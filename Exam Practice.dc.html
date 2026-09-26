@@ -31,6 +31,9 @@
     @keyframes suggest { 0%,100% { box-shadow:0 0 0 0 rgba(0,104,248,0.5); } 60% { box-shadow:0 0 0 12px rgba(0,104,248,0); } }
     @keyframes breathe { 0%,100% { transform:scale(1); box-shadow:0 14px 36px rgba(30,70,255,0.38); } 50% { transform:scale(1.02); box-shadow:0 18px 44px rgba(30,70,255,0.5); } }
     @keyframes dots { 0%,100% { opacity:0.25; } 50% { opacity:1; } }
+    [data-ticket] { transition:border-color 160ms ease, background-color 160ms ease, transform 120ms ease; }
+    [data-ticket]:hover { border-color:rgba(129,177,255,0.75) !important; background-color:rgba(0,104,248,0.18) !important; }
+    [data-ticket]:active { transform:scale(0.98); border-color:rgba(129,177,255,0.9) !important; background-color:rgba(0,104,248,0.22) !important; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
 </helmet>
@@ -68,9 +71,9 @@
   </header>
 
   <sc-if value="{{ onPick }}" hint-placeholder-val="{{ true }}">
-    <div data-screen-label="01 Home" style="position:relative; height:100vh; min-height:{{ homeMinH }}; display:flex; flex-direction:column; overflow:hidden">
+    <div data-screen-label="01 Home" style="position:relative; height:100vh; min-height:{{ homeMinH }}; display:{{ homeDisplay }}; flex-direction:column; grid-template-columns:55% 45%; grid-template-rows:auto auto 1fr auto auto 1fr; grid-template-areas:'top top' 'modes modes' 'stage .' 'stage head' 'stage act' 'stage .'; overflow:hidden">
 
-      <div style="position:relative; z-index:3; flex:none; display:flex; align-items:center; gap:8px; padding:{{ topPad }}">
+      <div style="grid-area:top; position:relative; z-index:3; flex:none; display:flex; align-items:center; gap:8px; padding:{{ topPad }}">
         <img src="assets/nexera-mark.png" alt="Nexera" style="width:24px; height:24px; display:block; flex:none" />
         <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text2); white-space:nowrap; display:{{ brandTextDisplay }}">Nexera · Exam practice</span>
         <span style="flex:1; min-width:0"></span>
@@ -96,7 +99,7 @@
         </sc-if>
       </div>
 
-      <div style="position:relative; z-index:3; flex:none; display:flex; justify-content:center; padding:0 12px">
+      <div style="grid-area:modes; position:relative; z-index:3; flex:none; display:flex; justify-content:center; padding:0 12px">
         <div role="group" aria-label="Preview state" style="display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.6); border:1px solid rgba(255,255,255,0.06)">
           <sc-for list="{{ homeModes }}" as="hm" hint-placeholder-count="4">
             <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
@@ -104,16 +107,16 @@
         </div>
       </div>
 
-      <div data-key="{{ homeKey }}" style="position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ headPad }}; animation:rise 520ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div data-key="{{ homeKey }}" style="grid-area:head; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ headPad }}; animation:rise 520ms cubic-bezier(0.22,0.61,0.36,1) both">
         <h1 style="margin:0; font-size:{{ homeH1 }}; font-weight:800; letter-spacing:-0.03em; line-height:1.05; text-align:center; text-wrap:balance; max-width:760px">{{ homeTitle }}</h1>
         <sc-if value="{{ hasHomeSub }}" hint-placeholder-val="{{ true }}">
           <p style="margin:0; font-size:{{ homeSubSize }}; line-height:1.55; color:var(--text2); text-align:center; text-wrap:pretty; max-width:520px">{{ homeSub }}</p>
         </sc-if>
       </div>
 
-      <div data-stage="true" style="position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}">
+      <div data-stage="true" style="grid-area:stage; position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}">
         <span aria-hidden="true" style="position:absolute; left:50%; bottom:calc(9.7% - {{ ringHalf }}); width:{{ ringW }}; height:{{ ringH }}; transform:translateX(-50%); border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,{{ glowA }}), rgba(30,70,255,{{ glowB }}) 55%, transparent 100%); pointer-events:none"></span>
-        <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:80.6%; aspect-ratio:1 / 2.25; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
+        <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:{{ posterH }}; aspect-ratio:1 / 2.25; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
           <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
             <img src="{{ posterSrc }}" alt="" onError="{{ posterFailed }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:50% 100%" />
           </sc-if>
@@ -126,24 +129,30 @@
           </sc-if>
         </span>
         <sc-if value="{{ mountModel }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/avatar-lite.glb" clip="{{ homeClip }}" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:0; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
+          <model-floor src="assets/avatar-lite.glb" clip="{{ homeClip }}" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
         </sc-if>
-        <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(32,35,39,0.82); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(16px); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}</p>
+        <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(32,35,39,0.82); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(16px); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}<span aria-hidden="true" style="display:{{ tailDisplay }}; position:absolute; left:calc(50% - 7px); bottom:-7px; width:12px; height:12px; transform:rotate(45deg); background:rgb(34,37,42); border-right:1px solid rgba(129,177,255,0.28); border-bottom:1px solid rgba(129,177,255,0.28)"></span></p>
       </div>
 
-      <div style="position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)">
+      <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
         <sc-if value="{{ showPicker }}" hint-placeholder-val="{{ true }}">
-          <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap" role="status">{{ sentenceSr }}</span>
-          <p style="margin:0; font-size:{{ sentenceSize }}; font-weight:600; line-height:1.4; color:var(--text2); text-align:center; text-wrap:balance; max-width:640px; animation:rise 520ms 260ms cubic-bezier(0.22,0.61,0.36,1) both">
-            <span aria-hidden="true">I'm practising </span><button data-trigger="subj" onClick="{{ openSubj }}" aria-haspopup="dialog" aria-label="{{ subjAria }}" style="min-height:44px; padding:0 2px; border:none; background:transparent; color:#ffffff; font-weight:800; font-size:inherit; line-height:inherit; text-decoration:underline; text-decoration-color:#81b1ff; text-decoration-thickness:2px; text-underline-offset:5px; cursor:pointer"><span data-key="{{ subjKey }}" style="display:inline-block; animation:{{ swapAnim }}">{{ subjWord }}</span></button><span aria-hidden="true">, </span><sc-if value="{{ hasPaperWord }}" hint-placeholder-val="{{ true }}"><button data-trigger="paper" onClick="{{ openPaper }}" aria-haspopup="dialog" aria-label="{{ paperAria }}" style="min-height:44px; padding:0 2px; border:none; background:transparent; color:#ffffff; font-weight:800; font-size:inherit; line-height:inherit; text-decoration:underline; text-decoration-color:#81b1ff; text-decoration-thickness:2px; text-underline-offset:5px; cursor:pointer"><span data-key="{{ paperKey }}" style="display:inline-block; animation:{{ swapAnim }}">{{ paperWord }}</span></button></sc-if><sc-if value="{{ noPaperWord }}" hint-placeholder-val="{{ false }}"><em aria-hidden="true" style="color:var(--text3); font-weight:600">no paper yet</em></sc-if><span aria-hidden="true">.</span>
-          </p>
+          <button data-ticket="true" data-trigger="ticket" onClick="{{ openTicket }}" aria-haspopup="dialog" aria-label="{{ ticketAria }}" style="box-sizing:border-box; width:{{ startW }}; min-height:64px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 14px; border-radius:18px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:var(--text); text-align:left; cursor:pointer; animation:{{ ticketAnim }}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8M8 17h5"></path></svg>
+            <span data-key="{{ ticketKey }}" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; animation:{{ swapAnim }}">
+              <span style="font-size:15.5px; font-weight:800; line-height:1.25; color:#ffffff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">{{ ticketSubj }}</span>
+              <span style="font-size:12.5px; font-weight:600; line-height:1.35; color:{{ ticketLineColor }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ticketLine }}</span>
+            </span>
+            <span aria-hidden="true" style="flex:none; display:flex; align-items:center; gap:4px; height:32px; padding:0 10px; border-radius:16px; border:1px solid rgba(129,177,255,0.45); font-size:12.5px; font-weight:700; color:#81b1ff">Change<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span>
+          </button>
           <div style="display:flex; align-items:center; gap:10px; width:{{ startW }}">
             <sc-if value="{{ picking }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ backToContinue }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Back</button>
             </sc-if>
             <button onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
           </div>
-          <span style="font-size:11.5px; color:var(--text3); text-align:center">DHET question paper · marking reviewed by Nexera</span>
+          <sc-if value="{{ hasTicketPaper }}" hint-placeholder-val="{{ true }}">
+            <span style="font-size:11.5px; color:var(--text3); text-align:center">DHET question paper · marking reviewed by Nexera</span>
+          </sc-if>
         </sc-if>
         <sc-if value="{{ showContinue }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ continueGo }}" style="width:min(460px, 100%); min-height:64px; padding:8px 22px; border:none; border-radius:20px; background:var(--grad); color:#ffffff; cursor:pointer; box-shadow:0 14px 36px rgba(30,70,255,0.38); animation:{{ breathe }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
@@ -152,7 +161,14 @@
               <span style="font-size:12px; font-weight:600; opacity:0.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%">{{ continueSub }}</span>
             </sc-if>
           </button>
-          <button onClick="{{ changePaper }}" style="min-height:44px; padding:0 14px; border:none; background:transparent; color:var(--text2); font-size:13.5px; font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:3px">Change paper</button>
+          <button data-ticket="true" data-trigger="ticket" onClick="{{ changePaper }}" aria-haspopup="dialog" aria-label="{{ resumeTicketAria }}" style="box-sizing:border-box; width:min(460px, 100%); min-height:56px; display:flex; align-items:center; gap:10px; padding:8px 10px 8px 14px; border-radius:16px; border:1px solid rgba(129,177,255,0.32); background:rgba(0,104,248,0.08); color:var(--text); text-align:left; cursor:pointer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
+            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px">
+              <span style="font-size:13.5px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeSubj }}</span>
+              <span style="font-size:12px; font-weight:600; color:#b9cdf0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeSitting }}</span>
+            </span>
+            <span aria-hidden="true" style="flex:none; display:flex; align-items:center; gap:4px; height:30px; padding:0 10px; border-radius:15px; border:1px solid rgba(129,177,255,0.4); font-size:12px; font-weight:700; color:#81b1ff">Change<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span>
+          </button>
         </sc-if>
       </div>
 
@@ -161,19 +177,23 @@
       </sc-if>
 
       <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
-        <div onClick="{{ closePops }}" style="position:fixed; inset:0; z-index:70; background:rgba(8,10,13,0.55); backdrop-filter:blur(2px)"></div>
-        <div data-sheet="true" role="dialog" aria-modal="true" aria-label="{{ sheetTitle }}" onKeyDown="{{ sheetKeys }}" style="position:fixed; z-index:71; {{ sheetPos }}; display:flex; flex-direction:column; gap:12px; padding:18px 16px 16px; background:rgba(32,35,39,0.97); border:1px solid rgba(129,177,255,0.22); backdrop-filter:blur(22px); box-shadow:0 -10px 50px rgba(0,0,0,0.5); animation:{{ sheetAnim }}">
+        <div style="position:fixed; inset:0; z-index:70; display:grid; align-items:{{ ovAlign }}; justify-items:{{ ovJustify }}; padding:{{ ovPad }}">
+        <div onClick="{{ closePops }}" aria-hidden="true" style="position:absolute; inset:0; background:rgba(8,10,13,0.55); backdrop-filter:blur(2px)"></div>
+        <div data-sheet="true" role="dialog" aria-modal="true" aria-label="{{ sheetTitle }}" onKeyDown="{{ sheetKeys }}" style="position:relative; box-sizing:border-box; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:12px; padding:18px 16px 16px; {{ sheetPos }}; background:rgba(32,35,39,0.97); border:1px solid rgba(129,177,255,0.22); backdrop-filter:blur(22px); box-shadow:0 -10px 50px rgba(0,0,0,0.5); animation:{{ sheetAnim }}">
           <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
             <span aria-hidden="true" style="align-self:center; width:40px; height:4px; border-radius:2px; background:rgba(255,255,255,0.18)"></span>
           </sc-if>
-          <div style="display:flex; align-items:center; gap:10px">
+          <div style="flex:none; display:flex; align-items:center; gap:10px">
+            <sc-if value="{{ sheetBack }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ sheetGoBack }}" aria-label="Back to subjects" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+            </sc-if>
             <h2 style="flex:1; margin:0; font-size:17px; font-weight:800">{{ sheetTitle }}</h2>
             <button onClick="{{ closePops }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
           </div>
 
           <sc-if value="{{ sheetSubj }}" hint-placeholder-val="{{ true }}">
-            <input data-sheet-search="true" value="{{ query }}" onChange="{{ onQuery }}" placeholder="Fluid, engineering, N6…" aria-label="Search subjects" aria-controls="subj-list" style="height:48px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
-            <div id="subj-list" role="listbox" aria-label="Subjects" data-noscrollbar="true" style="display:flex; flex-direction:column; gap:2px; max-height:{{ listMax }}; overflow-y:auto; margin:0 -4px; padding:0 4px">
+            <input data-sheet-search="true" value="{{ query }}" onChange="{{ onQuery }}" placeholder="Fluid, engineering, N6…" aria-label="Search subjects" aria-controls="subj-list" style="flex:none; height:48px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
+            <div id="subj-list" role="listbox" aria-label="Subjects" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:2px; overflow-y:auto; overscroll-behavior:contain; margin:0 -4px; padding:0 4px">
               <sc-for list="{{ subjRows }}" as="sr" hint-placeholder-count="6">
                 <sc-if value="{{ sr.isHead }}" hint-placeholder-val="{{ false }}">
                   <span role="presentation" style="padding:12px 8px 4px; font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">{{ sr.label }}</span>
@@ -199,6 +219,7 @@
             </div>
             <span style="font-size:13px; color:var(--text2)">{{ paperFacts }}</span>
           </sc-if>
+        </div>
         </div>
       </sc-if>
     </div>
@@ -622,12 +643,12 @@ class Component extends DCLogic {
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
-    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
     if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
-    this._rs = () => this.setState({ vw: window.innerWidth });
+    this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     window.addEventListener("resize", this._rs); this._rs();
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const saveData = !!(navigator.connection && navigator.connection.saveData);
@@ -641,17 +662,23 @@ class Component extends DCLogic {
   }
   // Closing returns focus to the control that opened the layer.
   closeLayer() {
-    const back = this.state.sheet || this.state.pop;
-    this.setState({ sheet: null, pop: null, query: "" }, () => {
+    // Both sheet steps open from the paper ticket; the popover opens from its pill.
+    const back = this.state.pop || (this.state.sheet ? "ticket" : null);
+    this.setState({ sheet: null, pop: null, query: "", sheetBack: false }, () => {
       requestAnimationFrame(() => { const t = document.querySelector('[data-trigger="' + back + '"]'); if (t) t.focus(); });
     });
   }
-  componentDidUpdate(_, prev) {
-    if (this.state.sheet && this.state.sheet !== prev.sheet) requestAnimationFrame(() => {
-      const f = this.state.sheet === "subj" ? document.querySelector("[data-sheet-search]") : document.querySelector('[data-sheet] [role="option"]');
+  // This runtime calls componentDidUpdate(prevProps) with no previous state, so the last
+  // open sheet is remembered here instead of read from a prevState argument.
+  componentDidUpdate() {
+    const sheet = this.state.sheet;
+    if (sheet && sheet !== this._lastSheet) requestAnimationFrame(() => {
+      const f = sheet === "subj" ? document.querySelector("[data-sheet-search]")
+        : document.querySelector('[data-sheet] [role="option"][aria-selected="true"]') || document.querySelector('[data-sheet] [role="option"]');
       if (f) f.focus();
     });
-    if (this.state.sheet && this.state.optIdx !== prev.optIdx && this._arrow) {
+    this._lastSheet = sheet;
+    if (sheet && this._arrow) {
       this._arrow = false;
       const o = document.querySelector('[data-sheet] [data-opt="' + this.state.optIdx + '"]'); if (o) o.focus();
     }
@@ -783,6 +810,8 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state, vw = s.vw, phone = vw < 600, desk = vw >= 1100;
+    // Tablets (600–1099) are touch-first; landscape tablets split the home page into two columns.
+    const tablet = !phone && !desk, tabletLand = tablet && vw > s.vh;
     const papers = this.papers || [];
     const paper = this.paper(), missions = this.missions(), mission = this.mission(), part = this.part();
     const pr = part ? this.pg(part.key) : null;
@@ -872,11 +901,13 @@ class Component extends DCLogic {
     const q = norm(s.query);
     const match = x => !q || norm(x.name + " " + PROG_SHORT[x.programme] + " " + (x.name.match(/N\d|Level \d/) || [""])[0]).indexOf(q) !== -1;
     const rowsA = withPaper.filter(match), rowsB = without.filter(match);
+    // Step 1 → step 2 only when the subject has more than one sitting to choose from.
     const pickSubj = x => {
       const ps = papersOf(x);
-      this.setState({ selSubj: x.name, selProg: x.programme, selPaper: ps.length ? ps[0].id : null, sheet: null, query: "", bubbleMsg: "", swap: s.swap + 1 }, () => {
+      if (ps.length > 1) { this.setState({ selSubj: x.name, selProg: x.programme, selPaper: ps[0].id, sheet: "paper", sheetBack: true, optIdx: 0, query: "", bubbleMsg: "" }); return; }
+      this.setState({ selSubj: x.name, selProg: x.programme, selPaper: ps.length ? ps[0].id : null, bubbleMsg: "", swap: s.swap + 1 }, () => {
         if (ps.length) this.nod();
-        requestAnimationFrame(() => { const t = document.querySelector('[data-trigger="subj"]'); if (t) t.focus(); });
+        this.closeLayer();
       });
     };
     let idx = 0;
@@ -890,26 +921,38 @@ class Component extends DCLogic {
     const optCount = idx;
     const facts = p => p ? p.total_marks + " marks · " + (p.duration_minutes / 60) + " hours · " + (PAPER_UNITS[p.id] || p.parts + " parts") : "";
     const bubble = s.bubbleMsg ? s.bubbleMsg
-      : showPicker ? "What are we beating today?"
+      : showPicker ? "Pick your paper here, then tap Start."
       : finished ? "Every mission is done. You banked " + rs.marks_earned + " of " + rs.total_marks + ". Let's look at what cost you marks."
       : "Question " + rs.next_mission.number + " is waiting. You've banked " + rs.marks_earned + " of " + rs.total_marks + ".";
     const onSubjSheet = s.sheet === "subj";
+    const resumePaper = HOME.papers.filter(p => p.id === rs.paper_id)[0];
+    const resumeName = resumePaper ? subjectName(resumePaper) : "";
+    const hours = p => (p.duration_minutes / 60) + " hours";
 
     return {
       headerDisplay: s.screen === "pick" ? "none" : "flex",
+      homeDisplay: tabletLand ? "grid" : "flex",
+      actBg: tabletLand ? "transparent" : "linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)",
       isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
-      hasHomeSub: !phone || !returning || picking,
+      // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
+      hasHomeSub: !returning || picking,
       homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. A clean streak multiplies it." : "Fluid Mechanics N6 · November 2022",
       homeH1: phone ? "30px" : "clamp(32px, 3.6vw, 44px)", homeSubSize: phone ? "13px" : "14px",
-      homeMinH: phone ? "560px" : "640px",
-      headPad: phone ? "8px 18px 0" : "clamp(8px, 2vh, 20px) 20px 0",
+      homeMinH: phone ? "560px" : tabletLand ? "560px" : "640px",
+      headPad: phone ? "8px 18px 0" : tabletLand ? "0 32px 10px 8px" : "clamp(8px, 2vh, 20px) 20px 0",
       // Phone: the stage takes the upper half and the bubble rides above the head;
       // desktop: the bubble sits beside the head so it never covers the face.
-      stageMin: phone ? "44vh" : "320px",
+      stageMin: phone ? "44vh" : tabletLand ? "0" : "320px",
       bubbleKey: bubble, bubble: bubble,
-      bubblePos: phone ? "left:50%; top:0; transform:translateX(-50%)" : "left:calc(50% + clamp(90px, 9vw, 150px)); top:6%",
-      bubbleMax: phone ? "min(300px, calc(100vw - 40px))" : "280px",
+      // Centred with auto margins, never a transform: the pop entrance animates transform and
+      // would wipe a translate out (the same fault that pushed the sheet off-screen).
+      bubblePos: phone ? "left:0; right:0; top:0; margin:0 auto; width:fit-content"
+        : tabletLand ? "left:calc(50% + 70px); top:4%" : "left:calc(50% + clamp(90px, 9vw, 150px)); top:6%",
+      bubbleMax: phone ? "min(300px, calc(100vw - 40px))" : tabletLand ? "220px" : "280px",
+      tailDisplay: phone ? "block" : "none",
+      // Phone: the model starts below the bubble so the bubble never covers the head.
+      modelInset: phone ? "84px 0 0 0" : "0", posterH: phone ? "calc(80.6% - 68px)" : "80.6%",
       bubbleRadius: phone ? "18px" : "18px 18px 18px 6px",
       ringW: phone ? "min(340px, 92vw)" : "min(560px, 60vw)", ringH: phone ? "64px" : "110px", ringHalf: phone ? "32px" : "55px",
       glowA: (0.16 + (returning ? glow * 0.025 : 0)).toFixed(3), glowB: (0.07 + (returning ? glow * 0.012 : 0)).toFixed(3),
@@ -918,7 +961,7 @@ class Component extends DCLogic {
       posterOpacity: modelOn && s.modelReady ? "0" : "1",
       posterSrc: POSTER_SRC || "", posterImgOn: !!POSTER_SRC && !s.posterMissing, posterSilhouette: !POSTER_SRC || s.posterMissing,
       posterFailed: () => this.setState({ posterMissing: true }),
-      actionPad: phone ? "10px 16px max(18px, env(safe-area-inset-bottom))" : "8px 20px clamp(20px, 4vh, 40px)",
+      actionPad: phone ? "10px 16px max(18px, env(safe-area-inset-bottom))" : tabletLand ? "6px 32px 0 8px" : "8px 20px clamp(20px, 4vh, 40px)",
       topPad: phone ? "12px 14px" : "20px 28px",
       brandTextDisplay: phone ? "none" : "inline",
       pillWordDisplay: phone ? "none" : "inline",
@@ -932,39 +975,47 @@ class Component extends DCLogic {
       homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"], ["picker", "Picker open"]].map(m => {
         const on = m[0] === "picker" ? s.sheet === "subj" && home === "first" : home === m[0] && !(s.sheet === "subj" && home === "first");
         return { label: m[1], on: on,
-          pick: () => { if (m[0] === "picker") { this.setState({ home: "first", picking: false, sheet: "subj", optIdx: 0, pop: null, bubbleMsg: "" }); return; }
+          pick: () => { if (m[0] === "picker") { this.setState({ home: "first", picking: false, sheet: "subj", sheetBack: false, optIdx: 0, pop: null, bubbleMsg: "", ticketSeen: true }); return; }
             this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }); },
           bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
-      hasContinueSub: !finished, continueSub: finished ? "" : rs.next_mission.title,
+      hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + rs.next_mission.title,
       continueGo: () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
         const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
         const i = ms ? ms.sections.reduce((acc, sec) => acc.concat(sec.missions), []).findIndex(m => m.id === rs.next_mission.number) : 0;
         this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id] }, () => this.openMission(Math.max(0, i))); },
       changePaper: () => { const cur = HOME.subjects.filter(x => x.paper_ids.indexOf(rs.paper_id) !== -1)[0];
-        this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "" }); },
+        this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "",
+          sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); },
+      resumeSubj: resumeName, resumeSitting: resumePaper ? resumePaper.sitting + " · " + resumePaper.total_marks + " marks" : "",
+      resumeTicketAria: "Paper: " + resumeName + (resumePaper ? ", " + resumePaper.sitting : "") + ". Change paper",
       backToContinue: () => this.setState({ picking: false, bubbleMsg: "" }),
       breathe: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite",
-      sentenceSize: phone ? "19px" : "clamp(20px, 2vw, 26px)",
-      subjWord: subj ? subj.name : "", subjKey: "s" + s.swap, paperKey: "p" + s.swap + (paper0 ? paper0.id : ""),
+      // The paper ticket: one button that names the choice and says it can change.
+      ticketSubj: subj ? subj.name : "",
+      ticketLine: paper0 ? (phone ? paper0.sitting : paper0.sitting + " · " + paper0.total_marks + " marks · " + hours(paper0)) : "No paper yet",
+      ticketLineColor: paper0 ? "#b9cdf0" : "var(--text3)", hasTicketPaper: !!paper0,
+      ticketAria: "Paper: " + (subj ? subj.name : "none") + (paper0 ? ", " + paper0.sitting : ", no paper yet") + ". Change paper",
+      ticketKey: "t" + s.swap + (paper0 ? paper0.id : "none"),
       swapAnim: s.reduced || !s.swap ? "none" : "pop 380ms cubic-bezier(0.34,1.56,0.64,1) both",
-      hasPaperWord: !!paper0, noPaperWord: !paper0, paperWord: paper0 ? paper0.sitting : "",
-      subjAria: "Subject: " + (subj ? subj.name : "none") + ", change", paperAria: "Paper: " + (paper0 ? paper0.sitting : "") + ", change",
-      sentenceSr: "I'm practising " + (subj ? subj.name : "") + ", " + (paper0 ? paper0.sitting : "no paper yet") + ".",
-      openSubj: () => this.setState({ sheet: "subj", query: "", optIdx: 0, pop: null }),
-      openPaper: () => this.setState({ sheet: "paper", optIdx: 0, pop: null }),
-      startW: phone ? "100%" : "min(420px, 100%)",
+      // Two gentle glows on a first visit only, then still for good.
+      ticketAnim: !s.reduced && home === "first" && !s.ticketSeen ? "suggest 1.6s ease-out 900ms 2" : "none",
+      openTicket: () => this.setState({ sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }),
+      sheetBack: s.sheet === "paper" && s.sheetBack,
+      sheetGoBack: () => this.setState({ sheet: "subj", sheetBack: false, optIdx: 0 }),
+      startW: phone ? "100%" : "min(460px, 100%)",
       startPaper: () => {
         if (paper0) { this.setState({ paperId: HOME_TO_LOCAL[paper0.id], screen: "map", sheet: null, bubbleMsg: "" }); return; }
-        this.setState({ bubbleMsg: "No paper for this subject yet. Pick another one?", sheet: "subj", query: "", optIdx: 0 });
+        this.setState({ bubbleMsg: "No paper for this subject yet. Pick another one?", sheet: "subj", sheetBack: false, query: "", optIdx: 0, ticketSeen: true });
       },
       isPhone: phone,
       sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPaper: s.sheet === "paper",
       sheetTitle: onSubjSheet ? "What are you studying?" : "Which sitting?",
-      sheetPos: phone ? "left:0; right:0; bottom:0; max-height:86vh; border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
-        : "left:50%; top:50%; transform:translate(-50%,-50%); width:min(520px, calc(100vw - 40px)); max-height:80vh; border-radius:22px",
+      // The overlay grid does the centring; the sheet itself only animates.
+      ovAlign: phone ? "end" : "center", ovJustify: phone ? "stretch" : "center", ovPad: phone ? "0" : "24px",
+      sheetPos: phone ? "width:100%; max-height:calc(100dvh - 24px); border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
+        : "width:min(" + (tablet ? 560 : 520) + "px, 100%); max-height:min(640px, calc(100dvh - 48px)); border-radius:22px",
       sheetAnim: s.reduced ? "none" : phone ? "rise 360ms cubic-bezier(0.34,1.4,0.64,1) both" : "pop 300ms cubic-bezier(0.22,0.61,0.36,1) both",
-      listMax: phone ? "52vh" : "46vh",
       query: s.query, onQuery: e => this.setState({ query: e.target.value, optIdx: 0 }),
       subjRows: subjRows, noResults: onSubjSheet && optCount === 0,
       // Arrow keys move through the listbox; Tab stays inside the dialog.
