@@ -31,6 +31,7 @@
     @keyframes suggest { 0%,100% { box-shadow:0 0 0 0 rgba(0,104,248,0.5); } 60% { box-shadow:0 0 0 12px rgba(0,104,248,0); } }
     @keyframes breathe { 0%,100% { transform:scale(1); box-shadow:0 14px 36px rgba(30,70,255,0.38); } 50% { transform:scale(1.02); box-shadow:0 18px 44px rgba(30,70,255,0.5); } }
     @keyframes dots { 0%,100% { opacity:0.25; } 50% { opacity:1; } }
+    @keyframes stamp { 0% { transform:scale(1); } 40% { transform:scale(1.24); } 100% { transform:scale(1); } }
     [data-ticket] { transition:border-color 160ms ease, background-color 160ms ease, transform 120ms ease; }
     [data-ticket]:hover { border-color:rgba(129,177,255,0.75) !important; background-color:rgba(0,104,248,0.18) !important; }
     [data-ticket]:active { transform:scale(0.98); border-color:rgba(129,177,255,0.9) !important; background-color:rgba(0,104,248,0.22) !important; }
@@ -38,7 +39,7 @@
   </style>
 </helmet>
 
-<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:hidden; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
+<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
 
   <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:10px; padding:10px {{ pad }}; background:rgba(25,27,30,0.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
     <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
@@ -53,20 +54,23 @@
       <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headSub }}</span>
     </span>
     <sc-if value="{{ showMeter }}" hint-placeholder-val="{{ false }}">
+      <span aria-label="{{ meterLabel }}" style="display:{{ ringDisplay }}; align-items:center; gap:6px; height:36px; padding:0 10px 0 5px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(32,35,39,0.72); font-size:12.5px; font-weight:800; white-space:nowrap">
+        <span aria-hidden="true" style="width:24px; height:24px; flex:none; border-radius:50%; background:conic-gradient(#81b1ff {{ ringDeg }}, rgba(255,255,255,0.1) 0); display:flex; align-items:center; justify-content:center"><span style="width:16px; height:16px; border-radius:50%; background:#202327"></span></span>{{ earnedNum }}<span style="font-size:11px; font-weight:600; color:var(--text3)">/{{ totalMarks }}</span>
+      </span>
       <span title="Marks earned against the paper" style="display:{{ meterDisplay }}; flex-direction:column; gap:4px; width:120px">
         <span style="font-size:11px; font-weight:700; color:var(--text2)">{{ meterLabel }}</span>
         <span style="height:6px; border-radius:3px; background:rgba(255,255,255,0.08); overflow:hidden"><span style="display:block; height:100%; width:{{ meterPct }}; background:var(--tint); border-radius:3px; transition:width 500ms ease"></span></span>
       </span>
     </sc-if>
     <sc-if value="{{ showKitBtn }}" hint-placeholder-val="{{ false }}">
-      <button onClick="{{ openKit }}" style="height:44px; padding:0 13px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); display:flex; align-items:center; gap:7px; cursor:pointer; font-size:13px; font-weight:600">
+      <button onClick="{{ openKit }}" aria-label="Paper kit" style="height:44px; padding:0 13px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); display:{{ kitHeadDisplay }}; align-items:center; gap:7px; cursor:pointer; font-size:13px; font-weight:600">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
         <span style="display:{{ backTextDisplay }}">Paper kit</span>
       </button>
     </sc-if>
-    <span data-xppill="true" title="XP earned" style="height:44px; padding:0 13px; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:6px; font-size:14px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
+    <span data-xppill="true" title="XP earned" aria-label="{{ xp }} XP" style="height:44px; padding:0 {{ xpPad }}; flex:none; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:6px; font-size:14px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>
-      <span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint)">XP</span>
+      <span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
     </span>
   </header>
 
@@ -226,46 +230,128 @@
   </sc-if>
 
   <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
-    <main style="max-width:720px; margin:0 auto; padding:18px {{ pad }} 80px; display:flex; flex-direction:column; gap:14px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
-      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px">
-        <span style="flex:1; min-width:200px; font-size:13px; line-height:1.55; color:var(--text2)">Every mission is open. Start anywhere. The road runs from the bottom up.</span>
-        <button onClick="{{ openSummary }}" style="min-height:44px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); font-size:13px; font-weight:600; cursor:pointer">Review my paper</button>
-      </div>
-      <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
-        <span style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</span>
-      </sc-if>
-      <div style="display:flex; flex-direction:column; align-items:center; gap:0">
-        <div style="padding:10px 18px; border-radius:18px; border:1px solid rgba(61,220,151,0.35); background:rgba(61,220,151,0.07); font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--ok)">Finish · {{ totalMarks }} marks</div>
-        <sc-for list="{{ road }}" as="rs" hint-placeholder-count="4">
-          <div style="display:flex; flex-direction:column; align-items:center; width:100%">
-            <sc-for list="{{ rs.missions }}" as="m" hint-placeholder-count="3">
-              <div style="display:flex; flex-direction:column; align-items:center; width:100%">
-                <span style="width:3px; height:26px; background:linear-gradient(180deg, rgba(129,177,255,0.10), rgba(129,177,255,0.28))"></span>
-                <button onClick="{{ m.open }}" aria-label="{{ m.aria }}" style="display:flex; align-items:center; gap:14px; width:min(100%, 520px); padding:10px 14px 10px 10px; border-radius:22px; border:1px solid var(--line); background:rgba(32,35,39,0.6); color:var(--text); cursor:pointer; text-align:left; transform:translateX({{ m.shift }})" style-hover="background:rgba(39,43,48,0.9)">
-                  <span style="position:relative; width:58px; height:58px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 30%, #3a4250, #1b1e23 70%); border:3px solid {{ m.ring }}; animation:{{ m.pulse }}">
-                    <span style="font-size:14px; font-weight:800">{{ m.number }}</span>
-                  </span>
-                  <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
-                    <span style="font-size:14.5px; font-weight:700; line-height:1.3; text-wrap:pretty">{{ m.title }}</span>
-                    <span style="font-size:12px; color:var(--text3)">{{ m.meta }}</span>
-                    <span style="display:flex; flex-wrap:wrap; gap:5px; margin-top:2px">
-                      <sc-for list="{{ m.tags }}" as="tg" hint-placeholder-count="1">
-                        <span style="padding:2px 7px; border-radius:6px; background:rgba(129,177,255,0.12); font-size:10.5px; font-weight:700; letter-spacing:0.05em; color:var(--tint)">{{ tg }}</span>
-                      </sc-for>
-                      <span style="padding:2px 7px; border-radius:6px; background:{{ m.stateBg }}; font-size:10.5px; font-weight:700; letter-spacing:0.03em; color:{{ m.stateColor }}">{{ m.state }}</span>
-                    </span>
-                  </span>
-                </button>
-              </div>
+    <main data-map="true" style="box-sizing:border-box; padding:12px {{ mapPadR }} 64px 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div style="box-sizing:border-box; width:{{ roadWpx }}; max-width:100%; margin:0 auto; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px">
+          <div role="group" aria-label="Preview state" style="display:flex; flex-wrap:wrap; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.6); border:1px solid rgba(255,255,255,0.06)">
+            <sc-for list="{{ mapModes }}" as="mm" hint-placeholder-count="3">
+              <button onClick="{{ mm.pick }}" aria-pressed="{{ mm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ mm.bg }}; color:{{ mm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ mm.label }}</button>
             </sc-for>
-            <span style="width:3px; height:22px; background:rgba(129,177,255,0.18)"></span>
-            <span style="padding:7px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--panel2); font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text2)">{{ rs.label }}</span>
           </div>
+          <span style="display:flex; gap:8px">
+            <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ openKit }}" style="min-height:44px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); font-size:13px; font-weight:600; cursor:pointer">Paper kit</button>
+            </sc-if>
+            <button onClick="{{ openSummary }}" style="min-height:44px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); font-size:13px; font-weight:600; cursor:pointer">Review my paper</button>
+          </span>
+        </div>
+        <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
+          <span style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</span>
+        </sc-if>
+      </div>
+
+      <div data-road="true" style="position:relative; width:{{ roadWpx }}; height:{{ roadHpx }}; margin:6px auto 0">
+        <svg aria-hidden="true" width="{{ roadW }}" height="{{ roadH }}" viewBox="{{ roadViewBox }}" style="position:absolute; left:0; top:0; overflow:visible">
+          <defs>
+            <linearGradient id="roadLit" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0068f8"></stop><stop offset="0.5" stop-color="#1e46ff"></stop><stop offset="1" stop-color="#671dff"></stop></linearGradient>
+          </defs>
+          <path d="{{ roadD }}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="{{ roadStroke }}" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="{{ roadD }}" fill="none" stroke="rgba(129,177,255,0.10)" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"></path>
+          <path data-lit="true" d="{{ roadD }}" fill="none" stroke="url(#roadLit)" stroke-width="{{ roadStroke }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ litDash }}" opacity="{{ litOpacity }}" style="transition:stroke-dasharray {{ litDur }} cubic-bezier(0.22,0.61,0.36,1)"></path>
+        </svg>
+
+        <span style="position:absolute; left:0; right:0; top:{{ finishTop }}; display:flex; justify-content:center; pointer-events:none">
+          <span style="padding:9px 16px; border-radius:16px; border:1px solid {{ finishBorder }}; background:{{ finishBg }}; font-size:11.5px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:{{ finishColor }}; white-space:nowrap">Finish · {{ totalMarks }} marks</span>
+        </span>
+        <span style="position:absolute; left:0; right:0; top:{{ startTop }}; display:flex; justify-content:center; pointer-events:none">
+          <span style="font-size:11px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--text4)">Start</span>
+        </span>
+        <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
+          <span style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
+            <span style="display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(29,32,35,0.92); white-space:nowrap">
+              <span style="font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text2)">{{ rc.label }}</span>
+              <span aria-hidden="true" style="width:88px; height:4px; border-radius:2px; background:rgba(255,255,255,0.08); overflow:hidden"><span style="display:block; height:100%; width:{{ rc.pct }}; background:var(--tint); border-radius:2px"></span></span>
+              <span style="font-size:10.5px; font-weight:700; color:var(--text3)">{{ rc.earned }} of {{ rc.total }} banked</span>
+            </span>
+          </span>
         </sc-for>
-        <span style="width:3px; height:22px; background:rgba(129,177,255,0.18)"></span>
-        <span style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">Start</span>
+
+        <ol aria-label="Missions, from the first question up" style="list-style:none; margin:0; padding:0">
+          <sc-for list="{{ roadNodes }}" as="n" hint-placeholder-count="6">
+            <li style="position:absolute; left:{{ n.left }}; top:{{ n.top }}; width:150px; display:flex; flex-direction:column; align-items:center; gap:6px">
+              <button data-node="{{ n.idx }}" onClick="{{ n.open }}" aria-haspopup="dialog" aria-label="{{ n.aria }}" style="position:relative; width:{{ n.size }}; height:{{ n.size }}; flex:none; border-radius:50%; padding:0; border:4px solid {{ n.ring }}; background:{{ n.fill }}; color:#ffffff; cursor:pointer; box-shadow:{{ n.shadow }}; animation:{{ n.anim }}">
+                <span style="font-size:{{ n.numSize }}; font-weight:800; letter-spacing:-0.02em">{{ n.number }}</span>
+                <sc-if value="{{ n.hasBadge }}" hint-placeholder-val="{{ false }}">
+                  <span aria-hidden="true" style="position:absolute; right:-6px; bottom:-6px; width:22px; height:22px; border-radius:50%; background:{{ n.ring }}; border:2px solid #191b1e; display:flex; align-items:center; justify-content:center">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#191b1e" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.badgePath }}"></path></svg>
+                  </span>
+                </sc-if>
+              </button>
+              <span style="max-width:150px; font-size:12.5px; font-weight:700; line-height:1.3; text-align:center; color:{{ n.titleColor }}; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">{{ n.title }}</span>
+              <span style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px; margin-top:-2px">
+                <span style="padding:2px 7px; border-radius:6px; background:{{ n.stateBg }}; font-size:10.5px; font-weight:700; color:{{ n.stateColor }}; white-space:nowrap">{{ n.state }}</span>
+                <sc-for list="{{ n.tags }}" as="tg" hint-placeholder-count="1">
+                  <span style="padding:2px 7px; border-radius:6px; background:rgba(129,177,255,0.12); font-size:10.5px; font-weight:700; letter-spacing:0.05em; color:var(--tint); white-space:nowrap">{{ tg }}</span>
+                </sc-for>
+              </span>
+            </li>
+          </sc-for>
+        </ol>
+
+        <div aria-hidden="true" style="position:absolute; left:{{ compLeft }}; top:{{ compTop }}; width:{{ compWpx }}; height:{{ compHpx }}; pointer-events:none; z-index:2; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
+          <sc-if value="{{ mapModelOn }}" hint-placeholder-val="{{ false }}">
+            <model-floor src="assets/avatar-lite.glb" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0"></model-floor>
+          </sc-if>
+          <sc-if value="{{ mapPoster }}" hint-placeholder-val="{{ true }}">
+            <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
+              <circle cx="50" cy="26" r="19" fill="rgba(129,177,255,0.2)"></circle>
+              <path d="M24 60 Q50 48 76 60 L82 130 Q78 138 70 136 L66 100 L64 222 L54 222 L50 150 L46 222 L36 222 L34 100 L30 136 Q22 138 18 130 Z" fill="rgba(129,177,255,0.14)"></path>
+            </svg>
+          </sc-if>
+        </div>
+        <span style="position:absolute; left:{{ bubLeft }}; top:{{ bubTop }}; width:{{ bubWpx }}; transform:translateY(-100%); z-index:3; pointer-events:none; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
+          <p data-key="{{ mapBubbleKey }}" aria-live="polite" style="margin:0 auto; width:fit-content; max-width:100%; padding:9px 12px; border-radius:16px; background:rgba(32,35,39,0.9); border:1px solid rgba(129,177,255,0.3); backdrop-filter:blur(14px); font-size:13px; font-weight:600; line-height:1.45; color:var(--text); text-wrap:pretty; animation:pop 380ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">{{ mapBubble }}</p>
+        </span>
       </div>
     </main>
+
+    <sc-if value="{{ cardOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed; inset:0; z-index:70; display:grid; align-items:{{ cOvAlign }}; justify-items:{{ cOvJustify }}; padding:{{ cOvPad }}; pointer-events:{{ cOvEvents }}">
+        <sc-if value="{{ cardDim }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ closeCard }}" aria-hidden="true" style="position:absolute; inset:0; background:rgba(8,10,13,0.55); backdrop-filter:blur(2px)"></div>
+        </sc-if>
+        <div data-card="true" role="dialog" aria-modal="{{ cardModal }}" aria-label="{{ cardAria }}" onKeyDown="{{ cardKeys }}" style="position:relative; pointer-events:auto; box-sizing:border-box; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding:18px 16px 16px; background:rgba(32,35,39,0.97); border:1px solid rgba(129,177,255,0.22); backdrop-filter:blur(22px); box-shadow:0 -10px 50px rgba(0,0,0,0.5); {{ cardPos }}; animation:{{ cardAnim }}">
+          <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+            <span aria-hidden="true" style="align-self:center; width:40px; height:4px; border-radius:2px; background:rgba(255,255,255,0.18)"></span>
+          </sc-if>
+          <div style="display:flex; align-items:flex-start; gap:10px">
+            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+              <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ cardKicker }}</span>
+              <h2 style="margin:0; font-size:19px; font-weight:800; line-height:1.25; letter-spacing:-0.01em; text-wrap:balance">{{ cardTitle }}</h2>
+            </span>
+            <button onClick="{{ closeCard }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
+          </div>
+          <span style="display:flex; flex-wrap:wrap; gap:6px">
+            <span style="padding:4px 9px; border-radius:8px; background:{{ cardStateBg }}; font-size:11.5px; font-weight:700; color:{{ cardStateColor }}">{{ cardState }}</span>
+            <sc-for list="{{ cardTags }}" as="ct" hint-placeholder-count="2">
+              <span style="padding:4px 9px; border-radius:8px; background:rgba(129,177,255,0.12); font-size:11.5px; font-weight:700; color:var(--tint)">{{ ct }}</span>
+            </sc-for>
+          </span>
+          <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px">
+            <sc-for list="{{ cardStats }}" as="cs" hint-placeholder-count="3">
+              <span style="display:flex; flex-direction:column; gap:3px; padding:10px 11px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)">
+                <span style="font-size:11px; font-weight:700; color:var(--text3)">{{ cs.label }}</span>
+                <span style="font-size:15px; font-weight:800; line-height:1.2">{{ cs.value }}</span>
+              </span>
+            </sc-for>
+          </div>
+          <sc-if value="{{ cardHasNote }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ cardNote }}</span>
+          </sc-if>
+          <button data-card-play="true" onClick="{{ cardPlay }}" style="min-height:54px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">{{ cardPlayLabel }}</button>
+        </div>
+      </div>
+    </sc-if>
   </sc-if>
 
   <sc-if value="{{ onPlay }}" hint-placeholder-val="{{ false }}">
@@ -546,6 +632,9 @@ const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","prog
 // model). Set to "assets/companion-greet.webp" once it exists; until then the silhouette holds
 // its place so nothing jumps and no request 404s.
 const POSTER_SRC = null;
+// The companion's walk loop, once it exists (Murci is generating it on Tripo, same rig).
+// Until then the companion glides along the road and greets on arrival.
+const WALK_CLIP = null;
 const PAPER_UNITS = { "fm-n6-2022-11": "13 missions", "aet-l4-2019-02": "28 parts" };
 const PROG_SHORT = { nated: "NATED", ncv: "NC(V)" };
 const HOME_TO_LOCAL = { "fm-n6-2022-11": "fm", "aet-l4-2019-02": "aet" };
@@ -643,7 +732,7 @@ class Component extends DCLogic {
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
-    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
@@ -657,7 +746,11 @@ class Component extends DCLogic {
     this._ld = () => this.setState({ modelReady: true });
     document.addEventListener("loaded", this._ld);
     this.countUp();
-    this._esc = e => { if (e.key === "Escape" && (this.state.sheet || this.state.pop)) { e.preventDefault(); this.closeLayer(); } };
+    this._esc = e => {
+      if (e.key !== "Escape") return;
+      if (this.state.card != null) { e.preventDefault(); this.closeCard(); return; }
+      if (this.state.sheet || this.state.pop) { e.preventDefault(); this.closeLayer(); }
+    };
     document.addEventListener("keydown", this._esc);
   }
   // Closing returns focus to the control that opened the layer.
@@ -665,23 +758,89 @@ class Component extends DCLogic {
     // Both sheet steps open from the paper ticket; the popover opens from its pill.
     const back = this.state.pop || (this.state.sheet ? "ticket" : null);
     this.setState({ sheet: null, pop: null, query: "", sheetBack: false }, () => {
-      requestAnimationFrame(() => { const t = document.querySelector('[data-trigger="' + back + '"]'); if (t) t.focus(); });
+      const t = document.querySelector('[data-trigger="' + back + '"]'); if (t) t.focus();
     });
   }
   // This runtime calls componentDidUpdate(prevProps) with no previous state, so the last
   // open sheet is remembered here instead of read from a prevState argument.
   componentDidUpdate() {
     const sheet = this.state.sheet;
-    if (sheet && sheet !== this._lastSheet) requestAnimationFrame(() => {
+    // componentDidUpdate runs after the DOM is committed, so focus can move now; waiting for a
+    // frame would fail wherever frames are throttled.
+    if (sheet && sheet !== this._lastSheet) {
       const f = sheet === "subj" ? document.querySelector("[data-sheet-search]")
         : document.querySelector('[data-sheet] [role="option"][aria-selected="true"]') || document.querySelector('[data-sheet] [role="option"]');
       if (f) f.focus();
-    });
+    }
     this._lastSheet = sheet;
+    const scr = this.state.screen;
+    if (scr === "map" && this._lastScreen !== "map") {
+      if (this._lastScreen === "done") {
+        const m = this.missions()[this.state.mi];
+        const got = m ? m.parts.reduce((a, p) => a + (this.pg(p.key).best || 0), 0) : 0;
+        this.celebrate(this.state.mi, Math.max(0, this.earnedNow() - got));
+      }
+      this.scrollToNode(this.state.cel ? this.state.cel.at : this.suggested(), false);
+    }
+    this._lastScreen = scr;
+    if (scr === "map") { const lp = document.querySelector("[data-lit]");
+      const L = lp ? Math.round(lp.getTotalLength()) : 0; if (L && L !== this.state.roadPx) this.setState({ roadPx: L }); }
+    if (this.state.card != null && this.state.card !== this._lastCard) {
+      const b = document.querySelector("[data-card-play]"); if (b) b.focus();
+    }
+    this._lastCard = this.state.card;
     if (sheet && this._arrow) {
       this._arrow = false;
       const o = document.querySelector('[data-sheet] [data-opt="' + this.state.optIdx + '"]'); if (o) o.focus();
     }
+  }
+  suggested() { return this.missions().findIndex(m => !m.parts.every(p => this.pg(p.key).closed)); }
+  earnedNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => b + (this.pg(p.key).best || 0), 0), 0); }
+  scrollToNode(i, smooth) {
+    const n = document.querySelector('[data-node="' + i + '"]');
+    if (n) n.scrollIntoView({ block: "center", behavior: smooth && !this.state.reduced ? "smooth" : "auto" });
+  }
+  openCard(i) { this.setState({ card: i }); }
+  closeCard() {
+    const i = this.state.card;
+    this.setState({ card: null }, () => { const n = document.querySelector('[data-node="' + i + '"]'); if (n) n.focus(); });
+  }
+  // Map preview seeds. "progress" is the home page's returning learner: 21 of 100, next up 1.4.
+  seedMap(kind, after) {
+    const fm = (this.papers || []).filter(x => x.id === "fm")[0]; if (!fm) return;
+    const byId = {}; fm.sections.forEach(sec => sec.missions.forEach(m => { byId[m.id] = m; }));
+    const prog = {}, paid = {};
+    const close = (id, how, best) => byId[id].parts.forEach(q => { const full = how !== "memo";
+      prog[q.key] = { tries: how === "clean" ? 1 : how === "hints" ? 2 : 3, best: full ? (q.marks || 0) : best, closed: true,
+        revealed: how === "memo", firstTryFull: how === "clean", waiting: false };
+      if (full) paid[q.key] = true; });
+    if (kind !== "fresh") {
+      close("1.1", "clean"); close("1.2", "hints"); close("1.3", "memo", 4); close("3.3", "clean");
+      const q21 = byId["2.1"].parts[0];
+      prog[q21.key] = { tries: 1, best: 2, closed: false, revealed: false, firstTryFull: false, waiting: false };
+    }
+    if (kind === "finished14") close("1.4", "clean");
+    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
+    this.setState({ paperId: "fm", screen: "map", mapMode: kind, prog: prog, paid: paid, streak: 0, card: null, cel: null, litHold: null,
+      xp: kind === "fresh" ? 0 : kind === "finished14" ? 1240 : 740 }, () => {
+      if (kind === "finished14") this.celebrate(this.missions().findIndex(m => m.id === "1.4"), 21);
+      else this.scrollToNode(this.suggested(), true);
+      if (after) after();
+    });
+  }
+  // The finish moment on the map: the light runs up, the ring stamps on, the companion moves on.
+  celebrate(i, fromEarned) {
+    if (i < 0) return;
+    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
+    if (this.state.reduced) { this.setState({ cel: null, litHold: null }); return; }
+    this.setState({ cel: { at: i, stamp: null }, litHold: fromEarned, mapClip: "greet" },
+      () => this.scrollToNode(i, false));
+    this._cel1 = setTimeout(() => this.setState({ litHold: null }), 450);
+    this._cel2 = setTimeout(() => this.setState({ cel: { at: i, stamp: i } }), 1550);
+    this._cel3 = setTimeout(() => {
+      this.setState({ cel: null, mapClip: WALK_CLIP || "" }, () => this.scrollToNode(this.suggested(), true));
+      this._cel4 = setTimeout(() => this.setState({ mapClip: "greet" }), WALK_CLIP ? 1100 : 60);
+    }, 2700);
   }
   // The companion nods: restarting its greet clip is the whole gesture.
   nod() {
@@ -700,7 +859,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
+  componentWillUnmount() { [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
@@ -806,6 +965,133 @@ class Component extends DCLogic {
     const m = this.mission(); if (!m) return;
     if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
     this.setState({ screen: "done" });
+  }
+
+  // ── The map: one road, bottom to top, through question capsules and mission spheres.
+  mapVals(paper, missions, suggestedIdx, missionState, earned, total, phone, tablet, desk, vw) {
+    const s = this.state;
+    const roadW = Math.max(280, Math.min(desk ? 560 : tablet ? 520 : 360, vw - 32));
+    const cx = roadW / 2, amp = phone ? Math.min(64, roadW * 0.19) : tablet ? 104 : 124;
+    const nodeR = phone ? 31 : 35, STEP = phone ? 150 : 160, CAPH = 104;
+    const ZIG = [0, 0.6, 1, 0.6, 0, -0.6, -1, -0.6];
+    const items = [{ kind: "start", h: 56 }];
+    let k = 0;
+    (paper ? paper.sections : []).forEach(sec => {
+      items.push({ kind: "cap", h: CAPH, sec: sec });
+      sec.missions.forEach(m => { items.push({ kind: "m", h: STEP, m: m, k: k++, i: missions.findIndex(x => x.id === m.id && x.title === m.title) }); });
+    });
+    items.push({ kind: "finish", h: 90 });
+    const roadH = items.reduce((a, it) => a + it.h, 0) + 40;
+    let acc = 20;
+    items.forEach(it => { it.y = roadH - (acc + it.h / 2); it.x = it.kind === "m" ? cx + amp * ZIG[it.k % 8] : cx; acc += it.h; });
+    // A smooth curve through every centre (Catmull-Rom as cubic Beziers), drawn bottom-up so the
+    // lit dash starts at Start.
+    const f = n => Math.round(n * 10) / 10, pts = items.map(it => [it.x, it.y]);
+    let d = "M" + f(pts[0][0]) + " " + f(pts[0][1]);
+    for (let j = 0; j < pts.length - 1; j++) {
+      const p0 = pts[j - 1] || pts[j], p1 = pts[j], p2 = pts[j + 1], p3 = pts[j + 2] || p2;
+      d += " C" + f(p1[0] + (p2[0] - p0[0]) / 6) + " " + f(p1[1] + (p2[1] - p0[1]) / 6) + " " + f(p2[0] - (p3[0] - p1[0]) / 6) + " " + f(p2[1] - (p3[1] - p1[1]) / 6) + " " + f(p2[0]) + " " + f(p2[1]);
+    }
+    const lit = s.litHold != null ? s.litHold : earned;
+    const cel = s.cel;
+    const got = m => m.parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
+    const worth = m => m.parts.reduce((a, q) => a + (q.marks || 0), 0);
+    const nextIdx = cel ? -1 : suggestedIdx;
+    const roadNodes = items.filter(it => it.kind === "m").map(it => {
+      const m = it.m, i = it.i, st = missionState(m), mm = worth(m), g = got(m);
+      const closed = m.parts.every(q => this.pg(q.key).closed);
+      const next = i === nextIdx;
+      const label = next ? (st.label === "Not started" ? "Next up" : st.label) : closed && mm ? st.label + " · " + g + "/" + mm : st.label;
+      return { idx: String(i), number: m.id, title: m.title, tags: m.tags, state: label,
+        stateBg: next ? "rgba(0,104,248,0.18)" : st.bg, stateColor: next ? "#ffffff" : st.color,
+        left: f(it.x - 75) + "px", top: f(it.y - nodeR) + "px", size: nodeR * 2 + "px", numSize: phone ? "15px" : "16px",
+        ring: next ? "rgba(129,177,255,0.95)" : st.ring,
+        fill: next ? "var(--grad)" : "radial-gradient(circle at 35% 30%, #3a4250, #1b1e23 70%)",
+        shadow: next ? "0 10px 28px rgba(30,70,255,0.45)" : "0 6px 18px rgba(0,0,0,0.35)",
+        anim: cel && cel.stamp === i ? "stamp 700ms cubic-bezier(0.34,1.56,0.64,1) both" : next && !s.reduced ? "suggest 2.2s ease-in-out infinite" : "none",
+        hasBadge: closed && st.label !== "Not started", badgePath: "M5 12.5l4.5 4.5L19 7.5",
+        titleColor: closed || next ? "var(--text)" : "var(--text2)",
+        aria: "Question " + m.id + ", " + m.title + ". " + label + ". " + (mm ? mm + " marks." : "Not marked online."),
+        open: () => this.openCard(i) };
+    });
+    const roadCaps = items.filter(it => it.kind === "cap").map(it => {
+      const sec = it.sec, t = sec.total || sec.missions.reduce((a, m) => a + worth(m), 0), e = sec.missions.reduce((a, m) => a + got(m), 0);
+      return { top: f(it.y - 38) + "px", label: sec.title + (sec.total ? " · " + sec.total + " marks" : ""), earned: e, total: t || "—",
+        pct: (t ? Math.round(100 * e / t) : 0) + "%" };
+    });
+    // The companion stands beside the next mission, on the side with room; on the finish when all is done.
+    const compW = phone ? 100 : tablet ? 120 : 136, compH = Math.round(compW * 1.7);
+    const at = cel ? cel.at : suggestedIdx;
+    const tIt = items.filter(it => it.kind === "m" && it.i === at)[0] || items[items.length - 1];
+    const zig = tIt.kind === "m" ? ZIG[tIt.k % 8] : 0;
+    let cL = zig >= 0 ? tIt.x - nodeR - 12 - compW : tIt.x + nodeR + 12;
+    if (tIt.kind !== "m") cL = cx + 70;
+    cL = Math.max(0, Math.min(roadW - compW, cL));
+    const cT = tIt.y + nodeR + 8 - compH;
+    const bubW = phone ? 172 : 214;
+    const bubL = Math.max(0, Math.min(roadW - bubW, cL + compW / 2 - bubW / 2));
+    const atM = tIt.kind === "m" ? tIt.m : null;
+    const fresh = !missions.some(m => m.parts.some(q => this.pg(q.key).tries > 0));
+    const bubble = cel && atM ? "Nice. " + atM.id + " banked, " + got(atM) + " of " + worth(atM) + "."
+      : !atM ? "Paper done. You banked " + earned + " of " + total + "."
+      : fresh ? "Start anywhere. I'd begin with " + atM.id + "."
+      : atM.id + " next · " + worth(atM) + " marks. Let's go.";
+    // The mission card.
+    const cm = s.card != null ? missions[s.card] : null;
+    const cmSt = cm ? missionState(cm) : null, cmW = cm ? worth(cm) : 0, cmG = cm ? got(cm) : 0;
+    const cmClosed = cm ? cm.parts.filter(q => this.pg(q.key).closed).length : 0;
+    const cmAll = cm ? cmClosed === cm.parts.length : false, cmStarted = cm ? cm.parts.some(q => this.pg(q.key).tries > 0) : false;
+    const cmPaid = cm ? cm.parts.every(q => s.paid[q.key] || !q.marks) : false;
+    const cmNext = cm && s.card === suggestedIdx;
+    const cmWaiting = cm ? cm.parts.some(q => this.pg(q.key).waiting) : false;
+    const cmDraw = cm ? cm.parts.every(q => q.response_mode === "draw") : false;
+    const note = !cm ? "" : cmWaiting ? "An answer here is waiting for a marker. It is saved."
+      : cmDraw ? "You draw this one on paper. It isn't marked online."
+      : cmAll && cmPaid ? "You've banked this one. A replay is for practice and pays no XP." : "";
+    return {
+      roadW: roadW, roadH: roadH, roadWpx: roadW + "px", roadHpx: roadH + "px", roadViewBox: "0 0 " + roadW + " " + roadH,
+      roadD: d, roadStroke: phone ? "16" : "20",
+      // The lit length IS the score: marks banked over the paper's total, in measured pixels.
+      litDash: Math.round((s.roadPx || 0) * lit / Math.max(1, total || 100)) + " " + ((s.roadPx || 0) + 40), // Hidden until measured: a zero dash with round caps would draw a dotted line.
+      litOpacity: lit > 0 && s.roadPx ? "1" : "0", litDur: s.reduced ? "0ms" : "1300ms",
+      roadNodes: roadNodes, roadCaps: roadCaps,
+      finishTop: f(items[items.length - 1].y - 18) + "px", startTop: f(items[0].y - 8) + "px",
+      finishBorder: earned >= total && total ? "rgba(61,220,151,0.8)" : "rgba(61,220,151,0.35)",
+      finishBg: earned >= total && total ? "rgba(61,220,151,0.16)" : "rgba(61,220,151,0.07)", finishColor: "var(--ok)",
+      compLeft: f(cL) + "px", compTop: f(cT) + "px", compWpx: compW + "px", compHpx: compH + "px",
+      glideDur: s.reduced ? "0ms" : "1100ms", mapClip: s.mapClip,
+      mapModelOn: !s.reduced && !s.saveData, mapPoster: !!(s.reduced || s.saveData),
+      bubLeft: f(bubL) + "px", bubTop: f(cT + 6) + "px", bubWpx: bubW + "px", mapBubble: bubble, mapBubbleKey: bubble,
+      mapPadR: desk && cm ? "392px" : "16px",
+      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress · 21"], ["finished14", "Just finished 1.4"]].map(x => {
+        const on = s.mapMode ? s.mapMode === x[0] : x[0] === (fresh ? "fresh" : "progress");
+        return { label: x[1], on: on, pick: () => this.seedMap(x[0]), bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
+      cardOpen: !!cm && s.screen === "map", cardDim: !desk, cardModal: desk ? "false" : "true",
+      cOvAlign: phone ? "end" : desk ? "stretch" : "center", cOvJustify: phone ? "stretch" : desk ? "end" : "center",
+      cOvPad: phone ? "0" : desk ? "76px 16px 16px" : "24px", cOvEvents: desk ? "none" : "auto",
+      cardPos: phone ? "width:100%; max-height:calc(100dvh - 24px); border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
+        : desk ? "width:360px; border-radius:22px" : "width:min(480px, 100%); max-height:min(640px, calc(100dvh - 48px)); border-radius:22px",
+      cardAnim: s.reduced ? "none" : phone ? "rise 360ms cubic-bezier(0.34,1.4,0.64,1) both" : "pop 300ms cubic-bezier(0.22,0.61,0.36,1) both",
+      cardAria: cm ? "Question " + cm.id + ": " + cm.title : "",
+      cardKicker: cm ? "Question " + cm.id + " · " + cm.parts.length + (cm.parts.length === 1 ? " part" : " parts") + (cmW ? " · " + cmW + " marks" : "") : "",
+      cardTitle: cm ? cm.title : "",
+      cardState: cm ? (cmNext && cmSt.label === "Not started" ? "Next up" : cmSt.label) : "",
+      cardStateBg: cm ? (cmNext ? "rgba(0,104,248,0.18)" : cmSt.bg) : "transparent", cardStateColor: cm ? (cmNext ? "#ffffff" : cmSt.color) : "",
+      cardTags: cm ? cm.tags.concat(paper && paper.id === "fm" ? ["Formula sheet"] : []) : [],
+      cardStats: cm ? [
+        cmAll && cmPaid ? { label: "XP", value: "None on replay" } : { label: "First-try XP", value: "100 a part" },
+        { label: "Parts done", value: cmClosed + " of " + cm.parts.length },
+        { label: "Best", value: cmW ? (cmStarted ? cmG + " of " + cmW : "—") : "Not marked" }] : [],
+      cardHasNote: !!note, cardNote: note,
+      cardPlayLabel: cm ? (cmAll ? "Replay " : cmStarted ? "Continue " : "Play ") + cm.id : "",
+      cardPlay: () => { const i = s.card; this.setState({ card: null }, () => this.openMission(i)); },
+      closeCard: () => this.closeCard(),
+      cardKeys: e => { if (e.key !== "Tab" || desk) return;
+        const fs = [].slice.call(document.querySelectorAll("[data-card] button")); if (!fs.length) return;
+        const first = fs[0], last = fs[fs.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } },
+    };
   }
 
   renderVals() {
@@ -980,10 +1266,12 @@ class Component extends DCLogic {
           bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
       hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + rs.next_mission.title,
-      continueGo: () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
-        const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
-        const i = ms ? ms.sections.reduce((acc, sec) => acc.concat(sec.missions), []).findIndex(m => m.id === rs.next_mission.number) : 0;
-        this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id] }, () => this.openMission(Math.max(0, i))); },
+      continueGo: () => { const go = () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
+          const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
+          const i = ms ? ms.sections.reduce((acc, sec) => acc.concat(sec.missions), []).findIndex(m => m.id === rs.next_mission.number) : 0;
+          this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id] }, () => this.openMission(Math.max(0, i))); };
+        // The returning learner the home page describes (21 of 100) is the progress the map shows.
+        if (!Object.keys(this.state.prog).length) this.seedMap("progress", go); else go(); },
       changePaper: () => { const cur = HOME.subjects.filter(x => x.paper_ids.indexOf(rs.paper_id) !== -1)[0];
         this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "",
           sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); },
@@ -1040,7 +1328,9 @@ class Component extends DCLogic {
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
       headTitle: headTitle, headSub: headSub,
-      showMeter: !!paper && s.screen !== "pick", meterLabel: earned + " of " + total + " marks", meterPct: (total ? Math.round(100 * earned / total) : 0) + "%",
+      showMeter: !!paper && s.screen !== "pick", meterLabel: earned + " of " + total + " marks",
+      ringDisplay: phone ? "flex" : "none", kitHeadDisplay: phone && s.screen === "map" ? "none" : "flex",
+      xpPad: phone ? "10px" : "13px", xpWordDisplay: phone ? "none" : "inline", ringDeg: Math.round(360 * earned / Math.max(1, total)) + "deg", earnedNum: earned, meterPct: (total ? Math.round(100 * earned / total) : 0) + "%",
       showKitBtn: !!paper && (s.screen === "map" || s.screen === "play"), openKit: () => this.setState({ kit: true }),
       xp: s.xp, pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
 
@@ -1058,13 +1348,7 @@ class Component extends DCLogic {
 
       openSummary: () => this.setState({ screen: "summary" }), totalMarks: total,
       paperNote: !!(paper && paper.note), paperNoteText: paper ? paper.note : "",
-      road: paper ? paper.sections.slice().reverse().map(sec => ({ label: sec.title + (sec.total ? " · " + sec.total + " marks" : ""),
-        missions: sec.missions.slice().reverse().map(m => { const i = missions.findIndex(x => x.id === m.id && x.title === m.title); const st = missionState(m);
-          const mm = m.parts.reduce((a, p) => a + (p.marks || 0), 0);
-          return { number: m.id, title: m.title, meta: m.parts.length + (m.parts.length === 1 ? " part" : " parts") + (mm ? " · " + mm + " marks" : ""), tags: m.tags,
-            state: i === suggestedIdx && st.label === "Not started" ? "Suggested" : st.label, stateBg: st.bg, stateColor: st.color, ring: st.ring,
-            pulse: i === suggestedIdx && !s.reduced ? "suggest 2.2s ease-in-out infinite" : "none", shift: phone ? "0px" : ((i % 3) - 1) * 26 + "px",
-            aria: m.id + " " + m.title + ", " + st.label, open: () => this.openMission(i) }; }) })) : [],
+      ...this.mapVals(paper, missions, suggestedIdx, missionState, earned, total, phone, tablet, desk, vw),
 
       partDots: mParts.map((p, i) => { const g = this.pg(p.key); const cur = i === s.pi;
         return { label: p.number, current: cur ? "step" : "false", aria: "Part " + p.number + (g.closed ? ", closed" : ""),
