@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  [data-thinbar] { scrollbar-width: thin; scrollbar-color: var(--thumb) transparent; }
+  [data-thinbar]::-webkit-scrollbar { width: 7px; height: 7px; }
+  [data-thinbar]::-webkit-scrollbar-track { background: transparent; }
+  [data-thinbar]::-webkit-scrollbar-thumb { background: var(--thumb); border-radius: 99px; border: 2px solid transparent; background-clip: content-box; }
+  [data-thinbar]:hover::-webkit-scrollbar-thumb { background: var(--thumbHot); background-clip: content-box; }
+  .op-course-grid { display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 18px; }
+  @media (min-width: 640px) { .op-course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .op-course-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .op-course-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .op-card:hover .op-card-menu, .op-card:focus-within .op-card-menu { opacity: 1; }
+  @media (pointer: coarse) { .op-card-menu { opacity: 1 !important; } }
+  [data-noscrollbar] { scrollbar-width: none; -ms-overflow-style: none; }
+  [data-noscrollbar]::-webkit-scrollbar { display: none; }
+  body { margin: 0; background: var(--bg); font-family: "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  @media (prefers-reduced-motion: reduce) { [data-xr] * { animation: none !important; } }
+  :root { --overlay1:rgba(255,255,255,0.04); --overlay3:rgba(255,255,255,0.10); --thumb:rgba(255,255,255,0.16); --thumbHot:rgba(255,255,255,0.28); --menuLine:rgba(255,255,255,0.10); --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --field2:#0f1214; --stripeA:#121517; --stripeB:#0e1113; --line:#2a2e33; --cardLine:#2f3439; --line2:#363b41; --btnLine:#454b52; --btnLine2:#2a3033; --hover:#272b30; --accentSoft:color-mix(in oklch, #0068f8 22%, #202327); --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --text5:#3a3e41; --accent:#2a52ff; --accentHover:color-mix(in oklch, #1e46ff 40%, #ffffff); --btnBgHover:#ffffff; --dot:rgba(125,147,184,0.24); --shadow:rgba(0,0,0,0.55); --sidebarBg:#1b1e21; --onAccent:#ffffff; }
+  html[data-theme="light"] { --overlay1:rgba(0,0,0,0.05); --overlay3:rgba(0,0,0,0.12); --thumb:rgba(20,22,26,0.26); --thumbHot:rgba(20,22,26,0.42); --menuLine:rgba(20,22,26,0.16); --bg:#f4f5f7; --panel:#ffffff; --panel2:#f8f9fb; --field:#fbfcfd; --field2:#f1efea; --stripeA:#dbd7ce; --stripeB:#e6e2da; --line:#e3e5ea; --cardLine:#dcdfe5; --line2:#cdd1d9; --btnLine:#b3b9c4; --btnLine2:#8b8272; --hover:#eceef2; --accentSoft:color-mix(in oklch, #0068f8 14%, #ffffff); --text:#14161a; --text2:#41464c; --text3:#53585f; --text4:#5f656c; --text5:#82888f; --accent:#1e46ff; --accentHover:#0068f8; --btnBgHover:#2f3238; --dot:rgba(44,79,128,0.28); --shadow:rgba(18,20,24,0.16); --sidebarBg:#f7f8fa; --onAccent:#ffffff; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accentHover); }
+  [data-railtoggle] { color: var(--text2); transition: color 150ms ease; }
+  [data-railtoggle]:hover { color: var(--text); }
+  [data-railtoggle] .rt-a { position: absolute; opacity: 1; transition: opacity 150ms ease; }
+  [data-railtoggle] .rt-b { position: absolute; opacity: 0; transition: opacity 150ms ease; }
+  [data-railtoggle]:hover .rt-a { opacity: 0; }
+  [data-railtoggle]:hover .rt-b { opacity: 1; }
+</style>
+</helmet>
+
+<div style="height:100vh; overflow:hidden; background:var(--bg); position:relative; color:var(--text); font-family:'Inter', system-ui, sans-serif; display:flex; flex-direction:row">
+
+  <sc-if value="{{ sidebarVisible }}" hint-placeholder-val="{{ false }}">
+    <div onMouseEnter="{{ startPeek }}" onMouseLeave="{{ schedulePeekClose }}" style="{{ sidebarStyle }}">
+      <sc-if value="{{ sidebarVisible }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:-2px; padding:0 16px 14px">
+        <span aria-hidden="true" style="width:28px; height:28px; flex:none"></span>
+        <img onClick="{{ goHome }}" src="assets/nexera-wordmark.webp" alt="Nexera" title="Home" style="cursor:pointer; height:24px; width:auto; display:block; flex:none" />
+        <span data-railtoggle="true" onClick="{{ toggleSidebar }}" title="Collapse sidebar" aria-label="Collapse sidebar" style="width:28px; height:28px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer">
+          <span style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center">
+            <img class="rt-a" src="assets/nexera-mark.png" alt="" style="width:20px; height:20px; display:block" />
+            <svg class="rt-b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m15 18-6-6 6-6"></path></svg>
+          </span>
+        </span>
+      </div>
+      </sc-if>
+      <div style="display:flex; flex-direction:column; gap:2px; padding:0 10px">
+        <sc-for list="{{ sidebarNav }}" as="s" hint-placeholder-count="4">
+          <a href="{{ s.href }}" style="text-decoration:none; display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; background:{{ s.bg }}; font-size:14px; color:{{ s.color }}; cursor:pointer" style-hover="background:var(--hover)">
+            <span style="display:flex; color:{{ s.color }}">{{ s.icon }}</span>{{ s.label }}
+          </a>
+        </sc-for>
+      </div>
+      <div style="padding:22px 22px 8px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text4)">Recents</div>
+      <div data-noscrollbar="true" style="display:flex; flex-direction:column; padding:0 10px; overflow-y:auto; overflow-x:hidden; min-height:0">
+        <sc-for list="{{ recents }}" as="r" hint-placeholder-count="5">
+          <div onClick="{{ goSession }}" style="display:flex; align-items:center; gap:11px; padding:7px 12px; border-radius:8px; font-size:13px; color:var(--text2); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" style-hover="background:var(--hover); color:var(--text)">
+            <span style="width:5px; height:5px; flex:none; border-radius:50%; border:1px solid var(--text4)"></span>{{ r }}
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:auto; padding:14px 18px 0; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between">
+        <span style="width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Inter', system-ui, sans-serif; font-weight:500; font-size:10px; color:var(--onAccent)">NM</span>
+        <div style="display:flex; align-items:center; gap:6px">
+          <span onClick="{{ cycleTheme }}" title="{{ themeLabel }}" style="width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none" style-hover="background:var(--hover)">
+            <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isSystem }}" hint-placeholder-val="{{ false }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><rect width="20" height="14" x="2" y="3" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path></svg>
+            </sc-if>
+          </span>
+          <span onClick="{{ goSettings }}" title="Settings" style="width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer" style-hover="background:var(--hover)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:hidden">
+  <div style="min-height:56px; flex:none; display:flex; align-items:center; justify-content:space-between; gap:12px 24px; padding:9px 40px; border-bottom:1px solid var(--line)">
+    <div style="display:flex; align-items:center; gap:20px; flex:none">
+      <sc-if value="{{ sidebarClosed }}" hint-placeholder-val="{{ true }}">
+        <span data-railtoggle="true" onClick="{{ toggleSidebar }}" onMouseEnter="{{ startPeek }}" onMouseLeave="{{ schedulePeekClose }}" title="Expand sidebar" aria-label="Expand sidebar" style="width:28px; height:28px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer">
+          <span style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center">
+            <img class="rt-a" src="assets/nexera-mark.png" alt="" style="width:20px; height:20px; display:block" />
+            <svg class="rt-b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m9 18 6-6-6-6"></path></svg>
+          </span>
+        </span>
+      </sc-if>
+      
+      <div style="display:flex; gap:20px; font-size:13px; color:var(--text3)">
+        <a href="Industries%20Library%20-%203%20Directions.dc.html" style="color:inherit; text-decoration:none">Industries</a>
+        <span style="color:var(--text); border-bottom:1px solid var(--accent); padding-bottom:3px">Courses</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px; flex:0 1 auto; min-width:0">
+      <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; color:var(--accent); white-space:nowrap; flex:none">{{ approvalLabel }}</span>
+      <div style="position:relative; flex:0 1 300px; min-width:110px">
+        <span style="position:absolute; left:15px; top:11px; width:12px; height:12px; border:1.5px solid var(--text3); border-radius:50%; pointer-events:none"></span>
+        <span style="position:absolute; left:25px; top:22px; width:6px; height:1.5px; background:var(--text3); transform:rotate(45deg); pointer-events:none"></span>
+        <input placeholder="Search courses" style="width:100%; height:36px; box-sizing:border-box; padding:0 16px 0 38px; border-radius:18px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-family:'Inter', system-ui, sans-serif; font-size:13px; outline:none" style-focus="border-color:var(--accent); background:var(--field2)" />
+      </div>
+      <sc-if value="{{ sidebarClosed }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; align-items:center; gap:6px; flex:none">
+          <span onClick="{{ cycleTheme }}" title="{{ themeLabel }}" style="width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none" style-hover="background:var(--hover)">
+            <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isSystem }}" hint-placeholder-val="{{ false }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><rect width="20" height="14" x="2" y="3" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path></svg>
+            </sc-if>
+          </span>
+          <span style="width:28px; height:28px; margin-left:2px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Inter', system-ui, sans-serif; font-weight:500; font-size:10px; color:var(--onAccent)">NM</span>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="flex:none; padding:16px 40px 14px; display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--line)">
+    <div style="display:flex; flex-direction:column; gap:7px">
+      <div style="display:flex; align-items:center; gap:10px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text3)">
+        <a href="Industries%20Library%20-%203%20Directions.dc.html" style="color:inherit; text-decoration:none">Industries</a>
+        <span style="color:var(--text5)">/</span>
+        <span style="color:var(--text2)">{{ crumbInd }}</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:24px; flex-wrap:wrap">
+      <h1 style="flex:0 1 auto; min-width:0; margin:0; font-size:34px; line-height:1.05; font-weight:700; letter-spacing:-0.035em; text-wrap:pretty">{{ indName }}</h1>
+      <div style="flex:none; display:flex; flex-wrap:wrap; align-items:baseline; gap:12px 36px">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex; flex-direction:column; gap:6px">
+            <span style="display:block; font-size:34px; line-height:1.05; font-weight:700; letter-spacing:-0.03em">{{ s.value }}</span>
+            <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">{{ s.label }}</span>
+          </div>
+        </sc-for>
+        <span onClick="{{ openNewCourse }}" style="height:38px; flex:none; padding:0 18px; border-radius:19px; display:flex; align-items:center; gap:8px; background:var(--text); font-size:13px; font-weight:500; color:var(--bg); cursor:pointer; white-space:nowrap; transition:background 150ms ease" style-hover="background:var(--btnBgHover)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+          New course
+        </span>
+      </div>
+    </div>
+    <p style="margin:0; max-width:620px; font-size:14px; line-height:1.45; color:var(--text2); text-wrap:pretty">{{ blurb }}</p>
+  </div>
+
+  <div style="flex:none; display:flex; align-items:center; flex-wrap:wrap; gap:7px; padding:12px 40px; border-bottom:1px solid var(--line)">
+    <sc-for list="{{ levelChips }}" as="lv" hint-placeholder-count="5">
+      <span onClick="{{ lv.pick }}" style="height:28px; padding:0 12px; border-radius:14px; border:1px solid {{ lv.border }}; background:{{ lv.bg }}; display:flex; align-items:center; gap:7px; font-size:12.5px; color:{{ lv.color }}; cursor:pointer; white-space:nowrap">
+        {{ lv.label }}
+        <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:10px; opacity:0.7">{{ lv.count }}</span>
+      </span>
+    </sc-for>
+  </div>
+
+  <div data-noscrollbar="true" style="flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; padding:22px 40px 48px">
+    <div class="op-course-grid">
+      <sc-for list="{{ courses }}" as="c" hint-placeholder-count="5">
+        <a href="{{ c.href }}" class="op-card" style="position:relative; display:flex; flex-direction:column; height:100%; border:1px solid var(--cardLine); border-radius:10px; background:var(--panel); text-decoration:none; color:inherit; transition:border-color 150ms ease" style-hover="border-color:var(--btnLine)">
+          <span style="flex:1; display:flex; flex-direction:column; overflow:hidden; border-radius:10px">
+
+            <span style="position:relative; display:flex; align-items:center; justify-content:center; width:100%; aspect-ratio:16 / 11; flex:none; background:var(--stripeA); border-bottom:1px solid var(--cardLine); color:var(--text4)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+              <sc-if value="{{ c.showInd }}" hint-placeholder-val="{{ false }}">
+                <span style="position:absolute; left:12px; top:10px; max-width:calc(100% - 80px); padding:2px 10px; border-radius:11px; background:var(--overlay3); backdrop-filter:blur(8px) saturate(1.2); -webkit-backdrop-filter:blur(8px) saturate(1.2); font-size:10px; font-weight:500; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ c.ind }}</span>
+              </sc-if>
+            </span>
+
+            <span style="flex:1; display:flex; flex-direction:column; gap:14px; padding:16px 18px 18px">
+              <span style="display:flex">
+                <span style="height:26px; max-width:100%; display:flex; align-items:center; padding:0 12px; border:1px dashed var(--line2); border-radius:13px; background:var(--field); font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; color:{{ c.audienceColor }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ c.audience }}</span>
+              </span>
+
+              <span style="display:flex; flex-direction:column; gap:6px">
+                <span title="{{ c.name }}" style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; min-height:46px; padding-right:32px; font-size:18px; font-weight:500; line-height:1.25; letter-spacing:-0.02em; color:var(--text); text-wrap:pretty">{{ c.name }}</span>
+                <span style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:13px; line-height:1.5; color:var(--text2); text-wrap:pretty">{{ c.desc }}</span>
+              </span>
+
+              <span style="margin-top:auto; display:flex; flex-direction:column; gap:10px">
+                <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; color:{{ c.moduleColor }}">{{ c.modules }}</span>
+                <span style="height:1px; background:var(--line)"></span>
+                <span style="min-height:1rem; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; color:var(--text4)">{{ c.activity }}</span>
+              </span>
+            </span>
+          </span>
+
+          <span title="Course actions" class="op-card-menu" style="position:absolute; right:8px; top:8px; z-index:3; opacity:0; transition:opacity 140ms ease; width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:8px; color:var(--text3)" style-hover="background:var(--hover); color:var(--text)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+          </span>
+        </a>
+      </sc-for>
+    </div>
+    <sc-if value="{{ noneMatch }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:48px 0; display:flex; flex-direction:column; align-items:center; gap:7px; text-align:center">
+        <span style="font-size:15px; color:var(--text2)">No courses at that level yet.</span>
+        <span onClick="{{ clearLevel }}" style="font-size:13px; color:var(--accent); cursor:pointer" style-hover="text-decoration:underline">Show all levels</span>
+      </div>
+    </sc-if>
+  </div>
+  </div>
+</div>
+
+    <sc-if value="{{ newCourseOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed; inset:0; z-index:220; background:rgba(8,10,13,0.62); display:flex; align-items:center; justify-content:center; padding:20px; overflow-x:hidden">
+        <div style="width:min(520px, 100%); max-height:min(86vh, 620px); box-sizing:border-box; display:flex; flex-direction:column; border:1px solid var(--menuLine); border-radius:18px; background:var(--panel); box-shadow:0 30px 80px var(--shadow); overflow:hidden">
+
+          <div style="flex:none; display:flex; align-items:flex-start; gap:12px; padding:17px 18px 14px; border-bottom:1px solid var(--line)">
+            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+              <span style="font-size:15.5px; font-weight:500; letter-spacing:-0.01em; color:var(--text)">New course</span>
+              <span style="font-size:12px; line-height:1.5; color:var(--text3); text-wrap:pretty">The level and year belong to the course — every lesson inside it inherits them.</span>
+            </span>
+            <span onClick="{{ closeNewCourse }}" title="Close" style="width:28px; height:28px; flex:none; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text3)" style-hover="background:var(--hover); color:var(--text)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </span>
+          </div>
+
+          <div data-thinbar="true" style="flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; padding:15px 18px 18px; display:flex; flex-direction:column; gap:15px">
+
+            <div style="display:flex; flex-direction:column; gap:7px">
+              <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:9px; letter-spacing:0.11em; text-transform:uppercase; color:var(--text4)">Course name</span>
+              <input value="{{ ncName }}" onChange="{{ onNcName }}" placeholder="Surface Mining" autoFocus="{{ true }}" style="height:36px; box-sizing:border-box; padding:0 12px; border:1px solid var(--line2); border-radius:10px; background:var(--field); font-family:inherit; font-size:13px; color:var(--text); outline:none" style-focus="border-color:var(--accent)" />
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:7px">
+              <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:9px; letter-spacing:0.11em; text-transform:uppercase; color:var(--text4)">Description · optional</span>
+              <input value="{{ ncDesc }}" onChange="{{ onNcDesc }}" placeholder="One line on what this course covers" style="height:36px; box-sizing:border-box; padding:0 12px; border:1px solid var(--line2); border-radius:10px; background:var(--field); font-family:inherit; font-size:13px; color:var(--text); outline:none" style-focus="border-color:var(--accent)" />
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:9px; letter-spacing:0.11em; text-transform:uppercase; color:var(--text4)">Education level</span>
+              <span style="display:flex; flex-wrap:wrap; gap:6px">
+                <sc-for list="{{ ncLevels }}" as="nl" hint-placeholder-count="4">
+                  <span onClick="{{ nl.pick }}" style="height:28px; padding:0 12px; border-radius:14px; display:flex; align-items:center; border:1px solid var(--line2); font-size:12px; cursor:pointer; white-space:nowrap; background:{{ nl.bg }}; color:{{ nl.color }}">{{ nl.label }}</span>
+                </sc-for>
+              </span>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:9px; letter-spacing:0.11em; text-transform:uppercase; color:var(--text4)">{{ ncYearLabel }}</span>
+              <span style="display:flex; flex-wrap:wrap; gap:6px">
+                <sc-for list="{{ ncYears }}" as="ny" hint-placeholder-count="5">
+                  <span onClick="{{ ny.pick }}" style="height:28px; padding:0 12px; border-radius:14px; display:flex; align-items:center; border:1px solid var(--line2); font-size:12px; cursor:pointer; white-space:nowrap; background:{{ ny.bg }}; color:{{ ny.color }}">{{ ny.label }}</span>
+                </sc-for>
+              </span>
+            </div>
+
+          </div>
+
+          <div style="flex:none; display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:13px 18px; border-top:1px solid var(--line)">
+            <span onClick="{{ closeNewCourse }}" style="height:32px; padding:0 14px; border-radius:16px; display:flex; align-items:center; font-size:13px; color:var(--text2); cursor:pointer" style-hover="color:var(--text)">Cancel</span>
+            <span onClick="{{ ncCreate }}" style="height:32px; padding:0 16px; border-radius:16px; display:flex; align-items:center; font-size:13px; cursor:pointer; background:{{ ncCreateBg }}; color:{{ ncCreateColor }}">Create course</span>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const LEVELS = [
+  { value: "primary", label: "Primary School" },
+  { value: "secondary", label: "Secondary School" },
+  { value: "vocational_training", label: "TVET" },
+  { value: "university", label: "Higher Education" }
+];
+const YEAR_LABEL = { primary: "Grade", secondary: "Grade", vocational_training: "NQF level", university: "Year of study" };
+const YEARS = {
+  primary: ["Grade R"].concat([1, 2, 3, 4, 5, 6, 7].map(n => "Grade " + n)).map(v => ({ value: v, label: v })),
+  secondary: [8, 9, 10, 11, 12].map(n => ({ value: "Grade " + n, label: "Grade " + n })),
+  vocational_training: [1, 2, 3, 4, 5, 6, 7, 8].map(n => ({ value: "NQF Level " + n, label: "NQF Level " + n })),
+  university: ["1st year", "2nd year", "3rd year", "4th year", "Postgraduate"].map(v => ({ value: v, label: v }))
+};
+
+class Component extends DCLogic {
+  state = { industry: null, level: null, ncOpen: false, ncName: "", ncDesc: "", ncLevel: "vocational_training", ncYear: "NQF Level 4", sidebar: false, peek: false, theme: "system" };
+
+  componentDidMount() {
+    try {
+      const v = new URLSearchParams(location.search).get("industry");
+      if (v) this.setState({ industry: v });
+    } catch (e) {}
+    this.restoreTheme();
+    this.applyTheme();
+    this._mq = window.matchMedia("(prefers-color-scheme: light)");
+    this._onMq = () => this.forceUpdate();
+    this._mq.addEventListener("change", this._onMq);
+  }
+  componentDidUpdate() { this.applyTheme(); }
+  componentWillUnmount() { if (this._mq) this._mq.removeEventListener("change", this._onMq); }
+  restoreTheme() {
+    try { const v = localStorage.getItem("nx.theme"); if (v === "dark" || v === "light" || v === "system") this.state.theme = v; } catch (e) {}
+  }
+  applyTheme() {
+    const t = this.state.theme;
+    const eff = t === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = eff;
+    try { localStorage.setItem("nx.theme", this.state.theme); } catch (e) {}
+  }
+  themeVals() {
+    const t = this.state.theme;
+    const next = { dark: "light", light: "system", system: "dark" };
+    return {
+      isDark: t === "dark", isLight: t === "light", isSystem: t === "system",
+      themeLabel: "Theme: " + t + " (click for " + next[t] + ")",
+      cycleTheme: () => this.setState({ theme: next[t] })
+    };
+  }
+
+
+
+
+
+  navIcon(name) {
+    const P = {
+      Dashboard: [["rect", { width: 7, height: 9, x: 3, y: 3, rx: 1 }], ["rect", { width: 7, height: 5, x: 14, y: 3, rx: 1 }], ["rect", { width: 7, height: 9, x: 14, y: 12, rx: 1 }], ["rect", { width: 7, height: 5, x: 3, y: 16, rx: 1 }]],
+      Library: [["path", { d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" }], ["path", { d: "m6.08 12-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83L17.9 12" }]],
+      "Exam Quiz": [["circle", { cx: 12, cy: 12, r: 9 }], ["path", { d: "M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7" }], ["path", { d: "M12 17h.01" }]],
+      "New simulation": [["path", { d: "M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" }], ["path", { d: "M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" }]]
+    };
+    const kids = (P[name] || []).map((c, i) => React.createElement(c[0], Object.assign({ key: i }, c[1])));
+    return React.createElement("svg", {
+      width: 15, height: 15, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+      strokeWidth: 1.75, strokeLinecap: "round", strokeLinejoin: "round", style: { display: "block", flex: "none" }
+    }, kids);
+  }
+
+  renderVals() {
+    const goSettings = () => { location.href = "Settings.dc.html"; };
+    const goSession = () => { location.href = "New%20XR%20Session.dc.html"; };
+    const goHome = () => { location.href = "Hero.dc.html"; };
+    const NAV_HREF = { "Dashboard": "Dashboard.dc.html", "Library": "Industries%20Library%20-%203%20Directions.dc.html", "Exam Quiz": "Exam%20Quiz.dc.html", "New simulation": "New%20XR%20Session.dc.html?new=1" };
+    const n = (v, w) => v + " " + w + (v === 1 ? "" : "s");
+    const industries = [
+      { code: "MM", name: "Mining & Minerals", group: "Earth, energy & environment", courseList: ["Surface Mining","Underground Mining","Drilling & Blasting","Mineral Processing","Mine Safety"], courses: 5, lessons: 15 },
+      { code: "OG", name: "Oil & Gas", group: "Earth, energy & environment", courseList: ["Upstream Operations","Midstream Operations","Downstream Operations","Pipeline Systems","Oil & Gas Safety"], courses: 5, lessons: 0 },
+      { code: "RE", name: "Renewable Energy", group: "Earth, energy & environment", courseList: ["Solar PV Systems","Wind Energy","Battery Energy Storage","Renewable Electrical Systems","Renewable Energy Maintenance"], courses: 5, lessons: 0 },
+      { code: "PG", name: "Power Generation", group: "Earth, energy & environment", courseList: ["Conventional Power Systems","Renewable Power Systems","Turbines & Generators","Electrical Distribution","Power Plant Maintenance"], courses: 5, lessons: 0 },
+      { code: "WW", name: "Water & Wastewater Operations", group: "Earth, energy & environment", courseList: ["Water Treatment","Wastewater Treatment","Pumps & Valves","Water Distribution","Water Quality Testing"], courses: 5, lessons: 0 },
+      { code: "EC", name: "Environmental Conservation", group: "Earth, energy & environment", courseList: ["Ecosystem Management","Biodiversity Conservation","Environmental Monitoring","Conservation Equipment","Environmental Compliance"], courses: 5, lessons: 0 },
+      { code: "WM", name: "Waste Management & Recycling", group: "Earth, energy & environment", courseList: ["Waste Collection Systems","Waste Sorting & Recycling","Recycling Equipment","Hazardous Waste Management","Waste Facility Operations"], courses: 5, lessons: 0 },
+      { code: "AE", name: "Agriculture & Environmental Science", group: "Earth, energy & environment", courseList: ["Animal Production","Crop Production","Agricultural Machinery","Irrigation Systems","Soil & Plant Science"], courses: 5, lessons: 1 },
+      { code: "FO", name: "Forestry", group: "Earth, energy & environment", courseList: ["Forest Ecology","Tree Identification & Silviculture","Timber Harvesting","Forestry Equipment","Forest Conservation & Fire Management"], courses: 5, lessons: 0 },
+      { code: "FA", name: "Fisheries & Aquaculture", group: "Earth, energy & environment", courseList: ["Aquaculture Systems","Fish Biology & Health","Water Quality Management","Aquaculture Equipment","Fisheries Operations"], courses: 5, lessons: 0 },
+      { code: "ME", name: "Mechanical Engineering", group: "Engineering & manufacturing", courseList: ["Mechanical Systems","Bearings & Power Transmission","Hydraulics","Pneumatics","Mechanical Maintenance"], courses: 5, lessons: 0 },
+      { code: "EE", name: "Electrical Engineering", group: "Engineering & manufacturing", courseList: ["Household Electrical Systems","Industrial Electrical Systems","Motor Control & Automation","Electrical Fault Finding","Electrical Safety"], courses: 5, lessons: 0 },
+      { code: "MP", name: "Manufacturing & Production", group: "Engineering & manufacturing", courseList: ["Manufacturing Processes","Production Operations","Quality Control","Lean Manufacturing","Factory Safety"], courses: 5, lessons: 0 },
+      { code: "WF", name: "Welding & Fabrication", group: "Engineering & manufacturing", courseList: ["Arc Welding","MIG & TIG Welding","Metal Fabrication","Cutting Processes","Welding Inspection"], courses: 5, lessons: 0 },
+      { code: "IM", name: "Industrial Maintenance", group: "Engineering & manufacturing", courseList: ["Preventative Maintenance","Predictive Maintenance","Equipment Inspection","Industrial Troubleshooting","Maintenance Safety"], courses: 5, lessons: 0 },
+      { code: "MC", name: "Mechatronics", group: "Engineering & manufacturing", courseList: ["Mechanical Systems","Electrical Systems","PLC & Control Systems","Sensors & Robotics","Mechatronic Maintenance"], courses: 5, lessons: 0 },
+      { code: "RA", name: "Robotics & Automation", group: "Engineering & manufacturing", courseList: ["Industrial Robotics","PLC Fundamentals","Sensors & Actuators","Automated Production Lines","Robot Maintenance"], courses: 5, lessons: 0 },
+      { code: "SE", name: "Semiconductor & Electronics Manufacturing", group: "Engineering & manufacturing", courseList: ["Semiconductor Fabrication","PCB Manufacturing","Electronic Assembly","Electronic Testing","Cleanroom Operations"], courses: 5, lessons: 0 },
+      { code: "CP", name: "Chemical Processing", group: "Engineering & manufacturing", courseList: ["Chemical Process Operations","Process Equipment","Process Instrumentation","Chemical Safety","Plant Maintenance"], courses: 5, lessons: 0 },
+      { code: "PP", name: "Printing & Packaging", group: "Engineering & manufacturing", courseList: ["Printing Processes","Printing Equipment","Packaging Systems","Print Quality Control","Printing Maintenance"], courses: 5, lessons: 0 },
+      { code: "TG", name: "Textile & Garment Manufacturing", group: "Engineering & manufacturing", courseList: ["Textile Materials","Garment Construction","Sewing Equipment","Textile Finishing","Quality Assurance"], courses: 5, lessons: 0 },
+      { code: "FM", name: "Furniture Manufacturing", group: "Engineering & manufacturing", courseList: ["Furniture Design & Construction","Wood Processing","Furniture Assembly","Upholstery Systems","Furniture Finishing"], courses: 5, lessons: 0 },
+      { code: "GC", name: "Glass & Ceramics Manufacturing", group: "Engineering & manufacturing", courseList: ["Raw Materials & Forming","Glass Manufacturing","Ceramic Manufacturing","Kilns & Furnaces","Quality Control"], courses: 5, lessons: 0 },
+      { code: "PA", name: "Paper & Pulp Manufacturing", group: "Engineering & manufacturing", courseList: ["Pulp Production","Paper Manufacturing","Finishing & Packaging","Paper Mill Equipment","Process Quality Control"], courses: 5, lessons: 0 },
+      { code: "FP", name: "Food Processing & Manufacturing", group: "Engineering & manufacturing", courseList: ["Food Safety","Food Production","Food Packaging","Food Quality Assurance","Processing Equipment"], courses: 5, lessons: 0 },
+      { code: "AT", name: "Automotive Technology", group: "Transport & logistics", courseList: ["Engine Systems","Vehicle Electrical Systems","Braking Systems","Suspension & Steering","Vehicle Diagnostics"], courses: 5, lessons: 4 },
+      { code: "AM", name: "Aviation Maintenance", group: "Transport & logistics", courseList: ["Aircraft Structures","Aircraft Engines","Aircraft Electrical Systems","Aircraft Inspection","Aviation Safety"], courses: 5, lessons: 2 },
+      { code: "MA", name: "Maritime", group: "Transport & logistics", courseList: ["Ship Operations","Marine Engineering","Deck Operations","Cargo Handling","Maritime Safety"], courses: 5, lessons: 0 },
+      { code: "RI", name: "Rail Engineering", group: "Transport & logistics", courseList: ["Railway Infrastructure","Rolling Stock Systems","Rail Signalling Systems","Rail Maintenance","Railway Safety"], courses: 5, lessons: 0 },
+      { code: "HE", name: "Heavy Equipment Operations", group: "Transport & logistics", courseList: ["Earthmoving Equipment","Excavation Operations","Lifting Equipment","Heavy Equipment Maintenance","Site Safety"], courses: 5, lessons: 0 },
+      { code: "LW", name: "Logistics & Warehousing", group: "Transport & logistics", courseList: ["Warehouse Operations","Inventory Management","Material Handling Equipment","Distribution Operations","Supply Chain Fundamentals"], courses: 5, lessons: 0 },
+      { code: "WR", name: "Warehouse Robotics", group: "Transport & logistics", courseList: ["Autonomous Mobile Robots","Robotic Picking Systems","Automated Storage Systems","Warehouse Control Systems","Robot Maintenance"], courses: 5, lessons: 0 },
+      { code: "CE", name: "Civil Engineering & Construction", group: "Built environment", courseList: ["Building Construction","Concrete Technology","Structural Engineering Basics","Surveying","Construction Site Safety"], courses: 5, lessons: 0 },
+      { code: "CJ", name: "Carpentry & Joinery", group: "Built environment", courseList: ["Hand Tools","Wood Construction","Roof Structures","Cabinet Making","Finishing & Installation"], courses: 5, lessons: 0 },
+      { code: "MS", name: "Masonry & Concrete Construction", group: "Built environment", courseList: ["Bricklaying","Blockwork","Concrete Placement","Reinforcement","Masonry Finishing"], courses: 5, lessons: 0 },
+      { code: "PL", name: "Plumbing", group: "Built environment", courseList: ["Domestic Plumbing","Commercial Plumbing","Pipe Installation","Drainage Systems","Plumbing Maintenance"], courses: 5, lessons: 0 },
+      { code: "HR", name: "HVAC & Refrigeration", group: "Built environment", courseList: ["Refrigeration Systems","Air Conditioning Systems","Ventilation Systems","HVAC Controls","HVAC Maintenance"], courses: 5, lessons: 0 },
+      { code: "PS", name: "Painting & Surface Finishing", group: "Built environment", courseList: ["Surface Preparation","Industrial Painting","Protective Coatings","Spray Painting","Surface Inspection"], courses: 5, lessons: 0 },
+      { code: "SB", name: "Smart Buildings & Building Automation", group: "Built environment", courseList: ["Building Management Systems","Smart Lighting Systems","HVAC Automation","Security & Access Control","Smart Building Maintenance"], courses: 5, lessons: 0 },
+      { code: "HC", name: "Healthcare & Clinical Support", group: "Health & life sciences", courseList: ["Patient Care","Clinical Procedures","Medical Equipment","Infection Prevention","Healthcare Safety"], courses: 5, lessons: 3 },
+      { code: "EM", name: "Emergency Medical Services & First Aid", group: "Health & life sciences", courseList: ["Basic First Aid","Trauma Care","Emergency Response","CPR & AED","Patient Transport"], courses: 5, lessons: 0 },
+      { code: "LS", name: "Laboratory Science", group: "Health & life sciences", courseList: ["Laboratory Safety","Laboratory Equipment","Sample Collection","Diagnostic Testing","Quality Assurance"], courses: 5, lessons: 0 },
+      { code: "PO", name: "Pharmacy Operations", group: "Health & life sciences", courseList: ["Pharmacy Practice","Dispensing Procedures","Pharmaceutical Storage","Medication Safety","Inventory Management"], courses: 5, lessons: 0 },
+      { code: "DE", name: "Dentistry", group: "Health & life sciences", courseList: ["Preventative Dentistry","Dental Anatomy","Dental Instruments & Equipment","Clinical Dental Procedures","Infection Prevention & Sterilisation"], courses: 5, lessons: 0 },
+      { code: "VS", name: "Veterinary Science", group: "Health & life sciences", courseList: ["Animal Anatomy & Physiology","Animal Health Assessment","Veterinary Clinical Procedures","Diagnostic Equipment","Animal Welfare & Biosecurity"], courses: 5, lessons: 0 },
+      { code: "BE", name: "Biomedical Engineering", group: "Health & life sciences", courseList: ["Medical Devices","Biomedical Instrumentation","Clinical Equipment Maintenance","Medical Imaging Systems","Biomedical Safety"], courses: 5, lessons: 0 },
+      { code: "IT", name: "Information Technology (Hardware & Networking)", group: "Technology & communications", courseList: ["Computer Hardware","PC Assembly","Computer Networking","Enterprise Infrastructure","IT Support"], courses: 5, lessons: 0 },
+      { code: "TE", name: "Telecommunications", group: "Technology & communications", courseList: ["Fibre Optics","Wireless Networks","Cellular Systems","Network Cabling","Telecom Maintenance"], courses: 5, lessons: 0 },
+      { code: "HO", name: "Hospitality & Commercial Kitchen Operations", group: "Service & safety", courseList: ["Kitchen Operations","Food Preparation","Commercial Equipment","Food Hygiene","Front of House Operations"], courses: 5, lessons: 0 },
+      { code: "FS", name: "Fire Safety & Emergency Response", group: "Service & safety", courseList: ["Fire Prevention","Fire Detection Systems","Firefighting Equipment","Emergency Evacuation","Hazardous Materials Response"], courses: 5, lessons: 0 }
+    ];
+
+    // Scope comes from the URL, never from a remembered selection — that is how the app
+    // ended up showing one industry's five courses under "All 5 courses across your industries".
+    const want = (this.state.industry || "").toLowerCase();
+    const ind = want ? industries.filter(i => i.name.toLowerCase() === want)[0] : null;
+    const allView = !ind;
+    const scope = ind ? [ind] : industries;
+    // Lessons are recorded per industry, so only a started industry's first course carries work.
+    const all = scope.flatMap(i => i.courseList.map((name, k) => ({
+      name: name, ind: i.name, lessons: k === 0 ? i.lessons : 0
+    })));
+    // A filter that skews the counts while leaving every card on screen is the bug the app
+    // records at page.tsx:596 — so the grid and the strip read the same filtered list.
+    const lv = this.state.level;
+    const list = !lv ? all
+      : lv === "__none" ? all.filter(c => !c.lessons)
+      : lv === "TVET" ? all.filter(c => c.lessons)
+      : [];
+
+    return {
+      ...this.themeVals(),
+      sidebarOpen: this.state.sidebar,
+      sidebarVisible: this.state.sidebar || this.state.peek,
+      sidebarClosed: !this.state.sidebar,
+      sidebarStyle: this.state.sidebar
+        ? "width:264px; flex:none; box-sizing:border-box; position:sticky; top:0; height:100vh; align-self:flex-start; z-index:2; background:var(--sidebarBg); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:16px 0 14px; overflow:hidden"
+        : "width:264px; box-sizing:border-box; position:fixed; left:18px; top:72px; max-height:min(70vh, 520px); z-index:80; background:var(--sidebarBg); border:1px solid var(--menuLine); border-radius:16px; box-shadow:0 24px 60px var(--shadow); display:flex; flex-direction:column; padding:16px 0 14px; overflow:hidden",
+      startPeek: () => { clearTimeout(this._peekT); this.setState({ peek: true }); },
+      schedulePeekClose: () => {
+        clearTimeout(this._peekT);
+        this._peekT = setTimeout(() => this.setState({ peek: false }), 160);
+      },
+      toggleSidebar: () => this.setState(s => ({ sidebar: !s.sidebar, peek: false })),
+      goSettings: goSettings,
+      goHome: goHome,
+      goSession: goSession,
+      sidebarNav: [
+        { label: "Dashboard", active: false },
+        { label: "Library", active: true },
+        { label: "Exam Quiz", active: false },
+        { label: "New simulation", active: false }
+      ].map(i => ({ label: i.label, icon: this.navIcon(i.label), href: NAV_HREF[i.label] || "#", bg: i.active ? "var(--accentSoft)" : "transparent", color: i.active ? "var(--accent)" : "var(--text2)" })),
+      recents: ["Drip Irrigation Design Module", "New session", "Run QA on this lesson."],
+      noneMatch: list.length === 0,
+      clearLevel: () => this.setState({ level: null }),
+      newCourseOpen: !!this.state.ncOpen,
+      openNewCourse: () => this.setState({ ncOpen: true, ncName: "", ncDesc: "", ncLevel: "vocational_training", ncYear: "NQF Level 4", menu: null }),
+      closeNewCourse: () => this.setState({ ncOpen: false }),
+      ncName: this.state.ncName || "",
+      ncDesc: this.state.ncDesc || "",
+      onNcName: e => this.setState({ ncName: e.target.value }),
+      onNcDesc: e => this.setState({ ncDesc: e.target.value }),
+      ncLevels: LEVELS.map(l => ({
+        label: l.label,
+        pick: () => this.setState(st => {
+          const years = YEARS[l.value] || [];
+          const keep = years.filter(y => y.value === st.ncYear).length > 0;
+          return { ncLevel: l.value, ncYear: keep ? st.ncYear : (years[0] || {}).value || "" };
+        }),
+        bg: (this.state.ncLevel || "vocational_training") === l.value ? "var(--accent)" : "transparent",
+        color: (this.state.ncLevel || "vocational_training") === l.value ? "var(--onAccent)" : "var(--text2)"
+      })),
+      ncYearLabel: YEAR_LABEL[this.state.ncLevel || "vocational_training"] || "Year",
+      ncYears: (YEARS[this.state.ncLevel || "vocational_training"] || []).map(y => ({
+        label: y.label,
+        pick: () => this.setState({ ncYear: y.value }),
+        bg: this.state.ncYear === y.value ? "var(--accent)" : "transparent",
+        color: this.state.ncYear === y.value ? "var(--onAccent)" : "var(--text2)"
+      })),
+      ncCanCreate: !!(this.state.ncName || "").trim(),
+      ncCreateBg: (this.state.ncName || "").trim() ? "var(--accent)" : "var(--overlay1)",
+      ncCreateColor: (this.state.ncName || "").trim() ? "var(--onAccent)" : "var(--text4)",
+      ncCreate: () => {
+        const name = (this.state.ncName || "").trim();
+        if (!name) return;
+        location.href = "New%20XR%20Session.dc.html?industry=" + encodeURIComponent(ind ? ind.name : industries[0].name)
+          + "&course=" + encodeURIComponent(name);
+      },
+
+      levelChips: (() => {
+        const LV = ["Primary School", "Secondary School", "TVET", "Higher Education"];
+        // Only a started course carries a level; the rest are unleveled, which the app
+        // reports rather than hides.
+        const leveled = all.filter(c => c.lessons).length;
+        const rows = [{ label: "All levels", count: String(all.length), key: null }]
+          .concat(LV.map(l => ({ label: l, count: l === "TVET" ? String(leveled) : "0", key: l })))
+          .concat([{ label: "No level set", count: String(all.length - leveled), key: "__none" }]);
+        return rows.map(r => {
+          const on = (this.state.level || null) === r.key;
+          return {
+            label: r.label, count: r.count,
+            pick: () => this.setState(st => ({ level: st.level === r.key ? null : r.key })),
+            bg: on ? "var(--accentSoft)" : "transparent",
+            border: on ? "transparent" : "var(--line2)",
+            color: on ? "var(--accent)" : "var(--text2)"
+          };
+        });
+      })(),
+      approvalLabel: (() => {
+        const l = list.reduce((s, c) => s + c.lessons, 0);
+        return l ? l + (l === 1 ? " lesson" : " lessons") + " authored" : "nothing authored yet";
+      })(),
+      indName: allView ? "Courses" : "Courses in " + ind.name,
+      crumbInd: allView ? "All courses" : ind.name,
+      onIndustry: allView,
+      blurb: allView
+        ? "All " + n(list.length, "course") + " across your industries. Pick one to see its modules, or open an industry to narrow down."
+        : "The " + n(list.length, "course") + " below are part of " + ind.name + ". Pick one to see its modules.",
+      stats: [
+        { value: String(list.length), label: list.length === 1 ? "Course" : "Courses" },
+        { value: String(list.reduce((s, c) => s + c.lessons, 0)), label: "Lessons" },
+        { value: String(list.filter(c => c.lessons).length), label: "Started" }
+      ],
+      courses: list.map(c => {
+        const href = "New%20XR%20Session.dc.html?industry=" + encodeURIComponent(c.ind) + "&course=" + encodeURIComponent(c.name);
+        // The footer names MODULES only — the level directly beneath a course.
+        const mods = c.lessons ? 3 : 0;
+        return {
+          name: c.name,
+          ind: c.ind,
+          // Inside an industry every card would repeat the same word, so the pill is
+          // the all-courses view only.
+          showInd: allView,
+          href: href,
+          desc: c.lessons
+            ? "Authored against the " + c.ind.toLowerCase() + " curriculum, built as spatial scenes."
+            : "Not started. Open it to plan its modules from your sources.",
+          audience: c.lessons ? "TVET · NQF 4" : "+ Set audience",
+          audienceColor: c.lessons ? "var(--text2)" : "var(--accent)",
+          modules: mods + (mods === 1 ? " module" : " modules"),
+          moduleColor: mods ? "var(--accent)" : "var(--text4)",
+          activity: c.lessons ? "edited 2 hr ago" : "no lessons yet"
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

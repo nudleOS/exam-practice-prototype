@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --btnLine:#454b52; --hover:#272b30; --accentSoft:color-mix(in oklch, #0068f8 22%, #202327); --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --accent:#2a52ff; --accentHover:color-mix(in oklch, #1e46ff 40%, #ffffff); --shadow:rgba(0,0,0,0.55); --sidebarBg:#1b1e21; --onAccent:#ffffff;
+    --azure:#0068f8; --cobalt:#1e46ff; --violet:#671dff; --vignette:oklch(0.24 0.004 264);
+    --composerBg:oklch(0.30 0.055 264 / 0.92); --composerBorder:oklch(0.48 0.075 264 / 0.45); --composerText:#eceded; --composerMuted:rgba(236,237,237,0.62); --composerLine:rgba(255,255,255,0.09); --composerAccent:color-mix(in oklch, #0068f8 55%, #ffffff); --overlay1:rgba(255,255,255,0.04); --overlay3:rgba(255,255,255,0.10); --menuBg:oklch(0.26 0.045 264 / 0.94); --peekBg:oklch(0.22 0.03 264 / 0.92); --menuLine:rgba(255,255,255,0.10); --chipDash:rgba(255,255,255,0.22); --composerGlowEdge:color-mix(in oklch, var(--azure) 42%, transparent); --composerGlowCore:color-mix(in oklch, var(--azure) 55%, transparent); --composerGlowHalo:color-mix(in oklch, var(--azure) 16%, transparent);; --authScrim:rgba(6,7,9,0.52); --authGlass:oklch(0.27 0.05 264 / 0.62); --authEdge:rgba(255,255,255,0.13); --authSheen:rgba(255,255,255,0.11); --authHalo:rgba(0,145,255,0.05); --authField:rgba(255,255,255,0.11); --authFieldBg:rgba(255,255,255,0.05); --authError:#e88a84; --authGlowCore:color-mix(in oklch, var(--azure) 48%, transparent); --authGlowHalo:color-mix(in oklch, var(--azure) 18%, transparent); }
+  html[data-theme="light"] { --bg:#f4f5f7; --panel:#ffffff; --panel2:#f8f9fb; --field:#fbfcfd; --line:#e3e5ea; --line2:#cdd1d9; --btnLine:#b3b9c4; --hover:#eceef2; --accentSoft:color-mix(in oklch, #0068f8 14%, #ffffff); --text:#14161a; --text2:#41464c; --text3:#53585f; --text4:#5f656c; --accent:#1e46ff; --accentHover:#0068f8; --shadow:rgba(18,20,24,0.16); --sidebarBg:#f7f8fa; --onAccent:#ffffff;
+    --azure:#0068f8; --cobalt:#1e46ff; --violet:#671dff; --vignette:oklch(0.955 0.003 264);
+    --composerBg:oklch(0.995 0.002 264 / 0.90); --composerBorder:rgba(29,31,34,0.07); --composerText:#1d1f22; --composerMuted:rgba(29,31,34,0.55); --composerLine:rgba(0,0,0,0.08); --composerAccent:#0052c4; --overlay1:rgba(0,0,0,0.04); --overlay3:rgba(0,0,0,0.10); --menuBg:oklch(0.995 0.004 80 / 0.95); --peekBg:oklch(0.985 0.004 80 / 0.96); --menuLine:rgba(29,31,34,0.10); --chipDash:rgba(29,31,34,0.22); --composerGlowEdge:color-mix(in oklch, var(--azure) 70%, transparent); --composerGlowCore:color-mix(in oklch, var(--azure) 85%, transparent); --composerGlowHalo:color-mix(in oklch, var(--azure) 26%, transparent);; --authScrim:rgba(60,56,50,0.24); --authGlass:oklch(0.995 0.004 80 / 0.72); --authEdge:rgba(29,31,34,0.09); --authSheen:rgba(255,255,255,0.75); --authHalo:rgba(43,92,255,0.05); --authField:rgba(29,31,34,0.11); --authFieldBg:rgba(255,255,255,0.6); --authError:#b8443d; --authGlowCore:color-mix(in oklch, var(--azure) 62%, transparent); --authGlowHalo:color-mix(in oklch, var(--azure) 24%, transparent); }
+  body { margin: 0; background: var(--bg); font-family: "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  @keyframes chatPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @keyframes ripple {
+    0%   { transform: translate(-50%, -50%) rotateX(58deg) scale(0.55); opacity: 0; }
+    12%  { opacity: 0.34; }
+    55%  { opacity: 0.11; }
+    100% { transform: translate(-50%, -50%) rotateX(58deg) scale(2.15); opacity: 0; }
+  }
+  @property --glowSpread { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  @keyframes glowTravel {
+    0%   { --glowSpread: 0deg; opacity: 0.65; }
+    45%  { --glowSpread: 92deg; opacity: 1; }
+    70%  { --glowSpread: 74deg; opacity: 0.8; }
+    100% { --glowSpread: 92deg; opacity: 1; }
+  }
+  @keyframes glowBreathe { 0%, 100% { --glowSpread: 84deg; opacity: 0.7; } 50% { --glowSpread: 96deg; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { [data-xr] * { animation: none !important; } }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  @keyframes heroWordIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulseDot { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+  a { color: var(--composerAccent); text-decoration: none; }
+  a:hover { color: var(--accentHover); }
+  [data-railtoggle] { color: var(--text2); transition: color 150ms ease; }
+  [data-railtoggle]:hover { color: var(--text); }
+  [data-railtoggle] .rt-a { position: absolute; opacity: 1; transition: opacity 150ms ease; }
+  [data-railtoggle] .rt-b { position: absolute; opacity: 0; transition: opacity 150ms ease; }
+  [data-railtoggle]:hover .rt-a { opacity: 0; }
+  [data-railtoggle]:hover .rt-b { opacity: 1; }
+  [data-noscrollbar] { scrollbar-width: none; -ms-overflow-style: none; }
+  [data-noscrollbar]::-webkit-scrollbar { display: none; width: 0; height: 0; }
+</style>
+</helmet>
+
+<div style="height:100vh; background:var(--bg); color:var(--text); font-family:'Inter', system-ui, sans-serif; display:flex; flex-direction:row; position:relative; overflow:hidden">
+
+  <div data-xr="scene" aria-hidden="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden">
+    <div style="position:absolute; inset:0; transform:translateX({{ focusShift }}px); background:radial-gradient(ellipse 34% 30% at 50% 50%, color-mix(in oklch, var(--azure) 22%, transparent) 0%, color-mix(in oklch, var(--azure) 10%, transparent) 50%, color-mix(in oklch, var(--azure) 3%, transparent) 66%, transparent 82%), radial-gradient(ellipse 68% 58% at 50% 50%, color-mix(in oklch, var(--cobalt) 11%, transparent) 0%, color-mix(in oklch, var(--cobalt) 4.5%, transparent) 56%, transparent 88%), radial-gradient(ellipse 132% 115% at 50% 50%, color-mix(in oklch, var(--violet) 5%, transparent) 0%, color-mix(in oklch, var(--violet) 2%, transparent) 58%, transparent 92%)"></div>
+
+    <div style="position:absolute; inset:0; perspective:1320px; perspective-origin:50% 47%; transform:translateX({{ focusShift }}px)">
+      <div style="position:absolute; left:50%; top:49%; width:0; height:0; transform-style:preserve-3d">
+        <div style="position:absolute; left:50%; top:50%; width:1000px; height:700px; border-radius:50%; border:2px solid color-mix(in oklch, var(--azure) 70%, transparent); box-shadow:inset 0 1.5px 0 0 color-mix(in oklch, var(--azure) 55%, transparent), 0 0 22px 2px color-mix(in oklch, var(--azure) 58%, transparent), 0 0 52px 10px color-mix(in oklch, var(--azure) 18%, transparent), 0 0 0 3px color-mix(in oklch, var(--vignette) 72%, transparent), 0 5px 10px 1px color-mix(in oklch, var(--vignette) 75%, transparent); filter:blur(1.4px); will-change:transform, opacity; animation:ripple 30s linear infinite; animation-delay:0s"></div>
+        <div style="position:absolute; left:50%; top:50%; width:1000px; height:700px; border-radius:50%; border:2px solid color-mix(in oklch, var(--cobalt) 70%, transparent); box-shadow:inset 0 1.5px 0 0 color-mix(in oklch, var(--azure) 55%, transparent), 0 0 22px 2px color-mix(in oklch, var(--cobalt) 58%, transparent), 0 0 52px 10px color-mix(in oklch, var(--cobalt) 18%, transparent), 0 0 0 3px color-mix(in oklch, var(--vignette) 72%, transparent), 0 5px 10px 1px color-mix(in oklch, var(--vignette) 75%, transparent); filter:blur(1.4px); will-change:transform, opacity; animation:ripple 30s linear infinite; animation-delay:-7.5s"></div>
+        <div style="position:absolute; left:50%; top:50%; width:1000px; height:700px; border-radius:50%; border:2px solid color-mix(in oklch, var(--cobalt) 70%, transparent); box-shadow:inset 0 1.5px 0 0 color-mix(in oklch, var(--azure) 55%, transparent), 0 0 22px 2px color-mix(in oklch, var(--cobalt) 58%, transparent), 0 0 52px 10px color-mix(in oklch, var(--cobalt) 18%, transparent), 0 0 0 3px color-mix(in oklch, var(--vignette) 72%, transparent), 0 5px 10px 1px color-mix(in oklch, var(--vignette) 75%, transparent); filter:blur(1.4px); will-change:transform, opacity; animation:ripple 30s linear infinite; animation-delay:-15s"></div>
+        <div style="position:absolute; left:50%; top:50%; width:1000px; height:700px; border-radius:50%; border:2px solid color-mix(in oklch, var(--azure) 70%, transparent); box-shadow:inset 0 1.5px 0 0 color-mix(in oklch, var(--azure) 55%, transparent), 0 0 22px 2px color-mix(in oklch, var(--azure) 58%, transparent), 0 0 52px 10px color-mix(in oklch, var(--azure) 18%, transparent), 0 0 0 3px color-mix(in oklch, var(--vignette) 72%, transparent), 0 5px 10px 1px color-mix(in oklch, var(--vignette) 75%, transparent); filter:blur(1.4px); will-change:transform, opacity; animation:ripple 30s linear infinite; animation-delay:-22.5s"></div>
+      </div>
+    </div>
+
+    <div style="position:absolute; inset:0; background:radial-gradient(ellipse 120% 110% at 50% 50%, transparent 0%, color-mix(in oklch, var(--vignette) 1.2%, transparent) 32%, color-mix(in oklch, var(--vignette) 5.5%, transparent) 48%, color-mix(in oklch, var(--vignette) 15%, transparent) 63%, color-mix(in oklch, var(--vignette) 31%, transparent) 77%, color-mix(in oklch, var(--vignette) 55%, transparent) 89%, color-mix(in oklch, var(--vignette) 86%, transparent) 97%, var(--vignette) 100%)"></div>
+  </div>
+
+  <sc-if value="{{ sidebarVisible }}" hint-placeholder-val="{{ false }}">
+    <div onMouseEnter="{{ startPeek }}" onMouseLeave="{{ schedulePeekClose }}" style="{{ sidebarStyle }}">
+      <sc-if value="{{ sidebarVisible }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding:0 16px 14px">
+        <span aria-hidden="true" style="width:28px; height:28px; flex:none"></span>
+        <img onClick="{{ goHome }}" src="assets/nexera-wordmark.webp" alt="Nexera" title="Home" style="cursor:pointer; height:24px; width:auto; display:block; flex:none" />
+        <span data-railtoggle="true" onClick="{{ toggleSidebar }}" title="Collapse sidebar" aria-label="Collapse sidebar" style="width:28px; height:28px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer">
+          <span style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center">
+            <svg class="rt-a" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg>
+            <svg class="rt-b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m15 18-6-6 6-6"></path></svg>
+          </span>
+        </span>
+      </div>
+      </sc-if>
+      <div style="display:flex; flex-direction:column; gap:2px; padding:0 10px">
+        <sc-for list="{{ sidebarNav }}" as="s" hint-placeholder-count="4">
+          <a href="{{ s.href }}" style="text-decoration:none; display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; background:{{ s.bg }}; font-size:14px; color:{{ s.color }}; cursor:pointer" style-hover="background:var(--overlay3)">
+            <span style="display:flex; color:{{ s.color }}">{{ s.icon }}</span>{{ s.label }}
+          </a>
+        </sc-for>
+      </div>
+      <div style="display:flex; align-items:center; padding:22px 18px 8px">
+        <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text4)">Recents</span>
+      </div>
+      <div data-noscrollbar="true" style="display:flex; flex-direction:column; padding:0 10px; overflow-y:auto; overflow-x:hidden; min-height:0">
+                <sc-for list="{{ recentGroups }}" as="g" hint-placeholder-count="3">
+                  <div style="display:flex; flex-direction:column; gap:1px; padding-bottom:8px">
+                    <div onClick="{{ g.toggle }}" style="display:flex; align-items:center; gap:7px; padding:6px 12px; border-radius:8px; cursor:pointer" style-hover="background:var(--hover)">
+                      <sc-if value="{{ g.canCollapse }}" hint-placeholder-val="{{ true }}">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none; color:var(--text4); transform:rotate({{ g.caret }}deg)"><path d="m9 18 6-6-6-6"></path></svg>
+                      </sc-if>
+                      <span style="flex:1; min-width:0; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ g.title }}</span>
+                      <sc-if value="{{ g.hasCount }}" hint-placeholder-val="{{ true }}">
+                        <span style="flex:none; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:9.5px; color:var(--text3)">{{ g.count }}</span>
+                      </sc-if>
+                      <sc-if value="{{ g.hasAdd }}" hint-placeholder-val="{{ true }}">
+                        <span onClick="{{ g.add }}" title="{{ g.addTitle }}" style="width:18px; height:18px; flex:none; border-radius:5px; display:flex; align-items:center; justify-content:center; color:var(--text4); cursor:pointer" style-hover="background:var(--overlay3); color:var(--text)">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                        </span>
+                      </sc-if>
+                    </div>
+                    <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}">
+                    <sc-for list="{{ g.chats }}" as="c" hint-placeholder-count="2">
+                      <a href="{{ c.href }}" title="{{ c.title2 }}" style="text-decoration:none; display:flex; align-items:center; gap:9px; padding:7px 12px 7px 20px; border-radius:8px; font-size:13px; color:var(--text2); cursor:pointer" style-hover="background:var(--hover); color:var(--text)">
+                        <sc-if value="{{ c.notWaiting }}" hint-placeholder-val="{{ true }}">
+                          <span style="width:5px; height:5px; flex:none; border-radius:50%; background:{{ c.dotBg }}; border:1px solid {{ c.dotBorder }}; animation:{{ c.dotAnim }}"></span>
+                        </sc-if>
+                        <sc-if value="{{ c.isWaiting }}" hint-placeholder-val="{{ false }}">
+                          <span title="{{ c.dotTitle }}" style="display:flex; flex:none; color:var(--warnInk)">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:block"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>
+                          </span>
+                        </sc-if>
+                        <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ c.title }}</span>
+                        <span style="flex:none; font-size:10.5px; color:var(--text4); white-space:nowrap">{{ c.when }}</span>
+                      </a>
+                    </sc-for>
+                    </sc-if>
+                  </div>
+                </sc-for>
+      </div>
+      <div style="margin-top:auto; padding:14px 18px 0; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between">
+        <span style="width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Inter', system-ui, sans-serif; font-weight:500; font-size:10px; color:var(--onAccent)">DN</span>
+        <div style="display:flex; align-items:center; gap:6px">
+          <span onClick="{{ cycleTheme }}" title="{{ themeLabel }}" style="width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none" style-hover="background:var(--overlay3)">
+            <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+            </sc-if>
+            <sc-if value="{{ isSystem }}" hint-placeholder-val="{{ false }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><rect width="20" height="14" x="2" y="3" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path></svg>
+            </sc-if>
+          </span>
+          <span onClick="{{ goSettings }}" title="Settings" style="width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer" style-hover="background:var(--overlay3)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text2)"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; min-width:0; min-height:0; position:relative; z-index:1; display:flex; flex-direction:column">
+    <div style="min-height:60px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:14px 26px">
+      <sc-if value="{{ sidebarClosed }}" hint-placeholder-val="{{ true }}">
+        <span data-railtoggle="true" onClick="{{ toggleSidebar }}" onMouseEnter="{{ startPeek }}" onMouseLeave="{{ schedulePeekClose }}" title="Expand sidebar" aria-label="Expand sidebar" style="position:fixed; left:16px; top:30px; z-index:81; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer">
+          <span style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center">
+            <img class="rt-a" src="assets/nexera-mark.png" alt="" style="width:20px; height:20px; display:block" />
+            <svg class="rt-b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m9 18 6-6-6-6"></path></svg>
+          </span>
+        </span>
+      </sc-if>
+      <div style="display:flex; align-items:center; gap:10px; margin-left:auto">
+        <sc-if value="{{ signedOut }}" hint-placeholder-val="{{ true }}">
+          <span onClick="{{ askAuth }}" style="height:32px; padding:0 18px; border-radius:16px; background:linear-gradient(135deg, var(--azure) 0%, var(--cobalt) 52%, var(--violet) 100%); border:1px solid rgba(255,255,255,0.20); display:flex; align-items:center; font-size:13px; font-weight:500; color:#ffffff; cursor:pointer; box-shadow:0 1px 0 0 rgba(255,255,255,0.22) inset, 0 6px 18px -6px color-mix(in oklch, var(--cobalt) 70%, transparent); transition:box-shadow 180ms ease, filter 180ms ease" style-hover="filter:brightness(1.08); box-shadow:0 1px 0 0 rgba(255,255,255,0.28) inset, 0 8px 22px -6px color-mix(in oklch, var(--cobalt) 85%, transparent)">Sign in</span>
+        </sc-if>
+        <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
+          <span title="Dev Nudle" style="width:30px; height:30px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Inter', system-ui, sans-serif; font-weight:500; font-size:11px; color:var(--onAccent)">DN</span>
+        </sc-if>
+      </div>
+    </div>
+
+    <div data-noscrollbar="true" style="flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; padding:48px 26px 96px">
+      <h1 style="margin:0; min-height:1.15em; font-size:clamp(30px, 3.6vw, 46px); font-weight:400; line-height:1.15; letter-spacing:-0.025em; text-align:center; text-wrap:pretty">{{ heroTitle }}</h1>
+
+      <div onMouseEnter="{{ openComposer }}" onMouseLeave="{{ leaveComposer }}" onClick="{{ engageComposer }}" style="{{ composerStyle }}">
+
+        <div style="display:flex; align-items:center; gap:8px; padding:0 4px">
+          <span data-menu-root="true" style="position:relative; display:flex; flex:none">
+            <span onClick="{{ togglePlus }}" title="Add to the conversation" style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--composerMuted); cursor:pointer" style-hover="background:var(--overlay3); color:var(--composerText)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+            </span>
+            <sc-if value="{{ plusOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; box-sizing:border-box; z-index:60; min-width:210px; max-width:320px; padding:5px; border-radius:13px; border:1px solid var(--composerBorder); background:var(--menuBg); backdrop-filter:blur(26px) saturate(1.5); -webkit-backdrop-filter:blur(26px) saturate(1.5); box-shadow:0 18px 46px -14px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:1px; left:0; bottom:38px">
+                <sc-for list="{{ plusItems }}" as="p" hint-placeholder-count="4">
+                  <span onClick="{{ closeMenus }}" style="height:30px; padding:0 9px; border-radius:8px; display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--composerText); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">
+                    {{ p.icon }}
+                    <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis">{{ p.label }}</span>
+                  </span>
+                </sc-for>
+              </div>
+            </sc-if>
+          </span>
+          <input value="{{ prompt }}" onChange="{{ onPrompt }}" ref="{{ inputRef }}" placeholder="Ask the agent to plan a course, a module or a lesson" style="flex:1 1 0; min-width:0; height:32px; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--composerText); outline:none" />
+          <span title="Send" style="width:30px; height:30px; flex:none; border-radius:50%; background:linear-gradient(135deg, var(--azure) 0%, var(--cobalt) 52%, var(--violet) 100%); display:flex; align-items:center; justify-content:center; color:#ffffff; cursor:pointer" style-hover="filter:brightness(1.08)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path></svg>
+          </span>
+        </div>
+
+        <sc-if value="{{ composerExpanded }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:2px 4px 0">
+              <span data-menu-root="true" style="position:relative; display:flex; flex:none">
+                <span onClick="{{ toggleAgentMode }}" title="{{ agentModeTitle }}" style="height:28px; padding:0 11px; border-radius:14px; display:flex; align-items:center; gap:6px; background:linear-gradient(135deg, #0068f8 0%, #1e46ff 50%, #671dff 100%); font-size:11.5px; font-weight:500; color:#ffffff; cursor:pointer; white-space:nowrap" style-hover="filter:brightness(1.08)">
+                  {{ agentModeLabel }}
+                  <span style="flex:none; font-size:9px">{{ agentModeMark }}</span>
+                </span>
+                <sc-if value="{{ agentModeOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute; bottom:100%; left:0; margin-bottom:8px; z-index:70; width:262px; padding:5px; border:1px solid var(--menuLine); border-radius:12px; background:var(--menuBg); box-shadow:0 1px 2px rgba(0,0,0,0.18), 0 10px 22px -6px var(--shadow), 0 28px 60px -12px var(--shadow), inset 0 1px 0 var(--overlay1)">
+                    <sc-for list="{{ agentModes }}" as="am" hint-placeholder-count="2">
+                      <div onClick="{{ am.pick }}" style="display:flex; flex-direction:column; gap:2px; padding:9px 10px; border-radius:9px; background:{{ am.bg }}; cursor:pointer" style-hover="background:var(--hover)">
+                        <span style="display:flex; align-items:center; gap:7px">
+                          <span style="flex:1; min-width:0; font-size:12.5px; color:{{ am.color }}">{{ am.label }}</span>
+                          <span style="flex:none; font-size:9px; color:var(--composerAccent)">{{ am.check }}</span>
+                        </span>
+                        <span style="font-size:11px; line-height:1.45; color:var(--composerMuted); text-wrap:pretty">{{ am.note }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </span>
+              <span style="flex:1 1 auto"></span>
+            <span data-menu-root="true" style="position:relative; display:flex; flex:none">
+              <span onClick="{{ toggleModel }}" title="Model" style="height:28px; padding:0 10px; border-radius:14px; display:flex; align-items:center; gap:6px; font-size:12px; color:var(--composerMuted); cursor:pointer; white-space:nowrap" style-hover="background:var(--overlay3); color:var(--composerText)">
+                {{ model }}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:block; transform:rotate({{ modelChevron }}deg)"><path d="m6 9 6 6 6-6"></path></svg>
+              </span>
+              <sc-if value="{{ modelOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute; box-sizing:border-box; z-index:60; min-width:210px; max-width:320px; padding:5px; border-radius:13px; border:1px solid var(--composerBorder); background:var(--menuBg); backdrop-filter:blur(26px) saturate(1.5); -webkit-backdrop-filter:blur(26px) saturate(1.5); box-shadow:0 18px 46px -14px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:1px; right:0; bottom:36px">
+                  <sc-for list="{{ models }}" as="m" hint-placeholder-count="4">
+                    <span onClick="{{ m.pick }}" style="height:30px; padding:0 9px; border-radius:8px; display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--composerText); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:{{ m.bg }}">
+                      <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis">{{ m.label }}</span>
+                      {{ m.badge }}
+                    </span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </span>
+          </div>
+        </sc-if>
+      </div>
+            <div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px">
+              <sc-for list="{{ ideas }}" as="q" hint-placeholder-count="2">
+                <span onClick="{{ q.pick }}" style="height:30px; padding:0 13px; border-radius:15px; border:1px solid var(--overlay3); display:flex; align-items:center; font-size:12.5px; color:var(--composerMuted); cursor:pointer; white-space:nowrap" style-hover="border-color:var(--composerAccent); color:var(--composerText)">{{ q.text }}</span>
+              </sc-for>
+            </div>
+
+    </div>
+  </div>
+
+  <sc-if value="{{ authOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeAuth }}" style="position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; background:var(--authScrim); backdrop-filter:blur(3px) saturate(1.1); -webkit-backdrop-filter:blur(3px) saturate(1.1)">
+      <div onClick="{{ stop }}" style="position:relative; width:100%; max-width:392px; box-sizing:border-box; border-radius:26px; padding:30px 30px 26px; background:var(--authGlass); border:1px solid var(--authEdge); backdrop-filter:blur(40px) saturate(1.9); -webkit-backdrop-filter:blur(40px) saturate(1.9); box-shadow:0 1px 0 0 var(--authSheen) inset, 0 30px 90px -20px rgba(0,0,0,0.55), 0 0 0 1px var(--authHalo)">
+
+        <span aria-hidden="true" style="position:absolute; left:26%; right:26%; bottom:-1px; height:1px; border-radius:1px; background:linear-gradient(90deg, transparent, var(--authGlowCore), transparent)"></span>
+        <span aria-hidden="true" style="position:absolute; left:32%; right:32%; bottom:-7px; height:14px; border-radius:50%; background:radial-gradient(closest-side, var(--authGlowHalo), transparent 76%); filter:blur(7px); pointer-events:none"></span>
+
+        <span onClick="{{ closeAuth }}" title="Close" style="position:absolute; top:16px; right:16px; width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--composerMuted); cursor:pointer" style-hover="background:var(--overlay3); color:var(--composerText)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </span>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:9px; padding-bottom:22px">
+          <img src="assets/nexera-wordmark.webp" alt="Nexera" style="height:26px; width:auto; display:block; opacity:0.92" />
+          <span style="font-size:17px; font-weight:500; letter-spacing:-0.015em; color:var(--composerText)">{{ authTitle }}</span>
+          <span style="max-width:290px; text-align:center; font-size:13px; line-height:1.45; color:var(--composerMuted); text-wrap:pretty">{{ authBlurb }}</span>
+        </div>
+
+        <sc-if value="{{ authLogin }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-direction:column; gap:13px">
+            <label style="display:flex; flex-direction:column; gap:6px">
+              <span style="font-size:12px; color:var(--composerMuted)">Email</span>
+              <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="you@org.com" style="box-sizing:border-box; width:100%; height:42px; padding:0 14px; border:1px solid var(--authField); border-radius:13px; background:var(--authFieldBg); color:var(--composerText); font-family:inherit; font-size:14px; outline:none; transition:border-color 160ms ease" style-focus="border-color:var(--composerAccent)" />
+            </label>
+            <div style="display:flex; flex-direction:column; gap:6px">
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px">
+                <span style="font-size:12px; color:var(--composerMuted)">Password</span>
+                <span onClick="{{ toForgot }}" style="font-size:12px; color:var(--composerAccent); cursor:pointer" style-hover="opacity:0.8">Forgot password?</span>
+              </div>
+              <input type="password" value="{{ password }}" onChange="{{ onPassword }}" placeholder="••••••••" style="box-sizing:border-box; width:100%; height:42px; padding:0 14px; border:1px solid var(--authField); border-radius:13px; background:var(--authFieldBg); color:var(--composerText); font-family:inherit; font-size:14px; outline:none; transition:border-color 160ms ease" style-focus="border-color:var(--composerAccent)" />
+            </div>
+            <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:12.5px; line-height:1.4; color:var(--authError)">{{ authError }}</span>
+            </sc-if>
+            <span onClick="{{ submitLogin }}" style="height:42px; margin-top:3px; border-radius:21px; background:var(--accent); color:var(--onAccent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:500; cursor:pointer; opacity:{{ busyOpacity }}" style-hover="opacity:0.9">{{ signInLabel }}</span>
+            <div style="display:flex; align-items:center; gap:11px; padding:5px 0 2px">
+              <span style="flex:1; height:1px; background:var(--composerLine)"></span>
+              <span style="font-size:12px; color:var(--composerMuted)">or</span>
+              <span style="flex:1; height:1px; background:var(--composerLine)"></span>
+            </div>
+            <span onClick="{{ submitGoogle }}" style="height:42px; border:1px solid var(--authField); border-radius:21px; background:var(--authFieldBg); display:flex; align-items:center; justify-content:center; gap:10px; font-size:14px; font-weight:500; color:var(--composerText); cursor:pointer" style-hover="border-color:var(--composerAccent)">
+              <svg width="16" height="16" viewBox="0 0 48 48" style="display:block; flex:none"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2.1 5-4.4 6.5v5.4h7.1c4.2-3.8 6.6-9.5 6.6-15.9z"></path><path fill="#34A853" d="M24 46c6 0 11-2 14.5-5.4l-7.1-5.4c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.6C8.1 41.2 15.5 46 24 46z"></path><path fill="#FBBC05" d="M11.8 28.3c-.4-1.3-.7-2.7-.7-4.3s.3-3 .7-4.3v-5.6H4.5C2.9 17.3 2 20.5 2 24s.9 6.7 2.5 9.9l7.3-5.6z"></path><path fill="#EA4335" d="M24 10.4c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 3.9 30 2 24 2 15.5 2 8.1 6.8 4.5 14.1l7.3 5.6c1.7-5.2 6.5-9.3 12.2-9.3z"></path></svg>
+              Continue with Google
+            </span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ authForgot }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:13px">
+            <label style="display:flex; flex-direction:column; gap:6px">
+              <span style="font-size:12px; color:var(--composerMuted)">Email</span>
+              <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="you@org.com" style="box-sizing:border-box; width:100%; height:42px; padding:0 14px; border:1px solid var(--authField); border-radius:13px; background:var(--authFieldBg); color:var(--composerText); font-family:inherit; font-size:14px; outline:none; transition:border-color 160ms ease" style-focus="border-color:var(--composerAccent)" />
+            </label>
+            <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:12.5px; line-height:1.4; color:var(--authError)">{{ authError }}</span>
+            </sc-if>
+            <span onClick="{{ submitReset }}" style="height:42px; margin-top:3px; border-radius:21px; background:var(--accent); color:var(--onAccent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:500; cursor:pointer" style-hover="opacity:0.9">Send reset link</span>
+            <span onClick="{{ toLogin }}" style="height:38px; border-radius:19px; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--composerMuted); cursor:pointer" style-hover="color:var(--composerText)">Back to sign in</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ authSent }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:15px; align-items:center">
+            <span style="width:46px; height:46px; border-radius:50%; border:1px solid var(--authField); background:var(--authFieldBg); display:flex; align-items:center; justify-content:center; color:var(--composerAccent)">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:block"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+            </span>
+            <span onClick="{{ toLogin }}" style="width:100%; box-sizing:border-box; height:42px; border-radius:21px; background:var(--accent); color:var(--onAccent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:500; cursor:pointer" style-hover="opacity:0.9">Back to sign in</span>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+
+
+
+const MODES = [
+  { key: "accept", label: "Accept edits", hint: "Stops at every decision — plans, techniques and failures all come back to you." },
+  { key: "auto", label: "Auto", hint: "Takes one detailed prompt and runs the whole chain, plan through publish, without stopping." }
+];
+
+const MODELS = [
+  { label: "qwen3:14b (default)" },
+  { label: "qwen3:8b" },
+  { label: "qwen3:32b", tag: "large", tone: "warn" },
+  { label: "Nemotron 3 Super 120B …" },
+  { label: "gpt-oss 20B — strong rea…" },
+  { label: "Nemotron 3 Ultra 550B —…" }
+];
+
+const HERO_TITLES = [
+  "What are we designing today?",
+  "Plan your next course.",
+  "From curriculum to XR, faster.",
+  "Architect a course that sticks.",
+  "Where should we begin?",
+  "Turn a syllabus into a simulation.",
+  "Build your next module.",
+  "Design training people remember.",
+  "What should learners master next?",
+  "Shape your next XR module.",
+  "From idea to immersive lesson."
+];
+const HOLD_MS = 3800;
+const OUT_MS = 320;
+
+class Component extends DCLogic {
+  state = { titleIdx: 0, titleOut: false, sidebar: false, peek: false, theme: "system", prompt: "", menu: null, mode: "Auto", model: "qwen3:8b", recentShut: {},
+    // signed out is the prototype's default — the composer is browsable, acting on it asks for auth
+    signedIn: false, auth: null, authView: "login", email: "", password: "", authError: "", busy: false };
+
+  icon(paths, size) {
+    const kids = paths.map((c, i) => React.createElement(c[0], Object.assign({ key: i }, c[1])));
+    return React.createElement("svg", {
+      width: size || 15, height: size || 15, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+      strokeWidth: 1.75, strokeLinecap: "round", strokeLinejoin: "round", style: { display: "block", flex: "none" }
+    }, kids);
+  }
+
+  badge(text, tone) {
+    const tones = {
+      warn: { background: "color-mix(in oklch, #f0b429 16%, transparent)", color: "#e0a10f" },
+      mute: { background: "var(--overlay3)", color: "var(--composerMuted)" }
+    };
+    return React.createElement("span", {
+      style: Object.assign({
+        borderRadius: "999px", padding: "2px 7px", fontSize: "10px", fontWeight: 500, whiteSpace: "nowrap"
+      }, tones[tone])
+    }, text);
+  }
+
+  check() {
+    return React.createElement("svg", {
+      width: 15, height: 15, viewBox: "0 0 24 24", fill: "none", stroke: "var(--composerAccent)",
+      strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round", style: { display: "block", flex: "none" }
+    }, React.createElement("path", { d: "M20 6 9 17l-5-5" }));
+  }
+
+  setMenu(id) { this.setState(s => ({ menu: s.menu === id ? null : id })); }
+
+
+  heroTitle() {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const text = HERO_TITLES[this.state.titleIdx] || "";
+    if (reduce) return text;
+    return React.createElement("span", {
+      key: this.state.titleIdx,
+      style: {
+        display: "inline",
+        opacity: this.state.titleOut ? 0 : 1,
+        transition: "opacity " + OUT_MS + "ms cubic-bezier(0.4,0,1,1)"
+      }
+    }, text.split(" ").map((w, i) => React.createElement("span", {
+      key: i,
+      style: {
+        display: "inline-block",
+        marginRight: "0.3em",
+        opacity: 0,
+        animation: "heroWordIn 520ms cubic-bezier(0.2,1.25,0.35,1) forwards",
+        animationDelay: (0.06 + i * 0.11) + "s"
+      }
+    }, w)));
+  }
+
+  componentDidMount() {
+    this._onColScroll = () => { if (this.state.menu) this.setState({ menu: null }); };
+    // Any scroller moving under a fixed menu invalidates its anchor, so all of them close it.
+    this._cols = Array.prototype.slice.call(document.querySelectorAll("[data-noscrollbar]"));
+    this._cols.forEach(c => c.addEventListener("scroll", this._onColScroll, { passive: true }));
+    window.addEventListener("resize", this._onColScroll);
+    this.restoreTheme();
+    this.applyTheme();
+    if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+      this._titleT = setInterval(() => {
+        this.setState({ titleOut: true });
+        this._titleSwap = setTimeout(() => this.setState(s => ({
+          titleIdx: (s.titleIdx + 1) % HERO_TITLES.length, titleOut: false
+        })), OUT_MS);
+      }, HOLD_MS);
+    }
+    // the scrim owns its own dismissal; don't let the menu closer fight it
+    this._onDocDown = e => {
+      if (this.state.auth) return;
+      if (!this.state.menu) return;
+      if (e.target.closest && e.target.closest("[data-menu-root]")) return;
+      this.setState({ menu: null });
+    };
+    this._onKey = e => {
+      if (e.key !== "Escape") return;
+      if (this.state.menu) this.setState({ menu: null });
+      else if (this.state.auth) this.setState({ auth: null, authError: "" });
+    };
+    document.addEventListener("pointerdown", this._onDocDown, true);
+    document.addEventListener("keydown", this._onKey);
+    this._mq = window.matchMedia("(prefers-color-scheme: light)");
+    this._onMq = () => this.forceUpdate();
+    this._mq.addEventListener("change", this._onMq);
+  }
+  componentDidUpdate() { this.applyTheme(); }
+  componentWillUnmount() {
+    if (this._cols) this._cols.forEach(c => c.removeEventListener("scroll", this._onColScroll));
+    window.removeEventListener("resize", this._onColScroll);
+    clearInterval(this._titleT);
+    clearTimeout(this._titleSwap);
+    clearTimeout(this._peekT);
+    document.removeEventListener("pointerdown", this._onDocDown, true);
+    document.removeEventListener("keydown", this._onKey);
+    if (this._mq) this._mq.removeEventListener("change", this._onMq);
+  }
+
+  restoreTheme() {
+    try { const v = localStorage.getItem("nx.theme"); if (v === "dark" || v === "light" || v === "system") this.state.theme = v; } catch (e) {}
+    try { if (localStorage.getItem("nx.session") === "1") this.state.signedIn = true; } catch (e) {}
+  }
+  setSession(on) {
+    try { on ? localStorage.setItem("nx.session", "1") : localStorage.removeItem("nx.session"); } catch (e) {}
+  }
+  applyTheme() {
+    const t = this.state.theme;
+    const eff = t === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = eff;
+    try { localStorage.setItem("nx.theme", this.state.theme); } catch (e) {}
+  }
+
+
+  navIcon(name) {
+    const P = {
+      Dashboard: [["rect", { width: 7, height: 9, x: 3, y: 3, rx: 1 }], ["rect", { width: 7, height: 5, x: 14, y: 3, rx: 1 }], ["rect", { width: 7, height: 9, x: 14, y: 12, rx: 1 }], ["rect", { width: 7, height: 5, x: 3, y: 16, rx: 1 }]],
+      Library: [["path", { d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" }], ["path", { d: "m6.08 12-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83L17.9 12" }]],
+      "Exam Quiz": [["circle", { cx: 12, cy: 12, r: 9 }], ["path", { d: "M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7" }], ["path", { d: "M12 17h.01" }]],
+      "New simulation": [["path", { d: "M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" }], ["path", { d: "M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" }]]
+    };
+    const kids = (P[name] || []).map((c, i) => React.createElement(c[0], Object.assign({ key: i }, c[1])));
+    return React.createElement("svg", {
+      width: 15, height: 15, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+      strokeWidth: 1.75, strokeLinecap: "round", strokeLinejoin: "round", style: { display: "block", flex: "none" }
+    }, kids);
+  }
+
+  renderVals() {
+    const view = this.state.authView;
+    const askAuth = () => this.setState({ auth: true, authView: "login", authError: "", menu: null });
+    const goSettings = () => { location.href = "Settings.dc.html"; };
+    const goSession = () => { location.href = "New%20XR%20Session.dc.html"; };
+    const goHome = () => { location.href = "Hero.dc.html"; };
+    const NAV_HREF = { "Dashboard": "Dashboard.dc.html", "Library": "Industries%20Library%20-%203%20Directions.dc.html", "Exam Quiz": "Exam%20Quiz.dc.html", "New simulation": "New%20XR%20Session.dc.html?new=1" };
+    const expanded = !!(this.state.engaged || this.state.hovered);
+    const t = this.state.theme;
+    const next = { dark: "light", light: "system", system: "dark" };
+    const n = (v, w) => v + " " + w + (v === 1 ? "" : "s");
+    return {
+      heroTitle: this.heroTitle(),
+      isDark: t === "dark", isLight: t === "light", isSystem: t === "system",
+      themeLabel: "Theme: " + t + " (click for " + next[t] + ")",
+      cycleTheme: () => this.setState({ theme: next[t] }),
+      focusShift: this.state.sidebar ? 132 : 0,
+      sidebarOpen: this.state.sidebar,
+      sidebarVisible: this.state.sidebar || this.state.peek,
+      sidebarClosed: !this.state.sidebar,
+      sidebarToggleLabel: this.state.sidebar ? "Collapse sidebar" : "Expand sidebar",
+      sidebarStyle: this.state.sidebar
+        ? "width:264px; flex:none; box-sizing:border-box; position:sticky; top:0; height:100vh; align-self:flex-start; z-index:2; background:var(--sidebarBg); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:16px 0 14px; overflow:hidden"
+        : "width:264px; box-sizing:border-box; position:fixed; left:12px; top:56px; max-height:min(70vh, 520px); z-index:60; background:var(--sidebarBg); border:1px solid var(--menuLine); border-radius:16px; box-shadow:0 24px 60px var(--shadow); display:flex; flex-direction:column; padding:16px 0 14px; overflow:hidden",
+      startPeek: () => { clearTimeout(this._peekT); this.setState({ peek: true }); },
+      schedulePeekClose: () => {
+        clearTimeout(this._peekT);
+        this._peekT = setTimeout(() => this.setState({ peek: false }), 160);
+      },
+      toggleSidebar: () => this.setState(s => ({ sidebar: !s.sidebar, peek: false })),
+      signedIn: this.state.signedIn,
+      signedOut: !this.state.signedIn,
+      authOpen: !!this.state.auth,
+      authLogin: view === "login",
+      authForgot: view === "forgot",
+      authSent: view === "sent",
+      authTitle: view === "sent" ? "Check your email" : view === "forgot" ? "Reset your password" : "Sign in to continue",
+      authBlurb: view === "sent"
+        ? "We sent a reset link to " + (this.state.email || "your inbox") + ". It expires in an hour."
+        : view === "forgot"
+          ? "We'll email you a link to set a new password."
+          : "Your sessions, lessons and library are tied to your account.",
+      email: this.state.email,
+      password: this.state.password,
+      onEmail: e => this.setState({ email: e.target.value, authError: "" }),
+      onPassword: e => this.setState({ password: e.target.value, authError: "" }),
+      hasError: !!this.state.authError,
+      authError: this.state.authError,
+      busyOpacity: this.state.busy ? 0.55 : 1,
+      signInLabel: this.state.busy ? "Signing in…" : "Sign in",
+      askAuth: askAuth,
+      closeAuth: () => this.setState({ auth: null, authError: "", busy: false }),
+      stop: e => e.stopPropagation(),
+      toForgot: () => this.setState({ authView: "forgot", authError: "" }),
+      toLogin: () => this.setState({ authView: "login", authError: "" }),
+      submitLogin: () => {
+        const em = this.state.email.trim();
+        if (!em || !this.state.password) { this.setState({ authError: "Enter your email and password" }); return; }
+        this.setState({ busy: true, authError: "" });
+        setTimeout(() => { this.setSession(true); this.setState({ busy: false, auth: null, signedIn: true, password: "" }); }, 700);
+      },
+      submitReset: () => {
+        if (!this.state.email.trim()) { this.setState({ authError: "Enter the email on your account" }); return; }
+        this.setState({ authView: "sent", authError: "" });
+      },
+      submitGoogle: () => { this.setSession(true); this.setState({ auth: null, signedIn: true }); },
+      goSettings: goSettings,
+      goHome: goHome,
+      goSession: goSession,
+      sidebarNav: [
+        { label: "Dashboard", active: false },
+        { label: "Library", active: false },
+        { label: "Exam Quiz", active: false },
+        { label: "New simulation", active: false }
+      ].map(i => ({ label: i.label, icon: this.navIcon(i.label), href: NAV_HREF[i.label] || "#", bg: i.active ? "var(--accentSoft)" : "transparent", color: i.active ? "var(--composerAccent)" : "var(--text2)" })),
+      recentGroups: [
+        { title: "Not in a course yet", industry: null, course: null,
+          chats: [{ title: "New session", when: "now", state: "active" }] },
+        { title: "Surface Mining", industry: "Mining & Minerals", course: "Surface Mining", chats: [
+          { title: "Surface mining — course plan", when: "2h ago", state: "working" },
+          { title: "Loading and Hauling Cycles", when: "yesterday", state: "waiting" },
+          { title: "Haul Road Design", when: "3d ago", state: "idle" }
+        ] },
+        { title: "Precision Irrigation Systems", industry: "Agriculture & Environmental Science", course: "Precision Irrigation Systems", chats: [
+          { title: "Emitter spacing module", when: "5d ago", state: "idle" }
+        ] }
+      ].map(g => {
+        const collapsed = !!(this.state.recentShut || {})[g.title];
+        return {
+        title: g.title,
+        count: g.chats.length + (g.chats.length === 1 ? " chat" : " chats"),
+        hasCount: !!g.course,
+        // Only course groups collapse; the ungrouped chats are the ones needing attention.
+        canCollapse: !!g.course,
+        open: !g.course || !collapsed,
+        caret: (!g.course || !collapsed) ? 90 : 0,
+        toggle: () => { if (g.course) this.setState(st => ({ recentShut: Object.assign({}, st.recentShut, { [g.title]: !collapsed }) })); },
+        hasAdd: !!g.course,
+        addTitle: "New chat in " + g.title,
+        // A new chat opens that course's workspace with an empty thread — the course is what
+        // the chat belongs to, so it comes along rather than being asked for afterwards.
+        add: e => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          if (!g.course) return;
+          location.href = "New%20XR%20Session.dc.html?industry=" + encodeURIComponent(g.industry)
+            + "&course=" + encodeURIComponent(g.course) + "&newchat=1";
+        },
+        chats: g.chats.map(c => ({
+          title: c.title, when: c.when,
+          // A courseless chat opens blank, exactly as the nav item does.
+          href: g.course
+            ? "New%20XR%20Session.dc.html?industry=" + encodeURIComponent(g.industry) + "&course=" + encodeURIComponent(g.course)
+            : "New%20XR%20Session.dc.html?new=1",
+          title2: g.course ? c.title + " — " + g.course : c.title,
+          // Waiting is the one state a dot cannot carry — it needs a glyph you read.
+          isWaiting: c.state === "waiting",
+          notWaiting: c.state !== "waiting",
+          dotTitle: c.state === "waiting" ? "Waiting on you" : "",
+          dotBg: c.state === "idle" ? "transparent" : "var(--composerAccent)",
+          dotBorder: c.state === "idle" ? "var(--text4)" : "var(--composerAccent)",
+          dotAnim: c.state === "working" ? "chatPulse 1.4s ease-in-out infinite" : "none"
+        }))
+        };
+      }),
+
+      micIdle: (this.state.mic || "idle") === "idle",
+      micRecording: this.state.mic === "recording",
+      micTranscribing: this.state.mic === "transcribing",
+      micTimer: "0:" + String(this.state.micSecs || 0).padStart(2, "0"),
+      startMic: () => {
+        clearInterval(this._micT);
+        this.setState({ mic: "recording", micSecs: 0 });
+        this._micT = setInterval(() => this.setState(s => ({ micSecs: (s.micSecs || 0) + 1 })), 1000);
+      },
+      stopMic: () => {
+        clearInterval(this._micT);
+        this.setState({ mic: "transcribing" });
+        this._micT2 = setTimeout(() => this.setState(s => ({
+          mic: "idle",
+          prompt: (s.prompt ? s.prompt + " " : "") + "a drip irrigation lesson for level 4 apprentices"
+        })), 1400);
+      },
+      imageMode: !!this.state.imageMode,
+      exitImageMode: () => this.setState({ imageMode: false }),
+      running: !!this.state.running,
+      notRunning: !this.state.running,
+      sendTitle: this.state.running ? "Stop" : "Send message",
+      sendStyle: "width:36px; height:36px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 180ms ease, color 180ms ease, opacity 180ms ease; "
+        + (this.state.running
+          ? "background:var(--overlay3); color:var(--composerText); cursor:pointer"
+          : ((this.state.prompt || "").trim().length > 0
+            ? "background:var(--accent); color:var(--onAccent); cursor:pointer"
+            : "background:var(--overlay3); color:var(--composerMuted); cursor:default; opacity:0.6")),
+      send: () => {
+        if (this.state.running) { this.setState({ running: false }); return; }
+        if (!(this.state.prompt || "").trim()) return;
+        // matches the app: send keeps its own auth gate rather than trusting the UI to hide it
+        if (!this.state.signedIn) { askAuth(); return; }
+        // hand the prompt to the session page, where the agent picks it up live
+        this.setState({ running: true });
+        this._sendT = setTimeout(() => {
+          location.href = "New%20XR%20Session.dc.html?prompt=" + encodeURIComponent(this.state.prompt.trim())
+            + "&mode=" + ((this.state.agentMode || "accept"));
+        }, 450);
+      },
+      isTyping: (this.state.prompt || "").trim().length > 0,
+      composerExpanded: expanded,
+      composerCollapsed: !expanded,
+      inputRef: this._input || (this._input = React.createRef()),
+      openComposer: () => { clearTimeout(this._collapseT); this.setState({ hovered: true }); },
+      leaveComposer: () => {
+        clearTimeout(this._collapseT);
+        this._collapseT = setTimeout(() => this.setState({ hovered: false }), 220);
+      },
+      engageComposer: () => {
+        this.setState({ engaged: true }, () => { if (this._input && this._input.current) this._input.current.focus(); });
+      },
+      composerStyle: "position:relative; box-sizing:border-box; width:100%; max-width:760px; display:flex; flex-direction:column; gap:" + (expanded ? "6px" : "0px")
+        + "; border-radius:26px; padding:" + (expanded ? "10px 12px" : "5px 8px")
+        + "; background:var(--composerBg); border:1px solid " + (expanded ? "var(--composerBorder)" : "var(--overlay3)")
+        + "; cursor:" + (expanded ? "auto" : "text")
+        + "; backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4); box-shadow:0 0 0 1px var(--overlay1) inset, 0 " + (expanded ? "8px 32px rgba(0,0,0,0.28)" : "4px 18px rgba(0,0,0,0.18)")
+        + ", inset 0 -22px 30px -22px color-mix(in oklch, var(--cobalt) " + (expanded ? "60" : "34") + "%, transparent); transition:padding 260ms cubic-bezier(0.22,0.9,0.3,1), gap 260ms cubic-bezier(0.22,0.9,0.3,1), border-color 260ms ease, box-shadow 260ms ease",
+      prompt: this.state.prompt,
+      onPrompt: e => this.setState({ prompt: e.target.value }),
+
+      mode: this.state.mode,
+      modeOpen: this.state.menu === "mode",
+      toggleMode: () => this.setMenu("mode"),
+      ideas: [
+        "Plan a course on underground mine ventilation",
+        "Turn this syllabus into modules and lessons"
+      ].map(t => ({
+        text: t,
+        pick: () => this.setState({ prompt: t, menu: null, engaged: true })
+      })),
+      agentModes: MODES.map(m => {
+        const on = (this.state.agentMode || "accept") === m.key;
+        return {
+          label: m.label, note: m.hint, on: on,
+          pick: () => this.setState({ agentMode: m.key, menu: null }),
+          bg: on ? "var(--hover)" : "transparent",
+          color: on ? "var(--composerText)" : "var(--composerMuted)",
+          check: on ? "●" : ""
+        };
+      }),
+      agentModeLabel: (this.state.agentMode || "accept") === "auto" ? "Auto" : "Accept edits",
+      agentModeTitle: (this.state.agentMode || "accept") === "auto"
+        ? "Auto — one prompt runs the whole chain without stopping"
+        : "Accept edits — the agent stops at every decision",
+      agentModeOpen: this.state.menu === "mode",
+      toggleAgentMode: () => this.setState(st => ({ menu: st.menu === "mode" ? null : "mode" })),
+      agentModeMark: this.state.menu === "mode" ? "▴" : "▾",
+
+      model: this.state.model,
+      modelOpen: this.state.menu === "model",
+      modelChevron: this.state.menu === "model" ? 180 : 0,
+      toggleModel: () => this.setMenu("model"),
+      models: MODELS.map(m => ({
+        label: m.label,
+        bg: m.label === this.state.model ? "var(--overlay3)" : "transparent",
+        badge: m.label === this.state.model ? this.check() : (m.tag ? this.badge(m.tag, m.tone) : ""),
+        pick: () => this.setState({ model: m.label, menu: null })
+      })),
+
+      plusOpen: this.state.menu === "plus",
+      plusClosed: this.state.menu !== "plus",
+      togglePlus: () => { if (!this.state.signedIn) { askAuth(); return; } this.setMenu("plus"); },
+      closeMenus: () => this.setState({ menu: null }),
+      plusItems: [
+        { label: "Add source", paths: [["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" }], ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4" }]] },
+        { label: "Share image", paths: [["rect", { width: 18, height: 18, x: 3, y: 3, rx: 2 }], ["circle", { cx: 9, cy: 9, r: 2 }], ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" }]] },
+        { label: "Generate image", paths: [["path", { d: "M12 3v3" }], ["path", { d: "M12 18v3" }], ["path", { d: "M3 12h3" }], ["path", { d: "M18 12h3" }], ["circle", { cx: 12, cy: 12, r: 4 }]] }
+      ].map(i => ({ label: i.label, icon: this.icon(i.paths, 15) })),
+
+      toggleIdeas: e => {
+        const el = e && e.currentTarget;
+        const r = el && el.getBoundingClientRect
+          ? { top: el.getBoundingClientRect().top, bottom: el.getBoundingClientRect().bottom, right: el.getBoundingClientRect().right }
+          : null;
+        this.setState({ ideasRect: r });
+        this.setMenu("ideas");
+      },
+      ideaGroups: [
+        { label: "Plan a course", items: ["Plan a course on underground mine ventilation", "Build a welding safety course for first-year apprentices", "Draft a 6-module curriculum for aircraft fuel systems"] },
+        { label: "Work from material", items: ["Turn this syllabus into modules and lessons", "Find the gaps between my curriculum and the training standard"] },
+        { label: "Design a simulation", items: ["Design a hazard-spotting scene for a live substation", "Script an assessment where learners diagnose a brake fault"] }
+      ].map(g => ({
+        label: g.label,
+        items: g.items.map(t => ({ text: t, pick: () => this.setState({ prompt: t, menu: null, engaged: true }, () => { if (this._input && this._input.current) this._input.current.focus(); }) }))
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+  <script type="module" src="model-floor.js"></script>
+  <script src="paper-fm-n6-2022.js"></script>
+  <style>
+    :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
+      --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
+      --azure:#0068f8; --cobalt:#1e46ff; --violet:#671dff; --danger:#f2777a; --warn:#e0a10f; --ok:#3ddc97;
+      --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
+    html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+    a { color:var(--tint); } a:hover { color:#ffffff; }
+    input, textarea, button { font:inherit; }
+    :focus-visible { outline:2px solid #81b1ff; outline-offset:2px; }
+    @keyframes rise { from { transform:translateY(14px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    @keyframes pop { 0% { transform:scale(0.92); opacity:0; } 60% { transform:scale(1.03); opacity:1; } 100% { transform:scale(1); } }
+    @keyframes shake { 0%,100% { transform:translateX(0); } 25% { transform:translateX(-6px); } 55% { transform:translateX(5px); } 80% { transform:translateX(-2px); } }
+    @keyframes fly { 0% { transform:translate(0,0) scale(0.8); opacity:0; } 15% { transform:translate(0,-12px) scale(1.12); opacity:1; } 55% { transform:translate(0,-18px) scale(1); opacity:1; } 100% { transform:translate(38vw,-70vh) scale(0.5); opacity:0; } }
+    @keyframes land { 0%,100% { transform:scale(1); } 40% { transform:scale(1.18); } }
+    @keyframes suggest { 0%,100% { box-shadow:0 0 0 0 rgba(0,104,248,0.5); } 60% { box-shadow:0 0 0 12px rgba(0,104,248,0); } }
+    @keyframes breathe { 0%,100% { transform:scale(1); box-shadow:0 14px 36px rgba(30,70,255,0.38); } 50% { transform:scale(1.02); box-shadow:0 18px 44px rgba(30,70,255,0.5); } }
+    @keyframes dots { 0%,100% { opacity:0.25; } 50% { opacity:1; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+  </style>
+</helmet>
+
+<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:hidden; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
+
+  <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:10px; padding:10px {{ pad }}; background:rgba(25,27,30,0.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
+    <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ goBack }}" aria-label="{{ backLabel }}" style="height:44px; min-width:44px; padding:0 12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+        <span style="display:{{ backTextDisplay }}">{{ backLabel }}</span>
+      </button>
+    </sc-if>
+    <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
+    <span style="flex:1; min-width:0; display:flex; flex-direction:column">
+      <span style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headTitle }}</span>
+      <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headSub }}</span>
+    </span>
+    <sc-if value="{{ showMeter }}" hint-placeholder-val="{{ false }}">
+      <span title="Marks earned against the paper" style="display:{{ meterDisplay }}; flex-direction:column; gap:4px; width:120px">
+        <span style="font-size:11px; font-weight:700; color:var(--text2)">{{ meterLabel }}</span>
+        <span style="height:6px; border-radius:3px; background:rgba(255,255,255,0.08); overflow:hidden"><span style="display:block; height:100%; width:{{ meterPct }}; background:var(--tint); border-radius:3px; transition:width 500ms ease"></span></span>
+      </span>
+    </sc-if>
+    <sc-if value="{{ showKitBtn }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ openKit }}" style="height:44px; padding:0 13px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); display:flex; align-items:center; gap:7px; cursor:pointer; font-size:13px; font-weight:600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+        <span style="display:{{ backTextDisplay }}">Paper kit</span>
+      </button>
+    </sc-if>
+    <span data-xppill="true" title="XP earned" style="height:44px; padding:0 13px; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:6px; font-size:14px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>
+      <span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint)">XP</span>
+    </span>
+  </header>
+
+  <sc-if value="{{ onPick }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="01 Home" style="position:relative; height:100vh; min-height:{{ homeMinH }}; display:flex; flex-direction:column; overflow:hidden">
+
+      <div style="position:relative; z-index:3; flex:none; display:flex; align-items:center; gap:8px; padding:{{ topPad }}">
+        <img src="assets/nexera-mark.png" alt="Nexera" style="width:24px; height:24px; display:block; flex:none" />
+        <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text2); white-space:nowrap; display:{{ brandTextDisplay }}">Nexera · Exam practice</span>
+        <span style="flex:1; min-width:0"></span>
+        <sc-if value="{{ isReturning }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; gap:6px; flex-wrap:nowrap; flex:none; animation:rise 480ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">
+            <span aria-label="{{ xpAria }}" style="box-sizing:border-box; height:36px; padding:0 11px; border-radius:18px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); font-size:13px; font-weight:800">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ pillWordDisplay }}">XP</span>
+            </span>
+            <span aria-label="{{ marksAria }}" style="box-sizing:border-box; height:36px; padding:0 11px 0 6px; border-radius:18px; display:flex; align-items:center; gap:6px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); font-size:13px; font-weight:800">
+              <span aria-hidden="true" style="width:24px; height:24px; flex:none; border-radius:50%; background:conic-gradient(#81b1ff {{ marksDeg }}, rgba(255,255,255,0.1) 0); display:flex; align-items:center; justify-content:center"><span style="width:16px; height:16px; border-radius:50%; background:#202327"></span></span>{{ dispMarks }}<span style="font-size:11px; font-weight:600; color:var(--text3)">/{{ resumeTotal }}</span>
+            </span>
+            <span style="position:relative; display:flex">
+              <button data-trigger="days" onClick="{{ toggleDays }}" aria-expanded="{{ daysOpen }}" aria-haspopup="dialog" aria-label="{{ daysAria }}" style="box-sizing:border-box; min-height:44px; margin:-4px 0; padding:0 12px; border-radius:22px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); color:var(--text); font-size:13px; font-weight:800; cursor:pointer">
+                {{ dispDays }}<span style="font-size:11px; font-weight:600; color:var(--text3)">{{ daysWord }}</span>
+              </button>
+              <sc-if value="{{ daysOpen }}" hint-placeholder-val="{{ false }}">
+                <div role="dialog" aria-label="Days practised" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; width:min(260px, 80vw); padding:14px 15px; border-radius:16px; background:rgba(32,35,39,0.96); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.45); animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
+                  <p style="margin:0; font-size:13.5px; line-height:1.55; color:var(--text); text-wrap:pretty">Days you practised this week. It resets gently each Monday and never takes XP away.</p>
+                </div>
+              </sc-if>
+            </span>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="position:relative; z-index:3; flex:none; display:flex; justify-content:center; padding:0 12px">
+        <div role="group" aria-label="Preview state" style="display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.6); border:1px solid rgba(255,255,255,0.06)">
+          <sc-for list="{{ homeModes }}" as="hm" hint-placeholder-count="4">
+            <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div data-key="{{ homeKey }}" style="position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ headPad }}; animation:rise 520ms cubic-bezier(0.22,0.61,0.36,1) both">
+        <h1 style="margin:0; font-size:{{ homeH1 }}; font-weight:800; letter-spacing:-0.03em; line-height:1.05; text-align:center; text-wrap:balance; max-width:760px">{{ homeTitle }}</h1>
+        <sc-if value="{{ hasHomeSub }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0; font-size:{{ homeSubSize }}; line-height:1.55; color:var(--text2); text-align:center; text-wrap:pretty; max-width:520px">{{ homeSub }}</p>
+        </sc-if>
+      </div>
+
+      <div data-stage="true" style="position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}">
+        <span aria-hidden="true" style="position:absolute; left:50%; bottom:calc(9.7% - {{ ringHalf }}); width:{{ ringW }}; height:{{ ringH }}; transform:translateX(-50%); border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,{{ glowA }}), rgba(30,70,255,{{ glowB }}) 55%, transparent 100%); pointer-events:none"></span>
+        <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:80.6%; aspect-ratio:1 / 2.25; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
+          <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
+            <img src="{{ posterSrc }}" alt="" onError="{{ posterFailed }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:50% 100%" />
+          </sc-if>
+          <sc-if value="{{ posterSilhouette }}" hint-placeholder-val="{{ true }}">
+            <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
+              <defs><linearGradient id="silh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#81b1ff" stop-opacity="0.22"></stop><stop offset="1" stop-color="#81b1ff" stop-opacity="0.06"></stop></linearGradient></defs>
+              <circle cx="50" cy="26" r="19" fill="url(#silh)"></circle>
+              <path d="M24 60 Q50 48 76 60 L82 130 Q78 138 70 136 L66 100 L64 222 L54 222 L50 150 L46 222 L36 222 L34 100 L30 136 Q22 138 18 130 Z" fill="url(#silh)"></path>
+            </svg>
+          </sc-if>
+        </span>
+        <sc-if value="{{ mountModel }}" hint-placeholder-val="{{ false }}">
+          <model-floor src="assets/avatar-lite.glb" clip="{{ homeClip }}" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:0; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
+        </sc-if>
+        <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(32,35,39,0.82); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(16px); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}</p>
+      </div>
+
+      <div style="position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)">
+        <sc-if value="{{ showPicker }}" hint-placeholder-val="{{ true }}">
+          <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap" role="status">{{ sentenceSr }}</span>
+          <p style="margin:0; font-size:{{ sentenceSize }}; font-weight:600; line-height:1.4; color:var(--text2); text-align:center; text-wrap:balance; max-width:640px; animation:rise 520ms 260ms cubic-bezier(0.22,0.61,0.36,1) both">
+            <span aria-hidden="true">I'm practising </span><button data-trigger="subj" onClick="{{ openSubj }}" aria-haspopup="dialog" aria-label="{{ subjAria }}" style="min-height:44px; padding:0 2px; border:none; background:transparent; color:#ffffff; font-weight:800; font-size:inherit; line-height:inherit; text-decoration:underline; text-decoration-color:#81b1ff; text-decoration-thickness:2px; text-underline-offset:5px; cursor:pointer"><span data-key="{{ subjKey }}" style="display:inline-block; animation:{{ swapAnim }}">{{ subjWord }}</span></button><span aria-hidden="true">, </span><sc-if value="{{ hasPaperWord }}" hint-placeholder-val="{{ true }}"><button data-trigger="paper" onClick="{{ openPaper }}" aria-haspopup="dialog" aria-label="{{ paperAria }}" style="min-height:44px; padding:0 2px; border:none; background:transparent; color:#ffffff; font-weight:800; font-size:inherit; line-height:inherit; text-decoration:underline; text-decoration-color:#81b1ff; text-decoration-thickness:2px; text-underline-offset:5px; cursor:pointer"><span data-key="{{ paperKey }}" style="display:inline-block; animation:{{ swapAnim }}">{{ paperWord }}</span></button></sc-if><sc-if value="{{ noPaperWord }}" hint-placeholder-val="{{ false }}"><em aria-hidden="true" style="color:var(--text3); font-weight:600">no paper yet</em></sc-if><span aria-hidden="true">.</span>
+          </p>
+          <div style="display:flex; align-items:center; gap:10px; width:{{ startW }}">
+            <sc-if value="{{ picking }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ backToContinue }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Back</button>
+            </sc-if>
+            <button onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
+          </div>
+          <span style="font-size:11.5px; color:var(--text3); text-align:center">DHET question paper · marking reviewed by Nexera</span>
+        </sc-if>
+        <sc-if value="{{ showContinue }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ continueGo }}" style="width:min(460px, 100%); min-height:64px; padding:8px 22px; border:none; border-radius:20px; background:var(--grad); color:#ffffff; cursor:pointer; box-shadow:0 14px 36px rgba(30,70,255,0.38); animation:{{ breathe }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
+            <span style="font-size:16.5px; font-weight:800; letter-spacing:-0.01em; white-space:nowrap">{{ continueLabel }}</span>
+            <sc-if value="{{ hasContinueSub }}" hint-placeholder-val="{{ true }}">
+              <span style="font-size:12px; font-weight:600; opacity:0.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%">{{ continueSub }}</span>
+            </sc-if>
+          </button>
+          <button onClick="{{ changePaper }}" style="min-height:44px; padding:0 14px; border:none; background:transparent; color:var(--text2); font-size:13.5px; font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:3px">Change paper</button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ daysOpen }}" hint-placeholder-val="{{ false }}">
+        <span onClick="{{ closePops }}" style="position:fixed; inset:0; z-index:2"></span>
+      </sc-if>
+
+      <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closePops }}" style="position:fixed; inset:0; z-index:70; background:rgba(8,10,13,0.55); backdrop-filter:blur(2px)"></div>
+        <div data-sheet="true" role="dialog" aria-modal="true" aria-label="{{ sheetTitle }}" onKeyDown="{{ sheetKeys }}" style="position:fixed; z-index:71; {{ sheetPos }}; display:flex; flex-direction:column; gap:12px; padding:18px 16px 16px; background:rgba(32,35,39,0.97); border:1px solid rgba(129,177,255,0.22); backdrop-filter:blur(22px); box-shadow:0 -10px 50px rgba(0,0,0,0.5); animation:{{ sheetAnim }}">
+          <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+            <span aria-hidden="true" style="align-self:center; width:40px; height:4px; border-radius:2px; background:rgba(255,255,255,0.18)"></span>
+          </sc-if>
+          <div style="display:flex; align-items:center; gap:10px">
+            <h2 style="flex:1; margin:0; font-size:17px; font-weight:800">{{ sheetTitle }}</h2>
+            <button onClick="{{ closePops }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
+          </div>
+
+          <sc-if value="{{ sheetSubj }}" hint-placeholder-val="{{ true }}">
+            <input data-sheet-search="true" value="{{ query }}" onChange="{{ onQuery }}" placeholder="Fluid, engineering, N6…" aria-label="Search subjects" aria-controls="subj-list" style="height:48px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
+            <div id="subj-list" role="listbox" aria-label="Subjects" data-noscrollbar="true" style="display:flex; flex-direction:column; gap:2px; max-height:{{ listMax }}; overflow-y:auto; margin:0 -4px; padding:0 4px">
+              <sc-for list="{{ subjRows }}" as="sr" hint-placeholder-count="6">
+                <sc-if value="{{ sr.isHead }}" hint-placeholder-val="{{ false }}">
+                  <span role="presentation" style="padding:12px 8px 4px; font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">{{ sr.label }}</span>
+                </sc-if>
+                <sc-if value="{{ sr.isOpt }}" hint-placeholder-val="{{ true }}">
+                  <button role="option" data-opt="{{ sr.idx }}" aria-selected="{{ sr.on }}" tabIndex="{{ sr.tab }}" onClick="{{ sr.pick }}" style="min-height:48px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:{{ sr.bg }}; color:var(--text); text-align:left; cursor:pointer" style-hover="background:var(--hover)">
+                    <span style="flex:1; min-width:0; font-size:14px; font-weight:{{ sr.weight }}; color:{{ sr.color }}; text-wrap:pretty">{{ sr.label }}</span>
+                    <span style="flex:none; padding:3px 8px; border-radius:8px; background:{{ sr.tagBg }}; font-size:10.5px; font-weight:700; color:{{ sr.tagColor }}; white-space:nowrap">{{ sr.tag }}</span>
+                  </button>
+                </sc-if>
+              </sc-for>
+              <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+                <span role="status" style="padding:18px 8px; font-size:14px; color:var(--text2)">We don't have that subject yet.</span>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ sheetPaper }}" hint-placeholder-val="{{ false }}">
+            <div role="listbox" aria-label="Sittings" style="display:flex; flex-wrap:wrap; gap:8px">
+              <sc-for list="{{ sittingChips }}" as="sc" hint-placeholder-count="1">
+                <button role="option" data-opt="{{ sc.idx }}" aria-selected="{{ sc.on }}" onClick="{{ sc.pick }}" style="min-height:44px; padding:0 16px; border-radius:22px; border:1px solid {{ sc.border }}; background:{{ sc.bg }}; color:#ffffff; font-size:14px; font-weight:700; cursor:pointer">{{ sc.label }}</button>
+              </sc-for>
+            </div>
+            <span style="font-size:13px; color:var(--text2)">{{ paperFacts }}</span>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:720px; margin:0 auto; padding:18px {{ pad }} 80px; display:flex; flex-direction:column; gap:14px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px">
+        <span style="flex:1; min-width:200px; font-size:13px; line-height:1.55; color:var(--text2)">Every mission is open. Start anywhere. The road runs from the bottom up.</span>
+        <button onClick="{{ openSummary }}" style="min-height:44px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); font-size:13px; font-weight:600; cursor:pointer">Review my paper</button>
+      </div>
+      <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
+        <span style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</span>
+      </sc-if>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:0">
+        <div style="padding:10px 18px; border-radius:18px; border:1px solid rgba(61,220,151,0.35); background:rgba(61,220,151,0.07); font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--ok)">Finish · {{ totalMarks }} marks</div>
+        <sc-for list="{{ road }}" as="rs" hint-placeholder-count="4">
+          <div style="display:flex; flex-direction:column; align-items:center; width:100%">
+            <sc-for list="{{ rs.missions }}" as="m" hint-placeholder-count="3">
+              <div style="display:flex; flex-direction:column; align-items:center; width:100%">
+                <span style="width:3px; height:26px; background:linear-gradient(180deg, rgba(129,177,255,0.10), rgba(129,177,255,0.28))"></span>
+                <button onClick="{{ m.open }}" aria-label="{{ m.aria }}" style="display:flex; align-items:center; gap:14px; width:min(100%, 520px); padding:10px 14px 10px 10px; border-radius:22px; border:1px solid var(--line); background:rgba(32,35,39,0.6); color:var(--text); cursor:pointer; text-align:left; transform:translateX({{ m.shift }})" style-hover="background:rgba(39,43,48,0.9)">
+                  <span style="position:relative; width:58px; height:58px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 30%, #3a4250, #1b1e23 70%); border:3px solid {{ m.ring }}; animation:{{ m.pulse }}">
+                    <span style="font-size:14px; font-weight:800">{{ m.number }}</span>
+                  </span>
+                  <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                    <span style="font-size:14.5px; font-weight:700; line-height:1.3; text-wrap:pretty">{{ m.title }}</span>
+                    <span style="font-size:12px; color:var(--text3)">{{ m.meta }}</span>
+                    <span style="display:flex; flex-wrap:wrap; gap:5px; margin-top:2px">
+                      <sc-for list="{{ m.tags }}" as="tg" hint-placeholder-count="1">
+                        <span style="padding:2px 7px; border-radius:6px; background:rgba(129,177,255,0.12); font-size:10.5px; font-weight:700; letter-spacing:0.05em; color:var(--tint)">{{ tg }}</span>
+                      </sc-for>
+                      <span style="padding:2px 7px; border-radius:6px; background:{{ m.stateBg }}; font-size:10.5px; font-weight:700; letter-spacing:0.03em; color:{{ m.stateColor }}">{{ m.state }}</span>
+                    </span>
+                  </span>
+                </button>
+              </div>
+            </sc-for>
+            <span style="width:3px; height:22px; background:rgba(129,177,255,0.18)"></span>
+            <span style="padding:7px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--panel2); font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text2)">{{ rs.label }}</span>
+          </div>
+        </sc-for>
+        <span style="width:3px; height:22px; background:rgba(129,177,255,0.18)"></span>
+        <span style="font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">Start</span>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ onPlay }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:720px; margin:0 auto; padding:16px {{ pad }} 120px; display:flex; flex-direction:column; gap:14px">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+        <sc-for list="{{ partDots }}" as="pd" hint-placeholder-count="3">
+          <button onClick="{{ pd.go }}" aria-label="{{ pd.aria }}" aria-current="{{ pd.current }}" style="min-width:44px; height:32px; padding:0 10px; border-radius:16px; border:1px solid {{ pd.border }}; background:{{ pd.bg }}; color:{{ pd.color }}; font-size:12px; font-weight:700; cursor:pointer">{{ pd.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:6px; padding:12px 14px; border-radius:16px; border:1px solid var(--line); background:rgba(29,32,35,0.8)">
+          <span style="font-size:11.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">Shared information</span>
+          <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty">{{ context }}</p>
+        </div>
+      </sc-if>
+
+      <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:14px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+          <span style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span>
+          <span style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
+          <span style="flex:1"></span>
+          <span style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
+        </div>
+        <h2 style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:600; text-wrap:pretty">{{ stem }}</h2>
+
+        <sc-if value="{{ showRules }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center">
+            <sc-for list="{{ rules }}" as="ru" hint-placeholder-count="3">
+              <span style="padding:5px 10px; border-radius:10px; border:1px solid var(--line2); font-size:12px; font-weight:600; color:var(--text2)">{{ ru }}</span>
+            </sc-for>
+            <button onClick="{{ openFormulas }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px solid rgba(129,177,255,0.35); background:transparent; color:var(--tint); font-size:12px; font-weight:700; cursor:pointer">Formula sheet</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSteps }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <sc-for list="{{ stepCards }}" as="st" hint-placeholder-count="3">
+              <label style="display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:16px; border:1px solid {{ st.border }}; background:{{ st.bg }}; animation:{{ st.anim }}">
+                <span style="display:flex; gap:10px; align-items:baseline">
+                  <span style="flex:1; font-size:13.5px; font-weight:600; line-height:1.45; text-wrap:pretty">{{ st.label }}</span>
+                  <span style="flex:none; font-size:11.5px; font-weight:700; color:var(--text3)">{{ st.marks }}</span>
+                </span>
+                <span style="display:flex; align-items:center; gap:8px">
+                  <input value="{{ st.value }}" onChange="{{ st.onChange }}" onKeyDown="{{ onEnter }}" inputMode="decimal" disabled="{{ locked }}" aria-label="{{ st.aria }}" placeholder="Your value" style="flex:1; min-width:0; height:46px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                  <sc-if value="{{ st.hasUnit }}" hint-placeholder-val="{{ true }}">
+                    <span style="flex:none; min-width:44px; font-size:14px; font-weight:700; color:var(--text2)">{{ st.unit }}</span>
+                  </sc-if>
+                </span>
+                <sc-if value="{{ st.hasStamp }}" hint-placeholder-val="{{ false }}">
+                  <span style="display:flex; align-items:flex-start; gap:7px; font-size:12.5px; font-weight:700; color:{{ st.stampColor }}"><span>{{ st.stampIcon }}</span><span style="display:flex; flex-direction:column; gap:2px"><span>{{ st.stamp }}</span><span style="font-weight:500; color:var(--text2)">{{ st.reason }}</span></span></span>
+                </sc-if>
+              </label>
+            </sc-for>
+            <span style="font-size:12px; color:var(--text3)">Use a decimal comma or a point — 2,557 and 2.557 both work. Do the calculation yourself; the app does not calculate for you.</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <sc-for list="{{ listFields }}" as="lf" hint-placeholder-count="4">
+              <label style="display:flex; align-items:center; gap:10px">
+                <span style="width:32px; height:32px; flex:none; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--text2)">{{ lf.n }}</span>
+                <input value="{{ lf.value }}" onChange="{{ lf.onChange }}" onKeyDown="{{ onEnter }}" disabled="{{ locked }}" aria-label="{{ lf.aria }}" style="flex:1; min-width:0; height:46px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15px; outline:none" />
+              </label>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isRubric }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <span style="font-size:13px; line-height:1.55; color:var(--tint)">{{ coachLine }}</span>
+            <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" rows="4" style="min-height:120px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15px; line-height:1.6; resize:vertical; outline:none"></textarea>
+            <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isMatch }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <span style="font-size:13px; line-height:1.55; color:var(--text2)">Tap a Column A item, then tap its description. One description is not used.</span>
+            <div style="display:grid; grid-template-columns:{{ matchCols }}; gap:12px">
+              <div role="group" aria-label="Column A" style="display:flex; flex-direction:column; gap:8px">
+                <span style="font-size:11px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN A</span>
+                <sc-for list="{{ matchLeft }}" as="ml" hint-placeholder-count="5">
+                  <button onClick="{{ ml.pick }}" aria-pressed="{{ ml.on }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ ml.border }}; background:{{ ml.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
+                    <span style="flex:1">{{ ml.text }}</span>
+                    <span style="flex:none; font-size:12px; font-weight:800; color:var(--tint)">{{ ml.paired }}</span>
+                  </button>
+                </sc-for>
+              </div>
+              <div role="group" aria-label="Column B" style="display:flex; flex-direction:column; gap:8px">
+                <span style="font-size:11px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN B</span>
+                <sc-for list="{{ matchRight }}" as="mr" hint-placeholder-count="5">
+                  <button onClick="{{ mr.pick }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ mr.border }}; background:{{ mr.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
+                    <span style="flex:none; font-size:12px; font-weight:800; color:var(--text3)">{{ mr.key }}</span>
+                    <span style="flex:1">{{ mr.text }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDraw }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:18px; border-radius:16px; border:1px dashed var(--line2); display:flex; gap:12px; align-items:flex-start">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+            <span style="display:flex; flex-direction:column; gap:4px"><span style="font-size:15px; font-weight:700">Draw it on paper. This one isn't marked online.</span><span style="font-size:13px; line-height:1.55; color:var(--text2)">When you are done, tap "I've drawn it" to see what the examiner looks for.</span></span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ marking }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="padding:14px; border-radius:16px; border:1px solid var(--line2); background:var(--panel2); display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600">
+            <span style="display:flex; gap:4px"><span style="width:7px; height:7px; border-radius:50%; background:var(--tint); animation:dots 1s infinite"></span><span style="width:7px; height:7px; border-radius:50%; background:var(--tint); animation:dots 1s 0.2s infinite"></span><span style="width:7px; height:7px; border-radius:50%; background:var(--tint); animation:dots 1s 0.4s infinite"></span></span>
+            Being marked…<span style="font-weight:500; color:var(--text3)">this can take up to 20 seconds</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasFeedback }}" hint-placeholder-val="{{ false }}">
+          <div role="status" aria-live="polite" style="display:flex; flex-direction:column; gap:10px; padding:14px 16px; border-radius:16px; border:1px solid {{ fbBorder }}; background:{{ fbBg }}; animation:{{ fbAnim }}">
+            <span style="display:flex; align-items:center; gap:9px">
+              <span style="font-size:15px; font-weight:800; color:{{ fbColor }}">{{ fbIcon }}</span>
+              <span style="flex:1; font-size:15px; font-weight:800; color:{{ fbColor }}">{{ fbTitle }}</span>
+              <sc-if value="{{ fbHasXp }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px; font-weight:800; color:var(--tint)">{{ fbXp }}</span>
+              </sc-if>
+            </span>
+            <sc-if value="{{ fbHasBody }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13.5px; line-height:1.6; color:var(--text); text-wrap:pretty">{{ fbBody }}</span>
+            </sc-if>
+            <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:8px">
+                <sc-for list="{{ points }}" as="pt" hint-placeholder-count="2">
+                  <span style="display:flex; gap:8px; font-size:13.5px; line-height:1.55"><span style="flex:none; font-weight:800; color:{{ pt.color }}">{{ pt.icon }}</span><span style="display:flex; flex-direction:column; gap:3px"><span style="font-weight:700">{{ pt.head }}</span><span style="color:var(--text2)">{{ pt.detail }}</span></span></span>
+                </sc-for>
+                <span style="font-size:12px; color:var(--text3)">{{ pointsFoot }}</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; gap:12px; padding:14px 16px; border-radius:16px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.07); animation:pop 360ms ease both">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e0a10f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:2px"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></svg>
+            <span style="display:flex; flex-direction:column; gap:4px"><span style="font-size:13.5px; font-weight:800; color:var(--warn)">{{ hintTitle }}</span><span style="font-size:14px; line-height:1.6; text-wrap:pretty">{{ hintText }}</span></span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasReveal }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel2); animation:rise 380ms ease both">
+            <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">What the examiner looks for</span>
+            <sc-for list="{{ revealLines }}" as="rl" hint-placeholder-count="3">
+              <div style="display:flex; flex-direction:column; gap:4px; padding:10px 0; border-top:1px solid var(--line)">
+                <span style="display:flex; gap:10px; align-items:baseline"><span style="flex:1; font-size:14px; font-weight:600; line-height:1.5; text-wrap:pretty">{{ rl.text }}</span><span style="flex:none; font-size:12px; font-weight:800; color:var(--text2)">{{ rl.marks }}</span></span>
+                <sc-if value="{{ rl.hasMemo }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px; line-height:1.55; color:var(--ok)">{{ rl.memo }}</span></sc-if>
+                <span style="font-size:11.5px; color:var(--text3)">{{ rl.source }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </section>
+
+      <sc-if value="{{ showFly }}" hint-placeholder-val="{{ false }}">
+        <span data-fly="{{ flyKey }}" aria-hidden="true" style="position:fixed; left:50%; bottom:110px; z-index:40; pointer-events:none; font-size:24px; font-weight:800; color:#81b1ff; text-shadow:0 0 20px rgba(129,177,255,0.5); animation:fly 1500ms cubic-bezier(0.45,0.05,0.25,1) both">{{ flyText }}</span>
+      </sc-if>
+
+      <div style="position:fixed; left:0; right:0; bottom:0; z-index:25; padding:12px {{ pad }} 16px; background:linear-gradient(180deg, transparent, rgba(25,27,30,0.96) 30%)">
+        <div style="max-width:720px; margin:0 auto; display:flex; gap:10px; align-items:center">
+          <sc-if value="{{ showMemoBtn }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ showMemo }}" style="min-height:48px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel); color:var(--text2); font-size:13.5px; font-weight:600; cursor:pointer">Show the memo</button>
+          </sc-if>
+          <sc-if value="{{ showReplay }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ replay }}" style="min-height:48px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel); color:var(--text2); font-size:13.5px; font-weight:600; cursor:pointer">Replay — no XP</button>
+          </sc-if>
+          <button onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:15px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ onDone }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:560px; margin:0 auto; padding:40px {{ pad }} 60px; display:flex; flex-direction:column; align-items:center; gap:18px; text-align:center; animation:pop 520ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <span style="width:108px; height:108px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 30%, #3a4250, #1b1e23 70%); border:5px solid {{ doneRing }}">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="{{ doneRing }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path></svg>
+      </span>
+      <span style="font-size:13px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:{{ doneRing }}">{{ doneGrade }}</span>
+      <h1 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.01em; text-wrap:pretty">{{ doneTitle }}</h1>
+      <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; width:100%">
+        <sc-for list="{{ doneStats }}" as="ds" hint-placeholder-count="3">
+          <span style="display:flex; flex-direction:column; gap:4px; padding:14px 8px; border-radius:16px; border:1px solid var(--line); background:rgba(32,35,39,0.6)"><span style="font-size:20px; font-weight:800">{{ ds.value }}</span><span style="font-size:11.5px; color:var(--text3)">{{ ds.label }}</span></span>
+        </sc-for>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; width:100%">
+        <button onClick="{{ nextMission }}" style="min-height:52px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 10px 26px rgba(30,70,255,0.3)">{{ nextLabel }}</button>
+        <button onClick="{{ toMap }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:600; cursor:pointer">Back to the map</button>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ onSummary }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:720px; margin:0 auto; padding:24px {{ pad }} 60px; display:flex; flex-direction:column; gap:18px; animation:rise 420ms ease both">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px">
+        <sc-for list="{{ sumStats }}" as="ss" hint-placeholder-count="4">
+          <span style="display:flex; flex-direction:column; gap:4px; padding:16px; border-radius:16px; border:1px solid var(--line); background:rgba(32,35,39,0.6)"><span style="font-size:22px; font-weight:800">{{ ss.value }}</span><span style="font-size:12px; color:var(--text3)">{{ ss.label }}</span></span>
+        </sc-for>
+      </div>
+      <section style="display:flex; flex-direction:column; gap:10px">
+        <h2 style="margin:0; font-size:15px; font-weight:800">Marks by section</h2>
+        <sc-for list="{{ sumSections }}" as="sx" hint-placeholder-count="4">
+          <div style="display:flex; flex-direction:column; gap:6px">
+            <span style="display:flex; font-size:13.5px"><span style="flex:1; font-weight:600">{{ sx.title }}</span><span style="font-weight:700; color:var(--text2)">{{ sx.label }}</span></span>
+            <span style="height:8px; border-radius:4px; background:rgba(255,255,255,0.07); overflow:hidden"><span style="display:block; height:100%; width:{{ sx.pct }}; background:var(--tint)"></span></span>
+          </div>
+        </sc-for>
+      </section>
+      <section style="display:flex; flex-direction:column; gap:8px">
+        <h2 style="margin:0; font-size:15px; font-weight:800">Below full marks</h2>
+        <sc-for list="{{ sumBelow }}" as="sb" hint-placeholder-count="3">
+          <button onClick="{{ sb.open }}" style="min-height:48px; padding:10px 14px; border-radius:14px; border:1px solid var(--line); background:rgba(32,35,39,0.6); color:var(--text); display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left">
+            <span style="font-size:13px; font-weight:800; color:var(--tint)">{{ sb.number }}</span>
+            <span style="flex:1; font-size:13px; color:var(--text2)">{{ sb.status }}</span>
+            <span style="font-size:13px; font-weight:700">{{ sb.marks }}</span>
+          </button>
+        </sc-for>
+        <sc-if value="{{ sumNoBelow }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px; color:var(--text3)">{{ sumNoBelowText }}</span></sc-if>
+      </section>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ kitOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeKit }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,0.5)"></div>
+    <aside role="dialog" aria-label="Paper kit" style="position:fixed; z-index:51; right:0; top:0; bottom:0; width:min(420px, 100vw); overflow-y:auto; background:var(--panel); border-left:1px solid var(--line2); display:flex; flex-direction:column; animation:rise 320ms ease both">
+      <div style="display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid var(--line)">
+        <span style="flex:1; font-size:15px; font-weight:800">Paper kit</span>
+        <button onClick="{{ closeKit }}" aria-label="Close" style="width:44px; height:44px; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); cursor:pointer; font-size:18px">×</button>
+      </div>
+      <div role="tablist" style="display:flex; gap:6px; padding:12px 14px 0">
+        <sc-for list="{{ kitTabs }}" as="kt" hint-placeholder-count="3">
+          <button role="tab" aria-selected="{{ kt.on }}" onClick="{{ kt.pick }}" style="min-height:40px; padding:0 13px; border-radius:12px; border:1px solid {{ kt.border }}; background:{{ kt.bg }}; color:var(--text); font-size:12.5px; font-weight:700; cursor:pointer">{{ kt.label }}</button>
+        </sc-for>
+      </div>
+      <div style="padding:14px; display:flex; flex-direction:column; gap:10px">
+        <sc-for list="{{ kitItems }}" as="ki" hint-placeholder-count="3">
+          <div style="padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:var(--panel2); display:flex; flex-direction:column; gap:4px">
+            <span style="font-size:13.5px; font-weight:700">{{ ki.head }}</span>
+            <span style="font-size:13px; line-height:1.55; color:var(--text2)">{{ ki.body }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{ showCompanion }}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" style="position:fixed; right:18px; bottom:80px; width:200px; height:260px; z-index:1; pointer-events:none">
+      <model-floor src="assets/avatar-lite.glb" clip="{{ avatarClip }}" autorotate="off" floor="none" face="user" style="position:absolute; inset:0"></model-floor>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;markerOnline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+// ── Sample data: the exact shapes of the learner API. The learner view never carries answers.
+const SAMPLE_PART = {"number":"1.1.1","marks":3,"response_mode":"steps","marking_mode":"method","stem":"The discharge.",
+ "topic":"Flow in pipes and hydraulic gradient","clues_available":2,
+ "steps":[{"id":"s1","label":"Friction head available between the reservoirs, hf (m)","marks":1,"unit_hint":"m"},
+          {"id":"s2","label":"Velocity in the pipe, V (m/s)","marks":1,"unit_hint":"m/s"},
+          {"id":"s3","label":"Discharge, Q (m³/s)","marks":1,"unit_hint":"m**3/s"}]};
+const SAMPLE_REPLY = {"part":"1.1.1","try":1,"tries_left":2,"closed":false,"revealed":false,"best_marks":2,
+ "result":{"marks_awarded":2,"marks":3,"full":false,"marker":"auto","message":null,
+   "items":[{"key":"s1","awarded":1,"available":1,"verdict":"correct"},
+            {"key":"s2","awarded":0,"available":1,"verdict":"incorrect"},
+            {"key":"s3","awarded":1,"available":1,"verdict":"follow_through","reason":"Correct method with your earlier value carried forward."}]},
+ "clue":"With shock losses ignored, the whole difference in level between the reservoirs is used up by pipe friction.",
+ "reveal":null,"xp_awarded":0,"multiplier":1,"streak":0};
+
+const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","programme":"nated","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","programme":"ncv","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","programme":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","programme":"ncv","paper_ids":["aet-l4-2019-02"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
+// Home paper id → the in-page paper it opens.
+// Missions are only stated where the whole paper is transcribed; otherwise parts, which are known.
+// The companion's greet still (≤60 KB, rendered from avatar-lite.glb, same framing as the 3D
+// model). Set to "assets/companion-greet.webp" once it exists; until then the silhouette holds
+// its place so nothing jumps and no request 404s.
+const POSTER_SRC = null;
+const PAPER_UNITS = { "fm-n6-2022-11": "13 missions", "aet-l4-2019-02": "28 parts" };
+const PROG_SHORT = { nated: "NATED", ncv: "NC(V)" };
+const HOME_TO_LOCAL = { "fm-n6-2022-11": "fm", "aet-l4-2019-02": "aet" };
+const PROGRAMMES = { nated: "NATED (Report 191)", ncv: "NC(V)" };
+// Subjects without a paper are listed so the empty state is honest, not hidden.
+const OTHER_SUBJECTS = {
+  nated: ["Financial Management", "Farming Management", "Management Assistant", "Marketing Management", "Public Management", "Tourism", "Civil Engineering", "Electrical Engineering", "Mechanical Engineering", "Multi-Disciplinary Drawing Office Practice"],
+  ncv: ["Finance, Economics and Accounting", "Marketing", "Management", "Office Administration", "Information Technology and Computer Science", "Civil Engineering & Building Construction", "Electrical Infrastructure Construction", "Education and Development", "Hospitality", "Primary Agriculture", "Tourism"] };
+const subjectName = p => p.programme === "nated" ? p.title : p.title + " (" + p.level_detail + ")";
+const XP_LADDER = [100, 60, 20];
+const PROVENANCE = "DHET question paper · marking reviewed by Nexera";
+const FM_RULES = ["Round to THREE decimal places", "g = 9,81 m/s²"];
+const FM_TITLES = {
+  "1.1": "Pipeline over a summit between two reservoirs", "1.2": "Pressure difference in a horizontal pipe",
+  "1.3": "Three pipes in parallel", "1.4": "Stand pipes on pipe AC", "2.1": "Sizing a 90° V-notch",
+  "2.2": "Jet from an orifice in a vertical wall", "2.3": "Splitting mine ventilation air between two branches",
+  "3.1": "Single-stage centrifugal pump", "3.2": "Three-throw pump", "3.3": "Definitions",
+  "4.1": "Triple-jet Pelton wheel", "4.2": "Classifying reaction turbines", "4.3": "Vertical-shaft Francis turbine" };
+const FM_TAGS = { "1.4": ["FIGURE 1"] };
+const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
+const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
+const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+
+// ── Mock of the marking service, standing in for the backend. The screens only ever see its replies.
+const SERVER = { keys: {}, clues: {}, memo: {} };
+
+function buildPapers() {
+  const src = window.PAPER_FM_N6_2022;
+  const fm = { id: "fm", title: "Fluid Mechanics N6", programme: "NATED · N6", sitting: "November 2022", total: 100, time: "3 hours",
+    note: src ? src.memoNote : "", sections: [] };
+  if (src) src.sections.forEach(s => {
+    const sec = { title: "Question " + s.id, total: s.total, missions: [] };
+    (s.missions || []).forEach(m => {
+      const id = String(m.id || "").replace("Question ", "");
+      const qs = m.parts || m.items || [];
+      let context = "";
+      const parts = qs.map((q, k) => {
+        const key = "fm:" + q.n;
+        let stem = q.q;
+        if (qs.length > 1 && k === 0) {
+          const cut = q.q.lastIndexOf(". ", q.q.length - 3);
+          if (cut > 0) { context = q.q.slice(0, cut + 1); stem = q.q.slice(cut + 2); }
+        }
+        SERVER.clues[key] = q.clues || [];
+        SERVER.memo[key] = q.bullets || [];
+        if (q.n === "1.1.1") {
+          SERVER.keys[key] = { steps: { s1: { a: 8, tol: 0.01, v: "hf = 8 m" }, s2: { a: 2.557, tol: 0.006, v: "V = 2,557 m/s" },
+            s3: { a: 2.892, tol: 0.01, v: "Q = 2,892 m³/s", ft: vals => Math.PI * 1.2 * 1.2 / 4 * vals.s2 } } };
+          return Object.assign({ key: key }, SAMPLE_PART);
+        }
+        if (q.t === "num") {
+          SERVER.keys[key] = { steps: { v: { a: q.a, tol: q.tol || 0.001, v: String(q.a).replace(".", ",") + " " + q.unit } } };
+          return { key: key, number: q.n, marks: q.marks, response_mode: "steps", marking_mode: "method", stem: stem,
+            clues_available: (q.clues || []).length, steps: [{ id: "v", label: "Your answer", marks: q.marks, unit_hint: q.unit }] };
+        }
+        if (q.t === "list") {
+          SERVER.keys[key] = { pool: q.pool };
+          return { key: key, number: q.n, marks: q.marks, response_mode: "list", marking_mode: "answer", stem: stem, count: q.count, clues_available: (q.clues || []).length };
+        }
+        if (q.methodOnly) {
+          const b = q.bullets || ["Working"];
+          const each = Math.floor(q.marks / b.length);
+          const steps = b.map((t, i) => ({ id: "s" + (i + 1), label: t, marks: i === b.length - 1 ? q.marks - each * (b.length - 1) : each, unit_hint: "" }));
+          return { key: key, number: q.n, marks: q.marks, response_mode: "steps", marking_mode: "method", stem: stem, clues_available: (q.clues || []).length, steps: steps };
+        }
+        SERVER.keys[key] = { rubric: q.bullets || [] };
+        return { key: key, number: q.n, marks: q.marks, response_mode: "rubric", marking_mode: "criteria", stem: stem, clues_available: (q.clues || []).length };
+      });
+      sec.missions.push({ id: id, title: FM_TITLES[id] || m.title, context: context, tags: FM_TAGS[id] || [], parts: parts });
+    });
+    fm.sections.push(sec);
+  });
+  // AET: only the structure the brief describes. Its text is not in this project yet, so nothing is invented.
+  const left = [], right = [];
+  for (let i = 0; i < 10; i++) left.push("Column A term 4.2." + (i + 1));
+  for (let i = 0; i < 11; i++) right.push("Description " + String.fromCharCode(65 + i));
+  SERVER.keys["aet:4.2"] = { match: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] };
+  SERVER.clues["aet:4.2"] = [];
+  const aet = { id: "aet", title: "Applied Engineering Technology", programme: "NC(V) · Level 4", sitting: "February 2019", total: 100, time: "3 hours",
+    note: "Only the matching and drawing parts are shown. The rest of this paper arrives when its text is transcribed.",
+    sections: [
+      { title: "Question 2", total: null, missions: [
+        { id: "2.1", title: "Drawing to scale", context: "", tags: ["DRAWING"], parts: [{ key: "aet:2.1", number: "2.1", marks: null, response_mode: "draw", stem: "Question 2.1 — drawing to scale.", clues_available: 0 }] },
+        { id: "2.3", title: "Drawing to scale", context: "", tags: ["DRAWING"], parts: [{ key: "aet:2.3", number: "2.3", marks: null, response_mode: "draw", stem: "Question 2.3 — drawing to scale.", clues_available: 0 }] } ] },
+      { title: "Question 4", total: null, missions: [
+        { id: "4.2", title: "Matching columns", context: "", tags: ["TEXT PENDING"], parts: [{ key: "aet:4.2", number: "4.2", marks: 10, response_mode: "match",
+          stem: "Match each term in Column A with a description in Column B.", clues_available: 0, match: { left: left, right: right } }] } ] } ] };
+  aet.partCount = 28;
+  fm.partCount = 32;
+  return [fm, aet];
+}
+
+class Component extends DCLogic {
+  state = { screen: "pick", programme: "All", paperId: null, mi: 0, pi: 0, vw: 1280,
+    inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
+    prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
+    kit: false, kitTab: "rules", reduced: false,
+    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+
+  componentDidMount() {
+    const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
+    if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
+    this._rs = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener("resize", this._rs); this._rs();
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = !!(navigator.connection && navigator.connection.saveData);
+    this.setState({ reduced: mq.matches, saveData: saveData, home: HOME.resume ? "returning" : "first" });
+    // The 3D companion swaps in over the poster only once it has actually loaded.
+    this._ld = () => this.setState({ modelReady: true });
+    document.addEventListener("loaded", this._ld);
+    this.countUp();
+    this._esc = e => { if (e.key === "Escape" && (this.state.sheet || this.state.pop)) { e.preventDefault(); this.closeLayer(); } };
+    document.addEventListener("keydown", this._esc);
+  }
+  // Closing returns focus to the control that opened the layer.
+  closeLayer() {
+    const back = this.state.sheet || this.state.pop;
+    this.setState({ sheet: null, pop: null, query: "" }, () => {
+      requestAnimationFrame(() => { const t = document.querySelector('[data-trigger="' + back + '"]'); if (t) t.focus(); });
+    });
+  }
+  componentDidUpdate(_, prev) {
+    if (this.state.sheet && this.state.sheet !== prev.sheet) requestAnimationFrame(() => {
+      const f = this.state.sheet === "subj" ? document.querySelector("[data-sheet-search]") : document.querySelector('[data-sheet] [role="option"]');
+      if (f) f.focus();
+    });
+    if (this.state.sheet && this.state.optIdx !== prev.optIdx && this._arrow) {
+      this._arrow = false;
+      const o = document.querySelector('[data-sheet] [data-opt="' + this.state.optIdx + '"]'); if (o) o.focus();
+    }
+  }
+  // The companion nods: restarting its greet clip is the whole gesture.
+  nod() {
+    if (this.state.reduced) return;
+    this.setState({ homeClip: "" }); clearTimeout(this._nd);
+    this._nd = setTimeout(() => this.setState({ homeClip: "greet" }), 60);
+  }
+  countUp() {
+    const rs = this.state.home === "finished" ? HOME.resume_finished : HOME.resume;
+    const to = { xp: HOME.me.xp_total, marks: rs.marks_earned, days: HOME.me.days_practised_this_week };
+    cancelAnimationFrame(this._cu);
+    if (this.state.reduced) { this.setState({ disp: to }); return; }
+    const t0 = performance.now(), dur = 900;
+    const step = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      this.setState({ disp: { xp: Math.round(to.xp * e), marks: Math.round(to.marks * e), days: Math.round(to.days * e) } });
+      if (k < 1) this._cu = requestAnimationFrame(step); };
+    this._cu = requestAnimationFrame(step);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
+
+  paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
+  missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
+  mission() { return this.missions()[this.state.mi] || null; }
+  part() { const m = this.mission(); return m ? m.parts[this.state.pi] : null; }
+  pg(key) { return this.state.prog[key] || { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }; }
+
+  resetInputs(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, reply: null, marking: false }, extra || {})); }
+  openMission(i) { this.resetInputs({ screen: "play", mi: i, pi: 0 }); }
+
+  // The marker, standing in for the service. Returns the reply shape of the API.
+  mark(part, answer) {
+    const key = SERVER.keys[part.key];
+    if (part.response_mode === "draw") return { marks_awarded: 0, marks: part.marks || 0, full: false, marker: "none", items: [{ key: "d", awarded: 0, available: 0, verdict: "not_marked_online" }] };
+    if (!key) return { marker: "unavailable", message: "saved" };
+    if (key.steps) {
+      const vals = {}; part.steps.forEach(s => { vals[s.id] = num(answer[s.id]); });
+      const items = part.steps.map(s => {
+        const k = key.steps[s.id]; const v = vals[s.id];
+        if (v === null) return { key: s.id, awarded: 0, available: s.marks, verdict: "missing" };
+        if (isNaN(v)) return { key: s.id, awarded: 0, available: s.marks, verdict: "unreadable", reason: "We could not read a number. Use digits, for example 2,557." };
+        if (Math.abs(v - k.a) <= k.tol) return { key: s.id, awarded: s.marks, available: s.marks, verdict: "correct" };
+        if (k.ft && Object.values(vals).every(x => x !== null && !isNaN(x)) && Math.abs(v - k.ft(vals)) <= k.tol * 2)
+          return { key: s.id, awarded: s.marks, available: s.marks, verdict: "follow_through", reason: "Correct method with your earlier value carried forward." };
+        return { key: s.id, awarded: 0, available: s.marks, verdict: "incorrect" };
+      });
+      const got = items.reduce((a, x) => a + x.awarded, 0);
+      return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
+    }
+    if (key.pool) {
+      const used = {}; let got = 0;
+      const items = answer.map((a, i) => { const n = norm(a); const hit = key.pool.filter(p => n && !used[p] && n.indexOf(p.split(" ")[0]) !== -1)[0];
+        if (hit) { used[hit] = 1; got++; return { key: "l" + i, awarded: 1, available: 1, verdict: "correct" }; }
+        return { key: "l" + i, awarded: 0, available: 1, verdict: n ? "incorrect" : "missing" }; });
+      return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
+    }
+    if (key.match) {
+      let got = 0; const items = key.match.map((r, l) => { const ok = answer[l] === r; if (ok) got++; return { key: "m" + l, awarded: ok ? 1 : 0, available: 1, verdict: answer[l] == null ? "missing" : ok ? "correct" : "incorrect" }; });
+      return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
+    }
+    if (key.rubric) {
+      const words = norm(answer).split(" ");
+      const items = key.rubric.map((pt, i) => {
+        const kw = norm(pt).split(" ").filter(w => w.length > 5);
+        const hits = words.filter(w => w.length > 4 && kw.some(k => k.indexOf(w.slice(0, 5)) === 0));
+        const ok = hits.length >= 2;
+        return { key: "p" + i, awarded: ok ? 1 : 0, available: 1, verdict: ok ? "correct" : answer.trim() ? "incorrect" : "missing",
+          evidence: ok ? [...new Set(hits)].join(", ") : "" };
+      });
+      const got = Math.min(part.marks, items.reduce((a, x) => a + x.awarded, 0));
+      return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "ai", items: items };
+    }
+    return { marker: "unavailable", message: "saved" };
+  }
+
+  reveal(part) {
+    const key = SERVER.keys[part.key] || {};
+    const note = "DHET did not publish a marking guideline for this sitting.";
+    if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "" })), provenance: { memo_source: "authored", note: note } };
+    const pts = key.pool ? key.pool : (SERVER.memo[part.key] || []);
+    return { memo: { points: pts.map(t => ({ text: t.charAt(0).toUpperCase() + t.slice(1), marks: 1 })) }, provenance: { memo_source: "authored", note: note } };
+  }
+
+  check() {
+    const part = this.part(); if (!part || this.state.marking) return;
+    const p = this.pg(part.key); if (p.closed) return;
+    const mode = part.response_mode;
+    const answer = mode === "steps" ? this.state.inputs : mode === "list" ? this.state.list : mode === "match" ? this.state.matchPairs : this.state.written;
+    const finish = result => {
+      const s = this.state; const pr = this.pg(part.key);
+      if (result.marker === "unavailable") { this.setState({ marking: false, reply: { waiting: true }, prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { waiting: true }) }) }); return; }
+      const tryNo = pr.tries + 1;
+      const draw = mode === "draw";
+      const closed = draw || result.full || tryNo >= 3;
+      const revealed = !draw && !result.full && tryNo >= 3;
+      let xp = 0, mult = 1, streak = s.streak;
+      const replay = !!s.paid[part.key];
+      if (result.full && tryNo === 1) { mult = Math.min(1 + Math.floor(s.streak / 2), 4); streak = s.streak + 1; } else if (!draw) streak = 0;
+      if (result.full && !replay) xp = XP_LADDER[tryNo - 1] * mult;
+      const clues = SERVER.clues[part.key] || [];
+      const reply = { part: part.number, try: tryNo, tries_left: 3 - tryNo, closed: closed, revealed: revealed,
+        best_marks: Math.max(pr.best, result.marks_awarded || 0), result: result,
+        clue: !closed ? (clues[tryNo - 1] || clues[clues.length - 1] || null) : null,
+        reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay };
+      this.setState({ marking: false, reply: reply, xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
+        paid: result.full ? Object.assign({}, s.paid, { [part.key]: true }) : s.paid, flySeq: xp ? s.flySeq + 1 : s.flySeq,
+        prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
+          firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw } }) });
+    };
+    const result = this.mark(part, answer);
+    if (result.marker === "ai") { if (this.props.markerOnline === false) { finish({ marker: "unavailable" }); return; }
+      this.setState({ marking: true, reply: null }); clearTimeout(this._mk); this._mk = setTimeout(() => finish(result), 2400); return; }
+    finish(result);
+  }
+
+  showMemo() {
+    const part = this.part(); if (!part) return; const s = this.state; const pr = this.pg(part.key);
+    this.setState({ streak: 0, reply: { part: part.number, try: pr.tries, closed: true, revealed: true, result: null, reveal: this.reveal(part), xp_awarded: 0 },
+      prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { closed: true, revealed: true }) }) });
+  }
+
+  advance() {
+    const m = this.mission(); if (!m) return;
+    if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
+    this.setState({ screen: "done" });
+  }
+
+  renderVals() {
+    const s = this.state, vw = s.vw, phone = vw < 600, desk = vw >= 1100;
+    const papers = this.papers || [];
+    const paper = this.paper(), missions = this.missions(), mission = this.mission(), part = this.part();
+    const pr = part ? this.pg(part.key) : null;
+    const reply = s.reply; const res = reply && reply.result;
+    const closed = !!(pr && pr.closed);
+    const partMarks = p => this.pg(p.key).best;
+    const paperEarned = pp => pp ? pp.sections.reduce((a, sec) => a + sec.missions.reduce((b, m) => b + m.parts.reduce((c, p) => c + (this.pg(p.key).best || 0), 0), 0), 0) : 0;
+    const missionState = m => {
+      const ps = m.parts.map(p => this.pg(p.key));
+      if (ps.some(p => p.waiting)) return { label: "1 waiting for a marker", ring: "#e0a10f", bg: "rgba(224,161,15,0.12)", color: "#e0a10f" };
+      if (ps.every(p => p.closed)) {
+        if (ps.some(p => p.revealed)) return { label: "Memo shown", ring: "#b0764a", bg: "rgba(176,118,74,0.15)", color: "#d99b6c" };
+        if (ps.every(p => p.firstTryFull || p.draw)) return { label: "Clean run", ring: "#e3b341", bg: "rgba(227,179,65,0.14)", color: "#e3b341" };
+        return { label: "With hints", ring: "#c3c8cf", bg: "rgba(195,200,207,0.12)", color: "#c3c8cf" };
+      }
+      if (ps.some(p => p.tries > 0)) return { label: "In progress", ring: "#81b1ff", bg: "rgba(129,177,255,0.12)", color: "#81b1ff" };
+      return { label: "Not started", ring: "#363b41", bg: "rgba(255,255,255,0.05)", color: "#a4a9ae" };
+    };
+    const suggestedIdx = missions.findIndex(m => !m.parts.every(p => this.pg(p.key).closed));
+    const total = paper ? paper.total : 0, earned = paperEarned(paper);
+
+    const verdictInfo = v => ({ correct: ["✓", "Correct", "#3ddc97"], follow_through: ["✓", "Carried forward", "#3ddc97"], incorrect: ["✕", "Not yet", "#f2777a"],
+      missing: ["—", "Nothing entered", "#a4a9ae"], unreadable: ["?", "We could not read this", "#e0a10f"], not_marked_online: ["•", "Not marked online", "#a4a9ae"] })[v] || ["•", v, "#a4a9ae"];
+
+    // feedback
+    let fb = null;
+    if (reply && reply.waiting) fb = { icon: "•", title: "Your answer is saved and waiting for a marker.", body: "You can keep going. Your marks appear on the map when it is marked.", color: "#e0a10f", border: "rgba(224,161,15,0.4)", bg: "rgba(224,161,15,0.07)" };
+    else if (reply && res && part) {
+      const draw = part.response_mode === "draw";
+      if (draw) fb = { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for below.", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
+      else if (res.full) fb = { icon: "✓", title: "Correct · " + res.marks + (res.marks === 1 ? " mark" : " marks"), color: "#3ddc97", border: "rgba(61,220,151,0.4)", bg: "rgba(61,220,151,0.08)",
+        xp: reply.replay ? "Replay — no XP" : "+" + reply.xp_awarded + " XP" + (reply.multiplier > 1 ? " · ×" + reply.multiplier : "") };
+      else if (res.marks_awarded > 0) fb = { icon: "◐", title: res.marks_awarded + " of " + res.marks + " marks so far", color: "#81b1ff", border: "rgba(129,177,255,0.35)", bg: "rgba(129,177,255,0.07)" };
+      else fb = { icon: "✕", title: reply.revealed ? "Out of tries · 0 marks" : "Not yet · 0 of " + res.marks + " marks", color: "#f2777a", border: "rgba(242,119,122,0.4)", bg: "rgba(242,119,122,0.07)" };
+    } else if (reply && reply.revealed && !res) fb = { icon: "•", title: "Memo shown · no XP for this part", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
+    const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
+    const pointLines = res && (res.marker === "ai" || (part && part.response_mode === "list")) ? res.items.map((x, i) => { const vi = verdictInfo(x.verdict);
+      return { icon: vi[0], color: vi[2], head: vi[1] + " · " + x.awarded + " of " + x.available, detail: x.evidence ? "From your answer: \u201c" + x.evidence + "\u201d" : part.response_mode === "list" ? "Field " + (i + 1) : "" }; }) : [];
+
+    const mode = part ? part.response_mode : "";
+    const tryN = pr ? pr.tries : 0;
+    const locked = closed || s.marking;
+    const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next part" : "Finish mission")
+      : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next part" : "Check";
+    const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
+      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0 : true;
+    const primaryDisabled = !part || s.marking || (!closed && !(reply && reply.waiting) && !canCheck);
+    const flyOn = !s.reduced && reply && reply.xp_awarded > 0 && s.screen === "play";
+
+    const rv = reply && reply.reveal;
+    const srcWord = src => src === "board" ? "As printed in the guideline" : src === "board_corrected" ? "Corrected by Nexera's curriculum team: " + (rv.provenance.note || "") : "Written by Nexera's curriculum team" + (rv.provenance.note ? " · " + rv.provenance.note : "");
+    const revealLines = rv ? (rv.steps ? rv.steps.map(x => ({ text: x.label, marks: x.marks + (x.marks === 1 ? " mark" : " marks"), memo: x.memo_text, hasMemo: !!x.memo_text, source: srcWord(rv.provenance.memo_source) }))
+      : (rv.memo.points.length ? rv.memo.points : [{ text: "Marking criteria arrive when this paper's text is transcribed.", marks: 0 }]).map(x => ({ text: x.text, marks: x.marks ? x.marks + (x.marks === 1 ? " mark" : " marks") : "", memo: "", hasMemo: false, source: srcWord(rv.provenance.memo_source) }))) : [];
+
+    // mission complete
+    const mParts = mission ? mission.parts : [];
+    const mSt = mission ? missionState(mission) : { label: "", ring: "#363b41" };
+    const mEarned = mParts.reduce((a, p) => a + (this.pg(p.key).best || 0), 0), mTotal = mParts.reduce((a, p) => a + (p.marks || 0), 0);
+    const mXp = mParts.reduce((a, p) => a + 0, 0);
+
+    const progFor = pp => { const ps = pp.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts)), []); const n = ps.filter(p => this.pg(p.key).tries > 0 || this.pg(p.key).closed).length; return { n: n, of: ps.length }; };
+    const shown = papers.filter(p => s.programme === "All" || (s.programme === "NATED" ? p.id === "fm" : s.programme === "NC(V)" ? p.id === "aet" : false));
+    const allParts = paper ? paper.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts.map(p => Object.assign({ mi: missions.indexOf(m) }, p)))), []) : [];
+
+    const headTitle = s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
+    const headSub = s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
+    const backMap = { map: ["Papers", () => this.setState({ screen: "pick" })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })] };
+    const bk = backMap[s.screen];
+
+    // ── home
+    const home = s.home || "first";
+    const finished = home === "finished";
+    const returning = home !== "first" && s.screen === "pick";
+    const picking = returning && s.picking;
+    const showPicker = !returning || picking;
+    const rs = finished ? HOME.resume_finished : HOME.resume;
+    const glow = Math.min(7, HOME.me.days_practised_this_week);
+    const modelOn = !s.reduced && !s.saveData;
+    // Every subject Nexera knows: the ones with a paper first, then the rest, honestly tagged.
+    const withPaper = HOME.subjects.map(x => ({ name: x.name, programme: x.programme, paper_ids: x.paper_ids }));
+    const without = [];
+    Object.keys(OTHER_SUBJECTS).forEach(k => OTHER_SUBJECTS[k].forEach(n => without.push({ name: n, programme: k, paper_ids: [] })));
+    const subj = withPaper.concat(without).filter(x => x.name === s.selSubj)[0] || withPaper[0];
+    const papersOf = x => (x ? x.paper_ids : []).map(id => HOME.papers.filter(p => p.id === id)[0]).filter(Boolean);
+    const sp = papersOf(subj);
+    const paper0 = sp.filter(p => p.id === s.selPaper)[0] || sp[0] || null;
+    const q = norm(s.query);
+    const match = x => !q || norm(x.name + " " + PROG_SHORT[x.programme] + " " + (x.name.match(/N\d|Level \d/) || [""])[0]).indexOf(q) !== -1;
+    const rowsA = withPaper.filter(match), rowsB = without.filter(match);
+    const pickSubj = x => {
+      const ps = papersOf(x);
+      this.setState({ selSubj: x.name, selProg: x.programme, selPaper: ps.length ? ps[0].id : null, sheet: null, query: "", bubbleMsg: "", swap: s.swap + 1 }, () => {
+        if (ps.length) this.nod();
+        requestAnimationFrame(() => { const t = document.querySelector('[data-trigger="subj"]'); if (t) t.focus(); });
+      });
+    };
+    let idx = 0;
+    const optRow = x => { const i = idx++; const on = x.name === s.selSubj; const has = x.paper_ids.length > 0;
+      return { isHead: false, isOpt: true, idx: String(i), on: on, tab: i === s.optIdx ? "0" : "-1", label: x.name,
+        tag: PROG_SHORT[x.programme] + " · " + (has ? x.paper_ids.length + (x.paper_ids.length === 1 ? " paper" : " papers") : "No paper yet"),
+        tagBg: has ? "rgba(129,177,255,0.14)" : "rgba(255,255,255,0.05)", tagColor: has ? "#81b1ff" : "var(--text3)",
+        weight: has ? "700" : "500", color: has ? "#ffffff" : "var(--text2)",
+        bg: on ? "rgba(0,104,248,0.16)" : "transparent", pick: () => pickSubj(x) }; };
+    const subjRows = rowsA.map(optRow).concat(rowsB.length ? [{ isHead: true, isOpt: false, label: "Also on Nexera" }] : [], rowsB.map(optRow));
+    const optCount = idx;
+    const facts = p => p ? p.total_marks + " marks · " + (p.duration_minutes / 60) + " hours · " + (PAPER_UNITS[p.id] || p.parts + " parts") : "";
+    const bubble = s.bubbleMsg ? s.bubbleMsg
+      : showPicker ? "What are we beating today?"
+      : finished ? "Every mission is done. You banked " + rs.marks_earned + " of " + rs.total_marks + ". Let's look at what cost you marks."
+      : "Question " + rs.next_mission.number + " is waiting. You've banked " + rs.marks_earned + " of " + rs.total_marks + ".";
+    const onSubjSheet = s.sheet === "subj";
+
+    return {
+      headerDisplay: s.screen === "pick" ? "none" : "flex",
+      isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
+      homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
+      hasHomeSub: !phone || !returning || picking,
+      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. A clean streak multiplies it." : "Fluid Mechanics N6 · November 2022",
+      homeH1: phone ? "30px" : "clamp(32px, 3.6vw, 44px)", homeSubSize: phone ? "13px" : "14px",
+      homeMinH: phone ? "560px" : "640px",
+      headPad: phone ? "8px 18px 0" : "clamp(8px, 2vh, 20px) 20px 0",
+      // Phone: the stage takes the upper half and the bubble rides above the head;
+      // desktop: the bubble sits beside the head so it never covers the face.
+      stageMin: phone ? "44vh" : "320px",
+      bubbleKey: bubble, bubble: bubble,
+      bubblePos: phone ? "left:50%; top:0; transform:translateX(-50%)" : "left:calc(50% + clamp(90px, 9vw, 150px)); top:6%",
+      bubbleMax: phone ? "min(300px, calc(100vw - 40px))" : "280px",
+      bubbleRadius: phone ? "18px" : "18px 18px 18px 6px",
+      ringW: phone ? "min(340px, 92vw)" : "min(560px, 60vw)", ringH: phone ? "64px" : "110px", ringHalf: phone ? "32px" : "55px",
+      glowA: (0.16 + (returning ? glow * 0.025 : 0)).toFixed(3), glowB: (0.07 + (returning ? glow * 0.012 : 0)).toFixed(3),
+      mountModel: modelOn, homeClip: s.homeClip, modelOpacity: s.modelReady ? "1" : "0",
+      // The still shows at once and yields to the 3D model only when it has loaded.
+      posterOpacity: modelOn && s.modelReady ? "0" : "1",
+      posterSrc: POSTER_SRC || "", posterImgOn: !!POSTER_SRC && !s.posterMissing, posterSilhouette: !POSTER_SRC || s.posterMissing,
+      posterFailed: () => this.setState({ posterMissing: true }),
+      actionPad: phone ? "10px 16px max(18px, env(safe-area-inset-bottom))" : "8px 20px clamp(20px, 4vh, 40px)",
+      topPad: phone ? "12px 14px" : "20px 28px",
+      brandTextDisplay: phone ? "none" : "inline",
+      pillWordDisplay: phone ? "none" : "inline",
+      dispXp: s.disp.xp, dispMarks: s.disp.marks, resumeTotal: rs.total_marks, dispDays: s.disp.days,
+      daysWord: phone ? (s.disp.days === 1 ? "day" : "days") : (s.disp.days === 1 ? "day this week" : "days this week"),
+      xpAria: HOME.me.xp_total + " XP", marksAria: rs.marks_earned + " of " + rs.total_marks + " marks banked",
+      daysAria: HOME.me.days_practised_this_week + " days practised this week, explain",
+      marksDeg: Math.round(360 * s.disp.marks / rs.total_marks) + "deg",
+      daysOpen: s.pop === "days", toggleDays: () => { if (s.pop === "days") this.closeLayer(); else this.setState({ pop: "days" }); },
+      closePops: () => this.closeLayer(),
+      homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"], ["picker", "Picker open"]].map(m => {
+        const on = m[0] === "picker" ? s.sheet === "subj" && home === "first" : home === m[0] && !(s.sheet === "subj" && home === "first");
+        return { label: m[1], on: on,
+          pick: () => { if (m[0] === "picker") { this.setState({ home: "first", picking: false, sheet: "subj", optIdx: 0, pop: null, bubbleMsg: "" }); return; }
+            this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }); },
+          bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
+      continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
+      hasContinueSub: !finished, continueSub: finished ? "" : rs.next_mission.title,
+      continueGo: () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
+        const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
+        const i = ms ? ms.sections.reduce((acc, sec) => acc.concat(sec.missions), []).findIndex(m => m.id === rs.next_mission.number) : 0;
+        this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id] }, () => this.openMission(Math.max(0, i))); },
+      changePaper: () => { const cur = HOME.subjects.filter(x => x.paper_ids.indexOf(rs.paper_id) !== -1)[0];
+        this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "" }); },
+      backToContinue: () => this.setState({ picking: false, bubbleMsg: "" }),
+      breathe: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite",
+      sentenceSize: phone ? "19px" : "clamp(20px, 2vw, 26px)",
+      subjWord: subj ? subj.name : "", subjKey: "s" + s.swap, paperKey: "p" + s.swap + (paper0 ? paper0.id : ""),
+      swapAnim: s.reduced || !s.swap ? "none" : "pop 380ms cubic-bezier(0.34,1.56,0.64,1) both",
+      hasPaperWord: !!paper0, noPaperWord: !paper0, paperWord: paper0 ? paper0.sitting : "",
+      subjAria: "Subject: " + (subj ? subj.name : "none") + ", change", paperAria: "Paper: " + (paper0 ? paper0.sitting : "") + ", change",
+      sentenceSr: "I'm practising " + (subj ? subj.name : "") + ", " + (paper0 ? paper0.sitting : "no paper yet") + ".",
+      openSubj: () => this.setState({ sheet: "subj", query: "", optIdx: 0, pop: null }),
+      openPaper: () => this.setState({ sheet: "paper", optIdx: 0, pop: null }),
+      startW: phone ? "100%" : "min(420px, 100%)",
+      startPaper: () => {
+        if (paper0) { this.setState({ paperId: HOME_TO_LOCAL[paper0.id], screen: "map", sheet: null, bubbleMsg: "" }); return; }
+        this.setState({ bubbleMsg: "No paper for this subject yet. Pick another one?", sheet: "subj", query: "", optIdx: 0 });
+      },
+      isPhone: phone,
+      sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPaper: s.sheet === "paper",
+      sheetTitle: onSubjSheet ? "What are you studying?" : "Which sitting?",
+      sheetPos: phone ? "left:0; right:0; bottom:0; max-height:86vh; border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
+        : "left:50%; top:50%; transform:translate(-50%,-50%); width:min(520px, calc(100vw - 40px)); max-height:80vh; border-radius:22px",
+      sheetAnim: s.reduced ? "none" : phone ? "rise 360ms cubic-bezier(0.34,1.4,0.64,1) both" : "pop 300ms cubic-bezier(0.22,0.61,0.36,1) both",
+      listMax: phone ? "52vh" : "46vh",
+      query: s.query, onQuery: e => this.setState({ query: e.target.value, optIdx: 0 }),
+      subjRows: subjRows, noResults: onSubjSheet && optCount === 0,
+      // Arrow keys move through the listbox; Tab stays inside the dialog.
+      sheetKeys: e => {
+        const n = onSubjSheet ? optCount : sp.length;
+        if ((e.key === "ArrowDown" || e.key === "ArrowUp") && n) { e.preventDefault(); this._arrow = true;
+          const cur = document.activeElement && document.activeElement.getAttribute("data-opt");
+          const base = cur == null ? (e.key === "ArrowDown" ? -1 : n) : parseInt(cur, 10);
+          const nx = e.key === "ArrowDown" ? Math.min(n - 1, base + 1) : Math.max(0, base - 1);
+          this.setState({ optIdx: nx }); if (String(nx) === cur) { const o = document.querySelector('[data-sheet] [data-opt="' + nx + '"]'); if (o) o.focus(); } }
+        if (e.key === "Tab") { const f = [].slice.call(document.querySelectorAll('[data-sheet] button, [data-sheet] input')).filter(x => x.tabIndex !== -1);
+          if (!f.length) return; const first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } }
+      },
+      sittingChips: sp.map((p, i) => ({ idx: String(i), label: p.sitting, on: paper0 && p.id === paper0.id,
+        border: paper0 && p.id === paper0.id ? "rgba(129,177,255,0.7)" : "var(--line2)", bg: paper0 && p.id === paper0.id ? "rgba(0,104,248,0.2)" : "transparent",
+        pick: () => { this.setState({ selPaper: p.id, swap: s.swap + 1 }, () => { this.nod(); this.closeLayer(); }); } })),
+      paperFacts: facts(paper0),
+      screenLabel: { pick: "01 Pick", map: "02 Map", play: "03 Mission", done: "04 Complete", summary: "05 Summary" }[s.screen],
+      pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
+      backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
+      showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
+      headTitle: headTitle, headSub: headSub,
+      showMeter: !!paper && s.screen !== "pick", meterLabel: earned + " of " + total + " marks", meterPct: (total ? Math.round(100 * earned / total) : 0) + "%",
+      showKitBtn: !!paper && (s.screen === "map" || s.screen === "play"), openKit: () => this.setState({ kit: true }),
+      xp: s.xp, pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
+
+      onPick: s.screen === "pick", onMap: s.screen === "map" && !!paper, onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
+      programmes: ["All", "NATED", "NC(V)", "Occupational"].map(l => ({ label: l, on: s.programme === l, pick: () => this.setState({ programme: l }),
+        border: s.programme === l ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.programme === l ? "rgba(0,104,248,0.14)" : "transparent", color: s.programme === l ? "#ffffff" : "var(--text2)" })),
+      // One gradient per screen: the paper already in progress, otherwise the first card.
+      paperCards: shown.map((p, idx) => { const g = progFor(p);
+        const leadIdx = Math.max(0, shown.findIndex(x => progFor(x).n > 0));
+        const lead = idx === leadIdx;
+        return { ctaBg: lead ? "var(--grad)" : "rgba(0,104,248,0.12)", ctaBorder: lead ? "none" : "1px solid rgba(129,177,255,0.4)", ctaShadow: lead ? "0 8px 24px rgba(30,70,255,0.28)" : "none", title: p.title, programme: p.programme, sitting: p.sitting, marks: p.total + " marks", time: p.time, parts: p.partCount + " parts", provenance: PROVENANCE,
+        hasProgress: g.n > 0, progressLabel: g.n + " of " + g.of + " parts started · " + paperEarned(p) + " of " + p.total + " marks", progressPct: Math.round(100 * g.n / Math.max(1, g.of)) + "%",
+        cta: g.n > 0 ? "Continue" : "Start practising", open: () => this.setState({ paperId: p.id, screen: "map" }) }; }),
+      noPapers: shown.length === 0,
+
+      openSummary: () => this.setState({ screen: "summary" }), totalMarks: total,
+      paperNote: !!(paper && paper.note), paperNoteText: paper ? paper.note : "",
+      road: paper ? paper.sections.slice().reverse().map(sec => ({ label: sec.title + (sec.total ? " · " + sec.total + " marks" : ""),
+        missions: sec.missions.slice().reverse().map(m => { const i = missions.findIndex(x => x.id === m.id && x.title === m.title); const st = missionState(m);
+          const mm = m.parts.reduce((a, p) => a + (p.marks || 0), 0);
+          return { number: m.id, title: m.title, meta: m.parts.length + (m.parts.length === 1 ? " part" : " parts") + (mm ? " · " + mm + " marks" : ""), tags: m.tags,
+            state: i === suggestedIdx && st.label === "Not started" ? "Suggested" : st.label, stateBg: st.bg, stateColor: st.color, ring: st.ring,
+            pulse: i === suggestedIdx && !s.reduced ? "suggest 2.2s ease-in-out infinite" : "none", shift: phone ? "0px" : ((i % 3) - 1) * 26 + "px",
+            aria: m.id + " " + m.title + ", " + st.label, open: () => this.openMission(i) }; }) })) : [],
+
+      partDots: mParts.map((p, i) => { const g = this.pg(p.key); const cur = i === s.pi;
+        return { label: p.number, current: cur ? "step" : "false", aria: "Part " + p.number + (g.closed ? ", closed" : ""),
+          border: cur ? "rgba(129,177,255,0.6)" : "var(--line2)", bg: cur ? "rgba(0,104,248,0.16)" : g.closed ? "rgba(61,220,151,0.08)" : "transparent", color: g.closed ? "#3ddc97" : cur ? "#ffffff" : "var(--text2)",
+          go: () => this.resetInputs({ pi: i }) }; }),
+      hasContext: !!(mission && mission.context), context: mission ? mission.context : "",
+      partKey: part ? part.key + ":" + s.pi : "", partNumber: part ? part.number : "",
+      partMarks: part ? (part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") : "Not marked online") : "",
+      tryLabel: !part || mode === "draw" ? "" : closed ? "Closed" : "Try " + Math.min(3, tryN + 1) + " of 3", tryColor: tryN >= 2 && !closed ? "#e0a10f" : "var(--text2)",
+      stem: part ? part.stem : "",
+      showRules: !!(paper && paper.id === "fm" && mode === "steps"), rules: FM_RULES.concat(["Decimal comma accepted"]),
+      openFormulas: () => this.setState({ kit: true, kitTab: "formulas" }),
+
+      isSteps: mode === "steps", locked: locked,
+      stepCards: mode === "steps" ? part.steps.map(st => { const it = itemsBy[st.id]; const vi = it ? verdictInfo(it.verdict) : null;
+        return { label: st.label, marks: st.marks + (st.marks === 1 ? " mark" : " marks"), value: s.inputs[st.id] || "", unit: unitText(st.unit_hint), hasUnit: !!st.unit_hint, aria: st.label,
+          onChange: e => this.setState({ inputs: Object.assign({}, this.state.inputs, { [st.id]: e.target.value }) }),
+          hasStamp: !!it, stampIcon: vi ? vi[0] : "", stamp: vi ? vi[1] : "", stampColor: vi ? vi[2] : "", reason: it && it.reason ? it.reason : "",
+          border: it ? (it.awarded ? "rgba(61,220,151,0.45)" : "rgba(242,119,122,0.45)") : "var(--line)", bg: "rgba(32,35,39,0.72)",
+          anim: it && !it.awarded && !s.reduced ? "shake 420ms ease both" : "none" }; }) : [],
+      onEnter: e => { if (e.key === "Enter") { e.preventDefault(); if (!e.repeat && !primaryDisabled && !closed && !(reply && reply.waiting)) this.check(); } },
+
+      isList: mode === "list",
+      listFields: mode === "list" ? Array.from({ length: part.count || 4 }, (_, i) => ({ n: i + 1, value: s.list[i] || "", aria: "Answer " + (i + 1),
+        onChange: e => { const l = this.state.list.slice(); l[i] = e.target.value; this.setState({ list: l }); } })) : [],
+
+      isRubric: mode === "rubric",
+      coachLine: part && mode === "rubric" ? "The question asks you to " + ((part.stem.match(/^(Define|Explain|Describe|Name|State|Give)/i) || ["Answer"])[0]) + ". It is worth " + part.marks + (part.marks === 1 ? " mark." : " marks.") : "",
+      written: s.written, onWritten: e => this.setState({ written: e.target.value }), writtenCount: s.written.length + " characters",
+
+      isMatch: mode === "match", matchCols: phone ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))",
+      matchLeft: mode === "match" ? part.match.left.map((t, l) => { const r = s.matchPairs[l]; const on = s.matchSel === l;
+        return { text: t, on: on, paired: r != null ? "→ " + String.fromCharCode(65 + r) : "", border: on ? "rgba(129,177,255,0.7)" : r != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.16)" : "rgba(32,35,39,0.72)",
+          pick: () => { if (!locked) this.setState({ matchSel: on ? null : l }); } }; }) : [],
+      matchRight: mode === "match" ? part.match.right.map((t, r) => { const usedBy = Object.keys(s.matchPairs).filter(k => s.matchPairs[k] === r)[0];
+        return { key: String.fromCharCode(65 + r), text: t, border: usedBy != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: "rgba(32,35,39,0.72)",
+          pick: () => { if (locked || this.state.matchSel == null) return; const mp = Object.assign({}, this.state.matchPairs); Object.keys(mp).forEach(k => { if (mp[k] === r) delete mp[k]; }); mp[this.state.matchSel] = r; this.setState({ matchPairs: mp, matchSel: null }); } }; }) : [],
+
+      isDraw: mode === "draw",
+      marking: s.marking,
+      hasFeedback: !!fb && !s.marking, fbIcon: fb ? fb.icon : "", fbTitle: fb ? fb.title : "", fbColor: fb ? fb.color : "", fbBorder: fb ? fb.border : "", fbBg: fb ? fb.bg : "",
+      fbAnim: fb && !s.reduced ? (res && !res.full && res.marks_awarded === 0 ? "shake 420ms ease both" : "pop 380ms ease both") : "none",
+      fbHasXp: !!(fb && fb.xp), fbXp: fb ? fb.xp || "" : "", fbHasBody: !!(fb && fb.body), fbBody: fb ? fb.body || "" : "",
+      hasPoints: pointLines.length > 0 && !(mode === "list" && res && res.full), points: pointLines,
+      pointsFoot: res && res.marker === "ai" ? "Marked by AI against the memo" : "",
+      hasHint: !!(reply && reply.clue && !closed), hintTitle: tryN === 1 ? "One down — here is a hint" : "Last hint before the memo", hintText: reply ? reply.clue || "" : "",
+      hasReveal: revealLines.length > 0 && closed, revealLines: revealLines,
+      showFly: !!flyOn, flyKey: String(s.flySeq), flyText: reply ? "+" + reply.xp_awarded : "",
+      showMemoBtn: !!part && !closed && tryN > 0 && mode !== "draw" && !s.marking,
+      showReplay: !!part && closed && mode !== "draw" && !s.marking,
+      replay: () => { const k = part.key; const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false, revealed: this.pg(k).revealed }); this.resetInputs({ prog: pp }); },
+      showMemo: () => this.showMemo(),
+      primary: () => { if (closed || (reply && reply.waiting)) this.advance(); else this.check(); },
+      primaryLabel: primaryLabel, primaryDisabled: primaryDisabled,
+      primaryBg: primaryDisabled ? "var(--panel)" : "var(--grad)", primaryColor: primaryDisabled ? "var(--text4)" : "#ffffff",
+      primaryCursor: primaryDisabled ? "not-allowed" : "pointer", primaryShadow: primaryDisabled ? "none" : "0 10px 26px rgba(30,70,255,0.3)",
+
+      doneRing: mSt.ring, doneGrade: mSt.label,
+      doneTitle: mission ? mission.title : "",
+      doneStats: [{ value: mEarned + "/" + mTotal, label: "marks" }, { value: String(mParts.reduce((a, p) => a + (s.paid[p.key] ? 1 : 0), 0)), label: "parts with XP" }, { value: String(s.streak), label: "first-try streak" }],
+      nextLabel: s.mi < missions.length - 1 ? "Next mission" : "Review my paper",
+      nextMission: () => { if (s.mi < missions.length - 1) this.openMission(s.mi + 1); else this.setState({ screen: "summary" }); },
+      toMap: () => this.setState({ screen: "map" }),
+
+      sumStats: [{ value: earned + " / " + total, label: "marks · " + (total ? Math.round(100 * earned / total) : 0) + "%" }, { value: String(s.xp), label: "XP earned" },
+        { value: allParts.filter(p => this.pg(p.key).closed).length + " / " + allParts.length, label: "parts closed" }, { value: String(s.bestStreak), label: "best first-try streak" }],
+      sumSections: paper ? paper.sections.map(sec => { const e = sec.missions.reduce((a, m) => a + m.parts.reduce((b, p) => b + (this.pg(p.key).best || 0), 0), 0); const t = sec.total || sec.missions.reduce((a, m) => a + m.parts.reduce((b, p) => b + (p.marks || 0), 0), 0);
+        return { title: sec.title, label: e + " of " + t, pct: (t ? Math.round(100 * e / t) : 0) + "%" }; }) : [],
+      sumBelow: allParts.filter(p => p.marks && this.pg(p.key).tries > 0 && this.pg(p.key).best < p.marks).map(p => { const g = this.pg(p.key);
+        return { number: p.number, status: g.waiting ? "Waiting for a marker" : g.revealed ? "Memo shown" : g.closed ? "Closed" : g.tries + " of 3 tries used", marks: g.best + " / " + p.marks,
+          open: () => { const m = missions[p.mi]; this.resetInputs({ screen: "play", mi: p.mi, pi: m.parts.findIndex(x => x.key === p.key) }); } }; }),
+      sumNoBelow: !allParts.some(p => p.marks && this.pg(p.key).tries > 0 && this.pg(p.key).best < p.marks),
+      sumNoBelowText: allParts.some(p => this.pg(p.key).tries > 0) ? "Every part you have tried is at full marks." : "You have not tried any part yet.",
+
+      kitOpen: s.kit, closeKit: () => this.setState({ kit: false }),
+      kitTabs: [["rules", "Instructions"], ["formulas", "Formula sheet"], ["figures", "Figures"]].map(t => ({ label: t[1], on: s.kitTab === t[0], pick: () => this.setState({ kitTab: t[0] }),
+        border: s.kitTab === t[0] ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.kitTab === t[0] ? "rgba(0,104,248,0.14)" : "transparent" })),
+      kitItems: s.kitTab === "rules" ? FM_RULES.map(r => ({ head: r, body: "Printed on the question paper." })).concat([{ head: "Decimal comma", body: "Write 2,557 or 2.557 — both are read the same." }])
+        : s.kitTab === "formulas" ? [1, 2, 3].map(n => ({ head: "Formula sheet · page " + n + " of 3", body: "The scan of the printed page opens here." }))
+        : [{ head: "FIGURE 1", body: "Stand pipes on pipe AC — used in 1.4. The scan opens here." }, { head: "Data table", body: "Printed with the paper. The scan opens here." }],
+
+      showCompanion: desk && (s.screen === "play" || s.screen === "done"),
+      avatarClip: s.screen === "pick" ? "greet" : res && res.full ? "dance" : res && !closed && res.marks_awarded < res.marks ? "fall" : "greet"
+    };
+  }
+}
+</script>
+</body>
+</html>

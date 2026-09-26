@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --cardLine:#2f3439; --line2:#363b41; --btnLine:#454b52; --hover:#272b30; --accentSoft:color-mix(in oklch, #0068f8 22%, #202327); --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --text5:#3a3e41; --accent:#2a52ff; --accentHover:color-mix(in oklch, #1e46ff 40%, #ffffff); --onAccent:#ffffff; --shadow:rgba(0,0,0,0.55); --sidebarBg:#1b1e21; --azure:#0068f8; --cobalt:#1e46ff; --overlay1:rgba(255,255,255,0.04); --overlay3:rgba(255,255,255,0.10); --menuBg:oklch(0.26 0.045 264 / 0.94); --menuLine:rgba(255,255,255,0.10); --ok:#4ea87a; --warn:#e0a10f; --danger:#d9615a; }
+  html[data-theme="light"] { --bg:#f4f5f7; --panel:#ffffff; --panel2:#f8f9fb; --field:#fbfcfd; --line:#e3e5ea; --cardLine:#dcdfe5; --line2:#cdd1d9; --btnLine:#b3b9c4; --hover:#eceef2; --accentSoft:color-mix(in oklch, #0068f8 14%, #ffffff); --text:#14161a; --text2:#41464c; --text3:#53585f; --text4:#5f656c; --text5:#82888f; --accent:#1e46ff; --accentHover:#0068f8; --onAccent:#ffffff; --shadow:rgba(18,20,24,0.16); --sidebarBg:#f7f8fa; --overlay1:rgba(0,0,0,0.05); --overlay3:rgba(0,0,0,0.12); --menuBg:oklch(0.99 0.002 264 / 0.97); --menuLine:rgba(20,22,26,0.16); --ok:#2f7350; --warn:#9a6f0c; --danger:#a83a33; }
+  body { margin: 0; background: var(--bg); font-family: "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  [data-noscrollbar] { scrollbar-width: thin; scrollbar-color: var(--line2) transparent; }
+  [data-noscrollbar]::-webkit-scrollbar { width: 6px; }
+  [data-noscrollbar]::-webkit-scrollbar-track { background: transparent; }
+  [data-noscrollbar]::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 3px; }
+  input, select { font-family: inherit; }
+  a { color: var(--composerAccent); text-decoration: none; }
+  a:hover { color: var(--accentHover); }
+  [data-railtoggle] { color: var(--text2); transition: color 150ms ease; }
+  [data-railtoggle]:hover { color: var(--text); }
+  [data-railtoggle] .rt-a { position: absolute; opacity: 1; transition: opacity 150ms ease; }
+  [data-railtoggle] .rt-b { position: absolute; opacity: 0; transition: opacity 150ms ease; }
+  [data-railtoggle]:hover .rt-a { opacity: 0; }
+  [data-railtoggle]:hover .rt-b { opacity: 1; }
+</style>
+</helmet>
+
+<div style="height:100vh; background:var(--bg); color:var(--text); font-family:'Inter', system-ui, sans-serif; display:flex; flex-direction:row; overflow:hidden">
+
+  <sc-if value="{{ sidebarVisible }}" hint-placeholder-val="{{ false }}">
+    <div onMouseEnter="{{ startPeek }}" onMouseLeave="{{ schedulePeekClose }}" style="{{ sidebarStyle }}">
+      <sc-if value="{{ sidebarVisible }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:-6px; padding:0 16px 14px">
+        <span aria-hidden="true" style="width:28px; height:28px; flex:none"></span>
+        <img onClick="{{ goHome }}" src="assets/nexera-wordmark.webp" alt="Nexera" title="Home" style="cursor:pointer; height:24px; width:auto; display:block; flex:none" />
+        <span data-railtoggle="true" onClick="{{ toggleSidebar }}" title="Collapse sidebar" aria-label="Collapse sidebar" style="width:28px; height:28px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer">
+          <span style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center">
+            <img class="rt-a" src="assets/nexera-mark.png" alt="" style="width:20px; height:20px; display:block" />
+            <svg class="rt-b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m15 18-6-6 6-6"></path></svg>
+          </span>
+        </span>
+      </div>
+      </sc-if>
+      <div style="display:flex; flex-direction:column; gap:2px; padding:0 10px">
+        <sc-for list="{{ sidebarNav }}" as="s" hint-placeholder-count="4">
+          <a href="{{ s.href }}" style="text-decoration:none; display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; background:{{ s.bg }}; font-size:14px; color:{{ s.color }}; cursor:pointer" style-hover="background:var(--overlay3)">
+            <span style="display:flex">{{ s.icon }}</span>{{ s.label }}
+          </a>
+        </sc-for>
+      </div>
+      <div style="margin-top:auto; padding:14px 18px 0; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between">
+        <span style="width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:500; font-size:10px; color:var(--onAccent)">NM</span>
+        <div style="display:flex; align-items:center; gap:6px">
+          <span onClick="{{ cycleTheme }}" title="{{ themeLabel }}" style="width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text2)" style-hover="background:var(--overlay3)">{{ themeIcon }}</span>
+          <span onClick="{{ goSettings }}" title="Settings" style="width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--composerAccent); background:var(--accentSoft)">{{ iconGear }}</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; min-width:0; display:flex; flex-direction:column">
+    <div style="height:48px; flex:none; display:flex; align-items:center; gap:14px; padding:0 20px 0 12px; border-bottom:1px solid var(--line)">
+      <sc-if value="{{ sidebarClosed }}" hint-placeholder-val="{{ true }}">
+        <span data-railtoggle="true" onClick="{{ toggleSidebar }}" onMouseEnter="{{ startPeek }}" onMouseLeave="{{ schedulePeekClose }}" title="Expand sidebar" aria-label="Expand sidebar" style="width:28px; height:28px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer">
+          <span style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center">
+            <img class="rt-a" src="assets/nexera-mark.png" alt="" style="width:20px; height:20px; display:block" />
+            <svg class="rt-b" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m9 18 6-6-6-6"></path></svg>
+          </span>
+        </span>
+      </sc-if>
+      <span style="font-size:14px; font-weight:500; letter-spacing:-0.01em">Settings</span>
+      <span style="font-size:13px; color:var(--text4)">/ {{ activeLabel }}</span>
+      <span style="margin-left:auto; width:28px; height:28px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:500; font-size:10px; color:var(--onAccent)">NM</span>
+    </div>
+
+    <div data-noscrollbar="true" style="flex:1; min-height:0; overflow-y:auto">
+      <div style="max-width:1020px; margin:0 auto; padding:30px 26px 60px; display:flex; flex-direction:column; gap:26px">
+
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <h1 style="margin:0; font-size:29px; font-weight:600; letter-spacing:-0.025em">Settings</h1>
+          <p style="margin:0; font-size:14px; color:var(--text3)">Your account, how Nexera looks on this device, and who else can sign in.</p>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:28px">
+
+          <div style="width:186px; flex:none; position:sticky; top:0; display:flex; flex-direction:column; gap:2px">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+              <span onClick="{{ t.pick }}" style="display:flex; align-items:center; gap:10px; padding:8px 11px; border-radius:9px; background:{{ t.bg }}; font-size:13px; font-weight:500; color:{{ t.color }}; cursor:pointer" style-hover="background:var(--overlay3)">
+                <span style="display:flex">{{ t.icon }}</span>{{ t.label }}
+              </span>
+            </sc-for>
+          </div>
+
+          <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:14px">
+
+            <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; flex-direction:column; gap:0; border:1px solid var(--cardLine); border-radius:16px; background:var(--panel); overflow:hidden">
+                <div style="display:flex; align-items:flex-start; gap:16px; padding:22px 22px 20px">
+                  <span style="width:58px; height:58px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:600; color:var(--onAccent)">NM</span>
+                  <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:8px">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <sc-if value="{{ editingName }}" hint-placeholder-val="{{ false }}">
+                        <input value="{{ name }}" onChange="{{ onName }}" placeholder="Display name" style="min-width:0; flex:1; max-width:280px; box-sizing:border-box; padding:6px 11px; border:1px solid var(--btnLine); border-radius:9px; background:var(--field); color:var(--text); font-size:17px; font-weight:500; outline:none" />
+                        <span onClick="{{ saveName }}" title="Save name" style="width:30px; height:30px; flex:none; border-radius:8px; background:color-mix(in oklch, var(--ok) 16%, transparent); display:flex; align-items:center; justify-content:center; color:var(--ok); cursor:pointer">{{ iconCheck }}</span>
+                        <span onClick="{{ cancelName }}" title="Cancel" style="width:30px; height:30px; flex:none; border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--text3); cursor:pointer" style-hover="background:var(--overlay3)">{{ iconX }}</span>
+                      </sc-if>
+                      <sc-if value="{{ notEditingName }}" hint-placeholder-val="{{ true }}">
+                        <span style="font-size:19px; font-weight:600; letter-spacing:-0.015em">{{ name }}</span>
+                        <span onClick="{{ startName }}" title="Edit name" style="width:26px; height:26px; flex:none; border-radius:7px; display:flex; align-items:center; justify-content:center; color:var(--text4); cursor:pointer" style-hover="background:var(--overlay3); color:var(--text2)">{{ iconPencil }}</span>
+                      </sc-if>
+                    </div>
+                    <p style="margin:0; font-size:14px; color:var(--text3)">{{ email }}</p>
+                    <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap">
+                      <span style="padding:2px 9px; border-radius:999px; background:color-mix(in oklch, var(--azure) 15%, transparent); font-size:11px; font-weight:500; color:var(--composerAccent)">Admin</span>
+                      <span style="font-size:12px; color:var(--text4)">Member since March 2025</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px; padding:13px 22px; border-top:1px solid var(--line); background:var(--panel2)">
+                  <span style="font-size:12px; color:var(--text4)">Signed in with email</span>
+                  <span onClick="{{ noop }}" style="margin-left:auto; display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text3); cursor:pointer" style-hover="color:var(--danger)">
+                    {{ iconOut }} Sign out
+                  </span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isSecurity }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:18px; padding:22px; border:1px solid var(--cardLine); border-radius:16px; background:var(--panel)">
+                <div style="display:flex; flex-direction:column; gap:5px">
+                  <span style="font-size:16px; font-weight:600; letter-spacing:-0.015em">Change password</span>
+                  <p style="margin:0; font-size:13px; color:var(--text3)">You'll need your current password to make changes.</p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:13px; max-width:400px">
+                  <sc-for list="{{ pwFields }}" as="f" hint-placeholder-count="3">
+                    <label style="display:flex; flex-direction:column; gap:6px">
+                      <span style="font-size:12px; color:var(--text3)">{{ f.label }}</span>
+                      <input type="password" placeholder="{{ f.placeholder }}" style="box-sizing:border-box; width:100%; padding:9px 12px; border:1px solid var(--line2); border-radius:10px; background:var(--field); color:var(--text); font-size:14px; outline:none" style-focus="border-color:var(--composerAccent)" />
+                    </label>
+                  </sc-for>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px">
+                  <span style="padding:9px 19px; border-radius:999px; background:color-mix(in oklch, var(--azure) 14%, transparent); font-size:13px; font-weight:500; color:var(--composerAccent); cursor:pointer" style-hover="background:color-mix(in oklch, var(--azure) 22%, transparent)">Update password</span>
+                  <span style="font-size:12px; color:var(--text4)">At least 8 characters.</span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isAppearance }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:16px; padding:22px; border:1px solid var(--cardLine); border-radius:16px; background:var(--panel)">
+                <div style="display:flex; flex-direction:column; gap:5px">
+                  <span style="font-size:16px; font-weight:600; letter-spacing:-0.015em">Theme</span>
+                  <p style="margin:0; font-size:13px; color:var(--text3)">Choose how Nexera looks on this device. System presents the light theme.</p>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; max-width:520px">
+                  <sc-for list="{{ themeOptions }}" as="o" hint-placeholder-count="3">
+                    <div onClick="{{ o.pick }}" style="display:flex; flex-direction:column; gap:11px; padding:13px; border:1.5px solid {{ o.border }}; border-radius:13px; background:{{ o.bg }}; cursor:pointer">
+                      <div style="height:52px; border-radius:9px; border:1px solid var(--line); background:{{ o.swatch }}; display:flex; align-items:flex-end; padding:7px; gap:4px">
+                        <span style="width:22px; height:5px; border-radius:3px; background:{{ o.swatchBar }}"></span>
+                        <span style="width:12px; height:5px; border-radius:3px; background:{{ o.swatchBar }}; opacity:0.5"></span>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px">
+                        <span style="display:flex; color:{{ o.color }}">{{ o.icon }}</span>
+                        <span style="font-size:13px; font-weight:500; color:{{ o.color }}">{{ o.label }}</span>
+                        <sc-if value="{{ o.active }}" hint-placeholder-val="{{ false }}">
+                          <span style="margin-left:auto; display:flex; color:var(--composerAccent)">{{ iconCheck }}</span>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:16px; padding:22px; border:1px solid var(--cardLine); border-radius:16px; background:var(--panel)">
+                <div style="display:flex; flex-direction:column; gap:5px">
+                  <span style="font-size:16px; font-weight:600; letter-spacing:-0.015em">Invite someone</span>
+                  <p style="margin:0; font-size:13px; color:var(--text3); text-wrap:pretty">Roles are fixed at invite. Admin runs everything, Internal team builds lessons, Teachers get the teaching surface only.</p>
+                </div>
+                <div style="display:flex; gap:9px; flex-wrap:wrap; align-items:center">
+                  <input placeholder="their@email.com" style="flex:1 1 220px; min-width:0; box-sizing:border-box; padding:9px 12px; border:1px solid var(--line2); border-radius:10px; background:var(--field); color:var(--text); font-size:14px; outline:none" style-focus="border-color:var(--composerAccent)" />
+                  <span data-menu-root="true" style="position:relative; display:flex; flex:none">
+                    <span onClick="{{ toggleRoleMenu }}" style="display:flex; align-items:center; gap:8px; padding:9px 13px; border:1px solid var(--line2); border-radius:10px; background:var(--field); font-size:13px; color:var(--text2); cursor:pointer">
+                      {{ inviteRole }}
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block; opacity:0.7"><path d="m6 9 6 6 6-6"></path></svg>
+                    </span>
+                    <sc-if value="{{ roleMenuOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute; top:100%; left:0; margin-top:6px; z-index:60; width:190px; border:1px solid var(--menuLine); border-radius:12px; background:var(--menuBg); backdrop-filter:blur(20px) saturate(1.3); -webkit-backdrop-filter:blur(20px) saturate(1.3); box-shadow:0 18px 44px var(--shadow); padding:5px">
+                        <sc-for list="{{ roleOptions }}" as="r" hint-placeholder-count="3">
+                          <div onClick="{{ r.pick }}" style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; background:{{ r.bg }}; font-size:13px; color:var(--text); cursor:pointer" style-hover="background:var(--overlay3)">
+                            <span style="flex:1">{{ r.label }}</span>
+                            <span style="display:flex; flex:none">{{ r.check }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </span>
+                  <span style="flex:none; padding:9px 19px; border-radius:999px; background:var(--accent); font-size:13px; font-weight:500; color:var(--onAccent); cursor:pointer" style-hover="opacity:0.9">Send invite</span>
+                </div>
+              </div>
+
+              <div style="border:1px solid var(--cardLine); border-radius:16px; background:var(--panel); overflow:hidden">
+                <div style="display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--line)">
+                  <span style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">Accounts</span>
+                  <span style="font-size:11px; color:var(--text4)">{{ userCount }}</span>
+                </div>
+                <sc-for list="{{ users }}" as="u" hint-placeholder-count="5">
+                  <div style="display:flex; align-items:center; gap:12px; padding:12px 20px; border-top:1px solid {{ u.divider }}">
+                    <span style="width:28px; height:28px; flex:none; border-radius:50%; background:{{ u.avatarBg }}; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; color:{{ u.avatarColor }}">{{ u.initials }}</span>
+                    <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px">
+                      <span style="font-size:13px; color:{{ u.nameColor }}; text-decoration:{{ u.strike }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ u.email }}</span>
+                      <span style="font-size:11px; color:var(--text5)">{{ u.seen }}</span>
+                    </div>
+                    <span style="flex:none; padding:2px 9px; border-radius:999px; background:{{ u.roleBg }}; font-size:10px; font-weight:500; color:{{ u.roleColor }}">{{ u.role }}</span>
+                    <sc-if value="{{ u.isYou }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none; font-size:11px; color:var(--text4)">You</span>
+                    </sc-if>
+                    <sc-if value="{{ u.notYou }}" hint-placeholder-val="{{ true }}">
+                      <span onClick="{{ u.toggle }}" style="flex:none; padding:4px 11px; border:1px solid {{ u.actionBorder }}; border-radius:999px; font-size:11px; color:{{ u.actionColor }}; cursor:pointer" style-hover="border-color:var(--composerAccent)">{{ u.action }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isWorkspace }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:16px; padding:22px; border:1px solid var(--cardLine); border-radius:16px; background:var(--panel)">
+                <div style="display:flex; flex-direction:column; gap:5px">
+                  <span style="font-size:16px; font-weight:600; letter-spacing:-0.015em">Reset the lesson layout</span>
+                  <p style="margin:0; font-size:13px; color:var(--text3); text-wrap:pretty">Put the lesson workspace panes back the way they started. Your lessons aren't affected — it applies next time you open one.</p>
+                </div>
+                <span style="align-self:flex-start; display:flex; align-items:center; gap:8px; padding:9px 16px; border:1px solid var(--line2); border-radius:10px; font-size:13px; color:var(--text2); cursor:pointer" style-hover="border-color:var(--composerAccent); color:var(--text)">
+                  {{ iconReset }} Reset layout
+                </span>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:820}}">
+const TABS = [
+  { id: "account", label: "Account" },
+  { id: "security", label: "Security" },
+  { id: "appearance", label: "Appearance" },
+  { id: "admin", label: "Administration" },
+  { id: "workspace", label: "Workspace" }
+];
+
+const ROLES = ["Internal team", "Teacher", "Admin"];
+
+const USERS = [
+  { email: "n.mokoena@nudlegroup.com", role: "Admin", seen: "Active now", you: true, active: true },
+  { email: "d.veron@nudlegroup.com", role: "3D team", seen: "Last seen 2h ago", active: true },
+  { email: "t.mokoena@nudlegroup.com", role: "Teacher", seen: "Last seen yesterday", active: true },
+  { email: "j.abara@nudlegroup.com", role: "Internal team", seen: "Last seen 3d ago", active: true },
+  { email: "old.account@nudlegroup.com", role: "Teacher", seen: "Deactivated in June", active: false }
+];
+
+class Component extends DCLogic {
+  state = { sidebar: false, peek: false, theme: "system", tab: "account", editingName: false, name: "Nkosi Mokoena", menu: null, inviteRole: "Internal team", users: USERS };
+
+  componentDidMount() {
+    this.restoreTheme();
+    this.applyTheme();
+    this._onDown = e => {
+      if (!this.state.menu) return;
+      if (e.target.closest && e.target.closest("[data-menu-root]")) return;
+      this.setState({ menu: null });
+    };
+    document.addEventListener("pointerdown", this._onDown, true);
+  }
+  componentDidUpdate() { this.applyTheme(); }
+  componentWillUnmount() { document.removeEventListener("pointerdown", this._onDown, true); }
+  restoreTheme() {
+    try { const v = localStorage.getItem("nx.theme"); if (v === "dark" || v === "light" || v === "system") this.state.theme = v; } catch (e) {}
+  }
+  applyTheme() {
+    document.documentElement.dataset.theme = this.state.theme === "dark" ? "dark" : "light";
+    try { localStorage.setItem("nx.theme", this.state.theme); } catch (e) {}
+  }
+
+  icon(paths, size) {
+    return React.createElement("svg", {
+      width: size || 15, height: size || 15, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+      strokeWidth: 1.75, strokeLinecap: "round", strokeLinejoin: "round", style: { display: "block", flex: "none" }
+    }, paths.map((c, i) => React.createElement(c[0], Object.assign({ key: i }, c[1]))));
+  }
+  check(color) {
+    return React.createElement("svg", {
+      width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: color || "currentColor",
+      strokeWidth: 2.4, strokeLinecap: "round", strokeLinejoin: "round", style: { display: "block", flex: "none" }
+    }, React.createElement("path", { d: "M20 6 9 17l-5-5" }));
+  }
+  initials(email) {
+    const n = email.split("@")[0].split(".");
+    return ((n[0] || "")[0] + (n[1] || "")[0]).toUpperCase();
+  }
+
+  renderVals() {
+    const goSettings = () => { location.href = "Settings.dc.html"; };
+    const goHome = () => { location.href = "Hero.dc.html"; };
+    const NAV_HREF = { "Dashboard": "Dashboard.dc.html", "Library": "Industries%20Library%20-%203%20Directions.dc.html", "Exam Quiz": "Exam%20Quiz.dc.html", "New simulation": "New%20XR%20Session.dc.html?new=1" };
+    const P = {
+      gear: [["path", { d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" }], ["circle", { cx: 12, cy: 12, r: 3 }]],
+      user: [["circle", { cx: 12, cy: 8, r: 5 }], ["path", { d: "M20 21a8 8 0 0 0-16 0" }]],
+      lock: [["rect", { width: 18, height: 11, x: 3, y: 11, rx: 2 }], ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4" }]],
+      palette: [["circle", { cx: 13.5, cy: 6.5, r: ".5", fill: "currentColor" }], ["circle", { cx: 17.5, cy: 10.5, r: ".5", fill: "currentColor" }], ["circle", { cx: 8.5, cy: 7.5, r: ".5", fill: "currentColor" }], ["circle", { cx: 6.5, cy: 12.5, r: ".5", fill: "currentColor" }], ["path", { d: "M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" }]],
+      shield: [["path", { d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" }]],
+      reset: [["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" }], ["path", { d: "M3 3v5h5" }]],
+      pencil: [["path", { d: "M12 20h9" }], ["path", { d: "M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" }]],
+      x: [["path", { d: "M18 6 6 18" }], ["path", { d: "m6 6 12 12" }]],
+      out: [["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" }], ["path", { d: "m16 17 5-5-5-5" }], ["path", { d: "M21 12H9" }]],
+      boxes: [["path", { d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" }], ["path", { d: "m6.08 12-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83L17.9 12" }]],
+      dash: [["rect", { width: 7, height: 9, x: 3, y: 3, rx: 1 }], ["rect", { width: 7, height: 5, x: 14, y: 3, rx: 1 }], ["rect", { width: 7, height: 9, x: 14, y: 12, rx: 1 }], ["rect", { width: 7, height: 5, x: 3, y: 16, rx: 1 }]],
+      pen: [["path", { d: "M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" }], ["path", { d: "M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" }]],
+      moon: [["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" }]],
+      sun: [["circle", { cx: 12, cy: 12, r: 4 }], ["path", { d: "M12 2v2" }], ["path", { d: "M12 20v2" }], ["path", { d: "m4.93 4.93 1.41 1.41" }], ["path", { d: "m17.66 17.66 1.41 1.41" }], ["path", { d: "M2 12h2" }], ["path", { d: "M20 12h2" }], ["path", { d: "m6.34 17.66-1.41 1.41" }], ["path", { d: "m19.07 4.93-1.41 1.41" }]],
+      monitor: [["rect", { width: 20, height: 14, x: 2, y: 3, rx: 2 }], ["path", { d: "M8 21h8" }], ["path", { d: "M12 17v4" }]]
+    };
+    const TAB_ICON = { account: P.user, security: P.lock, appearance: P.palette, admin: P.shield, workspace: P.reset };
+    const t = this.state.theme;
+    const nextTheme = { dark: "light", light: "system", system: "dark" };
+    const themeGlyph = { dark: P.moon, light: P.sun, system: P.monitor };
+    const tab = this.state.tab;
+    const users = this.state.users;
+
+    return {
+      sidebarOpen: this.state.sidebar,
+      sidebarVisible: this.state.sidebar || this.state.peek,
+      sidebarClosed: !this.state.sidebar,
+      sidebarStyle: this.state.sidebar
+        ? "width:264px; flex:none; box-sizing:border-box; height:100vh; background:var(--sidebarBg); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:16px 0 14px"
+        : "width:264px; box-sizing:border-box; position:fixed; left:18px; top:72px; max-height:min(70vh, 520px); z-index:80; background:var(--sidebarBg); border:1px solid var(--menuLine); border-radius:16px; box-shadow:0 24px 60px var(--shadow); display:flex; flex-direction:column; padding:16px 0 14px; overflow:hidden",
+      startPeek: () => { clearTimeout(this._peekT); this.setState({ peek: true }); },
+      schedulePeekClose: () => {
+        clearTimeout(this._peekT);
+        this._peekT = setTimeout(() => this.setState({ peek: false }), 160);
+      },
+      toggleSidebar: () => this.setState(s => ({ sidebar: !s.sidebar, peek: false })),
+      iconGear: this.icon(P.gear, 16),
+      themeIcon: this.icon(themeGlyph[t], 17),
+      themeLabel: "Theme: " + t + " (click for " + nextTheme[t] + ")",
+      cycleTheme: () => this.setState({ theme: nextTheme[t] }),
+      goSettings: goSettings,
+      goHome: goHome,
+      sidebarNav: [
+        { label: "Dashboard", paths: P.dash },
+        { label: "Library", paths: P.boxes },
+        { label: "New simulation", paths: P.pen }
+      ].map(i => ({ label: i.label, icon: this.icon(i.paths, 15), href: NAV_HREF[i.label] || "#", bg: "transparent", color: "var(--text2)" })),
+
+      tabs: TABS.map(x => ({
+        label: x.label,
+        icon: this.icon(TAB_ICON[x.id], 15),
+        bg: tab === x.id ? "var(--accentSoft)" : "transparent",
+        color: tab === x.id ? "var(--composerAccent)" : "var(--text2)",
+        pick: () => this.setState({ tab: x.id, menu: null })
+      })),
+      activeLabel: (TABS.filter(x => x.id === tab)[0] || TABS[0]).label,
+      isAccount: tab === "account",
+      isSecurity: tab === "security",
+      isAppearance: tab === "appearance",
+      isAdmin: tab === "admin",
+      isWorkspace: tab === "workspace",
+
+      name: this.state.name,
+      email: "n.mokoena@nudlegroup.com",
+      editingName: this.state.editingName,
+      notEditingName: !this.state.editingName,
+      startName: () => this.setState({ editingName: true }),
+      saveName: () => this.setState({ editingName: false }),
+      cancelName: () => this.setState({ editingName: false, name: "Nkosi Mokoena" }),
+      onName: e => this.setState({ name: e.target.value }),
+      noop: () => {
+        try { localStorage.removeItem("nx.session"); } catch (e) {}
+        location.href = "Hero.dc.html";
+      },
+      iconCheck: this.check(),
+      iconX: this.icon(P.x, 15),
+      iconPencil: this.icon(P.pencil, 13),
+      iconOut: this.icon(P.out, 13),
+      iconReset: this.icon(P.reset, 14),
+
+      pwFields: [
+        { label: "Current password", placeholder: "Enter current password" },
+        { label: "New password", placeholder: "Strong password" },
+        { label: "Confirm new password", placeholder: "Repeat new password" }
+      ],
+
+      themeOptions: [
+        { value: "light", label: "Light", swatch: "#f2f0ec", bar: "#1e46ff" },
+        { value: "dark", label: "Dark", swatch: "#0a0b0c", bar: "color-mix(in oklch, #1e46ff 62%, #ffffff)" },
+        { value: "system", label: "System", swatch: "linear-gradient(105deg, #f2f0ec 50%, #0a0b0c 50%)", bar: "color-mix(in oklch, #1e46ff 62%, #ffffff)" }
+      ].map(o => ({
+        label: o.label,
+        icon: this.icon(themeGlyph[o.value], 15),
+        active: t === o.value,
+        border: t === o.value ? "var(--accent)" : "var(--cardLine)",
+        bg: t === o.value ? "var(--accentSoft)" : "var(--panel2)",
+        color: t === o.value ? "var(--composerAccent)" : "var(--text2)",
+        swatch: o.swatch,
+        swatchBar: o.bar,
+        pick: () => this.setState({ theme: o.value })
+      })),
+
+      inviteRole: this.state.inviteRole,
+      roleMenuOpen: this.state.menu === "role",
+      toggleRoleMenu: () => this.setState(s => ({ menu: s.menu === "role" ? null : "role" })),
+      roleOptions: ROLES.map(r => ({
+        label: r,
+        bg: r === this.state.inviteRole ? "var(--overlay3)" : "transparent",
+        check: r === this.state.inviteRole ? this.check("var(--accent)") : "",
+        pick: () => this.setState({ inviteRole: r, menu: null })
+      })),
+
+      userCount: users.filter(u => u.active).length + " active · " + users.filter(u => !u.active).length + " deactivated",
+      users: users.map((u, i) => ({
+        email: u.email, role: u.role, seen: u.seen,
+        initials: this.initials(u.email),
+        divider: i === 0 ? "transparent" : "var(--line)",
+        isYou: !!u.you, notYou: !u.you,
+        nameColor: u.active ? "var(--text)" : "var(--text4)",
+        strike: u.active ? "none" : "line-through",
+        avatarBg: u.active ? "var(--accent)" : "var(--overlay3)",
+        avatarColor: u.active ? "var(--onAccent)" : "var(--text4)",
+        roleBg: u.role === "Admin" ? "color-mix(in oklch, var(--azure) 15%, transparent)" : "var(--overlay3)",
+        roleColor: u.role === "Admin" ? "var(--accent)" : "var(--text3)",
+        action: u.active ? "Deactivate" : "Reactivate",
+        actionBorder: u.active ? "var(--line2)" : "color-mix(in oklch, var(--ok) 45%, transparent)",
+        actionColor: u.active ? "var(--text3)" : "var(--ok)",
+        toggle: () => this.setState(st => ({
+          users: st.users.map((x, j) => j === i ? Object.assign({}, x, {
+            active: !x.active,
+            seen: !x.active ? "Reactivated just now" : "Deactivated just now"
+          }) : x)
+        }))
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

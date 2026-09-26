@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+  <script type="module" src="model-floor.js"></script>
+  <script src="image-slot.js"></script>
+  <script src="paper-ls-p1-2026.js"></script>
+  <script src="paper-fm-n6-2022.js"></script>
+  <style>
+    :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
+      --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91;
+      --azure:#0068f8; --cobalt:#1e46ff; --violet:#671dff; --accent:#2a52ff; --danger:#f2777a; --warn:#e0a10f; --ok:#3ddc97;
+      --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); --shadow:rgba(0,0,0,0.55); }
+    html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+    a { color:var(--text); } a:hover { color:#7ea0ff; }
+    input, textarea, button { font:inherit; }
+    @keyframes pulseRing { 0%,100% { box-shadow:0 0 0 0 rgba(30,70,255,0.55); } 60% { box-shadow:0 0 0 14px rgba(30,70,255,0); } }
+    @keyframes optRight { 0% { transform:scale(1); } 40% { transform:scale(1.045); } 100% { transform:scale(1); } }
+    @keyframes optWrong { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-7px); } 45% { transform:translateX(6px); } 70% { transform:translateX(-3px); } }
+    @keyframes popIn { from { transform:scale(0.94); opacity:0; } to { transform:scale(1); opacity:1; } }
+    @keyframes slideUp { from { transform:translateY(14px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    @keyframes xpFloat { 0% { transform:translate(-50%, 0) scale(0.7); opacity:0; } 12% { transform:translate(-50%, -14px) scale(1.15); opacity:1; } 30% { transform:translate(-50%, -30px) scale(1); } 100% { transform:translate(-50%, -140px) scale(0.92); opacity:0; } }
+    @keyframes barGlow { 0%,100% { box-shadow:0 0 0 rgba(30,70,255,0); } 40% { box-shadow:0 0 18px rgba(126,160,255,0.85); } }
+    @keyframes floatY { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+    /* The stake detaches, arcs to the pill, and lands — one motion, so the eye follows the
+       number it was playing for all the way to where it is banked. */
+    @keyframes xpFly {
+      0%   { transform: translate(0, 14px) scale(0.7);   opacity: 0; }
+      9%   { transform: translate(0, -2px) scale(1.18);  opacity: 1; }
+      14%  { transform: translate(0, -8px) scale(1.06);  opacity: 1; }
+      /* Dwell — the number sits still and readable before it goes anywhere. */
+      44%  { transform: translate(0, -12px) scale(1.06); opacity: 1; }
+      58%  { transform: translate(calc(var(--flyX, 0) * 0.18), calc(var(--flyY, -120px) * 0.14)) scale(1.02); opacity: 1; }
+      92%  { transform: translate(var(--flyX, 0), var(--flyY, -120px)) scale(0.72); opacity: 1; }
+      100% { transform: translate(var(--flyX, 0), var(--flyY, -120px)) scale(0.46); opacity: 0; }
+    }
+    @keyframes pillLand {
+      0%, 100% { transform: scale(1); }
+      35%      { transform: scale(1.22); }
+      60%      { transform: scale(0.97); }
+    }
+    @keyframes odo { from { transform: translateY(0.5em); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    /* Ruled out, not punished: the option folds out of the running so the remaining paths
+       visibly narrow. */
+    @keyframes ruleOut {
+      0%   { transform: scale(1);    opacity: 1; }
+      30%  { transform: scale(0.97); opacity: 1; }
+      100% { transform: scale(0.94); opacity: 0.26; filter: saturate(0.2); }
+    }
+    @keyframes leanIn { 0% { transform: translateX(0); } 50% { transform: translateX(-7px); } 100% { transform: translateX(0); } }
+    /* A hop on a clean answer, a lean toward the learner on a miss — the companion reacting
+       rather than the screen flashing at them. */
+    @keyframes cheer {
+      0%   { transform: translateY(0)    scale(1); }
+      22%  { transform: translateY(-16px) scale(1.04); }
+      44%  { transform: translateY(0)    scale(0.98); }
+      62%  { transform: translateY(-7px) scale(1.02); }
+      100% { transform: translateY(0)    scale(1); }
+    }
+    @keyframes sympathise {
+      0%   { transform: translateX(0) rotate(0); }
+      35%  { transform: translateX(-9px) rotate(-2.5deg); }
+      70%  { transform: translateX(-4px) rotate(-1deg); }
+      100% { transform: translateX(0) rotate(0); }
+    }
+    @keyframes roomPulse { 0% { opacity: 1; } 30% { opacity: 1.6; } 100% { opacity: 1; } }
+    @keyframes meterTick { 0% { transform: scaleY(1); filter: brightness(1); } 40% { transform: scaleY(1.8); filter: brightness(1.5); } 100% { transform: scaleY(1); filter: brightness(1); } }
+    @keyframes fromRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fromLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes bolt { 0% { transform:translateY(0); opacity:1; } 100% { transform:translateY(-34px); opacity:0; } }
+    [data-pop] { animation:popIn 220ms cubic-bezier(0.22,0.61,0.36,1) both; }
+    [data-rise] { animation:slideUp 240ms cubic-bezier(0.22,0.61,0.36,1) both; }
+    /* The question column keeps its 620px measure; the companion only appears where it can
+       sit beside it without reaching the cards. */
+    @media (max-width: 1279px) { [data-companion] { display:none !important; } }
+    [data-thin], [data-noscrollbar], [data-road] { scrollbar-width:none; -ms-overflow-style:none; }
+    [data-thin]::-webkit-scrollbar, [data-noscrollbar]::-webkit-scrollbar, [data-road]::-webkit-scrollbar { width:0; height:0; display:none; }
+    /* three.js is loaded from a CDN, so the companion needs a network. When it cannot be
+       reached the element stays undefined — this makes that visible rather than silent. */
+    html[data-no3d] model-floor:not(:defined) {
+      display:block; position:relative; background:center/44% no-repeat url(assets/nexera-mark.png);
+      opacity:0.4;
+    }
+  </style>
+  <script>
+    // Give the module a fair chance to load, then mark the page if it never defined itself.
+    setTimeout(function () {
+      if (!customElements.get("model-floor")) document.documentElement.setAttribute("data-no3d", "");
+    }, 6000);
+  </script>
+</helmet>
+
+<div style="min-height:100vh; display:flex; flex-direction:column; background:radial-gradient(120% 70% at 50% -10%, rgba(30,70,255,0.16) 0%, transparent 60%), var(--bg)">
+
+  <!-- ─── PICK ────────────────────────────────────────────── -->
+  <sc-if value="{{ onPick }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="Choose a paper" style="position:relative; height:100vh; display:flex; flex-direction:column; overflow:hidden">
+
+    <model-floor src="assets/avatar-lite.glb" clip="greet" autorotate="off" face="user" floor="still" fit="0.95" style="position:fixed; left:0; right:0; top:8%; bottom:-8%; z-index:0"></model-floor>
+    <span style="position:fixed; inset:0; z-index:0; pointer-events:none; background:linear-gradient(180deg, rgba(25,27,30,0.55) 0%, rgba(25,27,30,0) 30%, rgba(25,27,30,0) 52%, rgba(25,27,30,0.94) 100%)"></span>
+
+    <div style="position:relative; display:flex; align-items:center; gap:12px; padding:22px 30px">
+      <span style="width:28px; height:28px; flex:none; display:flex; align-items:center; justify-content:center">
+        <img src="assets/nexera-mark.png" alt="Nexera" style="width:24px; height:24px; display:block" />
+      </span>
+      <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text2)">Nexera · Exam missions</span>
+    </div>
+
+    <div style="position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:clamp(8px, 1.6vh, 16px); padding:clamp(4px, 2vh, 24px) 20px 0">
+      <span style="font-size:clamp(24px, 3.4vw, 40px); font-weight:800; letter-spacing:-0.03em; line-height:1.05; text-align:center; text-wrap:balance; max-width:760px">Beat the paper.</span>
+      <span style="font-size:14px; line-height:1.6; color:var(--text2); text-align:center; text-wrap:pretty; max-width:520px">100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. A clean streak multiplies it.</span>
+    </div>
+
+    <div style="position:relative; flex:1; min-height:0"></div>
+
+    <div style="position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:clamp(10px, 2vh, 18px); padding:0 20px clamp(20px, 6vh, 56px); max-height:40vh; overflow:visible">
+
+      <div data-pop="true" style="display:flex; flex-wrap:nowrap; max-width:100%; min-width:0; align-items:center; gap:1px; padding:5px; border-radius:20px; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(18px) saturate(1.3); -webkit-backdrop-filter:blur(18px) saturate(1.3); box-shadow:0 24px 70px rgba(0,0,0,0.5)">
+        <span data-menu-root="true" style="position:relative; display:flex; flex:0 1 auto; min-width:0">
+          <span onClick="{{ openLevelMenu }}" style="display:flex; flex-direction:column; gap:3px; padding:12px 18px; border-radius:15px; cursor:pointer; flex:0 1 auto; min-width:0; width:170px" style-hover="background:var(--hover)">
+            <span style="font-size:9.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">Level</span>
+            <span style="display:flex; align-items:center; gap:8px; min-width:0; font-size:14px; font-weight:700"><span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ levelLabel }}</span><span style="flex:none; font-size:9px; color:var(--text4)">▾</span></span>
+          </span>
+          <sc-if value="{{ levelMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; left:0; bottom:calc(100% + 10px); min-width:220px; padding:6px; border-radius:14px; background:rgba(32,35,39,0.96); border:1px solid rgba(255,255,255,0.1); box-shadow:0 20px 50px rgba(0,0,0,0.5); z-index:5">
+              <sc-for list="{{ levels }}" as="l" hint-placeholder-count="4">
+                <span onClick="{{ l.pick }}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; color:{{ l.color }}" style-hover="background:var(--hover)">{{ l.label }}<span style="font-size:10px; color:#7ea0ff">{{ l.mark }}</span></span>
+              </sc-for>
+            </div>
+          </sc-if>
+        </span>
+        <span style="width:1px; flex:none; align-self:stretch; background:rgba(255,255,255,0.08); margin:8px 0"></span>
+
+        <span data-menu-root="true" style="position:relative; display:flex; flex:0 1 auto; min-width:0">
+          <span onClick="{{ openYearMenu }}" style="display:flex; flex-direction:column; gap:3px; padding:12px 18px; border-radius:15px; cursor:{{ yearCursor }}; flex:0 1 auto; min-width:0; width:110px" style-hover="background:rgba(255,255,255,0.05)">
+            <span style="font-size:9.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">Year</span>
+            <span style="display:flex; align-items:center; gap:8px; min-width:0; font-size:14px; font-weight:700"><span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ yearLabel }}</span><sc-if value="{{ yearPickable }}" hint-placeholder-val="{{ true }}"><span style="flex:none; font-size:9px; color:var(--text4)">▾</span></sc-if></span>
+          </span>
+          <sc-if value="{{ yearMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; left:0; bottom:calc(100% + 10px); min-width:150px; padding:6px; border-radius:14px; background:rgba(32,35,39,0.96); border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(20px); box-shadow:0 20px 50px rgba(0,0,0,0.6); z-index:20">
+              <sc-for list="{{ years }}" as="y" hint-placeholder-count="3">
+                <span onClick="{{ y.pick }}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-radius:9px; font-size:13px; font-weight:600; color:{{ y.color }}; cursor:pointer; white-space:nowrap" style-hover="background:rgba(255,255,255,0.07)">{{ y.label }}<span style="font-size:9px; color:#7ea0ff">{{ y.mark }}</span></span>
+              </sc-for>
+            </div>
+          </sc-if>
+        </span>
+        <span style="width:1px; flex:none; align-self:stretch; background:rgba(255,255,255,0.08); margin:8px 0"></span>
+        <span data-menu-root="true" style="position:relative; display:flex; flex:0 1 auto; min-width:0">
+          <span onClick="{{ openSubjectMenu }}" style="display:flex; flex-direction:column; gap:3px; padding:12px 18px; border-radius:15px; cursor:pointer; flex:0 1 auto; min-width:0; width:190px" style-hover="background:var(--hover)">
+            <span style="font-size:9.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">Subject</span>
+            <span style="display:flex; align-items:center; gap:8px; min-width:0; font-size:14px; font-weight:700"><span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ subjectLabel }}</span><span style="flex:none; font-size:9px; color:var(--text4)">▾</span></span>
+          </span>
+          <sc-if value="{{ subjectMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="max-height:min(60vh, 460px); overflow-y:auto; position:absolute; left:0; bottom:calc(100% + 10px); min-width:240px; padding:6px; border-radius:14px; background:rgba(32,35,39,0.96); border:1px solid rgba(255,255,255,0.1); box-shadow:0 20px 50px rgba(0,0,0,0.5); z-index:5">
+              <sc-for list="{{ subjects }}" as="s" hint-placeholder-count="5">
+                <span onClick="{{ s.pick }}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; color:{{ s.color }}" style-hover="background:var(--hover)">{{ s.label }}<span style="font-size:10px; color:#7ea0ff">{{ s.mark }}</span></span>
+                  <sc-if value="{{ s.hasHead }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:block; padding:13px 12px 6px; font-size:9.5px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent">{{ s.head }}</span>
+                  </sc-if>
+              </sc-for>
+            </div>
+          </sc-if>
+        </span>
+        <span style="width:1px; flex:none; align-self:stretch; background:rgba(255,255,255,0.08); margin:8px 0"></span>
+        <span data-menu-root="true" style="position:relative; display:flex; flex:0 1 auto; min-width:0">
+          <span onClick="{{ openPaperMenu }}" style="display:flex; flex-direction:column; gap:3px; padding:12px 18px; border-radius:15px; cursor:pointer; flex:0 1 auto; min-width:0; width:230px" style-hover="background:var(--hover)">
+            <span style="font-size:9.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">Paper</span>
+            <span style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; white-space:nowrap; color:{{ paperLabelColor }}"><span style="min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ paperLabel }}</span><span style="flex:none; font-size:9px; color:var(--text4)">▾</span></span>
+          </span>
+          <sc-if value="{{ paperMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; left:0; bottom:calc(100% + 10px); min-width:300px; padding:6px; border-radius:14px; background:rgba(32,35,39,0.96); border:1px solid rgba(255,255,255,0.1); box-shadow:0 20px 50px rgba(0,0,0,0.5); z-index:5">
+              <sc-for list="{{ papers }}" as="p" hint-placeholder-count="2">
+                <span onClick="{{ p.pick }}" title="{{ p.title }}" style="display:flex; flex-direction:column; gap:3px; padding:10px 12px; border-radius:9px; cursor:{{ p.cursor }}; opacity:{{ p.opacity }}" style-hover="background:var(--hover)">
+                  <span style="display:flex; justify-content:space-between; gap:10px; font-size:13px; font-weight:700">{{ p.name }}<span style="font-size:10.5px; font-weight:700; color:{{ p.stateColor }}">{{ p.state }}</span></span>
+                  <span style="font-size:11px; color:var(--text3)">{{ p.meta }}</span>
+              <sc-if value="{{ p.hasNote }}" hint-placeholder-val="{{ false }}">
+                <span style="margin-top:3px; font-size:10.5px; line-height:1.45; color:var(--warn); text-wrap:pretty">{{ p.note }}</span>
+              </sc-if>
+                </span>
+              </sc-for>
+            </div>
+          </sc-if>
+        </span>
+        <span style="width:1px; flex:none; align-self:stretch; background:rgba(255,255,255,0.08); margin:8px 0"></span>
+        <span onClick="{{ startPaper }}" title="{{ startTitle }}" style="height:44px; flex:none; align-self:center; display:flex; align-items:center; gap:9px; padding:0 22px; margin-left:4px; border-radius:15px; background:{{ startBg }}; color:{{ startFg }}; font-size:14px; font-weight:800; cursor:{{ startCursor }}; box-shadow:{{ startShadow }}">
+          Start
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5v13l11-6.5Z"></path></svg>
+        </span>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ─── MAP ─────────────────────────────────────────────── -->
+  <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Map" style="position:relative; height:100vh; display:flex; flex-direction:column; overflow:hidden">
+
+    <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px; padding:16px 22px">
+      <span onClick="{{ toPick }}" title="Choose a different paper" style="width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--text3); cursor:pointer" style-hover="background:var(--hover); color:var(--text)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+      </span>
+      <span style="flex:1; min-width:0; display:flex; flex-direction:column">
+        <span style="font-size:14px; font-weight:700; letter-spacing:-0.01em">{{ paperTitle }}</span>
+        <span style="font-size:11.5px; color:var(--text3)">{{ levelLine }}</span>
+      </span>
+        <span onClick="{{ timerToggle }}" title="{{ timerNote }}" style="flex:none; align-self:center; height:32px; padding:0 13px; border-radius:11px; display:flex; flex-direction:column; justify-content:center; gap:2px; cursor:pointer; background:{{ timerBg }}; border:1px solid {{ timerBorder }}" style-hover="filter:brightness(1.1)">
+          <span style="display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:700; color:{{ timerInk }}; white-space:nowrap">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2"></path><path d="M9 2h6"></path></svg>
+            {{ timerLabel }}
+          </span>
+        </span>
+      <sc-if value="{{ hasReview }}" hint-placeholder-val="{{ false }}">
+        <span onClick="{{ openReview }}" title="Questions that cost you marks" style="display:flex; align-items:center; gap:6px; padding:6px 11px; border-radius:12px; border:1px solid var(--line); background:var(--panel); cursor:pointer" style-hover="border-color:var(--danger)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 8v4"></path><path d="M12 16h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+          <span style="font-size:12.5px; font-weight:800; color:var(--text2)">{{ reviewCount }}</span>
+        </span>
+      </sc-if>
+      <span title="Marks banked so far" style="display:flex; align-items:center; gap:7px; padding:6px 12px; border-radius:12px; background:rgba(32,35,39,0.8); border:1px solid var(--line)">
+        <span style="font-size:10px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Marks</span>
+          <span style="display:flex; align-items:center; gap:8px">
+            <span style="font-size:13px; font-weight:800">{{ marksLine }}</span>
+            <span style="width:58px; height:5px; border-radius:3px; background:rgba(255,255,255,0.12); overflow:hidden; display:block">
+              <span style="display:block; height:5px; width:{{ marksPct }}; border-radius:3px; background:var(--grad); transition:width .5s cubic-bezier(0.22,0.61,0.36,1)"></span>
+            </span>
+          </span>
+      </span>
+                <sc-if value="{{ clockShown }}" hint-placeholder-val="{{ false }}">
+                  <span title="{{ clockTitle }}" style="flex:none; display:flex; align-items:center; gap:7px; padding:6px 13px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid var(--line2)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{ clockInk }}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2"></path><path d="M9 2h6"></path></svg>
+                    <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; font-weight:700; color:{{ clockInk }}; white-space:nowrap; font-variant-numeric:tabular-nums">{{ clockText }}</span>
+                  </span>
+                </sc-if>
+      <span title="Experience" style="display:flex; align-items:center; gap:6px; padding:6px 11px; border-radius:12px; background:rgba(32,35,39,0.8); border:1px solid var(--line)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#7ea0ff" stroke="none"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"></path></svg>
+        <span style="font-size:13px; font-weight:800">{{ xp }}</span>
+      </span>
+      <span title="Day streak" style="display:flex; align-items:center; gap:6px; padding:6px 11px; border-radius:12px; background:rgba(32,35,39,0.8); border:1px solid var(--line)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--warn)" stroke="none"><path d="M12 2c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-9Z"></path></svg>
+        <span style="font-size:13px; font-weight:800">{{ streak }}</span>
+      </span>
+    </div>
+
+    <div data-thin="true" data-road="true" style="position:relative; z-index:2; flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; padding:110px 20px 40px">
+      <div style="position:relative; width:min(560px, 100%); margin:0 auto; display:flex; flex-direction:column-reverse; gap:0">
+
+        <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="6">
+                  <sc-if value="{{ n.isHeader }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative; display:flex; align-items:center; gap:14px; padding:26px 6px 14px">
+                      <span style="flex:1; height:1px; background:{{ n.hBorder }}; display:block"></span>
+                      <span style="flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; padding:11px 20px; border-radius:16px; border:1px solid {{ n.hBorder }}; background:rgba(29,32,35,0.72); backdrop-filter:blur(10px); box-shadow:{{ n.hGlow }}">
+                        <span style="font-size:12px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:{{ n.hInk }}">{{ n.hTitle }}</span>
+                        <span style="display:flex; align-items:center; gap:8px">
+                          <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:10px; color:var(--text3); white-space:nowrap">{{ n.hMarks }}</span>
+                          <span style="width:48px; height:4px; border-radius:2px; background:rgba(255,255,255,0.1); overflow:hidden; display:block"><span style="display:block; height:4px; width:{{ n.hPct }}; border-radius:2px; background:var(--grad)"></span></span>
+                        </span>
+                      </span>
+                      <span style="flex:1; height:1px; background:{{ n.hBorder }}; display:block"></span>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ n.isChest }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative; display:flex; justify-content:center; padding:10px 0 22px">
+                      <span onClick="{{ n.cOpen }}" title="{{ n.cTitle }}" style="display:flex; align-items:center; gap:13px; padding:11px 18px 11px 12px; border-radius:18px; border:1.5px solid {{ n.cRing }}; background:rgba(29,32,35,0.82); backdrop-filter:blur(10px); box-shadow:{{ n.cGlow }}; cursor:{{ n.cCursor }}" style-hover="background:var(--hover)">
+                        <span style="width:42px; height:42px; flex:none; border-radius:13px; display:flex; align-items:center; justify-content:center; border:1px solid {{ n.cRing }}; background:rgba(255,255,255,0.04); color:{{ n.cInk }}">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"></rect><path d="M3 12h18"></path><path d="M12 8v12"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9.5 3 12 8 12 8s2.5-5 4.5-5a2.5 2.5 0 0 1 0 5"></path></svg>
+                        </span>
+                        <span style="display:flex; flex-direction:column; gap:4px; min-width:130px">
+                          <span style="font-size:13px; font-weight:800; letter-spacing:-0.01em; color:{{ n.cInk }}">{{ n.cName }}</span>
+                          <span style="font-size:10.5px; color:var(--text3)">{{ n.cState }}</span>
+                          <span style="width:100%; height:4px; border-radius:2px; background:rgba(255,255,255,0.1); overflow:hidden; display:block"><span style="display:block; height:4px; width:{{ n.cPct }}; border-radius:2px; background:var(--grad)"></span></span>
+                        </span>
+                      </span>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ n.isNode }}" hint-placeholder-val="{{ true }}">
+          <div style="position:relative; display:flex; align-items:center; gap:18px; min-height:112px; padding-left:{{ n.offset }}">
+
+                <span style="position:relative; z-index:1; width:80px; height:80px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:50%; animation:{{ n.justPop }}">
+                  <sc-if value="{{ n.hasGrade }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; inset:2px; border-radius:50%; border:2.5px solid {{ n.ringColor }}; box-shadow:{{ n.ringGlow }}; pointer-events:none"></span></sc-if>
+              <span onClick="{{ n.open }}" title="{{ n.title }}" data-arcade="{{ n.arcade }}" style="width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:{{ n.cursor }}; color:{{ n.fg }}; background:{{ n.bg }}; box-shadow:{{ n.shadow }}; transform:translateY({{ n.lift }}); transition:transform 90ms ease, box-shadow 90ms ease; animation:{{ n.anim }}" style-active="transform:translateY(3px); box-shadow:inset 0 3px 8px rgba(0,0,0,0.55), 0 0 0 #000">
+                <sc-if value="{{ n.isDone }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+                <sc-if value="{{ n.isCurrent }}" hint-placeholder-val="{{ true }}"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5v13l11-6.5Z"></path></svg></sc-if>
+                <sc-if value="{{ n.isLocked }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>
+              </span>
+            </span>
+
+            <span onClick="{{ n.open }}" style="position:relative; z-index:1; flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; cursor:{{ n.cursor }}; opacity:{{ n.textOpacity }}">
+              <span style="font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:{{ n.tagColor }}">{{ n.tag }}</span>
+              <span style="font-size:15px; font-weight:800; letter-spacing:-0.01em; line-height:1.25">{{ n.name }}</span>
+                  <span style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap">
+                    <span style="font-size:11.5px; color:var(--text3)">{{ n.meta }}</span>
+                    <sc-if value="{{ n.hasGrade }}" hint-placeholder-val="{{ false }}">
+                      <span style="display:flex; align-items:center; gap:5px">
+                        <span style="width:6px; height:6px; border-radius:50%; background:{{ n.ringColor }}"></span>
+                        <span style="font-size:10.5px; font-weight:700; color:{{ n.gradeInk }}">{{ n.gradeLabel }}</span>
+                        <span style="font-size:10.5px; color:var(--text4)">· {{ n.banked }} marks</span>
+                      </span>
+                    </sc-if>
+                  </span>
+            </span>
+
+            <sc-if value="{{ n.isCurrent }}" hint-placeholder-val="{{ false }}">
+              <span style="position:fixed; right:clamp(8px, 4vw, 90px); bottom:6vh; width:min(400px, 36vw); height:max(360px, min(460px, 66vh)); pointer-events:none; z-index:1">
+                <model-floor src="{{ avatarSrc }}" clip="{{ avatarClip }}" autorotate="off" floor="none" face="user" style="position:absolute; inset:0; -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 82%, transparent 100%); mask-image:linear-gradient(180deg, #000 0%, #000 82%, transparent 100%)"></model-floor>
+                <span data-pop="true" style="position:absolute; right:6px; left:auto; top:-4px; z-index:7; width:max-content; max-width:min(300px, 78vw); box-sizing:border-box; padding:9px 12px; border-radius:14px 14px 14px 4px; background:rgba(32,35,39,0.92); border:1px solid rgba(255,255,255,0.1); font-size:11.5px; line-height:1.45; color:var(--text2); text-align:center; text-wrap:pretty; pointer-events:auto; backdrop-filter:blur(10px)">{{ arrivalLine }}</span>
+              </span>
+            </sc-if>
+          </div>
+                  </sc-if>
+        </sc-for>
+
+          <div style="display:flex; justify-content:center; padding:0 0 26px">
+      <span data-pop="true" style="display:flex; align-items:center; gap:12px; padding:10px 18px 10px 12px; border-radius:18px; background:{{ trophyBg }}; border:1px solid {{ trophyLine }}; box-shadow:{{ trophyShadow }}; pointer-events:auto">
+        <span style="width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:{{ trophyCupBg }}; animation:{{ trophyAnim }}">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{ trophyInk }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+        </span>
+        <span style="display:flex; flex-direction:column; gap:2px">
+          <span style="font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:{{ trophyTag }}">{{ trophyKicker }}</span>
+          <span style="font-size:14px; font-weight:800; letter-spacing:-0.01em">{{ trophyTitle }}</span>
+          <span style="font-size:11px; color:var(--text3)">{{ trophyMeta }}</span>
+        </span>
+      </span>
+    </div>
+      </div>
+    </div>
+
+  </div>
+  </sc-if>
+
+  <!-- ─── AVATARS ─────────────────────────────────────────── -->
+  <sc-if value="{{ onAvatars }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Avatars" data-pop="true" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:22px; padding:40px 18px; max-width:900px; width:100%; margin:0 auto">
+    <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#7ea0ff">Your assistant</span>
+    <span style="font-size:26px; font-weight:800; letter-spacing:-0.02em; text-align:center">Unlock a new assistant with XP</span>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(220px,100%),1fr)); gap:14px; width:100%">
+      <sc-for list="{{ avatars }}" as="a" hint-placeholder-count="3">
+        <span title="{{ a.title }}" style="display:flex; flex-direction:column; gap:10px; padding:14px; border-radius:18px; border:2px solid {{ a.border }}; background:var(--panel); cursor:{{ a.cursor }}; opacity:{{ a.opacity }}">
+          <span style="position:relative; height:200px; border-radius:14px; overflow:hidden; background:radial-gradient(80% 60% at 50% 30%, rgba(30,70,255,0.22), transparent 70%), var(--panel2)">
+            <sc-if value="{{ a.hasModel }}" hint-placeholder-val="{{ true }}"><model-floor src="{{ a.src }}" clip="greet" autorotate="off" floor="none" face="user" style="position:absolute; inset:0"></model-floor></sc-if>
+            <sc-if value="{{ a.isSlot }}" hint-placeholder-val="{{ false }}"><image-slot id="{{ a.slotId }}" shape="rounded" placeholder="{{ a.placeholder }}" style="position:absolute; inset:0; display:block"></image-slot></sc-if>
+            <sc-if value="{{ a.locked }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(16,18,20,0.55)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span></sc-if>
+          </span>
+          <span onClick="{{ a.pick }}" title="{{ a.title }}" style="display:flex; align-items:center; gap:8px; cursor:{{ a.cursor }}; border-radius:9px; padding:3px 4px" style-hover="background:var(--hover)"><span style="flex:1; font-size:14px; font-weight:700">{{ a.name }}</span><span style="font-size:11.5px; font-weight:700; color:{{ a.stateColor }}">{{ a.state }}</span></span>
+        </span>
+      </sc-for>
+    </div>
+    <span onClick="{{ toMap }}" style="padding:0 24px; height:46px; display:flex; align-items:center; border-radius:14px; border:1.5px solid var(--line2); font-size:14px; font-weight:700; cursor:pointer" style-hover="background:var(--hover)">Back to the map</span>
+  </div>
+  </sc-if>
+
+  <!-- ─── PLAY ────────────────────────────────────────────── -->
+  <sc-if value="{{ onPlay }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Mission" style="box-sizing:border-box; height:100vh; overflow:hidden; display:flex; flex-direction:column; max-width:1060px; width:100%; margin:0 auto; padding:0 18px; position:relative">
+              <span style="position:absolute; inset:0; pointer-events:none; z-index:0; background:{{ roomGlow }}; transition:background 600ms ease; animation:{{ roomPulse }}"></span>
+    <sc-if value="{{ figOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeFig }}" data-pop="true" style="position:fixed; inset:0; z-index:60; background:rgba(12,14,16,0.92); backdrop-filter:blur(14px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:clamp(16px, 4vw, 56px); cursor:zoom-out">
+        <span style="display:flex; align-items:center; gap:10px; align-self:stretch">
+          <span style="flex:1; min-width:0; font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#7ea0ff">{{ figLabel }}</span>
+          <span onClick="{{ closeFig }}" title="Close" style="width:32px; height:32px; flex:none; border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--text2); cursor:pointer" style-hover="background:var(--hover); color:var(--text)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          </span>
+        </span>
+        <span style="flex:1; min-height:0; width:100%; position:relative; border-radius:16px; overflow:hidden; background:var(--panel2); border:1px solid var(--line2)">
+          <image-slot id="figzoom-{{ itemNumber }}" shape="rect" placeholder="{{ figLabel }}" style="position:absolute; inset:0; display:block"></image-slot>
+        </span>
+        <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+          <span style="max-width:720px; font-size:13px; line-height:1.6; color:var(--text2); text-align:center; text-wrap:pretty">{{ note }}</span>
+        </sc-if>
+      </div>
+    </sc-if>
+    <div data-companion="true" style="position:fixed; right:clamp(6px, 2vw, 28px); bottom:12px; width:min(210px, 18vw); pointer-events:none; z-index:1; opacity:0.96; animation:{{ avatarReact }}; display:flex; flex-direction:column; gap:10px">
+      <span style="position:relative; height:max(210px, min(280px, 38vh)); display:block">
+                  <model-floor src="{{ avatarSrc }}" clip="{{ avatarClip }}" autorotate="off" floor="none" face="user" yaw="{{ companionYaw }}" lift="{{ companionLift }}" style="position:absolute; inset:0; -webkit-mask-image:radial-gradient(ellipse 70% 80% at 50% 58%, #000 45%, transparent 100%); mask-image:radial-gradient(ellipse 70% 80% at 50% 58%, #000 45%, transparent 100%)"></model-floor>
+                </span>
+      </div>
+    <span data-companion="true" data-pop="true" data-key="{{ speechKey }}" style="position:fixed; right:clamp(6px, 2vw, 28px); bottom:calc(12px + max(210px, min(280px, 38vh)) * 0.42); z-index:4; pointer-events:auto; width:max-content; max-width:min(280px, 30vw); box-sizing:border-box; font-size:12.5px; line-height:1.5; color:{{ speechColor }}; text-wrap:pretty; padding:10px 13px; border-radius:14px 14px 14px 4px; background:transparent; border:1px solid {{ speechBorder }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-shadow:0 1px 10px rgba(0,0,0,0.55); text-align:center">{{ speech }}</span>
+
+    <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px; padding:16px 0 22px">
+      <span onClick="{{ quit }}" title="Back to the map" style="width:32px; height:32px; flex:none; border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--text3); cursor:pointer" style-hover="background:var(--hover); color:var(--text)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </span>
+
+      <span data-noscrollbar="true" style="flex:1; min-width:0; display:flex; align-items:center; gap:4px; overflow-x:auto">
+        <sc-for list="{{ rail }}" as="rt" hint-placeholder-count="9">
+          <span onClick="{{ rt.go }}" title="{{ rt.title }}" style="flex:none; width:{{ rt.w }}; height:7px; border-radius:4px; background:{{ rt.bg }}; transition:width .25s ease, background .25s ease; position:relative; cursor:{{ rt.cursor }}" style-hover="filter:brightness(1.4)">
+            <sc-if value="{{ rt.wasMissed }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; left:50%; top:-6px; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:var(--danger)"></span></sc-if>
+          </span>
+        </sc-for>
+                <span style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text4); white-space:nowrap; margin-left:6px">{{ roadLabel }}</span>
+      </span>
+
+      <span title="Marks banked in this mission" style="flex:none; font-size:12.5px; font-weight:800; white-space:nowrap; color:var(--text2)">{{ missionMarksLine }}</span>
+
+      <sc-if value="{{ hasCombo }}" hint-placeholder-val="{{ false }}">
+        <span data-pop="true" data-key="{{ comboKey }}" title="{{ comboCount }} in a row" style="flex:none; display:flex; align-items:center; gap:5px; padding:4px 9px; border-radius:10px; border:1px solid {{ comboInk }}; background:rgba(255,255,255,0.04)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="{{ comboInk }}" stroke="none" style="display:block"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"></path></svg>
+          <span style="font-size:11.5px; font-weight:800; color:{{ comboInk }}">{{ comboLabel }}</span>
+        </span>
+      </sc-if>
+
+                <sc-if value="{{ clockShown }}" hint-placeholder-val="{{ false }}">
+                  <span title="{{ clockTitle }}" style="flex:none; display:flex; align-items:center; gap:7px; padding:6px 13px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid var(--line2)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{ clockInk }}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2"></path><path d="M9 2h6"></path></svg>
+                    <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; font-weight:700; color:{{ clockInk }}; white-space:nowrap; font-variant-numeric:tabular-nums">{{ clockText }}</span>
+                  </span>
+                </sc-if>
+      <span data-xppill="true" title="Experience" style="position:relative; animation:{{ pillLand }}; flex:none; display:flex; align-items:center; gap:7px; padding:6px 13px; border-radius:13px; border:1px solid {{ xpPillRing }}; background:rgba(255,255,255,0.03); box-shadow:{{ xpPillGlow }}; transition:border-color .25s ease, box-shadow .25s ease">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#7ea0ff" stroke="none" style="display:block"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"></path></svg>
+        <span style="display:flex; flex-direction:column; line-height:1.05">
+          <span style="font-size:13.5px; font-weight:800; color:#7ea0ff; animation:{{ xpGlow }}"><span data-odo="{{ odoKey }}" style="display:inline-block; animation:{{ odoAnim }}">{{ xp }}</span></span>
+          <sc-if value="{{ xpStakeShown }}" hint-placeholder-val="{{ true }}">
+            <span style="font-size:9px; font-weight:700; letter-spacing:0.02em; color:{{ xpStakeInk }}; white-space:nowrap; transition:color .25s ease"><sc-if value="{{ stakeDropped }}" hint-placeholder-val="{{ false }}"><span style="text-decoration:line-through; color:var(--text4); opacity:0.7; margin-right:4px">{{ stakeWas }}</span></sc-if>{{ xpStake }}</span>
+          </sc-if>
+        </span>
+        <sc-if value="{{ xpGainShown }}" hint-placeholder-val="{{ false }}">
+          <span data-key="{{ fxKey }}" style="position:absolute; left:50%; top:-4px; transform:translateX(-50%); font-size:13px; font-weight:800; color:var(--ok); pointer-events:none; animation:bolt 900ms cubic-bezier(0.2,0.7,0.2,1) both; white-space:nowrap">{{ xpGain }}</span>
+        </sc-if>
+      </span>
+              <span title="Marks banked against the paper" style="position:absolute; left:0; right:0; bottom:0; height:3px; display:block; background:var(--overlay3); overflow:hidden; border-radius:2px">
+                <span style="position:absolute; left:0; top:0; bottom:0; width:{{ meterPct }}; background:linear-gradient(90deg, #0068f8 0%, #1e46ff 55%, #671dff 100%); transition:width 500ms cubic-bezier(0.22,0.61,0.36,1); transform-origin:left center; animation:{{ meterPulse }}"></span>
+              </span>
+              <span style="position:absolute; right:0; bottom:8px; font-size:10px; font-weight:700; letter-spacing:0.04em; color:var(--text3); white-space:nowrap">{{ meterLabel }}</span>
+    </div>
+
+    <div data-thin="true" data-answers="true" style="position:relative; z-index:2; flex:1; min-height:0; overflow-y:auto; display:grid; grid-template-columns:minmax(0, {{ colWidth }}); gap:0; padding:0 clamp(16px, 5vw, 48px); align-items:center; justify-content:center">
+                <div data-key="{{ qKey }}" style="position:relative; animation:{{ enterAnim }}; width:100%; max-width:{{ colWidth }}; justify-self:center; display:flex; flex-direction:column; gap:16px; min-width:0">
+          <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px">
+            <span style="font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#7ea0ff">{{ sectionLabel }} · {{ itemNumber }}</span>
+            <sc-if value="{{ inFix }}" hint-placeholder-val="{{ false }}">
+              <span data-pop="true" style="padding:2px 8px; border-radius:8px; border:1px solid var(--danger); background:rgba(242,119,122,0.12); font-size:9.5px; font-weight:800; letter-spacing:0.09em; text-transform:uppercase; color:var(--danger)">{{ fixLabel }} · {{ fixLeft }}</span>
+            </sc-if>
+            <sc-if value="{{ isFinal }}" hint-placeholder-val="{{ false }}">
+              <span data-pop="true" style="padding:2px 8px; border-radius:8px; border:1px solid #ffcf4d; background:rgba(255,207,77,0.12); font-size:9.5px; font-weight:800; letter-spacing:0.09em; text-transform:uppercase; color:#ffcf4d">{{ finalLabel }}</span>
+            </sc-if>
+            <span style="flex:1"></span>
+            <span style="font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3); white-space:nowrap">{{ typeLabel }}</span>
+            <span style="font-size:10px; color:var(--text4)">·</span>
+            <span style="font-size:10px; font-weight:700; color:var(--text2); white-space:nowrap">{{ itemMarks }}</span>
+            <sc-if value="{{ showTries }}" hint-placeholder-val="{{ true }}">
+              <span title="Tries left" style="display:flex; align-items:center; gap:4px; margin-left:4px">
+                <sc-for list="{{ tries }}" as="t" hint-placeholder-count="3"><span style="width:8px; height:8px; border-radius:50%; background:{{ t.bg }}; border:1.5px solid {{ t.border }}"></span></sc-for>
+              </span>
+            </sc-if>
+          </div>
+        <sc-if value="{{ hasExtract }}" hint-placeholder-val="{{ false }}">
+          <span style="padding:12px 14px; border-radius:12px; background:var(--panel2); border:1px solid var(--line); font-size:12.5px; line-height:1.6; color:var(--text2); text-wrap:pretty">{{ extract }}</span>
+        </sc-if>
+        <span style="padding:14px 16px; border-radius:16px; background:var(--panel); border:1px solid var(--line); font-size:17px; font-weight:600; line-height:1.45; letter-spacing:-0.005em; text-wrap:pretty">{{ qText }}</span>
+            <div style="display:flex; flex-wrap:nowrap; align-items:flex-start; gap:18px">
+            <sc-if value="{{ hasFig }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:0 0 auto; width:clamp(240px, 34%, 360px); display:flex; flex-direction:column; gap:7px">
+                <span style="position:relative; display:block; width:100%; aspect-ratio:4/3; border-radius:14px; border:1px solid var(--line2); overflow:hidden; background:var(--panel2)" style-hover="border-color:#7ea0ff">
+                  <image-slot id="fig-{{ itemNumber }}" shape="rect" placeholder="{{ figLabel }}" style="position:absolute; inset:0; display:block"></image-slot>
+                  <span onClick="{{ openFig }}" title="Enlarge the figure" style="position:absolute; right:8px; bottom:8px; cursor:zoom-in; z-index:2; display:flex; align-items:center; gap:5px; padding:4px 9px; border-radius:9px; background:rgba(16,18,20,0.78); backdrop-filter:blur(8px)">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#e8ecf4" stroke-width="2.1" stroke-linecap="round" style="display:block"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path><path d="M11 8v6"></path><path d="M8 11h6"></path></svg>
+                    <span style="font-size:10px; font-weight:700; color:#e8ecf4">Enlarge</span>
+                  </span>
+                </span>
+                <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:12px; line-height:1.55; color:var(--text3); text-wrap:pretty">{{ note }}</span>
+                </sc-if>
+              </div>
+            </sc-if>
+                      <div style="flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:12px">
+          <sc-if value="{{ isMcq }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid; grid-template-columns:{{ optCols }}; gap:10px">
+              <sc-for list="{{ opts }}" as="o" hint-placeholder-count="4">
+                <span onClick="{{ o.pick }}" style="position:relative; display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:14px; border:2px solid {{ o.border }}; background:{{ o.bg }}; cursor:{{ o.cursor }}; font-size:14.5px; font-weight:500; line-height:1.4; opacity:{{ o.opacity }}; animation:{{ o.anim }}; text-decoration:{{ o.strike }}" style-hover="background:var(--hover)">
+                    <sc-if value="{{ o.flyHere }}" hint-placeholder-val="{{ false }}">
+                      <span data-fly="{{ flyKey }}" style="position:absolute; right:14px; top:50%; z-index:40; pointer-events:none; --flyX:20vw; --flyY:-34vh; font-size:22px; font-weight:800; letter-spacing:-0.01em; color:#7ea0ff; text-shadow:0 0 22px rgba(126,160,255,0.55); animation:xpFly 1600ms cubic-bezier(0.45,0.05,0.25,1) both">{{ flyText }}</span>
+                    </sc-if>
+                  <span style="width:28px; height:28px; flex:none; border-radius:9px; border:2px solid var(--line2); display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:700; color:var(--text3)">{{ o.key }}</span>
+                  <span style="flex:1; min-width:0">{{ o.text }}</span>
+                </span>
+              </sc-for>
+            </div>
+          </sc-if>
+  
+          <sc-if value="{{ isPickn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-wrap:wrap; gap:9px">
+              <sc-for list="{{ opts }}" as="o" hint-placeholder-count="5">
+                <span onClick="{{ o.pick }}" style="width:52px; height:52px; border-radius:14px; border:2px solid {{ o.border }}; background:{{ o.bg }}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; font-weight:800" style-hover="background:var(--hover)">{{ o.text }}</span>
+              </sc-for>
+              <span style="align-self:center; font-size:12px; color:var(--text4)">{{ picknHint }}</span>
+            </div>
+          </sc-if>
+  
+          <sc-if value="{{ isOrder }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <div style="min-height:56px; display:flex; flex-wrap:wrap; gap:8px; padding:10px; border-radius:14px; border:1.5px dashed var(--line2); background:var(--panel2)">
+                <sc-for list="{{ chosen }}" as="c" hint-placeholder-count="2"><span onClick="{{ c.unpick }}" style="display:flex; align-items:center; gap:8px; min-height:52px; padding:9px 15px; border-radius:14px; background:var(--field); border:2px solid var(--cobalt); font-size:13.5px; font-weight:700; cursor:pointer"><span style="font-size:10.5px; color:#7ea0ff; font-weight:800">{{ c.n }}</span>{{ c.text }}</span></sc-for>
+                <sc-if value="{{ chosenEmpty }}" hint-placeholder-val="{{ true }}"><span style="align-self:center; font-size:12.5px; color:var(--text4)">Tap the letters in order</span></sc-if>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px">
+                <sc-for list="{{ opts }}" as="o" hint-placeholder-count="3"><span onClick="{{ o.pick }}" style="width:52px; height:52px; border-radius:14px; border:2px solid var(--line2); background:var(--panel); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; cursor:pointer; opacity:{{ o.opacity }}" style-hover="background:var(--hover)">{{ o.text }}</span></sc-for>
+              </div>
+            </div>
+          </sc-if>
+  
+          <sc-if value="{{ isInput }}" hint-placeholder-val="{{ false }}">
+            <input value="{{ typed }}" onChange="{{ onTyped }}" onKeyDown="{{ onTypedKey }}" placeholder="{{ inputHint }}" style="height:52px; padding:0 16px; border-radius:14px; border:2px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" style-focus="border-color:var(--cobalt)" />
+          </sc-if>
+  
+          <sc-if value="{{ isLetterName }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <div style="display:flex; flex-wrap:wrap; gap:8px">
+                <sc-for list="{{ letters }}" as="o" hint-placeholder-count="6"><span onClick="{{ o.pick }}" style="width:52px; height:52px; border-radius:14px; border:2px solid {{ o.border }}; background:{{ o.bg }}; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; cursor:pointer" style-hover="background:var(--hover)">{{ o.text }}</span></sc-for>
+              </div>
+              <input value="{{ typed }}" onChange="{{ onTyped }}" onKeyDown="{{ onTypedKey }}" placeholder="…and its name" style="height:52px; padding:0 18px; border-radius:14px; border:2px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" style-focus="border-color:var(--cobalt)" />
+            </div>
+          </sc-if>
+  
+          <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <sc-for list="{{ listInputs }}" as="li" hint-placeholder-count="2"><input value="{{ li.val }}" onChange="{{ li.onVal }}" placeholder="{{ li.hint }}" style="height:50px; padding:0 16px; border-radius:14px; border:2px solid {{ li.border }}; background:var(--field); color:var(--text); font-size:15px; outline:none" style-focus="border-color:var(--cobalt)" /></sc-for>
+            </div>
+          </sc-if>
+  
+          <sc-if value="{{ isRubric }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <sc-if value="{{ writing }}" hint-placeholder-val="{{ true }}">
+                <textarea value="{{ typed }}" onChange="{{ onTyped }}" rows="4" placeholder="Write your answer the way you would in the answer book" style="box-sizing:border-box; width:100%; padding:12px 14px; border-radius:14px; border:2px solid var(--line2); background:var(--field); color:var(--text); font-size:14.5px; line-height:1.55; resize:vertical; outline:none" style-focus="border-color:var(--cobalt)"></textarea>
+              </sc-if>
+              <sc-if value="{{ marking }}" hint-placeholder-val="{{ false }}">
+                <span style="padding:12px 14px; border-radius:12px; background:var(--panel2); border:1px solid var(--line); font-size:13.5px; line-height:1.55; color:var(--text2); white-space:pre-wrap">{{ typed }}</span>
+                <span style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">{{ rubricLead }}</span>
+                <sc-for list="{{ rubric }}" as="r" hint-placeholder-count="3">
+                  <span onClick="{{ r.toggle }}" style="display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:12px; border:1.5px solid {{ r.border }}; background:{{ r.bg }}; cursor:pointer; font-size:13.5px; line-height:1.45">
+                    <span style="width:18px; height:18px; flex:none; margin-top:1px; border-radius:5px; border:1.5px solid {{ r.boxBorder }}; background:{{ r.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff"><sc-if value="{{ r.on }}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if></span>
+                    <span style="flex:1">{{ r.text }}</span>
+                  </span>
+                </sc-for>
+              </sc-if>
+            </div>
+          </sc-if>
+  
+          <sc-if value="{{ isDraw }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <sc-if value="{{ writing }}" hint-placeholder-val="{{ true }}">
+                <span style="height:220px; border-radius:14px; border:2px dashed var(--line2); overflow:hidden; background:var(--panel2)"><image-slot id="{{ drawId }}" shape="rounded" placeholder="Photograph your drawing and drop it here" style="width:100%; height:100%; display:block"></image-slot></span>
+              </sc-if>
+              <sc-if value="{{ marking }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:12.5px; line-height:1.55; color:var(--text2); padding:10px 12px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)">{{ drawMemo }}</span>
+                <span style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">{{ rubricLead }}</span>
+                <sc-for list="{{ rubric }}" as="r" hint-placeholder-count="3">
+                  <span onClick="{{ r.toggle }}" style="display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:12px; border:1.5px solid {{ r.border }}; background:{{ r.bg }}; cursor:pointer; font-size:13.5px; line-height:1.45">
+                    <span style="width:18px; height:18px; flex:none; margin-top:1px; border-radius:5px; border:1.5px solid {{ r.boxBorder }}; background:{{ r.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff"><sc-if value="{{ r.on }}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if></span>
+                    <span style="flex:1">{{ r.text }}</span>
+                    <span style="font-size:11px; font-weight:700; color:var(--text3); white-space:nowrap">{{ r.marks }}</span>
+                  </span>
+                </sc-for>
+              </sc-if>
+            </div>
+          </sc-if>
+              </div>
+            </div>
+            <sc-if value="{{ clueShown }}" hint-placeholder-val="{{ false }}">
+              <div data-pop="true" data-key="{{ speechKey }}" style="display:flex; gap:12px; align-items:flex-start; padding:0 4px">
+                <span style="width:36px; height:36px; flex:none; border-radius:50%; overflow:hidden; background:var(--panel2); border:1px solid var(--line2); animation:{{ avatarReact }}">
+                  <img src="assets/nexera-mark.png" alt="" style="width:22px; height:22px; margin:6px; display:block" />
+                </span>
+                <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+                  <span style="font-size:12.5px; font-weight:800; letter-spacing:0.04em; color:var(--warn)">{{ clueTitle }}</span>
+                  <span style="font-size:14px; line-height:1.55; color:var(--text); text-wrap:pretty">{{ clueText }}</span>
+                </span>
+              </div>
+            </sc-if>
+        <sc-if value="{{ showFeedback }}" hint-placeholder-val="{{ false }}">
+          <div data-pop="true" style="display:flex; gap:12px; align-items:flex-start; padding:0 4px">
+            <span style="width:36px; height:36px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ fbIconBg }}; color:#fff">
+              <sc-if value="{{ wasRight }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+              <sc-if value="{{ wasWrong }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
+            </span>
+            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+                        <span style="display:flex; align-items:center; flex-wrap:wrap; gap:6px">
+              <span style="font-size:15px; font-weight:800; color:{{ fbColor }}">{{ fbTitle }}</span>
+                        </span>
+              <span style="font-size:13px; line-height:1.55; color:var(--text2); text-wrap:pretty">{{ fbBody }}</span>
+              <span style="font-size:11px; color:var(--text4); margin-top:2px">{{ fbMemo }}</span>
+            </span>
+          </div>
+        </sc-if>
+      </div>
+
+
+    </div>
+    <div style="position:relative; z-index:2; padding:14px 0 24px; border-top:1px solid var(--line); margin-top:8px; display:flex; flex-direction:column; gap:12px">
+      <div style="display:flex; justify-content:center; padding:0 0 4px; margin-top:-2px; position:relative; z-index:5">
+            <sc-if value="{{ showPrimary }}" hint-placeholder-val="{{ true }}">
+        <span onClick="{{ primary }}" style="padding:0 26px; height:48px; display:flex; align-items:center; border-radius:14px; background:{{ primaryBg }}; color:{{ primaryFg }}; font-size:14px; font-weight:800; letter-spacing:0.02em; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</span>
+            </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ─── DONE ────────────────────────────────────────────── -->
+  <sc-if value="{{ onDone }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Mission complete" data-pop="true" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px 18px; text-align:center">
+    <span style="position:relative; width:260px; height:200px; border-radius:22px; overflow:hidden; background:radial-gradient(80% 60% at 50% 30%, rgba(30,70,255,0.28), transparent 70%), var(--panel2); border:1px solid var(--line); animation:pulseRing 2.2s ease-out infinite"><model-floor src="{{ avatarSrc }}" clip="{{ avatarClip }}" autorotate="off" floor="none" face="user" style="position:absolute; inset:0"></model-floor></span>
+    <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#7ea0ff">{{ doneKicker }}</span>
+    <span style="font-size:30px; font-weight:800; letter-spacing:-0.025em; max-width:560px; text-wrap:balance">{{ doneTitle }}</span>
+    <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; width:min(520px,100%)">
+      <span style="display:flex; flex-direction:column; gap:4px; padding:16px 12px; border-radius:16px; background:var(--panel); border:1px solid var(--line)"><span style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Marks</span><span style="font-size:24px; font-weight:800">{{ doneMarks }}</span></span>
+      <span style="display:flex; flex-direction:column; gap:4px; padding:16px 12px; border-radius:16px; background:var(--panel); border:1px solid var(--line)"><span style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">XP earned</span><span style="font-size:24px; font-weight:800; color:#7ea0ff">+{{ doneXp }}</span></span>
+      <span style="display:flex; flex-direction:column; gap:4px; padding:16px 12px; border-radius:16px; background:var(--panel); border:1px solid var(--line)"><span style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">First-try</span><span style="font-size:24px; font-weight:800">{{ doneFirst }}</span></span>
+    </div>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:7px; width:min(520px,100%)">
+          <span style="display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:11px; border:1px solid {{ doneGradeInk }}; background:rgba(255,255,255,0.03)">
+            <span style="width:7px; height:7px; border-radius:50%; background:{{ doneGradeInk }}"></span>
+            <span style="font-size:11.5px; font-weight:800; color:{{ doneGradeInk }}">{{ doneGradeLabel }}</span>
+          </span>
+          <span style="padding:6px 12px; border-radius:11px; border:1px solid var(--line); background:rgba(255,255,255,0.03); font-size:11.5px; color:var(--text2)">{{ doneClean }}</span>
+          <span style="display:flex; align-items:center; gap:5px; padding:6px 12px; border-radius:11px; border:1px solid var(--line); background:rgba(255,255,255,0.03)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="#ffcf4d" stroke="none" style="display:block"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"></path></svg>
+          </span>
+          <span style="padding:6px 12px; border-radius:11px; border:1px solid var(--line); background:rgba(255,255,255,0.03); font-size:11.5px; color:var(--text2)">{{ doneStreak }}</span>
+          <sc-if value="{{ doneHasFix }}" hint-placeholder-val="{{ false }}">
+            <span style="padding:6px 12px; border-radius:11px; border:1px solid var(--line); background:rgba(255,255,255,0.03); font-size:11.5px; color:var(--text2)">{{ doneFixed }}</span>
+          </sc-if>
+        </div>
+    <span style="max-width:520px; padding:14px 16px; border-radius:14px; background:var(--panel2); border:1px solid var(--line); font-size:13.5px; line-height:1.6; color:var(--text2); text-wrap:pretty; text-align:left">{{ doneInsight }}</span>
+    <div style="display:flex; gap:10px">
+          <sc-if value="{{ hasReview }}" hint-placeholder-val="{{ false }}">
+            <span onClick="{{ openReview }}" style="padding:0 20px; height:50px; display:flex; align-items:center; gap:8px; border-radius:14px; border:1.5px solid var(--line2); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer" style-hover="background:var(--hover); color:var(--text)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 8v4"></path><path d="M12 16h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+              Review mistakes
+            </span>
+          </sc-if>
+      <span onClick="{{ replay }}" style="padding:0 20px; height:50px; display:flex; align-items:center; border-radius:14px; border:1.5px solid var(--line2); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer" style-hover="background:var(--hover)">Replay</span>
+      <span onClick="{{ toMap }}" style="padding:0 28px; height:50px; display:flex; align-items:center; border-radius:14px; background:var(--grad); color:#fff; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 10px 30px rgba(30,70,255,0.35)">{{ doneNext }}</span>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ onReview }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Review" style="box-sizing:border-box; height:100vh; overflow:hidden; display:flex; flex-direction:column; max-width:840px; width:100%; margin:0 auto; padding:0 18px">
+
+    <div style="display:flex; align-items:center; gap:14px; padding:20px 0 14px">
+      <span onClick="{{ closeReview }}" title="Back to the map" style="width:32px; height:32px; flex:none; border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--text3); cursor:pointer" style-hover="background:var(--hover); color:var(--text)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+      </span>
+      <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px">
+        <span style="font-size:17px; font-weight:800; letter-spacing:-0.02em">What cost you marks</span>
+        <span style="font-size:11.5px; color:var(--text3)">{{ reviewCount }}</span>
+      </span>
+    </div>
+
+    <div data-thin="true" style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-bottom:30px">
+      <sc-if value="{{ reviewEmpty }}" hint-placeholder-val="{{ false }}">
+        <span style="padding:40px 0; text-align:center; font-size:13.5px; line-height:1.6; color:var(--text3); text-wrap:pretty">Nothing here yet. Questions you miss on the first try are collected so you can come back to them.</span>
+      </sc-if>
+      <sc-for list="{{ reviewRows }}" as="rv" hint-placeholder-count="3">
+        <div style="display:flex; flex-direction:column; gap:10px; padding:16px 18px; border-radius:16px; background:var(--panel); border:1px solid var(--line)">
+          <span style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap">
+            <span style="font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#7ea0ff">{{ rv.n }}</span>
+            <span style="flex:1; min-width:0; font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text4)">{{ rv.mission }}</span>
+            <span style="font-size:10.5px; font-weight:700; color:var(--text3)">{{ rv.marks }}</span>
+          </span>
+          <span style="font-size:14.5px; font-weight:600; line-height:1.45; text-wrap:pretty">{{ rv.q }}</span>
+          <div style="display:flex; flex-direction:column; gap:6px">
+            <span style="display:flex; align-items:flex-start; gap:9px; padding:9px 11px; border-radius:10px; border:1px solid rgba(242,119,122,0.4); background:rgba(242,119,122,0.08)">
+              <span style="flex:none; font-size:9.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--danger); padding-top:2px">You said</span>
+              <span style="flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--text2); text-wrap:pretty">{{ rv.chose }}</span>
+            </span>
+            <span style="display:flex; align-items:flex-start; gap:9px; padding:9px 11px; border-radius:10px; border:1px solid rgba(61,220,151,0.4); background:rgba(61,220,151,0.08)">
+              <span style="flex:none; font-size:9.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--ok); padding-top:2px">Memo</span>
+              <span style="flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--text); text-wrap:pretty">{{ rv.answer }}</span>
+            </span>
+          </div>
+          <sc-if value="{{ rv.hasMemo }}" hint-placeholder-val="{{ true }}">
+            <span style="font-size:11.5px; line-height:1.55; color:var(--text3); text-wrap:pretty">{{ rv.memo }}</span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script>
+// The paper is the spec. Every item here is the paper's own question, marked from its memo.
+const SAVE_KEY = "nexera-exam-missions-v3";
+const XP_LADDER = [100, 60, 20];
+
+const TYPE_LABEL = { mcq: "Multiple choice", term: "Biological term", pickn: "Pick the letters", order: "Put in order", num: "Calculate", lettername: "Letter and name", list: "Name them", rubric: "Written answer", draw: "Drawing" };
+
+const LEVELS = [
+  // The NSC is written in Grade 12 only, so that is the one year on offer.
+  { id: "secondary", label: "High School", groups: [
+    // Four compulsory: a home language, a first additional language, Life Orientation, and
+    // either Mathematics or Mathematical Literacy.
+    { name: "Languages", years: ["Grade 12"], subjects: [
+      "Afrikaans Home Language", "Afrikaans First Additional Language",
+      "English Home Language", "English First Additional Language",
+      "isiNdebele Home Language", "isiXhosa Home Language", "isiZulu Home Language",
+      "Sepedi Home Language", "Sesotho Home Language", "Setswana Home Language",
+      "siSwati Home Language", "Tshivenda Home Language", "Xitsonga Home Language",
+      "South African Sign Language Home Language"
+    ] },
+    { name: "Compulsory", years: ["Grade 12"], subjects: [
+      "Mathematics", "Mathematical Literacy", "Life Orientation"
+    ] },
+    { name: "Sciences", years: ["Grade 12"], subjects: [
+      "Physical Sciences", "Life Sciences", "Agricultural Sciences", "Technical Sciences"
+    ] },
+    { name: "Commerce", years: ["Grade 12"], subjects: [
+      "Accounting", "Business Studies", "Economics"
+    ] },
+    { name: "Humanities", years: ["Grade 12"], subjects: [
+      "Geography", "History", "Religion Studies"
+    ] },
+    { name: "Technology and Engineering", years: ["Grade 12"], subjects: [
+      "Civil Technology", "Electrical Technology", "Mechanical Technology",
+      "Engineering Graphics and Design", "Technical Mathematics"
+    ] },
+    { name: "Computing", years: ["Grade 12"], subjects: [
+      "Information Technology", "Computer Applications Technology"
+    ] },
+    { name: "Services", years: ["Grade 12"], subjects: [
+      "Consumer Studies", "Hospitality Studies", "Tourism", "Agricultural Management Practices",
+      "Agricultural Technology"
+    ] },
+    { name: "Arts", years: ["Grade 12"], subjects: [
+      "Visual Arts", "Dramatic Arts", "Music", "Design", "Dance Studies"
+    ] }
+  ] },
+  // Three families under one label, each with its own ladder — NC(V) is Levels 2–4, NATED
+  // Report 191 is N4–N6, and an occupational programme is assessed on competence, not a year.
+  { id: "vocational", label: "TVET", groups: [
+    { name: "National Certificate (Vocational)", years: ["Level 2", "Level 3", "Level 4"], subjects: [
+      "Finance, Economics and Accounting", "Marketing", "Management", "Office Administration",
+      "Information Technology and Computer Science", "Civil Engineering & Building Construction",
+      "Electrical Infrastructure Construction", "Engineering and Related Design",
+      "Education and Development", "Hospitality", "Primary Agriculture", "Tourism"
+    ] },
+    { name: "NATED (Report 191)", years: ["N4", "N5", "N6"], subjects: [
+      "Financial Management", "Farming Management", "Management Assistant", "Marketing Management",
+      "Public Management", "Tourism", "Civil Engineering", "Electrical Engineering",
+      "Mechanical Engineering", "Multi-Disciplinary Drawing Office Practice / Draughting"
+    ] },
+    { name: "Occupational & Skills Programmes", years: ["Trade test"], subjects: [
+      "Cabinet Making & Carpentry", "Welding / Boilermaking", "Fitting & Turning",
+      "Electronics & Electrical", "Plumbing & Bricklaying", "Motor Mechanics", "Hairdressing"
+    ] }
+  ] },
+  { id: "higher", label: "University", years: ["1st year", "2nd year", "3rd year", "4th year"], subjects: [
+    "Anatomy & Physiology", "Chemistry I", "Engineering Mathematics", "Fluid Mechanics", "Thermodynamics"
+  ] }
+];
+// Only papers the curriculum team has actually published from the generator.
+const PAPERS = [
+  { level: "secondary", year: "Grade 12", subject: "Life Sciences", data: () => window.PAPER_LS_P1_2026 },
+  { level: "vocational", year: "N6", subject: "Mechanical Engineering", data: () => window.PAPER_FM_N6_2022 }
+];
+
+const AVATARS = [
+  { id: "default", name: "Nexera", src: "assets/avatar-lite.glb", unlock: 0 },
+  { id: "field", name: "Field Guide", slot: "avatar-field", unlock: 1500 },
+  { id: "lab", name: "Lab Partner", slot: "avatar-lab", unlock: 4000 }
+];
+
+const ARRIVAL = {
+  gold:   ["Clean sweep. Nothing to fix there.", "Full marks, first try. That is exam pace.", "Not one clue needed. Keep that going."],
+  silver: ["Got there. Next time see if you can do it without me.", "Solid — the clues did some lifting though.", "Banked. Try that one again for a clean run."],
+  bronze: ["Rough one. Replay it before the marks fade.", "The memo carried that. Worth a second go.", "You have seen it now. Go again and own it."],
+  fresh:  ["Pick your next one.", "Road is open. Where to?", "Next section is waiting."]
+};
+
+const SPEECH = {
+  idle: ["Take your time — read it twice.", "This one is straight from the memo.", "Exact term. Examiners do not guess for you."],
+  right: ["That is exactly what the memo says.", "Clean. Full marks.", "You would have earned that in the hall."],
+  wrong1: "Not that one. Here is a nudge —",
+  wrong2: "Closer. One more clue —",
+  reveal: "Here is what the memo wanted. Read it once and it will stick.",
+  mark: "Tick every line your answer covers. Be honest — the examiner would be."
+};
+
+const GRADE = {
+  gold:   { label: "Clean run",   ink: "#ffcf4d", glow: "0 0 18px rgba(255,207,77,0.55)" },
+  silver: { label: "With clues",  ink: "#c9d4e3", glow: "0 0 14px rgba(201,212,227,0.42)" },
+  bronze: { label: "Memo shown",  ink: "#d09a6a", glow: "0 0 14px rgba(208,154,106,0.40)" }
+};
+
+class Component extends DCLogic {
+  state = { screen: "pick", pose: "greet", level: "secondary", year: "Grade 12", subject: "Life Sciences", paperIdx: null, menu: null, chosenPaper: null,
+    xp: 0, streak: 1, avatar: "default", cleared: {}, earned: {}, grades: {}, reviews: {}, byPaper: {}, clean: 0, helped: 0, shown: 0, justCleared: null, lastGrade: null, combo: 0, bestCombo: 0, figOpen: false, missed: [], missedAll: [], fixQueue: [], fixing: false, tStart: 0, ruled: [], timed: false, clockStart: 0, elapsed: 0, bell: false,
+    mi: 0, qi: 0, phase: "answer", tries: 0, clean: 0, helped: 0, shown: 0, pick: null, picks: [], chosen: [], letter: null, typed: "", lists: [], ticks: {},
+    right: 0, first: 0, missionXp: 0, missionMarks: 0, lastRight: true, gained: 0, fx: "", speechIdx: 0 };
+
+  paper() { const p = PAPERS[this.state.paperIdx]; return p ? p.data() : null; }
+  // What Start would open: used by the pick screen, which has no open paper to describe.
+  candidate() {
+    const s = this.state;
+    if (s.chosenPaper !== null && PAPERS[s.chosenPaper]) return PAPERS[s.chosenPaper].data();
+    const hit = PAPERS.filter(p => p.level === s.level && p.year === s.year && p.subject === s.subject)[0];
+    return hit ? hit.data() : null;
+  }
+  missions() { const p = this.paper(); return p ? p.sections.flatMap(s => s.missions.map(m => Object.assign({ section: s }, m))) : []; }
+  mission() { return this.missions()[this.state.mi]; }
+  item() { const m = this.mission(); return m ? m.items[this.state.qi] : null; }
+  objective(q) { return ["mcq", "term", "pickn", "order", "num", "lettername", "list"].indexOf(q.t) !== -1; }
+  norm(s) { return String(s || "").toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9' ]/g, " ").replace(/\s+/g, " ").trim(); }
+  matches(input, accepts) { const v = this.norm(input); const list = Array.isArray(accepts) ? accepts : [accepts]; return list.some(a => { const n = this.norm(a); return v === n || (n.length > 4 && v.indexOf(n) !== -1); }); }
+
+  start(mi) {
+    this.setState({ screen: "play", mi, qi: 0, right: 0, first: 0, missionXp: 0, missionMarks: 0, clean: 0, helped: 0, shown: 0, combo: 0, missed: [], missedAll: [], fixQueue: [], fixing: false });
+    this.resetQ();
+  }
+  // Replaying can only improve a grade, never erase one.
+  betterGrade(was, now) {
+    const rank = { bronze: 1, silver: 2, gold: 3 };
+    return (rank[now] || 0) > (rank[was] || 0) ? now : (was || now);
+  }
+  resetQ() { this.setState({ tStart: Date.now(), phase: "answer", tries: 0, pick: null, picks: [], chosen: [], letter: null, typed: "", lists: [], ticks: {}, ruled: [], fx: "" }); }
+  judge() {
+    const q = this.item(), s = this.state;
+    if (q.t === "mcq") return s.pick === q.a;
+    if (q.t === "term") return this.matches(s.typed, q.a);
+    if (q.t === "pickn") return s.picks.length === q.count && s.picks.every(i => q.pool.indexOf(i) !== -1);
+    if (q.t === "order") return s.chosen.length === q.a.length && s.chosen.every((c, i) => c === q.a[i]);
+    if (q.t === "num") return Math.abs(parseFloat(String(s.typed).replace(",", ".")) - q.a) <= (q.tol || 0.001);
+    if (q.t === "lettername") return s.letter === q.a.letter && this.matches(s.typed, q.a.name);
+    if (q.t === "list") { const used = []; return q.pool.filter(p => { const hit = s.lists.some((v, i) => used.indexOf(i) === -1 && this.matches(v, p) && (used.push(i), true)); return hit; }).length >= q.count; }
+    return false;
+  }
+  ready() {
+    const q = this.item(), s = this.state;
+    if (q.t === "mcq") return s.pick !== null;
+    if (q.t === "pickn") return s.picks.length === q.count;
+    if (q.t === "order") return s.chosen.length === q.opts.length;
+    if (q.t === "lettername") return s.letter !== null && this.norm(s.typed).length > 0;
+    if (q.t === "list") return s.lists.filter(v => this.norm(v).length).length >= q.count;
+    if (q.t === "rubric") return this.norm(s.typed).length > 0;
+    if (q.t === "draw") return true;
+    return this.norm(s.typed).length > 0;
+  }
+  flash(kind) {
+    clearTimeout(this._fxT);
+    // Long enough to read as an event, short enough not to gate the next move.
+    this.setState({ fx: kind, fxSeq: (this.state.fxSeq || 0) + 1 });
+    this._fxT = setTimeout(() => this.setState({ fx: "" }), 2100);
+  }
+  check() {
+    const q = this.item(), s = this.state;
+    if (!this.ready()) return;
+    if (!this.objective(q)) { this.setState({ phase: "mark", speechIdx: s.speechIdx + 1 }); return; }
+    if (this.judge()) {
+      // A clean streak multiplies the base — 2× from the third in a row, capped so it stays
+      // an incentive rather than the whole score.
+      const mult = s.tries === 0 ? Math.min(1 + Math.floor(s.combo / 2), 4) : 1;
+      const rescoring = s.fixing;
+      const mn = this.mission();
+      const replay = !!(mn && s.cleared[mn.id]);
+      const gained = (rescoring || replay) ? 0 : (XP_LADDER[s.tries] || 0) * mult;
+      this.setState({ pose: "dance", phase: "feedback", lastRight: true, gained, xp: s.xp + gained, missionXp: s.missionXp + gained,
+        missionMarks: s.missionMarks + (rescoring ? 0 : q.marks),
+        right: s.right + (rescoring ? 0 : 1), first: s.first + (!rescoring && s.tries === 0 ? 1 : 0), speechIdx: s.speechIdx + 1,
+        clean: s.clean + (!rescoring && s.tries === 0 ? 1 : 0), helped: s.helped + (!rescoring && s.tries > 0 ? 1 : 0),
+        combo: s.tries === 0 ? s.combo + 1 : 0, bestCombo: Math.max(s.bestCombo, s.tries === 0 ? s.combo + 1 : 0) });
+      this.flash("right");
+      return;
+    }
+    const tries = s.tries + 1;
+    this.flash("wrong");
+    // Down it goes, and it stays down until this is put right.
+    this.setState({ pose: "fall" });
+    // The chosen option is now known to be wrong, so it leaves the running.
+    if (q.t === "mcq" && s.pick !== null) this.setState({ ruled: (s.ruled || []).concat([s.pick]) });
+    // Recorded on the first slip: the question, what you chose, and the memo's line.
+    if (tries === 1 && !s.fixing) {
+      const m0 = this.mission();
+      const chose = q.opts && s.pick !== null && s.pick !== undefined ? q.opts[s.pick] : (s.typed || "");
+      const key = m0.id + ":" + s.qi;
+      this.setState({ reviews: Object.assign({}, s.reviews, { [key]: {
+        mission: m0.title, n: q.n || (s.qi + 1), q: q.q, chose: chose,
+        answer: q.opts && typeof q.a === "number" ? q.opts[q.a] : (q.a || ""),
+        memo: (q.clues && q.clues.length ? q.clues.join(" ") : "") || q.memo || "", marks: q.marks || 0
+      } }) });
+    }
+    // Queued once, on the first slip — a question missed twice is still one question to fix.
+    if (tries === 1 && !s.fixing && s.missed.indexOf(s.qi) === -1) this.setState({ missed: s.missed.concat([s.qi]), missedAll: s.missedAll.concat([s.qi]) });
+    if (tries >= XP_LADDER.length) this.setState({ pose: "fall", tries, phase: "reveal", lastRight: false, gained: 0, shown: s.shown + 1, combo: 0 });
+    else this.setState({ tries, phase: "clue", pick: q.t === "mcq" ? s.pick : null, combo: 0 });
+  }
+  retryOnEdit() { if (this.state.phase === "clue") this.retry(); }
+  retry() { const q = this.item(); this.setState({ phase: "answer", pick: null, picks: [], chosen: [], letter: null, typed: q.t === "mcq" ? "" : "", lists: [] }); }
+  // Three shapes, all of them real in the papers:
+  //   n === marks  → a mark per point
+  //   n  >  marks  → the memo lists more acceptable points than marks ("State THREE ways",
+  //                  seven options) — each worth 1, the question caps at its marks
+  //   n  <  marks  → method steps carrying more than one mark each, the NATED default —
+  //                  the marks are spread across the steps so the total is reachable
+  rubricLines(q) {
+    if (!q) return [];
+    if (q.t === "draw") return q.criteria || [];
+    const b = q.bullets || [];
+    if (!b.length) return [];
+    if (q.each) return b.map(x => [x, q.each]);
+    const m = q.marks || b.length;
+    if (b.length >= m) return b.map(x => [x, 1]);
+    const base = Math.floor(m / b.length), extra = m % b.length;
+    return b.map((x, i) => [x, base + (i < extra ? 1 : 0)]);
+  }
+  // What a perfect answer earns — never less than the question is worth.
+  rubricMax(q) {
+    const lines = this.rubricLines(q);
+    return Math.min(lines.reduce((a, l) => a + l[1], 0), q.marks);
+  }
+  confirmMarks() {
+    const q = this.item(), s = this.state;
+    const lines = this.rubricLines(q);
+    let got = 0; lines.forEach((l, i) => { if (s.ticks[i]) got += l[1]; });
+    got = Math.min(got, q.marks);
+    // Same rule for self-marked answers: nothing is paid twice.
+    const mn = this.mission();
+    const gained = (s.fixing || (mn && s.cleared[mn.id])) ? 0 : Math.round(100 * got / q.marks);
+    this.setState({ pose: got >= q.marks / 2 ? "dance" : "fall", phase: "feedback", lastRight: got >= q.marks / 2, gained, xp: s.xp + gained, missionXp: s.missionXp + gained, missionMarks: s.missionMarks + got, right: s.right + (got >= q.marks / 2 ? 1 : 0), first: s.first + (got === q.marks ? 1 : 0) });
+    this.flash(got >= q.marks / 2 ? "right" : "wrong");
+  }
+  // One exit, whether the run ended on the last question or on the last fix.
+  finishMission() {
+    const m = this.mission(), s = this.state;
+    const grade = s.shown > 0 ? "bronze" : s.helped > 0 ? "silver" : "gold";
+    this.setState({ screen: "done", justCleared: m.id,
+      cleared: Object.assign({}, s.cleared, { [m.id]: true }),
+      earned: Object.assign({}, s.earned, { [m.id]: Math.max(s.earned[m.id] || 0, s.missionMarks) }),
+      grades: Object.assign({}, s.grades, { [m.id]: this.betterGrade(s.grades[m.id], grade) }),
+      lastGrade: grade, speechIdx: (s.speechIdx || 0) + 1 });
+  }
+  next() {
+    const m = this.mission(), s = this.state;
+    // Anything not answered first-try is queued; the mission ends only once the queue is empty.
+    if (s.qi + 1 >= m.items.length) {
+      if (!s.fixing && s.missed.length) {
+        this.setState({ fixing: true, fixQueue: s.missed.slice(1), qi: s.missed[0], missed: [] });
+        this.resetQ();
+        return;
+      }
+      if (s.fixing && s.fixQueue.length) {
+        this.setState({ qi: s.fixQueue[0], fixQueue: s.fixQueue.slice(1) });
+        this.resetQ();
+        return;
+      }
+      // Gold is a clean run, silver means clues were needed, bronze means the memo did the
+      // work. The distinction is what makes a cleared paper worth replaying.
+      this.finishMission();
+      return;
+    }
+    if (s.fixing) {
+      if (s.fixQueue.length) { this.setState({ qi: s.fixQueue[0], fixQueue: s.fixQueue.slice(1) }); this.resetQ(); return; }
+      this.finishMission(); return;
+    }
+    this.setState({ qi: s.qi + 1 }); this.resetQ();
+  }
+  // An objective answer submits itself once it is complete; only written answers need a
+  // button, because there is no keystroke that means "done".
+  autoCheck() {
+    const q = this.item();
+    if (!q || !this.objective(q)) return;
+    if (this.state.phase !== "answer" || !this.ready()) return;
+    clearTimeout(this._autoT);
+    this._autoT = setTimeout(() => { if (this.state.phase === "answer" && this.ready()) this.check(); }, 260);
+  }
+  primary() {
+    const p = this.state.phase;
+    if (p === "answer") this.check();
+    else if (p === "clue") this.retry();
+    else if (p === "mark") this.confirmMarks();
+    else this.next();
+  }
+
+  componentDidMount() {
+    this.restore();
+    this._onKey = e => this.onKey(e);
+    window.addEventListener("keydown", this._onKey);
+  }
+  // Only what a returning student should still have: earned progress, not where they were.
+  // Minutes from the paper's own "2½ hours" / "3 hours" — never a number of my choosing.
+  // Flattened for anything that just wants "every subject at this level".
+  levelSubjects(lvl) {
+    if (!lvl.groups) return lvl.subjects;
+    return lvl.groups.reduce((all, g) => all.concat(g.subjects), []);
+  }
+  // The family a subject belongs to decides its ladder — Levels for NC(V), N-levels for
+  // NATED, a trade test for an occupational programme.
+  subjectGroup(lvl, subject) {
+    if (!lvl.groups) return null;
+    return lvl.groups.filter(g => g.subjects.indexOf(subject) !== -1)[0] || lvl.groups[0];
+  }
+  levelYears(lvl, subject) {
+    const g = this.subjectGroup(lvl, subject);
+    return g ? g.years : lvl.years;
+  }
+  paperMinutes(d) {
+    if (!d || !d.time) return 0;
+    const t = String(d.time);
+    const half = /½|1\/2/.test(t);
+    const h = parseFloat((t.match(/([\d.]+)/) || [0, 0])[1]) || 0;
+    const mins = /min/i.test(t) && !/hour/i.test(t) ? h : h * 60 + (half ? 30 : 0);
+    return Math.round(mins);
+  }
+  clockTick() {
+    if (!this.state.timed || !this.state.clockStart) return;
+    const sec = Math.floor((Date.now() - this.state.clockStart) / 1000);
+    if (sec === this.state.elapsed) return;
+    const total = this.paperMinutes(this.paper()) * 60;
+    this.setState({ elapsed: sec, bell: total > 0 && sec >= total });
+  }
+  paperId(idx) { const p = PAPERS[idx == null ? this.state.paperIdx : idx]; const d = p && p.data(); return d ? d.id : "none"; }
+  save() {
+    try {
+      const s = this.state;
+      // Fold the live maps back into the per-paper store before writing.
+      const byPaper = Object.assign({}, s.byPaper);
+      const id = this.paperId();
+      if (id !== "none") byPaper[id] = { cleared: s.cleared, earned: s.earned, grades: s.grades, reviews: s.reviews };
+      window.localStorage.setItem(SAVE_KEY, JSON.stringify({
+        v: 3, xp: s.xp, streak: s.streak, avatar: s.avatar, byPaper: byPaper
+      }));
+    } catch (e) {}
+  }
+  restore() {
+    try {
+      const raw = window.localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      // v1 and v2 saves are not namespaced, so their progress cannot be attributed to a
+      // paper — discarded rather than mis-applied, the same call as v1 to v2.
+      if (!d || d.v !== 3) return;
+      const mine = (d.byPaper || {})[this.paperId()] || {};
+      this.setState({ xp: d.xp || 0, streak: d.streak || 1, avatar: d.avatar || "default", byPaper: d.byPaper || {},
+        cleared: mine.cleared || {}, earned: mine.earned || {}, grades: mine.grades || {}, reviews: mine.reviews || {} });
+    } catch (e) {}
+  }
+  // Number keys choose, Enter advances, Escape leaves — the whole paper without a mouse.
+  onKey(e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target && e.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") { if (e.key === "Enter" && this.ready()) { e.preventDefault(); this.primary(); } return; }
+    if (this.state.figOpen) { if (e.key === "Escape") { e.preventDefault(); this.setState({ figOpen: false }); } return; }
+    if (this.state.screen !== "play") return;
+    if (e.key === "Escape") { e.preventDefault(); this.setState({ screen: "map" }); return; }
+    if (e.key === "Enter" || e.key === " ") {
+      if (this.state.phase !== "answer" || this.ready()) { e.preventDefault(); this.primary(); }
+      return;
+    }
+    const q = this.item();
+    if (!q || !q.opts) return;
+    const n = parseInt(e.key, 10);
+    if (!n || n > q.opts.length) return;
+    e.preventDefault();
+    const row = this.renderVals().opts[n - 1];
+    if (row && row.pick) row.pick();
+  }
+  componentWillUnmount() {
+    if (this._clk) clearInterval(this._clk);
+    if (this._onKey) window.removeEventListener("keydown", this._onKey); clearTimeout(this._popT); }
+  startClock() { if (this._clk) clearInterval(this._clk); this._clk = setInterval(() => this.clockTick(), 1000); }
+  aimToken() {
+    const tok = document.querySelector("[data-fly]");
+    if (!tok) { this._aimed = null; return; }
+    const key = tok.getAttribute("data-fly");
+    if (this._aimed === key) return;
+    const pill = document.querySelector("[data-xppill]");
+    if (!pill) return;
+    this._aimed = key;
+    const a = tok.getBoundingClientRect(), b = pill.getBoundingClientRect();
+    tok.style.setProperty("--flyX", Math.round((b.left + b.width / 2) - (a.left + a.width / 2)) + "px");
+    tok.style.setProperty("--flyY", Math.round((b.top + b.height / 2) - (a.top + a.height / 2)) + "px");
+  }
+  componentDidUpdate() {
+    this.aimToken();
+    // Anything worth keeping is written as it changes, not on some explicit save.
+    const sig = this.state.xp + "|" + Object.keys(this.state.cleared).length + "|" + Object.keys(this.state.grades).join(",") + "|" + Object.keys(this.state.reviews || {}).length;
+    if (this._savedSig !== sig) { this._savedSig = sig; this.save(); }
+    // A verdict that has to be scrolled to is worse than one in a fixed footer. When feedback
+    // lands, bring the bottom of the answer column into view so the reason is simply there.
+    const fbNow = this.state.phase === "feedback" || this.state.phase === "reveal";
+    const fbKey = this.state.screen + ":" + this.state.qi + ":" + this.state.phase;
+    if (fbNow && this._fbSeen !== fbKey) {
+      this._fbSeen = fbKey;
+      const col = document.querySelector("[data-answers]");
+      if (col) {
+        let tries = 0, lastH = -1;
+        const reveal = () => {
+          col.scrollTop = col.scrollHeight;
+          const h = col.scrollHeight;
+          if (h !== lastH && ++tries < 10) { lastH = h; requestAnimationFrame(reveal); }
+        };
+        reveal();
+      }
+    }
+    if (!fbNow) this._fbSeen = null;
+    // The payoff belongs on the map, not on the summary screen — so the newly unlocked node
+    // pops once as you arrive, then the flag clears so it does not loop.
+    if (this.state.screen === "map" && this.state.justCleared) {
+      clearTimeout(this._popT);
+      this._popT = setTimeout(() => this.setState({ justCleared: null }), 900);
+    }
+    // The road is read bottom-up, so the map opens on the live node. The nodes lay out a
+    // frame after this runs, so one write hits a not-yet-grown scrollHeight — keep writing
+    // until the height stops changing, the same settle loop the chat pin uses.
+    if (this.state.screen !== "map") { this._mapSeen = null; return; }
+    const key = this.state.paperIdx + ":" + Object.keys(this.state.cleared || {}).length;
+    if (this._mapSeen === key) return;
+    this._mapSeen = key;
+    const el = document.querySelector("[data-road]");
+    if (!el) return;
+    let tries = 0, lastH = -1;
+    const pin = () => {
+      el.scrollTop = el.scrollHeight;
+      const h = el.scrollHeight;
+      if (h !== lastH && ++tries < 12) { lastH = h; requestAnimationFrame(pin); }
+    };
+    pin();
+  }
+  renderVals() {
+    const s = this.state, paper = this.paper(), missions = this.missions(), m = this.mission(), q = this.item();
+    const sel = on => on ? "var(--cobalt)" : "var(--line2)", selBg = on => on ? "rgba(30,70,255,0.16)" : "var(--panel)";
+    const lvl = LEVELS.filter(l => l.id === s.level)[0] || LEVELS[1];
+    const totalEarned = Object.keys(s.earned).reduce((n, k) => n + s.earned[k], 0);
+    const avatar = AVATARS.filter(a => a.id === s.avatar)[0] || AVATARS[0];
+    const fb = s.phase === "feedback", clue = s.phase === "clue", reveal = s.phase === "reveal", mark = s.phase === "mark";
+    const decided = fb || reveal;
+    const nextIdx = missions.findIndex(x => !s.cleared[x.id]);
+    const optState = i => {
+      if (!decided || !q || q.t !== "mcq") {
+        // Ruled out on an earlier try: it folds away and stays out, so the remaining paths
+        // visibly narrow rather than the screen simply turning red.
+        if ((s.ruled || []).indexOf(i) !== -1 && s.pick !== i)
+          return { border: "var(--line)", bg: "transparent", opacity: "0.26", anim: "ruleOut 420ms cubic-bezier(0.22,0.61,0.36,1) both", strike: "line-through", cursor: "not-allowed" };
+        // A miss still shows on the option it was made on: the clue phase keeps the wrong
+        // pick in danger red and shakes it, or the only feedback for tries 1 and 2 is gone.
+        if (clue && s.pick === i) return { border: "var(--danger)", bg: "rgba(242,119,122,0.16)", opacity: "1", anim: "optWrong 420ms ease both", strike: "none", cursor: "not-allowed" };
+        return { border: sel(s.pick === i), bg: selBg(s.pick === i), opacity: "1", anim: "none", strike: "none", cursor: "pointer" };
+      }
+      // Right answer pulses, the wrong pick shakes and drains, the rest recede.
+      if (i === q.a) return { border: "var(--ok)", bg: "rgba(61,220,151,0.18)", opacity: "1", anim: "optRight 620ms cubic-bezier(0.34,1.56,0.64,1) both", strike: "none", cursor: "default" };
+      if (s.pick === i) return { border: "var(--danger)", bg: "rgba(242,119,122,0.16)", opacity: "1", anim: "optWrong 420ms ease both", strike: "none", cursor: "default" };
+      return { border: "var(--line2)", bg: "var(--panel)", opacity: "0.4", anim: "none", strike: "none", cursor: "default" };
+    };
+    // A clue invites another answer, so only a decided or marking phase locks the inputs.
+    const lock = () => decided || mark;
+    const lines = this.rubricLines(q);
+    const speech = !q ? "" : fb ? (s.lastRight ? SPEECH.right[s.speechIdx % 3] : "Not this time. Read the memo line below — that is the mark.")
+      : clue ? (s.tries === 1 ? SPEECH.wrong1 : SPEECH.wrong2) + " " + (q.clues || [])[Math.min(s.tries - 1, (q.clues || []).length - 1)]
+      : reveal ? SPEECH.reveal : mark ? SPEECH.mark : SPEECH.idle[s.qi % 3];
+    const answerText = !q ? "" : q.t === "mcq" ? String.fromCharCode(65 + q.a) + " · " + q.opts[q.a]
+      : q.t === "term" ? q.a[0] : q.t === "pickn" ? "Any three of " + q.pool.map(i => q.opts[i]).join(", ")
+      : q.t === "order" ? q.a.map(i => q.opts[i]).join(" → ") : q.t === "num" ? String(q.a).replace(".", ",")
+      : q.t === "lettername" ? q.a.letter + " — " + q.a.name[0] : q.t === "list" ? q.pool.map(p => p[0]).join(" · ") : "";
+    const primaryLabel = !q ? "" : s.phase === "answer" ? (q.t === "draw" ? "Mark my drawing" : "Mark my answer")
+      : mark ? "Confirm marks" : (s.qi + 1 >= m.items.length ? "Finish mission" : "Continue");
+    // Objective questions submit on the answering tap, so the footer button only exists for
+    // written answers and for moving on.
+    const showPrimary = !q ? false : s.phase === "answer" ? !this.objective(q) : !clue;
+    const canGo = s.phase !== "answer" || (q && this.ready());
+    const nodeList = [];
+    let lastSection = null, chestIdx = 0;
+    const REWARDS = AVATARS.filter(a => a.unlock > 0).sort((a, b) => a.unlock - b.unlock);
+    missions.forEach((x, i) => {
+      // A new section opens an act — its own banner, its own mark total.
+      if (x.section.title !== lastSection) {
+        lastSection = x.section.title;
+        const sec = x.section;
+        const secEarned = sec.missions.reduce((n, mm) => n + (s.earned[mm.id] || 0), 0);
+        const secDone = sec.missions.every(mm => s.cleared[mm.id]);
+        const secLive = !secDone && sec.missions.some(mm => !s.cleared[mm.id]) &&
+          missions.findIndex(y => y.section.title === sec.title && !s.cleared[y.id]) === nextIdx;
+        nodeList.push({
+          isNode: false, isHeader: true, isChest: false,
+          hTitle: sec.title, hSub: sec.subtitle || "",
+          hMarks: secEarned + " / " + sec.total + " marks",
+          hPct: sec.total ? Math.round(100 * secEarned / sec.total) + "%" : "0%",
+          hInk: secDone ? "var(--ok)" : secLive ? "#7ea0ff" : "var(--text4)",
+          hBorder: secDone ? "rgba(61,220,151,0.35)" : secLive ? "rgba(126,160,255,0.35)" : "var(--line)",
+          hGlow: secLive ? "0 0 26px rgba(42,82,255,0.18)" : "none"
+        });
+      }
+      const done = !!s.cleared[x.id], cur = i === nextIdx, locked = !done && !cur;
+      const off = [0, 120, 200, 120, 0, 80, 160, 60][i % 8] + "px";
+      nodeList.push({
+        isNode: true, isHeader: false,
+        name: x.title, meta: x.kind + " · " + x.marks + " marks", tag: x.section.title,
+        tagColor: done ? "var(--ok)" : cur ? "#7ea0ff" : "var(--text4)",
+        title: locked ? "Clear the mission before it" : done ? "Replay " + x.title : "Start " + x.title,
+        isDone: done, isCurrent: cur, isLocked: locked,
+        // A cleared node states HOW it was cleared, so a bronze keeps asking to be replayed.
+        grade: s.grades[x.id] || "",
+        hasGrade: done && !!s.grades[x.id],
+        ringColor: GRADE[s.grades[x.id]] ? GRADE[s.grades[x.id]].ink : "transparent",
+        ringGlow: GRADE[s.grades[x.id]] ? GRADE[s.grades[x.id]].glow : "none",
+        gradeLabel: GRADE[s.grades[x.id]] ? GRADE[s.grades[x.id]].label : "",
+        gradeInk: GRADE[s.grades[x.id]] ? GRADE[s.grades[x.id]].ink : "var(--text4)",
+        // Marks are the real stake, so a cleared node shows what it banked.
+        banked: done ? (s.earned[x.id] || 0) + " / " + x.marks : "",
+        // Arriving from a clear, the node that just changed announces itself.
+        justPop: s.justCleared === x.id ? "popIn 520ms cubic-bezier(0.34,1.56,0.64,1) both" : "none",
+        offset: off, cursor: locked ? "default" : "pointer", textOpacity: locked ? "0.4" : "1",
+        arcade: done ? "done" : cur ? "live" : "locked",
+        // Arcade cap: a lit dome on a black bezel. Locked caps are unlit; the current one glows.
+        bg: done ? "radial-gradient(circle at 35% 30%, #6ff0bd 0%, #3ddc97 45%, #1f9c69 100%)"
+          : cur ? "radial-gradient(circle at 35% 30%, #86a6ff 0%, #2a52ff 50%, #1230b8 100%)"
+          : "radial-gradient(circle at 35% 30%, #3a3f46 0%, #24282d 55%, #16191c 100%)",
+        fg: locked ? "#5b6169" : "#fff",
+        shadow: done ? "inset 0 -4px 8px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.35), 0 0 18px rgba(61,220,151,0.45)"
+          : cur ? "inset 0 -4px 8px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.4), 0 0 26px rgba(42,82,255,0.7)"
+          : "inset 0 -4px 8px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.05)",
+        lift: cur ? "-2px" : "0",
+        anim: cur ? "pulseRing 2s ease-out infinite" : "none",
+        roadStyle: done ? "solid" : "dashed",
+        roadColor: done ? "var(--ok)" : cur ? "#7ea0ff" : "rgba(255,255,255,0.22)",
+        open: () => { if (!locked) this.start(i); }
+      });
+      // Where a section ends, the reward that ends it — the next avatar, visible on the road
+      // rather than buried in a menu.
+      const isSectionEnd = i + 1 >= missions.length || missions[i + 1].section.title !== x.section.title;
+      if (isSectionEnd) {
+        // Each section end owns a distinct prize; past the last one, the road repeats it.
+        const reward = REWARDS[chestIdx] || REWARDS[REWARDS.length - 1] || AVATARS[AVATARS.length - 1];
+        chestIdx++;
+        const got = s.xp >= reward.unlock;
+        const secDone2 = x.section.missions.every(mm => s.cleared[mm.id]);
+        nodeList.push({
+          isNode: false, isHeader: false, isChest: true,
+          cName: reward.name,
+          cState: got ? "Unlocked" : (reward.unlock - s.xp) + " XP to go",
+          cInk: got ? "#ffcf4d" : "var(--text3)",
+          cRing: got ? "#ffcf4d" : secDone2 ? "rgba(126,160,255,0.45)" : "var(--line2)",
+          cGlow: got ? "0 0 26px rgba(255,207,77,0.45)" : "none",
+          cPct: reward.unlock ? Math.min(100, Math.round(100 * s.xp / reward.unlock)) + "%" : "100%",
+          cOpen: () => this.setState({ screen: "avatars" }),
+          cCursor: "pointer",
+          cTitle: got ? "Unlocked — " + reward.name : reward.name + " unlocks at " + reward.unlock + " XP"
+        });
+      }
+    });
+    const allDone = nextIdx === -1;
+    const clearedCount = Object.keys(s.cleared || {}).filter(k => s.cleared[k]).length;
+    const banked = Object.values(s.earned || {}).reduce((n, v) => n + v, 0);
+    const paperTotal = paper ? paper.total : 0;
+    const marksLine = banked + " / " + paperTotal;
+    // A number climbing is weaker than a bar filling — the bar is the whole point of the run.
+    const marksPct = paperTotal ? Math.round(100 * banked / paperTotal) + "%" : "0%";
+    // Already paid for: a mistakes round, or a mission cleared on an earlier run.
+    const noPay = !!(s.fixing || (m && s.cleared[m.id]));
+    const marksPassed = paperTotal ? banked >= paperTotal * 0.3 : false;
+    return {
+      onPick: s.screen === "pick", onMap: s.screen === "map", onPlay: s.screen === "play", onDone: s.screen === "done", onAvatars: s.screen === "avatars",
+      coachName: avatar.name,
+      // greet on arrival · fall on a miss, held through the clue and the retry · dance when
+      // it is put right. The pose is a fact about the run, not a transient flash.
+      avatarClip: s.screen === "pick" ? "greet" : (s.pose || "greet"),
+      avatarSrc: avatar.src || AVATARS[0].src, avatarSpin: fb || clue ? "off" : "on",
+      levels: LEVELS.map(l => ({ label: l.label, color: l.id === s.level ? "var(--text)" : "var(--text2)", mark: l.id === s.level ? "●" : "", pick: () => {
+        const sub = this.levelSubjects(l)[0];
+        this.setState({ level: l.id, subject: sub, year: this.levelYears(l, sub)[0], chosenPaper: null, menu: null });
+      } })),
+      years: this.levelYears(lvl, s.subject).map(y => ({ label: y, color: y === s.year ? "var(--text)" : "var(--text2)", mark: y === s.year ? "●" : "", pick: () => this.setState({ year: y, chosenPaper: null, menu: null }) })),
+      yearLabel: s.year, yearMenuOpen: s.menu === "year",
+      openYearMenu: () => this.setState(st => ({ menu: st.menu === "year" ? null : "year" })),
+      // One year means no choice to make, so the control reads as a label instead.
+      yearPickable: this.levelYears(lvl, s.subject).length > 1,
+      yearCursor: this.levelYears(lvl, s.subject).length > 1 ? "pointer" : "default",
+      subjects: (() => {
+        const row = (sub, head) => ({
+          label: sub, head: head || "", hasHead: !!head,
+          color: sub === s.subject ? "var(--text)" : "var(--text2)",
+          mark: sub === s.subject ? "●" : "",
+          // Switching family switches ladder, so the year moves with it rather than keeping
+          // an N-level on a programme that has none.
+          pick: () => {
+            const years = this.levelYears(lvl, sub);
+            this.setState({ subject: sub, year: years.indexOf(s.year) === -1 ? years[0] : s.year, chosenPaper: null, menu: null });
+          }
+        });
+        if (!lvl.groups) return lvl.subjects.map(sub => row(sub));
+        return lvl.groups.reduce((all, g) => all.concat(g.subjects.map((sub, i) => row(sub, i === 0 ? g.name : ""))), []);
+      })(),
+      levelLabel: lvl.label, subjectLabel: s.subject,
+      levelMenuOpen: s.menu === "level", subjectMenuOpen: s.menu === "subject", paperMenuOpen: s.menu === "paper",
+      openLevelMenu: () => this.setState(st => ({ menu: st.menu === "level" ? null : "level" })),
+      openSubjectMenu: () => this.setState(st => ({ menu: st.menu === "subject" ? null : "subject" })),
+      openPaperMenu: () => this.setState(st => ({ menu: st.menu === "paper" ? null : "paper" })),
+      papers: (() => {
+        const rows = PAPERS.map((p, i) => ({ p, i })).filter(x => x.p.level === s.level && x.p.year === s.year && x.p.subject === s.subject)
+          .map(x => ({ x: x, d: x.p.data() })).filter(r => !!r.d)
+          .map(({ x, d }) => { return {
+          badge: d.paper.replace(/^Paper /, "P"), name: d.subject + " · " + d.paper, meta: d.sitting + " · " + d.board + " · " + d.total + " marks · " + d.time, state: d.methodOnly ? "Method only" : "Ready", stateColor: d.methodOnly ? "var(--warn)" : "var(--ok)",
+          hasNote: !!d.memoNote, note: d.memoNote || "",
+          border: "var(--line2)", bg: "var(--panel)", cursor: "pointer", opacity: "1", title: d.memoNote || "Start this paper",
+          pick: () => this.setState({ chosenPaper: x.i, menu: null }) }; });
+        return rows.length ? rows : [{ badge: "—", name: s.subject, meta: lvl.label + " · no paper published yet", state: "Coming", stateColor: "var(--text4)", border: "var(--line)", bg: "transparent", cursor: "default", opacity: "0.6", title: "Not yet published", pick: () => {} }];
+      })(),
+      paperLabel: (() => { if (s.chosenPaper === null) return "Choose a paper"; const d = PAPERS[s.chosenPaper].data(); if (!d) return "Choose a paper"; return d.paper + " · " + d.sitting; })(),
+      paperLabelColor: s.chosenPaper === null ? "var(--text3)" : "var(--text)",
+      startBg: s.chosenPaper === null ? "rgba(255,255,255,0.05)" : "var(--grad)",
+      startFg: s.chosenPaper === null ? "var(--text4)" : "#fff",
+      startCursor: s.chosenPaper === null ? "default" : "pointer",
+      startShadow: s.chosenPaper === null ? "none" : "0 10px 30px rgba(30,70,255,0.4)",
+      startTitle: s.chosenPaper === null ? "Pick a paper first" : "Start this paper",
+      startPaper: () => {
+        if (s.chosenPaper === null) return;
+        const byPaper = Object.assign({}, s.byPaper);
+        const from = this.paperId();
+        if (from !== "none") byPaper[from] = { cleared: s.cleared, earned: s.earned, grades: s.grades, reviews: s.reviews };
+        const next = byPaper[this.paperId(s.chosenPaper)] || {};
+        if (s.timed) this.startClock();
+        this.setState({ clockStart: s.timed ? Date.now() : 0, elapsed: 0, bell: false,
+          paperIdx: s.chosenPaper, screen: "map", menu: null, byPaper: byPaper,
+          cleared: next.cleared || {}, earned: next.earned || {}, grades: next.grades || {}, reviews: next.reviews || {} });
+      },
+      paperTitle: paper ? paper.subject + " · " + paper.paper : "",
+      levelLine: paper ? paper.sitting + " · " + paper.board + " · " + paper.total + " marks" : "", paperMeta: paper ? paper.sitting + " · " + paper.board + " · " + paper.total + " marks" : "",
+      marksLine, marksPct, marksPassed, xp: s.xp, streak: s.streak,
+      // The line answers HOW the last mission went, not just that it ended.
+      arrivalLine: (() => {
+        const last = s.lastGrade;
+        const pool = ARRIVAL[last] || ARRIVAL.fresh;
+        return pool[(s.speechIdx || 0) % pool.length];
+      })(),
+      coachLine: nextIdx === -1 ? "Every question on the paper is cleared. Replay any node to push your marks up." : nextIdx === 0 ? "Section A opens with nine multiple-choice. Two marks each — no half marks, so read every option." : "Next up: " + missions[nextIdx].title + ". " + missions[nextIdx].kind + ", " + missions[nextIdx].marks + " marks.",
+      clearedLine: Object.keys(s.cleared).length + " / " + missions.length, clearedPct: Math.round(100 * Object.keys(s.cleared).length / Math.max(1, missions.length)) + "%",
+      sectionTotals: paper ? paper.sections.map(sec => ({ label: sec.title, line: sec.missions.reduce((n, mm) => n + (s.earned[mm.id] || 0), 0) + " / " + sec.total })) : [],
+      nodes: nodeList, toPick: () => this.setState({ screen: "pick", menu: null }), toMap: () => this.setState({ screen: "map" }), openAvatars: () => this.setState({ screen: "avatars" }),
+      avatars: AVATARS.map(a => { const locked = s.xp < a.unlock, on = a.id === s.avatar; return { name: a.name, src: a.src || "", hasModel: !!a.src, isSlot: !a.src, slotId: a.slot || "", placeholder: a.name, locked,
+        state: on ? "Selected" : locked ? "Unlock at " + a.unlock + " XP" : "Available", stateColor: on ? "var(--ok)" : locked ? "var(--text4)" : "#7ea0ff",
+        border: on ? "var(--cobalt)" : "var(--line)", cursor: locked ? "default" : "pointer", opacity: locked ? "0.75" : "1", title: locked ? "Earn " + a.unlock + " XP to unlock" : "Use " + a.name,
+        pick: () => { if (!locked) this.setState({ avatar: a.id }); } }; }),
+      // The finish line: the paper's total, and how much of it is banked. Lights when the last
+      // mission clears.
+      trophyBg: allDone ? "linear-gradient(135deg, rgba(224,161,15,0.22), rgba(32,35,39,0.9))" : "rgba(32,35,39,0.82)",
+      trophyLine: allDone ? "rgba(224,161,15,0.6)" : "var(--line)",
+      trophyShadow: allDone ? "0 0 40px rgba(224,161,15,0.35), 0 16px 40px rgba(0,0,0,0.5)" : "0 12px 30px rgba(0,0,0,0.4)",
+      trophyCupBg: allDone ? "linear-gradient(135deg, #ffd66b, #e0a10f)" : "#16191c",
+      trophyInk: allDone ? "#1a1200" : "var(--text4)",
+      trophyAnim: allDone ? "floatY 2.4s ease-in-out infinite" : "none",
+      trophyTag: allDone ? "var(--warn)" : "var(--text4)",
+      trophyKicker: allDone ? "Paper complete" : "Finish line",
+      trophyTitle: allDone ? "You sat the whole paper" : (paper ? paper.paper + " · " + paper.total + " marks" : ""),
+      trophyMeta: allDone ? marksLine + " banked" : clearedCount + " of " + missions.length + " missions cleared",
+      progressPct: m ? Math.round(100 * (s.qi + (decided ? 1 : 0)) / m.items.length) + "%" : "0%",
+      missionMarksLine: m ? s.missionMarks + " / " + m.marks : "", sectionLabel: m ? m.section.title : "", itemNumber: q ? q.n : "", typeLabel: q ? TYPE_LABEL[q.t] : "",
+      itemMarks: q ? q.marks + (q.marks === 1 ? " mark" : " marks") : "",
+      showTries: q ? this.objective(q) && !decided : false,
+      tries: XP_LADDER.map((x, i) => ({ bg: i < s.tries ? "var(--danger)" : i === s.tries ? "#7ea0ff" : "transparent", border: i < s.tries ? "var(--danger)" : i === s.tries ? "#7ea0ff" : "var(--line2)" })),
+      timed: s.timed,
+      timerToggle: () => this.setState(st => ({ timed: !st.timed })),
+      timerLabel: s.timed ? "Timed" : "Untimed",
+      timerNote: (() => {
+        const mins = this.paperMinutes(s.screen === "pick" ? this.candidate() : paper);
+        if (!s.timed) return "No clock. Take as long as you need.";
+        if (!mins) return "This paper's clock starts when you do.";
+        const h = mins / 60;
+        const span = mins % 60 === 0 ? h + (h === 1 ? " hour" : " hours")
+          : mins % 60 === 30 ? (mins - 30) / 60 + "\u00bd hours" : mins + " min";
+        return "The paper's own " + span + " runs from the moment you start.";
+      })(),
+      timerBg: s.timed ? "var(--grad)" : "transparent",
+      timerInk: s.timed ? "#fff" : "var(--text3)",
+      timerBorder: s.timed ? "transparent" : "var(--line2)",
+      // The clock shows what is left, then how far past the bell — stopping the run at zero
+      // would throw away work the student still wants to finish.
+      clockShown: s.timed && (s.screen === "play" || s.screen === "map"),
+      clockText: (() => {
+        const total = this.paperMinutes(paper) * 60;
+        const left = total - s.elapsed;
+        const v = Math.abs(left);
+        const hh = Math.floor(v / 3600), mm = Math.floor((v % 3600) / 60), ss = v % 60;
+        const body = (hh ? hh + ":" + String(mm).padStart(2, "0") : String(mm)) + ":" + String(ss).padStart(2, "0");
+        return (left < 0 ? "+" : "") + body;
+      })(),
+      clockInk: s.bell ? "var(--danger)" : (this.paperMinutes(paper) * 60 - s.elapsed) < 300 ? "var(--warn)" : "var(--text2)",
+      clockTitle: s.bell ? "Past the time the paper allows — keep going, the summary reports both" : "Time left on the paper",
+      pastBell: s.bell,
+      // The token flies from where you answered to where it is banked.
+      // The clue is carried inline, so it survives the companion being hidden on narrow
+      // screens — the companion echoes it where there is room for one.
+      clueShown: !!(clue && q && (q.clues || []).length),
+      clueTitle: s.tries === 1 ? "One down — here is a nudge" : "Last nudge before the answer",
+      clueText: !q ? "" : (q.clues || [])[Math.min(s.tries - 1, (q.clues || []).length - 1)] || "",
+      // 2 · The room reacts: azure while thinking, toward violet on a streak, dim and cool on
+      // a miss. One glow, no new elements — invisible until it moves.
+      roomGlow: (() => {
+        if (s.fx === "wrong") return "radial-gradient(60% 50% at 50% 42%, rgba(242,119,122,0.10) 0%, transparent 70%)";
+        const heat = Math.min(1, (s.combo || 0) / 6);
+        const r = Math.round(0 + heat * 103), g = Math.round(104 - heat * 75), b = Math.round(248 + heat * 7);
+        const a = 0.10 + heat * 0.10;
+        return "radial-gradient(60% 50% at 50% 42%, rgba(" + r + "," + g + "," + b + "," + a.toFixed(2) + ") 0%, transparent 70%)";
+      })(),
+      roomPulse: s.fx === "right" ? "roomPulse 900ms ease both" : "none",
+
+      // 3 · The companion faces the work: the options while you choose, the clue when you
+      // miss, into frame on a streak.
+      companionYaw: s.fx === "wrong" ? "-0.55" : (s.combo || 0) >= 3 ? "-0.15" : decided ? "-0.25" : "-0.4",
+      companionLift: (s.combo || 0) >= 3 ? "0.04" : "0",
+
+      // 4 · The mark meter: what you have banked against the paper's total.
+      // Finished missions from earned, the live one from missionMarks — the same figures the
+      // report prints, so the meter and the final score cannot disagree.
+      meterPct: Math.min(100, Math.round(100 * (banked + (s.cleared[(m || {}).id] ? 0 : s.missionMarks)) / Math.max(1, paperTotal))) + "%",
+      meterLabel: (banked + (s.cleared[(m || {}).id] ? 0 : s.missionMarks)) + " / " + paperTotal,
+      meterPulse: s.fx === "right" ? "meterTick 600ms cubic-bezier(0.22,0.61,0.36,1) both" : "none",
+
+      // 1 + 5 · Where you are on the road, and which way you are moving.
+      roadLabel: (() => {
+        const m = this.mission(); if (!m) return "";
+        return m.title + " · " + (s.qi + 1) + " of " + m.items.length;
+      })(),
+      roadPct: (() => { const m = this.mission(); return m ? Math.round(100 * s.qi / Math.max(1, m.items.length - 1)) + "%" : "0%"; })(),
+      enterAnim: s.fixing ? "fromLeft 300ms cubic-bezier(0.22,0.61,0.36,1) both" : "fromRight 300ms cubic-bezier(0.22,0.61,0.36,1) both",
+      flyShown: !!(fb && s.gained && s.fx === "right"),
+      flyText: "+" + s.gained,
+      flyKey: s.mi + "-" + s.qi + "-" + (s.fxSeq || 0),
+      pillLand: s.fx === "right" && s.gained ? "pillLand 560ms cubic-bezier(0.22,0.61,0.36,1) 1430ms both" : "none",
+      // Digits roll rather than swap, so the total reads as counting up.
+      odoKey: String(s.xp),
+      odoAnim: s.fx === "right" && s.gained ? "odo 460ms cubic-bezier(0.22,0.61,0.36,1) 1470ms both" : "none",
+      // 5 · A miss narrows the field: the option just ruled out folds away and the stake
+      // visibly drops, so the cost of another try is felt rather than read.
+      stakeWas: s.tries > 0 ? String(XP_LADDER[s.tries - 1] || 0) : "",
+      stakeDropped: s.tries > 0 && !noPay,
+      avatarReact: s.fx === "right" ? "cheer 820ms cubic-bezier(0.22,0.61,0.36,1) both"
+        : s.fx === "wrong" ? "sympathise 520ms ease both" : "none",
+      noPay: noPay, xpNow: noPay ? 0 : (XP_LADDER[s.tries] || 0), qKey: s.mi + "-" + s.qi + "-" + s.phase, speechKey: s.mi + "-" + s.qi + "-" + s.phase + "-" + s.tries,
+      hasExtract: !!(m && m.extract && s.qi === 0 || (q && q.t === "rubric" && m && m.extract)), extract: m ? m.extract || "" : "",
+      // A figure and its question need the whole page; text alone reads better held narrow.
+      // A figure and its question need the page's width; text alone reads better narrow.
+      colWidth: (q && q.fig) ? "min(1120px, 100%)" : "min(620px, 100%)",
+      hasFig: !!(q && (q.fig || (m && m.fig && q.note))), figId: q ? "fig-" + q.n.replace(/[^a-z0-9]/gi, "-") : "", figLabel: q ? "Diagram from the paper · " + (q.fig || (m && m.fig) || "") : "",
+      hasNote: !!(q && q.note), note: q ? q.note || "" : "", qText: q ? q.q : "",
+      isMcq: q && q.t === "mcq", isPickn: q && q.t === "pickn", isOrder: q && q.t === "order", isInput: q && (q.t === "term" || q.t === "num"), isLetterName: q && q.t === "lettername", isList: q && q.t === "list", isRubric: q && q.t === "rubric", isDraw: q && q.t === "draw",
+      writing: s.phase === "answer", marking: mark || fb,
+      // The multiplier is the streak made visible — it is what makes a clean run feel like
+      // a run rather than a sequence.
+      // Where you are, not just how far — each tick is a question you can point at.
+      rail: m ? m.items.map((it, k) => {
+        const seen = k < s.qi, here = k === s.qi;
+        return {
+          bg: seen ? "var(--ok)" : here ? "#7ea0ff" : "rgba(255,255,255,0.14)",
+          w: here ? "18px" : "8px",
+          wasMissed: s.missedAll.indexOf(k) !== -1,
+          // Backwards only — jumping ahead would hand out marks that were not earned.
+          canGo: seen && !s.fixing,
+          cursor: seen && !s.fixing ? "pointer" : "default",
+          title: here ? "You are here · " + (it.n || k + 1)
+            : seen ? "Back to " + (it.n || k + 1)
+            : "Not reached yet",
+          go: () => { if (seen && !s.fixing) { this.setState({ qi: k }); this.resetQ(); } }
+        };
+      }) : [],
+      // The mistakes round is a different act with a different promise, so it says so.
+      inFix: s.fixing,
+      fixLabel: s.fixing ? "Fix these" : "",
+      fixLeft: s.fixing ? (s.fixQueue.length + 1) + " to clear" : "",
+      // A last question carries the weight of the ending.
+      isFinal: !!m && !s.fixing && s.qi + 1 === m.items.length,
+      finalLabel: "Last question",
+      // The pill's three states, so the eye has one place to go.
+      xpStake: noPay ? (s.fixing ? "fixing — no XP" : "replay — no XP") : "worth " + (XP_LADDER[s.tries] || 0),
+      xpStakeShown: (s.phase === "answer" || s.phase === "clue") && !mark,
+      xpStakeInk: s.tries === 0 ? "var(--text3)" : s.tries === 1 ? "#d9a441" : "var(--danger)",
+      xpGain: fb && s.gained ? "+" + s.gained : "",
+      xpGainShown: !!(fb && s.gained),
+      xpPillRing: fb && s.lastRight ? "var(--ok)" : fb ? "var(--danger)" : "var(--line)",
+      xpPillGlow: fb && s.lastRight ? "0 0 22px rgba(61,220,151,0.35)" : "none",
+      figOpen: !!s.figOpen,
+      openFig: () => this.setState({ figOpen: true }),
+      closeFig: () => this.setState({ figOpen: false }),
+      figCaption: q && q.fig ? (typeof q.fig === "string" ? q.fig : q.fig.caption || "") : "",
+      figLabel: q ? "Figure for " + (q.n || this.state.itemNumber || "this question") : "Figure",
+      // Two columns only when the options divide evenly; otherwise one, so no cell is orphaned.
+      optCols: (() => {
+        const n = q && q.opts ? q.opts.length : 0;
+        return (n >= 4 && n % 2 === 0) ? "repeat(2, minmax(0,1fr))" : "minmax(0,1fr)";
+      })(),
+      hasCombo: s.combo >= 2,
+      comboLabel: Math.min(1 + Math.floor(s.combo / 2), 4) + "\u00d7",
+      comboCount: s.combo + " clean",
+      comboKey: "c" + s.combo,
+      comboInk: s.combo >= 6 ? "#ffcf4d" : s.combo >= 4 ? "#7ea0ff" : "var(--ok)",
+      opts: q && (q.t === "mcq" || q.t === "pickn" || q.t === "order") ? q.opts.map((t, i) => Object.assign({ key: String.fromCharCode(65 + i), text: t },
+        q.t === "mcq" ? optState(i) : q.t === "pickn" ? { border: sel(s.picks.indexOf(i) !== -1), bg: selBg(s.picks.indexOf(i) !== -1), opacity: "1", anim: "none", strike: "none", cursor: "pointer" } : { border: "var(--line2)", bg: "var(--panel)", opacity: s.chosen.indexOf(i) !== -1 ? "0.3" : "1", anim: "none", strike: "none", cursor: "pointer" },
+        { flyHere: !!(fb && s.gained && s.fx === "right" && q.t === "mcq" && i === q.a),
+          pick: () => { if (lock()) return; if (q.t === "mcq" && (s.ruled || []).indexOf(i) !== -1) return; this.retryOnEdit(); if (q.t === "mcq") this.setState({ pick: i }, () => this.autoCheck()); else if (q.t === "pickn") this.setState({ picks: s.picks.indexOf(i) !== -1 ? s.picks.filter(x => x !== i) : (s.picks.length < q.count ? s.picks.concat([i]) : s.picks) }); else if (s.chosen.indexOf(i) === -1) this.setState({ chosen: s.chosen.concat([i]) }); } })) : [],
+      picknHint: q && q.t === "pickn" ? "Pick " + q.count : "",
+      chosen: s.chosen.map((c, i) => ({ n: i + 1, text: q.opts[c], unpick: () => { if (!lock()) this.setState({ chosen: s.chosen.filter(x => x !== c) }); } })), chosenEmpty: s.chosen.length === 0,
+      letters: q && q.t === "lettername" ? q.letters.map(L => ({ text: L, border: sel(s.letter === L), bg: selBg(s.letter === L), pick: () => { if (!lock()) this.setState({ letter: L }); } })) : [],
+      listInputs: q && q.t === "list" ? Array.from({ length: q.count }, (_, i) => ({ val: s.lists[i] || "", hint: (i + 1) + ".", border: "var(--line2)", onVal: e => { const l = s.lists.slice(); l[i] = e.target.value; this.setState({ lists: l }); } })) : [],
+      typed: s.typed, onTyped: e => { if (!lock()) this.setState({ typed: e.target.value }); }, onTypedKey: e => { if (e.key === "Enter") { e.preventDefault(); this.primary(); } },
+      inputHint: q ? (q.t === "num" ? "Type the number" : "Type the term") : "",
+      rubricLead: (() => {
+        if (!q) return "";
+        if (q.t === "draw") return "The memo's criteria — tick what your drawing shows";
+        const n = (q.bullets || []).length, m = q.marks;
+        // The memo often lists more acceptable points than there are marks. Saying so stops
+        // a student ticking seven and wondering why they scored three.
+        if (n > m) return "The memo accepts any " + m + " of these " + n + " — tick what your answer covers";
+        if (n < m) return "Method marks — each step is worth what the memo gives it. Tick the steps you showed";
+        return "The memo awards a mark for each line — tick what your answer covers";
+      })(),
+      drawId: q ? "draw-" + q.n.replace(/[^a-z0-9]/gi, "-") : "", drawMemo: q ? q.memo || "" : "",
+      rubric: lines.map((l, i) => { const on = !!s.ticks[i]; return { text: l[0], marks: l[1] + (l[1] === 1 ? " mark" : " marks"), on, border: on ? "var(--ok)" : "var(--line2)", bg: on ? "rgba(61,220,151,0.10)" : "var(--panel2)", boxBorder: on ? "var(--ok)" : "var(--line2)", boxBg: on ? "var(--ok)" : "transparent",
+        toggle: () => { if (mark) this.setState({ ticks: Object.assign({}, s.ticks, { [i]: !on }) }); } }; }),
+      speech, speechColor: clue || reveal ? "var(--text)" : "var(--text2)", speechBorder: clue ? "var(--warn)" : fb && s.lastRight ? "var(--ok)" : reveal ? "var(--danger)" : "var(--line)",
+      fxKey: s.fxSeq || 0,
+      xpLostLabel: (() => { const next = XP_LADDER[Math.min(s.tries, XP_LADDER.length - 1)] || 0; return next ? "Now worth " + next + " XP" : "Memo answer next"; })(),
+      xpGlow: s.fx === "right" ? "barGlow 2000ms ease both" : "none",
+      showFeedback: fb || reveal, wasRight: fb && s.lastRight, wasWrong: (fb && !s.lastRight) || reveal, gained: s.gained, gainedSome: fb && s.gained > 0,
+      fbTitle: reveal ? "Out of tries — 0 marks" : s.lastRight ? "Correct · " + (q ? q.marks : 0) + (q && q.marks === 1 ? " mark" : " marks") : "Marked",
+      fbBody: reveal ? "Memo answer: " + answerText : (this.objective(q || {}) ? "Memo answer: " + answerText : "Marks are whatever you ticked against the memo — " + s.missionMarks + " so far this mission."),
+      fbMemo: q ? "Marking guideline · " + q.n + " · " + q.marks + (q.marks === 1 ? " mark" : " marks") : "",
+      fbColor: reveal || (fb && !s.lastRight) ? "var(--danger)" : "var(--ok)", fbIconBg: reveal || (fb && !s.lastRight) ? "var(--danger)" : "var(--ok)",
+      primaryLabel, showPrimary, primary: () => this.primary(),
+      primaryBg: canGo ? "var(--grad)" : "var(--panel)", primaryFg: canGo ? "#fff" : "var(--text4)", primaryCursor: canGo ? "pointer" : "default", primaryShadow: canGo ? "0 10px 28px rgba(30,70,255,0.35)" : "none",
+      quit: () => this.setState({ screen: "map" }), replay: () => this.start(s.mi),
+      // The review is the point of a study tool, so it opens from the summary.
+      openReview: () => this.setState({ screen: "review" }),
+      reviewRows: Object.keys(s.reviews || {}).map(k => {
+        const r = s.reviews[k];
+        return { mission: r.mission, n: String(r.n), q: r.q, chose: r.chose || "—", answer: r.answer,
+          memo: r.memo || "", hasMemo: !!(r.memo && r.memo.trim()),
+          marks: r.marks + (r.marks === 1 ? " mark" : " marks") };
+      }),
+      reviewCount: Object.keys(s.reviews || {}).length + " to revisit",
+      hasReview: Object.keys(s.reviews || {}).length > 0,
+      reviewEmpty: Object.keys(s.reviews || {}).length === 0,
+      onReview: s.screen === "review",
+      closeReview: () => this.setState({ screen: "map" }),
+      doneClean: s.clean + " first try",
+      doneStreak: s.bestCombo >= 2 ? "Best streak " + s.bestCombo : "No streak yet",
+      doneFixed: s.missedAll.length ? s.missedAll.length + (s.missedAll.length === 1 ? " question fixed" : " questions fixed") : "Nothing to fix",
+      doneHasFix: s.missedAll.length > 0,
+      doneGradeLabel: GRADE[s.lastGrade] ? GRADE[s.lastGrade].label : "",
+      doneGradeInk: GRADE[s.lastGrade] ? GRADE[s.lastGrade].ink : "var(--text3)",
+      doneKicker: m ? m.section.title + " · " + m.title : "", doneTitle: m ? (s.missionMarks === m.marks ? "Full marks on " + m.title + "." : s.missionMarks + " of " + m.marks + " marks on " + m.title + ".") : "",
+      doneMarks: m ? s.missionMarks + " / " + m.marks : "", doneXp: s.missionXp, doneFirst: m ? s.first + " / " + m.items.length : "",
+      doneInsight: m ? (m.kind === "Multiple choice" ? "Nine questions, two marks each. The memo gives no half marks here — an option is right or it is not." : m.items.some(x => x.t === "rubric") ? "Written answers are marked line by line. Each memo bullet is a mark, and the examiner stops counting once the marks are full." : "Every term here is one mark, and the memo accepts recognisable spelling — but not a different word.") : "",
+      doneNext: nextIdx === -1 ? "Back to the map" : "Next question"
+    };
+  }
+}
+</script>
+</body>
+</html>
