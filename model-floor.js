@@ -277,7 +277,9 @@ class ModelFloor extends HTMLElement {
 
       const t = clock.getElapsedTime();
       // Derived, not clock.getDelta() — that would consume the same tick the rings read.
-      if (this._mixer) { this._mixer.update(Math.min(0.1, Math.max(0, t - (this._lastT || t)))); }
+      if (this._mixer) { this._mixer.update(Math.min(0.1, Math.max(0, t - (this._lastT || t))));
+        const a = this._action;
+        if (this._holdAt != null && a && !a.paused && a.time >= this._holdAt) { a.time = this._holdAt; a.paused = true; this._mixer.update(0); } }
       this._lastT = t;
       if (floorMode() === "ripple") rings.forEach(r => {
         const p = ((t / RING_CYCLE) + r.phase) % 1;
@@ -350,7 +352,13 @@ class ModelFloor extends HTMLElement {
     next.reset();
     next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
     next.clampWhenFinished = once;
+    // hold="seconds" (with loop="once") stops the clip on a chosen frame instead of its last one;
+    // with reduced motion the figure starts already in that pose rather than playing into it.
+    const hold = once ? parseFloat(this.getAttribute("hold")) : NaN;
+    this._holdAt = isFinite(hold) ? Math.min(hold, hit.duration) : null;
     next.fadeIn(0.3).play();
+    if (this._holdAt != null && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      next.time = this._holdAt; next.paused = true; next.setEffectiveWeight(1); }
     if (this._action) this._action.crossFadeTo(next, 0.3, false);
     this._action = next;
   }
