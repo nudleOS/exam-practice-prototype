@@ -188,14 +188,14 @@
             <sc-if value="{{ picking }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ backToContinue }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Back</button>
             </sc-if>
-            <button onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
+            <button data-homestart="true" onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; box-sizing:border-box; border:{{ homeCtaBorder }}; border-radius:18px; background:{{ homeCtaBg }}; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:{{ homeStartShadow }}">Start</button>
           </div>
           <sc-if value="{{ hasTicketPaper }}" hint-placeholder-val="{{ true }}">
             <span style="font-size:11.5px; color:var(--text3); text-align:center">{{ ticketProv }}</span>
           </sc-if>
         </sc-if>
         <sc-if value="{{ showContinue }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ continueGo }}" style="width:min(460px, 100%); min-height:64px; padding:8px 22px; border:none; border-radius:20px; background:var(--grad); color:#ffffff; cursor:pointer; box-shadow:0 14px 36px rgba(30,70,255,0.38); animation:{{ breathe }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
+          <button data-homecontinue="true" onClick="{{ continueGo }}" style="width:min(460px, 100%); min-height:64px; padding:8px 22px; box-sizing:border-box; border:{{ homeCtaBorder }}; border-radius:20px; background:{{ homeCtaBg }}; color:#ffffff; cursor:pointer; box-shadow:{{ homeContinueShadow }}; animation:{{ homeContinueAnim }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
             <span style="font-size:16.5px; font-weight:800; letter-spacing:-0.01em; white-space:nowrap">{{ continueLabel }}</span>
             <sc-if value="{{ hasContinueSub }}" hint-placeholder-val="{{ true }}">
               <span style="font-size:12px; font-weight:600; opacity:0.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%">{{ continueSub }}</span>
@@ -2246,8 +2246,9 @@ class Component extends DCLogic {
     this.setState({ asg: win, hall: hall, testPreview: k, liveAsg: null, hoOpen: {}, hallNow: now }, () => { if (k === "handed" || k === "released") this.hallPoll(); });
   }
   classVals(s, phone, paper) {
-    const A = s.asg; if (!A) return { ctHomeOn: false, ctMapOn: false, ctModes: [] };
-    const now = Date.now(), ph = this.classPhase(now), pid = CLASS_TEST.paperId, P = (this.papers || []).filter(p => p.id === pid)[0]; if (!P) return { ctHomeOn: false, ctMapOn: false, ctModes: [] };
+    const HOME_PRIMARY = { homeCtaBg: "var(--grad)", homeCtaBorder: "none", homeStartShadow: "0 12px 30px rgba(30,70,255,0.36)", homeContinueShadow: "0 14px 36px rgba(30,70,255,0.38)", homeContinueAnim: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite" };
+    const A = s.asg; if (!A) return Object.assign({ ctHomeOn: false, ctMapOn: false, ctModes: [] }, HOME_PRIMARY);
+    const now = Date.now(), ph = this.classPhase(now), pid = CLASS_TEST.paperId, P = (this.papers || []).filter(p => p.id === pid)[0]; if (!P) return Object.assign({ ctHomeOn: false, ctMapOn: false, ctModes: [] }, HOME_PRIMARY);
     const fmt = t => new Date(t).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
     const H = ph.H, remain = H && H.phase === "sitting" ? Math.max(0, H.endsAt - Math.max(now, s.hallNow || 0)) : 0;
     const clock = Math.floor(remain / 3600000) + ":" + ("0" + Math.floor(remain % 3600000 / 60000)).slice(-2) + ":" + ("0" + Math.floor(remain % 60000 / 1000)).slice(-2);
@@ -2261,7 +2262,14 @@ class Component extends DCLogic {
       released: [(R ? R.marks + " of " + R.total_marks : "Marks") + " · released", "See your result", toResult],
       missed: ["Closed · you didn't sit this one", "Practise this paper", () => this.setState({ paperId: pid, screen: "map", mapView: "paper" })] }[ph.k];
     const live = ph.k === "open" || ph.k === "inprogress", lock = this.classLock(pid);
+    const testFirst = live && s.screen === "pick";
     const v = {
+      homeCtaBg: testFirst ? "rgba(0,104,248,0.12)" : "var(--grad)", homeCtaBorder: testFirst ? "1px solid rgba(129,177,255,0.45)" : "none",
+      homeStartShadow: testFirst ? "none" : "0 12px 30px rgba(30,70,255,0.36)", homeContinueShadow: testFirst ? "none" : "0 14px 36px rgba(30,70,255,0.38)",
+      homeContinueAnim: testFirst ? "none" : s.reduced ? "none" : "breathe 3.2s ease-in-out infinite",
+      // The companion points at the same thing the primary button does.
+      ...(testFirst && !s.bubbleMsg ? (() => { const b = ph.k === "inprogress" ? "Your class test is in progress: " + clock + " left." : "Your class test is open until " + fmt(A.closesAt) + ". Practice on this paper waits until then.";
+        return { bubble: b, bubbleKey: "ct:" + ph.k }; })() : {}),
       ctLive: !!s.liveAsg, ctReset: () => { busReset(); this._lastLive = null; this.onBus(busEmpty()); this.setState({ hallLive: "The shared demo is reset." }); },
       ctModes: (this.liveFromBus() ? [["live", "Live"]] : []).concat([["upcoming", "Upcoming"], ["open", "Open"], ["inprogress", "In progress"], ["handed", "Handed in"], ["released", "Released"], ["missed", "Missed"]]).map(x => { const on = s.testPreview === x[0];
         return { label: x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)", pick: () => x[0] === "live" ? this.goLive(this.liveFromBus()) : this.setTestPreview(x[0]) }; }),
