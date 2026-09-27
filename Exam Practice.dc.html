@@ -31,6 +31,7 @@
     @keyframes suggest { 0%,100% { box-shadow:0 0 0 0 rgba(0,104,248,0.5); } 60% { box-shadow:0 0 0 12px rgba(0,104,248,0); } }
     @keyframes breathe { 0%,100% { transform:scale(1); box-shadow:0 14px 36px rgba(30,70,255,0.38); } 50% { transform:scale(1.02); box-shadow:0 18px 44px rgba(30,70,255,0.5); } }
     @keyframes dots { 0%,100% { opacity:0.25; } 50% { opacity:1; } }
+    @keyframes ripple { 0% { transform:scale(0.72); opacity:0.9; } 100% { transform:scale(1.5); opacity:0; } }
     @keyframes halo { 0% { transform:scale(0.92); opacity:0.9; } 100% { transform:scale(1.4); opacity:0; } }
     [data-orb] { transition:transform 120ms ease, box-shadow 120ms ease, filter 160ms ease; }
     [data-orb]:hover { filter:brightness(1.08); }
@@ -254,6 +255,15 @@
           <span aria-hidden="true" style="position:absolute; left:-12%; right:-12%; top:{{ z.top }}; height:{{ z.h }}; pointer-events:none; background:radial-gradient(50% 50% at 50% 50%, {{ z.tint }}, transparent 72%)"></span>
         </sc-for>
 
+        <span aria-hidden="true" style="position:absolute; left:calc(50% - 120px); top:{{ padTop }}; width:240px; height:90px; pointer-events:none">
+          <span style="position:absolute; left:0; top:14px; width:240px; height:70px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,0.42), rgba(30,70,255,0.14) 62%, transparent)"></span>
+          <span style="position:absolute; left:45px; top:35px; width:150px; height:40px; border-radius:50%; background:linear-gradient(180deg, #1a2a4c, #0a0f1b); box-shadow:0 16px 26px rgba(0,0,0,0.55)"></span>
+          <span style="position:absolute; left:45px; top:25px; width:150px; height:40px; border-radius:50%; border:1px solid rgba(129,177,255,0.6); box-sizing:border-box; background:radial-gradient(ellipse at 50% 32%, #36599e 0%, #1b2d53 56%, #101a31 100%); box-shadow:inset 0 2px 0 rgba(255,255,255,0.14), inset 0 -5px 10px rgba(0,0,0,0.38)"></span>
+          <span style="position:absolute; left:45px; top:25px; width:150px; height:40px; border-radius:50%; box-sizing:border-box; border:2px solid rgba(129,177,255,0.55); opacity:{{ padRippleOpacity }}; animation:{{ padRipple }}"></span>
+          <span style="position:absolute; left:45px; top:25px; width:150px; height:40px; border-radius:50%; box-sizing:border-box; border:2px solid rgba(129,177,255,0.55); opacity:{{ padRippleOpacity }}; animation:{{ padRipple2 }}"></span>
+          <span style="position:absolute; left:75px; top:33px; width:90px; height:24px; border-radius:50%; box-sizing:border-box; border:2px solid rgba(129,177,255,0.5)"></span>
+          <span style="position:absolute; left:96px; top:37px; width:48px; height:16px; border-radius:50%; background:radial-gradient(closest-side, #ffffff, rgba(129,177,255,0.85) 38%, rgba(0,104,248,0) 100%)"></span>
+        </span>
         <svg aria-hidden="true" width="{{ roadW }}" height="{{ roadH }}" viewBox="{{ roadViewBox }}" style="position:absolute; left:0; top:0; overflow:visible">
           <defs>
             <linearGradient id="roadLit" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0068f8"></stop><stop offset="0.5" stop-color="#1e46ff"></stop><stop offset="1" stop-color="#671dff"></stop></linearGradient>
@@ -275,9 +285,15 @@
             Finish · {{ totalMarks }} marks
           </span>
         </span>
-        <span style="position:absolute; left:0; right:0; top:{{ startTop }}; display:flex; flex-direction:column; align-items:center; gap:4px; pointer-events:none">
-          <span aria-hidden="true" style="width:120px; height:26px; margin-top:-10px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,0.55), rgba(30,70,255,0.18) 60%, transparent); box-shadow:0 0 0 1px rgba(129,177,255,0.18)"></span>
-          <span style="font-size:11px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--text3)">Start</span>
+        <span style="position:absolute; left:8px; right:8px; top:{{ startTicketTop }}; display:flex; justify-content:center; pointer-events:none">
+          <span style="max-width:100%; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 18px 12px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #202532, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.7), rgba(103,29,255,0.35) 60%, rgba(255,255,255,0.06)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 34px rgba(0,0,0,0.5); text-align:center">
+            <span style="display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:0.18em; text-transform:uppercase; color:#81b1ff">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M6 4l14 8-14 8z"></path></svg>Start
+            </span>
+            <span style="font-size:13.5px; font-weight:800; line-height:1.3; color:#ffffff; text-wrap:balance">{{ startPaperName }}</span>
+            <span style="font-size:11.5px; font-weight:600; color:var(--text2)">{{ startPaperFacts }}</span>
+            <span style="font-size:10.5px; color:var(--text3)">DHET question paper · marking reviewed by Nexera</span>
+          </span>
         </span>
         <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
           <span style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
@@ -1008,7 +1024,7 @@ class Component extends DCLogic {
     // Spheres sit high in their slot so the two-line label below them has room.
     const LIFT = phone ? 26 : 28, CLEAR = phone ? 90 : 100;
     const ZIG = [0, 0.6, 1, 0.6, 0, -0.6, -1, -0.6];
-    const items = [{ kind: "start", h: 56 }];
+    const items = [{ kind: "start", h: 214, anchor: 90 }];
     let k = 0;
     (paper ? paper.sections : []).forEach(sec => {
       // Every plaque after the first leaves headroom below it, so the companion can stand at the
@@ -1083,7 +1099,7 @@ class Component extends DCLogic {
     items.forEach(it => {
       if (it.kind === "cap") blockers.push([cx - 120, it.y - 44, cx + 120, it.y + 44]);
       if (it.kind === "finish") blockers.push([cx - 110, it.y - 28, cx + 110, it.y + 28]);
-      if (it.kind === "start") blockers.push([cx - 64, it.y - 22, cx + 64, it.y + 22]);
+      if (it.kind === "start") blockers.push([cx - 130, it.y - 40, cx + 130, it.y + 150]);
       if (it.kind === "m" && it !== tIt) blockers.push([it.x - 75, it.y - nodeR - 10, it.x + 75, it.y + nodeR + 76]);
     });
     if (tIt.kind === "m") {
@@ -1139,7 +1155,14 @@ class Component extends DCLogic {
       litOpacity: lit > 0 && s.roadPx ? "1" : "0", litGlowOpacity: lit > 0 && s.roadPx ? "0.22" : "0",
       finishGlow: earned >= total && total ? "38px" : "0px", litDur: s.reduced ? "0ms" : "1300ms",
       roadNodes: roadNodes, roadCaps: roadCaps,
-      finishTop: f(items[items.length - 1].y - 18) + "px", startTop: f(items[0].y - 8) + "px",
+      finishTop: f(items[items.length - 1].y - 18) + "px",
+      // The pad's centre is the road's first point; the ticket hangs below the pad.
+      padTop: f(items[0].y - 45) + "px", startTicketTop: f(items[0].y + 42) + "px",
+      startPaperName: paper ? paper.title + " · " + paper.sitting : "",
+      startPaperFacts: paper ? paper.total + " marks · " + paper.time + " · " + missions.length + " missions" : "",
+      // Ripples invite on a fresh paper and calm down once practice has started.
+      padRipple: s.reduced ? "none" : "ripple 3.2s ease-out infinite", padRipple2: s.reduced ? "none" : "ripple 3.2s ease-out 1.6s infinite",
+      padRippleOpacity: fresh ? "1" : "0.45",
       finishBorder: earned >= total && total ? "rgba(61,220,151,0.8)" : "rgba(61,220,151,0.35)",
       finishBg: earned >= total && total ? "rgba(61,220,151,0.16)" : "rgba(61,220,151,0.07)", finishColor: "var(--ok)",
       compLeft: f(cL) + "px", compTop: f(cT) + "px", compWpx: compW + "px", compHpx: compH + "px",
