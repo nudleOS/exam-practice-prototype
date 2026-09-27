@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="paper-fm-n6-2022.js"></script>
+  <style>
+    :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
+      --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff; --bar:#5b8def;
+      --azure:#0068f8; --cobalt:#1e46ff; --violet:#671dff; --danger:#f2777a; --warn:#e0a10f; --ok:#3ddc97;
+      --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
+    html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+    input, textarea, button { font:inherit; }
+    :focus-visible { outline:2px solid #81b1ff; outline-offset:2px; }
+    [data-noscrollbar] { scrollbar-width:none; } [data-noscrollbar]::-webkit-scrollbar { display:none; }
+    [data-bin]:hover .bar, [data-bin]:focus-visible .bar { filter:brightness(1.25); }
+    @keyframes rise { from { transform:translateY(10px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+  </style>
+</helmet>
+
+<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; background:var(--bg); overflow-x:clip">
+  <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ live }}</p>
+
+  <header style="position:sticky; top:0; z-index:20; background:rgba(25,27,30,0.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
+    <div style="box-sizing:border-box; max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:10px; padding:10px {{ pad }}">
+      <img src="assets/nexera-mark.png" alt="Nexera" style="width:26px; height:26px; flex:none" />
+      <span style="flex:1; min-width:0; display:flex; flex-direction:column">
+        <span style="font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Teaching · Exams</span>
+        <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ collegeLine }}</span>
+      </span>
+      <div role="group" aria-label="Viewing as (design preview)" style="display:flex; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.8); border:1px solid rgba(255,255,255,0.07)">
+        <sc-for list="{{ roles }}" as="rl" hint-placeholder-count="2">
+          <button data-role="{{ rl.id }}" onClick="{{ rl.pick }}" aria-pressed="{{ rl.on }}" style="min-height:36px; padding:0 10px; border:none; border-radius:9px; background:{{ rl.bg }}; color:{{ rl.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ rl.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <nav aria-label="Teaching" data-noscrollbar="true" style="box-sizing:border-box; max-width:1180px; margin:0 auto; display:flex; gap:4px; padding:0 {{ pad }} 8px; overflow-x:auto">
+      <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5">
+        <button data-tab="{{ tb.id }}" onClick="{{ tb.go }}" aria-current="{{ tb.current }}" style="flex:none; min-height:38px; padding:0 13px; border-radius:10px; border:1px solid {{ tb.border }}; background:{{ tb.bg }}; color:{{ tb.color }}; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap">{{ tb.label }}<sc-if value="{{ tb.hasCount }}" hint-placeholder-val="{{ false }}"><span style="margin-left:6px; padding:1px 7px; border-radius:9px; background:rgba(0,104,248,0.25); font-size:11px">{{ tb.count }}</span></sc-if></button>
+      </sc-for>
+    </nav>
+  </header>
+
+  <main style="box-sizing:border-box; max-width:1180px; margin:0 auto; padding:18px {{ pad }} 64px; display:flex; flex-direction:column; gap:16px">
+
+    <sc-if value="{{ onHome }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap">
+        <h1 data-h1="true" tabIndex="-1" style="flex:1; min-width:200px; margin:0; font-size:22px; font-weight:800; outline:none">{{ homeTitle }}</h1>
+        <button data-assign="true" onClick="{{ startAssign }}" style="min-height:44px; padding:0 18px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">Assign a paper</button>
+      </div>
+      <p style="margin:0; padding:10px 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.3); background:rgba(0,104,248,0.08); font-size:13px; line-height:1.55; color:#cfe0ff">Classes aren't on the platform yet, so you assign to your whole college or a campus. Tests here are mocks and practice, not ICASS tasks.</p>
+      <div style="display:grid; grid-template-columns:{{ homeCols }}; gap:14px; align-items:start">
+        <section aria-labelledby="h-wait" style="display:flex; flex-direction:column; gap:8px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <h2 id="h-wait" style="margin:0 0 4px; font-size:14px; font-weight:800">Waiting for you</h2>
+          <sc-for list="{{ waiting }}" as="wt" hint-placeholder-count="3">
+            <button onClick="{{ wt.go }}" disabled="{{ wt.none }}" style="min-height:44px; display:flex; align-items:center; gap:10px; padding:0 12px; border-radius:11px; border:1px solid var(--line); background:var(--panel2); color:{{ wt.color }}; font-size:13.5px; font-weight:600; cursor:{{ wt.cursor }}; text-align:left">
+              <span style="flex:1">{{ wt.label }}</span><span style="font-weight:800">{{ wt.count }}</span><span aria-hidden="true" style="color:var(--tint)">{{ wt.chev }}</span>
+            </button>
+          </sc-for>
+        </section>
+        <section aria-labelledby="h-asg" style="display:flex; flex-direction:column; gap:8px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <h2 id="h-asg" style="margin:0 0 4px; font-size:14px; font-weight:800">{{ asgTitle }}</h2>
+          <sc-for list="{{ asgRows }}" as="ar" hint-placeholder-count="2">
+            <div data-asg="{{ ar.ref }}" style="display:flex; flex-direction:column; gap:4px; padding:11px 12px; border-radius:11px; border:1px solid var(--line); background:var(--panel2)">
+              <span style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap"><span style="font-size:13.5px; font-weight:800">{{ ar.title }}</span><span style="font-size:11.5px; font-weight:700; color:var(--text3)">{{ ar.kind }}</span></span>
+              <span style="font-size:12.5px; color:var(--text2)">{{ ar.line }}</span>
+              <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                <span style="padding:2px 8px; border-radius:7px; background:{{ ar.stateBg }}; color:{{ ar.stateColor }}; font-size:11.5px; font-weight:800">{{ ar.state }}</span>
+                <span style="flex:1"></span>
+                <sc-if value="{{ ar.hasGo }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ar.go }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer">{{ ar.goLabel }}</button></sc-if>
+              </span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ asgNone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; color:var(--text3)">Nothing assigned yet.</span></sc-if>
+        </section>
+        <section aria-labelledby="h-bank" style="display:flex; flex-direction:column; gap:8px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <h2 id="h-bank" style="margin:0 0 4px; font-size:14px; font-weight:800">Paper bank</h2>
+          <sc-for list="{{ bankRows }}" as="br" hint-placeholder-count="3">
+            <div style="display:flex; flex-direction:column; gap:4px; padding:11px 12px; border-radius:11px; border:1px solid var(--line); background:var(--panel2)">
+              <span style="align-self:flex-start; padding:2px 8px; border-radius:7px; background:{{ br.badgeBg }}; color:{{ br.badgeColor }}; font-size:11px; font-weight:800">{{ br.badge }}</span>
+              <span style="font-size:13.5px; font-weight:800">{{ br.title }}</span>
+              <span style="font-size:12px; color:var(--text2)">{{ br.facts }}</span>
+              <span style="font-size:12px; color:{{ br.useColor }}">{{ br.use }}</span>
+            </div>
+          </sc-for>
+          <div style="display:flex; flex-direction:column; gap:6px; padding-top:4px">
+            <span style="padding:9px 12px; border-radius:11px; border:1px dashed var(--line2); font-size:12.5px; color:var(--text3)">Upload a paper and its memo · next step (brief 13)</span>
+            <span style="padding:9px 12px; border-radius:11px; border:1px dashed var(--line2); font-size:12.5px; color:var(--text3)">Generate a practice paper · next step (brief 13)</span>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ onAssign }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; gap:10px">
+        <button onClick="{{ toHome }}" aria-label="Back to teaching home" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); cursor:pointer; font-size:18px">‹</button>
+        <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Assign a paper</h1>
+      </div>
+      <ol aria-label="Steps" style="list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px">
+        <sc-for list="{{ steps }}" as="sp" hint-placeholder-count="4">
+          <li aria-current="{{ sp.current }}" style="display:flex; flex-direction:column; gap:6px">
+            <span aria-hidden="true" style="height:5px; border-radius:3px; background:{{ sp.fill }}"></span>
+            <span style="font-size:12px; font-weight:700; color:{{ sp.color }}">{{ sp.label }}</span>
+          </li>
+        </sc-for>
+      </ol>
+      <section data-step="{{ stepN }}" style="max-width:760px; display:flex; flex-direction:column; gap:12px; padding:18px; border-radius:16px; border:1px solid var(--line2); background:var(--panel); animation:rise 280ms ease both">
+        <h2 data-steptitle="true" tabIndex="-1" style="margin:0; font-size:17px; font-weight:800; outline:none">{{ stepTitle }}</h2>
+
+        <sc-if value="{{ step1 }}" hint-placeholder-val="{{ true }}">
+          <div role="radiogroup" aria-label="Paper" style="display:flex; flex-direction:column; gap:8px">
+            <sc-for list="{{ paperOpts }}" as="po" hint-placeholder-count="3">
+              <button data-paper="{{ po.id }}" role="radio" aria-checked="{{ po.on }}" onClick="{{ po.pick }}" style="display:flex; flex-direction:column; gap:4px; padding:12px 14px; border-radius:12px; border:{{ po.border }}; background:{{ po.bg }}; color:var(--text); text-align:left; cursor:pointer">
+                <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span style="font-size:14px; font-weight:800">{{ po.title }}</span><span style="padding:2px 8px; border-radius:7px; background:{{ po.badgeBg }}; color:{{ po.badgeColor }}; font-size:11px; font-weight:800">{{ po.badge }}</span></span>
+                <span style="font-size:12.5px; color:var(--text2)">{{ po.facts }}</span>
+                <sc-if value="{{ po.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px; line-height:1.5; color:{{ po.noteColor }}">{{ po.note }}</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
+          <div role="radiogroup" aria-label="Mode" style="display:grid; grid-template-columns:{{ modeCols }}; gap:10px">
+            <sc-for list="{{ modeOpts }}" as="mo" hint-placeholder-count="2">
+              <button data-mode="{{ mo.id }}" role="radio" aria-checked="{{ mo.on }}" disabled="{{ mo.disabled }}" onClick="{{ mo.pick }}" style="display:flex; flex-direction:column; gap:6px; padding:14px; border-radius:12px; border:{{ mo.border }}; background:{{ mo.bg }}; color:var(--text); text-align:left; cursor:{{ mo.cursor }}; opacity:{{ mo.opacity }}">
+                <span style="font-size:14px; font-weight:800">{{ mo.title }}</span>
+                <span style="font-size:12.5px; line-height:1.55; color:var(--text2)">{{ mo.body }}</span>
+                <sc-if value="{{ mo.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px; line-height:1.5; color:#f3c14f">{{ mo.note }}</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ step3 }}" hint-placeholder-val="{{ false }}">
+          <div role="radiogroup" aria-label="Audience" style="display:flex; flex-direction:column; gap:8px">
+            <sc-for list="{{ audOpts }}" as="ao" hint-placeholder-count="3">
+              <button data-aud="{{ ao.id }}" role="radio" aria-checked="{{ ao.on }}" disabled="{{ ao.disabled }}" onClick="{{ ao.pick }}" style="min-height:48px; display:flex; align-items:center; gap:10px; padding:0 14px; border-radius:12px; border:{{ ao.border }}; background:{{ ao.bg }}; color:var(--text); text-align:left; cursor:{{ ao.cursor }}; opacity:{{ ao.opacity }}">
+                <span style="flex:1; font-size:13.5px; font-weight:700">{{ ao.label }}</span><span style="font-size:12px; color:var(--text3)">{{ ao.note }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div style="display:grid; grid-template-columns:{{ modeCols }}; gap:10px">
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:700; color:var(--text2)">Opens<input data-opens="true" type="datetime-local" value="{{ opensVal }}" onChange="{{ onOpens }}" style="min-height:44px; box-sizing:border-box; padding:0 12px; border-radius:11px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:14px; color-scheme:dark" /></label>
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:700; color:var(--text2)">Closes<input data-closes="true" type="datetime-local" value="{{ closesVal }}" onChange="{{ onCloses }}" style="min-height:44px; box-sizing:border-box; padding:0 12px; border-radius:11px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:14px; color-scheme:dark" /></label>
+          </div>
+          <span style="font-size:12.5px; color:var(--text2)">{{ durationLine }}</span>
+          <sc-if value="{{ hasWindowNote }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12.5px; line-height:1.5; color:{{ windowNoteColor }}">{{ windowNote }}</span></sc-if>
+          <span style="font-size:12px; color:var(--text3)">Extra time per learner needs per-learner data the platform doesn't have yet.</span>
+        </sc-if>
+
+        <sc-if value="{{ step4 }}" hint-placeholder-val="{{ false }}">
+          <dl style="margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:13.5px">
+            <sc-for list="{{ summary }}" as="sm" hint-placeholder-count="5">
+              <dt style="color:var(--text3); font-weight:600">{{ sm.k }}</dt><dd style="margin:0; font-weight:700">{{ sm.v }}</dd>
+            </sc-for>
+          </dl>
+          <div style="display:flex; flex-direction:column; gap:6px; padding:12px 14px; border-radius:12px; border:1px dashed rgba(129,177,255,0.45); background:rgba(0,104,248,0.06)">
+            <span style="font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--tint)">What learners will see</span>
+            <span data-notice="true" style="font-size:13.5px; line-height:1.55">{{ noticePreview }}</span>
+          </div>
+          <span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ sendNote }}</span>
+        </sc-if>
+
+        <div style="display:flex; gap:8px; margin-top:4px">
+          <button onClick="{{ stepBack }}" style="min-height:48px; padding:0 18px; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:700; cursor:pointer">{{ backLabel }}</button>
+          <span style="flex:1"></span>
+          <button data-next="true" onClick="{{ stepNext }}" disabled="{{ nextDisabled }}" style="min-height:48px; padding:0 20px; border:none; border-radius:12px; background:{{ nextBg }}; color:{{ nextColor }}; font-size:14px; font-weight:800; cursor:{{ nextCursor }}">{{ nextLabel }}</button>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ onModerate }}" hint-placeholder-val="{{ false }}">
+      <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Moderate</h1>
+      <sc-if value="{{ modNotAdmin }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0; font-size:13.5px; color:var(--text2)">Moderation is done by your college's institution admin. Switch "Viewing as" to see it.</p>
+      </sc-if>
+      <sc-if value="{{ modIsAdmin }}" hint-placeholder-val="{{ true }}">
+        <section aria-labelledby="h-approve" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <h2 id="h-approve" style="margin:0; font-size:15px; font-weight:800">Assessments to approve</h2>
+          <sc-for list="{{ toApprove }}" as="ta" hint-placeholder-count="1">
+            <div data-approve="{{ ta.ref }}" style="display:flex; flex-direction:column; gap:6px; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel2)">
+              <span style="font-size:14px; font-weight:800">{{ ta.title }}</span>
+              <span style="font-size:12.5px; color:var(--text2)">{{ ta.line }}</span>
+              <sc-if value="{{ ta.own }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px; color:#f3c14f">You set this test, so another institution admin must approve it.</span></sc-if>
+              <sc-if value="{{ ta.canApprove }}" hint-placeholder-val="{{ false }}">
+                <span style="display:flex; gap:8px"><button data-approvego="{{ ta.ref }}" onClick="{{ ta.approve }}" style="min-height:44px; padding:0 16px; border:none; border-radius:11px; background:var(--grad); color:#ffffff; font-size:13.5px; font-weight:800; cursor:pointer">Approve for learners</button></span>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noApprove }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; color:var(--text3)">Nothing waiting for approval.</span></sc-if>
+        </section>
+
+        <section data-sample="true" aria-labelledby="h-sample" style="display:flex; flex-direction:column; gap:12px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <span style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap"><h2 id="h-sample" style="flex:1; margin:0; font-size:15px; font-weight:800">Moderation sample · {{ sampleTitle }}</h2>
+            <span role="group" aria-label="Fill the sample (design preview)" style="display:flex; gap:4px"><button onClick="{{ fillAgree }}" style="min-height:32px; padding:0 10px; border-radius:9px; border:1px solid var(--line2); background:transparent; color:var(--text3); font-size:11.5px; font-weight:700; cursor:pointer">Preview: close marks</button><button onClick="{{ fillDisagree }}" style="min-height:32px; padding:0 10px; border-radius:9px; border:1px solid var(--line2); background:transparent; color:var(--text3); font-size:11.5px; font-weight:700; cursor:pointer">Preview: far apart</button></span></span>
+          <span style="font-size:13px; line-height:1.55; color:var(--text2)">{{ sampleRule }}</span>
+          <sc-for list="{{ sampleRows }}" as="sr" hint-placeholder-count="5">
+            <div data-script="{{ sr.idx }}" style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:12px; border:1px solid {{ sr.border }}; background:var(--panel2)">
+              <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span style="font-size:13.5px; font-weight:800">{{ sr.label }}</span><span style="font-size:11.5px; font-weight:700; color:var(--text3)">{{ sr.band }} · names hidden</span><span style="flex:1"></span><span style="font-size:12.5px; font-weight:800; color:{{ sr.resultColor }}">{{ sr.result }}</span></span>
+              <div style="display:grid; grid-template-columns:{{ qCols }}; gap:8px">
+                <sc-for list="{{ sr.qs }}" as="sq" hint-placeholder-count="4">
+                  <label style="display:flex; flex-direction:column; gap:4px; font-size:11.5px; font-weight:700; color:var(--text3)">{{ sq.label }}<input data-remark="{{ sq.id }}" inputMode="numeric" value="{{ sq.value }}" onChange="{{ sq.onChange }}" disabled="{{ sq.disabled }}" aria-label="{{ sq.aria }}" style="min-height:40px; box-sizing:border-box; padding:0 10px; border-radius:10px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:14px; font-weight:700" /></label>
+                </sc-for>
+              </div>
+              <span style="display:flex; align-items:center; gap:8px"><span style="flex:1; font-size:12px; color:var(--text3)">{{ sr.hint }}</span>
+                <sc-if value="{{ sr.canSave }}" hint-placeholder-val="{{ false }}"><button data-savescript="{{ sr.idx }}" onClick="{{ sr.save }}" style="min-height:40px; padding:0 14px; border-radius:10px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.14); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer">Save and show the AI's mark</button></sc-if></span>
+            </div>
+          </sc-for>
+          <span role="status" data-samplesum="true" style="font-size:13.5px; font-weight:800; color:{{ sampleSumColor }}">{{ sampleSum }}</span>
+        </section>
+
+        <section aria-labelledby="h-release" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <h2 id="h-release" style="margin:0; font-size:15px; font-weight:800">Marks to release · {{ sampleTitle }}</h2>
+          <sc-for list="{{ gates }}" as="gt" hint-placeholder-count="4">
+            <span style="display:flex; align-items:center; gap:10px; font-size:13.5px"><span aria-hidden="true" style="width:22px; height:22px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ gt.dot }}; color:#191b1e; font-size:12px; font-weight:900">{{ gt.icon }}</span><span style="color:{{ gt.color }}">{{ gt.text }}</span></span>
+          </sc-for>
+          <span style="display:flex; gap:8px; flex-wrap:wrap; align-items:center"><button data-release="true" onClick="{{ askRelease }}" disabled="{{ releaseDisabled }}" style="min-height:48px; padding:0 18px; border:none; border-radius:12px; background:{{ releaseBg }}; color:{{ releaseColor }}; font-size:14px; font-weight:800; cursor:{{ releaseCursor }}">Release marks</button><span style="font-size:12.5px; color:var(--text3)">{{ releaseNote }}</span></span>
+        </section>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ onMark }}" hint-placeholder-val="{{ false }}">
+      <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Marking</h1>
+      <span style="font-size:13px; color:var(--text2)">{{ queueLine }}</span>
+      <sc-if value="{{ hasItem }}" hint-placeholder-val="{{ true }}">
+        <div data-markitem="{{ itemKey }}" style="display:grid; grid-template-columns:{{ markCols }}; gap:14px; align-items:start">
+          <section aria-label="Learner's answer" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span style="font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--tint)">{{ itemKind }}</span><span style="flex:1"></span><span style="font-size:12px; font-weight:700; color:var(--text3)">Names hidden while marking</span></span>
+            <span style="font-size:13.5px; font-weight:800">{{ itemPart }}</span>
+            <span style="font-size:13px; line-height:1.55; color:var(--text2)">{{ itemStem }}</span>
+            <div style="padding:12px 14px; border-radius:12px; background:var(--panel2); border:1px solid var(--line); font-size:14px; line-height:1.6; white-space:pre-line">{{ itemAnswer }}</div>
+            <span style="font-size:11.5px; color:var(--text3)">Sample answer written for this prototype.</span>
+          </section>
+          <section aria-label="Memo criteria" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+            <span style="font-size:13px; font-weight:800">Memo criteria · {{ itemMarks }}</span>
+            <sc-for list="{{ criteria }}" as="cr" hint-placeholder-count="2">
+              <div style="display:flex; flex-direction:column; gap:6px; padding:10px 12px; border-radius:11px; border:1px solid {{ cr.border }}; background:var(--panel2)">
+                <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer"><input data-crit="{{ cr.idx }}" type="checkbox" checked="{{ cr.checked }}" onChange="{{ cr.toggle }}" style="width:20px; height:20px; margin:1px 0 0; flex:none; accent-color:#1e46ff" /><span style="flex:1; font-size:13.5px; line-height:1.5">{{ cr.text }}</span><span style="flex:none; font-size:12px; font-weight:800; color:var(--text2)">{{ cr.marks }}</span></label>
+                <sc-if value="{{ cr.hasReads }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:12px; line-height:1.5; color:var(--text2)">{{ cr.readA }}</span>
+                  <span style="font-size:12px; line-height:1.5; color:var(--text2)">{{ cr.readB }}</span>
+                </sc-if>
+              </div>
+            </sc-for>
+            <span style="font-size:13px; font-weight:800">{{ itemTotal }}</span>
+            <span style="display:flex; gap:8px; flex-wrap:wrap"><button data-savemark="true" onClick="{{ saveMark }}" style="min-height:46px; padding:0 16px; border-radius:11px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:13.5px; font-weight:700; cursor:pointer">Save mark</button><button data-savenext="true" onClick="{{ saveNext }}" style="min-height:46px; padding:0 16px; border:none; border-radius:11px; background:var(--grad); color:#ffffff; font-size:13.5px; font-weight:800; cursor:pointer">Save and next ›</button></span>
+          </section>
+        </div>
+      </sc-if>
+      <sc-if value="{{ queueDone }}" hint-placeholder-val="{{ false }}"><p style="margin:0; font-size:14px; color:var(--text2)">Every item is marked. The marks go into release once the moderation sample passes.</p></sc-if>
+    </sc-if>
+
+    <sc-if value="{{ onResults }}" hint-placeholder-val="{{ false }}">
+      <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Results</h1>
+      <sc-if value="{{ resNotYet }}" hint-placeholder-val="{{ false }}"><p style="margin:0; font-size:14px; color:var(--text2)">No results yet. Marks appear here after they are released.</p></sc-if>
+      <sc-if value="{{ resReady }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:4px">
+          <span style="font-size:15px; font-weight:800">{{ resTitle }}</span>
+          <span style="font-size:12.5px; color:var(--text2)">{{ resLine }}</span>
+          <span style="font-size:12px; color:var(--text3)">Gradebook column: {{ gradebookLabel }}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:{{ resCols }}; gap:14px; align-items:start">
+          <section aria-labelledby="h-hist" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+            <span style="display:flex; align-items:center; gap:8px"><h2 id="h-hist" style="flex:1; margin:0; font-size:14px; font-weight:800">Marks · {{ resN }} learners</h2><button data-tabletoggle="true" onClick="{{ toggleTable }}" aria-pressed="{{ tableOn }}" style="min-height:34px; padding:0 10px; border-radius:9px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:12px; font-weight:700; cursor:pointer">{{ tableLabel }}</button></span>
+            <sc-if value="{{ showChart }}" hint-placeholder-val="{{ true }}">
+              <div role="img" aria-label="{{ histAria }}" style="position:relative; display:grid; grid-template-columns:28px 1fr; gap:6px">
+                <div aria-hidden="true" style="position:relative; height:180px; font-size:10.5px; color:var(--text3)"><span style="position:absolute; right:0; top:-6px">{{ yMax }}</span><span style="position:absolute; right:0; top:84px">{{ yMid }}</span><span style="position:absolute; right:0; bottom:-6px">0</span></div>
+                <div style="position:relative; height:180px; border-bottom:1px solid var(--line2); display:grid; grid-template-columns:repeat(10, minmax(0, 1fr)); gap:2px; align-items:end; background:linear-gradient(to top, transparent calc(50% - 0.5px), rgba(255,255,255,0.06) 50%, transparent calc(50% + 0.5px))">
+                  <sc-for list="{{ bins }}" as="bn" hint-placeholder-count="10">
+                    <span data-bin="{{ bn.idx }}" tabIndex="0" title="{{ bn.tip }}" aria-label="{{ bn.tip }}" style="position:relative; height:100%; display:flex; align-items:flex-end; outline-offset:1px">
+                      <span class="bar" style="display:block; width:100%; height:{{ bn.h }}; min-height:{{ bn.minH }}; border-radius:4px 4px 0 0; background:var(--bar)"></span>
+                    </span>
+                  </sc-for>
+                </div>
+                <span></span>
+                <div aria-hidden="true" style="display:grid; grid-template-columns:repeat(10, minmax(0, 1fr)); gap:2px; font-size:10.5px; color:var(--text3); text-align:center"><sc-for list="{{ bins }}" as="bx" hint-placeholder-count="10"><span>{{ bx.short }}</span></sc-for></div>
+              </div>
+              <span style="font-size:11.5px; color:var(--text3)">Learners per 10-mark band. Hover or focus a bar for its count.</span>
+            </sc-if>
+            <sc-if value="{{ tableOn }}" hint-placeholder-val="{{ false }}">
+              <table data-histtable="true" style="width:100%; border-collapse:collapse; font-size:13px">
+                <thead><tr><th scope="col" style="text-align:left; padding:6px 4px; color:var(--text3); font-weight:700; border-bottom:1px solid var(--line2)">Marks</th><th scope="col" style="text-align:right; padding:6px 4px; color:var(--text3); font-weight:700; border-bottom:1px solid var(--line2)">Learners</th></tr></thead>
+                <tbody><sc-for list="{{ bins }}" as="bt" hint-placeholder-count="10"><tr><td style="padding:6px 4px; border-bottom:1px solid var(--line)">{{ bt.range }}</td><td style="padding:6px 4px; text-align:right; font-weight:700; border-bottom:1px solid var(--line)">{{ bt.n }}</td></tr></sc-for></tbody>
+              </table>
+            </sc-if>
+          </section>
+          <section aria-labelledby="h-byq" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+            <h2 id="h-byq" style="margin:0; font-size:14px; font-weight:800">By question · average</h2>
+            <sc-for list="{{ byQ }}" as="bq" hint-placeholder-count="4">
+              <span title="{{ bq.tip }}" style="display:grid; grid-template-columns:96px 1fr 44px; align-items:center; gap:8px; font-size:12.5px"><span style="color:var(--text2)">{{ bq.label }}</span><span aria-hidden="true" style="height:10px; border-radius:0 4px 4px 0; background:rgba(255,255,255,0.05)"><span style="display:block; height:100%; width:{{ bq.pct }}; border-radius:0 4px 4px 0; background:var(--bar)"></span></span><span style="text-align:right; font-weight:800">{{ bq.val }}</span></span>
+            </sc-for>
+            <h2 style="margin:8px 0 0; font-size:14px; font-weight:800">By topic · average</h2>
+            <sc-for list="{{ byTopic }}" as="bt2" hint-placeholder-count="7">
+              <span title="{{ bt2.tip }}" style="display:grid; grid-template-columns:96px 1fr 44px; align-items:center; gap:8px; font-size:12.5px"><span style="color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ bt2.label }}</span><span aria-hidden="true" style="height:10px; border-radius:0 4px 4px 0; background:rgba(255,255,255,0.05)"><span style="display:block; height:100%; width:{{ bt2.pct }}; border-radius:0 4px 4px 0; background:var(--bar)"></span></span><span style="text-align:right; font-weight:800">{{ bt2.val }}</span></span>
+            </sc-for>
+            <h2 style="margin:8px 0 0; font-size:14px; font-weight:800">By campus · average</h2>
+            <sc-for list="{{ byCampus }}" as="bc" hint-placeholder-count="2">
+              <span data-campus="{{ bc.label }}" style="display:flex; align-items:baseline; gap:8px; font-size:13px"><span style="flex:1; font-weight:700">{{ bc.label }}</span><span style="color:{{ bc.color }}; font-weight:{{ bc.weight }}">{{ bc.val }}</span></span>
+            </sc-for>
+          </section>
+        </div>
+        <section aria-labelledby="h-learners" style="display:flex; flex-direction:column; gap:8px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+          <h2 id="h-learners" style="margin:0; font-size:14px; font-weight:800">{{ learnersTitle }}</h2>
+          <sc-if value="{{ showNames }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ learners }}" as="ln" hint-placeholder-count="5">
+              <span data-learner="true" style="display:flex; align-items:baseline; gap:10px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px"><span style="flex:1; font-weight:700">{{ ln.name }}</span><span style="color:var(--text3)">{{ ln.campus }} · {{ ln.when }}</span><span style="width:48px; text-align:right; font-weight:800">{{ ln.total }}</span></span>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ hideNames }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; color:var(--text2)">You didn't set this assignment, so you see the totals above and no names.</span></sc-if>
+        </section>
+      </sc-if>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ confirmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:80; display:grid; place-items:center; padding:16px">
+      <div onClick="{{ closeConfirm }}" aria-hidden="true" style="position:absolute; inset:0; background:rgba(8,10,13,0.62)"></div>
+      <div data-confirm="true" role="dialog" aria-modal="true" aria-labelledby="cf-title" onKeyDown="{{ confirmKeys }}" style="position:relative; box-sizing:border-box; width:min(460px, 100%); display:flex; flex-direction:column; gap:12px; padding:20px; border-radius:18px; background:var(--panel); border:1px solid rgba(129,177,255,0.25); box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <h2 id="cf-title" style="margin:0; font-size:18px; font-weight:800">{{ confirmTitle }}</h2>
+        <p style="margin:0; font-size:13.5px; line-height:1.55; color:var(--text2)">{{ confirmBody }}</p>
+        <span style="display:flex; gap:8px"><button data-cfcancel="true" onClick="{{ closeConfirm }}" style="flex:1; min-height:48px; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:700; cursor:pointer">Cancel</button><button data-cfok="true" onClick="{{ confirmOk }}" style="flex:1; min-height:48px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">{{ confirmOkLabel }}</button></span>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:820}}">
+// ── The teacher tool (brief 12). A calm tool: no XP, no companion. Everything below the line
+// "MOCK" stands in for the exam service or the platform BFF; names and scripts are SAMPLES.
+const COLLEGE = { name: "Riverside College (sample)", campuses: ["North", "South"] };
+const PEOPLE = { t1: { id: "t1", name: "Ms Rivera", role: "teacher" }, a1: { id: "a1", name: "Mr Okafor", role: "institution_admin" } };
+const FM_TOPIC_OF = {"1.1.1": "Pipe flow", "1.1.2": "Pipe flow", "1.2": "Pipe flow", "1.3": "Pipe flow", "1.4.1": "Pipe flow", "1.4.2": "Pipe flow", "1.4.3": "Open channels", "1.4.4": "Pipe flow", "1.4.5": "Pipe flow", "2.1": "Open channels", "2.2.1": "Orifices", "2.2.2": "Orifices", "2.2.3": "Orifices", "2.3": "Ventilation", "3.1.1": "Pumps", "3.1.2": "Pumps", "3.1.3": "Pumps", "3.1.4": "Pumps", "3.1.5": "Pumps", "3.1.6": "Pumps", "3.2.1": "Pumps", "3.2.2": "Pumps", "3.3.1": "Pumps", "3.3.2": "Pumps", "3.3.3": "Pumps", "4.1.1": "Pelton wheel", "4.1.2": "Pelton wheel", "4.1.3": "Pelton wheel", "4.1.4": "Pelton wheel", "4.2": "Water turbines", "4.3.1": "Water turbines", "4.3.2": "Water turbines"};
+const BANK = [
+  { id: "fm-n6-2022-11", title: "Fluid Mechanics N6 · November 2022", marks: 100, minutes: 180, origin: "faithful_past_paper", version: "open", badge: "Checked by Nexera", practised: 22 },
+  { id: "fm-n6-2022-11-cards", title: "Fluid Mechanics N6 · November 2022 · flashcard edition", marks: 100, minutes: 180, origin: "faithful_past_paper", version: "disclosed", badge: "Checked by Nexera", practised: 0 },
+  { id: "ls-p1-2026", title: "Life Sciences P1 · May/June 2026", marks: 150, minutes: 150, origin: "faithful_past_paper", version: "open", badge: "Design sample · NSC", practised: 0 } ];
+const SAMPLE_NAMES = ["Aisha Bello", "Liam Chen", "Naledi Dube", "Mateo García", "Priya Nair", "Tomás Silva", "Zanele Khumalo", "Omar Haddad", "Yuki Tanaka", "Grace Mensah",
+  "Lucas Moreau", "Amara Okoye", "Sofia Rossi", "Kwame Asante", "Mei Lin", "Daniel Cohen", "Fatima Zahra", "Noah Müller", "Chloé Martin", "Ravi Patel",
+  "Thandiwe Ndlovu", "Ahmed Karim", "Elena Petrova", "Samuel Adeyemi", "Hana Kim", "Diego López", "Leila Farouk", "Jonas Berg", "Ana Costa", "Kofi Boateng",
+  "Isabel Ruiz", "Arjun Mehta", "Nomsa Zulu", "Victor Nguyen", "Layla Hassan", "Ethan Walker", "Lerato Molefe", "Mariam Diallo"];
+const rngOf = seed => { let a = seed >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+const fmtWhen = t => new Date(t).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const toLocalInput = t => { const d = new Date(t), p = n => (n < 10 ? "0" : "") + n; return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes()); };
+
+// MOCK of the scripts the exam service holds for the closed FM class test: per-part AI marks from a
+// seeded distribution (not real learners), ids pseudonymous, names joined in by the "BFF" below.
+function buildScripts() {
+  const src = window.PAPER_FM_N6_2022, parts = [];
+  if (src) src.sections.forEach(sec => (sec.missions || []).forEach(m => (m.parts || m.items || []).forEach(q => parts.push({ n: q.n, marks: q.marks, q: "Question " + sec.id }))));
+  const r = rngOf(20261010), closes = Date.now() - 86400000;
+  const scripts = SAMPLE_NAMES.map((name, i) => {
+    const ability = 0.18 + 0.72 * ((r() + r() + r()) / 3);
+    const byPart = {}; parts.forEach(p => { const f = Math.max(0, Math.min(1, ability + (r() - 0.5) * 0.7)); byPart[p.n] = Math.round(f * p.marks); });
+    return { id: "sub-" + (1000 + i * 37), name: name, campus: i < 35 ? "North" : "South", submittedAt: closes - Math.round(r() * 4 * 86400000), byPart: byPart };
+  });
+  return { parts: parts, scripts: scripts };
+}
+const qTotals = (parts, byPart) => { const o = {}; parts.forEach(p => { o[p.q] = (o[p.q] || 0) + (byPart[p.n] || 0); }); return o; };
+const QOF = { "Question 1": 27, "Question 2": 21, "Question 3": 23, "Question 4": 29 };
+
+// MOCK marking-queue items: two model reads that disagree (real FM stems and memo points; the
+// learner answers and the AI reads are written for this prototype).
+const QUEUE = [
+  { key: "q1", kind: "AI marks disagree", part: "3.3.1 · 1 mark", answer: "When you shut a valve very quickly, the moving water slams to a stop and the pressure in the pipe jumps. You hear a bang.",
+    reads: [["Awarded", "“moving water slams to a stop and the pressure in the pipe jumps”"], ["Not awarded", "no link between a flowing liquid being stopped and a pressure surge"]] },
+  { key: "q2", kind: "AI marks disagree", part: "3.3.2 · 1 mark", answer: "Bubbles form inside the pump where the pressure is low. When they move to higher pressure they burst and wear away the impeller.",
+    reads: [["Awarded", "“bubbles form where the pressure is low … burst and wear away the impeller”"], ["Not awarded", "does not say the pressure falls below the vapour pressure"]] },
+  { key: "q3", kind: "AI marks disagree", part: "2.3 · 8 marks", answer: "A_A = 0,76 m², perimeter 3,5 m. A_B = 0,503 m², perimeter 2,513 m.\nSame pressure drop in both branches.\nQ_A = 14,2 m³/s and Q_B = 10,8 m³/s (Q_A + Q_B = 25).",
+    reads: [["Awarded 6 of 8", "areas and perimeters, equal pressure drop, sum to 25"], ["Awarded 4 of 8", "the Pr = kSV²/a relation between Q_A and Q_B is not shown"]] } ];
+const partOf = n => { const src = window.PAPER_FM_N6_2022; let hit = null; if (src) src.sections.forEach(sec => (sec.missions || []).forEach(m => (m.parts || m.items || []).forEach(q => { if (q.n === n) hit = q; }))); return hit; };
+
+class Component extends DCLogic {
+  state = { role: "teacher", view: "home", vw: 1280, asgs: [], sample: {}, marks: {}, queueDone: {}, crit: {}, qi: 0, draft: null, confirm: null, live: "", tableOn: false, seeded: false };
+
+  componentDidMount() {
+    this._rs = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener("resize", this._rs); this._rs();
+    const ready = () => { this.data = buildScripts(); this.seed(); };
+    if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
+    this._esc = e => { if (e.key === "Escape" && this.state.confirm) { e.preventDefault(); this.closeConfirm(); } };
+    document.addEventListener("keydown", this._esc);
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this._rs); document.removeEventListener("keydown", this._esc); clearInterval(this._p); }
+  componentDidUpdate() {
+    if (this.state.view !== this._lastView) { this._lastView = this.state.view; const h = document.querySelector("[data-h1]"); if (h) h.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+    const st = this.state.draft ? this.state.draft.step : 0;
+    if (st && st !== this._lastStep) { if (this._lastStep) { const t = document.querySelector("[data-steptitle]"); if (t) t.focus({ preventScroll: true }); } }
+    this._lastStep = st;
+    if (this.state.confirm && !this._lastConfirm) { const c = document.querySelector("[data-cfcancel]"); if (c) c.focus(); }
+    this._lastConfirm = !!this.state.confirm;
+  }
+  // The closed FM class test from the learner prototype (brief 11), with 38 of 40 learners submitted.
+  seed() {
+    const now = Date.now(), D = 86400000;
+    this.setState({ seeded: true, asgs: [
+      { ref: "asg-fm-n6-mock-1", paperId: "fm-n6-2022-11", kind: "class_test", audience: "college", opensAt: now - 6 * D, closesAt: now - D, setter: "t1", state: "open", approvedBy: "a1", eligible: 40, released: false } ] });
+  }
+  me() { return this.state.role === "admin" ? PEOPLE.a1 : PEOPLE.t1; }
+  asgState(a, now) { now = now || Date.now();
+    if (a.kind === "practice") return "published";
+    if (a.state === "awaiting_moderation") return "awaiting_moderation";
+    if (a.released) return "released";
+    return now < a.opensAt ? "scheduled" : now <= a.closesAt ? "open" : "closed"; }
+  closed() { return this.state.asgs.filter(a => a.ref === "asg-fm-n6-mock-1")[0]; }
+
+  // ── MOCK exam-service routes (brief 12 §6). Each returns { status, body }.
+  api = {
+    // POST /v1/assignments: practice publishes (setter's own audience); a class test waits for moderation.
+    create: (draft, actor) => {
+      const P = BANK.filter(b => b.id === draft.paperId)[0];
+      if (draft.mode === "class_test" && P.version === "disclosed") return { status: 409, body: { error: "version_disclosed" } };
+      const a = { ref: "asg-" + P.id + "-" + Date.now(), paperId: P.id, kind: draft.mode, audience: draft.audience, opensAt: draft.opensAt, closesAt: draft.closesAt,
+        setter: actor.id, state: draft.mode === "class_test" ? "awaiting_moderation" : "published", approvedBy: null, eligible: draft.audience === "South" ? 3 : draft.audience === "North" ? 37 : 40, released: false };
+      return { status: 201, body: a };
+    },
+    // POST /v1/assignments/{ref}/approve: only an institution admin, never the setter (R1).
+    approve: (a, actor) => actor.role !== "institution_admin" ? { status: 403, body: { error: "not_moderator" } } : actor.id === a.setter ? { status: 403, body: { error: "setter_cannot_moderate" } } : { status: 200, body: { state: "open" } },
+    // GET /v1/assignments/{ref}/sample: 10% of submitted scripts or at least 5, stratified by AI total.
+    sample: () => {
+      const S = this.data.scripts, n = S.length, k = n < 5 ? n : Math.max(5, Math.ceil(n * 0.1));
+      const order = S.map((sc, i) => ({ i: i, t: Object.values(sc.byPart).reduce((x, y) => x + y, 0) })).sort((x, y) => y.t - x.t);
+      return { status: 200, body: Array.from({ length: k }, (_, j) => order[Math.round(j * (n - 1) / Math.max(1, k - 1))].i) };
+    },
+    // POST /v1/assignments/{ref}/release: after the window, with the sample passed and disagreements resolved.
+    release: (a, actor, gates) => actor.role !== "institution_admin" ? { status: 403, body: { error: "not_moderator" } }
+      : !gates.closed ? { status: 409, body: { error: "window_open" } } : !gates.sampleDone ? { status: 409, body: { error: "sample_incomplete" } }
+      : !gates.samplePass ? { status: 409, body: { error: "sample_failed" } } : !gates.queueDone ? { status: 409, body: { error: "disagreements_open" } } : { status: 200, body: { released_at: Date.now() } },
+    // GET /v1/assignments/{ref}/results: k >= 5 applied HERE, server-side; names only for the setter (the BFF joins them).
+    results: (a, actor) => {
+      const parts = this.data.parts, S = this.data.scripts.map((sc, i) => { const fin = this.finalByPart(i); return { sc: sc, byPart: fin, total: Object.values(fin).reduce((x, y) => x + y, 0) }; });
+      const K = 5, avg = arr => arr.length ? arr.reduce((x, y) => x + y, 0) / arr.length : 0;
+      const bins = Array.from({ length: 10 }, (_, b) => S.filter(x => Math.min(9, Math.floor(x.total / 10)) === b).length);
+      const byQ = Object.keys(QOF).map(q => ({ q: q, avg: avg(S.map(x => qTotals(parts, x.byPart)[q] || 0)) / QOF[q] }));
+      const topics = {}; parts.forEach(p => { const t = FM_TOPIC_OF[p.n]; if (!t) return; topics[t] = topics[t] || { got: 0, of: 0 }; S.forEach(x => { topics[t].got += x.byPart[p.n] || 0; topics[t].of += p.marks; }); });
+      const byCampus = COLLEGE.campuses.map(c => { const g = S.filter(x => x.sc.campus === c); return g.length < K ? { campus: c, hidden: true } : { campus: c, n: g.length, avg: avg(g.map(x => x.total)) }; });
+      return { status: 200, body: { n: S.length, bins: S.length >= K ? bins : null, byQ: byQ, byTopic: Object.keys(topics).map(t => ({ topic: t, avg: topics[t].got / topics[t].of })), byCampus: byCampus,
+        learners: actor.id === a.setter ? S.map(x => ({ name: x.sc.name, campus: x.sc.campus, when: x.sc.submittedAt, total: x.total })).sort((p, q) => q.total - p.total) : null } };
+    },
+  };
+  // A sampled script's final mark is the moderator's where the moderator re-marked it (scaled per question).
+  finalByPart(i) {
+    const sc = this.data.scripts[i], m = this.state.marks[i];
+    if (!m || !m.saved) return sc.byPart;
+    const parts = this.data.parts, ai = qTotals(parts, sc.byPart), out = Object.assign({}, sc.byPart);
+    parts.forEach(p => { const a = ai[p.q] || 0, y = Number(m.q[p.q]); if (!isNaN(y) && a > 0) out[p.n] = Math.round(sc.byPart[p.n] * y / a * 100) / 100; });
+    return out;
+  }
+  sampleIdx() { if (!this._sample) this._sample = this.api.sample().body; return this._sample; }
+  gates() {
+    const a = this.closed(), idx = this.sampleIdx(), marks = this.state.marks;
+    const done = idx.filter(i => marks[i] && marks[i].saved), over = done.filter(i => marks[i].variance > 0.05).length;
+    return { closed: !!a && Date.now() > a.closesAt, sampleDone: done.length === idx.length, samplePass: done.length === idx.length && over <= idx.length / 2,
+      queueDone: QUEUE.every(q => this.state.queueDone[q.key]), over: over, done: done.length, k: idx.length };
+  }
+  saveScript(i) {
+    const m = this.state.marks[i] || { q: {} }, parts = this.data.parts, ai = qTotals(parts, this.data.scripts[i].byPart);
+    const aiT = Object.values(ai).reduce((x, y) => x + y, 0), you = Object.keys(QOF).reduce((x, q) => x + (Number(m.q[q]) || 0), 0);
+    const variance = Math.abs(aiT - you) / 100;
+    this.setState({ marks: Object.assign({}, this.state.marks, { [i]: Object.assign({}, m, { saved: true, ai: aiT, you: you, variance: variance }) }),
+      live: "Saved. AI " + aiT + ", you " + you + ", " + Math.round(variance * 100) + "% apart." });
+  }
+  // Design preview: fill the whole sample close to, or far from, the AI's marks.
+  fillSample(far) {
+    const idx = this.sampleIdx(), parts = this.data.parts, marks = {};
+    idx.forEach((i, j) => { const ai = qTotals(parts, this.data.scripts[i].byPart), shift = far && j < 3 ? 3 : j % 2 ? 1 : 0, q = {};
+      Object.keys(QOF).forEach(k => { q[k] = String(Math.max(0, Math.min(QOF[k], (ai[k] || 0) + (j % 2 ? -shift : shift)))); });
+      marks[i] = { q: q, saved: false }; });
+    this.setState({ marks: marks }, () => idx.forEach(i => this.saveScript(i)));
+  }
+  closeConfirm() { this.setState({ confirm: null }, () => { const b = document.querySelector(this._confirmBack || "[data-release]"); if (b) b.focus(); }); }
+
+  renderVals() {
+    const s = this.state, vw = s.vw, phone = vw < 600, wide = vw >= 1000, me = this.me(), now = Date.now();
+    const isAdmin = me.role === "institution_admin";
+    const a1 = this.closed(), g = this.data ? this.gates() : { closed: false, sampleDone: false, samplePass: false, queueDone: false, over: 0, done: 0, k: 5 };
+    const P = id => BANK.filter(b => b.id === id)[0];
+    const toApproveList = s.asgs.filter(a => this.asgState(a, now) === "awaiting_moderation");
+    const queueLeft = QUEUE.filter(q => !s.queueDone[q.key]).length;
+    const releasable = a1 && !a1.released;
+    const go = v => () => this.setState({ view: v });
+    const STATE = { awaiting_moderation: ["Waiting for an institution admin", "rgba(224,161,15,0.16)", "#f3c14f"], scheduled: ["Scheduled", "rgba(129,177,255,0.14)", "#81b1ff"],
+      open: ["Open", "rgba(0,104,248,0.2)", "#cfe0ff"], closed: ["Closed · moderation", "rgba(224,161,15,0.16)", "#f3c14f"], released: ["Marks released", "rgba(61,220,151,0.14)", "#5fe6ab"], published: ["Published · practice", "rgba(129,177,255,0.14)", "#81b1ff"] };
+    const audWord = a => a === "college" ? "Everyone at " + COLLEGE.name : a + " campus";
+    const vals = {
+      pad: phone ? "16px" : "24px", collegeLine: COLLEGE.name + " · " + me.name + (isAdmin ? " · institution admin" : " · teacher"),
+      live: s.live,
+      roles: [["teacher", "Teacher"], ["admin", "Institution admin"]].map(x => { const on = s.role === x[0];
+        return { id: x[0], label: phone && x[0] === "admin" ? "Admin" : x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.22)" : "transparent", color: on ? "#ffffff" : "var(--text3)",
+          pick: () => this.setState({ role: x[0], view: x[0] === "teacher" && s.view === "moderate" ? "home" : s.view, live: "Viewing as " + x[1].toLowerCase() + "." }) }; }),
+      tabs: [["home", "Home", 0], ["moderate", "Moderate", isAdmin ? toApproveList.length + (releasable && g.closed ? 1 : 0) : 0], ["mark", "Marking", queueLeft], ["results", "Results", 0]]
+        .filter(t => t[0] !== "moderate" || isAdmin).map(t => { const on = s.view === t[0] || (t[0] === "home" && s.view === "assign");
+          return { id: t[0], label: t[1], count: String(t[2]), hasCount: t[2] > 0, current: on ? "page" : "false", border: on ? "rgba(129,177,255,0.55)" : "var(--line)", bg: on ? "rgba(0,104,248,0.14)" : "transparent", color: on ? "#ffffff" : "var(--text2)", go: go(t[0]) }; }),
+      onHome: s.view === "home", onAssign: s.view === "assign" && !!s.draft, onModerate: s.view === "moderate", onMark: s.view === "mark", onResults: s.view === "results",
+      screenLabel: { home: "T1 Teaching home", assign: "T2 Assign", moderate: "T3 Moderate", mark: "T4 Marking", results: "T5 Results" }[s.view],
+      toHome: go("home"),
+      startAssign: () => { const D = 86400000, o = new Date(Date.now() + D); o.setHours(8, 0, 0, 0); const c = new Date(o.getTime() + 4 * D); c.setHours(17, 0, 0, 0);
+        this.setState({ view: "assign", draft: { step: 1, paperId: null, mode: null, audience: "college", opensAt: o.getTime(), closesAt: c.getTime() } }); },
+      homeTitle: "Teaching · Exams", homeCols: wide ? "1fr 1.3fr 1.2fr" : vw >= 700 ? "1fr 1fr" : "minmax(0, 1fr)",
+      waiting: [["Marking", queueLeft, "mark"], ...(isAdmin ? [["Assessments to approve", toApproveList.length, "moderate"], ["Moderation sample", releasable && g.closed && !g.sampleDone ? 1 : 0, "moderate"], ["Marks to release", releasable && g.closed ? 1 : 0, "moderate"]] : [])]
+        .map(w => ({ label: w[0], count: String(w[1]), none: w[1] === 0, color: w[1] ? "var(--text)" : "var(--text3)", chev: w[1] ? "›" : "", cursor: w[1] ? "pointer" : "default", go: go(w[2]) })),
+      asgTitle: isAdmin ? "Assignments at your college" : "Your assignments",
+      asgRows: s.asgs.filter(a => isAdmin || a.setter === me.id).map(a => { const st = this.asgState(a, now), S = STATE[st], p = P(a.paperId);
+        const sub = a.ref === "asg-fm-n6-mock-1" && this.data ? this.data.scripts.length : 0;
+        const line = audWord(a.audience) + " · " + (st === "open" || st === "scheduled" ? "closes " + fmtWhen(a.closesAt) : st === "awaiting_moderation" ? "opens " + fmtWhen(a.opensAt) : "closed " + fmtWhen(a.closesAt))
+          + (sub ? " · " + sub + " of " + a.eligible + " handed in" : "") + " · set by " + PEOPLE[a.setter].name;
+        const goTo = st === "awaiting_moderation" && isAdmin ? ["Review", go("moderate")] : st === "closed" && isAdmin ? ["Moderate", go("moderate")] : st === "released" ? ["Results", go("results")] : null;
+        return { ref: a.ref, title: p.title, kind: a.kind === "class_test" ? "Mock / class test · not an ICASS task" : "Practice", line: line, state: S[0], stateBg: S[1], stateColor: S[2],
+          hasGo: !!goTo, goLabel: goTo ? goTo[0] : "", go: goTo ? goTo[1] : () => {} }; }),
+      bankRows: BANK.map(b => ({ title: b.title, badge: b.badge, badgeBg: b.badge === "Checked by Nexera" ? "rgba(61,220,151,0.14)" : "rgba(255,255,255,0.06)", badgeColor: b.badge === "Checked by Nexera" ? "#5fe6ab" : "var(--text2)",
+        facts: b.marks + " marks · " + (b.minutes / 60 === Math.floor(b.minutes / 60) ? b.minutes / 60 + " hours" : Math.floor(b.minutes / 60) + "½ hours"),
+        use: b.version === "disclosed" ? "Can be used for: practice only (its questions were shared as flashcards)" : "Can be used for: practice · mock / class test",
+        useColor: b.version === "disclosed" ? "#f3c14f" : "var(--text3)" })),
+    };
+    vals.asgNone = vals.asgRows.length === 0;
+
+    // ── T2 · Assign
+    const d = s.draft;
+    if (d) {
+      const p = d.paperId ? P(d.paperId) : null, set = patch => this.setState({ draft: Object.assign({}, this.state.draft, patch) });
+      const radioSty = (on, dis) => ({ border: on ? "1.5px solid rgba(129,177,255,0.8)" : "1px solid var(--line2)", bg: on ? "rgba(0,104,248,0.12)" : "var(--panel2)", cursor: dis ? "not-allowed" : "pointer", opacity: dis ? "0.5" : "1" });
+      const winOk = d.closesAt > d.opensAt, winShort = p && d.closesAt - d.opensAt < p.minutes * 60000;
+      const canNext = d.step === 1 ? !!d.paperId : d.step === 2 ? !!d.mode : d.step === 3 ? !!d.audience && winOk : true;
+      const isTest = d.mode === "class_test";
+      Object.assign(vals, {
+        steps: ["Paper", "Mode", "Audience and window", "Check and send"].map((l, i) => ({ label: (i + 1) + " · " + l, current: d.step === i + 1 ? "step" : "false",
+          fill: d.step > i ? "var(--grad)" : "rgba(255,255,255,0.08)", color: d.step === i + 1 ? "#ffffff" : d.step > i + 1 ? "var(--text2)" : "var(--text3)" })),
+        stepN: String(d.step), stepTitle: ["Which paper?", "Practice or a mock / class test?", "Who and when?", "Check and send"][d.step - 1],
+        step1: d.step === 1, step2: d.step === 2, step3: d.step === 3, step4: d.step === 4, modeCols: phone ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))",
+        paperOpts: BANK.map(b => { const on = d.paperId === b.id, st = radioSty(on, false);
+          const note = b.version === "disclosed" ? "This version can't be used for a test because its questions were shared as flashcards. Practice only."
+            : b.practised ? b.practised + " of your learners have practised this paper, so it isn't an unseen test." : "";
+          return Object.assign({ id: b.id, title: b.title, badge: b.badge, badgeBg: b.badge === "Checked by Nexera" ? "rgba(61,220,151,0.14)" : "rgba(255,255,255,0.06)", badgeColor: b.badge === "Checked by Nexera" ? "#5fe6ab" : "var(--text2)",
+            facts: b.marks + " marks · " + b.minutes + " minutes", on: on ? "true" : "false", hasNote: !!note, note: note, noteColor: b.version === "disclosed" ? "#f3c14f" : "var(--text2)",
+            pick: () => set({ paperId: b.id, mode: b.version === "disclosed" && this.state.draft.mode === "class_test" ? null : this.state.draft.mode }) }, st); }),
+        modeOpts: [["practice", "Practice (a challenge)", "Learners get three tries, hints and the memo after three tries. It doesn't earn tokens.", false],
+          ["class_test", "Mock / class test · not an ICASS task", "One attempt, no hints. Marks come back after the window closes and an institution admin moderates a sample.", p && p.version === "disclosed"]]
+          .map(m => { const on = d.mode === m[0], st = radioSty(on, m[3]);
+            return Object.assign({ id: m[0], title: m[1], body: m[2], on: on ? "true" : "false", disabled: m[3],
+              hasNote: m[0] === "class_test" && !!p && (p.version === "disclosed" || p.origin === "faithful_past_paper"),
+              note: p && p.version === "disclosed" ? "This version can't be used for a test: its questions were shared as flashcards." : "DHET says old exam papers aren't authentic ICASS tasks, so use this as a mock.",
+              pick: () => { if (!m[3]) set({ mode: m[0] }); } }, st); }),
+        audOpts: [["college", "Everyone at " + COLLEGE.name, "40 learners", false], ["North", "North campus", "37 learners", false], ["South", "South campus", "3 learners", false], ["class", "A class", "Classes aren't on the platform yet", true]]
+          .map(o => { const on = d.audience === o[0], st = radioSty(on, o[3]); return Object.assign({ id: o[0], label: o[1], note: o[2], on: on ? "true" : "false", disabled: o[3], pick: () => { if (!o[3]) set({ audience: o[0] }); } }, st); }),
+        opensVal: toLocalInput(d.opensAt), closesVal: toLocalInput(d.closesAt),
+        onOpens: e => { const t = new Date(e.target.value).getTime(); if (!isNaN(t)) set({ opensAt: t }); }, onCloses: e => { const t = new Date(e.target.value).getTime(); if (!isNaN(t)) set({ closesAt: t }); },
+        durationLine: p ? "Duration: the paper's own, " + p.minutes + " minutes, from when each learner starts." : "",
+        hasWindowNote: !winOk || !!winShort, windowNoteColor: !winOk ? "var(--danger)" : "#f3c14f",
+        windowNote: !winOk ? "The test must close after it opens." : "The window is shorter than the paper's " + (p ? p.minutes : 0) + " minutes. Learners who start late get less time.",
+        summary: p ? [{ k: "Paper", v: p.title }, { k: "Mode", v: isTest ? "Mock / class test · not an ICASS task" : "Practice (a challenge)" }, { k: "Audience", v: audWord(d.audience) + (d.audience === "South" ? " · fewer than 5 learners: results stay hidden" : "") },
+          { k: "Opens", v: fmtWhen(d.opensAt) }, { k: "Closes", v: fmtWhen(d.closesAt) }] : [],
+        noticePreview: isTest ? "Your teacher, " + me.name + ", will see your marks for this. This is a mock, not an ICASS task. One attempt, no hints; marks come after the test closes and is moderated."
+          : "Set by your teacher, " + me.name + ". Practise at your own pace: three tries, hints, and the memo after three tries.",
+        sendNote: isTest ? "An institution admin must approve this before learners see it" + (isAdmin ? ", and it can't be you, because you set it." : ".") : "Practice goes straight to your learners, labelled “Set by your teacher”.",
+        backLabel: d.step === 1 ? "Cancel" : "Back",
+        stepBack: () => { if (d.step === 1) this.setState({ view: "home", draft: null }); else set({ step: d.step - 1 }); },
+        nextLabel: d.step < 4 ? "Next" : isTest ? "Send for moderation" : "Publish to learners", nextDisabled: !canNext,
+        nextBg: canNext ? "var(--grad)" : "var(--panel2)", nextColor: canNext ? "#ffffff" : "var(--text4)", nextCursor: canNext ? "pointer" : "not-allowed",
+        stepNext: () => { if (!canNext) return; if (d.step < 4) { set({ step: d.step + 1 }); return; }
+          const r = this.api.create(d, me); if (r.status !== 201) { this.setState({ live: "This version can't be used for a test." }); return; }
+          this.setState({ asgs: this.state.asgs.concat([r.body]), draft: null, view: "home", live: isTest ? "Sent for moderation. An institution admin must approve it before learners see it." : "Published to learners." }); },
+      });
+    }
+
+    // ── T3 · Moderate (institution admin)
+    if (s.view === "moderate" && this.data) {
+      const idx = this.sampleIdx(), parts = this.data.parts, band = j => j === 0 ? "Best" : j === idx.length - 1 ? "Weakest" : "Middle";
+      Object.assign(vals, {
+        modIsAdmin: isAdmin, modNotAdmin: !isAdmin, noApprove: toApproveList.length === 0,
+        toApprove: toApproveList.map(a => { const own = a.setter === me.id;
+          return { ref: a.ref, title: P(a.paperId).title + " · mock / class test", line: audWord(a.audience) + " · opens " + fmtWhen(a.opensAt) + " · closes " + fmtWhen(a.closesAt) + " · set by " + PEOPLE[a.setter].name,
+            own: own, canApprove: !own, approve: () => { const r = this.api.approve(a, me); if (r.status !== 200) return;
+              this.setState({ asgs: this.state.asgs.map(x => x.ref === a.ref ? Object.assign({}, x, { state: "open", approvedBy: me.id }) : x), live: "Approved. Learners see it when it opens." }); } }; }),
+        sampleTitle: a1 ? P(a1.paperId).title : "", qCols: phone ? "repeat(2, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))",
+        sampleRule: this.data.scripts.length + " scripts submitted · the sample is " + idx.length + " (10% or at least 5, whichever is larger), spread across best, middle and weakest by AI total. Re-mark each question's total; the AI's marks show only after you save.",
+        sampleRows: idx.map((i, j) => { const m = s.marks[i] || { q: {} }, saved = !!m.saved, ai = qTotals(parts, this.data.scripts[i].byPart);
+          const filled = Object.keys(QOF).every(q => String(m.q[q] == null ? "" : m.q[q]).trim() !== "" && !isNaN(Number(m.q[q])));
+          return { idx: String(j), label: "Script " + (j + 1) + " of " + idx.length, band: band(j),
+            border: saved ? (m.variance > 0.05 ? "rgba(242,119,122,0.5)" : "rgba(61,220,151,0.45)") : "var(--line)",
+            result: saved ? "AI " + m.ai + " · you " + m.you + " · " + Math.round(m.variance * 100) + "% " + (m.variance > 0.05 ? "✕" : "✓") : "Not re-marked yet",
+            resultColor: saved ? (m.variance > 0.05 ? "#ff9a9c" : "#5fe6ab") : "var(--text3)",
+            qs: Object.keys(QOF).map(q => ({ id: j + "-" + q, label: q.replace("Question ", "Q") + " · of " + QOF[q], value: m.q[q] == null ? "" : String(m.q[q]), disabled: saved,
+              aria: "Script " + (j + 1) + ", " + q + ", your mark out of " + QOF[q],
+              onChange: e => { const v = e.target.value.replace(/[^\d.,]/g, "").replace(",", "."); const mm = Object.assign({ q: {} }, this.state.marks[i]); mm.q = Object.assign({}, mm.q, { [q]: v });
+                this.setState({ marks: Object.assign({}, this.state.marks, { [i]: mm }) }); } })),
+            hint: saved ? "AI by question: " + Object.keys(QOF).map(q => q.replace("Question ", "Q") + " " + (ai[q] || 0)).join(" · ") : filled ? "Ready to save." : "Enter a mark for every question.",
+            canSave: !saved && filled, save: () => this.saveScript(i) }; }),
+        sampleSum: g.done < g.k ? "Moderation sample: " + g.done + " of " + g.k + " re-marked." : g.samplePass ? g.over + " of " + g.k + " over 5% · release allowed" : g.over + " of " + g.k + " over 5% · re-mark the batch before release",
+        sampleSumColor: g.done < g.k ? "var(--text2)" : g.samplePass ? "#5fe6ab" : "#ff9a9c",
+        fillAgree: () => this.fillSample(false), fillDisagree: () => this.fillSample(true),
+        gates: [[g.closed, "The test has closed (" + (a1 ? fmtWhen(a1.closesAt) : "") + ")"], [g.queueDone, g.queueDone ? "All " + QUEUE.length + " marking disagreements resolved" : (QUEUE.length - queueLeft) + " of " + QUEUE.length + " marking disagreements resolved"],
+          [g.samplePass, g.done < g.k ? "Moderation sample not finished (" + g.done + " of " + g.k + ")" : g.samplePass ? "Moderation sample passed (n = " + g.k + ")" : "Moderation sample failed: re-mark the batch"],
+          [!!(a1 && a1.released), a1 && a1.released ? "Marks released " + fmtWhen(a1.releasedAt) : "Marks not released yet"]]
+          .map(x => ({ text: x[1], icon: x[0] ? "✓" : "", dot: x[0] ? "#3ddc97" : "rgba(255,255,255,0.12)", color: x[0] ? "var(--text)" : "var(--text3)" })),
+      });
+      const canRelease = isAdmin && a1 && !a1.released && g.closed && g.samplePass && g.queueDone;
+      Object.assign(vals, { releaseDisabled: !canRelease, releaseBg: canRelease ? "var(--grad)" : "var(--panel2)", releaseColor: canRelease ? "#ffffff" : "var(--text4)", releaseCursor: canRelease ? "pointer" : "not-allowed",
+        releaseNote: a1 && a1.released ? "Released. Learners can see their marks and the memo." : canRelease ? "Every check has passed." : "Release unlocks when every check above has passed.",
+        askRelease: () => { if (!canRelease) return; this._confirmBack = "[data-release]"; this.setState({ confirm: "release" }); } });
+    }
+
+    // ── T4 · Marking queue
+    if (s.view === "mark") {
+      const open = QUEUE.filter(q => !s.queueDone[q.key]), it = open[0];
+      Object.assign(vals, { queueLine: open.length ? open.length + (open.length === 1 ? " item" : " items") + " to mark · Mock / class test · not an ICASS task" : "Nothing left to mark.",
+        hasItem: !!it, queueDone: !it, markCols: wide ? "1fr 1fr" : "minmax(0, 1fr)" });
+      if (it) {
+        const n = it.part.split(" ")[0], q = partOf(n), pts = q && q.bullets ? q.bullets : [], each = q ? q.marks / Math.max(1, pts.length) : 1;
+        const ch = s.crit[it.key] || {}, got = pts.reduce((a, _, i) => a + (ch[i] ? each : 0), 0);
+        Object.assign(vals, { itemKey: it.key, itemKind: it.kind, itemPart: it.part, itemStem: q ? q.q : "", itemAnswer: it.answer, itemMarks: (q ? q.marks : 0) + (q && q.marks === 1 ? " mark" : " marks"),
+          criteria: pts.map((t, i) => ({ idx: String(i), text: t, marks: each + (each === 1 ? " mark" : " marks"), checked: !!ch[i], border: ch[i] ? "rgba(129,177,255,0.55)" : "var(--line)",
+            toggle: () => this.setState({ crit: Object.assign({}, this.state.crit, { [it.key]: Object.assign({}, ch, { [i]: !ch[i] }) }) }),
+            hasReads: i === 0, readA: "AI check A: " + it.reads[0][0] + " · " + it.reads[0][1], readB: "AI check B: " + it.reads[1][0] + " · " + it.reads[1][1] })),
+          itemTotal: "Your mark: " + (Math.round(got * 100) / 100) + " of " + (q ? q.marks : 0),
+          saveMark: () => this.setState({ live: "Mark saved for " + n + "." }),
+          saveNext: () => this.setState({ queueDone: Object.assign({}, this.state.queueDone, { [it.key]: true }), live: "Saved " + n + ". " + (open.length - 1) + " left." }) });
+      }
+    }
+
+    // ── T5 · Results (k >= 5, server-side)
+    if (s.view === "results" && this.data) {
+      const a = a1, ready = !!(a && a.released);
+      Object.assign(vals, { resNotYet: !ready, resReady: ready });
+      if (ready) {
+        const R = this.api.results(a, me).body, max = Math.max.apply(null, R.bins || [1]), top = Math.max(2, Math.ceil(max / 2) * 2);
+        Object.assign(vals, {
+          resTitle: P(a.paperId).title + " · Mock / class test · not an ICASS task", resLine: "Closed " + fmtWhen(a.closesAt) + " · " + R.n + " of " + a.eligible + " submitted · marks released " + fmtWhen(a.releasedAt) + " · AI-marked, moderated sample n = " + g.k,
+          gradebookLabel: "FM N6 Nov 2022 mock · AI-marked, moderated sample n = " + g.k + " · not ICASS", resN: String(R.n), resCols: wide ? "1.2fr 1fr" : "minmax(0, 1fr)",
+          yMax: String(top), yMid: String(top / 2), tableOn: s.tableOn, showChart: !s.tableOn, tableLabel: s.tableOn ? "Show as chart" : "Show as table", toggleTable: () => this.setState({ tableOn: !this.state.tableOn }),
+          bins: (R.bins || []).map((n, b) => ({ idx: String(b), n: String(n), h: Math.round(100 * n / top) + "%", minH: n ? "3px" : "0", short: String(b * 10), range: b * 10 + "–" + (b === 9 ? 100 : b * 10 + 9),
+            tip: (b * 10) + "–" + (b === 9 ? 100 : b * 10 + 9) + " marks: " + n + (n === 1 ? " learner" : " learners") })),
+          histAria: "Histogram of marks: " + (R.bins || []).map((n, b) => b * 10 + " to " + (b === 9 ? 100 : b * 10 + 9) + ", " + n).join("; "),
+          byQ: R.byQ.map(x => ({ label: x.q, val: Math.round(x.avg * 100) + "%", pct: Math.round(x.avg * 100) + "%", tip: x.q + ": " + Math.round(x.avg * 100) + "% average" })),
+          byTopic: R.byTopic.map(x => ({ label: x.topic, val: Math.round(x.avg * 100) + "%", pct: Math.round(x.avg * 100) + "%", tip: x.topic + ": " + Math.round(x.avg * 100) + "% average" })),
+          byCampus: R.byCampus.map(x => x.hidden ? { label: x.campus, val: "Fewer than 5 learners · hidden to protect privacy", color: "var(--text3)", weight: "600" } : { label: x.campus, val: Math.round(x.avg) + "% (n = " + x.n + ")", color: "var(--text)", weight: "800" }),
+          learnersTitle: R.learners ? "Learners who sat this assignment · " + R.n : "Learners", showNames: !!R.learners, hideNames: !R.learners,
+          learners: (R.learners || []).map(l => ({ name: l.name, campus: l.campus, when: fmtWhen(l.when), total: String(Math.round(l.total)) })) });
+      }
+    }
+
+    // ── The release confirm (irreversible: releasing shows the memo)
+    Object.assign(vals, {
+      confirmOpen: s.confirm === "release", confirmTitle: "Release marks to " + (this.data ? this.data.scripts.length : 0) + " learners?",
+      confirmBody: "They'll see their marks and the memo. This can't be undone.", confirmOkLabel: "Release marks",
+      closeConfirm: () => this.closeConfirm(),
+      confirmOk: () => { const r = this.api.release(a1, me, g); if (r.status !== 200) { this.setState({ confirm: null, live: "Release refused: " + r.body.error }); return; }
+        this.setState({ confirm: null, asgs: this.state.asgs.map(x => x.ref === a1.ref ? Object.assign({}, x, { released: true, releasedAt: r.body.released_at }) : x), live: "Marks released to " + this.data.scripts.length + " learners." }); },
+      confirmKeys: e => { if (e.key !== "Tab") return; const fs = [].slice.call(document.querySelectorAll("[data-confirm] button")); const f = fs[0], l = fs[fs.length - 1];
+        if (e.shiftKey && document.activeElement === f) { e.preventDefault(); l.focus(); } else if (!e.shiftKey && document.activeElement === l) { e.preventDefault(); f.focus(); } },
+    });
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
