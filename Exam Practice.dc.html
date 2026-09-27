@@ -103,19 +103,19 @@
         <span style="flex:1; min-width:0"></span>
         <sc-if value="{{ isReturning }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex; gap:6px; flex-wrap:nowrap; flex:none; animation:rise 480ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">
-            <span aria-label="{{ xpAria }}" style="box-sizing:border-box; height:36px; padding:0 11px; border-radius:18px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); font-size:13px; font-weight:800">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ pillWordDisplay }}">XP</span>
-            </span>
-            <span aria-label="{{ marksAria }}" style="box-sizing:border-box; height:36px; padding:0 11px 0 6px; border-radius:18px; display:flex; align-items:center; gap:6px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); font-size:13px; font-weight:800">
-              <span aria-hidden="true" style="width:24px; height:24px; flex:none; border-radius:50%; background:conic-gradient(#81b1ff {{ marksDeg }}, rgba(255,255,255,0.1) 0); display:flex; align-items:center; justify-content:center"><span style="width:16px; height:16px; border-radius:50%; background:#202327"></span></span>{{ dispMarks }}<span style="font-size:11px; font-weight:600; color:var(--text3)">/{{ resumeTotal }}</span>
-            </span>
             <span style="position:relative; display:flex">
-              <button data-trigger="days" onClick="{{ toggleDays }}" aria-expanded="{{ daysOpen }}" aria-haspopup="dialog" aria-label="{{ daysAria }}" style="box-sizing:border-box; min-height:44px; margin:-4px 0; padding:0 12px; border-radius:22px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); color:var(--text); font-size:13px; font-weight:800; cursor:pointer">
-                {{ dispDays }}<span style="font-size:11px; font-weight:600; color:var(--text3)">{{ daysWord }}</span>
+              <button data-trigger="progress" onClick="{{ toggleProgress }}" aria-expanded="{{ progressOpen }}" aria-haspopup="dialog" aria-label="{{ xpAria }}" style="box-sizing:border-box; min-height:44px; margin:-4px 0; padding:0 12px; border-radius:22px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); color:var(--text); font-size:13px; font-weight:800; cursor:pointer">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:11px; font-weight:600; color:var(--tint)">XP</span>
               </button>
-              <sc-if value="{{ daysOpen }}" hint-placeholder-val="{{ false }}">
-                <div role="dialog" aria-label="Days practised" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; width:min(260px, 80vw); padding:14px 15px; border-radius:16px; background:rgba(32,35,39,0.96); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.45); animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
-                  <p style="margin:0; font-size:13.5px; line-height:1.55; color:var(--text); text-wrap:pretty">Days you practised this week. It resets gently each Monday and never takes XP away.</p>
+              <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
+                <div role="dialog" aria-label="Your progress" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; box-sizing:border-box; width:min(290px, 86vw); padding:14px 15px; border-radius:16px; background:rgba(32,35,39,0.96); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.45); animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
+                  <p style="margin:0 0 6px; font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Your progress</p>
+                  <sc-for list="{{ progRows }}" as="pr" hint-placeholder-count="3">
+                    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:7px 0; border-top:1px solid rgba(255,255,255,0.06)">
+                      <span style="font-size:13px; color:var(--text2)">{{ pr.label }}</span><span style="font-size:14px; font-weight:800; white-space:nowrap">{{ pr.value }}</span>
+                    </div>
+                  </sc-for>
+                  <p style="margin:6px 0 0; font-size:12px; line-height:1.5; color:var(--text3); text-wrap:pretty">Days reset gently each Monday and never take XP away.</p>
                 </div>
               </sc-if>
             </span>
@@ -136,6 +136,7 @@
           <sc-for list="{{ ctModes }}" as="cm" hint-placeholder-count="6">
             <button onClick="{{ cm.pick }}" aria-pressed="{{ cm.on }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ cm.bg }}; color:{{ cm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ cm.label }}</button>
           </sc-for>
+          <button data-second="true" onClick="{{ toggleSecond }}" aria-pressed="{{ secondOn }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ secondBg }}; color:{{ secondColor }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">+ 2nd test</button>
           <button data-busreset="true" onClick="{{ ctReset }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">Reset shared demo</button>
         </div>
       </div>
@@ -170,18 +171,20 @@
 
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
         <sc-if value="{{ ctHomeOn }}" hint-placeholder-val="{{ false }}">
-          <div data-classcard="home" style="box-sizing:border-box; width:{{ startW }}; display:flex; flex-direction:column; gap:5px; padding:11px 14px 12px; border-radius:18px; border:1px solid {{ ctBorder }}; background:{{ ctBg }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-align:left">
-            <span style="display:flex; align-items:center; gap:8px"><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Set by your teacher</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:10.5px; font-weight:800">Live from the teacher tool</span></sc-if><span style="flex:1"></span><span style="font-size:11px; font-weight:700; color:var(--text3)">not an ICASS task</span></span>
-            <span style="font-size:14.5px; font-weight:800; line-height:1.3">{{ ctTitle }}</span>
-            <span style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-              <span style="flex:1; min-width:150px; font-size:12.5px; font-weight:700; color:{{ ctLineColor }}">{{ ctLine }}</span>
-              <sc-if value="{{ ctHasAction }}" hint-placeholder-val="{{ false }}">
-                <button data-classgo="home" onClick="{{ ctGo }}" style="flex:none; min-height:44px; padding:0 16px; border-radius:13px; border:{{ ctBtnBorder }}; background:{{ ctBtnBg }}; color:#ffffff; font-size:13.5px; font-weight:800; cursor:pointer; white-space:nowrap">{{ ctAction }}</button>
-              </sc-if>
-            </span>
+          <div data-classcard="home" style="box-sizing:border-box; width:min(460px, 100%); display:flex; flex-direction:column; gap:6px; padding:13px 14px 14px; border-radius:20px; border:1px solid {{ ctBorder }}; background:{{ ctBg }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-align:left">
+            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">{{ ctKicker }}</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:10.5px; font-weight:800">Live from the teacher tool</span></sc-if></span>
+            <span style="font-size:16px; font-weight:800; line-height:1.3">{{ ctTitle }}</span>
+            <span style="font-size:12.5px; font-weight:700; line-height:1.4; color:{{ ctLineColor }}">{{ ctLine }}</span>
+            <button data-classgo="home" onClick="{{ ctGo }}" style="box-sizing:border-box; width:100%; min-height:54px; margin-top:4px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">{{ ctAction }}</button>
+            <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
+              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
+                <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 6 6 6-6 6"></path></svg>
+              </button>
+            </sc-if>
           </div>
         </sc-if>
-        <sc-if value="{{ showPicker }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ showStartBlock }}" hint-placeholder-val="{{ true }}">
           <button data-ticket="true" data-trigger="ticket" onClick="{{ openTicket }}" aria-haspopup="dialog" aria-label="{{ ticketAria }}" style="box-sizing:border-box; width:{{ startW }}; min-height:64px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 14px; border-radius:18px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:var(--text); text-align:left; cursor:pointer; animation:{{ ticketAnim }}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8M8 17h5"></path></svg>
             <span data-key="{{ ticketKey }}" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; animation:{{ swapAnim }}">
@@ -199,26 +202,34 @@
           <sc-if value="{{ hasTicketPaper }}" hint-placeholder-val="{{ true }}">
             <span style="font-size:11.5px; color:var(--text3); text-align:center">{{ ticketProv }}</span>
           </sc-if>
-        </sc-if>
-        <sc-if value="{{ showContinue }}" hint-placeholder-val="{{ false }}">
-          <button data-homecontinue="true" onClick="{{ continueGo }}" style="width:min(460px, 100%); min-height:64px; padding:8px 22px; box-sizing:border-box; border:{{ homeCtaBorder }}; border-radius:20px; background:{{ homeCtaBg }}; color:#ffffff; cursor:pointer; box-shadow:{{ homeContinueShadow }}; animation:{{ homeContinueAnim }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
-            <span style="font-size:16.5px; font-weight:800; letter-spacing:-0.01em; white-space:nowrap">{{ continueLabel }}</span>
-            <sc-if value="{{ hasContinueSub }}" hint-placeholder-val="{{ true }}">
-              <span style="font-size:12px; font-weight:600; opacity:0.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%">{{ continueSub }}</span>
+          <div style="box-sizing:border-box; width:{{ startW }}">
+            <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
+              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
+                <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 6 6 6-6 6"></path></svg>
+              </button>
             </sc-if>
-          </button>
-          <button data-ticket="true" data-trigger="ticket" onClick="{{ changePaper }}" aria-haspopup="dialog" aria-label="{{ resumeTicketAria }}" style="box-sizing:border-box; width:min(460px, 100%); min-height:56px; display:flex; align-items:center; gap:10px; padding:8px 10px 8px 14px; border-radius:16px; border:1px solid rgba(129,177,255,0.32); background:rgba(0,104,248,0.08); color:var(--text); text-align:left; cursor:pointer">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
-            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px">
-              <span style="font-size:13.5px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeSubj }}</span>
-              <span style="font-size:12px; font-weight:600; color:#b9cdf0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeSitting }}</span>
-            </span>
-            <span aria-hidden="true" style="flex:none; display:flex; align-items:center; gap:4px; height:30px; padding:0 10px; border-radius:15px; border:1px solid rgba(129,177,255,0.4); font-size:12px; font-weight:700; color:#81b1ff">Change<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span>
-          </button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showContinueCard }}" hint-placeholder-val="{{ false }}">
+          <div data-continuecard="true" style="box-sizing:border-box; width:min(460px, 100%); display:flex; flex-direction:column; gap:6px; padding:13px 14px 14px; border-radius:20px; border:1px solid rgba(129,177,255,0.28); background:rgba(29,32,35,0.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-align:left">
+            <span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span>
+            <span style="font-size:16px; font-weight:800; line-height:1.3">{{ continueTitle }}</span>
+            <button data-homecontinue="true" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:56px; margin-top:4px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16.5px; font-weight:800; letter-spacing:-0.01em; cursor:pointer; box-shadow:0 14px 36px rgba(30,70,255,0.38); animation:{{ breathe }}">{{ continueLabel }}</button>
+            <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
+              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
+                <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 6 6 6-6 6"></path></svg>
+              </button>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showPracticeLink }}" hint-placeholder-val="{{ false }}">
+          <button data-trigger="ticket" data-practiselink="true" onClick="{{ practiseGo }}" aria-haspopup="dialog" style="min-height:44px; display:flex; align-items:center; gap:6px; padding:0 14px; border:none; border-radius:12px; background:transparent; color:#b9cdf0; font-size:13.5px; font-weight:700; cursor:pointer">{{ practiseLabel }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
         </sc-if>
       </div>
 
-      <sc-if value="{{ daysOpen }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
         <span onClick="{{ closePops }}" style="position:fixed; inset:0; z-index:2"></span>
       </sc-if>
 
@@ -264,6 +275,21 @@
               </sc-for>
             </div>
             <span style="font-size:13px; color:var(--text2)">{{ paperFacts }}</span>
+          </sc-if>
+
+          <sc-if value="{{ sheetTests }}" hint-placeholder-val="{{ false }}">
+            <div role="list" aria-label="Class tests" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:8px; overflow-y:auto; overscroll-behavior:contain">
+              <sc-for list="{{ testRows }}" as="tr" hint-placeholder-count="2">
+                <div role="listitem" data-testrow="{{ tr.ref }}" style="display:flex; flex-direction:column; gap:4px; padding:12px 13px; border-radius:14px; border:1px solid {{ tr.border }}; background:rgba(255,255,255,0.03)">
+                  <span style="font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3)">{{ tr.kicker }}</span>
+                  <span style="font-size:15px; font-weight:800; line-height:1.3">{{ tr.title }}</span>
+                  <span style="font-size:12.5px; font-weight:700; line-height:1.4; color:{{ tr.color }}">{{ tr.line }}</span>
+                  <sc-if value="{{ tr.hasAction }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ tr.go }}" style="align-self:flex-start; min-height:44px; margin-top:4px; padding:0 16px; border:none; border-radius:13px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">{{ tr.action }}</button>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
           </sc-if>
         </div>
         </div>
@@ -1801,7 +1827,7 @@ class Component extends DCLogic {
   // Closing returns focus to the control that opened the layer.
   closeLayer() {
     // Both sheet steps open from the paper ticket; the popover opens from its pill.
-    const back = this.state.pop || (this.state.sheet ? "ticket" : null);
+    const back = this.state.pop || (this.state.sheet === "tests" ? "tests" : this.state.sheet ? "ticket" : null);
     this.setState({ sheet: null, pop: null, query: "", sheetBack: false }, () => {
       const t = document.querySelector('[data-trigger="' + back + '"]'); if (t) t.focus();
     });
@@ -2257,10 +2283,51 @@ class Component extends DCLogic {
     }
     this.setState({ asg: win, hall: hall, testPreview: k, liveAsg: null, hoOpen: {}, hallNow: now }, () => { if (k === "handed" || k === "released") this.hallPoll(); });
   }
+  // "Practise another paper": the picker opens on the paper being resumed.
+  changePaperFrom(rs) { const s = this.state, cur = HOME.subjects.filter(x => x.paper_ids.indexOf(rs.paper_id) !== -1)[0];
+    this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "",
+      sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); }
+  // The one-card rule (brief 17): only what the learner can act on now may take the card.
+  testRank(t) { return t.k === "inprogress" ? 0 : t.k === "open" ? 1 : t.k === "released" && !(this.state.resultSeen || {})[t.ref] ? 2 : -1; }
+  // Whether a test the learner can't act on still belongs in "Your class tests" and the footer count.
+  keepListed(t, now) {
+    return true;
+  }
+  // The card, the footer line and the tests sheet, from every class test the learner has.
+  homeTestVals(s, prim) {
+    const now = Date.now(), D = 86400000, fmt = t => new Date(t).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    const tests = prim ? [prim] : [];
+    if (s.secondTest) { const T = s.secondTest, days = Math.max(1, Math.round((T.opensAt - now) / D));
+      tests.push({ ref: "asg-aet-l4-mock-1", title: "Applied Engineering Technology L4", teacher: "Ms Rivera", k: "upcoming",
+        line: "Opens " + fmt(T.opensAt) + " · in " + days + (days === 1 ? " day" : " days"), action: null, go: null, opensAt: T.opensAt, closesAt: T.closesAt }); }
+    const seenGo = t => t.k === "released" ? () => { this.setState({ resultSeen: Object.assign({}, s.resultSeen, { [t.ref]: true }) }); t.go(); } : t.go;
+    const short = t => ({ upcoming: "opens " + fmt(t.opensAt), open: "open · closes " + fmt(t.closesAt), inprogress: "in progress", handed: "handed in · marks after moderation",
+      released: "marks released", missed: "closed · not sat" })[t.k] || "";
+    const card = tests.filter(t => this.testRank(t) >= 0).sort((a, b) => this.testRank(a) - this.testRank(b) || a.closesAt - b.closesAt)[0] || null;
+    const others = tests.filter(t => t !== card && this.keepListed(t, now)).sort((a, b) => a.opensAt - b.opensAt);
+    const home = s.home, returning = home !== "first" && s.screen === "pick", picking = returning && s.picking, showPicker = !returning || picking;
+    const cardOn = !!card && !picking;
+    const moreText = others.length === 1 ? others[0].title + " · " + short(others[0]) : others.length + " more class tests";
+    const listed = (card ? [card] : []).concat(others);
+    return {
+      ctHomeOn: cardOn, homeCardTest: cardOn,
+      showContinueCard: returning && !picking && !cardOn, showStartBlock: showPicker && !(cardOn && !returning),
+      showPracticeLink: (returning && !picking) || (cardOn && !returning),
+      homeMoreOn: others.length > 0 && !picking, homeMoreText: moreText, homeMoreAria: "Your class tests: " + moreText,
+      homeMoreGo: () => this.setState({ sheet: "tests", pop: null, sheetBack: false }),
+      testRows: listed.map(t => ({ ref: t.ref, kicker: "Class test · " + t.teacher, title: t.title, line: t.line,
+        color: t.k === "open" || t.k === "inprogress" ? "#81b1ff" : t.k === "released" ? "#5fe6ab" : "var(--text2)",
+        border: t === card ? "rgba(129,177,255,0.55)" : "var(--line2)",
+        hasAction: !!(t.action && t.go), action: t.action || "", go: t.go ? () => { const g = seenGo(t); this.setState({ sheet: null }, () => g()); } : () => {} })),
+      ...(card ? { ctKicker: "Class test · " + card.teacher, ctTitle: card.title, ctLine: card.line, ctAction: card.action || "", ctGo: seenGo(card) } : {}),
+      secondOn: s.secondTest ? "true" : "false", secondBg: s.secondTest ? "rgba(0,104,248,0.18)" : "transparent", secondColor: s.secondTest ? "#ffffff" : "var(--text3)",
+      toggleSecond: () => this.setState({ secondTest: s.secondTest ? null : { opensAt: now + 3 * D, closesAt: now + 6 * D } }),
+    };
+  }
   classVals(s, phone, paper) {
     const HOME_PRIMARY = { homeCtaBg: "var(--grad)", homeCtaBorder: "none", homeStartShadow: "0 12px 30px rgba(30,70,255,0.36)", homeContinueShadow: "0 14px 36px rgba(30,70,255,0.38)", homeContinueAnim: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite" };
-    const A = s.asg; if (!A) return Object.assign({ ctHomeOn: false, ctMapOn: false, ctModes: [] }, HOME_PRIMARY);
-    const now = Date.now(), ph = this.classPhase(now), pid = CLASS_TEST.paperId, P = (this.papers || []).filter(p => p.id === pid)[0]; if (!P) return Object.assign({ ctHomeOn: false, ctMapOn: false, ctModes: [] }, HOME_PRIMARY);
+    const A = s.asg; if (!A) return Object.assign({ ctMapOn: false, ctModes: [] }, HOME_PRIMARY, this.homeTestVals(s, null));
+    const now = Date.now(), ph = this.classPhase(now), pid = CLASS_TEST.paperId, P = (this.papers || []).filter(p => p.id === pid)[0]; if (!P) return Object.assign({ ctMapOn: false, ctModes: [] }, HOME_PRIMARY, this.homeTestVals(s, null));
     const fmt = t => new Date(t).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
     const H = ph.H, remain = H && H.phase === "sitting" ? Math.max(0, H.endsAt - Math.max(now, s.hallNow || 0)) : 0;
     const clock = Math.floor(remain / 3600000) + ":" + ("0" + Math.floor(remain % 3600000 / 60000)).slice(-2) + ":" + ("0" + Math.floor(remain % 60000 / 1000)).slice(-2);
@@ -2285,11 +2352,12 @@ class Component extends DCLogic {
       ctLive: !!s.liveAsg, ctReset: () => { busReset(); this._lastLive = null; this.onBus(busEmpty()); this.setState({ hallLive: "The shared demo is reset." }); },
       ctModes: (this.liveFromBus() ? [["live", "Live"]] : []).concat([["upcoming", "Upcoming"], ["open", "Open"], ["inprogress", "In progress"], ["handed", "Handed in"], ["released", "Released"], ["missed", "Missed"]]).map(x => { const on = s.testPreview === x[0];
         return { label: x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)", pick: () => x[0] === "live" ? this.goLive(this.liveFromBus()) : this.setTestPreview(x[0]) }; }),
-      ctHomeOn: s.screen === "pick",
+      // The card is decided by the one-card rule (homeTestVals), not by the phase alone.
+      ...this.homeTestVals(s, { ref: this.ct().ref, title: P.title, teacher: this.ct().teacher, k: ph.k, line: C[0], action: C[1], go: C[2], opensAt: A.opensAt, closesAt: A.closesAt }),
       // Phones: the card shares one screen with the companion, so the stage gives up the room.
       ...(phone && s.screen === "pick" ? { stageMin: "22vh" } : {}),
       ctMapOn: s.screen === "map" && !!paper && paper.id === pid && live,
-      ctTitle: P.title + " · class test", ctLine: C[0], ctHasAction: !!C[1], ctAction: C[1] || "", ctGo: C[2] || (() => {}),
+
       ctLineColor: live ? "#81b1ff" : ph.k === "released" ? "#5fe6ab" : "var(--text2)",
       ctBorder: live ? "rgba(129,177,255,0.6)" : "var(--line2)", ctBg: live ? "rgba(14,24,44,0.88)" : "rgba(29,32,35,0.86)",
       ctBtnBg: live ? "var(--grad)" : "rgba(0,104,248,0.14)", ctBtnBorder: live ? "none" : "1px solid rgba(129,177,255,0.4)",
@@ -3712,10 +3780,13 @@ class Component extends DCLogic {
       pillWordDisplay: phone ? "none" : "inline",
       dispXp: s.disp.xp, dispMarks: s.disp.marks, resumeTotal: rs.total_marks, dispDays: s.disp.days,
       daysWord: phone ? (s.disp.days === 1 ? "day" : "days") : (s.disp.days === 1 ? "day this week" : "days this week"),
-      xpAria: HOME.me.xp_total + " XP", marksAria: rs.marks_earned + " of " + rs.total_marks + " marks banked",
+      xpAria: HOME.me.xp_total + " XP. Your progress", marksAria: rs.marks_earned + " of " + rs.total_marks + " marks banked",
       daysAria: HOME.me.days_practised_this_week + " days practised this week, explain",
       marksDeg: Math.round(360 * s.disp.marks / rs.total_marks) + "deg",
-      daysOpen: s.pop === "days", toggleDays: () => { if (s.pop === "days") this.closeLayer(); else this.setState({ pop: "days" }); },
+      progressOpen: s.pop === "progress", toggleProgress: () => { if (s.pop === "progress") this.closeLayer(); else this.setState({ pop: "progress" }); },
+      progRows: [{ label: "XP", value: HOME.me.xp_total.toLocaleString("en-GB") },
+        { label: "Marks banked · " + resumeName, value: rs.marks_earned + " of " + rs.total_marks },
+        { label: "Days practised this week", value: String(HOME.me.days_practised_this_week) }],
       closePops: () => this.closeLayer(),
       homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"], ["picker", "Picker open"]].map(m => {
         const on = m[0] === "picker" ? s.sheet === "subj" && home === "first" : home === m[0] && !(s.sheet === "subj" && home === "first");
@@ -3724,6 +3795,10 @@ class Component extends DCLogic {
             this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }); },
           bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
+      continueTitle: finished ? "Every mission done · " + rs.marks_earned + " of " + rs.total_marks : rs.next_mission.title,
+      resumeKicker: resumeName + (resumePaper ? " · " + resumePaper.sitting : ""),
+      showContinueCard: returning && !picking, showStartBlock: showPicker, showPracticeLink: returning && !picking, homeMoreOn: false,
+      practiseLabel: returning ? "Practise another paper" : "Practise a paper instead",
       hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + rs.next_mission.title,
       continueGo: () => { const go = () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
           const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
@@ -3731,9 +3806,9 @@ class Component extends DCLogic {
           this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id] }, () => this.openMission(Math.max(0, i))); };
         // The returning learner the home page describes (21 of 100) is the progress the map shows.
         if (!Object.keys(this.state.prog).length) this.seedMap("progress", go); else go(); },
-      changePaper: () => { const cur = HOME.subjects.filter(x => x.paper_ids.indexOf(rs.paper_id) !== -1)[0];
-        this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "",
-          sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); },
+      changePaper: () => this.changePaperFrom(rs),
+      // One quiet link under the card: a returning learner changes paper; a first visit opens the picker.
+      practiseGo: () => { if (returning) this.changePaperFrom(rs); else this.setState({ sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); },
       resumeSubj: resumeName, resumeSitting: resumePaper ? resumePaper.sitting + " · " + resumePaper.total_marks + " marks" : "",
       resumeTicketAria: "Paper: " + resumeName + (resumePaper ? ", " + resumePaper.sitting : "") + ". Change paper",
       backToContinue: () => this.setState({ picking: false, bubbleMsg: "" }),
@@ -3756,8 +3831,8 @@ class Component extends DCLogic {
         this.setState({ bubbleMsg: "No paper for this subject yet. Pick another one?", sheet: "subj", sheetBack: false, query: "", optIdx: 0, ticketSeen: true });
       },
       isPhone: phone,
-      sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPaper: s.sheet === "paper",
-      sheetTitle: onSubjSheet ? "What are you studying?" : "Which sitting?",
+      sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPaper: s.sheet === "paper", sheetTests: s.sheet === "tests",
+      sheetTitle: onSubjSheet ? "What are you studying?" : s.sheet === "tests" ? "Your class tests" : "Which sitting?",
       // The overlay grid does the centring; the sheet itself only animates.
       ovAlign: phone ? "end" : "center", ovJustify: phone ? "stretch" : "center", ovPad: phone ? "0" : "24px",
       sheetPos: phone ? "width:100%; max-height:calc(100dvh - 24px); border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
@@ -3767,7 +3842,7 @@ class Component extends DCLogic {
       subjRows: subjRows, noResults: onSubjSheet && optCount === 0,
       // Arrow keys move through the listbox; Tab stays inside the dialog.
       sheetKeys: e => {
-        const n = onSubjSheet ? optCount : sp.length;
+        const n = onSubjSheet ? optCount : s.sheet === "tests" ? 0 : sp.length;
         if ((e.key === "ArrowDown" || e.key === "ArrowUp") && n) { e.preventDefault(); this._arrow = true;
           const cur = document.activeElement && document.activeElement.getAttribute("data-opt");
           const base = cur == null ? (e.key === "ArrowDown" ? -1 : n) : parseInt(cur, 10);
