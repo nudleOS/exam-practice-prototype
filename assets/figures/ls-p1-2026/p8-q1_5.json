@@ -1,0 +1,36 @@
+{
+  "image": "p8-q1_5.png",
+  "w": 925,
+  "h": 420,
+  "page": 8,
+  "caption": "Diagrams A , B and C below represent different stages of human embryonic development. The stages are NOT shown in the correct order.",
+  "box": [
+    159.1,
+    438.9,
+    467.1,
+    578.6
+  ],
+  "hotspots": [
+    {
+      "letter": "A",
+      "x": 0.2176,
+      "y": 0.2084,
+      "w": 0.0389,
+      "h": 0.0958
+    },
+    {
+      "letter": "B",
+      "x": 0.4977,
+      "y": 0.2204,
+      "w": 0.0389,
+      "h": 0.0958
+    },
+    {
+      "letter": "C",
+      "x": 0.7923,
+      "y": 0.2247,
+      "w": 0.0389,
+      "h": 0.0958
+    }
+  ]
+}

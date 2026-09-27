@@ -575,6 +575,28 @@
           </div>
         </sc-if>
 
+        <sc-if value="{{ hasFigure }}" hint-placeholder-val="{{ false }}">
+          <div data-scene="true" data-figure="true" style="border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #1c2130, #161a23) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
+            <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ figAlt }}</span>
+            <div style="padding:10px 10px 0">
+              <div data-figbox="true" style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
+                <img src="{{ figSrc }}" alt="" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; user-select:none" />
+                <sc-for list="{{ figSpots }}" as="fs" hint-placeholder-count="5">
+                  <button data-hotspot="{{ fs.letter }}" onClick="{{ fs.tap }}" aria-label="{{ fs.aria }}" aria-pressed="{{ fs.pressed }}" disabled="{{ fs.disabled }}" style="position:absolute; left:{{ fs.x }}; top:{{ fs.y }}; transform:translate(-50%, -50%); width:{{ figSpotSize }}; height:{{ figSpotSize }}; padding:0; border-radius:50%; border:{{ fs.border }}; background:{{ fs.bg }}; box-shadow:{{ fs.shadow }}; cursor:pointer">
+                    <sc-if value="{{ fs.hasBadge }}" hint-placeholder-val="{{ false }}">
+                      <span aria-hidden="true" style="position:absolute; right:-8px; top:-8px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:{{ fs.badgeBg }}; color:#ffffff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.35)">{{ fs.badge }}</span>
+                    </sc-if>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:9px 12px 11px">
+              <span style="flex:1; min-width:0; font-size:12px; font-weight:600; color:{{ figHintColor }}">{{ figHint }}</span>
+              <button data-enlarge="true" onClick="{{ openFigBig }}" aria-haspopup="dialog" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Enlarge</button>
+            </div>
+          </div>
+        </sc-if>
+
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <span style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span>
@@ -787,6 +809,27 @@
       <span data-fly="{{ flyKey }}" aria-hidden="true" style="position:fixed; left:50%; bottom:180px; z-index:40; pointer-events:none; font-size:26px; font-weight:800; color:#81b1ff; text-shadow:0 0 22px rgba(129,177,255,0.55); animation:fly 1500ms cubic-bezier(0.45,0.05,0.25,1) both">{{ flyText }}</span>
     </sc-if>
 
+    <sc-if value="{{ figBigOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed; inset:0; z-index:80; display:grid; place-items:center; padding:16px">
+        <div onClick="{{ closeFigBig }}" aria-hidden="true" style="position:absolute; inset:0; background:rgba(8,10,13,0.82); backdrop-filter:blur(3px)"></div>
+        <div data-figdialog="true" role="dialog" aria-modal="true" aria-label="{{ figBigAria }}" onKeyDown="{{ figBigKeys }}" style="position:relative; box-sizing:border-box; width:min(100%, {{ figBigW }}); max-height:calc(100dvh - 32px); overflow:auto; display:flex; flex-direction:column; gap:10px; padding:12px; border-radius:20px; background:rgba(32,35,39,0.98); border:1px solid rgba(129,177,255,0.25); animation:{{ sheetAnim }}">
+          <div style="display:flex; align-items:center; gap:10px">
+            <span style="flex:1; font-size:13.5px; font-weight:700; color:var(--text2)">{{ figHint }}</span>
+            <button data-figclose="true" onClick="{{ closeFigBig }}" aria-label="Close the enlarged figure" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
+          </div>
+          <div style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
+            <img src="{{ figSrc }}" alt="{{ figAlt }}" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain" />
+            <sc-for list="{{ figSpots }}" as="fb" hint-placeholder-count="5">
+              <button data-hotspot-big="{{ fb.letter }}" onClick="{{ fb.tap }}" aria-label="{{ fb.aria }}" aria-pressed="{{ fb.pressed }}" disabled="{{ fb.disabled }}" style="position:absolute; left:{{ fb.x }}; top:{{ fb.y }}; transform:translate(-50%, -50%); width:48px; height:48px; padding:0; border-radius:50%; border:{{ fb.border }}; background:{{ fb.bg }}; box-shadow:{{ fb.shadow }}; cursor:pointer">
+                <sc-if value="{{ fb.hasBadge }}" hint-placeholder-val="{{ false }}">
+                  <span aria-hidden="true" style="position:absolute; right:-8px; top:-8px; min-width:22px; height:22px; padding:0 5px; border-radius:11px; background:{{ fb.badgeBg }}; color:#ffffff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center">{{ fb.badge }}</span>
+                </sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
     <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; z-index:24; pointer-events:none">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; padding:0 {{ footPadX }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
         <span style="display:{{ footSpacer }}"></span>
@@ -980,12 +1023,17 @@ const FM_TAGS = { "1.4": ["FIGURE 1"] };
 // The service's learner view + marking key for these parts, exported from the approved paper,
 // so the scenes bind to the real method steps.
 const FM_SERVICE = {"1.1.2": {"learner": {"number": "1.1.2", "marks": 3, "response_mode": "steps", "marking_mode": "method", "stem": "The pressure at the highest point of the pipeline. The atmospheric pressure can be taken as 101,3 kPa.", "givens": [{"symbol": "L", "value": 720, "unit": "m", "source": "stem", "label": "pipeline length"}, {"symbol": "dz", "value": 8, "unit": "m", "source": "stem", "label": "difference in reservoir levels"}, {"symbol": "zs", "value": 3, "unit": "m", "source": "stem", "label": "height of the highest point above the upper reservoir"}, {"symbol": "L1", "value": 260, "unit": "m", "source": "stem", "label": "distance from the entrance to the highest point"}, {"symbol": "d", "value": 1.2, "unit": "m", "source": "stem", "label": "pipe diameter"}, {"symbol": "f", "value": 0.01, "unit": null, "source": "stem", "label": "coefficient of friction"}, {"symbol": "p_atm", "value": 101.3, "unit": "kPa", "source": "stem", "label": "atmospheric pressure"}, {"symbol": "g", "value": 9.81, "unit": "m/s**2", "source": "instructions", "label": "gravitational acceleration (instruction 7)"}], "steps": [{"id": "s1", "label": "Friction head lost from the entrance to the highest point, hf₁ (m)", "marks": 1, "unit_hint": "m"}, {"id": "s2", "label": "Absolute pressure head at the highest point, p/ρg (m of water)", "marks": 1, "unit_hint": "m"}, {"id": "s3", "label": "Absolute pressure at the highest point, p (kPa)", "marks": 1, "unit_hint": "kPa"}], "clues_available": 2}, "key": {"s1": {"a": 2.888889, "tol": 0.02888889, "v": "hf₁ = 4fL₁V²/(2gd) = 8 × 260/720 = 2,889 m (same V, so hf ∝ L) ✓"}, "s2": {"a": 4.103975, "tol": 0.04103975, "v": "Datum at the upper reservoir surface: 101,3/9,81 + 0 + 0 = p/ρg + V²/2g + 3 + hf₁, with V²/2g = 2,557²/(2 × 9,81) = 0,333 m, so p/ρg = 10,326 - 3 - 0,333 - 2,889 = 4,104 m ✓ (ρ = 1 000 kg/m³ for water, not printed on the paper)"}, "s3": {"a": 40.25999, "tol": 0.4025999, "v": "p = ρg × 4,104 = 1 000 × 9,81 × 4,104 = 40,260 kPa absolute ✓ (below atmospheric: 40,260 - 101,3 kPa gauge)"}}, "clues": ["Apply Bernoulli between the upper reservoir surface and the highest point; only the friction over the first 260 m has been lost by then.", "When the velocity is the same all along the pipe, friction head is proportional to the length travelled."]}, "1.2": {"learner": {"number": "1.2", "marks": 6, "response_mode": "steps", "marking_mode": "method", "stem": "Use the following information to calculate the pressure difference in a horizontally placed pipeline:\nLarge diameter section is 300 mm\nSmall diameter section is 100 mm\nQuantity is 180 cubic metres of water per hour\nFlow is from the smaller to the bigger section\nIgnore ALL losses.", "givens": [{"symbol": "D", "value": 300, "unit": "mm", "source": "stem", "label": "large section diameter"}, {"symbol": "d", "value": 100, "unit": "mm", "source": "stem", "label": "small section diameter"}, {"symbol": "Qh", "value": 180, "unit": "m**3/h", "source": "stem", "label": "flow of water"}, {"symbol": "g", "value": 9.81, "unit": "m/s**2", "source": "instructions", "label": "gravitational acceleration (instruction 7)"}], "steps": [{"id": "s1", "label": "Velocity in the small (100 mm) section, V₁ (m/s)", "marks": 1, "unit_hint": "m/s"}, {"id": "s2", "label": "Velocity in the large (300 mm) section, V₂ (m/s)", "marks": 1, "unit_hint": "m/s"}, {"id": "s3", "label": "Velocity head in the small section, V₁²/2g (m)", "marks": 1, "unit_hint": "m"}, {"id": "s4", "label": "Velocity head in the large section, V₂²/2g (m)", "marks": 1, "unit_hint": "m"}, {"id": "s5", "label": "Pressure head difference, (p₂ - p₁)/ρg (m of water)", "marks": 1, "unit_hint": "m"}, {"id": "s6", "label": "Pressure difference, p₂ - p₁ (kPa)", "marks": 1, "unit_hint": "kPa"}], "clues_available": 2}, "key": {"s1": {"a": 6.366198, "tol": 0.06366197999999999, "v": "Q = 180/3 600 = 0,05 m³/s; V₁ = Q/A₁ = 0,05 × 4 / (π × 0,1²) = 6,366 m/s ✓"}, "s2": {"a": 0.7073553, "tol": 0.007073553000000001, "v": "V₂ = Q/A₂ = 0,05 × 4 / (π × 0,3²) = 0,707 m/s ✓"}, "s3": {"a": 2.065672, "tol": 0.020656720000000003, "v": "Bernoulli, small-section side: p₁/ρg + 6,366²/(2 × 9,81) + 0 → V₁²/2g = 2,066 m ✓"}, "s4": {"a": 0.02550212, "tol": 0.0005, "v": "Bernoulli, large-section side: p₂/ρg + 0,707²/(2 × 9,81) + 0 → V₂²/2g = 0,0255 m ✓"}, "s5": {"a": 2.04017, "tol": 0.0204017, "v": "(p₂ - p₁)/ρg = (V₁² - V₂²)/2g = 2,066 - 0,0255 = 2,040 m ✓"}, "s6": {"a": 20.01407, "tol": 0.2001407, "v": "Δp = 1 000 × 9,81 × 2,040 = 20,014 kPa (pressure rises in the larger section) ✓"}}, "clues": ["Convert the flow to m³/s, then find the velocity in each section from Q = AV.", "The pipe is horizontal and there are no losses, so Bernoulli reduces to pressure head plus velocity head being the same at both sections."]}, "1.3": {"learner": {"number": "1.3", "marks": 6, "response_mode": "steps", "marking_mode": "method", "stem": "Two water tanks are connected by three pipes with diameters of d, 2d and 3d. These are laid in parallel when connected. The three pipes have the same length and coefficient of friction, f.\n\nIf the smallest of the three pipes discharges 88 ℓ/s, calculate the discharge through each of the other TWO pipes in litres per second.", "givens": [{"symbol": "Q1", "value": 88, "unit": "L/s", "source": "stem", "label": "discharge of the smallest (d) pipe"}], "steps": [{"id": "s1", "label": "Discharge ratio for the 2d pipe, Q₂/Q₁ (from equal friction head)", "marks": 2, "unit_hint": null}, {"id": "s2", "label": "Discharge through the 2d pipe, Q₂ (ℓ/s)", "marks": 1, "unit_hint": "L/s"}, {"id": "s3", "label": "Discharge ratio for the 3d pipe, Q₃/Q₁ (from equal friction head)", "marks": 2, "unit_hint": null}, {"id": "s4", "label": "Discharge through the 3d pipe, Q₃ (ℓ/s)", "marks": 1, "unit_hint": "L/s"}], "clues_available": 2}, "key": {"s1": {"a": 5.656854, "tol": 0.05656854, "v": "hf₁ = hf₂ with hf = fLQ²/(3d⁵)-form → (Q²/d⁵)₁ = (Q²/d⁵)₂ ✓; 0,088²/d⁵ = Q₂²/(2d)⁵ → Q₂/Q₁ = 2^2,5 = 5,657 ✓"}, "s2": {"a": 497.8032, "tol": 4.978032, "v": "Q₂ = 88 × 5,657 = 497,803 ℓ/s ✓"}, "s3": {"a": 15.58846, "tol": 0.1558846, "v": "(Q²/d⁵)₁ = (Q²/d⁵)₃ ✓; 0,088²/d⁵ = Q₃²/(3d)⁵ → Q₃/Q₁ = 3^2,5 = 15,588 ✓"}, "s4": {"a": 1371.784, "tol": 13.71784, "v": "Q₃ = 88 × 15,588 = 1 371,784 ℓ/s ✓"}}, "clues": ["Pipes in parallel between the same two tanks all lose the same friction head.", "Write the Darcy head in terms of Q (V = 4Q/πd²) and see how Q must scale with d when f, L and hf are the same."]}};
+// Figures extracted from the paper's own PDF by nexera-exam-service/tools/extract_figure.py and
+// checked by eye (review PNGs beside them). DBE copyright: private prototype only.
+const FIGS = {"2.1": {"src": "assets/figures/ls-p1-2026/p10-q2_1.png", "w": 1022, "h": 763, "caption": "The diagram below represents the male reproductive system.", "hotspots": [{"letter": "A", "x": 0.5398, "y": 0.0827}, {"letter": "G", "x": 0.2087, "y": 0.34}, {"letter": "B", "x": 0.8156, "y": 0.3865}, {"letter": "C", "x": 0.9394, "y": 0.5258}, {"letter": "F", "x": 0.389, "y": 0.5602}, {"letter": "E", "x": 0.4204, "y": 0.802}, {"letter": "D", "x": 0.7405, "y": 0.9096}]}, "2.4": {"src": "assets/figures/ls-p1-2026/p12-q2_4.png", "w": 849, "h": 659, "caption": "The diagram below represents a part of the human central nervous system.", "hotspots": [{"letter": "B", "x": 0.4494, "y": 0.1159}, {"letter": "A", "x": 0.1257, "y": 0.3586}, {"letter": "C", "x": 0.9116, "y": 0.6352}, {"letter": "E", "x": 0.3421, "y": 0.7759}, {"letter": "D", "x": 0.7702, "y": 0.9021}]}, "1.4": {"src": "assets/figures/ls-p1-2026/p8-q1_4.png", "w": 1096, "h": 603, "caption": "The diagrams below represent stages in the reproduction of vertebrates.", "hotspots": [{"letter": "S", "x": 0.921, "y": 0.1725}, {"letter": "P", "x": 0.113, "y": 0.2245}, {"letter": "T", "x": 0.8881, "y": 0.3165}, {"letter": "Q", "x": 0.1191, "y": 0.3888}, {"letter": "R", "x": 0.0892, "y": 0.7266}]}, "1.5": {"src": "assets/figures/ls-p1-2026/p8-q1_5.png", "w": 925, "h": 420, "caption": "Diagrams A , B and C below represent different stages of human embryonic development. The stages are NOT shown in the correct order.", "hotspots": [{"letter": "A", "x": 0.2176, "y": 0.2084}, {"letter": "B", "x": 0.4977, "y": 0.2204}, {"letter": "C", "x": 0.7923, "y": 0.2247}]}, "1.6": {"src": "assets/figures/ls-p1-2026/p9-q1_6.png", "w": 699, "h": 741, "caption": "The diagram below shows the structure of the inner ear.", "hotspots": [{"letter": "A", "x": 0.3895, "y": 0.0848}, {"letter": "F", "x": 0.1148, "y": 0.4334}, {"letter": "B", "x": 0.861, "y": 0.445}, {"letter": "C", "x": 0.9209, "y": 0.5355}, {"letter": "D", "x": 0.8966, "y": 0.8574}, {"letter": "E", "x": 0.1133, "y": 0.8603}]}};
 // Layer 3 scenes: a mission opts in with data. Tags map a part's steps to anchors in a template.
 const SCENES = {
-  "1.1": { template: "summit", tags: { "1.1.1": { s1: ["levels", "hf"], s2: ["pipe", "V"], s3: ["outlet", "Q"] },
+  "fm:1.1": { template: "summit", tags: { "1.1.1": { s1: ["levels", "hf"], s2: ["pipe", "V"], s3: ["outlet", "Q"] },
     "1.1.2": { s1: ["to_summit", "hf₁"], s2: ["summit_head", "p/ρg"], s3: ["summit_gauge", "p"] } } },
-  "1.2": { template: "contraction", tags: { "1.2": { s1: ["v1", "V₁"], s2: ["v2", "V₂"], s3: ["vh1", "V₁²/2g"], s4: ["vh2", "V₂²/2g"], s5: ["dh", "Δh"], s6: ["dp", "Δp"] } } },
-  "1.3": { template: "parallel", tags: { "1.3": { s1: ["ratio2", "Q₂/Q₁"], s2: ["q2", "Q₂"], s3: ["ratio3", "Q₃/Q₁"], s4: ["q3", "Q₃"] } } },
+  "fm:1.2": { template: "contraction", tags: { "1.2": { s1: ["v1", "V₁"], s2: ["v2", "V₂"], s3: ["vh1", "V₁²/2g"], s4: ["vh2", "V₂²/2g"], s5: ["dh", "Δh"], s6: ["dp", "Δp"] } } },
+  "ls:1.4": { template: "figure", fig: "1.4" }, "ls:1.5": { template: "figure", fig: "1.5" }, "ls:1.6": { template: "figure", fig: "1.6" },
+  "ls:2.1": { template: "figure", fig: "2.1" }, "ls:2.4": { template: "figure", fig: "2.4" },
+  "fm:1.3": { template: "parallel", tags: { "1.3": { s1: ["ratio2", "Q₂/Q₁"], s2: ["q2", "Q₂"], s3: ["ratio3", "Q₃/Q₁"], s4: ["q3", "Q₃"] } } },
 };
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
 const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
@@ -1118,7 +1166,7 @@ class Component extends DCLogic {
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
@@ -1141,6 +1189,7 @@ class Component extends DCLogic {
     if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ sitting: "hall" });
     this._esc = e => {
       if (e.key !== "Escape") return;
+      if (this.state.figBig) { e.preventDefault(); this.closeFigBig(); return; }
       if (this.state.card != null) { e.preventDefault(); this.closeCard(); return; }
       if (this.state.sheet || this.state.pop) { e.preventDefault(); this.closeLayer(); }
     };
@@ -1500,9 +1549,10 @@ class Component extends DCLogic {
   // ── Layer 3: the pipe-systems scene. Draws from the part's givens; shows only the learner's own
   // values (live while typing, the SUBMITTED ones after Check); the memo's ghost only after close.
   sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, hall, touch) {
-    const sc = mission && SCENES[mission.id];
+    const sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + mission.id];
+    if (sc && sc.template === "figure") return this.figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall);
     const binds = sc && sc.tags[part.number];
-    const off = { hasScene: false };
+    const off = { hasScene: false, hasFigure: false, figBigOpen: false };
     if (!sc || !binds || part.response_mode !== "steps") return off;
     const G = {}; (part.givens || []).forEach(g => { G[g.symbol] = g.value; });
     const f1 = v => fmtNum(Math.round(v * 1000) / 1000);
@@ -1594,6 +1644,63 @@ class Component extends DCLogic {
     });
     out.sceneLabels = labels.map(l => ({ x: (l[0] / 360 * 100).toFixed(2) + "%", y: (l[1] / 200 * 100).toFixed(2) + "%", text: l[2], color: l[3] }));
     return Object.assign(out, { sceneAlt: alt, sceneGivens: givensLine, hasSceneNote: !!note, sceneNote: note, sceneNoteColor: noteColor });
+  }
+
+  closeFigBig() { this.setState({ figBig: false }, () => { const b = document.querySelector("[data-enlarge]"); if (b) b.focus(); }); }
+  // A tap on a printed letter writes the SAME state as the layer-2 control for that question.
+  figTap(L) {
+    const s = this.state, part = this.part(); if (!part) return;
+    const reply = s.reply; const pr = this.pg(part.key);
+    if (pr.closed || s.marking || (s.barOpen && reply)) return;
+    const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim()), i = opts.indexOf(L), need = part.count || 1;
+    if (mode === "lettername") { this.setState({ letter: L, edited: Object.assign({}, s.edited, { letter: true }) }, () => { const n = document.querySelector('[aria-label="Name of the part"]'); if (n && !s.figBig) n.focus(); }); return; }
+    if (i < 0) return;
+    if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, s.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }); return; }
+    if (mode === "pickn") { const has = s.picks.indexOf(i) !== -1;
+      if (!has && s.picks.length >= need) { this.setState({ pickWarn: s.pickWarn + 1 }); return; }
+      this.setState({ picks: has ? s.picks.filter(x => x !== i) : s.picks.concat([i]), edited: Object.assign({}, s.edited, { picks: true }) }); return; }
+    if (mode === "order") { const pos = s.orderSeq.indexOf(i);
+      this.setState({ orderSeq: pos === -1 ? s.orderSeq.concat([i]) : s.orderSeq.slice(0, pos), edited: Object.assign({}, s.edited, { order: true }) }); }
+  }
+  figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall) {
+    const F = FIGS[sc.fig]; if (!F) return { hasScene: false, hasFigure: false };
+    const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim());
+    const letterSet = mode === "lettername" ? (part.letters || []) : (["pickn", "order", "mcq"].indexOf(mode) !== -1 && opts.length && opts.every(o => /^[A-Z]$/.test(o))) ? opts : [];
+    const locked = closed || s.marking || (s.barOpen && !!reply);
+    const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
+    const rv = closed && !hall && reply && reply.reveal ? reply.reveal.answer : null;
+    const spots = F.hotspots.filter(h => letterSet.indexOf(h.letter) !== -1).map(h => {
+      const L = h.letter, i = opts.indexOf(L);
+      let sel = false, sp = null, memo = false, badge = "";
+      if (mode === "lettername") { sel = s.letter === L; if (sel && !s.edited.letter) sp = stampOf(itemsBy.letter); memo = !!rv && rv.letter === L && !sel; }
+      if (mode === "mcq") { sel = s.pick === i; if (sel && !s.edited["o" + i]) sp = stampOf(itemsBy["o" + i]); memo = rv === i && !sel; }
+      if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; if (sel && !s.edited.picks) sp = stampOf(itemsBy["o" + i]); memo = Array.isArray(rv) && rv.indexOf(i) !== -1 && !sel; }
+      if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : ""; if (sel && !s.edited.order) sp = stampOf(itemsBy["pos" + pos]); }
+      return { letter: L, x: (h.x * 100).toFixed(2) + "%", y: (h.y * 100).toFixed(2) + "%", pressed: sel ? "true" : "false", disabled: locked,
+        aria: "Letter " + L + " on the figure" + (sel ? ", selected" : "") + (badge ? ", placed " + badge : "") + (sp ? ", " + sp.t : "") + (memo ? ", the memo's answer" : ""),
+        border: sp ? "3px solid " + sp.c : memo ? "3px dashed #1f9d68" : sel ? "3px solid #1e46ff" : "2px solid rgba(30,70,255,0.45)",
+        bg: sp ? sp.bg : memo ? "rgba(61,220,151,0.18)" : sel ? "rgba(0,104,248,0.20)" : "rgba(0,104,248,0.06)",
+        shadow: sel ? "0 0 0 3px rgba(30,70,255,0.25)" : "none",
+        hasBadge: !!badge || !!sp || memo, badge: badge || (sp ? (sp.t.indexOf("✓") !== -1 ? "✓" : "✕") : memo ? "✓" : ""),
+        badgeBg: sp ? (sp.t.indexOf("✓") !== -1 ? "#1f9d68" : "#d64b4e") : memo ? "#1f9d68" : "#1e46ff",
+        tap: () => this.figTap(L) };
+    });
+    const letters = F.hotspots.map(h => h.letter).sort().join(", ");
+    // The question column is 640 px on wide layouts (desktop, landscape tablet), else the page width.
+    const wideCol = s.vw >= 1100 || (s.vw >= 600 && s.vw > s.vh);
+    const figW = Math.min(wideCol ? 640 : s.vw - 32, s.vw - 32) - 20, figH = figW * F.h / F.w;
+    let minD = Infinity; const hs = F.hotspots.filter(h => letterSet.indexOf(h.letter) !== -1);
+    for (let a = 0; a < hs.length; a++) for (let b = a + 1; b < hs.length; b++) minD = Math.min(minD, Math.hypot((hs[a].x - hs[b].x) * figW, (hs[a].y - hs[b].y) * figH));
+    const spot = Math.max(24, Math.min(phone ? 36 : 40, Math.floor(minD - 3)));
+    const hint = !letterSet.length ? F.caption : locked ? (closed ? "Closed · the figure shows your answer" : "Your answer is being checked") : mode === "order" ? "Tap the letters on the figure in order"
+      : mode === "pickn" ? "Tap " + (part.count || 1) + " letters on the figure" : "Tap a letter on the figure";
+    return { hasScene: false, hasFigure: true, figSrc: F.src, figAspect: F.w + " / " + F.h, figSpots: spots, figSpotSize: spot + "px",
+      figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint, figHintColor: letterSet.length && !locked ? "var(--tint)" : "var(--text3)",
+      figBigOpen: s.figBig, openFigBig: () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }),
+      closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: Math.min(2 * 640, Math.round(F.w * 0.9)) + "px",
+      figBigKeys: e => { if (e.key !== "Tab") return; const fs = [].slice.call(document.querySelectorAll("[data-figdialog] button:not([disabled])")); if (!fs.length) return;
+        const first = fs[0], last = fs[fs.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } } };
   }
 
   // ── Layer 2: native interaction per question type. Every value here maps to one API answer shape.
