@@ -32,6 +32,8 @@
     @keyframes suggest { 0%,100% { box-shadow:0 0 0 0 rgba(0,104,248,0.5); } 60% { box-shadow:0 0 0 12px rgba(0,104,248,0); } }
     @keyframes breathe { 0%,100% { transform:scale(1); box-shadow:0 14px 36px rgba(30,70,255,0.38); } 50% { transform:scale(1.02); box-shadow:0 18px 44px rgba(30,70,255,0.5); } }
     @keyframes dots { 0%,100% { opacity:0.25; } 50% { opacity:1; } }
+    @keyframes flowdash { to { stroke-dashoffset:-32; } }
+    @keyframes lvl { 0% { transform:translateY(3px); opacity:0.2; } 100% { transform:translateY(-3px); opacity:0.95; } }
     @keyframes ripple { 0% { transform:scale(0.42); opacity:0; } 16% { opacity:1; } 100% { transform:scale(1.95); opacity:0; } }
     @keyframes padspin { to { transform:rotate(360deg); } }
     @keyframes padcore { 0%, 100% { transform:scale(0.9); opacity:0.82; } 50% { transform:scale(1.12); opacity:1; } }
@@ -483,6 +485,96 @@
           </div>
         </sc-if>
 
+        <sc-if value="{{ hasScene }}" hint-placeholder-val="{{ false }}">
+          <div data-scene="true" style="border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #1c2130, #161a23) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
+            <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ sceneAlt }}</span>
+            <div style="position:relative; width:min(100%, {{ sceneMaxW }}); margin:0 auto; aspect-ratio:360 / 200">
+              <svg aria-hidden="true" viewBox="0 0 360 200" preserveAspectRatio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%">
+                <defs>
+                  <linearGradient id="scWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b93e6"></stop><stop offset="1" stop-color="#1b4f96"></stop></linearGradient>
+                  <linearGradient id="scPipe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a5262"></stop><stop offset="0.5" stop-color="#2f3541"></stop><stop offset="1" stop-color="#1c2028"></stop></linearGradient>
+                </defs>
+
+                <g style="display:{{ tplSummitD }}">
+                  <rect x="8" y="{{ upTankY }}" width="70" height="{{ upTankH }}" rx="4" fill="rgba(255,255,255,0.04)" stroke="#3b4250" stroke-width="2"></rect>
+                  <rect x="9" y="{{ upWaterY }}" width="68" height="{{ upWaterH }}" fill="url(#scWater)" opacity="0.85"></rect>
+                  <rect x="282" y="{{ loTankY }}" width="70" height="{{ loTankH }}" rx="4" fill="rgba(255,255,255,0.04)" stroke="#3b4250" stroke-width="2"></rect>
+                  <rect x="283" y="{{ loWaterY }}" width="68" height="{{ loWaterH }}" fill="url(#scWater)" opacity="0.85"></rect>
+                  <rect x="283" y="{{ loWaterY }}" width="68" height="4" fill="#9cc7ff" opacity="{{ riseOpacity }}" style="transform-box:fill-box; animation:{{ riseAnim }}"></rect>
+                  <line x1="78" y1="{{ upWaterY }}" x2="300" y2="{{ upWaterY }}" stroke="#81b1ff" stroke-width="1" stroke-dasharray="3 4" opacity="0.55"></line>
+                  <line x1="266" y1="{{ upWaterY }}" x2="266" y2="{{ loWaterY }}" stroke="#81b1ff" stroke-width="1.2" opacity="0.7"></line>
+                  <line x1="{{ summitX }}" y1="{{ summitY }}" x2="{{ summitX }}" y2="{{ upWaterY }}" stroke="#e0a10f" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"></line>
+                  <path d="{{ pipeD }}" fill="none" stroke="#0e1117" stroke-width="13" stroke-linecap="round"></path>
+                  <path d="{{ pipeD }}" fill="none" stroke="url(#scPipe)" stroke-width="10" stroke-linecap="round"></path>
+                  <path d="{{ pipeD }}" fill="none" stroke="rgba(129,177,255,0.95)" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 12" opacity="{{ flowOpacity }}" style="animation:{{ flowAnim }}; animation-play-state:{{ scenePlay }}"></path>
+                  <path d="{{ pipeD }}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2 14" opacity="{{ ghostOpacity }}" style="animation:{{ ghostAnim }}; animation-play-state:{{ scenePlay }}"></path>
+                  <g style="display:{{ showGaugeD }}">
+                    <circle cx="{{ summitX }}" cy="{{ gaugeY }}" r="11" fill="#11151c" stroke="#81b1ff" stroke-width="1.5"></circle>
+                    <line x1="{{ summitX }}" y1="{{ gaugeY }}" x2="{{ summitX }}" y2="{{ gaugeTipY }}" stroke="#e9f1ff" stroke-width="2" stroke-linecap="round" transform="{{ needleRot }}"></line>
+                    <line x1="{{ summitX }}" y1="{{ gaugeY }}" x2="{{ summitX }}" y2="{{ gaugeTipY }}" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" stroke-dasharray="2 2" stroke-linecap="round" transform="{{ ghostNeedleRot }}" opacity="{{ ghostOpacity }}"></line>
+                  </g>
+                  <g style="display:{{ airPocketD }}">
+                    <ellipse cx="{{ summitX }}" cy="{{ summitY }}" rx="9" ry="4" fill="#f3c14f" opacity="0.9"></ellipse>
+                  </g>
+                </g>
+
+                <g style="display:{{ tplContractionD }}">
+                  <path d="M14 40 L170 40 L200 58 L346 58 L346 76 L200 76 L170 94 L14 94 Z" fill="url(#scPipe)" stroke="#0e1117" stroke-width="2"></path>
+                  <path d="M16 44 L168 44 L198 61 L344 61 L344 73 L198 73 L168 90 L16 90 Z" fill="url(#scWater)" opacity="0.55"></path>
+                  <path d="M16 67 L168 67" stroke="rgba(129,177,255,0.95)" stroke-width="3" stroke-dasharray="4 12" stroke-linecap="round" opacity="{{ flowOpacity }}" style="animation:{{ flowAnim }}; animation-play-state:{{ scenePlay }}"></path>
+                  <path d="M200 67 L344 67" stroke="rgba(129,177,255,0.95)" stroke-width="3" stroke-dasharray="4 12" stroke-linecap="round" opacity="{{ flowOpacity }}" style="animation:{{ flowAnim2 }}; animation-play-state:{{ scenePlay }}"></path>
+                  <path d="M16 72 L168 72" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-dasharray="2 14" opacity="{{ ghostOpacity }}" style="animation:{{ ghostAnim }}; animation-play-state:{{ scenePlay }}"></path>
+                  <path d="M200 71 L344 71" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-dasharray="2 14" opacity="{{ ghostOpacity }}" style="animation:{{ ghostAnim2 }}; animation-play-state:{{ scenePlay }}"></path>
+                  <path d="M100 94 L100 186 L280 186 L280 76" fill="none" stroke="#3b4250" stroke-width="6" stroke-linejoin="round"></path>
+                  <rect x="97" y="{{ manoLeftY }}" width="6" height="{{ manoLeftH }}" fill="#c3c8cf"></rect>
+                  <rect x="277" y="{{ manoRightY }}" width="6" height="{{ manoRightH }}" fill="#c3c8cf"></rect>
+                  <rect x="100" y="183" width="180" height="6" fill="#c3c8cf"></rect>
+                </g>
+
+                <g style="display:{{ tplParallelD }}">
+                  <rect x="8" y="30" width="56" height="160" rx="4" fill="rgba(255,255,255,0.04)" stroke="#3b4250" stroke-width="2"></rect>
+                  <rect x="9" y="44" width="54" height="145" fill="url(#scWater)" opacity="0.85"></rect>
+                  <rect x="296" y="30" width="56" height="160" rx="4" fill="rgba(255,255,255,0.04)" stroke="#3b4250" stroke-width="2"></rect>
+                  <rect x="297" y="70" width="54" height="119" fill="url(#scWater)" opacity="0.85"></rect>
+                  <line x1="64" y1="62" x2="296" y2="62" stroke="#343b48" stroke-width="5"></line>
+                  <line x1="64" y1="112" x2="296" y2="112" stroke="#343b48" stroke-width="9"></line>
+                  <line x1="64" y1="164" x2="296" y2="164" stroke="#343b48" stroke-width="14"></line>
+                  <text x="72" y="56" style="font-size:9px; font-weight:800; fill:#9fb9e6">d</text>
+                  <text x="72" y="104" style="font-size:9px; font-weight:800; fill:#9fb9e6">2d</text>
+                  <text x="72" y="153" style="font-size:9px; font-weight:800; fill:#9fb9e6">3d</text>
+                  <line x1="66" y1="62" x2="294" y2="62" stroke="rgba(129,177,255,0.95)" stroke-width="2" stroke-dasharray="4 12" opacity="{{ flowOpacity }}" style="animation:{{ flowAnim }}; animation-play-state:{{ scenePlay }}"></line>
+                  <line x1="66" y1="112" x2="294" y2="112" stroke="rgba(129,177,255,0.95)" stroke-width="3" stroke-dasharray="4 12" opacity="{{ flowOpacity }}" style="animation:{{ flowAnim2 }}; animation-play-state:{{ scenePlay }}"></line>
+                  <line x1="66" y1="164" x2="294" y2="164" stroke="rgba(129,177,255,0.95)" stroke-width="4" stroke-dasharray="4 12" opacity="{{ flowOpacity }}" style="animation:{{ flowAnim3 }}; animation-play-state:{{ scenePlay }}"></line>
+                  <line x1="66" y1="116" x2="294" y2="116" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-dasharray="2 14" opacity="{{ ghostOpacity }}" style="animation:{{ ghostAnim2 }}; animation-play-state:{{ scenePlay }}"></line>
+                  <line x1="66" y1="169" x2="294" y2="169" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-dasharray="2 14" opacity="{{ ghostOpacity }}" style="animation:{{ ghostAnim3 }}; animation-play-state:{{ scenePlay }}"></line>
+                </g>
+              </svg>
+
+              <sc-for list="{{ sceneLabels }}" as="lb" hint-placeholder-count="2">
+                <span aria-hidden="true" style="position:absolute; left:{{ lb.x }}; top:{{ lb.y }}; transform:translate(-50%, -50%); font-size:10.5px; font-weight:800; color:{{ lb.color }}; white-space:nowrap; pointer-events:none; text-shadow:0 1px 3px rgba(0,0,0,0.85)">{{ lb.text }}</span>
+              </sc-for>
+              <sc-for list="{{ sceneTags }}" as="tg" hint-placeholder-count="3">
+                <button data-scenetag="{{ tg.sid }}" onClick="{{ tg.tap }}" aria-label="{{ tg.aria }}" style="position:absolute; left:{{ tg.x }}; top:{{ tg.y }}; transform:translate(-50%, -50%); min-width:44px; min-height:44px; padding:0; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center">
+                  <span style="display:flex; align-items:center; gap:4px; height:26px; padding:0 9px; border-radius:13px; border:1.5px solid {{ tg.border }}; background:{{ tg.bg }}; box-shadow:{{ tg.ring }}; font-size:11.5px; font-weight:800; color:{{ tg.color }}; white-space:nowrap">{{ tg.text }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:8px 12px 10px; border-top:1px solid var(--line)">
+              <span style="flex:1; min-width:0; font-size:11.5px; font-weight:600; color:var(--text3)">{{ sceneGivens }}</span>
+              <sc-if value="{{ hasLegend }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px; font-weight:700; color:var(--text2)"><span style="color:#81b1ff">━ Yours</span> · <span style="color:#e6e8ea">┅ The memo's</span></span>
+              </sc-if>
+              <button onClick="{{ toggleDescribe }}" aria-expanded="{{ describeOpen }}" style="min-height:32px; padding:0 10px; border-radius:10px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:11.5px; font-weight:700; cursor:pointer">Describe the system</button>
+            </div>
+            <sc-if value="{{ describeOpen }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; padding:0 12px 12px; font-size:13px; line-height:1.55; color:var(--text2)">{{ sceneAlt }}</p>
+            </sc-if>
+            <sc-if value="{{ hasSceneNote }}" hint-placeholder-val="{{ false }}">
+              <p role="status" style="margin:0; padding:9px 12px 11px; border-top:1px solid var(--line); font-size:13px; line-height:1.5; color:{{ sceneNoteColor }}">{{ sceneNote }}</p>
+            </sc-if>
+          </div>
+        </sc-if>
+
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <span style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span>
@@ -885,6 +977,16 @@ const FM_TITLES = {
   "3.1": "Single-stage centrifugal pump", "3.2": "Three-throw pump", "3.3": "Definitions",
   "4.1": "Triple-jet Pelton wheel", "4.2": "Classifying reaction turbines", "4.3": "Vertical-shaft Francis turbine" };
 const FM_TAGS = { "1.4": ["FIGURE 1"] };
+// The service's learner view + marking key for these parts, exported from the approved paper,
+// so the scenes bind to the real method steps.
+const FM_SERVICE = {"1.1.2": {"learner": {"number": "1.1.2", "marks": 3, "response_mode": "steps", "marking_mode": "method", "stem": "The pressure at the highest point of the pipeline. The atmospheric pressure can be taken as 101,3 kPa.", "givens": [{"symbol": "L", "value": 720, "unit": "m", "source": "stem", "label": "pipeline length"}, {"symbol": "dz", "value": 8, "unit": "m", "source": "stem", "label": "difference in reservoir levels"}, {"symbol": "zs", "value": 3, "unit": "m", "source": "stem", "label": "height of the highest point above the upper reservoir"}, {"symbol": "L1", "value": 260, "unit": "m", "source": "stem", "label": "distance from the entrance to the highest point"}, {"symbol": "d", "value": 1.2, "unit": "m", "source": "stem", "label": "pipe diameter"}, {"symbol": "f", "value": 0.01, "unit": null, "source": "stem", "label": "coefficient of friction"}, {"symbol": "p_atm", "value": 101.3, "unit": "kPa", "source": "stem", "label": "atmospheric pressure"}, {"symbol": "g", "value": 9.81, "unit": "m/s**2", "source": "instructions", "label": "gravitational acceleration (instruction 7)"}], "steps": [{"id": "s1", "label": "Friction head lost from the entrance to the highest point, hf₁ (m)", "marks": 1, "unit_hint": "m"}, {"id": "s2", "label": "Absolute pressure head at the highest point, p/ρg (m of water)", "marks": 1, "unit_hint": "m"}, {"id": "s3", "label": "Absolute pressure at the highest point, p (kPa)", "marks": 1, "unit_hint": "kPa"}], "clues_available": 2}, "key": {"s1": {"a": 2.888889, "tol": 0.02888889, "v": "hf₁ = 4fL₁V²/(2gd) = 8 × 260/720 = 2,889 m (same V, so hf ∝ L) ✓"}, "s2": {"a": 4.103975, "tol": 0.04103975, "v": "Datum at the upper reservoir surface: 101,3/9,81 + 0 + 0 = p/ρg + V²/2g + 3 + hf₁, with V²/2g = 2,557²/(2 × 9,81) = 0,333 m, so p/ρg = 10,326 - 3 - 0,333 - 2,889 = 4,104 m ✓ (ρ = 1 000 kg/m³ for water, not printed on the paper)"}, "s3": {"a": 40.25999, "tol": 0.4025999, "v": "p = ρg × 4,104 = 1 000 × 9,81 × 4,104 = 40,260 kPa absolute ✓ (below atmospheric: 40,260 - 101,3 kPa gauge)"}}, "clues": ["Apply Bernoulli between the upper reservoir surface and the highest point; only the friction over the first 260 m has been lost by then.", "When the velocity is the same all along the pipe, friction head is proportional to the length travelled."]}, "1.2": {"learner": {"number": "1.2", "marks": 6, "response_mode": "steps", "marking_mode": "method", "stem": "Use the following information to calculate the pressure difference in a horizontally placed pipeline:\nLarge diameter section is 300 mm\nSmall diameter section is 100 mm\nQuantity is 180 cubic metres of water per hour\nFlow is from the smaller to the bigger section\nIgnore ALL losses.", "givens": [{"symbol": "D", "value": 300, "unit": "mm", "source": "stem", "label": "large section diameter"}, {"symbol": "d", "value": 100, "unit": "mm", "source": "stem", "label": "small section diameter"}, {"symbol": "Qh", "value": 180, "unit": "m**3/h", "source": "stem", "label": "flow of water"}, {"symbol": "g", "value": 9.81, "unit": "m/s**2", "source": "instructions", "label": "gravitational acceleration (instruction 7)"}], "steps": [{"id": "s1", "label": "Velocity in the small (100 mm) section, V₁ (m/s)", "marks": 1, "unit_hint": "m/s"}, {"id": "s2", "label": "Velocity in the large (300 mm) section, V₂ (m/s)", "marks": 1, "unit_hint": "m/s"}, {"id": "s3", "label": "Velocity head in the small section, V₁²/2g (m)", "marks": 1, "unit_hint": "m"}, {"id": "s4", "label": "Velocity head in the large section, V₂²/2g (m)", "marks": 1, "unit_hint": "m"}, {"id": "s5", "label": "Pressure head difference, (p₂ - p₁)/ρg (m of water)", "marks": 1, "unit_hint": "m"}, {"id": "s6", "label": "Pressure difference, p₂ - p₁ (kPa)", "marks": 1, "unit_hint": "kPa"}], "clues_available": 2}, "key": {"s1": {"a": 6.366198, "tol": 0.06366197999999999, "v": "Q = 180/3 600 = 0,05 m³/s; V₁ = Q/A₁ = 0,05 × 4 / (π × 0,1²) = 6,366 m/s ✓"}, "s2": {"a": 0.7073553, "tol": 0.007073553000000001, "v": "V₂ = Q/A₂ = 0,05 × 4 / (π × 0,3²) = 0,707 m/s ✓"}, "s3": {"a": 2.065672, "tol": 0.020656720000000003, "v": "Bernoulli, small-section side: p₁/ρg + 6,366²/(2 × 9,81) + 0 → V₁²/2g = 2,066 m ✓"}, "s4": {"a": 0.02550212, "tol": 0.0005, "v": "Bernoulli, large-section side: p₂/ρg + 0,707²/(2 × 9,81) + 0 → V₂²/2g = 0,0255 m ✓"}, "s5": {"a": 2.04017, "tol": 0.0204017, "v": "(p₂ - p₁)/ρg = (V₁² - V₂²)/2g = 2,066 - 0,0255 = 2,040 m ✓"}, "s6": {"a": 20.01407, "tol": 0.2001407, "v": "Δp = 1 000 × 9,81 × 2,040 = 20,014 kPa (pressure rises in the larger section) ✓"}}, "clues": ["Convert the flow to m³/s, then find the velocity in each section from Q = AV.", "The pipe is horizontal and there are no losses, so Bernoulli reduces to pressure head plus velocity head being the same at both sections."]}, "1.3": {"learner": {"number": "1.3", "marks": 6, "response_mode": "steps", "marking_mode": "method", "stem": "Two water tanks are connected by three pipes with diameters of d, 2d and 3d. These are laid in parallel when connected. The three pipes have the same length and coefficient of friction, f.\n\nIf the smallest of the three pipes discharges 88 ℓ/s, calculate the discharge through each of the other TWO pipes in litres per second.", "givens": [{"symbol": "Q1", "value": 88, "unit": "L/s", "source": "stem", "label": "discharge of the smallest (d) pipe"}], "steps": [{"id": "s1", "label": "Discharge ratio for the 2d pipe, Q₂/Q₁ (from equal friction head)", "marks": 2, "unit_hint": null}, {"id": "s2", "label": "Discharge through the 2d pipe, Q₂ (ℓ/s)", "marks": 1, "unit_hint": "L/s"}, {"id": "s3", "label": "Discharge ratio for the 3d pipe, Q₃/Q₁ (from equal friction head)", "marks": 2, "unit_hint": null}, {"id": "s4", "label": "Discharge through the 3d pipe, Q₃ (ℓ/s)", "marks": 1, "unit_hint": "L/s"}], "clues_available": 2}, "key": {"s1": {"a": 5.656854, "tol": 0.05656854, "v": "hf₁ = hf₂ with hf = fLQ²/(3d⁵)-form → (Q²/d⁵)₁ = (Q²/d⁵)₂ ✓; 0,088²/d⁵ = Q₂²/(2d)⁵ → Q₂/Q₁ = 2^2,5 = 5,657 ✓"}, "s2": {"a": 497.8032, "tol": 4.978032, "v": "Q₂ = 88 × 5,657 = 497,803 ℓ/s ✓"}, "s3": {"a": 15.58846, "tol": 0.1558846, "v": "(Q²/d⁵)₁ = (Q²/d⁵)₃ ✓; 0,088²/d⁵ = Q₃²/(3d)⁵ → Q₃/Q₁ = 3^2,5 = 15,588 ✓"}, "s4": {"a": 1371.784, "tol": 13.71784, "v": "Q₃ = 88 × 15,588 = 1 371,784 ℓ/s ✓"}}, "clues": ["Pipes in parallel between the same two tanks all lose the same friction head.", "Write the Darcy head in terms of Q (V = 4Q/πd²) and see how Q must scale with d when f, L and hf are the same."]}};
+// Layer 3 scenes: a mission opts in with data. Tags map a part's steps to anchors in a template.
+const SCENES = {
+  "1.1": { template: "summit", tags: { "1.1.1": { s1: ["levels", "hf"], s2: ["pipe", "V"], s3: ["outlet", "Q"] },
+    "1.1.2": { s1: ["to_summit", "hf₁"], s2: ["summit_head", "p/ρg"], s3: ["summit_gauge", "p"] } } },
+  "1.2": { template: "contraction", tags: { "1.2": { s1: ["v1", "V₁"], s2: ["v2", "V₂"], s3: ["vh1", "V₁²/2g"], s4: ["vh2", "V₂²/2g"], s5: ["dh", "Δh"], s6: ["dp", "Δp"] } } },
+  "1.3": { template: "parallel", tags: { "1.3": { s1: ["ratio2", "Q₂/Q₁"], s2: ["q2", "Q₂"], s3: ["ratio3", "Q₃/Q₁"], s4: ["q3", "Q₃"] } } },
+};
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
 const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
 const lev = (a, b) => { a = a || ""; b = b || ""; const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
@@ -932,6 +1034,8 @@ function buildPapers() {
         }
         SERVER.clues[key] = q.clues || [];
         SERVER.memo[key] = q.bullets || [];
+        if (FM_SERVICE[q.n]) { const d = FM_SERVICE[q.n]; SERVER.keys[key] = { steps: d.key }; SERVER.clues[key] = d.clues; SERVER.memo[key] = [];
+          return Object.assign({ key: key }, d.learner); }
         if (q.n === "1.1.1") {
           SERVER.keys[key] = { steps: { s1: { a: 8, tol: 0.01, v: "hf = 8 m" }, s2: { a: 2.557, tol: 0.006, v: "V = 2,557 m/s" },
             s3: { a: 2.892, tol: 0.01, v: "Q = 2,892 m³/s", ft: vals => Math.PI * 1.2 * 1.2 / 4 * vals.s2 } } };
@@ -1014,7 +1118,7 @@ class Component extends DCLogic {
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
@@ -1078,6 +1182,11 @@ class Component extends DCLogic {
       const b = document.querySelector("[data-card-play]"); if (b) b.focus();
     }
     this._lastCard = this.state.card;
+    const scEl = document.querySelector("[data-scene]");
+    if (scEl && scEl !== this._scEl && window.IntersectionObserver) {
+      if (this._scIO) this._scIO.disconnect(); this._scEl = scEl;
+      this._scIO = new IntersectionObserver(es => { const on = es[0].isIntersecting; if (on !== this.state.sceneOn) this.setState({ sceneOn: on }); }, { threshold: 0.05 });
+      this._scIO.observe(scEl); }
     // A new result: focus its button so Enter continues. Then keep the question clear of the footer.
     if (this.state.barSeq !== this._lastBarSeq) { this._lastBarSeq = this.state.barSeq; const bp = document.querySelector("[data-bar-primary]"); if (bp) bp.focus(); }
     if (scr === "play") { const fe = document.querySelector("[data-footer]");
@@ -1232,7 +1341,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._rc); clearTimeout(this._kpT); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
@@ -1243,7 +1352,7 @@ class Component extends DCLogic {
 
   resetInputs(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "" }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   openMission(i) { this.resetInputs({ screen: "play", mi: i, pi: 0 }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
@@ -1319,7 +1428,8 @@ class Component extends DCLogic {
   reveal(part) {
     const key = SERVER.keys[part.key] || {};
     const note = "DHET did not publish a marking guideline for this sitting.";
-    if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "" })), provenance: { memo_source: "authored", note: note } };
+    if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ id: s.id, label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "",
+      expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })), provenance: { memo_source: "authored", note: note } };
     const pts = key.pool ? key.pool.map(g => Array.isArray(g) ? g[0] : g) : (SERVER.memo[part.key] || []);
     const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.term ? key.term[0] : key.num != null ? key.num : null;
     return { answer: answerOf, memo: { points: pts.map(t => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
@@ -1354,7 +1464,7 @@ class Component extends DCLogic {
         best_marks: Math.max(pr.best, result.marks_awarded || 0), result: result,
         clue: !closed ? (clues[tryNo - 1] || clues[clues.length - 1] || null) : null,
         reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay };
-      this.setState({ marking: false, reply: reply, barOpen: true, barSeq: s.barSeq + 1, edited: {}, memoSeen: false,
+      this.setState({ marking: false, reply: reply, barOpen: true, barSeq: s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: result.full && tryNo === 1 ? mult : draw ? s.lastMult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
         paid: result.full ? Object.assign({}, s.paid, { [part.key]: true }) : s.paid, flySeq: xp ? s.flySeq + 1 : s.flySeq,
@@ -1385,6 +1495,105 @@ class Component extends DCLogic {
     const m = this.mission(); if (!m) return;
     if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
     this.setState({ screen: "done" });
+  }
+
+  // ── Layer 3: the pipe-systems scene. Draws from the part's givens; shows only the learner's own
+  // values (live while typing, the SUBMITTED ones after Check); the memo's ghost only after close.
+  sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, hall, touch) {
+    const sc = mission && SCENES[mission.id];
+    const binds = sc && sc.tags[part.number];
+    const off = { hasScene: false };
+    if (!sc || !binds || part.response_mode !== "steps") return off;
+    const G = {}; (part.givens || []).forEach(g => { G[g.symbol] = g.value; });
+    const f1 = v => fmtNum(Math.round(v * 1000) / 1000);
+    const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
+    const sub = s.lastSub || {};
+    const subNum = id => { const v = num(sub[id]); return v == null || isNaN(v) ? null : v; };
+    const consequences = !!reply && !!s.lastSub && !hall;
+    const rv = closed && reply && reply.reveal && reply.reveal.steps ? reply.reveal.steps : null;
+    const memoNum = id => { const x = rv && rv.filter(y => y.id === id)[0]; return x && x.expected ? x.expected.value : null; };
+    const ghostOn = !!rv && !hall && (!(reply.revealed && reply.result) || s.memoSeen);
+    const clamp = (a, lo, hi) => Math.max(lo, Math.min(hi, a));
+    const dur = v => v && v > 0 ? clamp(3.2 / v, 0.35, 6).toFixed(2) + "s" : null;
+    const flowA = v => { const d = dur(v); return d && !s.reduced ? "flowdash " + d + " linear infinite" : "none"; };
+    const out = { hasScene: true, sceneMaxW: (desk || !phone ? 504 : 400) + "px", scenePlay: s.sceneOn ? "running" : "paused",
+      tplSummitD: "none", tplContractionD: "none", tplParallelD: "none", showGaugeD: "none", airPocketD: "none",
+      flowOpacity: "0", ghostOpacity: "0", flowAnim: "none", flowAnim2: "none", flowAnim3: "none", ghostAnim: "none", ghostAnim2: "none", ghostAnim3: "none",
+      riseOpacity: "0", riseAnim: "none", hasLegend: ghostOn, describeOpen: s.describeOpen, toggleDescribe: () => this.setState({ describeOpen: !this.state.describeOpen }) };
+    let pos = {}, labels = [], alt = "", givensLine = "", note = "", noteColor = "var(--text)";
+    if (sc.template === "summit") {
+      const dz = G.dz || 8, zs = G.zs || 3, L = G.L || 720, L1 = G.L1 || 260;
+      const k = Math.min(14, 110 / (dz + zs)), yS = 34, yU = yS + zs * k, yL = yU + dz * k;
+      const xs = 78 + (L1 / L) * 204;
+      Object.assign(out, { tplSummitD: "inline", upTankY: yU - 16, upTankH: 126 - (yU - 16), upWaterY: yU, upWaterH: 125 - yU,
+        loTankY: yL - 16, loTankH: 190 - (yL - 16), loWaterY: yL, loWaterH: 189 - yL, midLevelY: (yU + yL) / 2 + 3, dzLabel: fmtNum(dz) + " m",
+        summitX: xs, summitY: yS, summitLabelX: xs + 6, summitLabelY: (yS + yU) / 2 + 3, zsLabel: fmtNum(zs) + " m",
+        pipeD: "M78 116 C 104 116, " + (xs - 34) + " " + yS + ", " + xs + " " + yS + " C " + (xs + 44) + " " + yS + ", 248 184, 282 184",
+        gaugeY: yS - 16, gaugeTipY: yS - 25 });
+      labels = [[246, (yU + yL) / 2, fmtNum(dz) + " m", "#9fb9e6"], [xs + 22, (yS + yU) / 2, fmtNum(zs) + " m", "#e9c46a"]];
+      pos = { levels: [196, (yU + yL) / 2], pipe: [224, 150], outlet: [317, (yL + 190) / 2 + 6], to_summit: [100, yS + 26], summit_head: [xs - 58, yS - 16], summit_gauge: [xs + 60, yS - 16] };
+      alt = "Diagram: two reservoirs whose water levels differ by " + fmtNum(dz) + " m, joined by a " + fmtNum(L) + " m pipe of " + fmtNum(G.d || 1.2) + " m diameter. The pipe rises "
+        + fmtNum(zs) + " m above the upper reservoir at " + fmtNum(L1) + " m from the entrance, then falls to the lower reservoir.";
+      givensLine = "L " + fmtNum(L) + " m · d " + fmtNum(G.d || 1.2) + " m · f " + fmtNum(G.f || 0.01) + (G.p_atm ? " · p atm " + fmtNum(G.p_atm) + " kPa" : "");
+      if (part.number === "1.1.1") {
+        const V = subNum("s2"), Q = subNum("s3");
+        if (consequences && V) { out.flowOpacity = "1"; out.flowAnim = flowA(V); note = "With your V the water moves at " + f1(V) + " m/s" + (Q ? " and fills the lower reservoir at " + f1(Q) + " m³/s." : "."); }
+        if (consequences && Q) { out.riseOpacity = "1"; out.riseAnim = s.reduced ? "none" : "lvl " + clamp(6 / Q, 0.5, 6).toFixed(2) + "s ease-in-out infinite alternate"; }
+        const gV = memoNum("s2"); if (ghostOn && gV) { out.ghostOpacity = "1"; out.ghostAnim = flowA(gV); }
+      } else {
+        out.showGaugeD = "inline";
+        const P = subNum("s3"), rot = v => "rotate(" + clamp((v / 101.3) * 240 - 120, -120, 120).toFixed(1) + " " + xs + " " + (yS - 16) + ")";
+        out.needleRot = consequences && P != null ? rot(P) : "rotate(-120 " + xs + " " + (yS - 16) + ")";
+        const gP = memoNum("s3"); out.ghostNeedleRot = gP != null ? rot(gP) : out.needleRot; if (ghostOn && gP != null) out.ghostOpacity = "1";
+        if (consequences && P != null) {
+          // Water's vapour pressure is about 2,3 kPa absolute at 20 °C: at or below it the water boils and the siphon breaks.
+          if (P <= 2.3) { out.airPocketD = "inline"; note = "At " + f1(P) + " kPa the water would boil and the siphon would break."; noteColor = "#f3c14f"; }
+          else note = "Your summit pressure: " + f1(P) + " kPa absolute. Above water's vapour pressure (about 2,3 kPa), so the siphon keeps running.";
+        }
+      }
+    }
+    if (sc.template === "contraction") {
+      const D = G.D || 300, d = G.d || 100;
+      Object.assign(out, { tplContractionD: "inline", bigLabel: fmtNum(D) + " mm", smallLabel: fmtNum(d) + " mm" });
+      const V1 = subNum("s1"), V2 = subNum("s2"), dh = subNum("s5");
+      const h = consequences && dh != null ? clamp(dh * 12, 0, 60) : 0;
+      Object.assign(out, { manoLeftY: 150 + h / 2, manoLeftH: 186 - (150 + h / 2), manoRightY: 150 - h / 2, manoRightH: 186 - (150 - h / 2) });
+      if (consequences && (V1 || V2)) { out.flowOpacity = "1"; out.flowAnim = flowA(V2); out.flowAnim2 = flowA(V1);
+        note = "With your values the water runs at " + (V2 ? f1(V2) : "?") + " m/s in the wide section and " + (V1 ? f1(V1) : "?") + " m/s in the narrow one" + (dh != null ? ", and the manometer shows " + f1(dh) + " m." : "."); }
+      if (ghostOn) { const g1 = memoNum("s1"), g2 = memoNum("s2"); if (g1 || g2) { out.ghostOpacity = "1"; out.ghostAnim = flowA(g2); out.ghostAnim2 = flowA(g1); } }
+      labels = [[40, 32, fmtNum(D) + " mm", "#9fb9e6"], [318, 50, fmtNum(d) + " mm", "#9fb9e6"]];
+      pos = { v2: [110, 22], vh2: [46, 118], v1: [262, 38], vh1: [322, 100], dh: [190, 146], dp: [190, 178] };
+      alt = "Diagram: a horizontal pipe narrowing from " + fmtNum(D) + " mm to " + fmtNum(d) + " mm, with a U-tube manometer connected across the change in section.";
+      givensLine = "D " + fmtNum(D) + " mm · d " + fmtNum(d) + " mm · Q " + fmtNum(G.Qh || 180) + " m³/h";
+    }
+    if (sc.template === "parallel") {
+      const Q1 = G.Q1 || 88, Q2 = subNum("s2"), Q3 = subNum("s4");
+      out.tplParallelD = "inline"; labels = [[180, 50, "Q₁ " + fmtNum(Q1) + " ℓ/s", "#9fb9e6"]];
+      const rate = q => q ? (3 / clamp(q / Q1, 0.05, 40)) : null;
+      const fa = r => r && !s.reduced ? "flowdash " + clamp(r, 0.25, 6).toFixed(2) + "s linear infinite" : "none";
+      if (consequences && (Q2 || Q3)) { out.flowOpacity = "1"; out.flowAnim = fa(3); out.flowAnim2 = fa(rate(Q2)); out.flowAnim3 = fa(rate(Q3));
+        note = "With your values the 2d pipe carries " + (Q2 ? f1(Q2) : "?") + " ℓ/s and the 3d pipe " + (Q3 ? f1(Q3) : "?") + " ℓ/s, against " + fmtNum(Q1) + " ℓ/s in the smallest."; }
+      if (ghostOn) { const g2 = memoNum("s2"), g3 = memoNum("s4"); if (g2 || g3) { out.ghostOpacity = "1"; out.ghostAnim2 = fa(rate(g2)); out.ghostAnim3 = fa(rate(g3)); } }
+      pos = { ratio2: [130, 96], q2: [232, 96], ratio3: [130, 147], q3: [232, 147] };
+      alt = "Diagram: two water tanks joined by three pipes laid in parallel, of diameters d, 2d and 3d, with the same length and friction coefficient. The smallest carries " + fmtNum(Q1) + " litres per second.";
+      givensLine = "Q₁ " + fmtNum(Q1) + " ℓ/s · same L and f in all three pipes";
+    }
+    // Tags: shortcuts to the step fields; they show only what the learner typed.
+    const steps = part.steps;
+    const current = s.kp || ((steps.find(x => !String(s.inputs[x.id] || "").trim()) || {}).id);
+    out.sceneTags = steps.filter(st => binds[st.id]).map((st, i) => {
+      const b = binds[st.id], at = pos[b[0]] || [180, 100], typed = String(s.inputs[st.id] || "").trim();
+      const it = s.edited[st.id] ? null : itemsBy[st.id]; const sp = stampOf(it); const cur = !closed && st.id === current;
+      return { sid: st.id, x: (at[0] / 360 * 100).toFixed(2) + "%", y: (at[1] / 200 * 100).toFixed(2) + "%",
+        text: b[1] + " = " + (typed || "?") + (sp ? " " + (sp.t.indexOf("carried") === 0 ? "✓↺" : sp.t.charAt(0)) : ""),
+        aria: b[1] + ", " + st.label + ", step " + (i + 1) + ", " + (typed ? "your value " + typed : "not answered") + (sp ? ", " + sp.t : "") + ". Go to this step",
+        border: sp ? sp.b : cur ? "rgba(129,177,255,0.95)" : typed ? "rgba(129,177,255,0.5)" : "rgba(255,255,255,0.22)",
+        bg: sp ? sp.bg.replace("0.14", "0.3") : cur ? "rgba(0,104,248,0.35)" : "rgba(17,21,28,0.88)", color: sp ? sp.c : "#ffffff",
+        ring: cur ? "0 0 0 3px rgba(0,104,248,0.25)" : "none",
+        tap: () => { if (touch && !closed) this.kpOpenFor(st.id); else { const el = document.getElementById("f-" + st.id); if (el) { el.focus(); el.scrollIntoView({ block: "center", behavior: s.reduced ? "auto" : "smooth" }); } } } };
+    });
+    out.sceneLabels = labels.map(l => ({ x: (l[0] / 360 * 100).toFixed(2) + "%", y: (l[1] / 200 * 100).toFixed(2) + "%", text: l[2], color: l[3] }));
+    return Object.assign(out, { sceneAlt: alt, sceneGivens: givensLine, hasSceneNote: !!note, sceneNote: note, sceneNoteColor: noteColor });
   }
 
   // ── Layer 2: native interaction per question type. Every value here maps to one API answer shape.
@@ -1653,6 +1862,7 @@ class Component extends DCLogic {
         return { key: String.fromCharCode(65 + r), text: t, border: usedBy != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: "rgba(32,35,39,0.72)",
           pick: () => { if (locked || this.state.matchSel == null) return; const mp = Object.assign({}, this.state.matchPairs); Object.keys(mp).forEach(k => { if (mp[k] === r) delete mp[k]; }); mp[this.state.matchSel] = r; this.setState({ matchPairs: mp, matchSel: null }); } }; }) : [],
       isDraw: draw,
+      ...this.sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, hall, touch),
       ...this.layer2Vals(s, phone, tablet, part, reply, res, closed, mode, locked, stampOf, hall),
       hasReveal: !!(reply && reply.reveal && closed && !hall && (outcome !== "out" || s.memoSeen)),
       // the footer
