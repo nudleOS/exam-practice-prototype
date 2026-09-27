@@ -35,6 +35,9 @@
     @keyframes padspin { to { transform:rotate(360deg); } }
     @keyframes padcore { 0%, 100% { transform:scale(0.9); opacity:0.82; } 50% { transform:scale(1.12); opacity:1; } }
     @keyframes halo { 0% { transform:scale(0.92); opacity:0.9; } 100% { transform:scale(1.4); opacity:0; } }
+    [data-startbtn] { transition:transform 120ms ease, filter 160ms ease; }
+    [data-startbtn]:hover { filter:brightness(1.12); }
+    [data-startbtn]:active { transform:scale(0.98); }
     [data-orb] { transition:transform 120ms ease, box-shadow 120ms ease, filter 160ms ease; }
     [data-orb]:hover { filter:brightness(1.08); }
     [data-orb]:active { transform:translateY(5px); box-shadow:0 2px 0 var(--lip), 0 8px 14px rgba(0,0,0,0.45), inset 0 -9px 14px rgba(0,0,0,0.35), inset 0 7px 12px rgba(255,255,255,0.14) !important; }
@@ -296,14 +299,14 @@
           </span>
         </span>
         <span style="position:absolute; left:8px; right:8px; top:{{ startTicketTop }}; display:flex; justify-content:center; pointer-events:none">
-          <span style="max-width:100%; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 18px 12px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #202532, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.7), rgba(103,29,255,0.35) 60%, rgba(255,255,255,0.06)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 34px rgba(0,0,0,0.5); text-align:center">
-            <span style="display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:0.18em; text-transform:uppercase; color:#81b1ff">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M6 4l14 8-14 8z"></path></svg>Start
+          <button data-startbtn="true" onClick="{{ startGo }}" aria-haspopup="{{ startHasPopup }}" aria-label="{{ startAria }}" style="pointer-events:auto; max-width:100%; min-height:44px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 18px 12px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #202532, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.7), rgba(103,29,255,0.35) 60%, rgba(255,255,255,0.06)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 34px rgba(0,0,0,0.5); color:var(--text); font:inherit; text-align:center; cursor:pointer">
+            <span style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:800; letter-spacing:0.06em; color:#81b1ff">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M6 4l14 8-14 8z"></path></svg>{{ startLabel }}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
             </span>
             <span style="font-size:13.5px; font-weight:800; line-height:1.3; color:#ffffff; text-wrap:balance">{{ startPaperName }}</span>
             <span style="font-size:11.5px; font-weight:600; color:var(--text2)">{{ startPaperFacts }}</span>
             <span style="font-size:10.5px; color:var(--text3)">DHET question paper · marking reviewed by Nexera</span>
-          </span>
+          </button>
         </span>
         <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
           <span style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
@@ -858,10 +861,13 @@ class Component extends DCLogic {
     const n = document.querySelector('[data-node="' + i + '"]');
     if (n) n.scrollIntoView({ block: "center", behavior: smooth && !this.state.reduced ? "smooth" : "auto" });
   }
-  openCard(i) { this.setState({ card: i }); }
+  // Focus returns to whatever opened the card (a sphere or the start button).
+  openCard(i) { this._cardOpener = document.activeElement; this.setState({ card: i }); }
   closeCard() {
-    const i = this.state.card;
-    this.setState({ card: null }, () => { const n = document.querySelector('[data-node="' + i + '"]'); if (n) n.focus(); });
+    const i = this.state.card, back = this._cardOpener;
+    this.setState({ card: null }, () => {
+      const n = back && document.body.contains(back) && back !== document.body ? back : document.querySelector('[data-node="' + i + '"]');
+      if (n) n.focus(); });
   }
   // Map preview seeds. "progress" is the home page's returning learner: 21 of 100, next up 1.4.
   seedMap(kind, after) {
@@ -1169,6 +1175,12 @@ class Component extends DCLogic {
       // The pad's centre is the road's first point; the ticket hangs below the pad.
       padTop: f(items[0].y - 60) + "px", startTicketTop: f(items[0].y + 58) + "px",
       startPaperName: paper ? paper.title + " · " + paper.sitting : "",
+      startLabel: suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id,
+      startHasPopup: suggestedIdx < 0 ? "false" : "dialog",
+      startAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ": " + missions[suggestedIdx].title)
+        + ". " + (paper ? paper.title + ", " + paper.sitting : ""),
+      startGo: () => { if (suggestedIdx < 0) { this.setState({ screen: "summary" }); return; }
+        this.scrollToNode(suggestedIdx, true); this.openCard(suggestedIdx); },
       startPaperFacts: paper ? paper.total + " marks · " + paper.time + " · " + missions.length + " missions" : "",
       // Ripples invite on a fresh paper and calm down once practice has started.
       padRipple: s.reduced ? "none" : "ripple 3.6s cubic-bezier(0.2,0.6,0.3,1) infinite",
