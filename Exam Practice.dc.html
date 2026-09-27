@@ -251,13 +251,19 @@
       <span style="position:absolute; left:-60%; right:-60%; bottom:-6%; height:62%; background-image:linear-gradient(rgba(129,177,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(129,177,255,0.10) 1px, transparent 1px); background-size:56px 56px; transform:perspective(520px) rotateX(64deg); transform-origin:50% 100%; -webkit-mask-image:linear-gradient(to top, #000 8%, transparent 78%); mask-image:linear-gradient(to top, #000 8%, transparent 78%)"></span>
     </div>
     <main data-map="true" style="position:relative; z-index:1; box-sizing:border-box; padding:0 {{ mapPadR }} 120px 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
-      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; justify-content:center; padding:10px 0 6px; pointer-events:none">
+      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 0 6px; pointer-events:none">
+        <div role="group" aria-label="Map view" style="pointer-events:auto; display:flex; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.9); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
+          <sc-for list="{{ mapViews }}" as="mv" hint-placeholder-count="2">
+            <button data-mapview="{{ mv.id }}" onClick="{{ mv.pick }}" aria-pressed="{{ mv.on }}" style="min-width:92px; min-height:38px; padding:0 14px; border:none; border-radius:11px; background:{{ mv.bg }}; color:{{ mv.color }}; font-size:13px; font-weight:800; cursor:pointer">{{ mv.label }}</button>
+          </sc-for>
+        </div>
         <div role="group" aria-label="Preview state" style="pointer-events:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.78); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
           <sc-for list="{{ mapModes }}" as="mm" hint-placeholder-count="3">
             <button onClick="{{ mm.pick }}" aria-pressed="{{ mm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ mm.bg }}; color:{{ mm.color }}; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap">{{ mm.label }}</button>
           </sc-for>
         </div>
       </div>
+      <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
       <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
         <div style="box-sizing:border-box; width:{{ roadWpx }}; max-width:100%; margin:6px auto 0; padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</div>
       </sc-if>
@@ -368,6 +374,32 @@
           <p data-key="{{ mapBubbleKey }}" aria-live="polite" style="margin:0 auto; width:fit-content; max-width:100%; padding:9px 13px; border-radius:16px; border:1px solid transparent; background:linear-gradient(rgba(34,38,45,0.96), rgba(28,31,37,0.96)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.3)) border-box; box-shadow:0 12px 28px rgba(0,0,0,0.45); font-size:13px; font-weight:600; line-height:1.45; color:var(--text); text-wrap:pretty; animation:pop 380ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">{{ mapBubble }}</p>
         </span>
       </div>
+      </sc-if>
+      <sc-if value="{{ onTopics }}" hint-placeholder-val="{{ false }}">
+        <section data-topics="true" aria-label="Topics on this paper" style="box-sizing:border-box; width:min(560px, 100%); margin:8px auto 0; display:flex; flex-direction:column; gap:10px">
+          <p style="margin:0; font-size:12.5px; line-height:1.55; color:var(--text3)">{{ topicsIntro }}</p>
+          <sc-for list="{{ topicRows }}" as="tr" hint-placeholder-count="4">
+            <button data-topic="{{ tr.slug }}" onClick="{{ tr.go }}" disabled="{{ tr.disabled }}" aria-label="{{ tr.aria }}" style="box-sizing:border-box; width:100%; min-height:64px; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; border:{{ tr.border }}; background:{{ tr.bg }}; color:var(--text); text-align:left; cursor:{{ tr.cursor }}">
+              <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+                <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                  <span style="font-size:14.5px; font-weight:800">{{ tr.label }}</span>
+                  <span style="font-size:11.5px; font-weight:700; color:var(--text3)">{{ tr.weight }}</span>
+                  <sc-if value="{{ tr.suggested }}" hint-placeholder-val="{{ false }}">
+                    <span style="padding:2px 8px; border-radius:8px; background:rgba(0,104,248,0.18); border:1px solid rgba(129,177,255,0.5); font-size:10.5px; font-weight:800; letter-spacing:0.06em; color:#cfe0ff">SUGGESTED</span>
+                  </sc-if>
+                </span>
+                <span aria-hidden="true" style="display:block; height:4px; width:100%; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden"><span style="display:block; height:100%; width:{{ tr.weightPct }}; background:rgba(129,177,255,0.45)"></span></span>
+                <span style="font-size:12.5px; font-weight:700; color:{{ tr.bandColor }}">{{ tr.band }}</span>
+                <span style="font-size:12px; color:{{ tr.serveColor }}">{{ tr.serve }}</span>
+              </span>
+              <sc-if value="{{ tr.canDrill }}" hint-placeholder-val="{{ true }}">
+                <span aria-hidden="true" style="flex:none; font-size:12.5px; font-weight:800; color:var(--tint)">Drill ›</span>
+              </sc-if>
+            </button>
+          </sc-for>
+          <p style="margin:4px 0 0; font-size:11.5px; line-height:1.5; color:var(--text3)">{{ topicsFoot }}</p>
+        </section>
+      </sc-if>
     </main>
 
     <div style="position:fixed; left:0; right:{{ dockRight }}; bottom:0; z-index:16; display:flex; justify-content:center; padding:0 16px max(14px, env(safe-area-inset-bottom)); pointer-events:none; transition:right 300ms ease">
@@ -665,6 +697,9 @@
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <span style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span>
             <span style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
+            <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
+              <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:11.5px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
+            </sc-if>
             <span style="flex:1"></span>
             <span style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
           </div>
@@ -1065,6 +1100,35 @@
     </main>
   </sc-if>
 
+  <sc-if value="{{ onDrillOut }}" hint-placeholder-val="{{ false }}">
+    <main data-drillout="true" style="box-sizing:border-box; max-width:560px; margin:0 auto; padding:24px {{ pad }} 48px; display:flex; flex-direction:column; gap:14px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center">
+        <span style="font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Drill complete</span>
+        <h1 data-drilltitle="true" tabIndex="-1" style="margin:0; font-size:{{ h1Size }}; font-weight:800; line-height:1.2; letter-spacing:-0.01em; text-wrap:balance; outline:none">{{ drTitle }}</h1>
+        <span style="font-size:12.5px; color:var(--text3)">{{ drSub }}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px">
+        <span data-drillstat="first" style="display:flex; flex-direction:column; gap:4px; padding:14px; border-radius:16px; border:1px solid var(--line2); background:rgba(29,32,35,0.82)">
+          <span style="font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1">{{ drFirst }}</span>
+          <span style="font-size:12px; font-weight:600; color:var(--text2)">{{ drFirstLabel }}</span>
+        </span>
+        <span data-drillstat="xp" style="display:flex; flex-direction:column; gap:4px; padding:14px; border-radius:16px; border:1px solid transparent; background:linear-gradient(180deg, #1d2231, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.55), rgba(103,29,255,0.3) 60%, rgba(255,255,255,0.05)) border-box">
+          <span style="display:flex; align-items:center; gap:6px; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1"><svg width="17" height="17" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ drXp }}</span>
+          <span style="font-size:12px; font-weight:600; line-height:1.45; color:var(--text2)">{{ drXpWhy }}</span>
+        </span>
+      </div>
+      <section aria-labelledby="dr-ev" style="display:flex; flex-direction:column; gap:6px; padding:14px 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(29,32,35,0.82)">
+        <h2 id="dr-ev" style="margin:0; font-size:13px; font-weight:800; color:var(--text2)">Topic evidence</h2>
+        <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14.5px; font-weight:800"><span style="color:var(--text3)">{{ drBefore }}</span><span aria-hidden="true" style="color:var(--tint)">→</span><span style="color:{{ drAfterColor }}">{{ drAfter }}</span></span>
+        <span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ drRule }}</span>
+      </section>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <button data-drillagain="true" onClick="{{ drAgain }}" disabled="{{ drAgainDisabled }}" style="min-height:56px; border:none; border-radius:16px; background:{{ drAgainBg }}; color:{{ drAgainColor }}; font-size:16px; font-weight:800; cursor:pointer; box-shadow:{{ drAgainShadow }}">{{ drAgainLabel }}</button>
+        <button onClick="{{ drBack }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:600; cursor:pointer">Back to topics</button>
+      </div>
+    </main>
+  </sc-if>
+
   <sc-if value="{{ onSummary }}" hint-placeholder-val="{{ false }}">
     <main style="max-width:720px; margin:0 auto; padding:24px {{ pad }} 60px; display:flex; flex-direction:column; gap:18px; animation:rise 420ms ease both">
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px">
@@ -1296,6 +1360,88 @@ const POSTER_SRC = null;
 // The companion's walk loop, once it exists (Murci is generating it on Tripo, same rig).
 // Until then the companion glides along the road and greets on arrival.
 const WALK_CLIP = null;
+// ── Topic drills (brief 10). Topics per part come from the service's approved paper
+// (nexera-exam-service/data/papers/fm-n6-2022-11/paper.json); weights from the N6 syllabus (LOOP §5.4).
+const FM_TOPIC_OF = {"1.1.1": "Flow in pipes and hydraulic gradient", "1.1.2": "Flow in pipes and hydraulic gradient", "1.2": "Flow in pipes and hydraulic gradient", "1.3": "Flow in pipes and hydraulic gradient", "1.4.1": "Flow in pipes and hydraulic gradient", "1.4.2": "Flow in pipes and hydraulic gradient", "1.4.3": "Flow of water in open channels, notches and weirs", "1.4.4": "Flow in pipes and hydraulic gradient", "1.4.5": "Flow in pipes and hydraulic gradient", "2.1": "Flow of water in open channels, notches and weirs", "2.2.1": "Flow of water through orifices", "2.2.2": "Flow of water through orifices", "2.2.3": "Flow of water through orifices", "2.3": "Ventilation", "3.1.1": "Pumps", "3.1.2": "Pumps", "3.1.3": "Pumps", "3.1.4": "Pumps", "3.1.5": "Pumps", "3.1.6": "Pumps", "3.2.1": "Pumps", "3.2.2": "Pumps", "3.3.1": "Pumps", "3.3.2": "Pumps", "3.3.3": "Pumps", "4.1.1": "Pelton wheel", "4.1.2": "Pelton wheel", "4.1.3": "Pelton wheel", "4.1.4": "Pelton wheel", "4.2": "Water turbines", "4.3.1": "Water turbines", "4.3.2": "Water turbines"};
+const TOPIC_META = { fm: [
+  { slug: "pumps", label: "Pumps", service: "Pumps", weight: 22 },
+  { slug: "pipes", label: "Pipe flow", service: "Flow in pipes and hydraulic gradient", weight: 18, recipe: "fm-pipe-summit" },
+  { slug: "open-channels", label: "Open channels and notches", service: "Flow of water in open channels, notches and weirs", weight: 12, recipe: "fm-vnotch" },
+  { slug: "orifices", label: "Orifices", service: "Flow of water through orifices", weight: 10 },
+  { slug: "ventilation", label: "Ventilation", service: "Ventilation", weight: 10 },
+  { slug: "water-turbines", label: "Water turbines", service: "Water turbines", weight: 10 },
+  { slug: "pelton", label: "Pelton wheel", service: "Pelton wheel", weight: 10 },
+  { slug: "vortex", label: "Vortex flow", service: null, weight: 8 } ] };
+const PASS_MARK = { fm: 0.4 };
+const DRILL_SIZE = 6;
+// Seeded and reproducible: an instance is (recipe_ref, seed) and nothing else (ENGINE §5.5).
+const rngOf = seed => { let a = seed >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+const pickStep = (r, min, max, step) => Math.round((min + Math.floor(r() * (Math.round((max - min) / step) + 1)) * step) * 1e6) / 1e6;
+const r3 = v => fmtNum(Math.round(v * 1000) / 1000);
+// SAMPLE RECIPES (ENGINE §5.2 shape), awaiting curriculum approval (P-T1 unruled). Wordings are
+// ILLUSTRATIVE and Nexera-authored, never the paper's. The service would verify each with SymPy.
+const RECIPES = {
+  "fm-vnotch": { topic: "open-channels", isomorphic_to: "2.1", marks: 4, follow_through: "not_allowed",
+    // The paper's ticks are formula · convert · substitute · answer. A typed number cannot show the
+    // formula or the substitution, so those two ticks come with a correct H (mapping for approval).
+    steps: [{ id: "s1", label: "Flow in cubic metres per second, Q (m³/s)", marks: 1, unit_hint: "m**3/s" },
+            { id: "s2", label: "Head of water over the notch, H (mm)", marks: 3, unit_hint: "mm" }],
+    clues: ["Change the flow to m³/s first: 1 000 litres is 1 m³.", "Rearrange Q = (8/15)·Cd·√(2g)·tan(θ/2)·H^2,5 for H, then raise it to the power 2/5."],
+    variants: [
+      p => "An irrigation canal is gauged with a " + p.th + "° V-notch. It passes " + p.Q + " litres per second, and the coefficient of discharge is " + fmtNum(p.Cd) + ". Calculate the head of water over the notch in millimetres.",
+      p => "A factory's outflow channel ends in a " + p.th + "° V-notch with a coefficient of discharge of " + fmtNum(p.Cd) + ". Find the head over the notch, in millimetres, when " + p.Q + " ℓ/s flows through it.",
+      p => "A small dam's measuring weir is a " + p.th + "° V-notch (Cd = " + fmtNum(p.Cd) + "). What head over the notch, in millimetres, gives a flow of " + p.Q + " ℓ/s?" ],
+    make(r) {
+      for (let k = 0; k < 60; k++) {
+        const Q = pickStep(r, 150, 1500, 10), Cd = pickStep(r, 0.58, 0.98, 0.02), th = [60, 90, 120][Math.floor(r() * 3)];
+        const q = Q / 1000, kk = 8 / 15 * Cd * Math.sqrt(2 * 9.81) * Math.tan(th * Math.PI / 360), H = Math.pow(q / kk, 0.4) * 1000;
+        if (H < 50 || H > 1500) continue;
+        return { p: { Q: Q, Cd: Cd, th: th },
+          givens: [{ symbol: "Q", value: Q, unit: "L/s", label: "flow" }, { symbol: "Cd", value: Cd, unit: null, label: "coefficient of discharge" },
+                   { symbol: "θ", value: th, unit: "°", label: "notch angle" }, { symbol: "g", value: 9.81, unit: "m/s**2", label: "gravitational acceleration" }],
+          key: { s1: { a: q, tol: Math.max(0.0005, q * 0.005), v: "Q = " + Q + " ÷ 1 000 = " + r3(q) + " m³/s ✓" },
+                 s2: { a: H, tol: H * 0.005, v: "Q = (8/15)·Cd·√(2g)·tan(θ/2)·H^2,5 ✓ → " + r3(q) + " = (8/15) × " + fmtNum(Cd) + " × √(2 × 9,81) × tan " + (th / 2) + "° × H^2,5 ✓ → H = " + r3(H / 1000) + " m = " + r3(H) + " mm ✓" } } };
+      }
+      return null;
+    } },
+  "fm-pipe-summit": { topic: "pipes", isomorphic_to: "1.1.1", marks: 3, follow_through: "allowed",
+    steps: [{ id: "s1", label: "Friction head available between the reservoirs, hf (m)", marks: 1, unit_hint: "m" },
+            { id: "s2", label: "Velocity in the pipe, V (m/s)", marks: 1, unit_hint: "m/s" },
+            { id: "s3", label: "Discharge, Q (m³/s)", marks: 1, unit_hint: "m**3/s" }],
+    clues: ["With shock losses ignored, the whole difference in level is used up by pipe friction: hf = Δz.", "Use hf = 4fLV²/(2gd) to find V, then Q = (π d²/4) × V."],
+    variants: [
+      p => "Two reservoirs whose water surfaces differ by " + fmtNum(p.dz) + " m are joined by a pipeline " + p.L + " m long and " + fmtNum(p.d) + " m in diameter. The coefficient of friction is " + fmtNum(p.f) + ". Ignore shock losses and calculate the discharge.",
+      p => "A town's supply main runs " + p.L + " m from a hilltop dam to a service reservoir " + fmtNum(p.dz) + " m lower. The main is " + fmtNum(p.d) + " m in diameter with f = " + fmtNum(p.f) + ". Ignoring shock losses, find the flow it delivers.",
+      p => "A " + fmtNum(p.d) + " m pipe, " + p.L + " m long (f = " + fmtNum(p.f) + "), connects two tanks whose levels are " + fmtNum(p.dz) + " m apart. Shock losses may be ignored. Determine the discharge." ],
+    make(r) {
+      for (let k = 0; k < 60; k++) {
+        const L = pickStep(r, 300, 1500, 10), dz = pickStep(r, 3, 20, 0.5), d = pickStep(r, 0.3, 1.5, 0.05), f = pickStep(r, 0.005, 0.01, 0.001);
+        const V = Math.sqrt(2 * 9.81 * d * dz / (4 * f * L)), A = Math.PI * d * d / 4, Q = A * V;
+        if (V < 0.5 || V > 6) continue;
+        return { p: { L: L, dz: dz, d: d, f: f },
+          givens: [{ symbol: "L", value: L, unit: "m", label: "pipeline length" }, { symbol: "dz", value: dz, unit: "m", label: "difference in levels" },
+                   { symbol: "d", value: d, unit: "m", label: "pipe diameter" }, { symbol: "f", value: f, unit: null, label: "coefficient of friction" },
+                   { symbol: "g", value: 9.81, unit: "m/s**2", label: "gravitational acceleration" }],
+          key: { s1: { a: dz, tol: Math.max(0.01, dz * 0.005), v: "hf = Δz = " + fmtNum(dz) + " m ✓" },
+                 s2: { a: V, tol: V * 0.01, v: "hf = 4fLV²/(2gd) → V = √(2 × 9,81 × " + fmtNum(d) + " × " + fmtNum(dz) + " ÷ (4 × " + fmtNum(f) + " × " + L + ")) = " + r3(V) + " m/s ✓" },
+                 s3: { a: Q, tol: Q * 0.01, v: "Q = (π × " + fmtNum(d) + "² ÷ 4) × " + r3(V) + " = " + r3(Q) + " m³/s ✓", ft: vals => A * vals.s2 } } };
+      }
+      return null;
+    } },
+};
+// MOCK: the server re-creates an instance from (recipe_ref, seed) to mark it; the learner view has no key.
+const recipePart = (ref, seed, n) => {
+  const R = RECIPES[ref], r = rngOf(seed), m = R && R.make(r); if (!m) return null;
+  const key = "tpl:" + ref + ":" + seed;
+  SERVER.keys[key] = { steps: m.key }; SERVER.clues[key] = R.clues; SERVER.memo[key] = [];
+  return { key: key, number: "New " + n, marks: R.marks, response_mode: "steps", marking_mode: "method", stem: R.variants[Math.floor(r() * R.variants.length)](m.p),
+    givens: m.givens, steps: R.steps, clues_available: R.clues.length, recipe: ref, seed: seed };
+};
+// The 10th percentile of Beta(a, b) by a plain grid: the lower edge of the evidence interval (LOOP §5.5).
+const betaQ = (a, b, q) => { const N = 2000, lp = []; let mx = -Infinity, tot = 0;
+  for (let i = 0; i < N; i++) { const p = (i + 0.5) / N, v = (a - 1) * Math.log(p) + (b - 1) * Math.log(1 - p); lp.push(v); if (v > mx) mx = v; }
+  const w = lp.map(v => { const e = Math.exp(v - mx); tot += e; return e; });
+  let acc = 0; for (let i = 0; i < N; i++) { acc += w[i]; if (acc >= q * tot) return (i + 0.5) / N; } return 1; };
 // ── The Hall (brief 08). A paper opens in the Hall only when its version is not `disclosed` (§3)
 // and the whole paper is transcribed; AET is partial in this prototype, so it stays practice-only.
 const PAPER_VERSION = { fm: "open", aet: "open", ls: "open" };
@@ -1535,7 +1681,7 @@ class Component extends DCLogic {
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     // ?sitting=hall opens the Hall entrance (a design preview switch); &paper=ls picks Life Sciences.
@@ -1617,6 +1763,9 @@ class Component extends DCLogic {
     this._lastScreen2 = scr;
     if (scr === "done" && this._lastScreenD !== "done") this.doneArrive();
     this._lastScreenD = scr;
+    if (scr === "drillout" && this._lastScreenR !== "drillout") { const h = document.querySelector("[data-drilltitle]"); if (h) h.focus({ preventScroll: true });
+      const live = this.drillVals(this.state)._drLive; if (live) this.setState({ hallLive: live }); }
+    this._lastScreenR = scr;
     const scEl = document.querySelector("[data-scene]");
     if (scEl && scEl !== this._scEl && window.IntersectionObserver) {
       if (this._scIO) this._scIO.disconnect(); this._scEl = scEl;
@@ -1657,12 +1806,13 @@ class Component extends DCLogic {
     const prog = {}, paid = {};
     const close = (id, how, best) => byId[id].parts.forEach(q => { const full = how !== "memo";
       prog[q.key] = { tries: how === "clean" ? 1 : how === "hints" ? 2 : 3, best: full ? (q.marks || 0) : best, closed: true,
-        revealed: how === "memo", firstTryFull: how === "clean", waiting: false };
+        revealed: how === "memo", firstTryFull: how === "clean", waiting: false,
+        obs: [{ x: how === "clean" ? 1 : how === "hints" ? 0.5 : 0, c: 1, src: "fm" }] };
       if (full) paid[q.key] = true; });
     if (kind !== "fresh") {
       close("1.1", "clean"); close("1.2", "hints"); close("1.3", "memo", 4); close("3.3", "clean");
       const q21 = byId["2.1"].parts[0];
-      prog[q21.key] = { tries: 1, best: 2, closed: false, revealed: false, firstTryFull: false, waiting: false };
+      prog[q21.key] = { tries: 1, best: 2, closed: false, revealed: false, firstTryFull: false, waiting: false, obs: [{ x: 2 / (q21.marks || 4), c: 1, src: "fm" }] };
     }
     if (kind === "finished14") close("1.4", "clean");
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
@@ -1781,7 +1931,8 @@ class Component extends DCLogic {
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
-  mission() { return this.missions()[this.state.mi] || null; }
+  // A drill plays as one synthetic mission of the parts it chose.
+  mission() { if (this.state.drill) return this.state.drill.mission; return this.missions()[this.state.mi] || null; }
   part() { const m = this.mission(); return m ? m.parts[this.state.pi] : null; }
   pg(key) { return this.state.prog[key] || { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }; }
 
@@ -1865,7 +2016,7 @@ class Component extends DCLogic {
     const key = SERVER.keys[part.key] || {};
     const note = "DHET did not publish a marking guideline for this sitting.";
     if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ id: s.id, label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "",
-      expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })), provenance: { memo_source: "authored", note: note } };
+      expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })), provenance: { memo_source: "authored", note: part.recipe ? "" : note } };
     const pts = key.pool ? key.pool.map(g => Array.isArray(g) ? g[0] : g) : (SERVER.memo[part.key] || []);
     const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.term ? key.term[0] : key.num != null ? key.num : null;
     return { answer: answerOf, memo: { points: pts.map(t => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
@@ -1916,7 +2067,8 @@ class Component extends DCLogic {
         // The run log is what page 4 counts; `multiplier` is the server's, never recomputed here.
         runLog: s.runLog.concat([{ key: part.key, try: tryNo, full: !!result.full, xp: xp, mult: mult, revealed: revealed, replay: replay }]),
         prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
-          firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay } }) });
+          firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay,
+          obs: tryNo === 1 && !draw ? (pr.obs || []).concat([this.obsOf(part, pr, result)]) : pr.obs } }) });
       // Reactions come from the marks: full dances, partial encourages, zero falls, the memo greets.
       const got = result.marks_awarded || 0;
       // The Hall gives no instant verdicts: no reaction, no chime.
@@ -1941,10 +2093,136 @@ class Component extends DCLogic {
   advance() {
     const f = this.state.fix;
     if (f) { if (f.i < f.keys.length - 1) this.fixGo(f.i + 1); else this.endFix(true); return; }
+    const dr = this.state.drill;
+    if (dr) { if (this.state.pi < dr.mission.parts.length - 1) this.resetInputs({ pi: this.state.pi + 1 }); else this.setState({ screen: "drillout" }, () => window.scrollTo(0, 0)); return; }
     if (this.state.revisit) { this.setState({ screen: "done", revisit: false }, () => window.scrollTo(0, 0)); return; }
     const m = this.mission(); if (!m) return;
     if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
     this.setState({ screen: "done" });
+  }
+
+  // ── Topic drills (brief 10): one topic, six parts, recipes and unseen parts before repeats.
+  topicOfKey(key) {
+    if (key.indexOf("tpl:") === 0) { const R = RECIPES[key.split(":")[1]]; return R ? R.topic : null; }
+    if (key.indexOf("fm:") !== 0) return null;
+    const lab = FM_TOPIC_OF[key.slice(3)], t = TOPIC_META.fm.filter(x => x.service === lab)[0];
+    return t ? t.slug : null;
+  }
+  // One observation per first try (L4: unaided try-0 only), weighted by how fresh the item was.
+  obsOf(part, pr, result) {
+    const x0 = (result.marks_awarded || 0) / Math.max(1, result.marks || part.marks || 1);
+    const n = (part.options || []).length, g = part.response_mode === "mcq" && n ? 1 / n : part.response_mode === "pickn" && n ? (part.count || 1) / n : 0;
+    const x = Math.max(0, (x0 - g) / (1 - g));
+    let c = 1;
+    if (part.recipe) c = Object.keys(this.state.prog).some(k => k.indexOf("tpl:" + part.recipe + ":") === 0 && k !== part.key && (this.state.prog[k].obs || []).length) ? 0.7 : 1;
+    else if (pr.replay || pr.revealed) c = 0.3;
+    return { x: x, c: c, src: part.recipe ? "recipe:" + part.recipe : (this.state.paperId || "") };
+  }
+  topicEvidence(pid, slug) {
+    const prog = this.state.prog, srcs = {}; let a = 1, b = 1, n = 0, sum = 0, w = 0;
+    Object.keys(prog).forEach(k => { const o = prog[k].obs; if (!o || !o.length || this.topicOfKey(k) !== slug) return;
+      if (k.indexOf(pid + ":") !== 0 && k.indexOf("tpl:") !== 0) return;
+      n++; o.forEach(ob => { a += ob.c * ob.x; b += ob.c * (1 - ob.x); srcs[ob.src] = true; sum += ob.c * ob.x; w += ob.c; }); });
+    const sources = Object.keys(srcs).length, lower = betaQ(a, b, 0.1), pass = PASS_MARK[pid] || 0.4;
+    let band = "building";
+    if (n < 2) band = "none"; else if (n >= 6 && sources >= 2) band = lower >= 0.75 ? "strong" : lower >= pass + 0.15 ? "ontrack" : "building";
+    const text = band === "none" ? "No evidence yet" : band === "strong" ? "Strong · " + n + " parts" : band === "ontrack" ? "On track · " + n + " parts"
+      : "Building · " + n + (n === 1 ? " part" : " parts") + " so far";
+    return { band: band, text: text, n: n, sources: sources, share: w ? sum / w : 0, lower: lower };
+  }
+  // MOCK POST /v1/sittings { purpose: "drill" }: the parts are chosen once, by this recorded rule.
+  buildDrill(pid, slug, round) {
+    const meta = (TOPIC_META[pid] || []).filter(t => t.slug === slug)[0]; if (!meta) return null;
+    const own = [];
+    this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === slug) own.push(Object.assign({}, q, { _mid: m.id, _context: m.context || "" })); }));
+    const seen = q => { const g = this.pg(q.key); return g.tries > 0 || g.closed || g.waiting; };
+    const unseen = own.filter(q => !seen(q)), repeats = own.filter(seen);
+    const out = [], base = (Date.now() % 1000003) * 13 + round * 101;
+    let n = 0, u = 0;
+    if (meta.recipe) {
+      while (out.length < DRILL_SIZE) {
+        if (out.length % 2 === 0 || u >= unseen.length) { n++; const x = recipePart(meta.recipe, base + n * 7919, n); if (!x) break; out.push(x); }
+        else out.push(unseen[u++]);
+      }
+    } else {
+      unseen.slice(0, DRILL_SIZE).forEach(q => out.push(q));
+      repeats.slice(0, DRILL_SIZE - out.length).forEach(q => out.push(Object.assign({}, q, { _repeat: true })));
+    }
+    return { meta: meta, parts: out };
+  }
+  startDrill(slug, round) {
+    const pid = this.state.paperId;
+    if (this.hallLiveFor(pid)) { this.resumeHall(); return; }
+    const d = this.buildDrill(pid, slug, round || 0); if (!d || !d.parts.length) return;
+    const backup = {}, prog = Object.assign({}, this.state.prog);
+    d.parts.filter(q => q._repeat).forEach(q => { backup[q.key] = prog[q.key] || null; prog[q.key] = Object.assign({}, this.pg(q.key), { tries: 0, closed: false, replay: true }); });
+    const before = this.topicEvidence(pid, slug);
+    const mission = { id: "drill", title: d.meta.label + " drill", context: "", tags: [], parts: d.parts };
+    this.setState({ drill: { slug: slug, paperId: pid, round: round || 0, mission: mission, backup: backup, before: before, label: d.meta.label, recipe: d.meta.recipe || null }, prog: prog, card: null },
+      () => this.resetInputs({ screen: "play", pi: 0, runLog: [], revisit: false }));
+  }
+  // Leaving a drill: a repeated part keeps the better of what practice had and what the drill did.
+  endDrill(again) {
+    const d = this.state.drill; if (!d) return;
+    const prog = Object.assign({}, this.state.prog);
+    Object.keys(d.backup).forEach(k => { const a = d.backup[k], b = prog[k];
+      if (!b) { if (a) prog[k] = a; else delete prog[k]; return; }
+      const merged = Object.assign({}, a || {}, b, { replay: a ? a.replay : undefined });
+      if (a) merged.best = Math.max(a.best || 0, b.best || 0);
+      if (a && a.closed) merged.closed = true;
+      prog[k] = merged; });
+    this.setState({ drill: null, prog: prog, screen: "map", mapView: "topics" }, () => { window.scrollTo(0, 0); if (again) this.startDrill(d.slug, d.round + 1); });
+  }
+  topicsVals(s, paper) {
+    const pid = paper ? paper.id : null, metas = TOPIC_META[pid];
+    if (!metas) return { topicRows: [], topicsFoot: "",
+      topicsIntro: pid === "aet" ? "Topics arrive when this paper's text is transcribed." : "This sample paper isn't tagged by topic." };
+    const maxW = Math.max.apply(null, metas.map(t => t.weight));
+    const rows = metas.map(t => {
+      const own = []; this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === t.slug) own.push(q); }));
+      const unseen = own.filter(q => { const g = this.pg(q.key); return !(g.tries > 0 || g.closed || g.waiting); }).length;
+      const ev = this.topicEvidence(pid, t.slug), canDrill = own.length > 0 || !!t.recipe;
+      const serve = t.recipe ? "Fresh numbers every time · sample recipe" + (unseen ? " · " + unseen + " new to you on the paper" : "")
+        : unseen ? unseen + (unseen === 1 ? " part" : " parts") + " new to you · " + own.length + " on this paper"
+        : own.length ? "Only repeats left · practice, no XP" : "No questions in our bank yet";
+      return { t: t, ev: ev, canDrill: canDrill, unseen: unseen, serve: serve, own: own.length };
+    });
+    // Suggested: the heaviest topic where the evidence is weakest, among topics with something new to serve.
+    const cand = rows.filter(r => r.canDrill && (r.t.recipe || r.unseen));
+    const best = cand.reduce((a, r) => { const v = r.t.weight * (1 - (r.ev.n ? r.ev.share : 0)); return !a || v > a.v ? { r: r, v: v } : a; }, null);
+    const COL = { none: "var(--text3)", building: "#81b1ff", ontrack: "#5fe6ab", strong: "#e3b341" };
+    return {
+      topicsIntro: "Ordered by how much of the syllabus each topic carries. Drill one topic at a time; nothing is locked.",
+      topicsFoot: "Topics come from the approved paper. Weights are from the N6 Fluid Mechanics syllabus. Recipes are samples awaiting curriculum approval.",
+      topicRows: rows.map(r => { const sug = !!best && best.r === r;
+        return { slug: r.t.slug, label: r.t.label, weight: r.t.weight + "% of the syllabus", weightPct: Math.round(100 * r.t.weight / maxW) + "%",
+          band: r.canDrill ? r.ev.text : "Not in the question bank", bandColor: COL[r.ev.band], serve: r.serve, serveColor: r.t.recipe ? "#5fe6ab" : r.unseen ? "#81b1ff" : "var(--text3)",
+          suggested: sug, canDrill: r.canDrill, disabled: !r.canDrill, cursor: r.canDrill ? "pointer" : "default",
+          border: sug ? "1.5px solid rgba(129,177,255,0.7)" : r.canDrill ? "1px solid var(--line2)" : "1px dashed var(--line2)",
+          bg: sug ? "rgba(0,104,248,0.10)" : r.canDrill ? "rgba(29,32,35,0.86)" : "transparent",
+          aria: r.t.label + ", " + r.t.weight + "% of the syllabus, " + (r.canDrill ? r.ev.text + ", " : "") + r.serve + (sug ? ", suggested" : "") + (r.canDrill ? ". Start a drill" : ""),
+          go: () => { if (r.canDrill) this.startDrill(r.t.slug, 0); } }; }),
+    };
+  }
+  drillVals(s) {
+    const d = s.drill; if (!d || s.screen !== "drillout") return {};
+    const run = s.runLog || [], parts = d.mission.parts, n = parts.length;
+    const firsts = run.filter(r => r.try === 1), fullFirst = new Set(firsts.filter(r => r.full).map(r => r.key)).size, tried = new Set(firsts.map(r => r.key)).size;
+    const xp = run.reduce((a, r) => a + (r.xp || 0), 0);
+    const recs = parts.filter(q => q.recipe).length, reps = parts.filter(q => q._repeat).length, fresh = n - recs - reps;
+    const waiting = parts.filter(q => this.pg(q.key).waiting).length;
+    const why = [recs ? recs + " with new numbers" : null, fresh ? fresh + " new to you" : null, reps ? reps + " repeats · no XP" : null, waiting ? waiting + " waiting for a marker" : null].filter(Boolean).join(" · ");
+    const after = this.topicEvidence(d.paperId, d.slug);
+    const COL = { none: "var(--text3)", building: "#81b1ff", ontrack: "#5fe6ab", strong: "#e3b341" };
+    return {
+      drTitle: d.label, drSub: n + (n === 1 ? " part" : " parts") + (n < DRILL_SIZE ? " · all this topic has for now" : ""),
+      drFirst: tried ? fullFirst + " of " + tried : "—", drFirstLabel: tried ? "first tries" : "nothing marked yet: a marker reads these", drXp: "+" + xp, drXpWhy: why || "no XP this time",
+      drBefore: d.before.text, drAfter: after.text, drAfterColor: COL[after.band],
+      drRule: "We say more after 6 parts from 2 sources" + (d.recipe ? ": this paper and a recipe count as two." : ". This topic has one source so far: this paper."),
+      drAgain: () => this.endDrill(true), drAgainLabel: "Another round", drAgainDisabled: false, drAgainBg: "var(--grad)", drAgainColor: "#ffffff", drAgainShadow: "0 12px 30px rgba(30,70,255,0.36)",
+      drBack: () => this.endDrill(false),
+      _drLive: "Drill complete. " + fullFirst + " of " + tried + " first tries, " + xp + " XP. Topic evidence: " + after.text + ".",
+    };
   }
 
   // ── Page 4, mission complete (brief 09): what this run earned, what's next, then the map.
@@ -2038,7 +2316,7 @@ class Component extends DCLogic {
       doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. See the whole paper and what cost you marks.",
       doneContinueLabel: nm ? "Continue" : "Review my paper",
       doneContinue: () => { if (!nm) { this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); return; }
-        this._openAfterCel = nextIdx; this.setState({ screen: "map" }); },
+        this._openAfterCel = nextIdx; this.setState({ screen: "map", mapView: "paper" }); },
     };
   }
 
@@ -2201,7 +2479,7 @@ class Component extends DCLogic {
   // ── Layer 3: the pipe-systems scene. Draws from the part's givens; shows only the learner's own
   // values (live while typing, the SUBMITTED ones after Check); the memo's ghost only after close.
   sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, hall, touch) {
-    const sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + mission.id];
+    const sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + (part._mid || mission.id)];
     if (sc && sc.template === "figure") return this.figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall);
     const binds = sc && sc.tags[part.number];
     const off = { hasScene: false, hasFigure: false, figBigOpen: false };
@@ -2525,7 +2803,7 @@ class Component extends DCLogic {
     // The feedback bar.
     const next = () => this.advance();
     const fx = s.fix;
-    const nextLabel = fx ? (fx.i < fx.keys.length - 1 ? "Next fix" : "Finish the fix round") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next part";
+    const nextLabel = fx ? (fx.i < fx.keys.length - 1 ? "Next fix" : "Finish the fix round") : s.drill ? (lastPart ? "Finish the drill" : "Next question") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next part";
     const triesLeft = reply && reply.tries_left != null ? reply.tries_left : 0;
     // Short on phones so the button stays on one line.
     const tryAgainLabel = "Try again · " + triesLeft + (phone ? " left" : triesLeft === 1 ? " try left" : " tries left");
@@ -2561,7 +2839,8 @@ class Component extends DCLogic {
       if (v === "missing") return { t: "missing", c: "#a4a9ae", bg: "rgba(255,255,255,0.06)", b: "var(--line2)" };
       return { t: verdictInfo(v)[1].toLowerCase(), c: "#a4a9ae", bg: "rgba(255,255,255,0.06)", b: "var(--line2)" };
     };
-    const ctxOpen = s.ctxOpen != null ? s.ctxOpen : s.pi === 0;
+    const ctxOpen = s.ctxOpen != null ? s.ctxOpen : (s.drill ? true : s.pi === 0);
+    const ctxText = part._context != null ? part._context : mission ? mission.context : "";
     const locked = closed || s.marking || (s.barOpen && !!reply);
     const nFields = mode === "steps" ? part.steps.length : mode === "list" ? (part.count || 4) : 0;
     const touch = phone || tablet;
@@ -2590,7 +2869,7 @@ class Component extends DCLogic {
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
       // question
       toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }), ctxOpen: ctxOpen, ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
-      hasContext: !!(mission && mission.context), context: mission ? mission.context : "",
+      hasContext: !!ctxText, context: ctxText,
       partKey: part.key + ":" + s.pi, partNumber: part.number,
       partMarks: part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") : "Not marked online",
       tryLabel: draw ? "" : closed ? "Closed" : "Try " + Math.min(3, tryN + (s.barOpen && reply ? 0 : 1)) + " of 3", tryColor: tryN >= 2 && !closed ? "#e0a10f" : "var(--text2)",
@@ -2648,9 +2927,13 @@ class Component extends DCLogic {
   hallPlayVals(s, wide, part, mode) {
     const hall = s.sitting === "hall" && !!s.hall && s.hall.phase === "sitting", H = s.hall, fx = s.fix;
     const base = { hallMode: hall, showSegs: !hall, showPlayXp: !hall, showSound: !hall, showCoach: !hall, hallNavCol: hall && wide, hallStrip: hall && !wide,
-      playClose: () => hall ? this.openHallSheet("leave") : fx ? this.endFix(false) : this.setState({ screen: "map" }),
-      playCloseAria: hall ? "Leave the Hall" : fx ? "End the fix round" : "Back to the map", playCloseHasPopup: hall ? "dialog" : "false",
-      hasFixChip: !!fx && !hall, fixChip: fx ? "Fix round · " + (fx.i + 1) + " of " + fx.keys.length : "", hallSheetOpen: false };
+      playClose: () => hall ? this.openHallSheet("leave") : fx ? this.endFix(false) : s.drill ? this.endDrill(false) : this.setState({ screen: "map" }),
+      playCloseAria: hall ? "Leave the Hall" : fx ? "End the fix round" : s.drill ? "End the drill" : "Back to the map", playCloseHasPopup: hall ? "dialog" : "false",
+      hasFixChip: (!!fx || !!s.drill) && !hall, fixChip: fx ? "Fix round · " + (fx.i + 1) + " of " + fx.keys.length : s.drill ? s.drill.label + " drill · " + (s.pi + 1) + " of " + s.drill.mission.parts.length : "",
+      // What a part is, in a drill: new numbers from a recipe, or a repeat that pays no XP.
+      hasPartTag: !hall && !!(part.recipe || part._repeat), partTag: part.recipe ? "New numbers · Nexera recipe" : "Practised · no XP",
+      partTagColor: part.recipe ? "#5fe6ab" : "var(--text2)", partTagBg: part.recipe ? "rgba(61,220,151,0.10)" : "rgba(255,255,255,0.04)", partTagBorder: part.recipe ? "rgba(61,220,151,0.4)" : "var(--line2)",
+      hallSheetOpen: false };
     if (!hall) return base;
     const ps = this.hallParts(), cur = H.cur;
     const liveAns = filled(this.answerFrom(part, this.uiSnap(), true));
@@ -3063,10 +3346,10 @@ class Component extends DCLogic {
     const allParts = paper ? paper.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts.map(p => Object.assign({ mi: missions.indexOf(m) }, p)))), []) : [];
 
     const onHallScreen = s.screen === "hallgate" || s.screen === "hallout";
-    const headTitle = onHallScreen ? "The Hall" : s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
+    const headTitle = s.screen === "drillout" ? "Topic drill" : onHallScreen ? "The Hall" : s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
     const headSub = onHallScreen && paper ? paper.title + " · " + paper.sitting : s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
     const backMap = { map: ["Papers", () => this.setState({ screen: "pick" })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
-      hallgate: ["Map", () => this.setState({ screen: "map" })], hallout: ["Map", () => this.setState({ screen: "map" })] };
+      hallgate: ["Map", () => this.setState({ screen: "map" })], hallout: ["Map", () => this.setState({ screen: "map" })], drillout: ["Topics", () => this.endDrill(false)] };
     const bk = backMap[s.screen];
 
     // ── home
@@ -3225,7 +3508,7 @@ class Component extends DCLogic {
         border: paper0 && p.id === paper0.id ? "rgba(129,177,255,0.7)" : "var(--line2)", bg: paper0 && p.id === paper0.id ? "rgba(0,104,248,0.2)" : "transparent",
         pick: () => { this.setState({ selPaper: p.id, swap: s.swap + 1 }, () => { this.nod(); this.closeLayer(); }); } })),
       paperFacts: facts(paper0),
-      screenLabel: { pick: "01 Pick", map: "02 Map", play: "03 Mission", done: "04 Complete", summary: "05 Summary", hallgate: "06 Hall · entrance", hallout: "07 Hall · result" }[s.screen],
+      screenLabel: { pick: "01 Pick", map: "02 Map", play: "03 Mission", done: "04 Complete", summary: "05 Summary", hallgate: "06 Hall · entrance", hallout: "07 Hall · result", drillout: "08 Drill · result" }[s.screen],
       pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
@@ -3256,6 +3539,12 @@ class Component extends DCLogic {
         cardNote: "Your Hall paper is open, so practice on this paper waits until you hand in." } : {}),
       ...this.hallScreenVals(s, phone, paper, missions),
       hallLive: s.hallLive,
+      onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
+      mapViews: [["paper", "Paper"], ["topics", "Topics"]].map(x => { const on = (s.mapView || "paper") === x[0];
+        return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "var(--grad)" : "transparent", color: on ? "#ffffff" : "var(--text2)",
+          pick: () => this.setState({ mapView: x[0], card: null }, () => { if (x[0] === "paper") this.scrollToNode(this.suggested(), false); else window.scrollTo(0, 0); }) }; }),
+      ...(s.screen === "map" && s.mapView === "topics" ? this.topicsVals(s, paper) : {}),
+      ...this.drillVals(s),
 
       ...(s.screen === "done" ? this.doneVals(s, phone, mission, missions, mSt, mEarned, mTotal, earned, total) : {}),
       toMap: () => this.setState({ screen: "map" }),
