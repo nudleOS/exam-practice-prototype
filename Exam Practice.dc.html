@@ -51,6 +51,31 @@
     [data-ticket]:hover { border-color:rgba(129,177,255,0.75) !important; background-color:rgba(0,104,248,0.18) !important; }
     [data-ticket]:active { transform:scale(0.98); border-color:rgba(129,177,255,0.9) !important; background-color:rgba(0,104,248,0.22) !important; }
     [data-noscrollbar] { scrollbar-width:none; } [data-noscrollbar]::-webkit-scrollbar { display:none; }
+    /* Glass cards (brief 17b): a frosted layer, a gradient hairline edge, a lit top edge, a deep soft shadow. */
+    .glass-card { position:relative; isolation:isolate; box-sizing:border-box; border-radius:24px; border:1px solid transparent;
+      background:linear-gradient(160deg, rgba(46,52,66,0.58), rgba(20,23,30,0.50)) padding-box,
+        linear-gradient(145deg, rgba(170,200,255,0.50), rgba(255,255,255,0.08) 36%, rgba(255,255,255,0.03) 64%, rgba(140,110,255,0.40)) border-box;
+      -webkit-backdrop-filter:blur(22px) saturate(165%); backdrop-filter:blur(22px) saturate(165%);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30), 0 30px 64px -26px rgba(0,0,0,0.80); }
+    .glass-card::before { content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none;
+      background:radial-gradient(120% 75% at 10% -12%, rgba(255,255,255,0.11), transparent 55%), radial-gradient(90% 90% at 112% 118%, rgba(0,104,248,0.14), transparent 62%); }
+    .glass-card[data-tone="live"] { background:linear-gradient(160deg, rgba(34,48,78,0.62), rgba(16,22,38,0.52)) padding-box,
+        linear-gradient(145deg, rgba(129,177,255,0.85), rgba(0,104,248,0.22) 38%, rgba(255,255,255,0.05) 62%, rgba(103,29,255,0.60)) border-box;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30), 0 32px 72px -28px rgba(0,104,248,0.55); }
+    .glass-card[data-tone="released"] { background:linear-gradient(160deg, rgba(28,54,48,0.58), rgba(16,28,26,0.50)) padding-box,
+        linear-gradient(145deg, rgba(95,230,171,0.75), rgba(61,220,151,0.18) 38%, rgba(255,255,255,0.05) 62%, rgba(0,104,248,0.40)) border-box;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30), 0 32px 72px -28px rgba(61,220,151,0.35); }
+    .glass-card[data-size="row"] { border-radius:18px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 30px -18px rgba(0,0,0,0.7); }
+    .glass-dot { flex:none; width:7px; height:7px; border-radius:50%; background:#81b1ff; box-shadow:0 0 0 3px rgba(129,177,255,0.18), 0 0 12px rgba(129,177,255,0.8); }
+    .glass-dot[data-tone="live"] { animation:livedot 2.4s ease-in-out infinite; }
+    .glass-dot[data-tone="released"] { background:#5fe6ab; box-shadow:0 0 0 3px rgba(95,230,171,0.18), 0 0 12px rgba(95,230,171,0.7); }
+    .glass-dot[data-tone="calm"] { background:#a4a9ae; box-shadow:0 0 0 3px rgba(164,169,174,0.14); }
+    @keyframes livedot { 0%,100% { box-shadow:0 0 0 3px rgba(129,177,255,0.18), 0 0 12px rgba(129,177,255,0.8); } 50% { box-shadow:0 0 0 6px rgba(129,177,255,0.06), 0 0 18px rgba(129,177,255,1); } }
+    .glass-cta { box-shadow:inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -2px 0 rgba(0,0,0,0.18), 0 16px 36px -12px rgba(30,70,255,0.70); transition:transform 120ms ease, filter 160ms ease; }
+    .glass-cta:hover { filter:brightness(1.1); } .glass-cta:active { transform:scale(0.985); }
+    /* Where glass can't render, or the learner asked for less transparency: the same card, solid. */
+    @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass-card, .glass-card[data-tone] { background-color:#1d2027; } }
+    @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:#1d2027; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
 </helmet>
@@ -108,7 +133,7 @@
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:11px; font-weight:600; color:var(--tint)">XP</span>
               </button>
               <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
-                <div role="dialog" aria-label="Your progress" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; box-sizing:border-box; width:min(290px, 86vw); padding:14px 15px; border-radius:16px; background:rgba(32,35,39,0.96); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.45); animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
+                <div role="dialog" aria-label="Your progress" class="glass-card" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; width:min(290px, 86vw); padding:15px 16px; border-radius:20px; animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
                   <p style="margin:0 0 6px; font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Your progress</p>
                   <sc-for list="{{ progRows }}" as="pr" hint-placeholder-count="3">
                     <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:7px 0; border-top:1px solid rgba(255,255,255,0.06)">
@@ -171,11 +196,11 @@
 
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
         <sc-if value="{{ ctHomeOn }}" hint-placeholder-val="{{ false }}">
-          <div data-classcard="home" style="box-sizing:border-box; width:min(460px, 100%); display:flex; flex-direction:column; gap:6px; padding:13px 14px 14px; border-radius:20px; border:1px solid {{ ctBorder }}; background:{{ ctBg }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-align:left">
-            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">{{ ctKicker }}</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:10.5px; font-weight:800">Live from the teacher tool</span></sc-if></span>
-            <span style="font-size:16px; font-weight:800; line-height:1.3">{{ ctTitle }}</span>
+          <div data-classcard="home" class="glass-card" data-tone="{{ ctTone }}" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
+            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span class="glass-dot" data-tone="{{ ctTone }}" aria-hidden="true"></span><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">{{ ctKicker }}</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:10.5px; font-weight:800">Live from the teacher tool</span></sc-if></span>
+            <span style="font-size:18px; font-weight:800; letter-spacing:-0.015em; line-height:1.25">{{ ctTitle }}</span>
             <span style="font-size:12.5px; font-weight:700; line-height:1.4; color:{{ ctLineColor }}">{{ ctLine }}</span>
-            <button data-classgo="home" onClick="{{ ctGo }}" style="box-sizing:border-box; width:100%; min-height:54px; margin-top:4px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">{{ ctAction }}</button>
+            <button data-classgo="home" class="glass-cta" onClick="{{ ctGo }}" style="box-sizing:border-box; width:100%; min-height:54px; margin-top:6px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer">{{ ctAction }}</button>
             <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
               <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
                 <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
@@ -185,7 +210,7 @@
           </div>
         </sc-if>
         <sc-if value="{{ showStartBlock }}" hint-placeholder-val="{{ true }}">
-          <button data-ticket="true" data-trigger="ticket" onClick="{{ openTicket }}" aria-haspopup="dialog" aria-label="{{ ticketAria }}" style="box-sizing:border-box; width:{{ startW }}; min-height:64px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 14px; border-radius:18px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:var(--text); text-align:left; cursor:pointer; animation:{{ ticketAnim }}">
+          <button data-ticket="true" data-trigger="ticket" onClick="{{ openTicket }}" aria-haspopup="dialog" aria-label="{{ ticketAria }}" class="glass-card" style="width:{{ startW }}; min-height:68px; display:flex; align-items:center; gap:12px; padding:12px 12px 12px 16px; border-radius:20px; color:var(--text); text-align:left; cursor:pointer; animation:{{ ticketAnim }}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8M8 17h5"></path></svg>
             <span data-key="{{ ticketKey }}" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; animation:{{ swapAnim }}">
               <span style="font-size:15.5px; font-weight:800; line-height:1.25; color:#ffffff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">{{ ticketSubj }}</span>
@@ -212,10 +237,10 @@
           </div>
         </sc-if>
         <sc-if value="{{ showContinueCard }}" hint-placeholder-val="{{ false }}">
-          <div data-continuecard="true" style="box-sizing:border-box; width:min(460px, 100%); display:flex; flex-direction:column; gap:6px; padding:13px 14px 14px; border-radius:20px; border:1px solid rgba(129,177,255,0.28); background:rgba(29,32,35,0.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-align:left">
-            <span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span>
-            <span style="font-size:16px; font-weight:800; line-height:1.3">{{ continueTitle }}</span>
-            <button data-homecontinue="true" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:56px; margin-top:4px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16.5px; font-weight:800; letter-spacing:-0.01em; cursor:pointer; box-shadow:0 14px 36px rgba(30,70,255,0.38); animation:{{ breathe }}">{{ continueLabel }}</button>
+          <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
+            <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
+            <span style="font-size:18px; font-weight:800; letter-spacing:-0.015em; line-height:1.25">{{ continueTitle }}</span>
+            <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:56px; margin-top:6px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16.5px; font-weight:800; letter-spacing:-0.01em; cursor:pointer">{{ continueLabel }}</button>
             <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
               <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
                 <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
@@ -280,12 +305,12 @@
           <sc-if value="{{ sheetTests }}" hint-placeholder-val="{{ false }}">
             <div role="list" aria-label="Class tests" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:8px; overflow-y:auto; overscroll-behavior:contain">
               <sc-for list="{{ testRows }}" as="tr" hint-placeholder-count="2">
-                <div role="listitem" data-testrow="{{ tr.ref }}" style="display:flex; flex-direction:column; gap:4px; padding:12px 13px; border-radius:14px; border:1px solid {{ tr.border }}; background:rgba(255,255,255,0.03)">
-                  <span style="font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3)">{{ tr.kicker }}</span>
+                <div role="listitem" data-testrow="{{ tr.ref }}" class="glass-card" data-size="row" data-tone="{{ tr.tone }}" style="display:flex; flex-direction:column; gap:4px; padding:13px 14px 14px 16px">
+                  <span style="display:flex; align-items:center; gap:8px"><span class="glass-dot" data-tone="{{ tr.tone }}" aria-hidden="true"></span><span style="font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3)">{{ tr.kicker }}</span></span>
                   <span style="font-size:15px; font-weight:800; line-height:1.3">{{ tr.title }}</span>
                   <span style="font-size:12.5px; font-weight:700; line-height:1.4; color:{{ tr.color }}">{{ tr.line }}</span>
                   <sc-if value="{{ tr.hasAction }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ tr.go }}" style="align-self:flex-start; min-height:44px; margin-top:4px; padding:0 16px; border:none; border-radius:13px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">{{ tr.action }}</button>
+                    <button onClick="{{ tr.go }}" class="glass-cta" style="align-self:flex-start; min-height:44px; margin-top:6px; padding:0 18px; border:none; border-radius:13px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">{{ tr.action }}</button>
                   </sc-if>
                 </div>
               </sc-for>
@@ -2291,6 +2316,12 @@ class Component extends DCLogic {
   testRank(t) { return t.k === "inprogress" ? 0 : t.k === "open" ? 1 : t.k === "released" && !(this.state.resultSeen || {})[t.ref] ? 2 : -1; }
   // Whether a test the learner can't act on still belongs in "Your class tests" and the footer count.
   keepListed(t, now) {
+    // Murci's rule (2026-09-27): what's coming or still being marked always stays;
+    // history (a missed test, a result already seen) drops off 7 days after the test closed.
+    const WEEK = 7 * 86400000, old = now - t.closesAt > WEEK;
+    if (t.k === "upcoming" || t.k === "handed") return true;
+    if (t.k === "missed") return !old;
+    if (t.k === "released") return !(this.state.resultSeen || {})[t.ref] || !old;
     return true;
   }
   // The card, the footer line and the tests sheet, from every class test the learner has.
@@ -2317,9 +2348,9 @@ class Component extends DCLogic {
       homeMoreGo: () => this.setState({ sheet: "tests", pop: null, sheetBack: false }),
       testRows: listed.map(t => ({ ref: t.ref, kicker: "Class test · " + t.teacher, title: t.title, line: t.line,
         color: t.k === "open" || t.k === "inprogress" ? "#81b1ff" : t.k === "released" ? "#5fe6ab" : "var(--text2)",
-        border: t === card ? "rgba(129,177,255,0.55)" : "var(--line2)",
+        tone: t !== card ? "calm" : t.k === "released" ? "released" : "live",
         hasAction: !!(t.action && t.go), action: t.action || "", go: t.go ? () => { const g = seenGo(t); this.setState({ sheet: null }, () => g()); } : () => {} })),
-      ...(card ? { ctKicker: "Class test · " + card.teacher, ctTitle: card.title, ctLine: card.line, ctAction: card.action || "", ctGo: seenGo(card) } : {}),
+      ...(card ? { ctTone: card.k === "released" ? "released" : "live", ctKicker: "Class test · " + card.teacher, ctTitle: card.title, ctLine: card.line, ctAction: card.action || "", ctGo: seenGo(card) } : {}),
       secondOn: s.secondTest ? "true" : "false", secondBg: s.secondTest ? "rgba(0,104,248,0.18)" : "transparent", secondColor: s.secondTest ? "#ffffff" : "var(--text3)",
       toggleSecond: () => this.setState({ secondTest: s.secondTest ? null : { opensAt: now + 3 * D, closesAt: now + 6 * D } }),
     };
@@ -3742,7 +3773,9 @@ class Component extends DCLogic {
     return {
       headerDisplay: s.screen === "pick" || s.screen === "play" ? "none" : "flex",
       homeDisplay: tabletLand ? "grid" : "flex",
-      actBg: tabletLand ? "transparent" : "linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)",
+      // A soft light behind the card gives the glass something to frost (brief 17b); the dark fade still grounds it.
+      actBg: tabletLand ? "radial-gradient(70% 60% at 50% 45%, rgba(0,104,248,0.14), transparent 72%)"
+        : "radial-gradient(300px 170px at 50% 40%, rgba(0,104,248,0.22), transparent 72%), radial-gradient(190px 120px at calc(50% + 140px) 72%, rgba(103,29,255,0.14), transparent 70%), linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)",
       isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
