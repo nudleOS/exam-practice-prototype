@@ -12,7 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
-  <script type="module" src="model-floor.js?v=17d"></script>
+  <script type="module" src="model-floor.js?v=20"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
   <style>
@@ -61,6 +62,8 @@
     .glass-card[data-tone="released"] { background:rgba(24,40,36,0.86); border-color:rgba(95,230,171,0.28); }
     /* A card that floats over content (a popover) is opaque: nothing may read through it (brief 17d). */
     .glass-card[data-float] { background:rgba(32,35,42,0.98); box-shadow:inset 0 1px 0 rgba(255,255,255,0.07), 0 18px 44px rgba(0,0,0,0.5); }
+    .glass-card[data-tone="top"] { background:rgba(40,35,24,0.98); border-color:rgba(255,212,121,0.45); }
+    .glass-dot[data-tone="top"] { background:#ffd479; }
     .glass-card[data-size="row"] { border-radius:16px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.06); }
     .glass-dot { flex:none; width:8px; height:8px; border-radius:50%; background:#81b1ff; }
     .glass-dot[data-tone="live"] { background:#4d9bff; animation:livedot 2.4s ease-in-out infinite; }
@@ -408,7 +411,7 @@
         </svg>
 
         <span style="position:absolute; left:0; right:0; top:{{ finishTop }}; display:flex; justify-content:center; pointer-events:none">
-          <span style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:18px; border:1px solid transparent; background:linear-gradient(#17221d, #141a17) padding-box, linear-gradient(135deg, rgba(61,220,151,0.9), rgba(61,220,151,0.25)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.45), 0 0 {{ finishGlow }} rgba(61,220,151,0.35); font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--ok); white-space:nowrap; transform:{{ zoomFinishScale }}; transform-origin:50% 50%; visibility:{{ zoomFinishVis }}">
+          <span data-finishbadge="true" style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:18px; border:1px solid transparent; background:linear-gradient(#17221d, #141a17) padding-box, linear-gradient(135deg, rgba(61,220,151,0.9), rgba(61,220,151,0.25)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.45), 0 0 {{ finishGlow }} rgba(61,220,151,0.35); font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--ok); white-space:nowrap; transform:{{ zoomFinishScale }}; transform-origin:50% 50%; visibility:{{ zoomFinishVis }}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg>
             Finish · {{ totalMarks }} marks
           </span>
@@ -425,7 +428,7 @@
         </span>
         <sc-if value="{{ zoomDetail }}" hint-placeholder-val="{{ true }}">
         <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
-          <span style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
+          <span data-cap="{{ rc.idx }}" style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
             <span style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:9px 18px 10px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #23272e, #1a1d22) padding-box, linear-gradient(135deg, rgba(129,177,255,0.55), rgba(103,29,255,0.30) 60%, rgba(255,255,255,0.06)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 34px rgba(0,0,0,0.5); white-space:nowrap">
               <span style="font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:#dfe6f3">{{ rc.label }}</span>
               <span aria-hidden="true" style="width:96px; height:5px; border-radius:3px; background:rgba(0,0,0,0.45); box-shadow:inset 0 1px 1px rgba(0,0,0,0.5); overflow:hidden"><span style="display:block; height:100%; width:{{ rc.pct }}; background:var(--grad); border-radius:3px"></span></span>
@@ -464,7 +467,7 @@
 
         <div aria-hidden="true" style="visibility:{{ zoomCompVis }}; position:absolute; left:{{ compLeft }}; top:{{ compTop }}; width:{{ compWpx }}; height:{{ compHpx }}; pointer-events:none; z-index:2; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
           <sc-if value="{{ mapModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/avatar-lite.glb" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
+            <model-floor src="assets/avatar-lite.glb" from="{{ mapClipFrom }}" hold="{{ mapClipHold }}" loop="{{ mapClipLoop }}" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
           </sc-if>
           <sc-if value="{{ mapPoster }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -517,7 +520,28 @@
       </sc-if>
     </main>
 
-    <div style="position:fixed; left:0; right:{{ dockRight }}; bottom:0; z-index:16; display:flex; justify-content:center; padding:0 16px max(14px, env(safe-area-inset-bottom)); pointer-events:none; transition:right 300ms ease">
+    <sc-if value="{{ finishRunOn }}" hint-placeholder-val="{{ false }}">
+      <button data-skipfinish="true" onClick="{{ skipFinish }}" style="position:fixed; right:16px; top:76px; z-index:91; min-height:44px; padding:0 18px; border-radius:22px; border:1px solid rgba(255,255,255,0.14); background:rgba(30,33,40,0.98); color:#ffffff; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.4)">Skip</button>
+    </sc-if>
+    <sc-if value="{{ finishCardOn }}" hint-placeholder-val="{{ false }}">
+      <div data-finishcard="true" style="position:fixed; left:0; right:0; bottom:0; z-index:90; display:flex; justify-content:{{ finishJustify }}; padding:{{ finishPad }}; pointer-events:none">
+        <div role="dialog" aria-labelledby="finish-title" class="glass-card" data-float="true" data-tone="{{ finishTone }}" style="pointer-events:auto; box-sizing:border-box; width:min({{ finishW }}, 100%); padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; animation:{{ finishAnim }}">
+          <div style="display:flex; align-items:center; gap:8px"><span class="glass-dot" data-tone="{{ finishTone }}" aria-hidden="true"></span><span style="font-size:13px; font-weight:600; color:#b9bec4">Paper finished</span><span style="flex:1"></span>
+            <button onClick="{{ closeFinish }}" aria-label="Close" style="width:44px; height:44px; margin:-8px -10px -8px 0; border:none; border-radius:12px; background:transparent; color:#9aa0a6; font-size:20px; cursor:pointer">×</button></div>
+          <h2 id="finish-title" tabIndex="-1" style="margin:0; font-size:{{ finishTitleSize }}; font-weight:800; letter-spacing:-0.02em; line-height:1.2; outline:none">{{ finishTitle }}<sc-if value="{{ finishCompact }}" hint-placeholder-val="{{ false }}"><span style="font-weight:600; color:#9aa0a6"> · <span data-finishmark="true">{{ finishShown }}</span>/{{ finishTotal }}</span></sc-if></h2>
+          <sc-if value="{{ finishFull }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:2px 0 0; display:flex; align-items:baseline; gap:8px"><span data-finishmark="true" style="font-size:40px; font-weight:800; letter-spacing:-0.02em; line-height:1">{{ finishShown }}</span><span style="font-size:15px; font-weight:600; color:#9aa0a6">of {{ finishTotal }} · {{ finishPct }}%</span></p>
+          <p style="margin:0; font-size:14px; line-height:1.5; color:#c9cdd2; text-wrap:pretty">{{ finishLine }}</p>
+          </sc-if>
+          <p style="margin:0; font-size:12px; color:#8f9499">Practice mark · not an exam result</p>
+          <div style="display:flex; gap:8px; flex-wrap:{{ finishWrap }}; margin-top:{{ finishBtnGap }}">
+            <button data-finishprimary="true" onClick="{{ finishPrimaryGo }}" class="glass-cta" style="flex:1 1 {{ finishBtnBasis }}; min-height:{{ finishBtnH }}; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:15px; font-weight:700; cursor:pointer">{{ finishPrimary }}</button>
+            <button onClick="{{ finishSecondaryGo }}" style="flex:1 1 {{ finishBtnBasis }}; min-height:{{ finishBtnH }}; border:1px solid rgba(255,255,255,0.14); border-radius:14px; background:transparent; color:#ffffff; font-size:14px; font-weight:600; cursor:pointer">{{ finishSecondary }}</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <div style="position:fixed; left:0; right:{{ dockRight }}; bottom:0; z-index:16; display:{{ dockDisplay }}; justify-content:center; padding:0 16px max(14px, env(safe-area-inset-bottom)); pointer-events:none; transition:right 300ms ease">
       <div style="pointer-events:auto; display:flex; gap:6px; padding:6px; border-radius:20px; background:rgba(25,27,30,0.97); border:1px solid rgba(255,255,255,0.09); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)">
         <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ openKit }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text); display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; cursor:pointer">
@@ -1380,6 +1404,7 @@
           </sc-if>
           <span style="display:flex; align-items:baseline; gap:8px"><span data-hallmark="true" style="font-size:52px; font-weight:800; letter-spacing:-0.02em; line-height:1.1">{{ hoMark }}</span><span style="font-size:16px; font-weight:700; color:var(--text2)">of {{ hoOf }}</span></span>
           <span style="font-size:13.5px; font-weight:700; color:var(--text2)">{{ hoPctText }}</span>
+          <span data-tierline="true" style="margin-top:4px; font-size:15px; font-weight:700; color:{{ hoTierColor }}">{{ hoTierTitle }}</span>
           <sc-if value="{{ hoHasSeen }}" hint-placeholder-val="{{ false }}">
             <span data-seenline="true" style="max-width:460px; font-size:12.5px; line-height:1.5; color:{{ hoSeenColor }}">{{ hoSeen }}</span>
           </sc-if>
@@ -1584,6 +1609,12 @@ const busRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const
   return d && d.v === 1 && Array.isArray(d.assignments) && Array.isArray(d.submissions) ? d : busEmpty(); } catch (e) { return busEmpty(); } };
 const busWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(BUS_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
 const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY); } catch (e) {} };
+// Brief 20: pass marks with their sources. A paper without one gets no pass wording (a practice mark is not an exam result).
+const PASS_MARKS = {
+  fm: { pct: 40, source: "DHET, Report 191 ICASS Guidelines (Jan 2026) p.20: pass 40% or higher; Report 191 Part 2 lists no override for Fluid Mechanics N6 (08190216)" },
+  aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
+// Top form at 80%+ (named by its number, never "distinction": NATED has none on record); solid at the pass mark (else 50%).
+function finishTier(pct, pass) { return pct >= 80 ? "top" : pct >= (pass != null ? pass : 50) ? "solid" : "finished"; }
 const CLASS_TEST = { ref: "asg-fm-n6-mock-1", kind: "class_test", mode: "assessment", paperId: "fm", teacher: "Ms Rivera", minutes: 180 };
 const HALL_REWARD_XP = 300, FIX_REWARD_XP = 100, HALL_ANSWERED_MIN = 0.8;
 const EMPTY_UI = { inputs: {}, list: [], written: "", matchPairs: {}, drawn: false, pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "" };
@@ -1829,7 +1860,7 @@ class Component extends DCLogic {
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
-    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
+    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: false, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", asg: null, gateKind: "hall", testPreview: "open", bus: busEmpty(), liveAsg: null, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
@@ -1850,7 +1881,7 @@ class Component extends DCLogic {
     this._ld = () => this.setState({ modelReady: true });
     document.addEventListener("loaded", this._ld);
     this.countUp();
-    try { if (localStorage.getItem("exam.sound") === "off") this.setState({ sound: false }); } catch (e) {}
+    try { if (localStorage.getItem("exam.sound") === "on") this.setState({ sound: true }); } catch (e) {}
     // Keep the footer above the on-screen keyboard (the visual viewport shrinks, the layout one doesn't).
     const vv = window.visualViewport;
     if (vv) { this._vv = () => { const off = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)); if (off !== this.state.kbOff) this.setState({ kbOff: off }); };
@@ -1866,6 +1897,7 @@ class Component extends DCLogic {
         this.setState({ asg: Object.assign({}, A, { closesAt: c }), hall: h && h.kind === "class" ? Object.assign({}, h, { closesAt: c, endsAt: Math.min(h.endsAt, c) }) : h }); } };
     this._esc = e => {
       if (e.key !== "Escape") return;
+      if (this.state.finishCard) { e.preventDefault(); this.closeFinish(); return; }
       if (this.state.hallSheet) { e.preventDefault(); this.closeHallSheet(); return; }
       if (this.state.figBig) { e.preventDefault(); this.closeFigBig(); return; }
       if (this.state.card != null) { e.preventDefault(); this.closeCard(); return; }
@@ -1921,6 +1953,12 @@ class Component extends DCLogic {
     this._lastScreen = scr;
     // Brief 19: pinch binds to the live map box; every other screen puts the map back at 100% for its next visit.
     this.zoomBind();
+    if (scr !== "map" && (this.state.finishCard || this.state.finishRun || this.state.mapClipOpts)) { this.finishClear(); this.setState({ finishCard: null, finishRun: false, mapClipOpts: null }); }
+    // Leaving a result screen stops its fireworks (they must not follow the learner to the next screen).
+    const prevS = this._prevScr; this._prevScr = scr;
+    if (prevS === "hallout" && scr !== "hallout") { clearInterval(this._fw); if (window.confetti && window.confetti.reset) window.confetti.reset(); }
+    if (scr === "hallout") { const H = this.state.hall; this._resCel = this._resCel || {};
+      if (H && H.result && !this._resCel[H.sittingId]) { this._resCel[H.sittingId] = true; setTimeout(() => this.resultBurst(H), 450); } }
     if (scr !== "map" && ((this.state.mapZoom || 1) !== 1 || this._liveZ != null)) { this._liveZ = null; this.setState({ mapZoom: 1, zoomLive: "" }); }
     if (scr === "map") { const lp = document.querySelector("[data-lit]");
       const L = lp ? Math.round(lp.getTotalLength()) : 0; if (L && L !== this.state.roadPx) this.setState({ roadPx: L }); }
@@ -1969,7 +2007,9 @@ class Component extends DCLogic {
   zoomFitZ() { const B = this.zoomBand(); return Math.max(0.08, Math.min(1, (B.bottom - B.top - 80) / (this._roadH || 3000))); }
   // The band the map shows through: below the page header + map sub-header, above the dock.
   zoomBand() { const vh = this.state.vh || window.innerHeight, sub = document.querySelector("[data-map] > div");
-    const top = sub ? Math.round(sub.getBoundingClientRect().bottom) : 134; return { top: Math.max(100, top), bottom: vh - 96 }; }
+    const top = sub ? Math.round(sub.getBoundingClientRect().bottom) : 134, card = document.querySelector("[data-finishcard] [role=dialog]");
+    const side = card && card.getBoundingClientRect().left > window.innerWidth * 0.4;
+    const bottom = card && !side ? Math.min(vh - 96, Math.round(card.getBoundingClientRect().top) - 12) : vh - 96; return { top: Math.max(100, top), bottom: bottom }; }
   zoomWord(z) { return { detail: "Mission view", sections: "Sections", paper: "Whole paper" }[this.zoomTier(z)]; }
   // The road point under the focus line stays under it while the scale changes.
   zoomAnchor(fy) { const box = document.querySelector("[data-zoombox]"); if (!box) return null;
@@ -2050,10 +2090,18 @@ class Component extends DCLogic {
       prog[q21.key] = { tries: 1, best: 2, closed: false, revealed: false, firstTryFull: false, waiting: false, obs: [{ x: 2 / (q21.marks || 4), c: 1, src: "fm" }] };
     }
     if (kind === "finished14") close("1.4", "clean");
+    // Brief 20 previews: every part closed, marks interleaved so the running share stays near the target.
+    if (kind.indexOf("fin") === 0 && kind !== "finished14") { const T = +kind.slice(3) / 100; let got = 0, seen = 0;
+      fm.sections.forEach(sec => sec.missions.forEach(m => m.parts.forEach(q => { const full = q.marks || 0, hit = full && (got + full) / (seen + full) <= T + 0.02;
+        seen += full; if (hit) got += full; delete paid[q.key];
+        prog[q.key] = { tries: hit ? 1 : 3, best: hit ? full : 0, closed: true, revealed: !hit, firstTryFull: !!hit, waiting: false, obs: [{ x: hit ? 1 : 0, c: 1, src: "fm" }] };
+        if (hit) paid[q.key] = true; }))); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
     this.setState({ paperId: "fm", screen: "map", mapMode: kind, prog: prog, paid: paid, streak: 0, card: null, cel: null, litHold: null,
       xp: kind === "fresh" ? 0 : kind === "finished14" ? 1240 : 740 }, () => {
       if (kind === "finished14") this.celebrate(this.missions().findIndex(m => m.id === "1.4"), 21);
+      else if (kind.indexOf("fin") === 0) { const ms = this.missions(), last = ms.length - 1, gotLast = ms[last].parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
+        this._finishSeq = true; this.celebrate(last, this.earnedNow() - gotLast); }
       else this.scrollToNode(this.suggested(), true);
       if (after) after();
     });
@@ -2062,16 +2110,83 @@ class Component extends DCLogic {
   celebrate(i, fromEarned) {
     if (i < 0) return;
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
-    if (this.state.reduced) { this.setState({ cel: null, litHold: null }, () => this.openPending()); return; }
-    this.setState({ cel: { at: i, stamp: null }, litHold: fromEarned, mapClip: "greet" },
+    if (this.state.reduced) { if (this._finishSeq) { this._finishSeq = false; this.setState({ cel: null, litHold: null }, () => { this.setZoom(this.zoomFitZ(), null, false); this.showFinishCard(); }); return; }
+      this.setState({ cel: null, litHold: null }, () => this.openPending()); return; }
+    this.setState({ cel: { at: i, stamp: null }, litHold: fromEarned, mapClip: "greet", mapClipOpts: null },
       () => this.scrollToNode(i, false));
     this._cel1 = setTimeout(() => this.setState({ litHold: null }), 450);
-    this._cel2 = setTimeout(() => this.setState({ cel: { at: i, stamp: i } }), 1550);
+    this._cel2 = setTimeout(() => { this.setState({ cel: { at: i, stamp: i } }); if (!this._finishSeq) this.sectionBurst(i); }, 1550);
     this._cel3 = setTimeout(() => {
+      if (this._finishSeq) { this._finishSeq = false; this.finishBeats(); return; }
       this.setState({ cel: null, mapClip: WALK_CLIP || "" }, () => this.scrollToNode(this.suggested(), true));
       this._cel4 = setTimeout(() => this.setState({ mapClip: "greet" }, () => this.openPending()), WALK_CLIP ? 1100 : 60);
     }, 2700);
   }
+  // ── Brief 20: the finish line ─────────────────────────────────────────────────────
+  canBurst() { return !this.state.reduced && !this.state.saveData && typeof window.confetti === "function"; }
+  // Particles only (WCAG 2.3.1: no flashes); every burst ends by ~2.5 s.
+  burstAt(el, kind) {
+    if (!this.canBurst() || !el) return;
+    const r = el.getBoundingClientRect(), x = (r.left + r.width / 2) / window.innerWidth, y = (r.top + r.height / 2) / window.innerHeight;
+    const base = { disableForReducedMotion: true, zIndex: 85, colors: ["#0068f8", "#4d9bff", "#81b1ff", "#671dff", "#3ddc97", "#ffd479"] };
+    if (kind === "section") { window.confetti(Object.assign({}, base, { particleCount: 36, spread: 70, startVelocity: 26, ticks: 90, scalar: 0.8, origin: { x: x, y: y } })); return; }
+    if (kind === "cannons") { [[60, 0.02], [120, 0.98]].forEach(a => window.confetti(Object.assign({}, base, { particleCount: 70, angle: a[0], spread: 55, startVelocity: 55, origin: { x: a[1], y: 0.75 } })));
+      return; }
+    // Fireworks: bursts around the anchor for 2.4 s, thinning as they go (the canvas-confetti README pattern).
+    const D = 2400, end = Date.now() + D; clearInterval(this._fw);
+    const shoot = () => { const left = end - Date.now(); if (left <= 0) { clearInterval(this._fw); return; }
+      window.confetti(Object.assign({}, base, { particleCount: Math.round(46 * left / D), startVelocity: 30, spread: 360, ticks: 60,
+        origin: { x: Math.min(0.9, Math.max(0.1, x + (Math.random() - 0.5) * 0.4)), y: Math.max(0.12, y - Math.random() * 0.25) } })); };
+    shoot(); this._fw = setInterval(shoot, 250);
+  }
+  // A section's last mission closing: a small burst from the medal that completed it (never during the paper finish).
+  sectionBurst(i) {
+    const P = (this.papers || []).find(p => p.id === this.state.paperId), m = this.missions()[i]; if (!P || !m) return;
+    const j = P.sections.findIndex(sec => sec.missions.some(x => x.id === m.id && x.title === m.title)); if (j < 0) return;
+    if (!P.sections[j].missions.every(x => x.parts.every(q => this.pg(q.key).closed))) return;
+    this.burstAt(document.querySelector('[data-node="' + i + '"]'), "section");
+  }
+  finishData() { const ms = this.missions(), total = ms.reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0), earned = this.earnedNow();
+    const pct = total ? Math.round(100 * earned / total) : 0, pm = PASS_MARKS[this.state.paperId];
+    return { earned: earned, total: total, pct: pct, pass: pm ? pm.pct : null, tier: finishTier(pct, pm && pm.pct) }; }
+  finishClear() { [this._fb1, this._fb2, this._fb3].forEach(clearTimeout); clearInterval(this._fw); cancelAnimationFrame(this._fcu);
+    if (window.confetti && window.confetti.reset) window.confetti.reset(); }
+  // Beats (about 6 s): the companion reaches the flag → fireworks + dance → the reveal → the card.
+  finishBeats() {
+    const F = this.finishData(); this.finishClear();
+    this.setState({ finishRun: true, finishCard: null, cel: null, mapClip: "", mapClipOpts: null, zoomLive: "You reached the finish line." }, () => {
+      const b = document.querySelector("[data-finishbadge]"); if (b) b.scrollIntoView({ block: "center", behavior: "smooth" }); });
+    this._fb1 = setTimeout(() => {
+      // Finished (below the line): the raised-hand wave; otherwise the dance, held on its arms-wide "yes".
+      if (F.tier === "finished") this.setState({ mapClip: "greet", mapClipOpts: { hold: 1.95 } });
+      else this.setState({ mapClip: "dance", mapClipOpts: { from: 4.5, hold: 7.0 } });
+      const b = document.querySelector("[data-finishbadge]");
+      if (F.tier === "top") { this.burstAt(b, "fireworks"); this.chime("fanfare"); } else if (F.tier === "solid") { this.burstAt(b, "cannons"); this.chime("finish"); }
+    }, 1150);
+    this._fb2 = setTimeout(() => this.zoomToWhole(), 3700);
+    this._fb3 = setTimeout(() => this.showFinishCard(), 5100);
+  }
+  skipFinish() { this.finishClear(); const F = this.finishData();
+    this.setState({ mapClip: "" }, () => this.setState({ mapClip: F.tier === "finished" ? "greet" : "dance", mapClipOpts: F.tier === "finished" ? { from: 1.95, hold: 1.95 } : { from: 7.0, hold: 7.0 } }));
+    this.setZoom(this.zoomFitZ(), null, false); this.showFinishCard(); }
+  showFinishCard() {
+    const F = this.finishData(); [this._fb1, this._fb2, this._fb3].forEach(clearTimeout);
+    this.setState({ finishRun: false, finishCard: F, finishShown: this.state.reduced ? F.earned : 0, zoomLive: "Paper finished. " + F.earned + " of " + F.total + "." }, () => {
+      const h = document.getElementById("finish-title"); if (h) h.focus({ preventScroll: true });
+      // The whole paper re-fits above the card, so every medal stays in view.
+      this.zoomToWhole();
+      if (this.state.reduced) return; const t0 = performance.now();
+      const step = now => { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); this.setState({ finishShown: Math.round(F.earned * e) }); if (k < 1) this._fcu = requestAnimationFrame(step); };
+      this._fcu = requestAnimationFrame(step); });
+  }
+  finishToSummary() { this.closeFinish(); this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); }
+  // The Hall respects the class-test pause (the dock's own action decides).
+  finishToHall() { this.closeFinish(); const v = this.renderVals(); if (v && v.hallDockGo) v.hallDockGo(); }
+  closeFinish() { this.finishClear(); this.setState({ finishCard: null, finishRun: false }); }
+  // Hall and class results: the first view after release celebrates by tier (finished: no particles).
+  resultBurst(H) { const R = H.result; if (!R) return; const pct = R.total_marks ? Math.round(100 * R.marks / R.total_marks) : 0, pm = PASS_MARKS[H.paperId], t = finishTier(pct, pm && pm.pct);
+    const el = document.querySelector("[data-hallmark]");
+    if (t === "top") { this.burstAt(el, "fireworks"); this.chime("fanfare"); } else if (t === "solid") { this.burstAt(el, "cannons"); this.chime("finish"); } }
   fitKpField() {
     const f = this.state.kp && document.getElementById("f-" + this.state.kp), kp = document.querySelector("[data-keypad]");
     if (!f || !kp) return;
@@ -2115,6 +2230,7 @@ class Component extends DCLogic {
   // gesture); mute is remembered on this device.
   audioInit() {
     if (!this.state.sound) return;
+    // (Called on Check and on the finish line; browsers only allow audio after a tap.)
     try { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       this._ac = this._ac || new AC(); if (this._ac.state === "suspended") this._ac.resume(); } catch (e) {}
   }
@@ -2128,6 +2244,8 @@ class Component extends DCLogic {
       if (kind === "full") { tone(1046.5, t, 0.16, "sine", 0.16); tone(1318.5, t + 0.09, 0.24, "sine", 0.16); }
       else if (kind === "partial") tone(784, t, 0.2, "sine", 0.12);
       else if (kind === "zero") tone(220, t, 0.14, "triangle", 0.18);
+      else if (kind === "fanfare") { [523.25, 659.25, 783.99, 1046.5].forEach((f, k) => tone(f, t + k * 0.11, k === 3 ? 0.5 : 0.18, "sine", 0.14)); }
+      else if (kind === "finish") { tone(783.99, t, 0.18, "sine", 0.14); tone(1046.5, t + 0.12, 0.34, "sine", 0.14); }
     } catch (e) {}
   }
   toggleSound() {
@@ -2762,9 +2880,9 @@ class Component extends DCLogic {
           open: () => { const pp = Object.assign({}, this.state.prog); pp[x.p.key] = Object.assign({}, this.pg(x.p.key), { tries: 0, closed: false, replay: true });
             this.resetInputs({ screen: "play", mi: s.mi, pi: x.pi, prog: pp, revisit: true }); } }; }),
       doneNextTitle: nm ? nm.id + " · " + nm.title : "Review my paper",
-      doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. See the whole paper and what cost you marks.",
-      doneContinueLabel: nm ? "Continue" : "Review my paper",
-      doneContinue: () => { if (!nm) { this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); return; }
+      doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. The finish line is next.",
+      doneContinueLabel: nm ? "Continue" : "Cross the finish line",
+      doneContinue: () => { if (!nm) { this.audioInit(); this._finishSeq = true; this.setState({ screen: "map", mapView: "paper", card: null }); return; }
         this._openAfterCel = nextIdx; this.setState({ screen: "map", mapView: "paper" }); },
     };
   }
@@ -3542,6 +3660,10 @@ class Component extends DCLogic {
       hoSeen: !H.practised ? "" : H.practised.n > 0 ? "You'd practised " + H.practised.n + " of " + H.practised.of + " missions on this paper before sitting it, so this mark may run high. It isn't counted towards your readiness."
         : "You hadn't practised this paper before sitting it. Hall marks aren't counted towards your readiness yet.",
       hoSeenColor: H.practised && H.practised.n > 0 ? "#f3c14f" : "var(--text3)",
+      ...(() => { const pct = R.total_marks ? Math.round(100 * R.marks / R.total_marks) : 0, pm = PASS_MARKS[H.paperId], t = finishTier(pct, pm && pm.pct);
+        return { hoTierTitle: t === "top" ? "Top form" : t === "solid" ? (pm ? "Above this subject's " + pm.pct + "% pass mark" : "A solid result")
+          : H.kind === "class" ? "You sat the class test" : "You sat a full paper under exam conditions",
+          hoTierColor: t === "top" ? "#ffd479" : t === "solid" ? "#5fe6ab" : "#c9cdd2" }; })(),
       hoMark: String(R.marks), hoOf: String(R.total_marks), hoPctText: (R.total_marks ? Math.round(100 * R.marks / R.total_marks) : 0) + "%",
       hoHasOffline: offline.length > 0, hoOffline: offline.length ? "Drawings (" + offline.reduce((a, x) => a + x.of, 0) + " marks) are marked on paper, so they're not in this total." : "",
       hoRewards: rewards,
@@ -3633,9 +3755,9 @@ class Component extends DCLogic {
       let end = j + 1; while (end < items.length && items[end].kind === "m") end++;
       const top = items[end - 1].y - STEP / 2, bottom = it.y + CAPH / 2;
       roadZones.push({ top: f(top) + "px", h: f(bottom - top) + "px", tint: roadZones.length % 2 ? "rgba(103,29,255,0.08)" : "rgba(0,104,248,0.08)" }); });
-    const roadCaps = items.filter(it => it.kind === "cap").map(it => {
+    const roadCaps = items.filter(it => it.kind === "cap").map((it, capJ) => {
       const sec = it.sec, t = sec.total || sec.missions.reduce((a, m) => a + worth(m), 0), e = sec.missions.reduce((a, m) => a + got(m), 0);
-      return { top: f(it.y - 38) + "px", label: sec.title + (sec.total ? " · " + sec.total + " marks" : ""), earned: e, total: t || "—",
+      return { idx: String(capJ), top: f(it.y - 38) + "px", label: sec.title + (sec.total ? " · " + sec.total + " marks" : ""), earned: e, total: t || "—",
         pct: (t ? Math.round(100 * e / t) : 0) + "%" };
     });
     // The companion stands beside the next mission (on the finish when all is done). Its side and
@@ -3715,6 +3837,30 @@ class Component extends DCLogic {
     if (paperOn) zoomPills.push({ id: "finish", top: f(finIt.y) + "px", finish: true, isRing: false, color: "var(--ok)", title: "Finish", sub: earned + " / " + total,
       shadow: "0 0 0 1px rgba(61,220,151,0.35), 0 6px 16px rgba(0,0,0,0.4)", hereOn: false,
       aria: "Finish, " + total + " marks. " + earned + " banked so far. Zoom in", go: () => this.setZoom(1, null, true, () => { if (lastI) this.scrollToNode(lastI.i, true); }) });
+    const FC = s.finishCard;
+    const finishVals = {
+      mapClipFrom: s.mapClipOpts && s.mapClipOpts.from != null ? String(s.mapClipOpts.from) : "", mapClipHold: s.mapClipOpts && s.mapClipOpts.hold != null ? String(s.mapClipOpts.hold) : "",
+      mapClipLoop: s.mapClipOpts ? "once" : "", finishRunOn: !!s.finishRun, finishCardOn: !!FC, skipFinish: () => this.skipFinish(), closeFinish: () => this.closeFinish(),
+      finishAnim: s.reduced ? "none" : "rise 360ms cubic-bezier(0.22,0.61,0.36,1) both",
+      // Wide screens keep the whole reveal in view: the card sits right, the road moves left (see roadLeft).
+      // The finish card carries the Hall and Review actions, so the dock steps aside while it's open.
+      dockDisplay: FC ? "none" : "flex",
+      // Short phones: a compact card (title + mark on one line, both actions side by side) so the whole reveal fits above it.
+      finishCompact: vw < 900 && (s.vh || 800) < 720, finishFull: !(vw < 900 && (s.vh || 800) < 720),
+      finishTitleSize: vw < 900 && (s.vh || 800) < 720 ? "19px" : "24px", finishWrap: vw < 900 && (s.vh || 800) < 720 ? "nowrap" : "wrap",
+      finishBtnGap: vw < 900 && (s.vh || 800) < 720 ? "4px" : "8px", finishBtnBasis: vw < 900 && (s.vh || 800) < 720 ? "0" : "150px", finishBtnH: vw < 900 && (s.vh || 800) < 720 ? "44px" : "50px",
+      finishJustify: vw >= 900 ? "flex-end" : "center", finishPad: vw >= 900 ? "0 20px 20px" : "0 12px max(12px, env(safe-area-inset-bottom))", finishW: vw >= 900 ? "380px" : "440px",
+      ...(FC ? { finishTone: FC.tier === "top" ? "top" : FC.tier === "solid" ? "released" : "calm",
+        finishTitle: FC.tier === "top" ? "Top form" : FC.tier === "solid" ? "A solid finish" : "You finished all " + FC.total + " marks",
+        finishShown: String(s.finishShown != null ? s.finishShown : FC.earned), finishTotal: String(FC.total), finishPct: String(FC.pct),
+        finishHasLine: true,
+        finishLine: FC.tier === "finished" ? "Next: go through what cost you marks, then try the paper again."
+          : FC.pass != null ? (FC.tier === "top" ? "Well above" : "Above") + " this subject's " + FC.pass + "% pass mark." : "Every question on the paper, done.",
+        finishPrimary: FC.tier === "finished" ? (vw < 900 && (s.vh || 800) < 720 ? "What cost marks" : "See what cost you marks") : "Sit it in the Hall",
+        finishSecondary: FC.tier === "finished" ? (vw < 900 && (s.vh || 800) < 720 ? "The Hall" : "Sit it in the Hall") : (vw < 900 && (s.vh || 800) < 720 ? "What cost marks" : "See what cost you marks") } : {}),
+      finishPrimaryGo: () => (FC && FC.tier === "finished" ? this.finishToSummary() : this.finishToHall()),
+      finishSecondaryGo: () => (FC && FC.tier === "finished" ? this.finishToHall() : this.finishToSummary()),
+    };
     const zoomVals = {
       paperNoteOn: !!(paper && paper.note) && detailOn,
       zoomBoxH: Math.round(roadH * z) + "px", roadTransform: "translateX(-50%) scale(" + z + ")", zoomInv: String(1 / z),
@@ -3723,7 +3869,7 @@ class Component extends DCLogic {
       zoomFinishScale: detailOn ? "none" : "scale(" + (1 / z) + ")", zoomPills: zoomPills, zoomFinishVis: paperOn ? "hidden" : "visible",
       // Whole paper: room above the finish pill even when the page is too short to scroll.
       zoomBoxPad: paperOn ? "28px" : "0px",
-      roadLeft: paperOn && phone ? "60px" : "50%", roadLeftT: s.reduced ? "none" : "left 260ms ease",
+      roadLeft: paperOn && s.finishCard && vw >= 900 ? "24%" : paperOn && phone ? "60px" : "50%", roadLeftT: s.reduced ? "none" : "left 260ms ease",
       zoomPillLeft: paperOn ? "calc(50% + " + Math.round(26 / z) + "px)" : "50%",
       zoomPillTf: paperOn ? "translate(0, -50%) scale(" + (1 / z) + ")" : "translate(-50%, -50%) scale(" + (1 / z) + ")",
       zoomPillOrigin: paperOn ? "0 50%" : "50% 50%",
@@ -3732,7 +3878,7 @@ class Component extends DCLogic {
       pinX: pinIt ? f(pinIt.x) + "px" : "50%", pinY: pinIt ? f(pinIt.y - (pinIt.kind === "m" ? nodeR + 6 : 30)) + "px" : "0px",
       pinLabel: suggestedIdx >= 0 ? "You are here" : "All done",
       // Whole paper: the dot sits under its section's pill, so "You" rides in the pill instead (no collision).
-      pinDisplay: tier === "sections" || (paperOn && suggestedIdx < 0) ? "flex" : "none",
+      pinDisplay: tier === "sections" ? "flex" : "none",
       zoomOutOff: z <= fitZ + 0.001, zoomInOff: z >= 0.999, zoomOutOp: z <= fitZ + 0.001 ? "0.4" : "1", zoomInOp: z >= 0.999 ? "0.4" : "1",
       zoomFitWhole: !paperOn, zoomFitBack: paperOn, zoomFitWord: paperOn ? "My mission" : "Whole paper",
       zoomFitAria: paperOn ? "Back to your mission" : "Show the whole paper", zoomFitBg: paperOn ? "rgba(0,104,248,0.18)" : "transparent",
@@ -3745,6 +3891,7 @@ class Component extends DCLogic {
       zoomIn: () => this.zoomStep(1), zoomOut: () => this.zoomStep(-1), zoomFit: () => this.zoomFitToggle(),
     };
     return {
+      ...finishVals,
       ...zoomVals,
       roadW: roadW, roadH: roadH, roadWpx: roadW + "px", roadHpx: roadH + "px", roadViewBox: "0 0 " + roadW + " " + roadH,
       roadD: d, roadStroke: phone ? "18" : "22", roadEdgeW: phone ? "24" : "28", roadShadowW: phone ? "30" : "36",
@@ -3778,7 +3925,7 @@ class Component extends DCLogic {
       mapModelOn: !s.reduced && !s.saveData, mapPoster: !!(s.reduced || s.saveData),
       bubLeft: f(bub.x) + "px", bubTop: f(bub.anchor) + "px", bubShift: bub.shift, bubWpx: bubW + "px", mapBubble: bubble, mapBubbleKey: bubble,
       mapPadR: desk && cm ? "392px" : "16px", dockRight: desk && cm ? "392px" : "0px",
-      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress · 21"], ["finished14", "Just finished 1.4"]].map(x => {
+      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress · 21"], ["finished14", "Just finished 1.4"], ["fin85", "Finish · 85"], ["fin55", "Finish · 55"], ["fin25", "Finish · 25"]].map(x => {
         const on = s.mapMode ? s.mapMode === x[0] : x[0] === (fresh ? "fresh" : "progress");
         return { label: x[1], on: on, pick: () => this.seedMap(x[0]), bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       cardOpen: !!cm && s.screen === "map", cardDim: !desk, cardModal: desk ? "false" : "true",

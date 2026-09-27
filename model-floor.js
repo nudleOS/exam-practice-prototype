@@ -350,6 +350,9 @@ class ModelFloor extends HTMLElement {
     // loop="once" plays any clip one time and holds its last frame (the home greeting must not visibly loop).
     const once = key === "fall" || this.getAttribute("loop") === "once";
     next.reset();
+    // from="seconds" starts the clip part-way (the finish plays only the dance's best stretch).
+    const from = parseFloat(this.getAttribute("from"));
+    if (isFinite(from) && from > 0) next.time = Math.min(from, hit.duration);
     next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
     next.clampWhenFinished = once;
     // hold="seconds" (with loop="once") stops the clip on a chosen frame instead of its last one;
