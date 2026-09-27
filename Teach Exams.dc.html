@@ -100,7 +100,7 @@
               </div>
             </sc-for>
             <button data-upload="true" onClick="{{ startUpload }}" style="min-height:44px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.10); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer; text-align:left">Upload a paper and its memo ›</button>
-            <span style="padding:9px 12px; border-radius:11px; border:1px dashed var(--line2); font-size:12.5px; color:var(--text3)">Generate a practice paper · next step (brief 13)</span>
+            <button data-genstart="true" onClick="{{ startGen }}" style="min-height:44px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.10); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer; text-align:left">Generate a practice paper ›</button>
           </div>
         </section>
       </div>
@@ -335,6 +335,41 @@
         </section>
       </sc-if>
     </sc-if>
+    <sc-if value="{{ onGenerate }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; gap:10px">
+        <button onClick="{{ toHome }}" aria-label="Back to teaching home" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); cursor:pointer; font-size:18px">‹</button>
+        <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Generate a practice paper</h1>
+      </div>
+      <div role="group" aria-label="Generation preview (design only)" style="align-self:flex-start; display:flex; flex-wrap:wrap; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.7); border:1px solid rgba(255,255,255,0.07)">
+        <span style="align-self:center; padding:0 6px; font-size:10.5px; font-weight:800; color:var(--text3)">Preview outcome</span>
+        <sc-for list="{{ genModes }}" as="gm" hint-placeholder-count="5">
+          <button onClick="{{ gm.pick }}" aria-pressed="{{ gm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ gm.bg }}; color:{{ gm.color }}; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap">{{ gm.label }}</button>
+        </sc-for>
+      </div>
+      <section style="max-width:760px; display:flex; flex-direction:column; gap:12px; padding:18px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
+        <span style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap"><h2 style="flex:1; margin:0; font-size:16px; font-weight:800">Fluid Mechanics N6 · the blueprint</h2><span style="font-size:12px; color:var(--text3)">{{ quotaLine }}</span></span>
+        <span style="font-size:12.5px; line-height:1.55; color:var(--text2)">Tick the topics and give each its marks. Weights are from the N6 syllabus. Past papers are never used as source text; they only shape the numbers (marks, topics, time).</span>
+        <div role="group" aria-label="Topics" style="display:flex; flex-direction:column; gap:6px">
+          <sc-for list="{{ genTopics }}" as="gt" hint-placeholder-count="8">
+            <div data-gentopic="{{ gt.id }}" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:11px; border:1px solid {{ gt.border }}; background:var(--panel2)">
+              <label style="flex:1; min-width:0; display:flex; align-items:center; gap:10px; cursor:pointer"><input type="checkbox" checked="{{ gt.on }}" onChange="{{ gt.toggle }}" style="width:20px; height:20px; flex:none; accent-color:#1e46ff" /><span style="display:flex; flex-direction:column"><span style="font-size:13.5px; font-weight:700">{{ gt.label }}</span><span style="font-size:11.5px; color:var(--text3)">{{ gt.weight }}</span></span></label>
+              <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text3)">marks<input inputMode="numeric" value="{{ gt.marks }}" onChange="{{ gt.onMarks }}" disabled="{{ gt.disabled }}" aria-label="{{ gt.aria }}" style="width:64px; min-height:40px; box-sizing:border-box; padding:0 10px; border-radius:10px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:14px; font-weight:700" /></label>
+            </div>
+          </sc-for>
+        </div>
+        <span style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+          <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--text2)">Total<input data-gentotal="true" inputMode="numeric" value="{{ genTotalVal }}" onChange="{{ onGenTotal }}" aria-label="Total marks to fill" style="width:70px; min-height:40px; box-sizing:border-box; padding:0 10px; border-radius:10px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:14px; font-weight:700" /></label>
+          <button data-fillweights="true" onClick="{{ fillWeights }}" style="min-height:40px; padding:0 12px; border-radius:10px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer">Fill from weights</button>
+          <span style="flex:1"></span>
+          <span data-gensum="true" style="font-size:13px; font-weight:800">{{ genSum }}</span>
+        </span>
+        <label style="display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:700; color:var(--text2)">Your notes (optional)<textarea data-gennotes="true" value="{{ genNotes }}" onChange="{{ onGenNotes }}" placeholder="Your own notes or textbook passages for these topics" style="min-height:80px; box-sizing:border-box; padding:10px 12px; border-radius:11px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:13px; line-height:1.5; resize:vertical"></textarea></label>
+        <label style="display:flex; gap:10px; align-items:flex-start; font-size:13px; cursor:pointer"><input data-genrights="true" type="checkbox" checked="{{ genRights }}" onChange="{{ toggleRights }}" style="width:20px; height:20px; margin:1px 0 0; flex:none; accent-color:#1e46ff" /><span>I have the right to use this text. <span style="color:var(--text3)">It is used as source material, never shown as an instruction, and stays with your college.</span></span></label>
+        <sc-if value="{{ genHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0; padding:10px 12px; border-radius:12px; border:1px solid rgba(242,119,122,0.4); background:rgba(242,119,122,0.08); font-size:13px; color:#ffb3b5">{{ genErr }}</p></sc-if>
+        <span style="font-size:12px; color:var(--text3)">Prototype: the draft is a fixed sample so the checks can be shown. In production it is written with AI from the N6 syllabus, and that switch waits on a quality check (R5).</span>
+        <span style="display:flex; justify-content:flex-end"><button data-generate="true" onClick="{{ startGenerate }}" style="min-height:48px; padding:0 20px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">Generate a draft</button></span>
+      </section>
+    </sc-if>
     <sc-if value="{{ onUpload }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex; align-items:center; gap:10px">
         <button onClick="{{ toHome }}" aria-label="Back to teaching home" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); cursor:pointer; font-size:18px">‹</button>
@@ -365,12 +400,24 @@
     </sc-if>
 
     <sc-if value="{{ onReading }}" hint-placeholder-val="{{ false }}">
-      <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Reading your paper</h1>
+      <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">{{ readingTitle }}</h1>
       <section role="status" aria-live="polite" style="max-width:760px; display:flex; flex-direction:column; gap:10px; padding:18px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
         <sc-for list="{{ stages }}" as="sg" hint-placeholder-count="5">
           <span data-stage="{{ sg.id }}" style="display:flex; align-items:flex-start; gap:10px; font-size:13.5px; line-height:1.5"><span aria-hidden="true" style="width:22px; height:22px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ sg.dot }}; color:#191b1e; font-size:12px; font-weight:900">{{ sg.icon }}</span><span style="display:flex; flex-direction:column"><span style="font-weight:700; color:{{ sg.color }}">{{ sg.title }}</span><span style="font-size:12.5px; color:var(--text2)">{{ sg.sub }}</span></span></span>
         </sc-for>
         <span style="font-size:12.5px; color:var(--text3)">{{ readingFoot }}</span>
+        <sc-if value="{{ hasSuggest }}" hint-placeholder-val="{{ false }}">
+          <div data-suggest="true" style="display:flex; flex-direction:column; gap:8px; padding-top:10px; border-top:1px solid var(--line)">
+            <span style="font-size:14px; font-weight:800">{{ suggestTitle }}</span>
+            <sc-for list="{{ suggestions }}" as="sgs" hint-placeholder-count="2">
+              <div data-suggestion="{{ sgs.id }}" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 12px; border-radius:11px; border:1px solid var(--line); background:var(--panel2)">
+                <span style="flex:1; min-width:200px; display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:800">{{ sgs.title }}</span><span style="font-size:12px; line-height:1.5; color:var(--text2)">{{ sgs.line }}</span></span>
+                <button onClick="{{ sgs.use }}" style="min-height:40px; padding:0 14px; border-radius:10px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:#ffffff; font-size:12.5px; font-weight:800; cursor:pointer">Use this paper</button>
+              </div>
+            </sc-for>
+            <span style="font-size:12px; color:var(--text3)">{{ suggestFoot }}</span>
+          </div>
+        </sc-if>
         <span style="display:flex; gap:8px; justify-content:flex-end">
           <sc-if value="{{ readFailed }}" hint-placeholder-val="{{ false }}"><button onClick="{{ backToUpload }}" style="min-height:46px; padding:0 16px; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:700; cursor:pointer">Upload again</button></sc-if>
           <sc-if value="{{ readDone }}" hint-placeholder-val="{{ false }}"><button data-toreview="true" onClick="{{ openReview }}" style="min-height:46px; padding:0 18px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">Review the paper</button></sc-if>
@@ -430,7 +477,7 @@
               <div data-finding="{{ df.id }}" style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:12px; border:1px solid {{ df.border }}; background:{{ df.bg }}">
                 <span style="font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:{{ df.kindColor }}">{{ df.kind }}</span>
                 <span style="font-size:13.5px; line-height:1.55">{{ df.text }}</span>
-                <sc-if value="{{ df.hasValues }}" hint-placeholder-val="{{ false }}"><span style="display:flex; gap:14px; flex-wrap:wrap; font-size:13px"><span>Printed: <b style="font-weight:800">{{ df.printed }}</b></span><span>Replay of the paper: <b style="font-weight:800; color:#5fe6ab">{{ df.replay }}</b></span></span></sc-if>
+                <sc-if value="{{ df.hasValues }}" hint-placeholder-val="{{ false }}"><span style="display:flex; gap:14px; flex-wrap:wrap; font-size:13px"><span>Printed: <b style="font-weight:800">{{ df.printed }}</b></span><span>{{ df.replayLabel }}: <b style="font-weight:800; color:#5fe6ab">{{ df.replay }}</b></span></span></sc-if>
                 <div role="radiogroup" aria-label="{{ df.aria }}" style="display:flex; gap:8px; flex-wrap:wrap">
                   <sc-for list="{{ df.opts }}" as="dfo" hint-placeholder-count="3">
                     <button data-res="{{ dfo.id }}" role="radio" aria-checked="{{ dfo.on }}" onClick="{{ dfo.pick }}" disabled="{{ dfo.disabled }}" style="min-height:40px; padding:0 12px; border-radius:10px; border:1px solid {{ dfo.border }}; background:{{ dfo.bg }}; color:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer; text-align:left">{{ dfo.label }}</button>
@@ -517,6 +564,33 @@ const RES_OPTS = {
   untraceable: [["reauthor", "Rewrite this memo from the question's own numbers"], ["derivation", "Show the number does trace (write the derivation)"]],
   convention: [["accept_both", "Accept both routes"], ["printed_stands", "Printed stands (with a reason)"]] };
 const KIND_WORD = { arith: "The memo's sum is wrong", untraceable: "The memo uses a number that isn't in the question", convention: "Depends on a convention" };
+// ── Brief 14: generate. The prototype's model is a fixed SAMPLE draft (R5: the real switch waits on an
+// eval). Its physics is checked; two items carry faults so the shared review gates are exercised.
+const GEN_TOPICS = [["pumps", "Pumps", 22], ["pipes", "Pipe flow", 18], ["open", "Open channels", 12], ["orifices", "Orifices", 10], ["vent", "Ventilation", 10],
+  ["turbines", "Water turbines", 10], ["pelton", "Pelton wheel", 10], ["vortex", "Vortex flow", 8]];
+const GEN_PARTS = [
+  { n: "G1", topic: "Pipe flow", slug: "pipes", marks: 3,
+    q: "Two reservoirs with a 10 m difference in level are joined by a pipeline 600 m long and 0,5 m in diameter. The pipeline rises 3 m above the upper reservoir at 260 m from the entrance, then falls to the new lower reservoir. The coefficient of friction is 0,006. Ignore shock losses. Calculate the friction head, the velocity in the pipe and the discharge.",
+    bullets: ["hf = Δz = 10 m (1)", "V = √(2 × 9,81 × 0,5 × 10 ÷ (4 × 0,006 × 600)) = 2,610 m/s (1)", "Q = (π × 0,5² ÷ 4) × 2,610 = 0,512 m³/s (1)"],
+    rewrite: "Two reservoirs with a 10 m difference in level are joined by a pipeline 600 m long and 0,5 m in diameter, with a coefficient of friction of 0,006. Ignore shock losses. Calculate the friction head, the velocity in the pipe and the discharge." },
+  { n: "G2", topic: "Open channels", slug: "open", marks: 4,
+    q: "A 60° V-notch measures the flow in an irrigation canal. It passes 420 litres per second, and the coefficient of discharge is 0,62. Calculate the head of water over the notch in millimetres.",
+    bullets: ["Q = (8/15) · Cd · √(2g) · tan(θ/2) · H^2,5 (1)", "Q = 420 ÷ 1 000 = 0,42 m³/s (1)", "0,42 = (8/15) × 0,62 × √(2 × 9,81) × tan 30° × H^2,5 (1)", "H = 0,756 m = 755,837 mm (1)"] },
+  { n: "G3", topic: "Pumps", slug: "pumps", marks: 3,
+    q: "A centrifugal pump delivers 0,05 m³/s of water against a total head of 30 m. Its overall efficiency is 75%. Calculate the power the water receives and the shaft power needed to drive the pump.",
+    bullets: ["Water power = ρgQH = 1 000 × 9,81 × 0,05 × 30 = 14,715 kW (1)", "Shaft power = water power × η = 14,715 × 0,75 = 11,036 kW (2)"] },
+  { n: "G4", topic: "Pumps", slug: "pumps", marks: 2, q: "Define cavitation and state ONE effect it has on a pump.",
+    bullets: ["The formation and collapse of vapour bubbles when the local pressure falls below the vapour pressure of the liquid (1)", "It pits the impeller and casing surfaces and lowers the pump's efficiency (1)"] },
+  { n: "G5", topic: "Pumps", slug: "pumps", marks: 2, q: "Explain why a centrifugal pump must be primed before it is started.",
+    bullets: ["Air is far less dense than water, so the impeller cannot create enough pressure difference to lift water up the suction pipe (1)", "Priming fills the casing and suction pipe with water so that pumping can start (1)"] } ];
+const GEN_FINDINGS = {
+  "G1": [{ id: "o1", kind: "overlap", text: "This stem shares words with a past paper in the bank (Fluid Mechanics N6 · November 2022, 1.1). Generated text must be our own." }],
+  "G3": [{ id: "m3", kind: "agreement", text: "The draft memo multiplies by the efficiency. An independent solve, marked by our marker, divides: shaft power = 14,715 ÷ 0,75 = 19,62 kW.", printed: "11,036 kW", replay: "19,62 kW" }] };
+RES_OPTS.agreement = [["erratum", "Correct it: the independent value earns the marks"], ["accept_both", "Accept both values"], ["printed_stands", "Printed stands (reason + a second approver)"]];
+KIND_WORD.agreement = "The memo disagrees with an independent solve";
+KIND_WORD.overlap = "Shares words with a past paper";
+// The 12-word shingle check (C-no-verbatim-overlap, ENGINE §4.2) against the bank's FM paper text.
+const wordsOf = t => String(t || "").toLowerCase().replace(/[.,;:()"“”]/g, " ").split(/\s+/).filter(Boolean);
 const SAMPLE_NAMES = ["Aisha Bello", "Liam Chen", "Naledi Dube", "Mateo García", "Priya Nair", "Tomás Silva", "Zanele Khumalo", "Omar Haddad", "Yuki Tanaka", "Grace Mensah",
   "Lucas Moreau", "Amara Okoye", "Sofia Rossi", "Kwame Asante", "Mei Lin", "Daniel Cohen", "Fatima Zahra", "Noah Müller", "Chloé Martin", "Ravi Patel",
   "Thandiwe Ndlovu", "Ahmed Karim", "Elena Petrova", "Samuel Adeyemi", "Hana Kim", "Diego López", "Leila Farouk", "Jonas Berg", "Ana Costa", "Kofi Boateng",
@@ -553,7 +627,8 @@ const QUEUE = [
 const partOf = n => { const src = window.PAPER_FM_N6_2022; let hit = null; if (src) src.sections.forEach(sec => (sec.missions || []).forEach(m => (m.parts || m.items || []).forEach(q => { if (q.n === n) hit = q; }))); return hit; };
 
 class Component extends DCLogic {
-  state = { role: "teacher", view: "home", vw: 1280, asgs: [], sample: {}, marks: {}, queueDone: {}, crit: {}, qi: 0, draft: null, confirm: null, live: "", tableOn: false, seeded: false, uploads: [], upCur: null, upSel: null, upForm: { mode: "clean", err: "", noMemo: false, paper: null, memo: null }, rvEdit: null, changesNote: "" };
+  state = { role: "teacher", view: "home", vw: 1280, asgs: [], sample: {}, marks: {}, queueDone: {}, crit: {}, qi: 0, draft: null, confirm: null, live: "", tableOn: false, seeded: false, uploads: [], upCur: null, upSel: null, upForm: { mode: "clean", err: "", noMemo: false, paper: null, memo: null }, rvEdit: null, changesNote: "", quota: 7,
+    genForm: { outcome: "success", topics: { pipes: { on: true, marks: "3" }, open: { on: true, marks: "4" }, pumps: { on: true, marks: "7" } }, total: "14", notes: "", rights: false, err: "" } };
 
   componentDidMount() {
     this._rs = () => this.setState({ vw: window.innerWidth });
@@ -578,10 +653,51 @@ class Component extends DCLogic {
     this.setState({ seeded: true, asgs: [
       { ref: "asg-fm-n6-mock-1", paperId: "fm-n6-2022-11", kind: "class_test", audience: "college", opensAt: now - 6 * D, closesAt: now - D, setter: "t1", state: "open", approvedBy: "a1", eligible: 40, released: false } ] });
   }
+  // ── One review for every draft (brief 14 generalises brief 13): these accessors are the only
+  // place an upload and a generated draft differ.
+  partsOf(u) { return u && u.src === "generated" ? GEN_PARTS.map(q => Object.assign({ sec: q.topic }, q)) : this.fmParts(); }
+  fOf(u, n) { return u.noMemo ? [] : (u.src === "generated" ? GEN_FINDINGS[n] : FINDINGS[n]) || []; }
+  carOf(u, n) { return u.src === "generated" || u.noMemo ? null : CARRIES[n] || null; }
+  smeOf(u, n) { return u.src !== "generated" && !u.noMemo && !!SME_CHECK[n]; }
+  inGroup(u, n) { return u.src !== "generated" && !u.noMemo && Q4_GROUP.indexOf(n) !== -1; }
+  // The longest run of words a stem shares with the bank's FM paper; 12 or more is a hit.
+  overlapRun(text) {
+    if (!this._corpus) { const c = []; this.fmParts().forEach(q => c.push(wordsOf(q.q))); this._corpus = c; }
+    const w = wordsOf(text); let best = 0, at = "";
+    this._corpus.forEach(c => { for (let i = 0; i < w.length; i++) for (let j = 0; j < c.length; j++) { let k = 0; while (i + k < w.length && j + k < c.length && w[i + k] === c[j + k]) k++; if (k > best) { best = k; at = w.slice(i, i + k).join(" "); } } });
+    return { n: best, words: at };
+  }
+  // C-blueprint-fit: topic marks in the draft against the teacher's blueprint (±5 marks).
+  bpFit(u) {
+    if (u.src !== "generated") return { rows: [], over: false };
+    const draft = {}; GEN_PARTS.forEach(q => { draft[q.topic] = (draft[q.topic] || 0) + q.marks; });
+    const bp = u.blueprint || {}, names = Object.keys(Object.assign({}, draft, bp));
+    const rows = names.map(t => ({ topic: t, draft: draft[t] || 0, bp: bp[t] || 0, dev: (draft[t] || 0) - (bp[t] || 0) }));
+    return { rows: rows, over: rows.some(r => Math.abs(r.dev) > 5) };
+  }
+  startGenerate() {
+    const f = this.state.genForm, me = this.me(), bp = {}, labels = {};
+    GEN_TOPICS.forEach(t => { labels[t[0]] = t[1]; const x = f.topics[t[0]]; if (x && x.on && Number(x.marks) > 0) bp[t[1]] = Number(x.marks); });
+    const total = Object.values(bp).reduce((a, b) => a + b, 0);
+    const err = !total ? "Tick at least one topic and give it marks." : String(f.notes || "").trim() && !f.rights ? "Confirm you have the right to use your notes, or clear them." : "";
+    if (err) { this.setState({ genForm: Object.assign({}, f, { err: err }), live: err }); return; }
+    if (this.state.quota <= 0 && f.outcome !== "budget") { this.setState({ genForm: Object.assign({}, f, { err: "The monthly generation budget for your college is used up." }) }); return; }
+    // MOCK POST /v1/banks/{bank_ref}/generations → a job (ENGINE §11.2 states). A job refused before any
+    // model call ("shape unknown") keeps its budget reservation, so it doesn't use up the quota.
+    const FAIL = { budget: [0, "budget", "The monthly generation budget for your college is used up. It resets on the 1st; meanwhile, use an approved paper."],
+      noshape: [1, "no_blueprint", "This subject's exam shape isn't known yet, so a blueprint can't be checked."],
+      declined: [3, "model_refusal", "The model declined part of this request. Try again, or use an approved paper."],
+      refused: [4, "refused", "The draft was refused twice: G3's memo points add up to 2, but G3 is worth 3 marks."] }[f.outcome];
+    const id = "gen-" + Date.now();
+    const u = { id: id, src: "generated", title: "Practice paper · Fluid Mechanics N6 (generated)", by: me.id, state: "reading", stage: 0, noMemo: false, flags: {}, items: {}, group: null, pairAck: false, note: "",
+      blueprint: bp, total: total, minutes: Number(f.minutes) || Math.round(total * 1.8), withNotes: !!String(f.notes || "").trim(),
+      failAt: FAIL ? FAIL[0] : null, failReason: FAIL ? FAIL[1] : null, failSentence: FAIL ? FAIL[2] : "" };
+    this.setState({ uploads: this.state.uploads.concat([u]), upCur: id, view: "reading", quota: f.outcome === "budget" ? 0 : f.outcome === "noshape" ? this.state.quota : this.state.quota - 1, genForm: Object.assign({}, f, { err: "" }) }, () => this.tickRead(id));
+  }
   // ── Brief 13: upload → reading → review → approval. The college bank = Nexera papers + approved uploads.
   bank() {
-    return BANK.concat(this.state.uploads.filter(u => u.state === "approved").map(u => ({ id: u.id, title: u.title, marks: 100, minutes: 180, origin: "faithful_past_paper",
-      version: "open", badge: "Your college · approved", practised: 0 })));
+    return BANK.concat(this.state.uploads.filter(u => u.state === "approved").map(u => ({ id: u.id, title: u.title, marks: u.src === "generated" ? u.total : 100, minutes: u.src === "generated" ? u.minutes : 180,
+      origin: u.src === "generated" ? "generated" : "faithful_past_paper", version: "open", badge: u.src === "generated" ? "Your college · generated" : "Your college · approved", practised: 0 })));
   }
   fmParts() { const src = window.PAPER_FM_N6_2022, out = []; if (src) src.sections.forEach(sec => (sec.missions || []).forEach(m => (m.parts || m.items || []).forEach(q => out.push(Object.assign({ sec: sec.id }, q))))); return out; }
   upCur() { return this.state.uploads.filter(u => u.id === this.state.upCur)[0] || null; }
@@ -591,21 +707,25 @@ class Component extends DCLogic {
   // An item is resolved when every gate on it has a legal resolution (with its text), its follow-through
   // is set, its expert check is acknowledged, its group is ruled, and the setter marked it reviewed.
   itemStatus(u, n) {
-    const it = u.items[n] || {}, F = u.noMemo ? [] : FINDINGS[n] || [], open = [];
-    F.forEach(f => { const r = (it.res || {})[f.id]; if (!r || !r.opt) open.push("a resolution"); else if (this.needsText(r.opt) && !String(r.text || "").trim()) open.push("the written reason"); });
-    if (!u.noMemo && CARRIES[n] && !it.ft) open.push("the follow-through answer");
-    if (!u.noMemo && SME_CHECK[n] && !it.ack) open.push("the memo check");
-    if (!u.noMemo && Q4_GROUP.indexOf(n) !== -1 && !u.group) open.push("the Question 4 ruling");
-    const flagged = !u.noMemo && (F.length > 0 || !!CARRIES[n] || !!SME_CHECK[n]);
-    const counter = F.some(f => { const r = (it.res || {})[f.id]; return f.kind === "arith" && r && r.opt === "printed_stands" && !r.countersigned; });
-    return { flagged: flagged, open: open, resolved: !flagged || (open.length === 0 && !!it.reviewed), counter: counter, nFlags: F.length + (CARRIES[n] ? 1 : 0) + (SME_CHECK[n] ? 1 : 0) };
+    const it = u.items[n] || {}, F = this.fOf(u, n), open = [], car = this.carOf(u, n), sme = this.smeOf(u, n);
+    const part = this.partsOf(u).filter(q => q.n === n)[0];
+    F.forEach(f => { if (f.kind === "overlap") { if (this.overlapRun(it.stem || (part ? part.q : "")).n >= 12) open.push("a stem in your own words"); return; }
+      const r = (it.res || {})[f.id]; if (!r || !r.opt) open.push("a resolution"); else if (this.needsText(r.opt) && !String(r.text || "").trim()) open.push("the written reason"); });
+    if (car && !it.ft) open.push("the follow-through answer");
+    if (sme && !it.ack) open.push("the memo check");
+    if (this.inGroup(u, n) && !u.group) open.push("the Question 4 ruling");
+    const flagged = F.length > 0 || !!car || sme;
+    const counter = F.some(f => { const r = (it.res || {})[f.id]; return (f.kind === "arith" || f.kind === "agreement") && r && r.opt === "printed_stands" && !r.countersigned; });
+    return { flagged: flagged, open: open, resolved: !flagged || (open.length === 0 && !!it.reviewed), counter: counter, nFlags: F.length + (car ? 1 : 0) + (sme ? 1 : 0) };
   }
   upSummary(u) {
-    const parts = this.fmParts(), st = parts.map(q => this.itemStatus(u, q.n)), resolved = st.filter(x => x.resolved).length;
+    const parts = this.partsOf(u), st = parts.map(q => this.itemStatus(u, q.n)), resolved = st.filter(x => x.resolved).length;
     let errata = 0, reauth = 0, other = 0;
-    parts.forEach(q => (FINDINGS[q.n] || []).forEach(f => { const r = ((u.items[q.n] || {}).res || {})[f.id]; if (!r) return; if (r.opt === "erratum") errata++; else if (r.opt === "reauthor") reauth++; else other++; }));
+    parts.forEach(q => this.fOf(u, q.n).forEach(f => { const it = u.items[q.n] || {};
+      if (f.kind === "overlap") { if (it.stem && this.overlapRun(it.stem).n < 12) reauth++; return; }
+      const r = (it.res || {})[f.id]; if (!r) return; if (r.opt === "erratum") errata++; else if (r.opt === "reauthor") reauth++; else other++; }));
     return { total: parts.length, resolved: resolved, counter: st.some(x => x.counter), errata: errata, reauth: reauth, other: other,
-      ready: resolved === parts.length && (!u.flags.pair || u.pairAck) && !u.noMemo };
+      ready: resolved === parts.length && (!u.flags.pair || u.pairAck) && !u.noMemo && (!this.bpFit(u).over || !!u.bpAck) };
   }
   startRead() {
     const f = this.state.upForm, me = this.me();
@@ -616,25 +736,27 @@ class Component extends DCLogic {
     if (err) { this.setState({ upForm: Object.assign({}, f, { err: err }), live: err }); return; }
     // MOCK POST /v1/banks/{bank_ref}/sources → a reading job.
     const id = "up-" + Date.now(), m = f.mode;
-    const u = { id: id, title: "Fluid Mechanics N6 · November 2022 (uploaded)", by: me.id, state: "reading", stage: 0, failed: null, noMemo: !!f.noMemo,
+    const u = { id: id, src: "upload", title: "Fluid Mechanics N6 · November 2022 (uploaded)", by: me.id, state: "reading", stage: 0, failed: null, noMemo: !!f.noMemo,
+      failAt: m === "encrypted" ? 0 : null, failReason: m === "encrypted" ? "pdf_refused" : null, failSentence: "This PDF is encrypted, so it can't be read safely. Export a plain PDF and upload again.",
       flags: { scan: m === "scan", pair: m === "pair", hidden: m === "hidden", encrypted: m === "encrypted" }, items: {}, group: null, pairAck: false, note: "" };
     this.setState({ uploads: this.state.uploads.concat([u]), upCur: id, view: "reading", upForm: Object.assign({}, f, { err: "" }) }, () => this.tickRead(id));
   }
   tickRead(id) {
     clearTimeout(this._rt);
     const u = this.state.uploads.filter(x => x.id === id)[0]; if (!u || u.state !== "reading") return;
-    if (u.stage === 0 && u.flags.encrypted) { this.patchUp(id, { state: "failed", failed: "This PDF is encrypted, so it can't be read safely. Export a plain PDF and upload again." });
-      this.setState({ live: "Reading stopped: the PDF is encrypted." }); return; }
-    if (u.stage >= 5) { this.patchUp(id, { state: "review" }); this.setState({ live: "Reading finished. Review the paper." }); return; }
+    const N = u.src === "generated" ? 7 : 5;
+    if (u.failAt != null && u.stage === u.failAt) { this.patchUp(id, { state: "failed", failed: u.failSentence }); this.setState({ live: u.failSentence }); return; }
+    if (u.stage >= N) { this.patchUp(id, { state: "review" }); this.setState({ live: u.src === "generated" ? "The draft is ready. Review it." : "Reading finished. Review the paper." }); return; }
     this._rt = setTimeout(() => { this.patchUp(id, x => ({ stage: x.stage + 1 })); this.tickRead(id); }, 650);
   }
-  // Design preview: resolve every flag the way ENGINE §6.4 proposes.
+  // Design preview: resolve every flag the way ENGINE §6.4 (and the sample draft's own rewrite) proposes.
   previewResolve() {
     const u = this.upCur(); if (!u) return; const items = Object.assign({}, u.items);
-    this.fmParts().forEach(q => { const F = FINDINGS[q.n] || [], it = Object.assign({}, items[q.n] || {}), res = Object.assign({}, it.res || {});
-      F.forEach(f => { res[f.id] = f.kind === "arith" ? { opt: "erratum" } : f.kind === "untraceable" ? { opt: "reauthor", text: f.proposed } : { opt: "accept_both" }; });
-      if (F.length || CARRIES[q.n] || SME_CHECK[q.n]) items[q.n] = Object.assign(it, { res: res, ft: CARRIES[q.n] ? "yes" : it.ft, ack: SME_CHECK[q.n] ? true : it.ack, reviewed: true }); });
-    this.patchUp(u.id, { items: items, group: "other", pairAck: true });
+    this.partsOf(u).forEach(q => { const F = this.fOf(u, q.n), car = this.carOf(u, q.n), sme = this.smeOf(u, q.n), it = Object.assign({}, items[q.n] || {}), res = Object.assign({}, it.res || {});
+      F.forEach(f => { if (f.kind === "overlap") { it.stem = q.rewrite || it.stem; return; }
+        res[f.id] = f.kind === "arith" || f.kind === "agreement" ? { opt: "erratum" } : f.kind === "untraceable" ? { opt: "reauthor", text: f.proposed } : { opt: "accept_both" }; });
+      if (F.length || car || sme) items[q.n] = Object.assign(it, { res: res, ft: car ? "yes" : it.ft, ack: sme ? true : it.ack, reviewed: true }); });
+    this.patchUp(u.id, { items: items, group: u.src === "generated" ? null : "other", pairAck: true, bpAck: true });
     this.setState({ live: "Every flag resolved as the design proposes." });
   }
   me() { return this.state.role === "admin" ? PEOPLE.a1 : PEOPLE.t1; }
@@ -736,27 +858,36 @@ class Component extends DCLogic {
     const u = this.upCur();
     // ── Reading
     if (s.view === "reading" && u) {
-      const k = u.stage, fail = u.state === "failed";
-      const ST = [["safe", "Safe to open", fail ? u.failed : "Not encrypted, no scripts or embedded files.", fail ? "fail" : null],
+      const k = u.stage, fail = u.state === "failed", gen = u.src === "generated";
+      const topicsN = Object.keys(u.blueprint || {}).length;
+      const ST = gen ? [["budget", "Budget reserved", "This month: " + this.state.quota + " of 10 generations left for your college (sample)."],
+        ["plan", "Blueprint checked against the syllabus", (u.total || 0) + " marks · " + topicsN + (topicsN === 1 ? " topic" : " topics") + " · the N6 syllabus weights"],
+        ["retrieve", "Syllabus text retrieved", "5 passages from the N6 syllabus" + (u.withNotes ? " and your notes" : "") + " · no past-paper text"],
+        ["draft", "Draft written", "5 items, 14 marks"], ["enforce", "Marks and memos enforced", "Every item's memo points add up to its marks."],
+        ["check", "Checked", "2 flags for you: G1 shares words with a past paper; G3's memo disagrees with an independent solve."],
+        ["save", "Draft saved", "Awaiting your review. Nothing reaches learners until it's reviewed and approved."]].map((x, i) => i === u.failAt ? [x[0], x[1], fail ? u.failSentence : x[2], "fail"] : [x[0], x[1], x[2], i === 5 ? "warn" : null]) : [["safe", "Safe to open", fail ? u.failed : "Not encrypted, no scripts or embedded files.", fail ? "fail" : null],
         ["text", "Text read", u.flags.scan ? "This looks like a scan. It will be read with OCR, which needs a closer check." : u.flags.hidden ? "32 parts found. We removed text you can't see on the page (white text on page 4). It can't reach learners or our marker." : "32 parts found across 4 questions.", u.flags.scan || u.flags.hidden ? "warn" : null],
         ["pair", "Memo paired", u.noMemo ? "No memo: it will be stored, not publishable." : u.flags.pair ? "The memo's paper code (8190217) differs from the paper's (8190216). You'll be asked to confirm it." : "Paper code 8190216 on both.", u.noMemo || u.flags.pair ? "warn" : null],
         ["marks", "Marks add up", "100 marks: 27 + 21 + 23 + 29.", null],
         ["replay", "Memo replayed", u.noMemo ? "Not run: there is no memo." : "33 marks flagged (1.3, 1.4.5, 4.1 and 4.3) · 3 conventions to confirm · the 3.3 definitions need an expert's check.", u.noMemo ? null : "warn"]];
       Object.assign(vals, {
-        stages: ST.map((x, i) => { const done = i < k || (i === 0 && fail), cur = i === k && !fail;
+        readingTitle: gen ? "Generating a draft" : "Reading your paper",
+        stages: ST.map((x, i) => { const done = i < k || (fail && i === u.failAt), cur = i === k && !fail;
           const tone = x[3] === "fail" && done ? ["✕", "#f2777a", "#ffb3b5"] : done && x[3] === "warn" ? ["◐", "#e0a10f", "var(--text)"] : done ? ["✓", "#3ddc97", "var(--text)"] : cur ? ["…", "#81b1ff", "var(--text)"] : ["", "rgba(255,255,255,0.12)", "var(--text3)"];
           return { id: x[0], title: x[1], sub: done || cur ? x[2] : "", icon: tone[0], dot: tone[1], color: tone[2] }; }),
-        readingFoot: fail ? "Nothing was kept from this file." : u.state === "review" ? "Finished. Nothing reaches learners until the paper is reviewed and approved." : "You can leave this page; we'll keep reading.",
-        readFailed: fail, readDone: u.state !== "reading" && !fail, backToUpload: () => this.setState({ view: "upload" }), openReview: () => this.setState({ view: "review", upSel: null }),
+        readingFoot: fail && gen ? "Nothing was drafted." : fail ? "Nothing was kept from this file." : u.state === "review" ? "Finished. Nothing reaches learners until the paper is reviewed and approved." : "You can leave this page; we'll keep reading.",
+        ...this.suggestVals(u, fail),
+        readFailed: fail, readDone: u.state !== "reading" && !fail, backToUpload: () => this.setState({ view: gen ? "generate" : "upload" }), openReview: () => this.setState({ view: "review", upSel: null }),
       });
     }
     // ── Review (the setter) / approval (the institution admin)
     if (s.view === "review" && u) {
-      const parts = this.fmParts(), sum = this.upSummary(u), isSetter = u.by === me.id;
+      const parts = this.partsOf(u), sum = this.upSummary(u), isSetter = u.by === me.id, gen = u.src === "generated", fit = this.bpFit(u);
       const approver = isAdmin && !isSetter && u.state === "awaiting", ro = !isSetter || u.state === "awaiting" || u.state === "approved";
       const sel = parts.filter(q => q.n === s.upSel)[0] || parts.filter(q => this.itemStatus(u, q.n).flagged && !this.itemStatus(u, q.n).resolved)[0] || parts[0];
       const stOf = q => this.itemStatus(u, q.n);
-      const notices = [{ id: "sim", text: "Simulated read of FM N6 Nov 2022. The flags below are the measured faults of its real board memo (ENGINE §6.4). Learners will see exactly the text shown here.", border: "var(--line2)", bg: "var(--panel2)", color: "var(--text2)", hasActions: false, actions: [] }];
+      const notices = [{ id: "sim", text: gen ? "Sample draft for this prototype. In production it is written with AI from the N6 syllabus (and your notes), then checked here. Learners would see “Written with AI from the syllabus · checked by your college”."
+        : "Simulated read of FM N6 Nov 2022. The flags below are the measured faults of its real board memo (ENGINE §6.4). Learners will see exactly the text shown here.", border: "var(--line2)", bg: "var(--panel2)", color: "var(--text2)", hasActions: false, actions: [] }];
       if (u.state === "changes" && u.note) notices.push({ id: "changes", text: PEOPLE.a1.name + " asked for changes: “" + u.note + "”", border: "rgba(224,161,15,0.45)", bg: "rgba(224,161,15,0.08)", color: "#f3c14f", hasActions: false, actions: [] });
       if (u.noMemo) notices.push({ id: "nomemo", text: "No memo was published, so this paper is stored but can't be given to learners.", border: "rgba(224,161,15,0.45)", bg: "rgba(224,161,15,0.08)", color: "#f3c14f", hasActions: false, actions: [] });
       if (u.flags.hidden) notices.push({ id: "hidden", text: "We removed text you can't see on the page (white text on page 4). It can't reach learners or our marker.", border: "rgba(129,177,255,0.35)", bg: "rgba(0,104,248,0.07)", color: "#cfe0ff", hasActions: false, actions: [] });
@@ -764,10 +895,14 @@ class Component extends DCLogic {
       const tog = (on, dis) => ({ on: on ? "true" : "false", disabled: dis, border: on ? "rgba(129,177,255,0.8)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.2)" : "transparent" });
       if (u.flags.pair) notices.push({ id: "pair", text: "The memo's paper code (8190217) differs from the paper's (8190216). Confirm the memo belongs to this paper before sending it.", border: "rgba(224,161,15,0.45)", bg: "rgba(224,161,15,0.08)", color: "#f3c14f", hasActions: true,
         actions: [Object.assign({ label: u.pairAck ? "✓ Checked: this memo belongs to this paper" : "I've checked: this memo belongs to this paper", go: () => { if (!ro) this.patchUp(u.id, { pairAck: !u.pairAck }); } }, tog(u.pairAck, ro))] });
-      if (!u.noMemo) notices.push({ id: "q4", text: "4.1 and 4.3 both use numbers that aren't in this question paper. The memo was possibly written for another version of this paper. Rule on it before Question 4's items can be reviewed.", border: u.group ? "var(--line2)" : "rgba(242,119,122,0.45)", bg: u.group ? "var(--panel2)" : "rgba(242,119,122,0.07)", color: u.group ? "var(--text2)" : "#ffb3b5", hasActions: true,
+      if (gen) notices.push({ id: "fit", text: (fit.over ? "Blueprint fit: the draft is more than 5 marks off your blueprint on a topic. " : "Blueprint fit ✓ · cognitive mix ✓ · every item cites the N6 syllabus. ")
+        + fit.rows.map(r => r.topic + " " + r.draft + " of " + r.bp + (r.dev ? " (" + (r.dev > 0 ? "+" : "") + r.dev + ")" : "")).join(" · "),
+        border: fit.over ? "rgba(224,161,15,0.45)" : "rgba(61,220,151,0.35)", bg: fit.over ? "rgba(224,161,15,0.08)" : "rgba(61,220,151,0.06)", color: fit.over ? "#f3c14f" : "#bff5dc",
+        hasActions: fit.over, actions: fit.over ? [Object.assign({ label: u.bpAck ? "✓ Checked: this fit is fine for practice" : "I've checked: this fit is fine for practice", go: () => { if (!ro) this.patchUp(u.id, { bpAck: !u.bpAck }); } }, tog(!!u.bpAck, ro))] : [] });
+      if (!u.noMemo && !gen) notices.push({ id: "q4", text: "4.1 and 4.3 both use numbers that aren't in this question paper. The memo was possibly written for another version of this paper. Rule on it before Question 4's items can be reviewed.", border: u.group ? "var(--line2)" : "rgba(242,119,122,0.45)", bg: u.group ? "var(--panel2)" : "rgba(242,119,122,0.07)", color: u.group ? "var(--text2)" : "#ffb3b5", hasActions: true,
         actions: [["this", "The memo is for this paper"], ["other", "It's for another version: rewrite from this paper"]].map(o => Object.assign({ label: o[1], go: () => { if (!ro) this.patchUp(u.id, { group: o[0] }); } }, tog(u.group === o[0], ro))) });
       Object.assign(vals, {
-        rvTitle: u.title, rvLine: "Uploaded by " + PEOPLE[u.by].name + " · " + (u.state === "awaiting" ? "waiting for an institution admin" : u.state === "approved" ? "approved for the college" : u.state === "changes" ? "changes asked for" : "in your review") + " · your college's bank only",
+        rvTitle: u.title, rvLine: (gen ? "Generated for " : "Uploaded by ") + PEOPLE[u.by].name + " · " + (u.state === "awaiting" ? "waiting for an institution admin" : u.state === "approved" ? "approved for the college" : u.state === "changes" ? "changes asked for" : "in your review") + " · your college's bank only",
         rvCount: sum.resolved + " of " + sum.total + " items resolved", rvCountBg: sum.resolved === sum.total ? "rgba(61,220,151,0.14)" : "rgba(224,161,15,0.14)", rvCountColor: sum.resolved === sum.total ? "#5fe6ab" : "#f3c14f",
         rvNotices: notices, canPreviewResolve: !ro && !u.noMemo, previewResolve: () => this.previewResolve(),
         reviewBack: () => this.setState({ view: isAdmin && !isSetter ? "moderate" : "home" }),
@@ -779,40 +914,42 @@ class Component extends DCLogic {
             icon: icon, iconColor: t.resolved ? "#3ddc97" : "#f3c14f", border: on ? "rgba(129,177,255,0.7)" : "transparent", bg: on ? "rgba(0,104,248,0.14)" : "transparent" }; }),
       });
       if (sel) {
-        const n = sel.n, it = u.items[n] || {}, t = stOf(sel), F = u.noMemo ? [] : FINDINGS[n] || [], edit = s.rvEdit && s.rvEdit.key === n;
+        const n = sel.n, it = u.items[n] || {}, t = stOf(sel), F = this.fOf(u, n), edit = s.rvEdit && s.rvEdit.key === n, car = this.carOf(u, n);
+        const run = F.some(x => x.kind === "overlap") ? this.overlapRun(it.stem || sel.q) : null;
         const reauth = F.map(x => (it.res || {})[x.id]).filter(r => r && r.opt === "reauthor" && r.text)[0];
         const memo = u.noMemo ? [{ text: "No memo was published.", marks: "" }] : reauth ? [{ text: "Rewritten by " + PEOPLE[u.by].name + ": " + reauth.text, marks: sel.marks + (sel.marks === 1 ? " mark" : " marks") }]
           : (sel.bullets && sel.bullets.length ? sel.bullets.map(b => ({ text: b, marks: "" })) : sel.a != null ? [{ text: "Answer: " + String(sel.a).replace(".", ",") + (sel.unit ? " " + sel.unit : ""), marks: sel.marks + " marks" }] : [{ text: "Memo point text as read from the upload.", marks: "" }]);
         const checks = [["✓", "#3ddc97", "Marks read: " + sel.marks + " · memo " + (u.noMemo ? "missing" : "present")]];
         if (!u.noMemo) checks.push(["✓", "#3ddc97", "Memo points add up to the question's marks"]);
         if (/^1\.4/.test(n)) checks.push(["✓", "#3ddc97", "FIGURE 1 linked · alt text written · leak check passed"]);
-        if (F.length) checks.push(["⚑", "#f3c14f", F.length + (F.length === 1 ? " flag from the memo replay" : " flags from the memo replay")]);
+        if (gen) checks.push(["✓", "#3ddc97", "Source: N6 syllabus · " + sel.topic + " (C-grounded)"], run && run.n >= 12 ? ["⚑", "#f3c14f", "Shares " + run.n + " words in a row with a past paper (12 or more is a hit)"] : ["✓", "#3ddc97", "No run of 12 words shared with a past paper" + (run ? " (longest now: " + run.n + ")" : "")]);
+        if (F.length && !gen) checks.push(["⚑", "#f3c14f", F.length + (F.length === 1 ? " flag from the memo replay" : " flags from the memo replay")]);
         Object.assign(vals, {
-          hasDetail: true, dKey: n, dTitle: n + " · " + sel.marks + (sel.marks === 1 ? " mark" : " marks"), dSub: "Question " + sel.sec,
+          hasDetail: true, dKey: n, dTitle: n + " · " + sel.marks + (sel.marks === 1 ? " mark" : " marks"), dSub: gen ? sel.topic + " · Generated · source: N6 syllabus" : "Question " + sel.sec,
           dEditing: !!edit, dNotEditing: !edit, dStem: it.stem || sel.q, dStemDraft: edit ? s.rvEdit.draft : "", dCanEdit: !ro,
           dEditedNote: it.stem ? "Edited by " + PEOPLE[u.by].name + " (recorded; the original stays in the source)" : "Extracted text",
           dStemEdit: () => this.setState({ rvEdit: { key: n, draft: it.stem || sel.q } }), dStemInput: e => this.setState({ rvEdit: { key: n, draft: e.target.value } }),
           dStemCancel: () => this.setState({ rvEdit: null }), dStemSave: () => { const v = String(s.rvEdit.draft || "").trim(); if (v) this.patchItem(u, n, { stem: v }); this.setState({ rvEdit: null }); },
           dMemo: memo, dChecks: checks.map(c => ({ icon: c[0], color: c[1], text: c[2] })),
           dFindings: F.map(x => { const r = (it.res || {})[x.id] || {}, needs = this.needsText(r.opt);
-            const counterOpen = x.kind === "arith" && r.opt === "printed_stands" && !r.countersigned;
+            const counterOpen = (x.kind === "arith" || x.kind === "agreement") && r.opt === "printed_stands" && !r.countersigned;
             return { id: x.id, kind: KIND_WORD[x.kind], kindColor: x.kind === "convention" ? "#81b1ff" : x.kind === "arith" ? "#f3c14f" : "#ff9a9c",
               border: r.opt ? "var(--line2)" : x.kind === "untraceable" ? "rgba(242,119,122,0.45)" : "rgba(224,161,15,0.45)", bg: r.opt ? "var(--panel2)" : x.kind === "untraceable" ? "rgba(242,119,122,0.06)" : "rgba(224,161,15,0.06)",
-              text: x.text, hasValues: !!x.printed, printed: x.printed || "", replay: x.replay || "", aria: "Resolve: " + KIND_WORD[x.kind],
-              opts: RES_OPTS[x.kind].map(o => Object.assign({ id: o[0], label: o[1], pick: () => { if (ro) return; const res = Object.assign({}, it.res || {}, { [x.id]: { opt: o[0], text: o[0] === "reauthor" ? x.proposed ? "" : "" : "" } });
+              text: x.kind === "overlap" ? x.text + (run && run.n >= 12 ? " Shared now: “" + run.words + "” (" + run.n + " words)." : " Rewritten: no run of 12 words is shared now.") : x.text, hasValues: !!x.printed, printed: x.printed || "", replay: x.replay || "", replayLabel: x.kind === "agreement" ? "Independent solve" : "Replay of the paper", aria: "Resolve: " + KIND_WORD[x.kind],
+              opts: (RES_OPTS[x.kind] || []).map(o => Object.assign({ id: o[0], label: o[1], pick: () => { if (ro) return; const res = Object.assign({}, it.res || {}, { [x.id]: { opt: o[0], text: o[0] === "reauthor" ? x.proposed ? "" : "" : "" } });
                 this.patchItem(u, n, { res: res, reviewed: false }); } }, tog(r.opt === o[0], ro))),
               needsText: needs, textVal: r.text || "", textDisabled: ro,
               textLabel: r.opt === "reauthor" ? "Write the memo points from the question's own numbers" : r.opt === "derivation" ? "Show how the number traces to the question" : "Why the printed value stands",
               onText: e => { const v = e.target.value; this.patchItem(u, n, { res: Object.assign({}, it.res || {}, { [x.id]: Object.assign({}, r, { text: v }) }), reviewed: false }); },
-              hasNote: x.kind === "arith" && r.opt === "printed_stands" || x.kind === "untraceable" && !r.opt,
-              note: x.kind === "untraceable" ? "Correcting the single number isn't offered: a memo that uses numbers from another paper has to be rewritten from this one." : r.countersigned ? "Countersigned by " + PEOPLE.a1.name + "." : "A second approver must countersign this before the paper is approved.",
+              hasNote: (x.kind === "arith" || x.kind === "agreement") && r.opt === "printed_stands" || x.kind === "untraceable" && !r.opt || x.kind === "overlap",
+              note: x.kind === "overlap" ? "Edit the stem above so it's in your own words. The check re-runs when you save." : x.kind === "untraceable" ? "Correcting the single number isn't offered: a memo that uses numbers from another paper has to be rewritten from this one." : r.countersigned ? "Countersigned by " + PEOPLE.a1.name + "." : "A second approver must countersign this before the paper is approved.",
               noteColor: r.countersigned ? "#5fe6ab" : "var(--text2)",
               canCountersign: counterOpen && isAdmin && !isSetter && !!String(r.text || "").trim(),
               countersign: () => this.patchItem(u, n, { res: Object.assign({}, it.res || {}, { [x.id]: Object.assign({}, r, { countersigned: true }) }) }) }; }),
-          dHasFt: !u.noMemo && !!CARRIES[n], dFtText: n + " uses " + CARRIES[n] + "'s answer. Can a wrong " + CARRIES[n] + " still earn marks here?",
+          dHasFt: !!car, dFtText: n + " uses " + car + "'s answer. Can a wrong " + car + " still earn marks here?",
           dFtBorder: it.ft ? "var(--line2)" : "rgba(224,161,15,0.45)",
           dFtOpts: [["yes", "Yes, carry it forward"], ["no", "No"]].map(o => Object.assign({ id: o[0], label: o[1], pick: () => { if (!ro) this.patchItem(u, n, { ft: o[0], reviewed: false }); } }, tog(it.ft === o[0], ro))),
-          dHasAck: !u.noMemo && !!SME_CHECK[n], dAck: !!it.ack, dAckDisabled: ro,
+          dHasAck: this.smeOf(u, n), dAck: !!it.ack, dAckDisabled: ro,
           dAckText: "I've checked this memo's wording as a subject expert. Some 3.3 answers in this memo are technically weak (DIGEST addendum 1).",
           dAckToggle: () => { if (!ro) this.patchItem(u, n, { ack: !it.ack, reviewed: false }); },
           dStatus: !t.flagged ? "No flags: this item passed." : t.resolved ? "Resolved." : t.open.length ? "Still needed: " + t.open.join(", ") + "." : "Ready: mark it reviewed.",
@@ -833,7 +970,7 @@ class Component extends DCLogic {
           : approver ? (sum.counter ? "Countersign every “printed stands” before approving." : sum.ready ? "Every item is resolved. You're approving it for your college only." : "Some items aren't resolved yet.")
           : u.state === "awaiting" ? "Sent. An institution admin at your college approves it, and it can't be you."
           : sum.ready ? "Ready. An institution admin at your college approves it, and it can't be you."
-          : sum.resolved === sum.total ? "Confirm the memo pair above, then send it."
+          : sum.resolved === sum.total ? (fit.over && !u.bpAck ? "Check the blueprint fit above, then send it." : "Confirm the memo pair above, then send it.")
           : (sum.total - sum.resolved) + (sum.total - sum.resolved === 1 ? " item still needs" : " items still need") + " you" + (u.flags.pair && !u.pairAck ? ", and the memo pair needs your check" : "") + ".",
         submitDisabled: !canSubmit, submitBg: canSubmit ? "var(--grad)" : "var(--panel2)", submitColor: canSubmit ? "#ffffff" : "var(--text4)",
         submitPaper: () => { if (!canSubmit) return; this.patchUp(u.id, { state: "awaiting", note: "" }); this.setState({ view: "home", live: "Sent for approval." }); },
@@ -848,7 +985,7 @@ class Component extends DCLogic {
     const waiting = s.uploads.filter(x => x.state === "awaiting");
     Object.assign(vals, {
       papersToApprove: waiting.map(x => { const sm = this.upSummary(x), own = x.by === me.id;
-        return { id: x.id, title: x.title, line: "uploaded by " + PEOPLE[x.by].name + " · " + sm.resolved + " of " + sm.total + " resolved · " + (sm.errata + sm.reauth + sm.other) + " resolutions (" + sm.errata + (sm.errata === 1 ? " erratum, " : " errata, ") + sm.reauth + " re-authored" + (sm.other ? ", " + sm.other + " other" : "") + ")" + (own ? " · yours, so another admin approves it" : ""),
+        return { id: x.id, title: x.title, line: (x.src === "generated" ? "generated for " : "uploaded by ") + PEOPLE[x.by].name + " · " + sm.resolved + " of " + sm.total + " resolved · " + (sm.errata + sm.reauth + sm.other) + " resolutions (" + sm.errata + (sm.errata === 1 ? " erratum, " : " errata, ") + sm.reauth + " re-authored" + (sm.other ? ", " + sm.other + " other" : "") + ")" + (own ? " · yours, so another admin approves it" : ""),
           openLabel: own ? "View" : "Review", open: () => this.setState({ upCur: x.id, view: "review", upSel: null }) }; }),
       noPapers: waiting.length === 0, nPapersWaiting: waiting.filter(x => x.by !== me.id).length,
       upRows: s.uploads.filter(x => isAdmin || x.by === me.id).map(x => { const W = { reading: "Reading…", failed: "Couldn't be read", review: "In your review", awaiting: "Waiting for approval", changes: "Changes asked for", approved: "Approved · in the bank" }[x.state];
@@ -858,6 +995,52 @@ class Component extends DCLogic {
     });
     vals.hasUpRows = vals.upRows.length > 0;
     return vals;
+  }
+  // ── Brief 14 values: the blueprint form, and ranked suggestions when a job is refused.
+  genVals(s) {
+    const f = s.genForm, v = { startGen: () => this.setState({ view: "generate", genForm: Object.assign({}, this.state.genForm, { err: "" }) }) };
+    if (s.view !== "generate") return v;
+    const set = patch => this.setState({ genForm: Object.assign({}, this.state.genForm, patch) });
+    const setTopic = (id, patch) => set({ topics: Object.assign({}, this.state.genForm.topics, { [id]: Object.assign({ on: false, marks: "" }, this.state.genForm.topics[id], patch) }) });
+    const sum = GEN_TOPICS.reduce((a, t) => { const x = f.topics[t[0]]; return a + (x && x.on ? Number(x.marks) || 0 : 0); }, 0);
+    return Object.assign(v, {
+      genModes: [["success", "Success"], ["refused", "Refused twice"], ["budget", "Budget used up"], ["declined", "Model declined"], ["noshape", "Shape unknown"]].map(m => { const on = f.outcome === m[0];
+        return { label: m[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.2)" : "transparent", color: on ? "#ffffff" : "var(--text3)", pick: () => set({ outcome: m[0], err: "" }) }; }),
+      quotaLine: "This month: " + s.quota + " of 10 generations left for your college (sample)",
+      genTopics: GEN_TOPICS.map(t => { const x = f.topics[t[0]] || { on: false, marks: "" };
+        return { id: t[0], label: t[1], weight: t[2] + "% of the syllabus" + (t[0] === "vortex" ? " · no question in the bank yet" : ""), on: !!x.on, marks: x.marks || "", disabled: !x.on,
+          border: x.on ? "rgba(129,177,255,0.55)" : "var(--line)", aria: t[1] + " marks",
+          toggle: () => setTopic(t[0], { on: !x.on }), onMarks: e => setTopic(t[0], { marks: e.target.value.replace(/[^\d]/g, "").slice(0, 3) }) }; }),
+      genTotalVal: f.total || "", onGenTotal: e => set({ total: e.target.value.replace(/[^\d]/g, "").slice(0, 3) }),
+      // Spread the total over the ticked topics by syllabus weight (largest remainder, so it adds up exactly).
+      fillWeights: () => { const T = Number(this.state.genForm.total) || 0, on = GEN_TOPICS.filter(t => (this.state.genForm.topics[t[0]] || {}).on);
+        if (!T || !on.length) { set({ err: "Tick at least one topic and set a total first." }); return; }
+        const W = on.reduce((a, t) => a + t[2], 0), raw = on.map(t => ({ id: t[0], x: T * t[2] / W })), base = raw.map(r => ({ id: r.id, m: Math.floor(r.x), rem: r.x - Math.floor(r.x) }));
+        let left = T - base.reduce((a, b) => a + b.m, 0); base.slice().sort((a, b) => b.rem - a.rem).forEach(b => { if (left > 0) { b.m++; left--; } });
+        const topics = Object.assign({}, this.state.genForm.topics); base.forEach(b => { topics[b.id] = { on: true, marks: String(b.m) }; });
+        set({ topics: topics, err: "" }); },
+      genSum: sum + " marks · " + Math.round(sum * 1.8) + " minutes (the paper's own rate)",
+      genNotes: f.notes || "", onGenNotes: e => set({ notes: e.target.value }), genRights: !!f.rights, toggleRights: () => set({ rights: !this.state.genForm.rights }),
+      genHasErr: !!f.err, genErr: f.err || "", startGenerate: () => this.startGenerate(),
+    });
+  }
+  // ENGINE §7.2: rank APPROVED versions by fit, lexicographically (subject; topics covered; smallest
+  // topic-mark deviation; most recent). The setter chooses; nothing is chosen automatically.
+  suggestVals(u, fail) {
+    if (!(u.src === "generated" && fail && u.failReason === "refused")) return { hasSuggest: false, suggestions: [] };
+    const bp = u.blueprint || {}, want = Object.keys(bp);
+    const topicMarks = b => { const tm = {};
+      if (b.origin === "generated") GEN_PARTS.forEach(q => { tm[q.topic] = (tm[q.topic] || 0) + q.marks; });
+      else this.fmParts().forEach(q => { const t = FM_TOPIC_OF[q.n]; if (t) tm[t] = (tm[t] || 0) + q.marks; });
+      return tm; };
+    const cands = this.bank().filter(b => /^fm-|^up-|^gen-/.test(b.id)).map(b => { const tm = topicMarks(b);
+      return { b: b, covered: want.filter(t => tm[t]).length, dev: want.reduce((a, t) => a + Math.abs((tm[t] || 0) - bp[t]), 0) }; })
+      .sort((x, y) => y.covered - x.covered || x.dev - y.dev);
+    const lic = b => b.badge === "Checked by Nexera" ? "DHET question paper · licence pending clearance" : "Your college's own paper";
+    return { hasSuggest: true, suggestTitle: cands.length ? "Here are " + cands.length + " approved papers that fit this blueprint." : "No approved paper fits this blueprint.",
+      suggestFoot: cands.length ? "You choose. Nothing is picked for you." : "Edit the blueprint or try again.",
+      suggestions: cands.map(c => ({ id: c.b.id, title: c.b.title, line: c.b.badge + " · " + lic(c.b) + " · covers " + c.covered + " of " + want.length + " blueprint topics",
+        use: () => this.setState({ view: "assign", draft: { step: 2, paperId: c.b.id, mode: "practice", audience: "college", opensAt: Date.now() + 86400000, closesAt: Date.now() + 5 * 86400000 } }) })) };
   }
   renderVals() {
     const s = this.state, vw = s.vw, phone = vw < 600, wide = vw >= 1000, me = this.me(), now = Date.now();
@@ -878,11 +1061,11 @@ class Component extends DCLogic {
         return { id: x[0], label: phone && x[0] === "admin" ? "Admin" : x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.22)" : "transparent", color: on ? "#ffffff" : "var(--text3)",
           pick: () => this.setState({ role: x[0], view: x[0] === "teacher" && s.view === "moderate" ? "home" : s.view, live: "Viewing as " + x[1].toLowerCase() + "." }) }; }),
       tabs: [["home", "Home", 0], ["moderate", "Moderate", isAdmin ? toApproveList.length + (releasable && g.closed ? 1 : 0) + s.uploads.filter(x => x.state === "awaiting" && x.by !== me.id).length : 0], ["mark", "Marking", queueLeft], ["results", "Results", 0]]
-        .filter(t => t[0] !== "moderate" || isAdmin).map(t => { const on = s.view === t[0] || (t[0] === "home" && (s.view === "assign" || s.view === "upload" || s.view === "reading" || (s.view === "review" && !isAdmin))) || (t[0] === "moderate" && s.view === "review" && isAdmin);
+        .filter(t => t[0] !== "moderate" || isAdmin).map(t => { const on = s.view === t[0] || (t[0] === "home" && (s.view === "assign" || s.view === "upload" || s.view === "generate" || s.view === "reading" || (s.view === "review" && !isAdmin))) || (t[0] === "moderate" && s.view === "review" && isAdmin);
           return { id: t[0], label: t[1], count: String(t[2]), hasCount: t[2] > 0, current: on ? "page" : "false", border: on ? "rgba(129,177,255,0.55)" : "var(--line)", bg: on ? "rgba(0,104,248,0.14)" : "transparent", color: on ? "#ffffff" : "var(--text2)", go: go(t[0]) }; }),
-      onUpload: s.view === "upload", onReading: s.view === "reading" && !!this.upCur(), onReview: s.view === "review" && !!this.upCur(),
+      onGenerate: s.view === "generate", onUpload: s.view === "upload", onReading: s.view === "reading" && !!this.upCur(), onReview: s.view === "review" && !!this.upCur(),
       onHome: s.view === "home", onAssign: s.view === "assign" && !!s.draft, onModerate: s.view === "moderate", onMark: s.view === "mark", onResults: s.view === "results",
-      screenLabel: { home: "T1 Teaching home", assign: "T2 Assign", moderate: "T3 Moderate", mark: "T4 Marking", results: "T5 Results", upload: "T6 Upload", reading: "T6 Reading", review: "T6 Review" }[s.view],
+      screenLabel: { home: "T1 Teaching home", assign: "T2 Assign", moderate: "T3 Moderate", mark: "T4 Marking", results: "T5 Results", upload: "T6 Upload", reading: this.upCur() && this.upCur().src === "generated" ? "T7 Generating" : "T6 Reading", review: this.upCur() && this.upCur().src === "generated" ? "T7 Review draft" : "T6 Review", generate: "T7 Generate" }[s.view],
       toHome: go("home"),
       startAssign: () => { const D = 86400000, o = new Date(Date.now() + D); o.setHours(8, 0, 0, 0); const c = new Date(o.getTime() + 4 * D); c.setHours(17, 0, 0, 0);
         this.setState({ view: "assign", draft: { step: 1, paperId: null, mode: null, audience: "college", opensAt: o.getTime(), closesAt: c.getTime() } }); },
@@ -924,11 +1107,11 @@ class Component extends DCLogic {
             facts: b.marks + " marks · " + b.minutes + " minutes", on: on ? "true" : "false", hasNote: !!note, note: note, noteColor: b.version === "disclosed" ? "#f3c14f" : "var(--text2)",
             pick: () => set({ paperId: b.id, mode: b.version === "disclosed" && this.state.draft.mode === "class_test" ? null : this.state.draft.mode }) }, st); }),
         modeOpts: [["practice", "Practice (a challenge)", "Learners get three tries, hints and the memo after three tries. It doesn't earn tokens.", false],
-          ["class_test", "Mock / class test · not an ICASS task", "One attempt, no hints. Marks come back after the window closes and an institution admin moderates a sample.", p && p.version === "disclosed"]]
+          ["class_test", "Mock / class test · not an ICASS task", "One attempt, no hints. Marks come back after the window closes and an institution admin moderates a sample.", !!p && (p.version === "disclosed" || p.origin === "generated")]]
           .map(m => { const on = d.mode === m[0], st = radioSty(on, m[3]);
             return Object.assign({ id: m[0], title: m[1], body: m[2], on: on ? "true" : "false", disabled: m[3],
-              hasNote: m[0] === "class_test" && !!p && (p.version === "disclosed" || p.origin === "faithful_past_paper"),
-              note: p && p.version === "disclosed" ? "This version can't be used for a test: its questions were shared as flashcards." : "DHET says old exam papers aren't authentic ICASS tasks, so use this as a mock.",
+              hasNote: m[0] === "class_test" && !!p && (p.version === "disclosed" || p.origin === "faithful_past_paper" || p.origin === "generated"),
+              note: p && p.origin === "generated" ? "Generated papers are for practice until our quality check of generation is complete." : p && p.version === "disclosed" ? "This version can't be used for a test: its questions were shared as flashcards." : "DHET says old exam papers aren't authentic ICASS tasks, so use this as a mock.",
               pick: () => { if (!m[3]) set({ mode: m[0] }); } }, st); }),
         audOpts: [["college", "Everyone at " + COLLEGE.name, "40 learners", false], ["North", "North campus", "37 learners", false], ["South", "South campus", "3 learners", false], ["class", "A class", "Classes aren't on the platform yet", true]]
           .map(o => { const on = d.audience === o[0], st = radioSty(on, o[3]); return Object.assign({ id: o[0], label: o[1], note: o[2], on: on ? "true" : "false", disabled: o[3], pick: () => { if (!o[3]) set({ audience: o[0] }); } }, st); }),
@@ -940,7 +1123,7 @@ class Component extends DCLogic {
         summary: p ? [{ k: "Paper", v: p.title }, { k: "Mode", v: isTest ? "Mock / class test · not an ICASS task" : "Practice (a challenge)" }, { k: "Audience", v: audWord(d.audience) + (d.audience === "South" ? " · fewer than 5 learners: results stay hidden" : "") },
           { k: "Opens", v: fmtWhen(d.opensAt) }, { k: "Closes", v: fmtWhen(d.closesAt) }] : [],
         noticePreview: isTest ? "Your teacher, " + me.name + ", will see your marks for this. This is a mock, not an ICASS task. One attempt, no hints; marks come after the test closes and is moderated."
-          : "Set by your teacher, " + me.name + ". Practise at your own pace: three tries, hints, and the memo after three tries.",
+          : "Set by your teacher, " + me.name + ". Practise at your own pace: three tries, hints, and the memo after three tries." + (p && p.origin === "generated" ? " Written with AI from the syllabus · checked by " + COLLEGE.name + "." : ""),
         sendNote: isTest ? "An institution admin must approve this before learners see it" + (isAdmin ? ", and it can't be you, because you set it." : ".") : "Practice goes straight to your learners, labelled “Set by your teacher”.",
         backLabel: d.step === 1 ? "Cancel" : "Back",
         stepBack: () => { if (d.step === 1) this.setState({ view: "home", draft: null }); else set({ step: d.step - 1 }); },
@@ -1028,7 +1211,7 @@ class Component extends DCLogic {
       }
     }
 
-    Object.assign(vals, this.uploadVals(s, phone, wide, me, isAdmin));
+    Object.assign(vals, this.uploadVals(s, phone, wide, me, isAdmin), this.genVals(s));
     // Waiting: papers to approve count for the admin.
     if (isAdmin) vals.waiting = vals.waiting.concat([{ label: "Papers to approve", count: String(vals.nPapersWaiting), none: vals.nPapersWaiting === 0, color: vals.nPapersWaiting ? "var(--text)" : "var(--text3)", chev: vals.nPapersWaiting ? "›" : "", cursor: vals.nPapersWaiting ? "pointer" : "default", go: go("moderate") }]);
     // ── The release confirm (irreversible: releasing shows the memo)
