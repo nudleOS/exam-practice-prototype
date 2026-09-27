@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
-  <script type="module" src="model-floor.js"></script>
+  <script type="module" src="model-floor.js?v=17c"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
   <style>
@@ -51,31 +51,24 @@
     [data-ticket]:hover { border-color:rgba(129,177,255,0.75) !important; background-color:rgba(0,104,248,0.18) !important; }
     [data-ticket]:active { transform:scale(0.98); border-color:rgba(129,177,255,0.9) !important; background-color:rgba(0,104,248,0.22) !important; }
     [data-noscrollbar] { scrollbar-width:none; } [data-noscrollbar]::-webkit-scrollbar { display:none; }
-    /* Glass cards (brief 17b): a frosted layer, a gradient hairline edge, a lit top edge, a deep soft shadow. */
-    .glass-card { position:relative; isolation:isolate; box-sizing:border-box; border-radius:24px; border:1px solid transparent;
-      background:linear-gradient(160deg, rgba(46,52,66,0.58), rgba(20,23,30,0.50)) padding-box,
-        linear-gradient(145deg, rgba(170,200,255,0.50), rgba(255,255,255,0.08) 36%, rgba(255,255,255,0.03) 64%, rgba(140,110,255,0.40)) border-box;
-      -webkit-backdrop-filter:blur(22px) saturate(165%); backdrop-filter:blur(22px) saturate(165%);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30), 0 30px 64px -26px rgba(0,0,0,0.80); }
-    .glass-card::before { content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none;
-      background:radial-gradient(120% 75% at 10% -12%, rgba(255,255,255,0.11), transparent 55%), radial-gradient(90% 90% at 112% 118%, rgba(0,104,248,0.14), transparent 62%); }
-    .glass-card[data-tone="live"] { background:linear-gradient(160deg, rgba(34,48,78,0.62), rgba(16,22,38,0.52)) padding-box,
-        linear-gradient(145deg, rgba(129,177,255,0.85), rgba(0,104,248,0.22) 38%, rgba(255,255,255,0.05) 62%, rgba(103,29,255,0.60)) border-box;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30), 0 32px 72px -28px rgba(0,104,248,0.55); }
-    .glass-card[data-tone="released"] { background:linear-gradient(160deg, rgba(28,54,48,0.58), rgba(16,28,26,0.50)) padding-box,
-        linear-gradient(145deg, rgba(95,230,171,0.75), rgba(61,220,151,0.18) 38%, rgba(255,255,255,0.05) 62%, rgba(0,104,248,0.40)) border-box;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30), 0 32px 72px -28px rgba(61,220,151,0.35); }
-    .glass-card[data-size="row"] { border-radius:18px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 30px -18px rgba(0,0,0,0.7); }
-    .glass-dot { flex:none; width:7px; height:7px; border-radius:50%; background:#81b1ff; box-shadow:0 0 0 3px rgba(129,177,255,0.18), 0 0 12px rgba(129,177,255,0.8); }
-    .glass-dot[data-tone="live"] { animation:livedot 2.4s ease-in-out infinite; }
-    .glass-dot[data-tone="released"] { background:#5fe6ab; box-shadow:0 0 0 3px rgba(95,230,171,0.18), 0 0 12px rgba(95,230,171,0.7); }
-    .glass-dot[data-tone="calm"] { background:#a4a9ae; box-shadow:0 0 0 3px rgba(164,169,174,0.14); }
-    @keyframes livedot { 0%,100% { box-shadow:0 0 0 3px rgba(129,177,255,0.18), 0 0 12px rgba(129,177,255,0.8); } 50% { box-shadow:0 0 0 6px rgba(129,177,255,0.06), 0 0 18px rgba(129,177,255,1); } }
-    .glass-cta { box-shadow:inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -2px 0 rgba(0,0,0,0.18), 0 16px 36px -12px rgba(30,70,255,0.70); transition:transform 120ms ease, filter 160ms ease; }
-    .glass-cta:hover { filter:brightness(1.1); } .glass-cta:active { transform:scale(0.985); }
-    /* Where glass can't render, or the learner asked for less transparency: the same card, solid. */
-    @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass-card, .glass-card[data-tone] { background-color:#1d2027; } }
-    @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:#1d2027; } }
+    /* Cards (brief 17c): a quiet material, not a glow — near-solid for legibility, a light blur so the page
+       still reads through, a crisp 1px hairline and a lit top edge. Colour is carried by the dot, not a halo. */
+    .glass-card { position:relative; box-sizing:border-box; border-radius:22px; border:1px solid rgba(255,255,255,0.10);
+      background:rgba(30,33,40,0.84); -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.07), 0 12px 32px rgba(0,0,0,0.32); }
+    .glass-card[data-tone="live"] { background:rgba(26,34,52,0.86); border-color:rgba(129,177,255,0.30); }
+    .glass-card[data-tone="released"] { background:rgba(24,40,36,0.86); border-color:rgba(95,230,171,0.28); }
+    .glass-card[data-size="row"] { border-radius:16px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.06); }
+    .glass-dot { flex:none; width:8px; height:8px; border-radius:50%; background:#81b1ff; }
+    .glass-dot[data-tone="live"] { background:#4d9bff; animation:livedot 2.4s ease-in-out infinite; }
+    .glass-dot[data-tone="released"] { background:#3ddc97; }
+    .glass-dot[data-tone="calm"] { background:#8f9499; }
+    @keyframes livedot { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+    .glass-cta { box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 12px rgba(0,0,0,0.28); transition:transform 120ms ease, filter 160ms ease; }
+    .glass-cta:hover { filter:brightness(1.08); } .glass-cta:active { transform:scale(0.985); }
+    /* Where blur can't render, or the learner asked for less transparency: the same card, solid. */
+    @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass-card { background-color:#1e2128; } }
+    @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:#1e2128; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
 </helmet>
@@ -92,16 +85,21 @@
     <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
     <span style="flex:1; min-width:0; display:flex; flex-direction:column">
       <span style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headTitle }}</span>
-      <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headSub }}</span>
+      <span style="font-size:12px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headSub }}</span>
     </span>
     <sc-if value="{{ showMeter }}" hint-placeholder-val="{{ false }}">
       <span aria-label="{{ meterLabel }}" style="display:{{ ringDisplay }}; align-items:center; gap:6px; height:36px; padding:0 10px 0 5px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(32,35,39,0.72); font-size:12.5px; font-weight:800; white-space:nowrap">
-        <span aria-hidden="true" style="width:24px; height:24px; flex:none; border-radius:50%; background:conic-gradient(#81b1ff {{ ringDeg }}, rgba(255,255,255,0.1) 0); display:flex; align-items:center; justify-content:center"><span style="width:16px; height:16px; border-radius:50%; background:#202327"></span></span>{{ earnedNum }}<span style="font-size:11px; font-weight:600; color:var(--text3)">/{{ totalMarks }}</span>
+        <span aria-hidden="true" style="width:24px; height:24px; flex:none; border-radius:50%; background:conic-gradient(#81b1ff {{ ringDeg }}, rgba(255,255,255,0.1) 0); display:flex; align-items:center; justify-content:center"><span style="width:16px; height:16px; border-radius:50%; background:#202327"></span></span>{{ earnedNum }}<span style="font-size:12px; font-weight:600; color:var(--text3)">/{{ totalMarks }}</span>
       </span>
       <span title="Marks earned against the paper" style="display:{{ meterDisplay }}; flex-direction:column; gap:4px; width:120px">
-        <span style="font-size:11px; font-weight:700; color:var(--text2)">{{ meterLabel }}</span>
+        <span style="font-size:12px; font-weight:700; color:var(--text2)">{{ meterLabel }}</span>
         <span style="height:6px; border-radius:3px; background:rgba(255,255,255,0.08); overflow:hidden"><span style="display:block; height:100%; width:{{ meterPct }}; background:var(--tint); border-radius:3px; transition:width 500ms ease"></span></span>
       </span>
+    </sc-if>
+    <sc-if value="{{ pvToggleOn }}" hint-placeholder-val="{{ false }}">
+      <button data-trigger="preview" onClick="{{ togglePreview }}" aria-expanded="{{ pvOpen }}" aria-label="Design preview controls" style="box-sizing:border-box; height:44px; min-width:44px; padding:0 10px; border:1px dashed var(--line2); border-radius:14px; background:transparent; color:var(--text3); display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg><span style="display:{{ backTextDisplay }}">Preview</span>
+      </button>
     </sc-if>
     <sc-if value="{{ showKitBtn }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ openKit }}" aria-label="Paper kit" style="height:44px; padding:0 13px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); display:{{ kitHeadDisplay }}; align-items:center; gap:7px; cursor:pointer; font-size:13px; font-weight:600">
@@ -111,7 +109,7 @@
     </sc-if>
     <span data-xppill="true" title="XP earned" aria-label="{{ xp }} XP" style="height:44px; padding:0 {{ xpPad }}; flex:none; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:6px; font-size:14px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>
-      <span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
+      <span>{{ xp }}</span><span style="font-size:12px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
     </span>
   </header>
   <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ hallLive }}</p>
@@ -121,8 +119,8 @@
 
       <div style="grid-area:top; position:relative; z-index:3; flex:none; display:flex; align-items:center; gap:8px; padding:{{ topPad }}">
         <img src="assets/nexera-mark.png" alt="Nexera" style="width:24px; height:24px; display:block; flex:none" />
-        <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text2); white-space:nowrap; display:{{ brandTextDisplay }}">Nexera · Exam practice</span>
-        <button data-trigger="preview" onClick="{{ togglePreview }}" aria-expanded="{{ pvOpen }}" aria-controls="design-preview" aria-label="Design preview controls" style="box-sizing:border-box; min-height:36px; margin-left:4px; padding:0 10px; border:1px dashed var(--line2); border-radius:18px; background:transparent; color:var(--text3); display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">
+        <span style="font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text2); white-space:nowrap; display:{{ brandTextDisplay }}">Nexera · Exam practice</span>
+        <button data-trigger="preview" onClick="{{ togglePreview }}" aria-expanded="{{ pvOpen }}" aria-controls="design-preview" aria-label="Design preview controls" style="box-sizing:border-box; min-height:36px; margin-left:4px; padding:0 10px; border:1px dashed var(--line2); border-radius:18px; background:transparent; color:var(--text3); display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg><span style="display:{{ brandTextDisplay }}">Preview</span>
         </button>
         <span style="flex:1; min-width:0"></span>
@@ -130,11 +128,11 @@
           <div style="display:flex; gap:6px; flex-wrap:nowrap; flex:none; animation:rise 480ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">
             <span style="position:relative; display:flex">
               <button data-trigger="progress" onClick="{{ toggleProgress }}" aria-expanded="{{ progressOpen }}" aria-haspopup="dialog" aria-label="{{ xpAria }}" style="box-sizing:border-box; min-height:44px; margin:-4px 0; padding:0 12px; border-radius:22px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(32,35,39,0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); color:var(--text); font-size:13px; font-weight:800; cursor:pointer">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:11px; font-weight:600; color:var(--tint)">XP</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:12px; font-weight:600; color:var(--tint)">XP</span>
               </button>
               <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
                 <div role="dialog" aria-label="Your progress" class="glass-card" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; width:min(290px, 86vw); padding:15px 16px; border-radius:20px; animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
-                  <p style="margin:0 0 6px; font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Your progress</p>
+                  <p style="margin:0 0 6px; font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Your progress</p>
                   <sc-for list="{{ progRows }}" as="pr" hint-placeholder-count="3">
                     <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:7px 0; border-top:1px solid rgba(255,255,255,0.06)">
                       <span style="font-size:13px; color:var(--text2)">{{ pr.label }}</span><span style="font-size:14px; font-weight:800; white-space:nowrap">{{ pr.value }}</span>
@@ -150,19 +148,19 @@
 
       <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
       <div id="design-preview" role="region" aria-label="Design preview, not part of the product" style="position:absolute; top:{{ pvTop }}; left:12px; z-index:58; box-sizing:border-box; max-width:calc(100vw - 24px); display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:10px; border-radius:16px; background:rgba(25,27,30,0.97); border:1px solid var(--line2); box-shadow:0 18px 40px rgba(0,0,0,0.45)">
-        <span style="padding:0 4px; font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--text3)">Design preview · not in the product</span>
+        <span style="padding:0 4px; font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--text3)">Design preview · not in the product</span>
         <div role="group" aria-label="Preview state" style="display:flex; flex-wrap:wrap; justify-content:flex-start; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.6); border:1px solid rgba(255,255,255,0.06)">
           <sc-for list="{{ homeModes }}" as="hm" hint-placeholder-count="4">
-            <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
+            <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
           </sc-for>
         </div>
         <div role="group" aria-label="Class test preview" style="display:flex; flex-wrap:wrap; justify-content:flex-start; align-items:center; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.6); border:1px solid rgba(255,255,255,0.06)">
-          <span style="padding:0 6px; font-size:10.5px; font-weight:800; color:var(--text3)">Class test</span>
+          <span style="padding:0 6px; font-size:12px; font-weight:800; color:var(--text3)">Class test</span>
           <sc-for list="{{ ctModes }}" as="cm" hint-placeholder-count="6">
-            <button onClick="{{ cm.pick }}" aria-pressed="{{ cm.on }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ cm.bg }}; color:{{ cm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ cm.label }}</button>
+            <button onClick="{{ cm.pick }}" aria-pressed="{{ cm.on }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ cm.bg }}; color:{{ cm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ cm.label }}</button>
           </sc-for>
-          <button data-second="true" onClick="{{ toggleSecond }}" aria-pressed="{{ secondOn }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ secondBg }}; color:{{ secondColor }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">+ 2nd test</button>
-          <button data-busreset="true" onClick="{{ ctReset }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">Reset shared demo</button>
+          <button data-second="true" onClick="{{ toggleSecond }}" aria-pressed="{{ secondOn }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ secondBg }}; color:{{ secondColor }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">+ 2nd test</button>
+          <button data-busreset="true" onClick="{{ ctReset }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">Reset shared demo</button>
         </div>
       </div>
       </sc-if>
@@ -175,7 +173,6 @@
       </div>
 
       <div data-stage="true" style="grid-area:stage; position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}">
-        <span aria-hidden="true" style="position:absolute; left:50%; bottom:calc(9.7% - {{ ringHalf }}); width:{{ ringW }}; height:{{ ringH }}; transform:translateX(-50%); border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,{{ glowA }}), rgba(30,70,255,{{ glowB }}) 55%, transparent 100%); pointer-events:none"></span>
         <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:{{ posterH }}; aspect-ratio:1 / 2.25; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
           <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
             <img src="{{ posterSrc }}" alt="" onError="{{ posterFailed }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:50% 100%" />
@@ -189,20 +186,20 @@
           </sc-if>
         </span>
         <sc-if value="{{ mountModel }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/avatar-lite.glb" clip="{{ homeClip }}" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
+          <model-floor src="assets/avatar-lite.glb" clip="{{ homeClip }}" loop="once" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
         </sc-if>
-        <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(32,35,39,0.82); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(16px); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}<span aria-hidden="true" style="display:{{ tailDisplay }}; position:absolute; left:calc(50% - 7px); bottom:-7px; width:12px; height:12px; transform:rotate(45deg); background:rgb(34,37,42); border-right:1px solid rgba(129,177,255,0.28); border-bottom:1px solid rgba(129,177,255,0.28)"></span></p>
+        <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; box-sizing:border-box; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(30,33,40,0.90); border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); box-shadow:0 8px 24px rgba(0,0,0,0.3); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}<span aria-hidden="true" style="display:{{ tailDisplay }}; position:absolute; left:calc(50% - 7px); bottom:-7px; width:12px; height:12px; transform:rotate(45deg); background:rgb(34,37,42); border-right:1px solid rgba(129,177,255,0.28); border-bottom:1px solid rgba(129,177,255,0.28)"></span></p>
       </div>
 
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
         <sc-if value="{{ ctHomeOn }}" hint-placeholder-val="{{ false }}">
           <div data-classcard="home" class="glass-card" data-tone="{{ ctTone }}" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
-            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span class="glass-dot" data-tone="{{ ctTone }}" aria-hidden="true"></span><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">{{ ctKicker }}</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:10.5px; font-weight:800">Live from the teacher tool</span></sc-if></span>
-            <span style="font-size:18px; font-weight:800; letter-spacing:-0.015em; line-height:1.25">{{ ctTitle }}</span>
-            <span style="font-size:12.5px; font-weight:700; line-height:1.4; color:{{ ctLineColor }}">{{ ctLine }}</span>
-            <button data-classgo="home" class="glass-cta" onClick="{{ ctGo }}" style="box-sizing:border-box; width:100%; min-height:54px; margin-top:6px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer">{{ ctAction }}</button>
+            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span class="glass-dot" data-tone="{{ ctTone }}" aria-hidden="true"></span><span style="font-size:13px; font-weight:600; color:#b9bec4">{{ ctKicker }}</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:12px; font-weight:800">Live from the teacher tool</span></sc-if></span>
+            <span style="font-size:19px; font-weight:700; letter-spacing:-0.02em; line-height:1.25">{{ ctTitle }}</span>
+            <span style="font-size:14px; font-weight:500; line-height:1.45; color:#c9cdd2; text-wrap:pretty">{{ ctLine }}</span>
+            <button data-classgo="home" class="glass-cta" onClick="{{ ctGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ ctAction }}</button>
             <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
-              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
+              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:6px; display:flex; align-items:center; gap:8px; padding:10px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:#c9cdd2; font-size:13.5px; font-weight:600; text-align:left; cursor:pointer">
                 <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 6 6 6-6 6"></path></svg>
               </button>
@@ -225,11 +222,11 @@
             <button data-homestart="true" onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; box-sizing:border-box; border:{{ homeCtaBorder }}; border-radius:18px; background:{{ homeCtaBg }}; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:{{ homeStartShadow }}">Start</button>
           </div>
           <sc-if value="{{ hasTicketPaper }}" hint-placeholder-val="{{ true }}">
-            <span style="font-size:11.5px; color:var(--text3); text-align:center">{{ ticketProv }}</span>
+            <span style="font-size:12px; color:var(--text3); text-align:center">{{ ticketProv }}</span>
           </sc-if>
           <div style="box-sizing:border-box; width:{{ startW }}">
             <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
-              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
+              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:6px; display:flex; align-items:center; gap:8px; padding:10px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:#c9cdd2; font-size:13.5px; font-weight:600; text-align:left; cursor:pointer">
                 <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 6 6 6-6 6"></path></svg>
               </button>
@@ -238,11 +235,11 @@
         </sc-if>
         <sc-if value="{{ showContinueCard }}" hint-placeholder-val="{{ false }}">
           <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
-            <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
-            <span style="font-size:18px; font-weight:800; letter-spacing:-0.015em; line-height:1.25">{{ continueTitle }}</span>
-            <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:56px; margin-top:6px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16.5px; font-weight:800; letter-spacing:-0.01em; cursor:pointer">{{ continueLabel }}</button>
+            <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:13px; font-weight:600; color:#b9bec4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
+            <span style="font-size:19px; font-weight:700; letter-spacing:-0.02em; line-height:1.25">{{ continueTitle }}</span>
+            <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ continueLabel }}</button>
             <sc-if value="{{ homeMoreOn }}" hint-placeholder-val="{{ false }}">
-              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:4px; display:flex; align-items:center; gap:8px; padding:8px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:var(--text2); font-size:12.5px; font-weight:700; text-align:left; cursor:pointer">
+              <button data-trigger="tests" data-homemore="true" onClick="{{ homeMoreGo }}" aria-haspopup="dialog" aria-label="{{ homeMoreAria }}" style="box-sizing:border-box; width:100%; min-height:44px; margin-top:6px; display:flex; align-items:center; gap:8px; padding:10px 2px 0; border:none; border-top:1px solid rgba(255,255,255,0.08); background:transparent; color:#c9cdd2; font-size:13.5px; font-weight:600; text-align:left; cursor:pointer">
                 <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ homeMoreText }}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m9 6 6 6-6 6"></path></svg>
               </button>
@@ -278,12 +275,12 @@
             <div id="subj-list" role="listbox" aria-label="Subjects" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:2px; overflow-y:auto; overscroll-behavior:contain; margin:0 -4px; padding:0 4px">
               <sc-for list="{{ subjRows }}" as="sr" hint-placeholder-count="6">
                 <sc-if value="{{ sr.isHead }}" hint-placeholder-val="{{ false }}">
-                  <span role="presentation" style="padding:12px 8px 4px; font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">{{ sr.label }}</span>
+                  <span role="presentation" style="padding:12px 8px 4px; font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">{{ sr.label }}</span>
                 </sc-if>
                 <sc-if value="{{ sr.isOpt }}" hint-placeholder-val="{{ true }}">
                   <button role="option" data-opt="{{ sr.idx }}" aria-selected="{{ sr.on }}" tabIndex="{{ sr.tab }}" onClick="{{ sr.pick }}" style="min-height:48px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:{{ sr.bg }}; color:var(--text); text-align:left; cursor:pointer" style-hover="background:var(--hover)">
                     <span style="flex:1; min-width:0; font-size:14px; font-weight:{{ sr.weight }}; color:{{ sr.color }}; text-wrap:pretty">{{ sr.label }}</span>
-                    <span style="flex:none; padding:3px 8px; border-radius:8px; background:{{ sr.tagBg }}; font-size:10.5px; font-weight:700; color:{{ sr.tagColor }}; white-space:nowrap">{{ sr.tag }}</span>
+                    <span style="flex:none; padding:3px 8px; border-radius:8px; background:{{ sr.tagBg }}; font-size:12px; font-weight:700; color:{{ sr.tagColor }}; white-space:nowrap">{{ sr.tag }}</span>
                   </button>
                 </sc-if>
               </sc-for>
@@ -306,9 +303,9 @@
             <div role="list" aria-label="Class tests" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:8px; overflow-y:auto; overscroll-behavior:contain">
               <sc-for list="{{ testRows }}" as="tr" hint-placeholder-count="2">
                 <div role="listitem" data-testrow="{{ tr.ref }}" class="glass-card" data-size="row" data-tone="{{ tr.tone }}" style="display:flex; flex-direction:column; gap:4px; padding:13px 14px 14px 16px">
-                  <span style="display:flex; align-items:center; gap:8px"><span class="glass-dot" data-tone="{{ tr.tone }}" aria-hidden="true"></span><span style="font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3)">{{ tr.kicker }}</span></span>
+                  <span style="display:flex; align-items:center; gap:8px"><span class="glass-dot" data-tone="{{ tr.tone }}" aria-hidden="true"></span><span style="font-size:12.5px; font-weight:600; color:#b9bec4">{{ tr.kicker }}</span></span>
                   <span style="font-size:15px; font-weight:800; line-height:1.3">{{ tr.title }}</span>
-                  <span style="font-size:12.5px; font-weight:700; line-height:1.4; color:{{ tr.color }}">{{ tr.line }}</span>
+                  <span style="font-size:13.5px; font-weight:500; line-height:1.45; color:#c9cdd2">{{ tr.line }}</span>
                   <sc-if value="{{ tr.hasAction }}" hint-placeholder-val="{{ false }}">
                     <button onClick="{{ tr.go }}" class="glass-cta" style="align-self:flex-start; min-height:44px; margin-top:6px; padding:0 18px; border:none; border-radius:13px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">{{ tr.action }}</button>
                   </sc-if>
@@ -337,16 +334,18 @@
           <div data-classcard="map" style="pointer-events:auto; box-sizing:border-box; width:min(560px, calc(100vw - 32px)); display:flex; align-items:center; gap:10px; padding:8px 8px 8px 14px; border-radius:16px; border:1px solid rgba(129,177,255,0.55); background:rgba(20,30,52,0.94); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
             <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px">
               <span style="font-size:12.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ctMapLine }}</span>
-              <span style="font-size:11px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ctMapLock }}</span>
+              <span style="font-size:12px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ctMapLock }}</span>
             </span>
             <button data-classgo="map" onClick="{{ ctGo }}" style="flex:none; min-height:40px; padding:0 14px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap">{{ ctAction }}</button>
           </div>
         </sc-if>
+        <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
         <div role="group" aria-label="Preview state" style="pointer-events:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.78); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
           <sc-for list="{{ mapModes }}" as="mm" hint-placeholder-count="3">
-            <button onClick="{{ mm.pick }}" aria-pressed="{{ mm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ mm.bg }}; color:{{ mm.color }}; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap">{{ mm.label }}</button>
+            <button onClick="{{ mm.pick }}" aria-pressed="{{ mm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ mm.bg }}; color:{{ mm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ mm.label }}</button>
           </sc-for>
         </div>
+        </sc-if>
       </div>
       <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
       <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
@@ -391,7 +390,7 @@
         </svg>
 
         <span style="position:absolute; left:0; right:0; top:{{ finishTop }}; display:flex; justify-content:center; pointer-events:none">
-          <span style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:18px; border:1px solid transparent; background:linear-gradient(#17221d, #141a17) padding-box, linear-gradient(135deg, rgba(61,220,151,0.9), rgba(61,220,151,0.25)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.45), 0 0 {{ finishGlow }} rgba(61,220,151,0.35); font-size:11.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--ok); white-space:nowrap">
+          <span style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:18px; border:1px solid transparent; background:linear-gradient(#17221d, #141a17) padding-box, linear-gradient(135deg, rgba(61,220,151,0.9), rgba(61,220,151,0.25)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.45), 0 0 {{ finishGlow }} rgba(61,220,151,0.35); font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--ok); white-space:nowrap">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg>
             Finish · {{ totalMarks }} marks
           </span>
@@ -402,16 +401,16 @@
               <svg width="11" height="11" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M6 4l14 8-14 8z"></path></svg>{{ startLabel }}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
             </span>
             <span style="font-size:13.5px; font-weight:800; line-height:1.3; color:#ffffff; text-wrap:balance">{{ startPaperName }}</span>
-            <span style="font-size:11.5px; font-weight:600; color:var(--text2)">{{ startPaperFacts }}</span>
-            <span style="font-size:10.5px; color:var(--text3)">{{ startProv }}</span>
+            <span style="font-size:12px; font-weight:600; color:var(--text2)">{{ startPaperFacts }}</span>
+            <span style="font-size:12px; color:var(--text3)">{{ startProv }}</span>
           </button>
         </span>
         <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
           <span style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
             <span style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:9px 18px 10px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #23272e, #1a1d22) padding-box, linear-gradient(135deg, rgba(129,177,255,0.55), rgba(103,29,255,0.30) 60%, rgba(255,255,255,0.06)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 34px rgba(0,0,0,0.5); white-space:nowrap">
-              <span style="font-size:11px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:#dfe6f3">{{ rc.label }}</span>
+              <span style="font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:#dfe6f3">{{ rc.label }}</span>
               <span aria-hidden="true" style="width:96px; height:5px; border-radius:3px; background:rgba(0,0,0,0.45); box-shadow:inset 0 1px 1px rgba(0,0,0,0.5); overflow:hidden"><span style="display:block; height:100%; width:{{ rc.pct }}; background:var(--grad); border-radius:3px"></span></span>
-              <span style="font-size:10.5px; font-weight:700; color:var(--text3)">{{ rc.earned }} of {{ rc.total }} banked</span>
+              <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ rc.earned }} of {{ rc.total }} banked</span>
             </span>
           </span>
         </sc-for>
@@ -434,9 +433,9 @@
               </button>
               <span style="margin-top:4px; max-width:150px; font-size:12.5px; font-weight:700; line-height:1.3; text-align:center; color:{{ n.titleColor }}; text-shadow:0 2px 8px rgba(0,0,0,0.8); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">{{ n.title }}</span>
               <span style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px; margin-top:-3px">
-                <span style="padding:2px 7px; border-radius:6px; background:{{ n.stateBg }}; font-size:10.5px; font-weight:700; color:{{ n.stateColor }}; white-space:nowrap">{{ n.state }}</span>
+                <span style="padding:2px 7px; border-radius:6px; background:{{ n.stateBg }}; font-size:12px; font-weight:700; color:{{ n.stateColor }}; white-space:nowrap">{{ n.state }}</span>
                 <sc-for list="{{ n.tags }}" as="tg" hint-placeholder-count="1">
-                  <span style="padding:2px 7px; border-radius:6px; background:rgba(129,177,255,0.14); font-size:10.5px; font-weight:700; letter-spacing:0.05em; color:var(--tint); white-space:nowrap">{{ tg }}</span>
+                  <span style="padding:2px 7px; border-radius:6px; background:rgba(129,177,255,0.14); font-size:12px; font-weight:700; letter-spacing:0.05em; color:var(--tint); white-space:nowrap">{{ tg }}</span>
                 </sc-for>
               </span>
             </li>
@@ -444,7 +443,6 @@
         </ol>
 
         <div aria-hidden="true" style="position:absolute; left:{{ compLeft }}; top:{{ compTop }}; width:{{ compWpx }}; height:{{ compHpx }}; pointer-events:none; z-index:2; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
-          <span style="position:absolute; left:14%; right:14%; bottom:0; height:16px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,0.5), rgba(0,104,248,0.12) 60%, transparent); box-shadow:0 0 0 1px rgba(129,177,255,0.15)"></span>
           <sc-if value="{{ mapModelOn }}" hint-placeholder-val="{{ false }}">
             <model-floor src="assets/avatar-lite.glb" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
           </sc-if>
@@ -468,9 +466,9 @@
               <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
                 <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
                   <span style="font-size:14.5px; font-weight:800">{{ tr.label }}</span>
-                  <span style="font-size:11.5px; font-weight:700; color:var(--text3)">{{ tr.weight }}</span>
+                  <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ tr.weight }}</span>
                   <sc-if value="{{ tr.suggested }}" hint-placeholder-val="{{ false }}">
-                    <span style="padding:2px 8px; border-radius:8px; background:rgba(0,104,248,0.18); border:1px solid rgba(129,177,255,0.5); font-size:10.5px; font-weight:800; letter-spacing:0.06em; color:#cfe0ff">SUGGESTED</span>
+                    <span style="padding:2px 8px; border-radius:8px; background:rgba(0,104,248,0.18); border:1px solid rgba(129,177,255,0.5); font-size:12px; font-weight:800; letter-spacing:0.06em; color:#cfe0ff">SUGGESTED</span>
                   </sc-if>
                 </span>
                 <span aria-hidden="true" style="display:block; height:4px; width:100%; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden"><span style="display:block; height:100%; width:{{ tr.weightPct }}; background:rgba(129,177,255,0.45)"></span></span>
@@ -482,7 +480,7 @@
               </sc-if>
             </button>
           </sc-for>
-          <p style="margin:4px 0 0; font-size:11.5px; line-height:1.5; color:var(--text3)">{{ topicsFoot }}</p>
+          <p style="margin:4px 0 0; font-size:12px; line-height:1.5; color:var(--text3)">{{ topicsFoot }}</p>
         </section>
       </sc-if>
     </main>
@@ -522,15 +520,15 @@
             <button onClick="{{ closeCard }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
           </div>
           <span style="display:flex; flex-wrap:wrap; gap:6px">
-            <span style="padding:4px 9px; border-radius:8px; background:{{ cardStateBg }}; font-size:11.5px; font-weight:700; color:{{ cardStateColor }}">{{ cardState }}</span>
+            <span style="padding:4px 9px; border-radius:8px; background:{{ cardStateBg }}; font-size:12px; font-weight:700; color:{{ cardStateColor }}">{{ cardState }}</span>
             <sc-for list="{{ cardTags }}" as="ct" hint-placeholder-count="2">
-              <span style="padding:4px 9px; border-radius:8px; background:rgba(129,177,255,0.12); font-size:11.5px; font-weight:700; color:var(--tint)">{{ ct }}</span>
+              <span style="padding:4px 9px; border-radius:8px; background:rgba(129,177,255,0.12); font-size:12px; font-weight:700; color:var(--tint)">{{ ct }}</span>
             </sc-for>
           </span>
           <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px">
             <sc-for list="{{ cardStats }}" as="cs" hint-placeholder-count="3">
               <span style="display:flex; flex-direction:column; gap:3px; padding:10px 11px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)">
-                <span style="font-size:11px; font-weight:700; color:var(--text3)">{{ cs.label }}</span>
+                <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ cs.label }}</span>
                 <span style="font-size:15px; font-weight:800; line-height:1.2">{{ cs.value }}</span>
               </span>
             </sc-for>
@@ -569,7 +567,7 @@
         <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
           <span style="flex:1; min-width:0; display:flex; flex-direction:column">
             <span style="font-size:13.5px; font-weight:800; white-space:nowrap">{{ hallHeadTitle }}</span>
-            <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hallPaperLine }}</span>
+            <span style="font-size:12px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hallPaperLine }}</span>
           </span>
           <span data-clock="true" role="timer" aria-label="{{ clockAria }}" style="flex:none; height:38px; padding:0 12px; border-radius:14px; border:1px solid {{ clockBorder }}; background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:7px; font-size:15px; font-weight:800; font-variant-numeric:tabular-nums; color:{{ clockColor }}; white-space:nowrap">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5"></path><path d="M9 2h6"></path></svg>{{ clockText }}
@@ -588,7 +586,7 @@
         </sc-if>
         <sc-if value="{{ showPlayXp }}" hint-placeholder-val="{{ true }}">
         <span data-xppill="true" aria-label="{{ xp }} XP" style="flex:none; height:36px; padding:0 {{ xpPad }}; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:5px; font-size:13.5px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ xp }}</span><span style="font-size:12px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
         </span>
         </sc-if>
         <sc-if value="{{ showSound }}" hint-placeholder-val="{{ true }}">
@@ -601,7 +599,7 @@
         <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:8px; padding:0 12px 8px">
           <div data-hallnav="strip" data-noscrollbar="true" role="group" aria-label="Questions on the paper" style="flex:1; min-width:0; display:flex; gap:6px; overflow-x:auto; padding:4px 3px">
             <sc-for list="{{ navSquares }}" as="nq" hint-placeholder-count="8">
-              <button data-navsq="{{ nq.idx }}" onClick="{{ nq.go }}" aria-label="{{ nq.aria }}" aria-current="{{ nq.current }}" style="position:relative; flex:none; min-width:46px; height:34px; padding:0 6px; border-radius:9px; border:{{ nq.border }}; background:{{ nq.bg }}; color:{{ nq.color }}; font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; box-shadow:{{ nq.ring }}">{{ nq.label }}<sc-if value="{{ nq.flagged }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute; right:-3px; top:-3px; width:10px; height:10px; border-radius:50%; background:#e0a10f; border:2px solid #191b1e"></span></sc-if></button>
+              <button data-navsq="{{ nq.idx }}" onClick="{{ nq.go }}" aria-label="{{ nq.aria }}" aria-current="{{ nq.current }}" style="position:relative; flex:none; min-width:46px; height:34px; padding:0 6px; border-radius:9px; border:{{ nq.border }}; background:{{ nq.bg }}; color:{{ nq.color }}; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; box-shadow:{{ nq.ring }}">{{ nq.label }}<sc-if value="{{ nq.flagged }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute; right:-3px; top:-3px; width:10px; height:10px; border-radius:50%; background:#e0a10f; border:2px solid #191b1e"></span></sc-if></button>
             </sc-for>
           </div>
           <button data-handin="true" onClick="{{ openHandIn }}" aria-haspopup="dialog" style="flex:none; min-height:40px; padding:0 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.5); background:rgba(0,104,248,0.16); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap">Hand in</button>
@@ -613,7 +611,6 @@
       <sc-if value="{{ showCoach }}" hint-placeholder-val="{{ true }}">
       <aside aria-label="Your companion" style="position:{{ coachPos }}; top:{{ coachTop }}; align-self:start; z-index:2; display:flex; flex-direction:{{ coachDir }}; align-items:{{ coachAlign }}; gap:{{ coachGap }}; margin-bottom:{{ coachMb }}">
         <div aria-hidden="true" style="position:relative; width:{{ coachW }}; height:{{ coachH }}; flex:none">
-          <span style="position:absolute; left:8%; right:8%; bottom:0; height:{{ coachShadowH }}; border-radius:50%; background:radial-gradient(closest-side, {{ coachShadowTint }}, transparent); transition:background 600ms ease"></span>
           <sc-if value="{{ coachModelOn }}" hint-placeholder-val="{{ false }}">
             <model-floor src="assets/avatar-lite.glb" clip="{{ playClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 4px 0"></model-floor>
           </sc-if>
@@ -633,15 +630,15 @@
           <div data-navscroll="true" style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#363b41 transparent; display:flex; flex-direction:column; gap:12px; margin:0 -6px; padding:0 6px">
           <sc-for list="{{ navGroups }}" as="ng" hint-placeholder-count="4">
             <div style="display:flex; flex-direction:column; gap:7px">
-              <span style="font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ ng.title }}</span>
+              <span style="font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ ng.title }}</span>
               <div data-hallnav="col" style="display:flex; flex-wrap:wrap; gap:6px; padding:2px">
                 <sc-for list="{{ ng.squares }}" as="nq" hint-placeholder-count="6">
-                  <button data-navsq="{{ nq.idx }}" onClick="{{ nq.go }}" aria-label="{{ nq.aria }}" aria-current="{{ nq.current }}" style="position:relative; flex:none; min-width:46px; height:32px; padding:0 6px; border-radius:9px; border:{{ nq.border }}; background:{{ nq.bg }}; color:{{ nq.color }}; font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; box-shadow:{{ nq.ring }}">{{ nq.label }}<sc-if value="{{ nq.flagged }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute; right:-3px; top:-3px; width:10px; height:10px; border-radius:50%; background:#e0a10f; border:2px solid #191b1e"></span></sc-if></button>
+                  <button data-navsq="{{ nq.idx }}" onClick="{{ nq.go }}" aria-label="{{ nq.aria }}" aria-current="{{ nq.current }}" style="position:relative; flex:none; min-width:46px; height:32px; padding:0 6px; border-radius:9px; border:{{ nq.border }}; background:{{ nq.bg }}; color:{{ nq.color }}; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; box-shadow:{{ nq.ring }}">{{ nq.label }}<sc-if value="{{ nq.flagged }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute; right:-3px; top:-3px; width:10px; height:10px; border-radius:50%; background:#e0a10f; border:2px solid #191b1e"></span></sc-if></button>
                 </sc-for>
               </div>
             </div>
           </sc-for>
-          <span aria-hidden="true" style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:11px; font-weight:600; color:var(--text3)">
+          <span aria-hidden="true" style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:12px; font-weight:600; color:var(--text3)">
             <span style="display:flex; align-items:center; gap:5px"><span style="width:12px; height:10px; border-radius:3px; border:1.5px solid var(--line2)"></span>Not answered</span>
             <span style="display:flex; align-items:center; gap:5px"><span style="width:12px; height:10px; border-radius:3px; border:1.5px solid rgba(129,177,255,0.6); background:rgba(0,104,248,0.22)"></span>Answered</span>
             <span style="display:flex; align-items:center; gap:5px"><span style="width:9px; height:9px; border-radius:50%; background:#e0a10f"></span>Flagged</span>
@@ -656,7 +653,7 @@
         <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
           <div style="border-radius:16px; border:1px solid var(--line); background:rgba(29,32,35,0.82)">
             <button onClick="{{ toggleCtx }}" aria-expanded="{{ ctxOpen }}" style="width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:10px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
-              <span style="flex:none; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
+              <span style="flex:none; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
               <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ context }}</span>
               <span style="flex:none; font-size:12.5px; font-weight:700; color:var(--tint)">{{ ctxAction }}</span>
             </button>
@@ -732,20 +729,20 @@
               </svg>
 
               <sc-for list="{{ sceneLabels }}" as="lb" hint-placeholder-count="2">
-                <span aria-hidden="true" style="position:absolute; left:{{ lb.x }}; top:{{ lb.y }}; transform:translate(-50%, -50%); font-size:10.5px; font-weight:800; color:{{ lb.color }}; white-space:nowrap; pointer-events:none; text-shadow:0 1px 3px rgba(0,0,0,0.85)">{{ lb.text }}</span>
+                <span aria-hidden="true" style="position:absolute; left:{{ lb.x }}; top:{{ lb.y }}; transform:translate(-50%, -50%); font-size:12px; font-weight:800; color:{{ lb.color }}; white-space:nowrap; pointer-events:none; text-shadow:0 1px 3px rgba(0,0,0,0.85)">{{ lb.text }}</span>
               </sc-for>
               <sc-for list="{{ sceneTags }}" as="tg" hint-placeholder-count="3">
                 <button data-scenetag="{{ tg.sid }}" onClick="{{ tg.tap }}" aria-label="{{ tg.aria }}" style="position:absolute; left:{{ tg.x }}; top:{{ tg.y }}; transform:translate(-50%, -50%); min-width:44px; min-height:44px; padding:0; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center">
-                  <span style="display:flex; align-items:center; gap:4px; height:26px; padding:0 9px; border-radius:13px; border:1.5px solid {{ tg.border }}; background:{{ tg.bg }}; box-shadow:{{ tg.ring }}; font-size:11.5px; font-weight:800; color:{{ tg.color }}; white-space:nowrap">{{ tg.text }}</span>
+                  <span style="display:flex; align-items:center; gap:4px; height:26px; padding:0 9px; border-radius:13px; border:1.5px solid {{ tg.border }}; background:{{ tg.bg }}; box-shadow:{{ tg.ring }}; font-size:12px; font-weight:800; color:{{ tg.color }}; white-space:nowrap">{{ tg.text }}</span>
                 </button>
               </sc-for>
             </div>
             <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:8px 12px 10px; border-top:1px solid var(--line)">
-              <span style="flex:1; min-width:0; font-size:11.5px; font-weight:600; color:var(--text3)">{{ sceneGivens }}</span>
+              <span style="flex:1; min-width:0; font-size:12px; font-weight:600; color:var(--text3)">{{ sceneGivens }}</span>
               <sc-if value="{{ hasLegend }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11px; font-weight:700; color:var(--text2)"><span style="color:#81b1ff">━ Yours</span> · <span style="color:#e6e8ea">┅ The memo's</span></span>
+                <span style="font-size:12px; font-weight:700; color:var(--text2)"><span style="color:#81b1ff">━ Yours</span> · <span style="color:#e6e8ea">┅ The memo's</span></span>
               </sc-if>
-              <button onClick="{{ toggleDescribe }}" aria-expanded="{{ describeOpen }}" style="min-height:32px; padding:0 10px; border-radius:10px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:11.5px; font-weight:700; cursor:pointer">Describe the system</button>
+              <button onClick="{{ toggleDescribe }}" aria-expanded="{{ describeOpen }}" style="min-height:32px; padding:0 10px; border-radius:10px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:12px; font-weight:700; cursor:pointer">Describe the system</button>
             </div>
             <sc-if value="{{ describeOpen }}" hint-placeholder-val="{{ false }}">
               <p style="margin:0; padding:0 12px 12px; font-size:13px; line-height:1.55; color:var(--text2)">{{ sceneAlt }}</p>
@@ -765,7 +762,7 @@
                 <sc-for list="{{ figSpots }}" as="fs" hint-placeholder-count="5">
                   <button data-hotspot="{{ fs.letter }}" onClick="{{ fs.tap }}" aria-label="{{ fs.aria }}" aria-pressed="{{ fs.pressed }}" disabled="{{ fs.disabled }}" style="position:absolute; left:{{ fs.x }}; top:{{ fs.y }}; transform:translate(-50%, -50%); width:{{ figSpotSize }}; height:{{ figSpotSize }}; padding:0; border-radius:50%; border:{{ fs.border }}; background:{{ fs.bg }}; box-shadow:{{ fs.shadow }}; cursor:pointer">
                     <sc-if value="{{ fs.hasBadge }}" hint-placeholder-val="{{ false }}">
-                      <span aria-hidden="true" style="position:absolute; right:-8px; top:-8px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:{{ fs.badgeBg }}; color:#ffffff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.35)">{{ fs.badge }}</span>
+                      <span aria-hidden="true" style="position:absolute; right:-8px; top:-8px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:{{ fs.badgeBg }}; color:#ffffff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.35)">{{ fs.badge }}</span>
                     </sc-if>
                   </button>
                 </sc-for>
@@ -783,7 +780,7 @@
             <span style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span>
             <span style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
-              <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:11.5px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
+              <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:12px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
             </sc-if>
             <span style="flex:1"></span>
             <span style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
@@ -815,7 +812,7 @@
                 <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ st.border }}; background:rgba(32,35,39,0.78); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04); animation:{{ st.anim }}; transition:border-color 200ms ease">
                   <span style="display:flex; gap:10px; align-items:baseline">
                     <span style="flex:1; font-size:13.5px; font-weight:600; line-height:1.45; text-wrap:pretty">{{ st.label }}</span>
-                    <span style="flex:none; font-size:11.5px; font-weight:700; color:var(--text3)">{{ st.marks }}</span>
+                    <span style="flex:none; font-size:12px; font-weight:700; color:var(--text3)">{{ st.marks }}</span>
                   </span>
                   <span style="display:flex; align-items:center; gap:8px">
                     <input id="{{ st.inputId }}" aria-label="{{ st.aria }}" data-field="true" value="{{ st.value }}" onChange="{{ st.onChange }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" onFocus="{{ st.onFocus }}" enterKeyHint="{{ st.enterHint }}" autoComplete="off" disabled="{{ locked }}" placeholder="Your value" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
@@ -910,7 +907,7 @@
                   <span style="display:flex; align-items:center; gap:2px; padding:3px 3px 3px 4px; border-radius:22px; border:1.5px solid {{ ch.border }}; background:{{ ch.bg }}">
                     <button onClick="{{ ch.edit }}" disabled="{{ locked }}" aria-label="{{ ch.aria }}" style="min-height:38px; padding:0 8px 0 10px; border:none; background:transparent; color:var(--text); font-size:14px; font-weight:700; cursor:pointer; text-align:left">{{ ch.n }} · {{ ch.text }}</button>
                     <sc-if value="{{ ch.hasStamp }}" hint-placeholder-val="{{ false }}">
-                      <span style="height:26px; padding:0 8px; border-radius:13px; display:flex; align-items:center; background:{{ ch.stampBg }}; font-size:11.5px; font-weight:800; color:{{ ch.stampColor }}; white-space:nowrap">{{ ch.stamp }}</span>
+                      <span style="height:26px; padding:0 8px; border-radius:13px; display:flex; align-items:center; background:{{ ch.stampBg }}; font-size:12px; font-weight:800; color:{{ ch.stampColor }}; white-space:nowrap">{{ ch.stamp }}</span>
                     </sc-if>
                     <sc-if value="{{ ch.canRemove }}" hint-placeholder-val="{{ true }}">
                       <button onClick="{{ ch.remove }}" aria-label="{{ ch.removeAria }}" style="width:38px; height:38px; border:none; border-radius:19px; background:transparent; color:var(--text3); font-size:16px; cursor:pointer">×</button>
@@ -931,7 +928,7 @@
             <div style="display:flex; flex-direction:column; gap:8px">
               <sc-if value="{{ hasCoach }}" hint-placeholder-val="{{ false }}">
                 <div role="note" style="display:flex; gap:10px; align-items:flex-start; padding:11px 13px; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.08)">
-                  <span aria-hidden="true" style="flex:none; padding:3px 8px; border-radius:8px; background:rgba(129,177,255,0.18); font-size:11.5px; font-weight:800; color:#cfe0ff">{{ coachCmd }}</span>
+                  <span aria-hidden="true" style="flex:none; padding:3px 8px; border-radius:8px; background:rgba(129,177,255,0.18); font-size:12px; font-weight:800; color:#cfe0ff">{{ coachCmd }}</span>
                   <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:700">{{ coachShape }}</span><span style="font-size:12.5px; color:var(--text2)">{{ coachAim }}</span></span>
                 </div>
               </sc-if>
@@ -945,7 +942,7 @@
               <span style="font-size:13px; line-height:1.55; color:var(--text2)">Tap a Column A item, then tap its description. One description is not used.</span>
               <div style="display:grid; grid-template-columns:{{ matchCols }}; gap:12px">
                 <div role="group" aria-label="Column A" style="display:flex; flex-direction:column; gap:8px">
-                  <span style="font-size:11px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN A</span>
+                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN A</span>
                   <sc-for list="{{ matchLeft }}" as="ml" hint-placeholder-count="5">
                     <button onClick="{{ ml.pick }}" aria-pressed="{{ ml.on }}" aria-label="{{ ml.aria }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ ml.border }}; background:{{ ml.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
                       <span style="flex:1">{{ ml.text }}</span>
@@ -954,7 +951,7 @@
                   </sc-for>
                 </div>
                 <div role="group" aria-label="Column B" style="display:flex; flex-direction:column; gap:8px">
-                  <span style="font-size:11px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN B</span>
+                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN B</span>
                   <sc-for list="{{ matchRight }}" as="mr" hint-placeholder-count="5">
                     <button onClick="{{ mr.pick }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ mr.border }}; background:{{ mr.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
                       <span style="flex:none; font-size:12px; font-weight:800; color:var(--text3)">{{ mr.key }}</span>
@@ -980,7 +977,7 @@
                 <div style="display:flex; flex-direction:column; gap:4px; padding:10px 0; border-top:1px solid var(--line)">
                   <span style="display:flex; gap:10px; align-items:baseline"><span style="flex:1; font-size:14px; font-weight:600; line-height:1.5; text-wrap:pretty">{{ rl.text }}</span><span style="flex:none; font-size:12px; font-weight:800; color:var(--text2)">{{ rl.marks }}</span></span>
                   <sc-if value="{{ rl.hasMemo }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px; line-height:1.55; color:var(--ok)">{{ rl.memo }}</span></sc-if>
-                  <span style="font-size:11.5px; color:var(--text3)">{{ rl.source }}</span>
+                  <span style="font-size:12px; color:var(--text3)">{{ rl.source }}</span>
                 </div>
               </sc-for>
             </div>
@@ -1024,7 +1021,7 @@
               <sc-for list="{{ hsStats }}" as="hs" hint-placeholder-count="3">
                 <span style="display:flex; flex-direction:column; gap:3px; padding:10px 11px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)">
                   <span style="font-size:17px; font-weight:800; line-height:1.2; color:{{ hs.color }}">{{ hs.value }}</span>
-                  <span style="font-size:11.5px; font-weight:700; color:var(--text3)">{{ hs.label }}</span>
+                  <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ hs.label }}</span>
                 </span>
               </sc-for>
             </div>
@@ -1064,7 +1061,7 @@
                   <sc-for list="{{ points }}" as="pt" hint-placeholder-count="2">
                     <span style="display:flex; gap:8px; font-size:13px; line-height:1.5"><span style="flex:none; font-weight:800; color:{{ pt.color }}">{{ pt.icon }}</span><span style="display:flex; flex-direction:column; gap:2px"><span style="font-weight:700">{{ pt.head }}</span><span style="color:var(--text2)">{{ pt.detail }}</span></span></span>
                   </sc-for>
-                  <span style="font-size:11.5px; color:var(--text3)">{{ pointsFoot }}</span>
+                  <span style="font-size:12px; color:var(--text3)">{{ pointsFoot }}</span>
                 </div>
               </sc-if>
               <span style="display:flex; gap:8px; margin-top:4px">
@@ -1165,7 +1162,7 @@
         </div>
         <sc-if value="{{ doneHasRevisit }}" hint-placeholder-val="{{ false }}">
           <section aria-labelledby="done-revisit" style="display:flex; flex-direction:column; gap:8px">
-            <span style="display:flex; align-items:baseline; gap:8px"><h2 id="done-revisit" style="flex:1; margin:0; font-size:14px; font-weight:800">To revisit</h2><span style="font-size:11.5px; color:var(--text3)">Replays are practice · no XP</span></span>
+            <span style="display:flex; align-items:baseline; gap:8px"><h2 id="done-revisit" style="flex:1; margin:0; font-size:14px; font-weight:800">To revisit</h2><span style="font-size:12px; color:var(--text3)">Replays are practice · no XP</span></span>
             <sc-for list="{{ doneRevisit }}" as="dr" hint-placeholder-count="2">
               <button data-revisit="{{ dr.number }}" onClick="{{ dr.open }}" aria-label="{{ dr.aria }}" style="min-height:48px; padding:9px 12px; border-radius:14px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.07); color:var(--text); display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left">
                 <span style="flex:none; font-size:13px; font-weight:800; color:#f3c14f">{{ dr.number }}</span>
@@ -1176,7 +1173,7 @@
           </section>
         </sc-if>
         <div style="display:flex; flex-direction:column; gap:3px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(29,32,35,0.82)">
-          <span style="font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--tint)">Up next</span>
+          <span style="font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--tint)">Up next</span>
           <span style="font-size:14.5px; font-weight:800; line-height:1.35">{{ doneNextTitle }}</span>
           <span style="font-size:12px; color:var(--text3)">{{ doneNextSub }}</span>
         </div>
@@ -1255,7 +1252,6 @@
     <main data-hallgate="true" style="box-sizing:border-box; max-width:600px; margin:0 auto; padding:20px {{ pad }} 48px; display:flex; flex-direction:column; gap:16px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div style="display:flex; align-items:flex-end; gap:14px">
         <span aria-hidden="true" data-still="true" style="position:relative; width:64px; height:140px; flex:none">
-          <span style="position:absolute; left:6%; right:6%; bottom:0; height:12px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,0.45), transparent)"></span>
           <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
             <img src="{{ posterSrc }}" alt="" onError="{{ posterFailed }}" style="position:absolute; inset:0 0 4px 0; width:100%; height:calc(100% - 4px); object-fit:contain; object-position:50% 100%" />
           </sc-if>
@@ -1269,7 +1265,7 @@
         <p style="margin:0 0 18px; padding:10px 13px; border-radius:16px 16px 16px 4px; border:1px solid transparent; background:linear-gradient(rgba(34,38,45,0.96), rgba(28,31,37,0.96)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.25)) border-box; font-size:13.5px; font-weight:600; line-height:1.5">{{ gateBubble }}</p>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px">
-        <span style="font-size:11.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">{{ gateKicker }}</span>
+        <span style="font-size:12px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">{{ gateKicker }}</span>
         <h1 data-gatetitle="true" tabIndex="-1" style="margin:0; font-size:{{ h1Size }}; font-weight:800; line-height:1.2; letter-spacing:-0.01em; text-wrap:balance; outline:none">{{ gateTitle }}</h1>
         <span style="font-size:13.5px; font-weight:700; color:#b9cdf0">{{ gateMeta }}</span>
         <p data-gatelead="true" style="margin:0; font-size:14px; line-height:1.55; font-weight:{{ gateLeadWeight }}; color:{{ gateLeadColor }}; text-wrap:pretty">{{ gateLead }}</p>
@@ -1310,11 +1306,13 @@
   <sc-if value="{{ onHallOut }}" hint-placeholder-val="{{ false }}">
     <main data-hallout="true" style="box-sizing:border-box; max-width:640px; margin:0 auto; padding:0 {{ pad }} 56px; display:flex; flex-direction:column; gap:16px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; justify-content:center; padding:10px 0 2px; pointer-events:none">
+        <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
         <div role="group" aria-label="Preview state" style="pointer-events:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.78); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
           <sc-for list="{{ hoModes }}" as="hm" hint-placeholder-count="3">
-            <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
+            <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
           </sc-for>
         </div>
+        </sc-if>
       </div>
 
       <sc-if value="{{ hoWaiting }}" hint-placeholder-val="{{ true }}">
@@ -1322,7 +1320,7 @@
           <span aria-hidden="true" style="width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 30%, #34405a, #1b1e23 70%); border:2px solid rgba(129,177,255,0.55)">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
           </span>
-          <span style="font-size:11.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">Paper handed in</span>
+          <span style="font-size:12px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">Paper handed in</span>
           <h1 style="margin:0; font-size:22px; font-weight:800; line-height:1.3; text-wrap:balance">{{ hoHandedTitle }}</h1>
           <p style="margin:0; font-size:13.5px; line-height:1.55; color:var(--text2)">{{ hoHandedNote }}</p>
         </section>
@@ -1336,7 +1334,7 @@
           <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ hoFinalText }}</span>
           <ol style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px">
             <sc-for list="{{ hoSteps }}" as="hp" hint-placeholder-count="4">
-              <li style="display:flex; gap:10px; align-items:center; font-size:13px; color:{{ hp.color }}"><span aria-hidden="true" style="width:20px; height:20px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ hp.dotBg }}; color:#191b1e; font-size:11px; font-weight:900">{{ hp.icon }}</span><span>{{ hp.text }}<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)">{{ hp.sr }}</span></span></li>
+              <li style="display:flex; gap:10px; align-items:center; font-size:13px; color:{{ hp.color }}"><span aria-hidden="true" style="width:20px; height:20px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ hp.dotBg }}; color:#191b1e; font-size:12px; font-weight:900">{{ hp.icon }}</span><span>{{ hp.text }}<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)">{{ hp.sr }}</span></span></li>
             </sc-for>
           </ol>
         </section>
@@ -1344,7 +1342,7 @@
 
       <sc-if value="{{ hoReleased }}" hint-placeholder-val="{{ false }}">
         <section data-report="true" style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:24px 18px 20px; border-radius:20px; border:1px solid transparent; background:linear-gradient(180deg, #1d2231, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.3) 60%, rgba(255,255,255,0.05)) border-box; text-align:center">
-          <span style="font-size:11.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">{{ hoKicker }}</span>
+          <span style="font-size:12px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">{{ hoKicker }}</span>
           <sc-if value="{{ hoHasReleasedBy }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:12px; font-weight:700; color:var(--text2)">{{ hoReleasedBy }}</span>
           </sc-if>
@@ -3773,9 +3771,7 @@ class Component extends DCLogic {
     return {
       headerDisplay: s.screen === "pick" || s.screen === "play" ? "none" : "flex",
       homeDisplay: tabletLand ? "grid" : "flex",
-      // A soft light behind the card gives the glass something to frost (brief 17b); the dark fade still grounds it.
-      actBg: tabletLand ? "radial-gradient(70% 60% at 50% 45%, rgba(0,104,248,0.14), transparent 72%)"
-        : "radial-gradient(300px 170px at 50% 40%, rgba(0,104,248,0.22), transparent 72%), radial-gradient(190px 120px at calc(50% + 140px) 72%, rgba(103,29,255,0.14), transparent 70%), linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)",
+      actBg: tabletLand ? "transparent" : "linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)",
       isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
@@ -3792,8 +3788,9 @@ class Component extends DCLogic {
       // Centred with auto margins, never a transform: the pop entrance animates transform and
       // would wipe a translate out (the same fault that pushed the sheet off-screen).
       bubblePos: phone ? "left:0; right:0; top:0; margin:0 auto; width:fit-content"
-        : tabletLand ? "left:calc(50% + 70px); top:4%" : "left:calc(50% + clamp(90px, 9vw, 150px)); top:6%",
-      bubbleMax: phone ? "min(300px, calc(100vw - 40px))" : tabletLand ? "220px" : "280px",
+        : tabletLand ? "left:calc(50% + 108px); top:2%; width:max-content" : "left:calc(50% + clamp(90px, 9vw, 150px)); top:6%; width:max-content",
+      // The bubble starts right of the head, so its width is capped by what's left before the window's edge (16px gutter).
+      bubbleMax: phone ? "min(300px, calc(100vw - 40px))" : tabletLand ? "min(250px, calc(72.5vw - 124px))" : "min(280px, calc(50vw - clamp(90px, 9vw, 150px) - 16px))",
       tailDisplay: phone ? "block" : "none",
       // Phone: the model starts below the bubble so the bubble never covers the head.
       modelInset: phone ? "84px 0 0 0" : "0", posterH: phone ? "calc(80.6% - 68px)" : "80.6%",
@@ -3809,6 +3806,8 @@ class Component extends DCLogic {
       topPad: phone ? "12px 14px" : "20px 28px",
       brandTextDisplay: phone ? "none" : "inline",
       pvOpen: !!s.pvOpen, pvTop: phone ? "64px" : "68px",
+      // Design-only: the screens whose state switches live behind a Preview toggle in the shared header.
+      pvToggleOn: s.screen === "map" || s.screen === "hallout",
       togglePreview: () => s.pvOpen ? this.closePreview() : this.setState({ pvOpen: true }),
       pillWordDisplay: phone ? "none" : "inline",
       dispXp: s.disp.xp, dispMarks: s.disp.marks, resumeTotal: rs.total_marks, dispDays: s.disp.days,

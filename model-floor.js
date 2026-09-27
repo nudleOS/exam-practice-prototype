@@ -151,6 +151,8 @@ class ModelFloor extends HTMLElement {
       const mode = floorMode();
       rings.forEach(r => { r.mesh.visible = mode === "ripple"; });
       pool.visible = mode !== "none";
+      // No floor, no disc: a shadow with nothing to fall on reads as a hole under the feet.
+      shadow.visible = mode !== "none";
       if (mode === "still") {
         // One resting ring at the pool's edge reads as a plinth, not a pulse.
         rings[0].mesh.visible = true;
@@ -343,7 +345,8 @@ class ModelFloor extends HTMLElement {
     const next = this._mixer.clipAction(hit);
     // A fall stays fallen — it holds its last frame until something else is asked for.
     // Anything else loops, because a greet or a dance that freezes looks like a crash.
-    const once = key === "fall";
+    // loop="once" plays any clip one time and holds its last frame (the home greeting must not visibly loop).
+    const once = key === "fall" || this.getAttribute("loop") === "once";
     next.reset();
     next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
     next.clampWhenFinished = once;
