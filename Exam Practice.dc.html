@@ -327,22 +327,22 @@
       <span style="position:absolute; left:-60%; right:-60%; bottom:-6%; height:62%; background-image:linear-gradient(rgba(129,177,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(129,177,255,0.10) 1px, transparent 1px); background-size:56px 56px; transform:perspective(520px) rotateX(64deg); transform-origin:50% 100%; -webkit-mask-image:linear-gradient(to top, #000 8%, transparent 78%); mask-image:linear-gradient(to top, #000 8%, transparent 78%)"></span>
     </div>
     <main data-map="true" style="position:relative; z-index:1; box-sizing:border-box; padding:0 {{ mapPadR }} 120px 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
-      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 0 14px; margin:0 calc(-1 * {{ mapPadR }}) 0 -16px; background:linear-gradient(180deg, rgba(25,27,30,0.97) 0%, rgba(25,27,30,0.97) 72%, rgba(25,27,30,0) 100%); pointer-events:none">
-        <div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px">
-        <div role="group" aria-label="Map view" style="pointer-events:auto; display:flex; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.97); border:1px solid rgba(129,177,255,0.28); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
+      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 0 14px; margin:0 calc(-1 * {{ mapPadR }}) 0 -16px; background:linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%); pointer-events:none">
+        <div style="box-sizing:border-box; width:min(560px, calc(100% - 32px)); display:flex; align-items:center; justify-content:{{ subRowJustify }}; gap:10px">
+        <div role="group" aria-label="Map view" style="pointer-events:auto; display:flex; padding:2px; border-radius:14px; background:rgba(255,255,255,0.07)">
           <sc-for list="{{ mapViews }}" as="mv" hint-placeholder-count="2">
-            <button data-mapview="{{ mv.id }}" onClick="{{ mv.pick }}" aria-pressed="{{ mv.on }}" style="min-width:92px; min-height:44px; padding:0 14px; border:none; border-radius:11px; background:{{ mv.bg }}; color:{{ mv.color }}; font-size:13px; font-weight:800; cursor:pointer">{{ mv.label }}</button>
+            <button data-mapview="{{ mv.id }}" onClick="{{ mv.pick }}" aria-pressed="{{ mv.on }}" style="min-width:84px; min-height:44px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; transition:background 180ms ease, color 180ms ease, box-shadow 180ms ease; background:{{ mv.bg }}; box-shadow:{{ mv.shadow }}; color:{{ mv.color }}; font-size:14px; font-weight:{{ mv.weight }}; white-space:nowrap">{{ mv.label }}</button>
           </sc-for>
         </div>
         <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
-          <div role="group" aria-label="Map zoom" style="pointer-events:auto; display:flex; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.97); border:1px solid rgba(129,177,255,0.28); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-            <button data-zoom="out" onClick="{{ zoomOut }}" disabled="{{ zoomOutOff }}" aria-label="Zoom out" style="box-sizing:border-box; min-width:44px; height:44px; padding:0 10px; border:none; border-radius:11px; background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center; gap:6px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; opacity:{{ zoomOutOp }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
-            <button data-zoom="in" onClick="{{ zoomIn }}" disabled="{{ zoomInOff }}" aria-label="Zoom in" style="box-sizing:border-box; min-width:44px; height:44px; padding:0 10px; border:none; border-radius:11px; background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center; gap:6px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; opacity:{{ zoomInOp }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button>
-            <button data-zoom="fit" onClick="{{ zoomFit }}" aria-label="{{ zoomFitAria }}" style="box-sizing:border-box; min-width:44px; height:44px; padding:0 10px; border:none; border-radius:11px; background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center; gap:6px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; background:{{ zoomFitBg }}">
-              <sc-if value="{{ zoomFitWhole }}" hint-placeholder-val="{{ true }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></sc-if>
-              <sc-if value="{{ zoomFitBack }}" hint-placeholder-val="{{ false }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="2.5"></circle></svg></sc-if>
-              <span style="display:{{ zoomWordDisplay }}">{{ zoomFitWord }}</span>
-            </button>
+          <div role="group" aria-label="Zoom level" style="pointer-events:auto; display:flex; padding:2px; border-radius:14px; background:rgba(255,255,255,0.07)">
+            <sc-for list="{{ zoomSegs }}" as="zs" hint-placeholder-count="3">
+              <button data-zoomlevel="{{ zs.id }}" onClick="{{ zs.go }}" aria-pressed="{{ zs.on }}" aria-label="{{ zs.label }}" title="{{ zs.label }}" style="width:44px; height:44px; padding:0; border:none; border-radius:12px; cursor:pointer; transition:background 180ms ease, color 180ms ease, box-shadow 180ms ease; background:{{ zs.bg }}; box-shadow:{{ zs.shadow }}; color:{{ zs.color }}; display:flex; align-items:center; justify-content:center">
+                <sc-if value="{{ zs.isDetail }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="3.5"></rect></svg></sc-if>
+                <sc-if value="{{ zs.isSections }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h12"></path></svg></sc-if>
+                <sc-if value="{{ zs.isPaper }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect></svg></sc-if>
+              </button>
+            </sc-for>
           </div>
         </sc-if>
         </div>
@@ -478,9 +478,14 @@
         </span>
         <sc-if value="{{ zoomOverview }}" hint-placeholder-val="{{ false }}">
           <sc-for list="{{ zoomPills }}" as="zp" hint-placeholder-count="4">
-            <button data-zoompill="{{ zp.id }}" onClick="{{ zp.go }}" aria-label="{{ zp.aria }}" style="position:absolute; left:{{ zoomPillLeft }}; top:{{ zp.top }}; z-index:4; transform:{{ zoomPillTf }}; transform-origin:{{ zoomPillOrigin }}; box-sizing:border-box; min-height:44px; display:flex; align-items:center; gap:10px; padding:0 16px; border-radius:22px; border:1px solid {{ zp.border }}; background:rgba(30,33,40,0.98); color:var(--text); font-size:14px; font-weight:700; white-space:nowrap; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,0.45)"><sc-if value="{{ zp.finish }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3ddc97" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path></svg></sc-if><span style="color:{{ zp.color }}">{{ zp.label }}</span><span style="font-size:13px; font-weight:600; color:#b9bec4">{{ zp.done }}</span><sc-if value="{{ zp.hereOn }}" hint-placeholder-val="{{ false }}"><span style="display:flex; align-items:center; gap:5px; padding:3px 8px; border-radius:10px; background:#0068f8; color:#ffffff; font-size:12px; font-weight:800"><span style="width:6px; height:6px; border-radius:50%; background:#ffffff"></span>You</span></sc-if></button>
+            <button data-zoompill="{{ zp.id }}" onClick="{{ zp.go }}" aria-label="{{ zp.aria }}" style="position:absolute; left:{{ zoomPillLeft }}; top:{{ zp.top }}; z-index:4; transform:{{ zoomPillTf }}; transform-origin:{{ zoomPillOrigin }}; box-sizing:border-box; min-height:44px; display:flex; align-items:center; gap:9px; padding:0 14px 0 11px; border:none; border-radius:14px; background:#1e2128; color:var(--text); white-space:nowrap; cursor:pointer; box-shadow:{{ zp.shadow }}">
+              <sc-if value="{{ zp.isRing }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="flex:none; width:16px; height:16px; border-radius:50%; background:radial-gradient(closest-side, #1e2128 60%, transparent 63%), conic-gradient({{ zp.ringColor }} {{ zp.deg }}, rgba(255,255,255,0.14) 0)"></span></sc-if>
+              <sc-if value="{{ zp.finish }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3ddc97" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path></svg></sc-if>
+              <span style="font-size:14px; font-weight:600; color:{{ zp.color }}">{{ zp.title }}</span><span style="font-size:13px; font-weight:500; color:#9aa0a6">{{ zp.sub }}</span>
+              <sc-if value="{{ zp.hereOn }}" hint-placeholder-val="{{ false }}"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#81b1ff"><span style="width:6px; height:6px; border-radius:50%; background:#4d9bff"></span>You</span></sc-if>
+            </button>
           </sc-for>
-          <span aria-hidden="true" data-herepin="true" style="display:{{ pinDisplay }}; position:absolute; left:{{ pinX }}; top:{{ pinY }}; z-index:5; transform:translate(-50%, -100%) scale({{ zoomInv }}); transform-origin:50% 100%; align-items:center; gap:6px; padding:6px 11px; border-radius:14px; background:#0068f8; color:#ffffff; font-size:13px; font-weight:800; white-space:nowrap; box-shadow:0 6px 16px rgba(0,0,0,0.45)"><span style="width:7px; height:7px; border-radius:50%; background:#ffffff"></span>{{ pinLabel }}</span>
+          <span aria-hidden="true" data-herepin="true" style="display:{{ pinDisplay }}; position:absolute; left:{{ pinX }}; top:{{ pinY }}; z-index:5; transform:translate(-50%, -100%) scale({{ zoomInv }}); transform-origin:50% 100%; align-items:center; gap:5px; padding:4px 10px; border-radius:11px; background:#1e2128; color:#81b1ff; font-size:12px; font-weight:600; white-space:nowrap; box-shadow:0 0 0 1px rgba(77,155,255,0.55), 0 4px 12px rgba(0,0,0,0.4)"><span style="width:6px; height:6px; border-radius:50%; background:#4d9bff"></span>{{ pinLabel }}</span>
         </sc-if>
       </div>
       </div>
@@ -1993,6 +1998,10 @@ class Component extends DCLogic {
     if (next == null) return;
     // Reaching the whole paper by − behaves like Fit: the road is centred in the band.
     if (next <= this.zoomFitZ() + 0.001) this.zoomToWhole(); else this.setZoom(next, null, true); }
+  zoomToLevel(id) { if (this.zoomTier(this.zoomNow()) === id) return;
+    if (id === "paper") this.zoomToWhole();
+    else if (id === "sections") this.setZoom(0.5, null, true);
+    else { const i = this.suggested(); this.setZoom(1, null, true, () => { if (i >= 0) this.scrollToNode(i, true); }); } }
   zoomFitToggle() { if (this.zoomTier(this.zoomNow()) === "paper") { const i = this.suggested(); this.setZoom(1, null, true, () => { if (i >= 0) this.scrollToNode(i, true); }); }
     else this.zoomToWhole(); }
   zoomToWhole() { { const fit = this.zoomFitZ(), B = this.zoomBand();
@@ -3694,14 +3703,17 @@ class Component extends DCLogic {
     const zoomPills = items.filter(it => it.kind === "cap").map((it, j) => {
       const sec = it.sec, firstI = items.find(x => x.kind === "m" && sec.missions.indexOf(x.m) !== -1), doneN = sec.missions.filter(m => m.parts.every(q => this.pg(q.key).closed)).length;
       const here = pinIt && pinIt.kind === "m" && sec.missions.indexOf(pinIt.m) !== -1;
-      return { id: String(j), top: f(it.y) + "px", finish: false, color: "var(--text)", label: shortSec(sec.title) + (sec.total ? " · " + sec.total + " marks" : ""), done: phone ? doneN + "/" + sec.missions.length : doneN + " of " + sec.missions.length + " done",
+      const frac = sec.missions.length ? doneN / sec.missions.length : 0;
+      return { id: String(j), top: f(it.y) + "px", finish: false, isRing: true, color: "var(--text)", title: sec.title, sub: sec.total ? sec.total + " marks" : "",
+        deg: Math.round(360 * frac) + "deg", ringColor: frac >= 1 ? "#3ddc97" : here ? "#4d9bff" : "#8f9499",
+        shadow: here ? "0 0 0 1px rgba(77,155,255,0.55), 0 6px 16px rgba(0,0,0,0.4)" : "0 6px 16px rgba(0,0,0,0.4)",
         border: here ? "rgba(129,177,255,0.7)" : "rgba(255,255,255,0.14)", hereOn: here && paperOn,
         aria: sec.title + ", " + (sec.total ? sec.total + " marks, " : "") + doneN + " of " + sec.missions.length + " missions done" + (here ? ", you are here" : "") + ". Zoom in",
         go: () => this.setZoom(1, null, true, () => { if (firstI) this.scrollToNode(firstI.i, true); }) }; });
     // The whole paper ends at a finish pill beside the trophy's place on the road.
     const finIt = items[items.length - 1], lastI = items.filter(it => it.kind === "m").slice(-1)[0];
-    if (paperOn) zoomPills.push({ id: "finish", top: f(finIt.y) + "px", finish: true, color: "var(--ok)", label: phone ? "Finish · " + total : "Finish · " + total + " marks",
-      done: earned >= total && total ? "done" : earned + " banked", border: "rgba(61,220,151,0.45)", hereOn: false,
+    if (paperOn) zoomPills.push({ id: "finish", top: f(finIt.y) + "px", finish: true, isRing: false, color: "var(--ok)", title: "Finish", sub: earned + " / " + total,
+      shadow: "0 0 0 1px rgba(61,220,151,0.35), 0 6px 16px rgba(0,0,0,0.4)", hereOn: false,
       aria: "Finish, " + total + " marks. " + earned + " banked so far. Zoom in", go: () => this.setZoom(1, null, true, () => { if (lastI) this.scrollToNode(lastI.i, true); }) });
     const zoomVals = {
       paperNoteOn: !!(paper && paper.note) && detailOn,
@@ -3724,7 +3736,12 @@ class Component extends DCLogic {
       zoomOutOff: z <= fitZ + 0.001, zoomInOff: z >= 0.999, zoomOutOp: z <= fitZ + 0.001 ? "0.4" : "1", zoomInOp: z >= 0.999 ? "0.4" : "1",
       zoomFitWhole: !paperOn, zoomFitBack: paperOn, zoomFitWord: paperOn ? "My mission" : "Whole paper",
       zoomFitAria: paperOn ? "Back to your mission" : "Show the whole paper", zoomFitBg: paperOn ? "rgba(0,104,248,0.18)" : "transparent",
-      zoomWordDisplay: phone ? "none" : "inline", zoomLive: s.zoomLive || "",
+      zoomWordDisplay: phone ? "none" : "inline", zoomLive: s.zoomLive || "", subRowJustify: s.mapView === "topics" ? "center" : "space-between",
+      // One segmented control names the level you're on (Mission · Sections · Whole paper).
+      zoomSegs: [["detail", "Mission view"], ["sections", "Sections"], ["paper", "Whole paper"]].filter(x => x[0] !== "sections" || fitZ < 0.45).map(x => { const on = tier === x[0];
+        return { id: x[0], label: x[1], on: on ? "true" : "false", isDetail: x[0] === "detail", isSections: x[0] === "sections", isPaper: x[0] === "paper",
+          bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6", shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none",
+          go: () => this.zoomToLevel(x[0]) }; }),
       zoomIn: () => this.zoomStep(1), zoomOut: () => this.zoomStep(-1), zoomFit: () => this.zoomFitToggle(),
     };
     return {
@@ -4062,7 +4079,8 @@ class Component extends DCLogic {
       hallLive: s.hallLive,
       onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
       mapViews: [["paper", "Paper"], ["topics", "Topics"]].map(x => { const on = (s.mapView || "paper") === x[0];
-        return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "var(--grad)" : "transparent", color: on ? "#ffffff" : "var(--text2)",
+        return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6",
+          shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", weight: on ? "600" : "500",
           pick: () => this.setState({ mapView: x[0], card: null }, () => { if (x[0] === "paper") this.scrollToNode(this.suggested(), false); else window.scrollTo(0, 0); }) }; }),
       ...(s.screen === "map" && s.mapView === "topics" ? this.topicsVals(s, paper) : {}),
       ...this.drillVals(s),
