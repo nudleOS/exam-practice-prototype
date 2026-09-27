@@ -50,6 +50,7 @@
     [data-ticket] { transition:border-color 160ms ease, background-color 160ms ease, transform 120ms ease; }
     [data-ticket]:hover { border-color:rgba(129,177,255,0.75) !important; background-color:rgba(0,104,248,0.18) !important; }
     [data-ticket]:active { transform:scale(0.98); border-color:rgba(129,177,255,0.9) !important; background-color:rgba(0,104,248,0.22) !important; }
+    [data-noscrollbar] { scrollbar-width:none; } [data-noscrollbar]::-webkit-scrollbar { display:none; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
 </helmet>
@@ -88,6 +89,7 @@
       <span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
     </span>
   </header>
+  <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ hallLive }}</p>
 
   <sc-if value="{{ onPick }}" hint-placeholder-val="{{ true }}">
     <div data-screen-label="01 Home" style="position:relative; height:100vh; min-height:{{ homeMinH }}; display:{{ homeDisplay }}; flex-direction:column; grid-template-columns:55% 45%; grid-template-rows:auto auto 1fr auto auto 1fr; grid-template-areas:'top top' 'modes modes' 'stage .' 'stage head' 'stage act' 'stage .'; overflow:hidden">
@@ -372,11 +374,16 @@
       <div style="pointer-events:auto; display:flex; gap:6px; padding:6px; border-radius:20px; background:rgba(25,27,30,0.82); border:1px solid rgba(255,255,255,0.09); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)">
         <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ openKit }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text); display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; cursor:pointer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>Paper kit
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>{{ kitDockLabel }}
+          </button>
+        </sc-if>
+        <sc-if value="{{ hallDockOn }}" hint-placeholder-val="{{ false }}">
+          <button data-halldock="true" onClick="{{ hallDockGo }}" aria-label="{{ hallDockAria }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid {{ hallDockBorder }}; background:{{ hallDockBg }}; color:#ffffff; display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; font-variant-numeric:tabular-nums; cursor:pointer; white-space:nowrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V9l7-5 7 5v12"></path><path d="M9 21v-6h6v6"></path></svg>{{ hallDockLabel }}
           </button>
         </sc-if>
         <button onClick="{{ openSummary }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.14); color:#ffffff; display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; cursor:pointer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 15l4-4 3 3 5-6"></path></svg>Review my paper
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 15l4-4 3 3 5-6"></path></svg>{{ reviewLabel }}
         </button>
       </div>
     </div>
@@ -430,9 +437,10 @@
 
     <div style="position:sticky; top:0; z-index:22; background:rgba(25,27,30,0.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:8px; padding:6px 12px">
-        <button onClick="{{ toMap }}" aria-label="Back to the map" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer">
+        <button data-playclose="true" onClick="{{ playClose }}" aria-label="{{ playCloseAria }}" aria-haspopup="{{ playCloseHasPopup }}" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
         </button>
+        <sc-if value="{{ showSegs }}" hint-placeholder-val="{{ true }}">
         <div role="group" aria-label="Parts in this mission" style="flex:1; min-width:0; display:flex; align-items:center; gap:5px">
           <sc-for list="{{ segs }}" as="sg" hint-placeholder-count="3">
             <button onClick="{{ sg.go }}" aria-label="{{ sg.aria }}" aria-current="{{ sg.current }}" style="flex:1; min-width:14px; height:44px; padding:0; border:none; background:transparent; cursor:pointer; display:flex; align-items:center">
@@ -440,21 +448,52 @@
             </button>
           </sc-for>
         </div>
+        </sc-if>
+        <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
+          <span style="flex:1; min-width:0; display:flex; flex-direction:column">
+            <span style="font-size:13.5px; font-weight:800; white-space:nowrap">The Hall</span>
+            <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hallPaperLine }}</span>
+          </span>
+          <span data-clock="true" role="timer" aria-label="{{ clockAria }}" style="flex:none; height:38px; padding:0 12px; border-radius:14px; border:1px solid {{ clockBorder }}; background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:7px; font-size:15px; font-weight:800; font-variant-numeric:tabular-nums; color:{{ clockColor }}; white-space:nowrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5"></path><path d="M9 2h6"></path></svg>{{ clockText }}
+          </span>
+          <button onClick="{{ openKit }}" aria-label="Paper kit" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+          </button>
+        </sc-if>
+        <sc-if value="{{ hasFixChip }}" hint-placeholder-val="{{ false }}">
+          <span style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); font-size:12.5px; font-weight:800; color:#cfe0ff; white-space:nowrap">{{ fixChip }}</span>
+        </sc-if>
         <sc-if value="{{ hasStreak }}" hint-placeholder-val="{{ false }}">
           <span data-key="{{ streakKey }}" aria-label="{{ streakLabel }}" style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; gap:4px; border:1px solid rgba(224,161,15,0.5); background:rgba(224,161,15,0.12); font-size:12.5px; font-weight:800; color:#f3c14f; white-space:nowrap; animation:{{ streakAnim }}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="#f3c14f" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ streakText }}
           </span>
         </sc-if>
+        <sc-if value="{{ showPlayXp }}" hint-placeholder-val="{{ true }}">
         <span data-xppill="true" aria-label="{{ xp }} XP" style="flex:none; height:36px; padding:0 {{ xpPad }}; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:5px; font-size:13.5px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ xp }}</span><span style="font-size:11px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
         </span>
+        </sc-if>
+        <sc-if value="{{ showSound }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ toggleSound }}" aria-pressed="{{ soundOn }}" aria-label="Sound" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:{{ soundColor }}; display:flex; align-items:center; justify-content:center; cursor:pointer">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"></path><path d="{{ soundPath }}"></path></svg>
         </button>
+        </sc-if>
       </div>
+      <sc-if value="{{ hallStrip }}" hint-placeholder-val="{{ false }}">
+        <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:8px; padding:0 12px 8px">
+          <div data-hallnav="strip" data-noscrollbar="true" role="group" aria-label="Questions on the paper" style="flex:1; min-width:0; display:flex; gap:6px; overflow-x:auto; padding:4px 3px">
+            <sc-for list="{{ navSquares }}" as="nq" hint-placeholder-count="8">
+              <button data-navsq="{{ nq.idx }}" onClick="{{ nq.go }}" aria-label="{{ nq.aria }}" aria-current="{{ nq.current }}" style="position:relative; flex:none; min-width:46px; height:34px; padding:0 6px; border-radius:9px; border:{{ nq.border }}; background:{{ nq.bg }}; color:{{ nq.color }}; font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; box-shadow:{{ nq.ring }}">{{ nq.label }}<sc-if value="{{ nq.flagged }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute; right:-3px; top:-3px; width:10px; height:10px; border-radius:50%; background:#e0a10f; border:2px solid #191b1e"></span></sc-if></button>
+            </sc-for>
+          </div>
+          <button data-handin="true" onClick="{{ openHandIn }}" aria-haspopup="dialog" style="flex:none; min-height:40px; padding:0 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.5); background:rgba(0,104,248,0.16); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap">Hand in</button>
+        </div>
+      </sc-if>
     </div>
 
     <main style="position:relative; z-index:1; box-sizing:border-box; max-width:1060px; margin:0 auto; padding:12px 16px {{ playPadB }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
+      <sc-if value="{{ showCoach }}" hint-placeholder-val="{{ true }}">
       <aside aria-label="Your companion" style="position:{{ coachPos }}; top:{{ coachTop }}; align-self:start; z-index:2; display:flex; flex-direction:{{ coachDir }}; align-items:{{ coachAlign }}; gap:{{ coachGap }}; margin-bottom:{{ coachMb }}">
         <div aria-hidden="true" style="position:relative; width:{{ coachW }}; height:{{ coachH }}; flex:none">
           <span style="position:absolute; left:8%; right:8%; bottom:0; height:{{ coachShadowH }}; border-radius:50%; background:radial-gradient(closest-side, {{ coachShadowTint }}, transparent); transition:background 600ms ease"></span>
@@ -470,6 +509,31 @@
         </div>
         <p data-key="{{ coachKey }}" aria-live="polite" style="margin:0; flex:{{ coachBubbleFlex }}; max-width:{{ coachBubbleMax }}; padding:10px 13px; border-radius:{{ coachBubbleRadius }}; border:1px solid transparent; background:linear-gradient(rgba(34,38,45,0.96), rgba(28,31,37,0.96)) padding-box, linear-gradient(135deg, {{ coachEdge }}, rgba(103,29,255,0.25)) border-box; box-shadow:0 12px 28px rgba(0,0,0,0.4); font-size:13.5px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 360ms cubic-bezier(0.22,0.61,0.36,1) both">{{ coachBubble }}</p>
       </aside>
+      </sc-if>
+      <sc-if value="{{ hallNavCol }}" hint-placeholder-val="{{ false }}">
+        <aside aria-label="Questions on the paper" style="position:sticky; top:76px; align-self:start; z-index:2; box-sizing:border-box; display:flex; flex-direction:column; gap:12px; max-height:calc(100vh - 96px); padding:14px; border-radius:18px; border:1px solid var(--line2); background:rgba(29,32,35,0.86)">
+          <span style="display:flex; align-items:baseline; gap:8px"><span style="flex:1; font-size:13.5px; font-weight:800">Your paper</span><span style="font-size:12px; font-weight:700; color:var(--text2)">{{ navCount }}</span></span>
+          <div data-navscroll="true" style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#363b41 transparent; display:flex; flex-direction:column; gap:12px; margin:0 -6px; padding:0 6px">
+          <sc-for list="{{ navGroups }}" as="ng" hint-placeholder-count="4">
+            <div style="display:flex; flex-direction:column; gap:7px">
+              <span style="font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ ng.title }}</span>
+              <div data-hallnav="col" style="display:flex; flex-wrap:wrap; gap:6px; padding:2px">
+                <sc-for list="{{ ng.squares }}" as="nq" hint-placeholder-count="6">
+                  <button data-navsq="{{ nq.idx }}" onClick="{{ nq.go }}" aria-label="{{ nq.aria }}" aria-current="{{ nq.current }}" style="position:relative; flex:none; min-width:46px; height:32px; padding:0 6px; border-radius:9px; border:{{ nq.border }}; background:{{ nq.bg }}; color:{{ nq.color }}; font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; box-shadow:{{ nq.ring }}">{{ nq.label }}<sc-if value="{{ nq.flagged }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute; right:-3px; top:-3px; width:10px; height:10px; border-radius:50%; background:#e0a10f; border:2px solid #191b1e"></span></sc-if></button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          <span aria-hidden="true" style="display:flex; flex-wrap:wrap; gap:6px 12px; font-size:11px; font-weight:600; color:var(--text3)">
+            <span style="display:flex; align-items:center; gap:5px"><span style="width:12px; height:10px; border-radius:3px; border:1.5px solid var(--line2)"></span>Not answered</span>
+            <span style="display:flex; align-items:center; gap:5px"><span style="width:12px; height:10px; border-radius:3px; border:1.5px solid rgba(129,177,255,0.6); background:rgba(0,104,248,0.22)"></span>Answered</span>
+            <span style="display:flex; align-items:center; gap:5px"><span style="width:9px; height:9px; border-radius:50%; background:#e0a10f"></span>Flagged</span>
+          </span>
+          </div>
+          <button data-handin="true" onClick="{{ openHandIn }}" aria-haspopup="dialog" style="min-height:48px; border-radius:14px; border:1px solid rgba(129,177,255,0.5); background:rgba(0,104,248,0.16); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">Hand in</button>
+        </aside>
+      </sc-if>
+
 
       <div data-question="true" style="min-width:0; display:flex; flex-direction:column; gap:14px">
         <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
@@ -604,7 +668,7 @@
             <span style="flex:1"></span>
             <span style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
           </div>
-          <h2 style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty">{{ stem }}</h2>
+          <h2 data-stem="true" tabIndex="-1" style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty; outline:none">{{ stem }}</h2>
 
           <sc-if value="{{ showRules }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
@@ -830,6 +894,32 @@
         </div>
       </div>
     </sc-if>
+    <sc-if value="{{ hallSheetOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed; inset:0; z-index:85; display:grid; align-items:{{ ovAlign }}; justify-items:{{ ovJustify }}; padding:{{ ovPad }}">
+        <div onClick="{{ closeHallSheet }}" aria-hidden="true" style="position:absolute; inset:0; background:rgba(8,10,13,0.62); backdrop-filter:blur(2px)"></div>
+        <div data-hallsheet="true" role="dialog" aria-modal="true" aria-labelledby="hallsheet-title" onKeyDown="{{ hallSheetKeys }}" style="position:relative; box-sizing:border-box; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding:20px 18px; background:rgba(32,35,39,0.98); border:1px solid rgba(129,177,255,0.25); box-shadow:0 -10px 50px rgba(0,0,0,0.5); {{ sheetPos }}; animation:{{ sheetAnim }}">
+          <h2 id="hallsheet-title" style="margin:0; font-size:19px; font-weight:800; letter-spacing:-0.01em">{{ hsTitle }}</h2>
+          <sc-if value="{{ hsHasStats }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px">
+              <sc-for list="{{ hsStats }}" as="hs" hint-placeholder-count="3">
+                <span style="display:flex; flex-direction:column; gap:3px; padding:10px 11px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)">
+                  <span style="font-size:17px; font-weight:800; line-height:1.2; color:{{ hs.color }}">{{ hs.value }}</span>
+                  <span style="font-size:11.5px; font-weight:700; color:var(--text3)">{{ hs.label }}</span>
+                </span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-for list="{{ hsJumps }}" as="hj" hint-placeholder-count="1">
+            <button onClick="{{ hj.go }}" style="min-height:48px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text); display:flex; align-items:center; gap:10px; font-size:14px; font-weight:700; cursor:pointer; text-align:left"><span style="flex:1">{{ hj.label }}</span><span aria-hidden="true" style="color:var(--tint)">›</span></button>
+          </sc-for>
+          <p style="margin:0; font-size:13.5px; line-height:1.55; color:var(--text2); text-wrap:pretty">{{ hsBody }}</p>
+          <div style="display:flex; gap:8px">
+            <button data-hs-cancel="true" onClick="{{ closeHallSheet }}" style="flex:1; min-height:52px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text); font-size:15px; font-weight:700; cursor:pointer">{{ hsCancel }}</button>
+            <button data-hs-confirm="true" onClick="{{ hsConfirm }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 10px 26px rgba(30,70,255,0.3)">{{ hsConfirmLabel }}</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
     <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; z-index:24; pointer-events:none">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; padding:0 {{ footPadX }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
         <span style="display:{{ footSpacer }}"></span>
@@ -894,7 +984,14 @@
               <sc-if value="{{ showCheckReason }}" hint-placeholder-val="{{ false }}">
                 <span role="status" style="display:block; margin-bottom:6px; text-align:center; font-size:12.5px; font-weight:600; color:var(--text3)">{{ checkReason }}</span>
               </sc-if>
-              <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="width:100%; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
+              <div style="display:flex; gap:8px">
+              <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
+                <button data-flag="true" onClick="{{ toggleFlag }}" aria-pressed="{{ flagPressed }}" style="flex:none; min-height:54px; padding:0 16px; border-radius:16px; border:1px solid {{ flagBorder }}; background:{{ flagBg }}; color:{{ flagColor }}; display:flex; align-items:center; gap:7px; font-size:14px; font-weight:800; cursor:pointer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ flagFill }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22V4"></path><path d="M5 4h12l-2.5 4.5L17 13H5"></path></svg>{{ flagLabel }}
+                </button>
+              </sc-if>
+              <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-width:0; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
+              </div>
             </div>
           </sc-if>
         </div>
@@ -928,6 +1025,13 @@
           <span style="display:flex; flex-direction:column; gap:4px; padding:16px; border-radius:16px; border:1px solid var(--line); background:rgba(32,35,39,0.6)"><span style="font-size:22px; font-weight:800">{{ ss.value }}</span><span style="font-size:12px; color:var(--text3)">{{ ss.label }}</span></span>
         </sc-for>
       </div>
+      <sc-if value="{{ hallDockOn }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ hallDockGo }}" style="min-height:64px; padding:12px 16px; border-radius:16px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.10); color:var(--text); display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M3 21h18"></path><path d="M5 21V9l7-5 7 5v12"></path><path d="M9 21v-6h6v6"></path></svg>
+          <span style="flex:1; display:flex; flex-direction:column; gap:2px"><span style="font-size:14.5px; font-weight:800">{{ sumHallTitle }}</span><span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ sumHallBody }}</span></span>
+          <span aria-hidden="true" style="color:var(--tint); font-weight:800">›</span>
+        </button>
+      </sc-if>
       <section style="display:flex; flex-direction:column; gap:10px">
         <h2 style="margin:0; font-size:15px; font-weight:800">Marks by section</h2>
         <sc-for list="{{ sumSections }}" as="sx" hint-placeholder-count="4">
@@ -948,6 +1052,150 @@
         </sc-for>
         <sc-if value="{{ sumNoBelow }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px; color:var(--text3)">{{ sumNoBelowText }}</span></sc-if>
       </section>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ onHallGate }}" hint-placeholder-val="{{ false }}">
+    <main data-hallgate="true" style="box-sizing:border-box; max-width:600px; margin:0 auto; padding:20px {{ pad }} 48px; display:flex; flex-direction:column; gap:16px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div style="display:flex; align-items:flex-end; gap:14px">
+        <span aria-hidden="true" data-still="true" style="position:relative; width:64px; height:140px; flex:none">
+          <span style="position:absolute; left:6%; right:6%; bottom:0; height:12px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,0.45), transparent)"></span>
+          <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
+            <img src="{{ posterSrc }}" alt="" onError="{{ posterFailed }}" style="position:absolute; inset:0 0 4px 0; width:100%; height:calc(100% - 4px); object-fit:contain; object-position:50% 100%" />
+          </sc-if>
+          <sc-if value="{{ posterSilhouette }}" hint-placeholder-val="{{ true }}">
+            <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0 0 4px 0; width:100%; height:calc(100% - 4px)">
+              <circle cx="50" cy="26" r="19" fill="rgba(129,177,255,0.22)"></circle>
+              <path d="M24 60 Q50 48 76 60 L82 130 Q78 138 70 136 L66 100 L64 222 L54 222 L50 150 L46 222 L36 222 L34 100 L30 136 Q22 138 18 130 Z" fill="rgba(129,177,255,0.15)"></path>
+            </svg>
+          </sc-if>
+        </span>
+        <p style="margin:0 0 18px; padding:10px 13px; border-radius:16px 16px 16px 4px; border:1px solid transparent; background:linear-gradient(rgba(34,38,45,0.96), rgba(28,31,37,0.96)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.25)) border-box; font-size:13.5px; font-weight:600; line-height:1.5">{{ gateBubble }}</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <span style="font-size:11.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">The Hall</span>
+        <h1 data-gatetitle="true" tabIndex="-1" style="margin:0; font-size:{{ h1Size }}; font-weight:800; line-height:1.2; letter-spacing:-0.01em; text-wrap:balance; outline:none">{{ gateTitle }}</h1>
+        <span style="font-size:13.5px; font-weight:700; color:#b9cdf0">{{ gateMeta }}</span>
+        <p style="margin:0; font-size:14px; line-height:1.55; color:var(--text2); text-wrap:pretty">A mock exam, sat like the real one. Your marks come when the paper is released.</p>
+      </div>
+      <section aria-labelledby="gate-ready" style="display:flex; flex-direction:column; gap:12px; padding:16px; border-radius:18px; border:1px solid var(--line2); background:rgba(29,32,35,0.82)">
+        <h2 id="gate-ready" style="margin:0; font-size:14px; font-weight:800">Ready check</h2>
+        <sc-for list="{{ gateReady }}" as="gr" hint-placeholder-count="4">
+          <span style="display:flex; gap:12px; align-items:flex-start">
+            <span aria-hidden="true" style="width:26px; height:26px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ gr.iconBg }}; color:{{ gr.color }}; font-size:13px; font-weight:900">{{ gr.icon }}</span>
+            <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:14px; font-weight:700">{{ gr.head }}</span><span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ gr.body }}</span></span>
+          </span>
+        </sc-for>
+      </section>
+      <section aria-labelledby="gate-rules" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:18px; border:1px solid var(--line2); background:rgba(29,32,35,0.82)">
+        <h2 id="gate-rules" style="margin:0; font-size:14px; font-weight:800">How the Hall works</h2>
+        <ul style="margin:0; padding:0 0 0 18px; display:flex; flex-direction:column; gap:7px">
+          <sc-for list="{{ gateRules }}" as="gl" hint-placeholder-count="4">
+            <li style="font-size:13.5px; line-height:1.5; color:var(--text2)">{{ gl }}</li>
+          </sc-for>
+        </ul>
+      </section>
+      <section style="display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #1d2231, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.3) 60%, rgba(255,255,255,0.05)) border-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none; margin-top:1px"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg>
+        <span style="display:flex; flex-direction:column; gap:3px"><span style="font-size:14px; font-weight:800">{{ gateRewardTitle }}</span><span style="font-size:12.5px; line-height:1.55; color:var(--text2)">{{ gateRewardBody }}</span></span>
+      </section>
+      <sc-if value="{{ gateHasErr }}" hint-placeholder-val="{{ false }}">
+        <p role="alert" style="margin:0; padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.08); font-size:13px; line-height:1.5; color:var(--warn)">{{ gateErr }}</p>
+      </sc-if>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <button data-enterhall="true" onClick="{{ enterHall }}" style="min-height:56px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">{{ gateEnterLabel }}</button>
+        <button onClick="{{ toMap }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:600; cursor:pointer">Not now</button>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ onHallOut }}" hint-placeholder-val="{{ false }}">
+    <main data-hallout="true" style="box-sizing:border-box; max-width:640px; margin:0 auto; padding:0 {{ pad }} 56px; display:flex; flex-direction:column; gap:16px; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; justify-content:center; padding:10px 0 2px; pointer-events:none">
+        <div role="group" aria-label="Preview state" style="pointer-events:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.78); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
+          <sc-for list="{{ hoModes }}" as="hm" hint-placeholder-count="3">
+            <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ hoWaiting }}" hint-placeholder-val="{{ true }}">
+        <section style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:26px 18px 22px; border-radius:20px; border:1px solid var(--line2); background:rgba(29,32,35,0.82); text-align:center">
+          <span aria-hidden="true" style="width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 30%, #34405a, #1b1e23 70%); border:2px solid rgba(129,177,255,0.55)">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          </span>
+          <span style="font-size:11.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">Paper handed in</span>
+          <h1 style="margin:0; font-size:22px; font-weight:800; line-height:1.3; text-wrap:balance">{{ hoHandedTitle }}</h1>
+          <p style="margin:0; font-size:13.5px; line-height:1.55; color:var(--text2)">{{ hoHandedNote }}</p>
+        </section>
+        <section aria-labelledby="ho-next" style="display:flex; flex-direction:column; gap:12px; padding:16px; border-radius:18px; border:1px solid var(--line2); background:rgba(29,32,35,0.82)">
+          <h2 id="ho-next" style="margin:0; font-size:14px; font-weight:800">What happens next</h2>
+          <div role="status" style="display:flex; flex-direction:column; gap:4px">
+            <span style="font-size:16px; font-weight:800; color:{{ hoStatusColor }}">{{ hoStatusTitle }}</span>
+            <span style="font-size:13px; line-height:1.55; color:var(--text2)">{{ hoStatusBody }}</span>
+          </div>
+          <span role="progressbar" aria-label="Answers marked" aria-valuemin="0" aria-valuemax="{{ hoTotal }}" aria-valuenow="{{ hoFinal }}" style="height:8px; border-radius:4px; background:rgba(255,255,255,0.07); overflow:hidden"><span style="display:block; height:100%; width:{{ hoPct }}; background:var(--grad); border-radius:4px; transition:width 600ms ease"></span></span>
+          <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ hoFinalText }}</span>
+          <ol style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px">
+            <sc-for list="{{ hoSteps }}" as="hp" hint-placeholder-count="4">
+              <li style="display:flex; gap:10px; align-items:center; font-size:13px; color:{{ hp.color }}"><span aria-hidden="true" style="width:20px; height:20px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ hp.dotBg }}; color:#191b1e; font-size:11px; font-weight:900">{{ hp.icon }}</span><span>{{ hp.text }}<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)">{{ hp.sr }}</span></span></li>
+            </sc-for>
+          </ol>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ hoReleased }}" hint-placeholder-val="{{ false }}">
+        <section data-report="true" style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:24px 18px 20px; border-radius:20px; border:1px solid transparent; background:linear-gradient(180deg, #1d2231, #171b24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.3) 60%, rgba(255,255,255,0.05)) border-box; text-align:center">
+          <span style="font-size:11.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--tint)">Hall report · released</span>
+          <span style="display:flex; align-items:baseline; gap:8px"><span data-hallmark="true" style="font-size:52px; font-weight:800; letter-spacing:-0.02em; line-height:1.1">{{ hoMark }}</span><span style="font-size:16px; font-weight:700; color:var(--text2)">of {{ hoOf }}</span></span>
+          <span style="font-size:13.5px; font-weight:700; color:var(--text2)">{{ hoPctText }}</span>
+          <sc-if value="{{ hoHasOffline }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12px; line-height:1.5; color:var(--text3)">{{ hoOffline }}</span>
+          </sc-if>
+        </section>
+        <sc-for list="{{ hoRewards }}" as="rw" hint-placeholder-count="1">
+          <section style="display:flex; gap:12px; align-items:center; padding:14px 16px; border-radius:16px; border:1px solid {{ rw.border }}; background:{{ rw.bg }}">
+            <span aria-hidden="true" style="width:34px; height:34px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ rw.dot }}; color:#191b1e; font-size:15px; font-weight:900">{{ rw.icon }}</span>
+            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px"><span style="font-size:14px; font-weight:800; color:{{ rw.color }}">{{ rw.title }}</span><span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ rw.body }}</span></span>
+            <sc-if value="{{ rw.hasXp }}" hint-placeholder-val="{{ false }}">
+              <span style="flex:none; font-size:14px; font-weight:800; color:{{ rw.color }}; white-space:nowrap">{{ rw.xp }}</span>
+            </sc-if>
+          </section>
+        </sc-for>
+        <sc-if value="{{ hoHasFix }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:6px">
+            <button data-fix="true" onClick="{{ startFix }}" style="min-height:56px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">{{ hoFixLabel }}</button>
+            <span style="font-size:12.5px; line-height:1.5; color:var(--text3); text-align:center">{{ hoFixBody }}</span>
+          </div>
+        </sc-if>
+        <section aria-labelledby="ho-q" style="display:flex; flex-direction:column; gap:8px">
+          <h2 id="ho-q" style="margin:0; font-size:15px; font-weight:800">Marks by question</h2>
+          <sc-for list="{{ hoQuestions }}" as="hq" hint-placeholder-count="4">
+            <div style="border-radius:14px; border:1px solid var(--line); background:rgba(32,35,39,0.6)">
+              <button onClick="{{ hq.toggle }}" aria-expanded="{{ hq.open }}" style="width:100%; min-height:52px; display:flex; flex-direction:column; gap:7px; padding:11px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
+                <span style="display:flex; width:100%; align-items:center; gap:8px; font-size:13.5px"><span style="flex:1; font-weight:700">{{ hq.title }}</span><span style="font-weight:800; color:var(--text2)">{{ hq.label }}</span><span aria-hidden="true" style="color:var(--tint); font-weight:800">{{ hq.chev }}</span></span>
+                <span aria-hidden="true" style="width:100%; height:6px; border-radius:3px; background:rgba(255,255,255,0.07); overflow:hidden"><span style="display:block; height:100%; width:{{ hq.pct }}; background:var(--tint)"></span></span>
+              </button>
+              <sc-if value="{{ hq.open }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; gap:10px; padding:2px 14px 14px">
+                  <sc-for list="{{ hq.parts }}" as="hr" hint-placeholder-count="2">
+                    <div style="display:flex; flex-direction:column; gap:5px; padding-top:10px; border-top:1px solid var(--line)">
+                      <span style="display:flex; align-items:baseline; gap:8px; font-size:13px"><span style="font-weight:800; color:var(--tint)">{{ hr.number }}</span><span style="flex:1; color:var(--text3); font-size:12px">{{ hr.route }}</span><span style="font-weight:800; color:{{ hr.color }}">{{ hr.marks }}</span></span>
+                      <span style="font-size:12.5px; line-height:1.55; color:var(--text2); white-space:pre-line">{{ hr.memo }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </section>
+      </sc-if>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <button onClick="{{ toMap }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:600; cursor:pointer">Back to the map</button>
+        <sc-if value="{{ hoWaiting }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ toPapers }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Practise another paper while you wait</button>
+        </sc-if>
+      </div>
     </main>
   </sc-if>
 
@@ -1001,6 +1249,80 @@ const POSTER_SRC = null;
 // The companion's walk loop, once it exists (Murci is generating it on Tripo, same rig).
 // Until then the companion glides along the road and greets on arrival.
 const WALK_CLIP = null;
+// ── The Hall (brief 08). A paper opens in the Hall only when its version is not `disclosed` (§3)
+// and the whole paper is transcribed; AET is partial in this prototype, so it stays practice-only.
+const PAPER_VERSION = { fm: "open", aet: "open", ls: "open" };
+const HALL_FULL = { fm: true, aet: false, ls: true };
+const HALL_MINUTES = { fm: 180, aet: 180, ls: 150 };
+// PLACEHOLDER amounts: the platform owns XP and tokens (R2 refinement 2). The design pays a FLAT
+// reward for a full paper sat under conditions and for a finished fix round, never one scaled to the score.
+const HALL_REWARD_XP = 300, FIX_REWARD_XP = 100, HALL_ANSWERED_MIN = 0.8;
+const EMPTY_UI = { inputs: {}, list: [], written: "", matchPairs: {}, drawn: false, pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "" };
+const filled = a => a == null || a === false ? false : typeof a === "string" ? !!a.trim() : typeof a === "number" ? true
+  : Array.isArray(a) ? a.some(filled) : typeof a === "object" ? Object.keys(a).some(k => filled(a[k])) : !!a;
+const ROUTE_WORD = { auto: "Marked by the computer", model: "Marked by the model, then reviewed", person: "Marked by a person", offline: "Marked on paper, not online" };
+// ── MOCK of the PROPOSED sittings contract (nexera-exam-service/docs/design/prompts/08-the-hall.md §6).
+// The service has no Hall endpoints yet. Each method stands in for one route and returns
+// { status, body } in that route's shapes. Marking happens on the server at hand-in; the screens
+// only ever see these replies, and nothing here reaches the practice reply/reveal path.
+const HALL_API = {
+  db: {},
+  force: null, // design preview only: "marking" | "awaiting_moderation" | "released"
+  // MOCK POST /v1/sittings
+  create(paperId, parts, now, minutes) {
+    if (PAPER_VERSION[paperId] === "disclosed") return { status: 409, body: { error: "version_disclosed" } };
+    const id = "hall-" + paperId + "-" + now, ends = now + minutes * 60000;
+    this.db[id] = { id: id, paper: paperId, started_at: now, ends_at: ends, parts: parts, answers: {}, events: [], submitted_at: null, marked: null };
+    return { status: 201, body: { sitting_id: id, started_at: now, ends_at: ends, parts: parts.map(q => ({ key: q.key, number: q.number, marks: q.marks })) } };
+  },
+  // MOCK PUT /v1/sittings/{id}/answers/{part_key}: a draft, no mark, no verdict. The SERVER's clock decides.
+  save(id, key, answer, flagged, now) {
+    const r = this.db[id];
+    if (!r || r.submitted_at != null || now > r.ends_at) return { status: 409, body: { error: "sitting_closed" } };
+    r.answers[key] = { answer: answer, flagged: !!flagged, saved_at: now };
+    return { status: 200, body: { saved_at: now } };
+  },
+  // MOCK POST /v1/sittings/{id}/events { type: "left" | "returned" }: how "one sitting" is known.
+  event(id, type, now) { const r = this.db[id]; if (!r || r.submitted_at != null) return { status: 409, body: { error: "sitting_closed" } };
+    r.events.push({ type: type, at: now }); return { status: 204, body: null }; },
+  // MOCK POST /v1/sittings/{id}/submit. `markOne` stands in for the service's three marking routes.
+  submit(id, now, markOne) {
+    const r = this.db[id]; if (!r) return { status: 404, body: { error: "not_found" } };
+    if (r.submitted_at == null) {
+      r.submitted_at = Math.min(now, r.ends_at);
+      r.marked = r.parts.map(q => { const a = r.answers[q.key]; return Object.assign({ key: q.key }, markOne(q, a ? a.answer : null)); });
+    }
+    return { status: 202, body: this.progress(r, now) };
+  },
+  // How far marking has got under the standing release policy (R2): computer marks are final at
+  // once; model marks after review; one model mark is dual-marked and disagrees, so a person
+  // resolves it; marks release by themselves once every mark is final.
+  progress(r, now) {
+    const total = r.marked.length, model = r.marked.filter(m => m.route === "model").length, person = r.marked.filter(m => m.route === "person").length;
+    const settled = r.marked.filter(m => m.route === "auto" || m.route === "offline").length;
+    const t = this.force === "marking" ? 2000 : this.force === "awaiting_moderation" ? 6000 : this.force === "released" ? 1e12 : now - r.submitted_at;
+    // The disputed model mark is final only once a person has decided it.
+    const disagree = model > 0;
+    const modelFinal = Math.min(model - (disagree && t < 8000 ? 1 : 0), Math.floor(model * Math.min(1, t / 4500)));
+    const final = settled + (t >= 3000 ? person : 0) + modelFinal;
+    if (final >= total) return { status: "released", final: total, total: total };
+    if (disagree && final === total - 1) return { status: "awaiting_moderation", final: final, total: total };
+    return { status: "marking", final: final, total: total };
+  },
+  // MOCK GET /v1/sittings/{id}/result: 202 until released. No memo content and no mark before release.
+  result(id, now, sections) {
+    const r = this.db[id]; if (!r || r.submitted_at == null) return { status: 404, body: { error: "not_submitted" } };
+    const pg = this.progress(r, now); if (pg.status !== "released") return { status: 202, body: pg };
+    const online = r.marked.filter(m => m.route !== "offline");
+    const sum = (ms, k) => ms.reduce((a, m) => a + m[k], 0);
+    const answered = r.parts.filter(q => r.answers[q.key] && filled(r.answers[q.key].answer)).length;
+    return { status: 200, body: { status: "released", marks: sum(online, "awarded"), total_marks: sum(online, "available"),
+      by_question: sections.map(sec => { const ms = online.filter(m => sec.keys.indexOf(m.key) !== -1); return { q: sec.title, marks: sum(ms, "awarded"), of: sum(ms, "available") }; }),
+      by_part: r.marked.map(m => ({ key: m.key, marks: m.awarded, of: m.available, route: m.route })),
+      conditions: { within_time: r.submitted_at <= r.ends_at, one_sitting: !r.events.some(e => e.type === "left"), answered_ratio: r.parts.length ? answered / r.parts.length : 0 },
+      fix_parts: online.filter(m => m.available > 0 && m.awarded < m.available).map(m => m.key) } };
+  },
+};
 const PAPER_UNITS = { "fm-n6-2022-11": "13 missions", "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
 const PROG_SHORT = { nated: "NATED", ncv: "NC(V)", nsc: "NSC · design sample" };
 const HOME_TO_LOCAL = { "fm-n6-2022-11": "fm", "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
@@ -1166,10 +1488,12 @@ class Component extends DCLogic {
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
-    const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
+    // ?sitting=hall opens the Hall entrance (a design preview switch); &paper=ls picks Life Sciences.
+    const qs = new URLSearchParams(location.search), sitQ = qs.get("sitting"), paperQ = HALL_FULL[qs.get("paper")] ? qs.get("paper") : "fm";
+    const ready = () => { this.papers = buildPapers(); if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ paperId: paperQ, screen: "hallgate" }, () => window.scrollTo(0, 0)); else this.forceUpdate(); };
     if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     window.addEventListener("resize", this._rs); this._rs();
@@ -1185,10 +1509,14 @@ class Component extends DCLogic {
     const vv = window.visualViewport;
     if (vv) { this._vv = () => { const off = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)); if (off !== this.state.kbOff) this.setState({ kbOff: off }); };
       vv.addEventListener("resize", this._vv); vv.addEventListener("scroll", this._vv); }
-    const sitQ = new URLSearchParams(location.search).get("sitting");
-    if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ sitting: "hall" });
+    // One clock for the Hall: time left, warnings, autosave, and polling for release.
+    this._tick = setInterval(() => this.hallTick(), 1000);
+    // Design-only hook for verification: end the open Hall paper in N seconds.
+    window.__examHall = { endIn: sec => { const h = this.state.hall; if (!h) return; const r = HALL_API.db[h.sittingId]; const e = Date.now() + sec * 1000; if (r) r.ends_at = e;
+      this.setState({ hall: Object.assign({}, h, { endsAt: e }) }); } };
     this._esc = e => {
       if (e.key !== "Escape") return;
+      if (this.state.hallSheet) { e.preventDefault(); this.closeHallSheet(); return; }
       if (this.state.figBig) { e.preventDefault(); this.closeFigBig(); return; }
       if (this.state.card != null) { e.preventDefault(); this.closeCard(); return; }
       if (this.state.sheet || this.state.pop) { e.preventDefault(); this.closeLayer(); }
@@ -1231,6 +1559,15 @@ class Component extends DCLogic {
       const b = document.querySelector("[data-card-play]"); if (b) b.focus();
     }
     this._lastCard = this.state.card;
+    if (this.state.hallSheet && this.state.hallSheet !== this._lastHs) { const c = document.querySelector("[data-hs-cancel]"); if (c) c.focus(); }
+    this._lastHs = this.state.hallSheet;
+    if (this._focusStem && scr === "play") { this._focusStem = false; const h2 = document.querySelector("[data-stem]"); if (h2) h2.focus({ preventScroll: true });
+      const strip = document.querySelector('[data-hallnav="strip"]'), sq = strip && strip.querySelector('[aria-current="step"]');
+      if (strip && sq) strip.scrollLeft = sq.offsetLeft - strip.clientWidth / 2 + sq.offsetWidth / 2;
+      const col = document.querySelector("[data-navscroll]"), cq = col && col.querySelector('[aria-current="step"]');
+      if (col && cq) { const cr = col.getBoundingClientRect(), qr = cq.getBoundingClientRect(); if (qr.top < cr.top || qr.bottom > cr.bottom) col.scrollTop += qr.top - cr.top - cr.height / 2; } }
+    if (scr === "hallgate" && this._lastScreen2 !== "hallgate") { const h1 = document.querySelector("[data-gatetitle]"); if (h1) h1.focus({ preventScroll: true }); }
+    this._lastScreen2 = scr;
     const scEl = document.querySelector("[data-scene]");
     if (scEl && scEl !== this._scEl && window.IntersectionObserver) {
       if (this._scIO) this._scIO.disconnect(); this._scEl = scEl;
@@ -1391,7 +1728,7 @@ class Component extends DCLogic {
     this._cu = requestAnimationFrame(step);
   }
   componentWillUnmount() { clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
-    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
+    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); clearInterval(this._tick); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
@@ -1402,7 +1739,8 @@ class Component extends DCLogic {
   resetInputs(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
-  openMission(i) { this.resetInputs({ screen: "play", mi: i, pi: 0 }); }
+  // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
+  openMission(i) { if (this.hallLiveFor(this.state.paperId)) { this.resumeHall(); return; } this.resetInputs({ screen: "play", mi: i, pi: 0 }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
   mark(part, answer) {
@@ -1484,16 +1822,25 @@ class Component extends DCLogic {
     return { answer: answerOf, memo: { points: pts.map(t => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
   }
 
+  // Exactly the answer shapes in docs/API.md. `ui` is the state, or a Hall draft of it.
+  answerFrom(part, ui, draft) {
+    const mode = part.response_mode;
+    // A Hall draft keeps a typed-but-not-added list entry; practice Check never sees one.
+    const list = ui.list.concat(draft && String(ui.chipDraft || "").trim() ? [String(ui.chipDraft).trim()] : []);
+    return mode === "steps" ? Object.assign({}, ui.inputs) : mode === "list" ? list.filter(x => String(x || "").trim())
+      : mode === "match" ? part.match.left.map((_, l) => ui.matchPairs[l] != null ? ui.matchPairs[l] : null)
+      : mode === "mcq" ? ui.pick : mode === "pickn" ? ui.picks.slice() : mode === "order" ? ui.orderSeq.slice()
+      : mode === "lettername" ? { letter: ui.letter, name: ui.lname } : mode === "term" ? ui.term : mode === "num" ? ui.numVal
+      : mode === "draw" ? !!ui.drawn : ui.written;
+  }
   check() {
+    // In the Hall there is no Check: the button saves a draft and moves on.
+    if (this.state.sitting === "hall") { this.hallSaveNext(); return; }
     const part = this.part(); if (!part || this.state.marking) return;
     const p = this.pg(part.key); if (p.closed) return;
     const mode = part.response_mode;
-    // Exactly the answer shapes in docs/API.md.
     const s0 = this.state;
-    const answer = mode === "steps" ? Object.assign({}, s0.inputs) : mode === "list" ? s0.list.filter(x => String(x || "").trim())
-      : mode === "match" ? part.match.left.map((_, l) => s0.matchPairs[l] != null ? s0.matchPairs[l] : null)
-      : mode === "mcq" ? s0.pick : mode === "pickn" ? s0.picks.slice() : mode === "order" ? s0.orderSeq.slice()
-      : mode === "lettername" ? { letter: s0.letter, name: s0.lname } : mode === "term" ? s0.term : mode === "num" ? s0.numVal : s0.written;
+    const answer = this.answerFrom(part, s0);
     window.__lastAnswer = { mode: mode, answer: JSON.parse(JSON.stringify(answer == null ? null : answer)) };
     if (s0.kp) this.setState({ kp: null, kpErr: "" });
     const finish = result => {
@@ -1541,9 +1888,167 @@ class Component extends DCLogic {
   }
 
   advance() {
+    const f = this.state.fix;
+    if (f) { if (f.i < f.keys.length - 1) this.fixGo(f.i + 1); else this.endFix(true); return; }
     const m = this.mission(); if (!m) return;
     if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
     this.setState({ screen: "done" });
+  }
+
+  // ── The Hall (brief 08): one paper, the real clock, one hand-in. Drafts stay editable until
+  // then; nothing on screen says right or wrong; marks and the memo arrive only at release.
+  hallParts(pid) {
+    const id = pid || (this.state.hall || {}).paperId, p = (this.papers || []).filter(x => x.id === id)[0]; if (!p) return [];
+    const out = []; let mi = 0;
+    p.sections.forEach(sec => sec.missions.forEach(m => { m.parts.forEach((q, pi) => out.push({ key: q.key, number: q.number, marks: q.marks, mi: mi, pi: pi, section: sec.title })); mi++; }));
+    return out;
+  }
+  partByKey(key) { let hit = null; (this.papers || []).forEach(p => p.sections.forEach(sec => sec.missions.forEach(m => m.parts.forEach(q => { if (q.key === key) hit = q; })))); return hit; }
+  hallLiveFor(pid) { const h = this.state.hall; return !!(h && h.paperId === pid && h.phase === "sitting"); }
+  hallAvailable(pid) { return !!HALL_FULL[pid] && PAPER_VERSION[pid] !== "disclosed"; }
+  uiSnap() { const s = this.state;
+    return { inputs: Object.assign({}, s.inputs), list: s.list.slice(), written: s.written, matchPairs: Object.assign({}, s.matchPairs), drawn: s.drawn,
+      pick: s.pick, picks: s.picks.slice(), orderSeq: s.orderSeq.slice(), letter: s.letter, lname: s.lname, term: s.term, numVal: s.numVal, chipDraft: s.chipDraft }; }
+  // Save the part on screen as a draft (the MOCK PUT). Returns the updated hall, or null when the
+  // server refused because the time is up.
+  hallSaved(flag) {
+    const s = this.state, h = s.hall, part = this.part();
+    if (!h || h.phase !== "sitting" || s.screen !== "play" || s.sitting !== "hall" || !part) return h;
+    const ui = this.uiSnap(), answer = this.answerFrom(part, ui, true);
+    const flagged = flag != null ? flag : !!h.flags[part.key];
+    if (!filled(answer) && !h.drafts[part.key] && flag == null) return h;
+    const r = HALL_API.save(h.sittingId, part.key, answer, flagged, Date.now());
+    if (r.status !== 200) return null;
+    return Object.assign({}, h, { drafts: Object.assign({}, h.drafts, { [part.key]: { ui: ui, answered: filled(answer), saved_at: r.body.saved_at } }),
+      flags: Object.assign({}, h.flags, { [part.key]: flagged }) });
+  }
+  // Go to any question: the one on screen is saved first, the target's draft comes back.
+  hallGo(idx, extra) {
+    const h = this.hallSaved(); if (!h) { this.handIn("time"); return; }
+    const ps = this.hallParts(), t = ps[Math.max(0, Math.min(ps.length - 1, idx))]; if (!t) return;
+    const d = h.drafts[t.key];
+    this._focusStem = true;
+    this.resetInputs(Object.assign({ screen: "play", sitting: "hall", paperId: h.paperId, mi: t.mi, pi: t.pi, hallSheet: null, hall: Object.assign({}, h, { cur: ps.indexOf(t) }) },
+      JSON.parse(JSON.stringify(d ? d.ui : EMPTY_UI)), extra || {}));
+  }
+  hallSaveNext() {
+    const s = this.state, h = s.hall, part = this.part(); if (!h || !part) return;
+    // A drawing is done on paper; "I've drawn it" is its answer.
+    if (part.response_mode === "draw" && !s.drawn) { this.setState({ drawn: true }, () => this.hallSaveNext()); return; }
+    const ps = this.hallParts();
+    if (h.cur < ps.length - 1) { this.hallGo(h.cur + 1, { hallLive: "Saved " + part.number + "." }); return; }
+    const h2 = this.hallSaved(); if (!h2) { this.handIn("time"); return; }
+    this.setState({ hall: h2, hallLive: "Saved. That was the last question." }, () => this.openHallSheet("handin"));
+  }
+  toggleFlag() {
+    const h = this.state.hall, part = this.part(); if (!h || !part) return;
+    const on = !h.flags[part.key], h2 = this.hallSaved(on); if (!h2) { this.handIn("time"); return; }
+    this.setState({ hall: h2, hallLive: on ? "Flagged " + part.number + " to come back to." : "Flag removed from " + part.number + "." });
+  }
+  openHallSheet(kind) {
+    this._hsOpener = document.activeElement;
+    const h2 = this.hallSaved(); if (!h2) { this.handIn("time"); return; }
+    this.setState({ hall: h2, hallSheet: kind, kp: null });
+  }
+  closeHallSheet() {
+    const back = this._hsOpener;
+    this.setState({ hallSheet: null }, () => { const b = back && document.body.contains(back) && back !== document.body ? back : document.querySelector("[data-handin]"); if (b) b.focus(); });
+  }
+  enterHall() {
+    const p = this.paper(); if (!p) return;
+    const h0 = this.state.hall;
+    if (h0 && h0.phase === "sitting" && h0.paperId !== p.id) { this.setState({ hallErr: "Your other Hall paper is still open. Hand it in first." }); return; }
+    const ps = this.hallParts(p.id);
+    const q = parseFloat(new URLSearchParams(location.search).get("hallMinutes"));
+    const r = HALL_API.create(p.id, ps.map(x => ({ key: x.key, number: x.number, marks: x.marks })), Date.now(), q > 0 ? q : HALL_MINUTES[p.id]);
+    if (r.status !== 201) { this.setState({ hallErr: r.body.error === "version_disclosed" ? "This paper's memo has been published, so it can be practised but not sat in the Hall." : "The Hall couldn't open. Try again." }); return; }
+    const h = { paperId: p.id, sittingId: r.body.sitting_id, phase: "sitting", startedAt: r.body.started_at, endsAt: r.body.ends_at, drafts: {}, flags: {}, cur: 0,
+      warned: {}, left: 0, status: null, final: 0, total: ps.length, result: null, paid: false, fixDone: false, fixPaid: false };
+    this.setState({ hall: h, hallErr: "", hallNow: Date.now(), hoOpen: {} }, () => this.hallGo(0, { hallLive: "You're in the Hall. The clock has started." }));
+  }
+  leaveHall() {
+    const h = this.hallSaved() || this.state.hall; if (!h) return;
+    HALL_API.event(h.sittingId, "left", Date.now());
+    this.setState({ hall: Object.assign({}, h, { left: h.left + 1 }), hallSheet: null, sitting: "practice", screen: "map", kp: null });
+  }
+  resumeHall() {
+    const h = this.state.hall; if (!h || h.phase !== "sitting") return;
+    HALL_API.event(h.sittingId, "returned", Date.now());
+    this.setState({ card: null, paperId: h.paperId }, () => this.hallGo(h.cur));
+  }
+  // The server marks at hand-in through the same three routes it uses everywhere.
+  hallMarkOne(q, answer) {
+    const part = this.partByKey(q.key);
+    if (!part || part.response_mode === "draw" || !part.marks) return { route: "offline", awarded: 0, available: part && part.marks || 0 };
+    if (!filled(answer)) return { route: "auto", awarded: 0, available: part.marks };
+    const r = this.mark(part, answer);
+    if (r.marker === "auto") return { route: "auto", awarded: r.marks_awarded || 0, available: part.marks };
+    if (r.marker === "ai") return { route: "model", awarded: r.marks_awarded || 0, available: part.marks };
+    // MOCK: the prototype has no human marker. A person's mark is stood in by half the part's marks.
+    return { route: "person", awarded: Math.floor(part.marks / 2), available: part.marks };
+  }
+  handIn(by) {
+    const h0 = this.state.hall; if (!h0 || h0.phase !== "sitting") return;
+    const h = (by === "you" && this.hallSaved()) || h0, now = Date.now();
+    const r = HALL_API.submit(h.sittingId, now, (q, a) => this.hallMarkOne(q, a));
+    const answered = Object.keys(h.drafts).filter(k => h.drafts[k].answered).length;
+    this.setState({ hall: Object.assign({}, h, { phase: "handed", handedAt: Math.min(now, h.endsAt), handedBy: by, answered: answered, status: r.body.status, final: r.body.final, total: r.body.total }),
+      hallSheet: null, sitting: "practice", screen: "hallout", kp: null,
+      hallLive: by === "time" ? "Time is up. Your paper has been handed in." : "Your paper has been handed in." }, () => { window.scrollTo(0, 0); this.hallPoll(); });
+  }
+  hallSections(pid) { const p = (this.papers || []).filter(x => x.id === pid)[0]; if (!p) return [];
+    return p.sections.map(sec => ({ title: sec.title, keys: sec.missions.reduce((a, m) => a.concat(m.parts.map(q => q.key)), []) })); }
+  hallTick() {
+    const s = this.state, h = s.hall; if (!h) return;
+    const now = Date.now();
+    if (h.phase === "sitting") {
+      if (now >= h.endsAt) { this.handIn("time"); return; }
+      // Autosave: whatever is on screen is at most a second old when the time runs out.
+      let h2 = h;
+      if (s.screen === "play" && s.sitting === "hall") { const part = this.part(), d = part && h.drafts[part.key];
+        if (part && JSON.stringify(this.uiSnap()) !== JSON.stringify(d ? d.ui : EMPTY_UI)) { h2 = this.hallSaved(); if (!h2) { this.handIn("time"); return; } } }
+      const left = (h.endsAt - now) / 60000, len = (h.endsAt - h.startedAt) / 60000, warned = Object.assign({}, h2.warned);
+      let live = null;
+      [30, 10, 5].forEach(m => { if (left <= m && !warned[m] && len > m) { warned[m] = true; live = m + " minutes left."; } });
+      this.setState({ hallNow: now, hall: Object.assign({}, h2, { warned: warned }), hallLive: live || s.hallLive });
+      return;
+    }
+    // Poll until the result is in hand (a paper marked wholly by the computer is released at once).
+    if (h.phase === "handed" && (!h.result || HALL_API.force)) this.hallPoll(now);
+  }
+  hallPoll(now) {
+    const h = this.state.hall; if (!h || h.phase !== "handed") return;
+    const r = HALL_API.result(h.sittingId, now || Date.now(), this.hallSections(h.paperId));
+    if (r.status === 202) { if (r.body.status !== h.status || r.body.final !== h.final) this.setState({ hall: Object.assign({}, h, { status: r.body.status, final: r.body.final, total: r.body.total }) }); return; }
+    if (r.status !== 200 || (h.status === "released" && h.result)) return;
+    const c = r.body.conditions, earned = c.within_time && c.one_sitting && c.answered_ratio >= HALL_ANSWERED_MIN;
+    // XP is paid at release, once, and never scaled by the mark.
+    const pay = earned && !h.paid;
+    this.setState({ hall: Object.assign({}, h, { status: "released", final: r.body.by_part.length, result: r.body, earned: earned, paid: h.paid || pay }), xp: this.state.xp + (pay ? HALL_REWARD_XP : 0),
+      hallLive: "Your Hall paper is released: " + r.body.marks + " of " + r.body.total_marks + "." });
+  }
+  // The fix round: the parts that lost marks, in PRACTICE (tries, hints, reactions). The Hall mark stands.
+  startFix() {
+    const h = this.state.hall; if (!h || !h.result) return;
+    const keys = h.result.fix_parts.slice(); if (!keys.length) return;
+    const backup = {}, prog = Object.assign({}, this.state.prog);
+    keys.forEach(k => { backup[k] = prog[k] || null; delete prog[k]; });
+    this.setState({ fix: { keys: keys, i: 0, backup: backup, paperId: h.paperId }, prog: prog, paperId: h.paperId, sitting: "practice" }, () => this.fixGo(0));
+  }
+  fixGo(i) {
+    const f = this.state.fix, t = this.hallParts(f.paperId).filter(x => x.key === f.keys[i])[0]; if (!t) { this.endFix(false); return; }
+    this.resetInputs({ screen: "play", mi: t.mi, pi: t.pi, fix: Object.assign({}, f, { i: i }) });
+  }
+  // Practice keeps the better of what it had and what the fix round did.
+  endFix(done) {
+    const f = this.state.fix; if (!f) return;
+    const prog = Object.assign({}, this.state.prog);
+    f.keys.forEach(k => { const a = f.backup[k], b = prog[k];
+      if (!b) { if (a) prog[k] = a; else delete prog[k]; return; }
+      if (a && (a.best || 0) > (b.best || 0)) prog[k] = Object.assign({}, b, { best: a.best }); });
+    const h = this.state.hall, pay = done && h && !h.fixPaid;
+    this.setState({ fix: null, prog: prog, hall: h ? Object.assign({}, h, { fixDone: h.fixDone || done, fixPaid: h.fixPaid || pay }) : h,
+      xp: this.state.xp + (pay ? FIX_REWARD_XP : 0), screen: done ? "hallout" : "map" }, () => window.scrollTo(0, 0));
   }
 
   // ── Layer 3: the pipe-systems scene. Draws from the part's givens; shows only the learner's own
@@ -1553,7 +2058,7 @@ class Component extends DCLogic {
     if (sc && sc.template === "figure") return this.figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall);
     const binds = sc && sc.tags[part.number];
     const off = { hasScene: false, hasFigure: false, figBigOpen: false };
-    if (!sc || !binds || part.response_mode !== "steps") return off;
+    if (!sc || !binds || part.response_mode !== "steps" || hall) return off;
     const G = {}; (part.givens || []).forEach(g => { G[g.symbol] = g.value; });
     const f1 = v => fmtNum(Math.round(v * 1000) / 1000);
     const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
@@ -1821,7 +2326,7 @@ class Component extends DCLogic {
       kpDisplay: s.kpExpr || "0", kpDisplayAria: "Calculator shows " + (s.kpExpr || "0"),
       kpHasErr: !!s.kpErr, kpErr: s.kpErr, kpClose: () => this.setState({ kp: null, kpErr: "" }),
       kpHasChips: givenChips.length + earlierChips.length > 0, kpChips: earlierChips.concat(givenChips), kpKeys: kpKeys, kpKeyH: phone ? "42px" : "44px",
-      showCheckReason: !closed && !s.marking && !(reply && s.barOpen) && !!reason && !kpOn && !this.canCheckNow(part), checkReason: reason,
+      showCheckReason: !hall && !closed && !s.marking && !(reply && s.barOpen) && !!reason && !kpOn && !this.canCheckNow(part), checkReason: reason,
     };
   }
   canCheckNow(part) { const s = this.state, mode = part.response_mode;
@@ -1872,7 +2377,8 @@ class Component extends DCLogic {
     const shadowTint = { ok: "rgba(61,220,151,0.45)", warn: "rgba(224,161,15,0.4)", bad: "rgba(242,119,122,0.4)", neutral: "rgba(0,104,248,0.45)" }[tone];
     // The feedback bar.
     const next = () => this.advance();
-    const nextLabel = lastPart ? "Finish mission" : "Next part";
+    const fx = s.fix;
+    const nextLabel = fx ? (fx.i < fx.keys.length - 1 ? "Next fix" : "Finish the fix round") : lastPart ? "Finish mission" : "Next part";
     const triesLeft = reply && reply.tries_left != null ? reply.tries_left : 0;
     // Short on phones so the button stays on one line.
     const tryAgainLabel = "Try again · " + triesLeft + (phone ? " left" : triesLeft === 1 ? " try left" : " tries left");
@@ -1894,7 +2400,7 @@ class Component extends DCLogic {
       draw: { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for, below.", primary: [nextLabel, next] },
       closed: { icon: "✓", title: "Closed · " + best + " of " + (part.marks || 0), body: "", primary: [nextLabel, next], secondary: ["Replay — no XP", () => { const k = part.key; const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false }); this.resetInputs({ prog: pp }); }] },
     }[outcome];
-    const showBar = !!bar && (outcome === "marking" || outcome === "closed" || outcome === "saved" || (reply && (s.barOpen || closed)));
+    const showBar = s.sitting !== "hall" && !!bar && (outcome === "marking" || outcome === "closed" || outcome === "saved" || (reply && (s.barOpen || closed)));
     const primaryIsSuccess = outcome === "full";
     // Stamps.
     const hall = s.sitting === "hall";
@@ -1987,6 +2493,167 @@ class Component extends DCLogic {
       primaryLabel: draw ? "I've drawn it" : "Check", primaryDisabled: primaryDisabled,
       primaryBg: primaryDisabled ? "var(--panel)" : "var(--grad)", primaryColor: primaryDisabled ? "var(--text4)" : "#ffffff",
       primaryCursor: primaryDisabled ? "not-allowed" : "pointer", primaryShadow: primaryDisabled ? "none" : "0 10px 26px rgba(30,70,255,0.3)",
+      ...this.hallPlayVals(s, wide, part, mode),
+    };
+  }
+
+  // The play screen inside the Hall: the clock, the navigator, drafts, flags, the hand-in sheet.
+  hallPlayVals(s, wide, part, mode) {
+    const hall = s.sitting === "hall" && !!s.hall && s.hall.phase === "sitting", H = s.hall, fx = s.fix;
+    const base = { hallMode: hall, showSegs: !hall, showPlayXp: !hall, showSound: !hall, showCoach: !hall, hallNavCol: hall && wide, hallStrip: hall && !wide,
+      playClose: () => hall ? this.openHallSheet("leave") : fx ? this.endFix(false) : this.setState({ screen: "map" }),
+      playCloseAria: hall ? "Leave the Hall" : fx ? "End the fix round" : "Back to the map", playCloseHasPopup: hall ? "dialog" : "false",
+      hasFixChip: !!fx && !hall, fixChip: fx ? "Fix round · " + (fx.i + 1) + " of " + fx.keys.length : "", hallSheetOpen: false };
+    if (!hall) return base;
+    const ps = this.hallParts(), cur = H.cur;
+    const liveAns = filled(this.answerFrom(part, this.uiSnap(), true));
+    const isAns = i => i === cur ? liveAns : !!(H.drafts[ps[i].key] && H.drafts[ps[i].key].answered);
+    const squares = ps.map((p, i) => { const ans = isAns(i), fl = !!H.flags[p.key], on = i === cur;
+      return { idx: String(i), label: p.number, flagged: fl, current: on ? "step" : "false",
+        aria: p.number + ", " + (ans ? "answered" : "not answered") + (fl ? ", flagged" : "") + (on ? ", current question" : ""),
+        border: fl ? "1.5px solid #e0a10f" : ans ? "1.5px solid rgba(129,177,255,0.65)" : "1.5px solid var(--line2)",
+        bg: ans ? "rgba(0,104,248,0.24)" : "transparent", color: ans ? "#ffffff" : "var(--text3)",
+        ring: on ? "0 0 0 2px #191b1e, 0 0 0 4px #81b1ff" : "none", go: () => this.hallGo(i) }; });
+    const groups = [];
+    ps.forEach((p, i) => { const g = groups[groups.length - 1]; if (g && g.title === p.section) g.squares.push(squares[i]); else groups.push({ title: p.section, squares: [squares[i]] }); });
+    const answeredN = ps.filter((_, i) => isAns(i)).length;
+    const remain = Math.max(0, H.endsAt - (s.hallNow || H.startedAt));
+    const hh = Math.floor(remain / 3600000), mm = Math.floor(remain % 3600000 / 60000), sec = Math.floor(remain % 60000 / 1000), two = n => (n < 10 ? "0" : "") + n;
+    const low = remain <= 5 * 60000, flagged = !!H.flags[part.key], last = cur >= ps.length - 1, draw = mode === "draw";
+    const saved = !!(H.drafts[part.key] && H.drafts[part.key].answered);
+    const p = this.paper();
+    // The sheet: hand in, or leave.
+    const unanswered = ps.map((q, i) => i).filter(i => !isAns(i)), flaggedIdx = ps.map((q, i) => i).filter(i => H.flags[ps[i].key]);
+    const leftMin = Math.floor(remain / 60000);
+    const sheet = s.hallSheet === "handin" ? {
+      hsTitle: "Hand in your paper?", hsHasStats: true,
+      hsStats: [{ value: answeredN + " of " + ps.length, label: "answered", color: "#ffffff" }, { value: String(flaggedIdx.length), label: "flagged", color: flaggedIdx.length ? "#f3c14f" : "#ffffff" },
+        { value: leftMin >= 60 ? Math.floor(leftMin / 60) + " h " + (leftMin % 60) + " min" : leftMin < 1 ? "Under 1 min" : leftMin + " min", label: "left", color: low ? "#f3c14f" : "#ffffff" }],
+      hsJumps: [unanswered.length ? { label: "Go to the first unanswered · " + unanswered.length + " left", go: () => this.hallGo(unanswered[0]) } : null,
+        flaggedIdx.length ? { label: "Go to the first flagged · " + flaggedIdx.length + " flagged", go: () => this.hallGo(flaggedIdx[0]) } : null].filter(Boolean),
+      hsBody: "You can't change your answers after you hand in.", hsCancel: "Keep working", hsConfirm: () => this.handIn("you"), hsConfirmLabel: "Hand in" }
+      : { hsTitle: "Leave the Hall?", hsHasStats: false, hsStats: [], hsJumps: [],
+      hsBody: "The clock keeps running while you're away. A paper you leave and come back to doesn't count as sat under conditions, so it won't earn the Hall reward.",
+      hsCancel: "Stay", hsConfirm: () => this.leaveHall(), hsConfirmLabel: "Leave" };
+    return Object.assign(base, sheet, {
+      hallPaperLine: p ? p.title + " · " + p.sitting : "",
+      clockText: hh + ":" + two(mm) + ":" + two(sec),
+      clockAria: "Time left: " + (hh ? hh + (hh === 1 ? " hour " : " hours ") : "") + mm + (mm === 1 ? " minute" : " minutes"),
+      clockColor: low ? "#f3c14f" : "#ffffff", clockBorder: low ? "rgba(224,161,15,0.6)" : "rgba(129,177,255,0.35)",
+      navSquares: squares, navGroups: groups, navCount: answeredN + " of " + ps.length + " answered",
+      openHandIn: () => this.openHallSheet("handin"),
+      hallSheetOpen: !!s.hallSheet, closeHallSheet: () => this.closeHallSheet(),
+      hallSheetKeys: e => { if (e.key !== "Tab") return; const fs = [].slice.call(document.querySelectorAll("[data-hallsheet] button")); if (!fs.length) return;
+        const first = fs[0], lastB = fs[fs.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); lastB.focus(); } else if (!e.shiftKey && document.activeElement === lastB) { e.preventDefault(); first.focus(); } },
+      toggleFlag: () => this.toggleFlag(), flagPressed: flagged ? "true" : "false", flagLabel: flagged ? "Flagged" : "Flag", flagFill: flagged ? "currentColor" : "none",
+      flagBorder: flagged ? "rgba(224,161,15,0.7)" : "var(--line2)", flagBg: flagged ? "rgba(224,161,15,0.14)" : "rgba(255,255,255,0.04)", flagColor: flagged ? "#f3c14f" : "var(--text2)",
+      tryLabel: liveAns ? (saved ? "Saved" : "Saving…") : "Not answered", tryColor: liveAns ? "var(--text2)" : "var(--text3)",
+      hasStreak: false, hasHint: false, hasReveal: false, hasPoints: false,
+      primary: () => this.hallSaveNext(), primaryDisabled: false,
+      primaryLabel: draw ? (last ? "I've drawn it · review" : "I've drawn it · next") : last ? (liveAns ? "Save and review" : "Review and hand in") : liveAns ? "Save and next" : "Next question",
+      primaryBg: "var(--grad)", primaryColor: "#ffffff", primaryCursor: "pointer", primaryShadow: "0 10px 26px rgba(30,70,255,0.3)",
+    });
+  }
+  // The Hall's own screens and its door on the map and the summary.
+  hallScreenVals(s, phone, paper, missions) {
+    const H = s.hall, pid = paper ? paper.id : null, mine = !!(H && H.paperId === pid);
+    const live = mine && H.phase === "sitting", handed = mine && H.phase === "handed", released = handed && H.status === "released" && !!H.result;
+    const avail = !!pid && this.hallAvailable(pid);
+    const remain = live ? Math.max(0, H.endsAt - (s.hallNow || H.startedAt)) : 0;
+    const clock = Math.floor(remain / 3600000) + ":" + ("0" + Math.floor(remain % 3600000 / 60000)).slice(-2) + ":" + ("0" + Math.floor(remain % 60000 / 1000)).slice(-2);
+    const R = released ? H.result : null;
+    const vals = {
+      hallDockOn: !!pid && (avail || mine),
+      hallDockLabel: live ? (phone ? clock : "Back to the Hall · " + clock) : R ? (phone ? R.marks + "/" + R.total_marks : "Hall report · " + R.marks + " of " + R.total_marks)
+        : handed ? (phone ? "Marking" : "Hall paper · being marked") : (phone ? "The Hall" : "Sit it in the Hall"),
+      hallDockAria: live ? "Back to the Hall, " + clock + " left" : R ? "Hall report, " + R.marks + " of " + R.total_marks : handed ? "Hall paper, being marked" : "Sit this paper in the Hall",
+      hallDockBorder: live ? "rgba(129,177,255,0.7)" : "rgba(129,177,255,0.4)", hallDockBg: live ? "var(--grad)" : "rgba(0,104,248,0.14)",
+      hallDockGo: () => { if (live) this.resumeHall(); else if (handed) this.setState({ screen: "hallout" }, () => window.scrollTo(0, 0)); else this.setState({ screen: "hallgate", hallErr: "" }, () => window.scrollTo(0, 0)); },
+      kitDockLabel: avail || mine ? "Kit" : "Paper kit", reviewLabel: phone && (avail || mine) ? "Review" : "Review my paper",
+      sumHallTitle: live ? "Your Hall paper is open · " + clock + " left" : R ? "Hall report · " + R.marks + " of " + R.total_marks : handed ? "Your Hall paper is being marked" : "Sit it in the Hall",
+      sumHallBody: live ? "Go back in. The clock kept running." : R ? "Your marks, the memo and a fix round." : handed ? "Marks come when the paper is released."
+        : "A mock exam on the real clock. Practice builds the skill; the Hall shows where you stand.",
+      onHallGate: s.screen === "hallgate" && !!paper, onHallOut: s.screen === "hallout" && mine && H.phase === "handed",
+      toPapers: () => this.setState({ screen: "pick" }),
+    };
+    if (s.screen === "hallgate" && paper) {
+      const practised = missions.filter(m => m.parts.some(q => { const g = this.pg(q.key); return g.tries > 0 || g.closed; })).length, half = Math.ceil(missions.length / 2);
+      const qm = parseFloat(new URLSearchParams(location.search).get("hallMinutes"));
+      const timeText = qm > 0 ? qm + (qm === 1 ? " minute (preview)" : " minutes (preview)") : paper.time;
+      const ok = { icon: "✓", color: "#0d2419", iconBg: "#3ddc97" }, info = { icon: "•", color: "#0b1a33", iconBg: "#81b1ff" };
+      const otherLive = !!(H && H.phase === "sitting" && H.paperId !== pid);
+      Object.assign(vals, {
+        gateBubble: "You've got this. I'll wait outside.",
+        gateTitle: paper.title, gateMeta: paper.sitting + " · " + paper.total + " marks · " + paper.programme,
+        gateReady: [
+          Object.assign({}, practised >= half ? ok : info, { head: practised + " of " + missions.length + " missions practised", body: practised >= half ? "Good preparation." : "You can go in now or practise more first. Your call." }),
+          Object.assign({}, ok, { head: "Calculator in the app", body: "The same keypad as practice." }),
+          Object.assign({}, info, { icon: "◷", head: timeText + ", in one go", body: "The clock starts when you enter and doesn't pause." }),
+          Object.assign({}, ok, { head: paper.id === "fm" ? "Instructions and formula sheet on hand" : "Instructions on hand", body: "One tap away on every question, as printed." }) ],
+        gateRules: ["One answer per question. Change it as often as you like until you hand in.", "Answer in any order. Flag a question to come back to it.",
+          "No hints and no ticks. Your marks come when the paper is released.", "You can leave, but the clock keeps running."],
+        gateRewardTitle: "The Hall reward · +" + HALL_REWARD_XP + " XP",
+        gateRewardBody: "Hand in on time, in one go, with at least " + Math.round(HALL_ANSWERED_MIN * 100) + "% answered. It's paid at release and doesn't depend on your mark.",
+        gateHasErr: !!s.hallErr || otherLive, gateErr: s.hallErr || (otherLive ? "Your other Hall paper is still open. Hand it in first." : ""),
+        enterHall: () => this.enterHall(), gateEnterLabel: "Enter the Hall",
+      });
+    }
+    if (vals.onHallOut) {
+      const spent = Math.max(0, (H.handedAt || H.startedAt) - H.startedAt), sh = Math.floor(spent / 3600000), sm = Math.round(spent % 3600000 / 60000);
+      const dur = sh ? sh + " h " + sm + " min" : sm < 1 ? "Under a minute" : sm + " min";
+      const st = H.status;
+      Object.assign(vals, {
+        hoModes: [["marking", "Being marked"], ["awaiting_moderation", "Waiting for a person"], ["released", "Released"]].map(x => { const on = st === x[0];
+          return { label: x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)",
+            pick: () => { HALL_API.force = x[0]; this.hallPoll(); } }; }),
+        hoWaiting: !released, hoReleased: released,
+        hoHandedTitle: dur + " · " + H.answered + " of " + H.total + " answered",
+        hoHandedNote: H.handedBy === "time" ? "Handed in when the time ran out, with everything you'd saved." : "Handed in before the time was up.",
+        hoStatusTitle: st === "awaiting_moderation" ? "Waiting for a person" : "Being marked", hoStatusColor: st === "awaiting_moderation" ? "#f3c14f" : "#81b1ff",
+        hoStatusBody: st === "awaiting_moderation" ? "Two markers read one of your written answers differently. A person from Nexera's curriculum team decides, then your marks are released."
+          : "Answers the computer marks are final already. Written answers are marked by the model, then reviewed.",
+        hoFinal: String(H.final), hoTotal: String(H.total), hoPct: (H.total ? Math.round(100 * H.final / H.total) : 0) + "%",
+        hoFinalText: H.final + " of " + H.total + " answers marked",
+        hoSteps: [["Marked by the computer", true], ["Written answers marked by the model, then reviewed", st !== "marking"],
+          ["Any disagreement decided by a person", false], ["Released: your marks and the memo", false]].map(x => ({
+          text: x[0], icon: x[1] ? "✓" : "", dotBg: x[1] ? "#3ddc97" : "rgba(255,255,255,0.12)", color: x[1] ? "var(--text)" : "var(--text3)", sr: x[1] ? ", done" : ", not yet" })),
+      });
+      if (released) Object.assign(vals, this.hallReportVals(s, H));
+    }
+    return vals;
+  }
+  // The report exists only after release: this is the first place any Hall mark or memo appears.
+  hallReportVals(s, H) {
+    const R = H.result, byPart = {}; R.by_part.forEach(x => { byPart[x.key] = x; });
+    const c = R.conditions, pctAns = Math.round(c.answered_ratio * 100), need = Math.round(HALL_ANSWERED_MIN * 100);
+    const why = [];
+    if (!c.within_time) why.push("it was handed in after the time");
+    if (!c.one_sitting) why.push("you left the Hall during the paper");
+    if (c.answered_ratio < HALL_ANSWERED_MIN) why.push("only " + pctAns + "% was answered (" + need + "% is needed)");
+    const offline = R.by_part.filter(x => x.route === "offline" && x.of > 0);
+    const good = { icon: "✓", dot: "#3ddc97", color: "#5fe6ab", border: "rgba(61,220,151,0.45)", bg: "rgba(20,48,37,0.6)", hasXp: true };
+    const rewards = [H.earned ? Object.assign({}, good, { title: "Full paper, sat under conditions", body: "On time, in one go, " + pctAns + "% answered.", xp: "+" + HALL_REWARD_XP + " XP" })
+      : { icon: "•", dot: "#81b1ff", color: "#ffffff", border: "var(--line2)", bg: "rgba(32,35,39,0.6)", hasXp: false, xp: "",
+        title: "The Hall reward wasn't earned this time", body: "Because " + why.join(" and ") + ". Your mark is still your Hall result." }];
+    if (H.fixDone) rewards.push(Object.assign({}, good, { title: "Fix round complete", body: "Every part that lost marks, practised again.", xp: "+" + FIX_REWARD_XP + " XP" }));
+    const memoOf = part => { const rv = this.reveal(part);
+      let lines = rv.steps ? rv.steps.filter(x => x.memo_text).map(x => x.label + ": " + x.memo_text) : (rv.memo.points || []).map(x => "• " + x.text);
+      if (!lines.length) lines = (SERVER.memo[part.key] || []).map(t => "• " + t);
+      return lines.length ? "The memo:\n" + lines.join("\n") : "The memo for this part arrives when its text is transcribed."; };
+    const secs = this.hallSections(H.paperId);
+    return {
+      hoMark: String(R.marks), hoOf: String(R.total_marks), hoPctText: (R.total_marks ? Math.round(100 * R.marks / R.total_marks) : 0) + "%",
+      hoHasOffline: offline.length > 0, hoOffline: offline.length ? "Drawings (" + offline.reduce((a, x) => a + x.of, 0) + " marks) are marked on paper, so they're not in this total." : "",
+      hoRewards: rewards,
+      hoHasFix: R.fix_parts.length > 0 && !H.fixDone, hoFixLabel: "Fix round · " + R.fix_parts.length + (R.fix_parts.length === 1 ? " part" : " parts"),
+      hoFixBody: "Practise the parts that lost marks, with tries and hints. Your Hall mark stays as it is.", startFix: () => this.startFix(),
+      hoQuestions: R.by_question.map((q, qi) => { const open = !!s.hoOpen[q.q];
+        return { title: q.q, label: q.marks + " of " + q.of, pct: (q.of ? Math.round(100 * q.marks / q.of) : 0) + "%", open: open, chev: open ? "−" : "+",
+          toggle: () => this.setState({ hoOpen: Object.assign({}, this.state.hoOpen, { [q.q]: !open }) }),
+          parts: open ? secs[qi].keys.map(k => { const part = this.partByKey(k), b = byPart[k] || { marks: 0, of: 0, route: "auto" };
+            return { number: part ? part.number : k, route: ROUTE_WORD[b.route] || "", marks: b.route === "offline" ? "on paper" : b.marks + " of " + b.of,
+              color: b.route === "offline" ? "var(--text3)" : b.marks >= b.of ? "#5fe6ab" : b.marks > 0 ? "#f3c14f" : "#ff9a9c", memo: part ? memoOf(part) : "" }; }) : [] }; }),
     };
   }
 
@@ -2259,9 +2926,11 @@ class Component extends DCLogic {
     const shown = papers.filter(p => s.programme === "All" || (s.programme === "NATED" ? p.id === "fm" : s.programme === "NC(V)" ? p.id === "aet" : false));
     const allParts = paper ? paper.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts.map(p => Object.assign({ mi: missions.indexOf(m) }, p)))), []) : [];
 
-    const headTitle = s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
-    const headSub = s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
-    const backMap = { map: ["Papers", () => this.setState({ screen: "pick" })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })] };
+    const onHallScreen = s.screen === "hallgate" || s.screen === "hallout";
+    const headTitle = onHallScreen ? "The Hall" : s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
+    const headSub = onHallScreen && paper ? paper.title + " · " + paper.sitting : s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
+    const backMap = { map: ["Papers", () => this.setState({ screen: "pick" })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
+      hallgate: ["Map", () => this.setState({ screen: "map" })], hallout: ["Map", () => this.setState({ screen: "map" })] };
     const bk = backMap[s.screen];
 
     // ── home
@@ -2420,15 +3089,15 @@ class Component extends DCLogic {
         border: paper0 && p.id === paper0.id ? "rgba(129,177,255,0.7)" : "var(--line2)", bg: paper0 && p.id === paper0.id ? "rgba(0,104,248,0.2)" : "transparent",
         pick: () => { this.setState({ selPaper: p.id, swap: s.swap + 1 }, () => { this.nod(); this.closeLayer(); }); } })),
       paperFacts: facts(paper0),
-      screenLabel: { pick: "01 Pick", map: "02 Map", play: "03 Mission", done: "04 Complete", summary: "05 Summary" }[s.screen],
+      screenLabel: { pick: "01 Pick", map: "02 Map", play: "03 Mission", done: "04 Complete", summary: "05 Summary", hallgate: "06 Hall · entrance", hallout: "07 Hall · result" }[s.screen],
       pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
       headTitle: headTitle, headSub: headSub,
-      showMeter: !!paper && s.screen !== "pick", meterLabel: earned + " of " + total + " marks",
+      showMeter: !!paper && s.screen !== "pick" && !onHallScreen, meterLabel: earned + " of " + total + " marks",
       ringDisplay: phone ? "flex" : "none", kitHeadDisplay: phone && s.screen === "map" ? "none" : "flex",
       xpPad: phone ? "10px" : "13px", xpWordDisplay: phone ? "none" : "inline", ringDeg: Math.round(360 * earned / Math.max(1, total)) + "deg", earnedNum: earned, meterPct: (total ? Math.round(100 * earned / total) : 0) + "%",
-      showKitBtn: !!paper && (s.screen === "map" || s.screen === "play"), openKit: () => this.setState({ kit: true }),
+      showKitBtn: !!paper && (s.screen === "map" || s.screen === "play" || s.screen === "hallgate"), openKit: () => this.setState({ kit: true }),
       xp: s.xp, pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
 
       onPick: s.screen === "pick", onMap: s.screen === "map" && !!paper, onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
@@ -2446,6 +3115,11 @@ class Component extends DCLogic {
       openSummary: () => this.setState({ screen: "summary" }), totalMarks: total,
       paperNote: !!(paper && paper.note), paperNoteText: paper ? paper.note : "",
       ...this.mapVals(paper, missions, suggestedIdx, missionState, earned, total, phone, tablet, desk, vw),
+      // While this paper's Hall sitting is open, a mission card is a way back in, not into practice.
+      ...(paper && this.hallLiveFor(paper.id) ? { cardPlayLabel: "Back to the Hall", cardPlay: () => this.resumeHall(), cardHasNote: true,
+        cardNote: "Your Hall paper is open, so practice on this paper waits until you hand in." } : {}),
+      ...this.hallScreenVals(s, phone, paper, missions),
+      hallLive: s.hallLive,
 
       doneRing: mSt.ring, doneGrade: mSt.label,
       doneTitle: mission ? mission.title : "",
@@ -2460,7 +3134,7 @@ class Component extends DCLogic {
         return { title: sec.title, label: e + " of " + t, pct: (t ? Math.round(100 * e / t) : 0) + "%" }; }) : [],
       sumBelow: allParts.filter(p => p.marks && this.pg(p.key).tries > 0 && this.pg(p.key).best < p.marks).map(p => { const g = this.pg(p.key);
         return { number: p.number, status: g.waiting ? "Waiting for a marker" : g.revealed ? "Memo shown" : g.closed ? "Closed" : g.tries + " of 3 tries used", marks: g.best + " / " + p.marks,
-          open: () => { const m = missions[p.mi]; this.resetInputs({ screen: "play", mi: p.mi, pi: m.parts.findIndex(x => x.key === p.key) }); } }; }),
+          open: () => { if (this.hallLiveFor(s.paperId)) { this.resumeHall(); return; } const m = missions[p.mi]; this.resetInputs({ screen: "play", mi: p.mi, pi: m.parts.findIndex(x => x.key === p.key) }); } }; }),
       sumNoBelow: !allParts.some(p => p.marks && this.pg(p.key).tries > 0 && this.pg(p.key).best < p.marks),
       sumNoBelowText: allParts.some(p => this.pg(p.key).tries > 0) ? "Every part you have tried is at full marks." : "You have not tried any part yet.",
 
