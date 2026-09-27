@@ -14,6 +14,7 @@
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js"></script>
   <script src="paper-fm-n6-2022.js"></script>
+  <script src="paper-ls-p1-2026.js"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -36,6 +37,7 @@
     @keyframes padcore { 0%, 100% { transform:scale(0.9); opacity:0.82; } 50% { transform:scale(1.12); opacity:1; } }
     @keyframes barup { from { transform:translateY(100%); } to { transform:translateY(0); } }
     @keyframes halo { 0% { transform:scale(0.92); opacity:0.9; } 100% { transform:scale(1.4); opacity:0; } }
+    [data-tile]:active:not(:disabled), [data-kpkey]:active { transform:scale(0.97); }
     [data-startbtn] { transition:transform 120ms ease, filter 160ms ease; }
     [data-startbtn]:hover { filter:brightness(1.12); }
     [data-startbtn]:active { transform:scale(0.98); }
@@ -166,7 +168,7 @@
             <button onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
           </div>
           <sc-if value="{{ hasTicketPaper }}" hint-placeholder-val="{{ true }}">
-            <span style="font-size:11.5px; color:var(--text3); text-align:center">DHET question paper · marking reviewed by Nexera</span>
+            <span style="font-size:11.5px; color:var(--text3); text-align:center">{{ ticketProv }}</span>
           </sc-if>
         </sc-if>
         <sc-if value="{{ showContinue }}" hint-placeholder-val="{{ false }}">
@@ -306,7 +308,7 @@
             </span>
             <span style="font-size:13.5px; font-weight:800; line-height:1.3; color:#ffffff; text-wrap:balance">{{ startPaperName }}</span>
             <span style="font-size:11.5px; font-weight:600; color:var(--text2)">{{ startPaperFacts }}</span>
-            <span style="font-size:10.5px; color:var(--text3)">DHET question paper · marking reviewed by Nexera</span>
+            <span style="font-size:10.5px; color:var(--text3)">{{ startProv }}</span>
           </button>
         </span>
         <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
@@ -497,6 +499,11 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ showCalcBtn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; justify-content:flex-end; margin-top:-4px">
+              <button onClick="{{ openCalc }}" aria-label="Open the calculator" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"></path></svg>Calculator</button>
+            </div>
+          </sc-if>
           <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ false }}">
             <div role="note" style="display:flex; gap:10px; padding:12px 14px; border-radius:14px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.07); animation:pop 320ms ease both">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e0a10f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none; margin-top:2px"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></svg>
@@ -513,7 +520,7 @@
                     <span style="flex:none; font-size:11.5px; font-weight:700; color:var(--text3)">{{ st.marks }}</span>
                   </span>
                   <span style="display:flex; align-items:center; gap:8px">
-                    <input id="{{ st.inputId }}" aria-label="{{ st.aria }}" data-field="true" value="{{ st.value }}" onChange="{{ st.onChange }}" onKeyDown="{{ onEnter }}" inputMode="decimal" enterKeyHint="{{ st.enterHint }}" autoComplete="off" disabled="{{ locked }}" placeholder="Your value" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                    <input id="{{ st.inputId }}" aria-label="{{ st.aria }}" data-field="true" value="{{ st.value }}" onChange="{{ st.onChange }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" onFocus="{{ st.onFocus }}" enterKeyHint="{{ st.enterHint }}" autoComplete="off" disabled="{{ locked }}" placeholder="Your value" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
                     <sc-if value="{{ st.hasUnit }}" hint-placeholder-val="{{ true }}">
                       <span style="flex:none; min-width:36px; font-size:14px; font-weight:700; color:var(--text2)">{{ st.unit }}</span>
                     </sc-if>
@@ -529,23 +536,108 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ isTiles }}" hint-placeholder-val="{{ false }}">
+            <div role="{{ tilesRole }}" aria-label="{{ tilesAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-direction:column; gap:10px">
+              <sc-if value="{{ hasCounter }}" hint-placeholder-val="{{ false }}">
+                <span data-key="{{ counterKey }}" role="status" style="font-size:12.5px; font-weight:700; color:{{ counterColor }}; animation:{{ counterAnim }}">{{ counterText }}</span>
+              </sc-if>
+              <sc-if value="{{ hasSeq }}" hint-placeholder-val="{{ false }}">
+                <span style="padding:9px 12px; border-radius:12px; border:1px dashed var(--line2); font-size:13px; font-weight:700; color:var(--text2)">{{ seqText }}</span>
+              </sc-if>
+              <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
+                <button data-tile="true" data-idx="{{ tl.idx }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ locked }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
+                  <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; background:{{ tl.badgeBg }}; font-size:13px; font-weight:800; color:{{ tl.badgeColor }}">{{ tl.badge }}</span>
+                  <span style="flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.4; text-wrap:pretty">{{ tl.text }}</span>
+                  <sc-if value="{{ tl.hasStamp }}" hint-placeholder-val="{{ false }}">
+                    <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ tl.stampBg }}; font-size:12px; font-weight:800; color:{{ tl.stampColor }}; white-space:nowrap">{{ tl.stamp }}</span>
+                  </sc-if>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isLetterName }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <div style="display:flex; align-items:center; gap:8px">
+                <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">Letter on the figure</span>
+                <button onClick="{{ openFigure }}" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Figure</button>
+                <sc-if value="{{ lnLetterHasStamp }}" hint-placeholder-val="{{ false }}">
+                  <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnLetterStampBg }}; font-size:12px; font-weight:800; color:{{ lnLetterStampColor }}">{{ lnLetterStamp }}</span>
+                </sc-if>
+              </div>
+              <div role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:8px">
+                <sc-for list="{{ letterTiles }}" as="lt" hint-placeholder-count="6">
+                  <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:52px; height:52px; border-radius:14px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:17px; font-weight:800; cursor:pointer">{{ lt.label }}</button>
+                </sc-for>
+              </div>
+              <span style="display:flex; align-items:center; gap:8px">
+                <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:15.5px; outline:none" />
+                <sc-if value="{{ lnNameHasStamp }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnNameStampBg }}; font-size:12px; font-weight:800; color:{{ lnNameStampColor }}">{{ lnNameStamp }}</span>
+                </sc-if>
+              </span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <span style="font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">The term</span>
+              <span style="display:flex; align-items:center; gap:8px">
+                <input data-field="true" value="{{ termVal }}" onChange="{{ onTerm }}" onKeyDown="{{ onEnter }}" aria-label="The term" placeholder="Type the term" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:52px; padding:0 14px; border-radius:12px; border:1px solid {{ termBorder }}; background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                <sc-if value="{{ termHasStamp }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ termStampBg }}; font-size:12px; font-weight:800; color:{{ termStampColor }}">{{ termStamp }}</span>
+                </sc-if>
+              </span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isNum }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ numBorder }}; background:rgba(32,35,39,0.78)">
+              <span style="font-size:13.5px; font-weight:600">Your answer</span>
+              <span style="display:flex; align-items:center; gap:8px">
+                <input id="f-num" data-field="true" value="{{ numVal }}" onChange="{{ onNum }}" onFocus="{{ onNumFocus }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" aria-label="Your answer" placeholder="Your value" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                <sc-if value="{{ numHasUnit }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-size:14px; font-weight:700; color:var(--text2)">{{ numUnit }}</span></sc-if>
+                <sc-if value="{{ numHasStamp }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex:none; height:30px; padding:0 9px; border-radius:15px; display:flex; align-items:center; background:{{ numStampBg }}; font-size:12px; font-weight:800; color:{{ numStampColor }}">{{ numStamp }}</span>
+                </sc-if>
+              </span>
+            </div>
+          </sc-if>
+
           <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:10px">
-              <sc-for list="{{ listFields }}" as="lf" hint-placeholder-count="4">
-                <span style="display:flex; align-items:center; gap:10px">
-                  <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--text2)">{{ lf.n }}</span>
-                  <input data-field="true" value="{{ lf.value }}" onChange="{{ lf.onChange }}" onKeyDown="{{ onEnter }}" enterKeyHint="{{ lf.enterHint }}" autoComplete="off" disabled="{{ locked }}" aria-label="{{ lf.aria }}" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid {{ lf.border }}; background:var(--field); color:var(--text); font-size:15px; outline:none" />
-                  <sc-if value="{{ lf.hasStamp }}" hint-placeholder-val="{{ false }}">
-                    <span style="flex:none; height:30px; padding:0 9px; border-radius:15px; display:flex; align-items:center; background:{{ lf.stampBg }}; font-size:12px; font-weight:800; color:{{ lf.stampColor }}; white-space:nowrap">{{ lf.stamp }}</span>
-                  </sc-if>
+              <span role="status" style="font-size:12.5px; font-weight:700; color:var(--text2)">{{ listCounter }}</span>
+              <div style="display:flex; flex-wrap:wrap; gap:8px">
+                <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="2">
+                  <span style="display:flex; align-items:center; gap:2px; padding:3px 3px 3px 4px; border-radius:22px; border:1.5px solid {{ ch.border }}; background:{{ ch.bg }}">
+                    <button onClick="{{ ch.edit }}" disabled="{{ locked }}" aria-label="{{ ch.aria }}" style="min-height:38px; padding:0 8px 0 10px; border:none; background:transparent; color:var(--text); font-size:14px; font-weight:700; cursor:pointer; text-align:left">{{ ch.n }} · {{ ch.text }}</button>
+                    <sc-if value="{{ ch.hasStamp }}" hint-placeholder-val="{{ false }}">
+                      <span style="height:26px; padding:0 8px; border-radius:13px; display:flex; align-items:center; background:{{ ch.stampBg }}; font-size:11.5px; font-weight:800; color:{{ ch.stampColor }}; white-space:nowrap">{{ ch.stamp }}</span>
+                    </sc-if>
+                    <sc-if value="{{ ch.canRemove }}" hint-placeholder-val="{{ true }}">
+                      <button onClick="{{ ch.remove }}" aria-label="{{ ch.removeAria }}" style="width:38px; height:38px; border:none; border-radius:19px; background:transparent; color:var(--text3); font-size:16px; cursor:pointer">×</button>
+                    </sc-if>
+                  </span>
+                </sc-for>
+              </div>
+              <sc-if value="{{ showChipInput }}" hint-placeholder-val="{{ true }}">
+                <span style="display:flex; gap:8px">
+                  <input data-chipinput="true" value="{{ chipDraft }}" onChange="{{ onChipDraft }}" onKeyDown="{{ chipKeys }}" aria-label="{{ chipAria }}" placeholder="Type an answer, then Enter" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="enter" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15.5px; outline:none" />
+                  <button onClick="{{ addChip }}" disabled="{{ locked }}" style="flex:none; min-width:64px; height:50px; padding:0 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:var(--tint); font-size:14px; font-weight:800; cursor:pointer">Add</button>
                 </span>
-              </sc-for>
+              </sc-if>
             </div>
           </sc-if>
 
           <sc-if value="{{ isRubric }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:8px">
-              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15px; line-height:1.6; resize:vertical; outline:none"></textarea>
+              <sc-if value="{{ hasCoach }}" hint-placeholder-val="{{ false }}">
+                <div role="note" style="display:flex; gap:10px; align-items:flex-start; padding:11px 13px; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.08)">
+                  <span aria-hidden="true" style="flex:none; padding:3px 8px; border-radius:8px; background:rgba(129,177,255,0.18); font-size:11.5px; font-weight:800; color:#cfe0ff">{{ coachCmd }}</span>
+                  <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:700">{{ coachShape }}</span><span style="font-size:12.5px; color:var(--text2)">{{ coachAim }}</span></span>
+                </div>
+              </sc-if>
+              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15px; line-height:1.6; resize:vertical; outline:none"></textarea>
               <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
             </div>
           </sc-if>
@@ -638,8 +730,35 @@
               </span>
             </div>
           </sc-if>
+          <sc-if value="{{ kpShow }}" hint-placeholder-val="{{ false }}">
+            <div data-keypad="true" role="group" aria-label="Calculator" style="margin:0 0 8px; padding:10px; border-radius:20px; border:1px solid var(--line2); background:rgba(28,31,36,0.98); box-shadow:0 -12px 32px rgba(0,0,0,0.45)">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                <span style="flex:none; max-width:45%; font-size:12px; font-weight:700; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ kpFor }}</span>
+                <span role="status" aria-label="{{ kpDisplayAria }}" style="flex:1; min-width:0; text-align:right; font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl">{{ kpDisplay }}</span>
+                <button onClick="{{ kpClose }}" aria-label="Close calculator" style="width:40px; height:40px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:17px; cursor:pointer">×</button>
+              </div>
+              <sc-if value="{{ kpHasErr }}" hint-placeholder-val="{{ false }}">
+                <span role="alert" style="display:block; margin:-2px 0 6px; font-size:12px; font-weight:700; color:#f3c14f">{{ kpErr }}</span>
+              </sc-if>
+              <sc-if value="{{ kpHasChips }}" hint-placeholder-val="{{ false }}">
+                <div data-noscrollbar="true" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px">
+                  <sc-for list="{{ kpChips }}" as="kc" hint-placeholder-count="4">
+                    <button onClick="{{ kc.tap }}" aria-label="{{ kc.aria }}" style="flex:none; min-height:36px; padding:0 11px; border-radius:18px; border:1px solid {{ kc.border }}; background:{{ kc.bg }}; color:{{ kc.color }}; font-size:12.5px; font-weight:700; white-space:nowrap; cursor:pointer">{{ kc.label }}</button>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <div style="display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:6px">
+                <sc-for list="{{ kpKeys }}" as="kk" hint-placeholder-count="25">
+                  <button data-kpkey="true" onClick="{{ kk.tap }}" aria-label="{{ kk.aria }}" style="height:{{ kpKeyH }}; border-radius:12px; border:1px solid {{ kk.border }}; background:{{ kk.bg }}; color:{{ kk.color }}; font-size:{{ kk.size }}; font-weight:800; cursor:pointer">{{ kk.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
           <sc-if value="{{ showCheck }}" hint-placeholder-val="{{ true }}">
             <div style="padding:12px 0 max(16px, env(safe-area-inset-bottom)); background:linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.96) 34%)">
+              <sc-if value="{{ showCheckReason }}" hint-placeholder-val="{{ false }}">
+                <span role="status" style="display:block; margin-bottom:6px; text-align:center; font-size:12.5px; font-weight:600; color:var(--text3)">{{ checkReason }}</span>
+              </sc-if>
               <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="width:100%; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
             </div>
           </sc-if>
@@ -725,7 +844,7 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;markerOnline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
 // ── Sample data: the exact shapes of the learner API. The learner view never carries answers.
 const SAMPLE_PART = {"number":"1.1.1","marks":3,"response_mode":"steps","marking_mode":"method","stem":"The discharge.",
- "topic":"Flow in pipes and hydraulic gradient","clues_available":2,
+ "topic":"Flow in pipes and hydraulic gradient","clues_available":2,"givens":[{"symbol": "L", "value": 720, "unit": "m", "source": "stem", "label": "pipeline length"}, {"symbol": "dz", "value": 8, "unit": "m", "source": "stem", "label": "difference in reservoir levels"}, {"symbol": "zs", "value": 3, "unit": "m", "source": "stem", "label": "height of the highest point above the upper reservoir"}, {"symbol": "L1", "value": 260, "unit": "m", "source": "stem", "label": "distance from the entrance to the highest point"}, {"symbol": "d", "value": 1.2, "unit": "m", "source": "stem", "label": "pipe diameter"}, {"symbol": "f", "value": 0.01, "unit": null, "source": "stem", "label": "coefficient of friction"}, {"symbol": "g", "value": 9.81, "unit": "m/s**2", "source": "instructions", "label": "gravitational acceleration (instruction 7)"}],
  "steps":[{"id":"s1","label":"Friction head available between the reservoirs, hf (m)","marks":1,"unit_hint":"m"},
           {"id":"s2","label":"Velocity in the pipe, V (m/s)","marks":1,"unit_hint":"m/s"},
           {"id":"s3","label":"Discharge, Q (m³/s)","marks":1,"unit_hint":"m**3/s"}]};
@@ -737,7 +856,7 @@ const SAMPLE_REPLY = {"part":"1.1.1","try":1,"tries_left":2,"closed":false,"reve
  "clue":"With shock losses ignored, the whole difference in level between the reservoirs is used up by pipe friction.",
  "reveal":null,"xp_awarded":0,"multiplier":1,"streak":0};
 
-const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","programme":"nated","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","programme":"ncv","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","programme":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","programme":"ncv","paper_ids":["aet-l4-2019-02"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
+const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","programme":"nated","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","programme":"ncv","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"ls-p1-2026","title":"Life Sciences P1","programme":"nsc","level_detail":"Grade 12","sitting":"May/June 2026","total_marks":150,"duration_minutes":150,"parts":85,"provenance_label":"Design sample · a DBE NSC paper, not a TVET paper"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","programme":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","programme":"ncv","paper_ids":["aet-l4-2019-02"]},{"name":"Life Sciences P1 (design sample)","programme":"nsc","paper_ids":["ls-p1-2026"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
 // Home paper id → the in-page paper it opens.
 // Missions are only stated where the whole paper is transcribed; otherwise parts, which are known.
 // The companion's greet still (≤60 KB, rendered from avatar-lite.glb, same framing as the 3D
@@ -747,10 +866,10 @@ const POSTER_SRC = null;
 // The companion's walk loop, once it exists (Murci is generating it on Tripo, same rig).
 // Until then the companion glides along the road and greets on arrival.
 const WALK_CLIP = null;
-const PAPER_UNITS = { "fm-n6-2022-11": "13 missions", "aet-l4-2019-02": "28 parts" };
-const PROG_SHORT = { nated: "NATED", ncv: "NC(V)" };
-const HOME_TO_LOCAL = { "fm-n6-2022-11": "fm", "aet-l4-2019-02": "aet" };
-const PROGRAMMES = { nated: "NATED (Report 191)", ncv: "NC(V)" };
+const PAPER_UNITS = { "fm-n6-2022-11": "13 missions", "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
+const PROG_SHORT = { nated: "NATED", ncv: "NC(V)", nsc: "NSC · design sample" };
+const HOME_TO_LOCAL = { "fm-n6-2022-11": "fm", "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
+const PROGRAMMES = { nated: "NATED (Report 191)", ncv: "NC(V)", nsc: "NSC (design sample)" };
 // Subjects without a paper are listed so the empty state is honest, not hidden.
 const OTHER_SUBJECTS = {
   nated: ["Financial Management", "Farming Management", "Management Assistant", "Marketing Management", "Public Management", "Tourism", "Civil Engineering", "Electrical Engineering", "Mechanical Engineering", "Multi-Disciplinary Drawing Office Practice"],
@@ -768,6 +887,27 @@ const FM_TITLES = {
 const FM_TAGS = { "1.4": ["FIGURE 1"] };
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
 const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
+const lev = (a, b) => { a = a || ""; b = b || ""; const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length]; };
+// The calculator's parser: + − × ÷ ^ ( ) √ ² and unary minus, SA decimal comma. No eval.
+function evalExpr(src) {
+  const t = String(src || "").replace(/×10\^/g, "*10^").replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/\s+/g, "");
+  const toks = t.match(/\d+(?:[.,]\d+)?|[+\-*/^()√²]/g) || [];
+  if (toks.join("") !== t) return NaN;
+  let i = 0;
+  const peek = () => toks[i], eat = () => toks[i++];
+  const primary = () => { const k = eat(); if (k === "(") { const v = expr(); if (eat() !== ")") return NaN; return v; }
+    if (k != null && /^\d/.test(k)) return parseFloat(k.replace(",", ".")); return NaN; };
+  const postfix = () => { let v = primary(); while (peek() === "²") { eat(); v = v * v; } return v; };
+  const unary = () => { if (peek() === "-") { eat(); return -unary(); } if (peek() === "√") { eat(); const v = unary(); return v < 0 ? NaN : Math.sqrt(v); } return postfix(); };
+  const power = () => { const b = unary(); if (peek() === "^") { eat(); return Math.pow(b, power()); } return b; };
+  const term = () => { let v = power(); while (peek() === "*" || peek() === "/") { const op = eat(); const r = power(); v = op === "*" ? v * r : v / r; } return v; };
+  const expr = () => { let v = term(); while (peek() === "+" || peek() === "-") { const op = eat(); const r = term(); v = op === "+" ? v + r : v - r; } return v; };
+  const v = expr(); return i === toks.length && isFinite(v) ? v : NaN;
+}
+const fmtNum = v => { const r = Math.round(v * 1e6) / 1e6; return String(r).replace(".", ","); };
 const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 
 // ── Mock of the marking service, standing in for the backend. The screens only ever see its replies.
@@ -835,8 +975,37 @@ function buildPapers() {
         { id: "4.2", title: "Matching columns", context: "", tags: ["TEXT PENDING"], parts: [{ key: "aet:4.2", number: "4.2", marks: 10, response_mode: "match",
           stem: "Match each term in Column A with a description in Column B.", clues_available: 0, match: { left: left, right: right } }] } ] } ] };
   aet.partCount = 28;
+  fm.prov = PROVENANCE; aet.prov = PROVENANCE;
+  const lsSrc = window.PAPER_LS_P1_2026;
+  const ls = { id: "ls", title: "Life Sciences P1", programme: "NSC · Grade 12 · design sample", sitting: "May/June 2026", total: 150, time: "2½ hours",
+    note: "Design sample: a DBE NSC paper used to test question types. It is not a TVET paper and is not in the service.", prov: "Design sample · a DBE NSC paper, not a TVET paper", sections: [] };
+  let lsCount = 0;
+  if (lsSrc) lsSrc.sections.forEach(sec0 => {
+    const sec = { title: sec0.title, total: sec0.total, missions: [] };
+    (sec0.missions || []).forEach(m => {
+      const parts = (m.parts || m.items || []).map(q => {
+        const key = "ls:" + q.n; lsCount++;
+        SERVER.clues[key] = q.clues || [];
+        const base = { key: key, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length };
+        if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]]; return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts }); }
+        if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
+        if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
+        if (q.t === "term") { SERVER.keys[key] = { term: q.a }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
+        if (q.t === "list") { SERVER.keys[key] = { pool: q.pool.map(g => Array.isArray(g) ? g : [g]) }; return Object.assign(base, { response_mode: "list", marking_mode: "answer", count: q.count }); }
+        if (q.t === "lettername") { SERVER.keys[key] = { letter: q.a.letter, names: q.a.name }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]]; return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
+        if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
+        SERVER.memo[key] = q.bullets || [];
+        if (q.t === "draw") return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" });
+        SERVER.keys[key] = { rubric: q.bullets || [] };
+        return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
+      });
+      sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, context: "", tags: [], parts: parts });
+    });
+    ls.sections.push(sec);
+  });
+  ls.partCount = lsCount;
   fm.partCount = 32;
-  return [fm, aet];
+  return [fm, aet, ls];
 }
 
 class Component extends DCLogic {
@@ -844,7 +1013,8 @@ class Component extends DCLogic {
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
-    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     const ready = () => { this.papers = buildPapers(); this.forceUpdate(); };
@@ -863,6 +1033,8 @@ class Component extends DCLogic {
     const vv = window.visualViewport;
     if (vv) { this._vv = () => { const off = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)); if (off !== this.state.kbOff) this.setState({ kbOff: off }); };
       vv.addEventListener("resize", this._vv); vv.addEventListener("scroll", this._vv); }
+    const sitQ = new URLSearchParams(location.search).get("sitting");
+    if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ sitting: "hall" });
     this._esc = e => {
       if (e.key !== "Escape") return;
       if (this.state.card != null) { e.preventDefault(); this.closeCard(); return; }
@@ -909,7 +1081,12 @@ class Component extends DCLogic {
     // A new result: focus its button so Enter continues. Then keep the question clear of the footer.
     if (this.state.barSeq !== this._lastBarSeq) { this._lastBarSeq = this.state.barSeq; const bp = document.querySelector("[data-bar-primary]"); if (bp) bp.focus(); }
     if (scr === "play") { const fe = document.querySelector("[data-footer]");
-      const h = fe ? Math.round(fe.getBoundingClientRect().height) : 0; if (h && Math.abs(h - this.state.footH) > 3) this.setState({ footH: h }); }
+      const h = fe ? Math.round(fe.getBoundingClientRect().height) : 0; if (h && Math.abs(h - this.state.footH) > 3) this.setState({ footH: h });
+      // The first pass can be clamped (the page grows its bottom padding only after the keypad
+      // renders), so fit now AND once more after the padding has grown.
+      const kpKey = this.state.kp ? this.state.kp + ":" + this.state.footH : null;
+      if (kpKey && kpKey !== this._kpKey) { this.fitKpField(); clearTimeout(this._kpT); this._kpT = setTimeout(() => this.fitKpField(), 120); }
+      this._kpKey = kpKey; }
     if (sheet && this._arrow) {
       this._arrow = false;
       const o = document.querySelector('[data-sheet] [data-opt="' + this.state.optIdx + '"]'); if (o) o.focus();
@@ -965,6 +1142,39 @@ class Component extends DCLogic {
       this.setState({ cel: null, mapClip: WALK_CLIP || "" }, () => this.scrollToNode(this.suggested(), true));
       this._cel4 = setTimeout(() => this.setState({ mapClip: "greet" }), WALK_CLIP ? 1100 : 60);
     }, 2700);
+  }
+  fitKpField() {
+    const f = this.state.kp && document.getElementById("f-" + this.state.kp), kp = document.querySelector("[data-keypad]");
+    if (!f || !kp) return;
+    const fr = f.getBoundingClientRect(), kr = kp.getBoundingClientRect();
+    const below = fr.bottom - (kr.top - 12), above = 70 - fr.top;
+    if (below > 0) window.scrollBy(0, below); else if (above > 0) window.scrollBy(0, -above);
+  }
+  // The calculator keypad: it writes into one numeric field (a step id, or "num").
+  kpOpenFor(id) {
+    const s = this.state, part = this.part(); if (!part) return;
+    const val = id === "num" ? s.numVal : (s.inputs[id] || "");
+    this.setState({ kp: id, kpExpr: String(val || ""), kpErr: "" });
+  }
+  kpPress(k) {
+    const s = this.state; let e = s.kpExpr;
+    if (k === "C") e = ""; else if (k === "⌫") e = e.replace(/×10\^$/, "").slice(0, e.endsWith("×10^") ? e.length : e.length - 1);
+    else if (k === "±") { const m = e.match(/(−?)(\d[\d,]*)$/); e = m ? e.slice(0, e.length - m[0].length) + (m[1] ? "" : "−") + m[2] : e + "−"; }
+    else if (k === "x²") e = e + "²"; else if (k === "×10ⁿ") e = e + "×10^";
+    else if (k === "=") { const v = evalExpr(e); if (isNaN(v)) { this.setState({ kpErr: "Can't work that out. Check the brackets and signs." }); return; } e = fmtNum(v); }
+    else e = e + k;
+    this.setState({ kpExpr: e, kpErr: "" });
+  }
+  kpSet() {
+    const s = this.state, part = this.part(); if (!part || !s.kp) return;
+    let e = s.kpExpr.trim(); if (!e) { this.setState({ kpErr: "Type a number first." }); return; }
+    if (/[+×÷^√²()]|.−/.test(e)) { const v = evalExpr(e); if (isNaN(v)) { this.setState({ kpErr: "Can't work that out. Check the brackets and signs." }); return; } e = fmtNum(v); }
+    else e = e.replace(/^−/, "-");
+    if (s.kp === "num") { this.setState({ numVal: e, kp: null, kpExpr: "", kpErr: "", edited: Object.assign({}, s.edited, { num: true }) }); return; }
+    const ids = part.steps.map(x => x.id), i = ids.indexOf(s.kp), nextId = ids[i + 1];
+    const inputs = Object.assign({}, s.inputs, { [s.kp]: e }), edited = Object.assign({}, s.edited, { [s.kp]: true });
+    if (nextId) this.setState({ inputs: inputs, edited: edited, kp: nextId, kpExpr: String(inputs[nextId] || ""), kpErr: "" });
+    else this.setState({ inputs: inputs, edited: edited, kp: null, kpExpr: "", kpErr: "" });
   }
   // Restart a clip without remounting the model (a remount would re-parse the 4.7 MB file).
   react(clip) {
@@ -1022,7 +1232,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._rc); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { clearTimeout(this._rc); clearTimeout(this._kpT); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
@@ -1032,7 +1242,8 @@ class Component extends DCLogic {
   pg(key) { return this.state.prog[key] || { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }; }
 
   resetInputs(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, reply: null, marking: false,
-    barOpen: false, edited: {}, memoSeen: false, ctxOpen: null }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
+    barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "" }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   openMission(i) { this.resetInputs({ screen: "play", mi: i, pi: 0 }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
@@ -1055,12 +1266,37 @@ class Component extends DCLogic {
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
     }
     if (key.pool) {
-      const used = {}; let got = 0;
-      const items = answer.map((a, i) => { const n = norm(a); const hit = key.pool.filter(p => n && !used[p] && n.indexOf(p.split(" ")[0]) !== -1)[0];
-        if (hit) { used[hit] = 1; got++; return { key: "l" + i, awarded: 1, available: 1, verdict: "correct" }; }
-        return { key: "l" + i, awarded: 0, available: 1, verdict: n ? "incorrect" : "missing" }; });
-      return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
+      // Synonym groups: one group scores once; a second answer from the same group is "same as".
+      const groups = key.pool.map(g => Array.isArray(g) ? g : [g]);
+      const usedBy = {}; let got = 0;
+      const each = part.marks / Math.max(1, part.count || groups.length);
+      const items = answer.slice(0, part.count || answer.length).map((a, i) => { const n = norm(a);
+        const gi = groups.findIndex(g => g.some(syn => { const t = norm(syn); return n && (n === t || n.indexOf(t.split(" ")[0]) !== -1); }));
+        if (gi >= 0 && usedBy[gi] == null) { usedBy[gi] = i; got += each; return { key: "l" + i, awarded: each, available: each, verdict: "correct" }; }
+        if (gi >= 0) return { key: "l" + i, awarded: 0, available: each, verdict: "incorrect", reason: "Same as answer " + (usedBy[gi] + 1) + "." };
+        return { key: "l" + i, awarded: 0, available: each, verdict: n ? "incorrect" : "missing" }; });
+      got = Math.round(got * 100) / 100;
+      return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items };
     }
+    const whole = (ok, items) => ({ marks_awarded: ok ? part.marks : items.reduce((a, x) => a + x.awarded, 0), marks: part.marks, full: ok, marker: "auto", items: items });
+    if (key.mcq != null) { const ok = answer === key.mcq;
+      return whole(ok, [{ key: "o" + answer, awarded: ok ? part.marks : 0, available: part.marks, verdict: ok ? "correct" : "incorrect" }]); }
+    if (key.pickn) { const each = part.marks / key.count; let got = 0;
+      const items = answer.map(i => { const ok = key.pickn.indexOf(i) !== -1; if (ok) got += each; return { key: "o" + i, awarded: ok ? each : 0, available: each, verdict: ok ? "correct" : "incorrect" }; });
+      got = Math.round(got * 100) / 100; return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items }; }
+    if (key.order) { const ok = key.order.every((w, pos) => answer[pos] === w);
+      return whole(ok, key.order.map((w, pos) => ({ key: "pos" + pos, awarded: 0, available: 0, verdict: answer[pos] === w ? "correct" : "incorrect" }))); }
+    if (key.term) { const n = norm(answer); const ok = key.term.some(t => { const tn = norm(t); return n === tn || (tn.length >= 7 && lev(n, tn) <= 1); });
+      return whole(ok, [{ key: "t", awarded: ok ? part.marks : 0, available: part.marks, verdict: n ? (ok ? "correct" : "incorrect") : "missing" }]); }
+    if (key.letter) { const half = part.marks / 2;
+      const lOk = String((answer || {}).letter || "").trim().toUpperCase() === String(key.letter).toUpperCase();
+      const nOk = key.names.some(nm => norm((answer || {}).name) === norm(nm));
+      const items = [{ key: "letter", awarded: lOk ? half : 0, available: half, verdict: lOk ? "correct" : "incorrect" }, { key: "name", awarded: nOk ? half : 0, available: half, verdict: nOk ? "correct" : "incorrect" }];
+      return { marks_awarded: (lOk ? half : 0) + (nOk ? half : 0), marks: part.marks, full: lOk && nOk, marker: "auto", items: items }; }
+    if (key.num != null) { const v = num(answer);
+      if (v === null) return whole(false, [{ key: "num", awarded: 0, available: part.marks, verdict: "missing" }]);
+      if (isNaN(v)) return whole(false, [{ key: "num", awarded: 0, available: part.marks, verdict: "unreadable", reason: "We could not read a number. Use digits, for example 12." }]);
+      const ok = Math.abs(v - key.num) <= key.tol; return whole(ok, [{ key: "num", awarded: ok ? part.marks : 0, available: part.marks, verdict: ok ? "correct" : "incorrect" }]); }
     if (key.match) {
       let got = 0; const items = key.match.map((r, l) => { const ok = answer[l] === r; if (ok) got++; return { key: "m" + l, awarded: ok ? 1 : 0, available: 1, verdict: answer[l] == null ? "missing" : ok ? "correct" : "incorrect" }; });
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
@@ -1084,15 +1320,23 @@ class Component extends DCLogic {
     const key = SERVER.keys[part.key] || {};
     const note = "DHET did not publish a marking guideline for this sitting.";
     if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "" })), provenance: { memo_source: "authored", note: note } };
-    const pts = key.pool ? key.pool : (SERVER.memo[part.key] || []);
-    return { memo: { points: pts.map(t => ({ text: t.charAt(0).toUpperCase() + t.slice(1), marks: 1 })) }, provenance: { memo_source: "authored", note: note } };
+    const pts = key.pool ? key.pool.map(g => Array.isArray(g) ? g[0] : g) : (SERVER.memo[part.key] || []);
+    const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.term ? key.term[0] : key.num != null ? key.num : null;
+    return { answer: answerOf, memo: { points: pts.map(t => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
   }
 
   check() {
     const part = this.part(); if (!part || this.state.marking) return;
     const p = this.pg(part.key); if (p.closed) return;
     const mode = part.response_mode;
-    const answer = mode === "steps" ? this.state.inputs : mode === "list" ? this.state.list : mode === "match" ? this.state.matchPairs : this.state.written;
+    // Exactly the answer shapes in docs/API.md.
+    const s0 = this.state;
+    const answer = mode === "steps" ? Object.assign({}, s0.inputs) : mode === "list" ? s0.list.filter(x => String(x || "").trim())
+      : mode === "match" ? part.match.left.map((_, l) => s0.matchPairs[l] != null ? s0.matchPairs[l] : null)
+      : mode === "mcq" ? s0.pick : mode === "pickn" ? s0.picks.slice() : mode === "order" ? s0.orderSeq.slice()
+      : mode === "lettername" ? { letter: s0.letter, name: s0.lname } : mode === "term" ? s0.term : mode === "num" ? s0.numVal : s0.written;
+    window.__lastAnswer = { mode: mode, answer: JSON.parse(JSON.stringify(answer == null ? null : answer)) };
+    if (s0.kp) this.setState({ kp: null, kpErr: "" });
     const finish = result => {
       const s = this.state; const pr = this.pg(part.key);
       if (result.marker === "unavailable") { this.setState({ marking: false, reply: { waiting: true }, barOpen: true, barSeq: s.barSeq + 1, prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { waiting: true }) }) }, () => this.react("greet")); return; }
@@ -1103,7 +1347,8 @@ class Component extends DCLogic {
       let xp = 0, mult = 1, streak = s.streak;
       const replay = !!s.paid[part.key];
       if (result.full && tryNo === 1) { mult = Math.min(1 + Math.floor(s.streak / 2), 4); streak = s.streak + 1; } else if (!draw) streak = 0;
-      if (result.full && !replay) xp = XP_LADDER[tryNo - 1] * mult;
+      // In the Hall XP is paid at release, not per answer.
+      if (result.full && !replay && s.sitting !== "hall") xp = XP_LADDER[tryNo - 1] * mult;
       const clues = SERVER.clues[part.key] || [];
       const reply = { part: part.number, try: tryNo, tries_left: 3 - tryNo, closed: closed, revealed: revealed,
         best_marks: Math.max(pr.best, result.marks_awarded || 0), result: result,
@@ -1117,6 +1362,8 @@ class Component extends DCLogic {
           firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw } }) });
       // Reactions come from the marks: full dances, partial encourages, zero falls, the memo greets.
       const got = result.marks_awarded || 0;
+      // The Hall gives no instant verdicts: no reaction, no chime.
+      if (this.state.sitting === "hall") { this.react("greet"); return; }
       this.react(draw || revealed ? "greet" : result.full ? "dance" : got > 0 ? "greet" : "fall");
       if (!draw) this.chime(result.full ? "full" : got > 0 ? "partial" : "zero");
     };
@@ -1140,6 +1387,133 @@ class Component extends DCLogic {
     this.setState({ screen: "done" });
   }
 
+  // ── Layer 2: native interaction per question type. Every value here maps to one API answer shape.
+  layer2Vals(s, phone, tablet, part, reply, res, closed, mode, locked, stampOf, hall) {
+    const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
+    const touch = phone || tablet;
+    const opts = part.options || [];
+    const isTiles = mode === "mcq" || mode === "pickn" || mode === "order";
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const revealAns = closed && reply && reply.reveal ? reply.reveal.answer : null;
+    const stampSty = sp => sp ? { hasStamp: true, stamp: sp.t, stampBg: sp.bg, stampColor: sp.c } : { hasStamp: false, stamp: "", stampBg: "transparent", stampColor: "" };
+    const memoStamp = { t: "✓ memo", c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
+    const need = part.count || 1;
+    const tiles = isTiles ? opts.map((o, i) => {
+      let sel = false, badge = letters[i], sp = null;
+      if (mode === "mcq") { sel = s.pick === i; sp = s.edited["o" + i] ? null : stampOf(itemsBy["o" + i]); if (!sp && !hall && revealAns === i && s.pick !== i) sp = memoStamp; }
+      if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; sp = s.edited.picks ? null : stampOf(itemsBy["o" + i]); if (!sp && !hall && Array.isArray(revealAns) && revealAns.indexOf(i) !== -1 && !sel) sp = memoStamp; }
+      if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : letters[i] === o ? "·" : letters[i];
+        sp = sel && !s.edited.order ? stampOf(itemsBy["pos" + pos]) : null; }
+      const st = stampSty(sp);
+      return Object.assign({ idx: String(i), text: o, badge: badge,
+        role: mode === "mcq" ? "radio" : mode === "pickn" ? "checkbox" : "button", checked: mode === "order" ? "false" : sel ? "true" : "false",
+        aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : letters[i] + ". " + o) + (sp ? ", " + sp.t : ""),
+        tab: mode === "mcq" ? ((s.pick == null ? i === 0 : sel) ? "0" : "-1") : "0",
+        border: sp ? sp.b : sel ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: sel ? "rgba(0,104,248,0.16)" : "rgba(32,35,39,0.78)",
+        shadow: sel ? "0 0 0 3px rgba(0,104,248,0.18)" : "none",
+        badgeBg: sel ? "#81b1ff" : "rgba(255,255,255,0.06)", badgeColor: sel ? "#0b1a33" : "var(--text2)",
+        pick: () => {
+          if (locked) return;
+          const st0 = this.state;
+          if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, st0.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }); return; }
+          if (mode === "pickn") { const has = st0.picks.indexOf(i) !== -1;
+            if (!has && st0.picks.length >= need) { this.setState({ pickWarn: st0.pickWarn + 1 }); return; }
+            this.setState({ picks: has ? st0.picks.filter(x => x !== i) : st0.picks.concat([i]), edited: Object.assign({}, st0.edited, { picks: true }) }); return; }
+          const pos = st0.orderSeq.indexOf(i);
+          this.setState({ orderSeq: pos === -1 ? st0.orderSeq.concat([i]) : st0.orderSeq.slice(0, pos), edited: Object.assign({}, st0.edited, { order: true }) });
+        } }, st); }) : [];
+    const pickedN = mode === "pickn" ? s.picks.length : 0;
+    const seq = mode === "order" ? s.orderSeq.map(i => opts[i]) : [];
+    // Letter + name
+    const lnL = mode === "lettername" ? (s.edited.letter ? null : stampOf(itemsBy.letter)) : null;
+    const lnN = mode === "lettername" ? (s.edited.lname ? null : stampOf(itemsBy.name)) : null;
+    const termSp = mode === "term" && !s.edited.term ? stampOf(itemsBy.t) : null;
+    const numSp = mode === "num" && !s.edited.num ? stampOf(itemsBy.num) : null;
+    // Chips (list)
+    const count = part.count || 4;
+    const chips = mode === "list" ? s.list.map((t, i) => { const it = s.edited.list ? null : itemsBy["l" + i];
+      let sp = stampOf(it); if (sp && it && it.reason && /^Same as/.test(it.reason)) sp = Object.assign({}, sp, { t: "same as " + it.reason.replace(/\D+/g, "") });
+      return Object.assign({ n: i + 1, text: t, aria: "Answer " + (i + 1) + ": " + t + (sp ? ", " + sp.t : "") + ". Edit", removeAria: "Remove answer " + (i + 1),
+        border: sp ? sp.b : "rgba(129,177,255,0.4)", bg: "rgba(0,104,248,0.10)", canRemove: !locked,
+        edit: () => { if (locked) return; const l = this.state.list.slice(); const txt = l.splice(i, 1)[0]; this.setState({ list: l, chipDraft: txt, edited: Object.assign({}, this.state.edited, { list: true }) }, () => { const f = document.querySelector("[data-chipinput]"); if (f) f.focus(); }); },
+        remove: () => { if (locked) return; const l = this.state.list.slice(); l.splice(i, 1); this.setState({ list: l, edited: Object.assign({}, this.state.edited, { list: true }) }); } }, stampSty(sp)); }) : [];
+    const addChip = () => { const t = String(this.state.chipDraft || "").replace(/,$/, "").trim(); if (!t || this.state.list.length >= count) return;
+      this.setState({ list: this.state.list.concat([t]), chipDraft: "", edited: Object.assign({}, this.state.edited, { list: true }) }); };
+    // Written-answer coach: the SHAPE of an answer, from the stem's command word; never content.
+    const cmd = (String(part.stem || "").match(/\b(Define|Explain|Describe|Compare|Differentiate|Distinguish|Name|State|List|Give|Suggest|Tabulate|Discuss)\b/) || [])[1] || "";
+    const SHAPE = { Define: "One precise sentence: what it is.", Explain: "A point, then because …", Describe: "What it looks like or does, step by step.",
+      Compare: "Both sides, one line each.", Differentiate: "Both sides, one line each.", Distinguish: "Both sides, one line each.", Name: "Short answers, no explanation needed.",
+      State: "Short answers, no explanation needed.", List: "Short answers, no explanation needed.", Give: "Short answers, no explanation needed.",
+      Suggest: "A reasonable idea, with a because.", Tabulate: "A table with a heading for each column.", Discuss: "Points for and against, each with a reason." };
+    // Keypad
+    const kpOn = !!s.kp && !locked;
+    const stepList = mode === "steps" ? part.steps : [];
+    const curIdx = stepList.findIndex(x => x.id === s.kp);
+    const symOf = lbl => { const m = String(lbl).match(/,\s*([^,()]+?)\s*\(([^)]*)\)\s*$/); return m ? { sym: m[1], unit: m[2] } : null; };
+    const givenChips = (part.givens || []).map(g => ({ label: g.symbol + " " + fmtNum(g.value) + (g.unit ? " " + unitText(g.unit) : ""), aria: "Type " + g.label + ", " + fmtNum(g.value),
+      border: "var(--line2)", bg: "rgba(255,255,255,0.04)", color: "var(--text)", tap: () => this.setState({ kpExpr: this.state.kpExpr + fmtNum(g.value), kpErr: "" }) }));
+    const earlierChips = curIdx > 0 ? stepList.slice(0, curIdx).filter(x => String(s.inputs[x.id] || "").trim()).map((x, j) => { const sy = symOf(x.label); const v = String(s.inputs[x.id]).trim();
+      return { label: (sy ? sy.sym : "Step " + (j + 1)) + " " + v, aria: "Type your " + (sy ? sy.sym : "step " + (j + 1)) + ", " + v,
+        border: "rgba(61,220,151,0.45)", bg: "rgba(61,220,151,0.10)", color: "#bff5dc", tap: () => this.setState({ kpExpr: this.state.kpExpr + v.replace(/\s.*$/, ""), kpErr: "" }) }; }) : [];
+    const KEYS = [["C", "Clear"], ["(", "Open bracket"], [")", "Close bracket"], ["÷", "Divide"], ["⌫", "Delete"],
+      ["7"], ["8"], ["9"], ["×", "Times"], ["√", "Square root"],
+      ["4"], ["5"], ["6"], ["−", "Minus"], ["x²", "Squared"],
+      ["1"], ["2"], ["3"], ["+", "Plus"], ["×10ⁿ", "Times ten to the power"],
+      ["±", "Change sign"], ["0"], [",", "Decimal comma"], ["=", "Equals"], ["Set", "Set this value"]];
+    const kpKeys = KEYS.map(k => { const lab = k[0], set = lab === "Set", op = /[÷×−+=√()⌫C±²ⁿ]/.test(lab) && !/^\d$/.test(lab);
+      return { label: lab, aria: k[1] || lab, size: lab.length > 2 ? "13px" : "18px",
+        bg: set ? "var(--grad)" : op ? "rgba(129,177,255,0.10)" : "rgba(255,255,255,0.05)", color: set ? "#ffffff" : op ? "#cfe0ff" : "var(--text)",
+        border: set ? "transparent" : "var(--line2)", tap: () => set ? this.kpSet() : this.kpPress(lab) }; });
+    const reason = mode === "mcq" ? "Pick one answer" : mode === "pickn" ? "Pick " + need + " · " + pickedN + " picked" : mode === "order" ? "Place all " + opts.length + " · " + s.orderSeq.length + " placed"
+      : mode === "lettername" ? "Pick the letter and give the name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? "" : "Enter your answer";
+    return {
+      isTiles: isTiles, tiles: tiles, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
+      tilesKeys: e => { if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].indexOf(e.key) === -1) return;
+        const ts = [].slice.call(e.currentTarget.querySelectorAll("[data-tile]")); const i = ts.indexOf(document.activeElement); if (i < 0) return;
+        e.preventDefault(); const nx = ts[(i + (e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : ts.length - 1)) % ts.length]; nx.focus();
+        if (e.currentTarget.getAttribute("role") === "radiogroup") nx.click(); },
+      hasCounter: mode === "pickn", counterText: pickedN >= need && s.pickWarn && mode === "pickn" ? "Pick " + need + ": unpick one first" : "Pick " + need + " · " + pickedN + " picked",
+      counterColor: pickedN === need ? "#3ddc97" : "var(--text2)", counterKey: "w" + s.pickWarn, counterAnim: s.pickWarn && !s.reduced ? "shake 360ms ease both" : "none",
+      hasSeq: mode === "order", seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
+      isLetterName: mode === "lettername", openFigure: () => this.setState({ kit: true, kitTab: "figures" }),
+      letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L;
+        return { label: L, checked: on ? "true" : "false", aria: "Letter " + L, tab: (s.letter ? on : j === 0) ? "0" : "-1",
+          border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
+          pick: () => { if (!locked) this.setState({ letter: L, edited: Object.assign({}, this.state.edited, { letter: true }) }); } }; }) : [],
+      lname: s.lname, onLname: e => this.setState({ lname: e.target.value, edited: Object.assign({}, this.state.edited, { lname: true }) }),
+      lnLetterHasStamp: !!lnL, lnLetterStamp: lnL ? "letter " + lnL.t : "", lnLetterStampBg: lnL ? lnL.bg : "", lnLetterStampColor: lnL ? lnL.c : "",
+      lnNameHasStamp: !!lnN, lnNameStamp: lnN ? "name " + lnN.t : "", lnNameStampBg: lnN ? lnN.bg : "", lnNameStampColor: lnN ? lnN.c : "", lnNameBorder: lnN ? lnN.b : "var(--line2)",
+      isTerm: mode === "term", termVal: s.term, onTerm: e => this.setState({ term: e.target.value, edited: Object.assign({}, this.state.edited, { term: true }) }),
+      termHasStamp: !!termSp, termStamp: termSp ? termSp.t : "", termStampBg: termSp ? termSp.bg : "", termStampColor: termSp ? termSp.c : "", termBorder: termSp ? termSp.b : "var(--line2)",
+      isNum: mode === "num", numVal: s.numVal, numUnit: unitText(part.unit_hint), numHasUnit: !!part.unit_hint, numBorder: numSp ? numSp.b : "var(--line)",
+      onNum: e => this.setState({ numVal: e.target.value, edited: Object.assign({}, this.state.edited, { num: true }) }),
+      onNumFocus: () => { if (touch && !locked && this.state.kp !== "num") this.kpOpenFor("num"); },
+      numHasStamp: !!numSp, numStamp: numSp ? numSp.t : "", numStampBg: numSp ? numSp.bg : "", numStampColor: numSp ? numSp.c : "",
+      numInputMode: touch ? "none" : "decimal",
+      isList: mode === "list", chips: chips, listCounter: s.list.length + " of " + count + " named",
+      showChipInput: mode === "list" && s.list.length < count && !locked, chipDraft: s.chipDraft, chipAria: "Answer " + (s.list.length + 1) + " of " + count,
+      onChipDraft: e => { const v = e.target.value; if (/,$/.test(v) && v.replace(/,$/, "").trim()) { this.setState({ chipDraft: v }, addChip); return; } this.setState({ chipDraft: v }); },
+      chipKeys: e => { if (e.key !== "Enter") return; e.preventDefault(); if (String(this.state.chipDraft || "").trim()) addChip(); },
+      addChip: addChip,
+      isRubric: mode === "rubric", written: s.written, onWritten: e => this.setState({ written: e.target.value }),
+      hasCoach: mode === "rubric" && !hall && !!cmd, coachCmd: cmd, coachShape: SHAPE[cmd] || "",
+      coachAim: part.marks > 1 ? part.marks + " marks: aim for " + part.marks + " separate points." : "1 mark: one clear point.",
+      writtenCount: s.written.length + " / 2 500 characters",
+      showCalcBtn: (mode === "steps" || mode === "num") && !locked && !kpOn,
+      openCalc: () => { const first = mode === "num" ? "num" : (stepList.find(x => !String(this.state.inputs[x.id] || "").trim()) || stepList[0] || {}).id; if (first) this.kpOpenFor(first); },
+      kpShow: kpOn, kpFor: s.kp === "num" ? "Your answer" : curIdx >= 0 ? (symOf(stepList[curIdx].label) || { sym: "Step " + (curIdx + 1) }).sym + " · step " + (curIdx + 1) + " of " + stepList.length : "",
+      kpDisplay: s.kpExpr || "0", kpDisplayAria: "Calculator shows " + (s.kpExpr || "0"),
+      kpHasErr: !!s.kpErr, kpErr: s.kpErr, kpClose: () => this.setState({ kp: null, kpErr: "" }),
+      kpHasChips: givenChips.length + earlierChips.length > 0, kpChips: earlierChips.concat(givenChips), kpKeys: kpKeys, kpKeyH: phone ? "42px" : "44px",
+      showCheckReason: !closed && !s.marking && !(reply && s.barOpen) && !!reason && !kpOn && !this.canCheckNow(part), checkReason: reason,
+    };
+  }
+  canCheckNow(part) { const s = this.state, mode = part.response_mode;
+    return mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
+      : mode === "match" ? Object.keys(s.matchPairs).length > 0 : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
+      : mode === "order" ? s.orderSeq.length === (part.options || []).length : mode === "lettername" ? !!(s.letter && String(s.lname).trim())
+      : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : true; }
+
   // ── Mission play: the lesson header, the companion, stamps in place, the feedback bar.
   playVals(s, phone, tablet, tabletLand, desk, mission, part, pr, reply, res, closed, mode, tryN, primaryDisabled, itemsBy, verdictInfo) {
     if (s.screen !== "play" || !part) return {};
@@ -1149,7 +1523,7 @@ class Component extends DCLogic {
     const draw = mode === "draw";
     const got = res ? res.marks_awarded || 0 : 0, worth = res ? res.marks || 0 : part.marks || 0;
     const hasFT = !!(res && res.items && res.items.some(x => x.verdict === "follow_through"));
-    const outcome = s.marking ? "marking" : !reply ? (closed ? "closed" : "idle") : reply.waiting ? "waiting" : draw ? "draw"
+    const outcome = s.sitting === "hall" && reply && !s.marking && !reply.waiting ? "saved" : s.marking ? "marking" : !reply ? (closed ? "closed" : "idle") : reply.waiting ? "waiting" : draw ? "draw"
       : res && res.full ? "full" : reply.revealed && res ? "out" : reply.revealed ? "memo" : res && got > 0 ? "partial" : res ? "zero" : "idle";
     const tone = { full: "ok", partial: "warn", zero: "bad", out: "bad", waiting: "warn" }[outcome] || "neutral";
     // The companion's words, from the data.
@@ -1176,6 +1550,7 @@ class Component extends DCLogic {
       memo: "Here's how the examiner marks it.",
       draw: "Compare your drawing with the examiner's list.",
       closed: pr && part.marks && best >= part.marks ? "You banked this one." : "Closed at " + best + " of " + (part.marks || 0) + ".",
+      saved: "Saved. On to the next one.",
     };
     const edge = { ok: "rgba(61,220,151,0.65)", warn: "rgba(224,161,15,0.65)", bad: "rgba(242,119,122,0.65)", neutral: "rgba(129,177,255,0.6)" }[tone];
     const shadowTint = { ok: "rgba(61,220,151,0.45)", warn: "rgba(224,161,15,0.4)", bad: "rgba(242,119,122,0.4)", neutral: "rgba(0,104,248,0.45)" }[tone];
@@ -1198,15 +1573,17 @@ class Component extends DCLogic {
       partial: { icon: "◐", title: got + " of " + worth + " marks so far", body: reply && reply.clue ? "Hint: " + reply.clue : "", primary: [tryAgainLabel, () => this.tryAgain()], secondary: ["Show the memo", () => this.showMemo()] },
       zero: { icon: "✕", title: "Not yet · 0 of " + worth, body: reply && reply.clue ? "Hint: " + reply.clue : "", primary: [tryAgainLabel, () => this.tryAgain()], secondary: ["Show the memo", () => this.showMemo()] },
       out: { icon: "✕", title: "Out of tries · " + got + " of " + worth, body: s.memoSeen ? "The memo is below your answer." : "", primary: s.memoSeen ? [nextLabel, next] : ["See the memo", () => this.setState({ memoSeen: true }, () => this.scrollReveal())] },
+      saved: { icon: "•", title: "Answer saved", body: "In the Hall you see your marks when the paper is released.", primary: [nextLabel, next] },
       memo: { icon: "•", title: "Memo shown · no XP for this part", body: "The memo is below your answer.", primary: [nextLabel, next] },
       draw: { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for, below.", primary: [nextLabel, next] },
       closed: { icon: "✓", title: "Closed · " + best + " of " + (part.marks || 0), body: "", primary: [nextLabel, next], secondary: ["Replay — no XP", () => { const k = part.key; const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false }); this.resetInputs({ prog: pp }); }] },
     }[outcome];
-    const showBar = !!bar && (outcome === "marking" || outcome === "closed" || (reply && (s.barOpen || closed)));
+    const showBar = !!bar && (outcome === "marking" || outcome === "closed" || outcome === "saved" || (reply && (s.barOpen || closed)));
     const primaryIsSuccess = outcome === "full";
     // Stamps.
+    const hall = s.sitting === "hall";
     const stampOf = it => {
-      if (!it) return null;
+      if (!it || hall) return null;
       const v = it.verdict;
       if (v === "correct") return { t: "✓ " + it.awarded, c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
       if (v === "follow_through") return { t: "carried forward ✓", c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
@@ -1218,6 +1595,7 @@ class Component extends DCLogic {
     const ctxOpen = s.ctxOpen != null ? s.ctxOpen : s.pi === 0;
     const locked = closed || s.marking || (s.barOpen && !!reply);
     const nFields = mode === "steps" ? part.steps.length : mode === "list" ? (part.count || 4) : 0;
+    const touch = phone || tablet;
     const segs = mParts.map((p, i) => { const g = this.pg(p.key), cur = i === s.pi;
       const fill = g.waiting ? "#e0a10f" : g.closed ? (g.revealed ? "#b0764a" : g.firstTryFull || g.draw ? "#e3b341" : "#c3c8cf") : g.tries > 0 ? "rgba(129,177,255,0.55)" : "rgba(255,255,255,0.13)";
       const st = g.waiting ? "waiting for a marker" : g.closed ? (g.revealed ? "memo shown" : g.firstTryFull ? "clean first try" : g.draw ? "done" : "with hints") : g.tries > 0 ? "in progress" : "not started";
@@ -1250,11 +1628,12 @@ class Component extends DCLogic {
       stem: part.stem, showRules: !!(this.paper() && this.paper().id === "fm" && mode === "steps"),
       rulesLine: "3 decimals · g = 9,81 m/s² · decimal comma OK",
       openFormulas: () => this.setState({ kit: true, kitTab: "formulas" }),
-      hasHint: !!(reply && reply.clue && !closed && !s.barOpen), hintTitle: "Hint", hintText: reply ? reply.clue || "" : "",
+      hasHint: !!(reply && reply.clue && !closed && !s.barOpen && !hall), hintTitle: "Hint", hintText: reply ? reply.clue || "" : "",
       isSteps: mode === "steps", locked: locked,
       stepCards: mode === "steps" ? part.steps.map((st, i) => { const it = s.edited[st.id] ? null : itemsBy[st.id]; const sp = stampOf(it);
         return { label: st.label, marks: st.marks + (st.marks === 1 ? " mark" : " marks"), value: s.inputs[st.id] || "", unit: unitText(st.unit_hint), hasUnit: !!st.unit_hint,
           aria: st.label + (st.unit_hint ? ", in " + unitText(st.unit_hint) : ""), inputId: "f-" + st.id, enterHint: i === nFields - 1 ? "done" : "next",
+          onFocus: () => { if (touch && !locked && this.state.kp !== st.id) this.kpOpenFor(st.id); },
           onChange: e => this.setState({ inputs: Object.assign({}, this.state.inputs, { [st.id]: e.target.value }), edited: Object.assign({}, this.state.edited, { [st.id]: true }) }),
           hasStamp: !!sp, stamp: sp ? sp.t : "", stampColor: sp ? sp.c : "", stampBg: sp ? sp.bg : "",
           hasReason: !!(it && it.reason), reason: it && it.reason ? it.reason : "",
@@ -1264,12 +1643,6 @@ class Component extends DCLogic {
         const i = fs.indexOf(e.target);
         if (i >= 0 && i < fs.length - 1) { fs[i + 1].focus(); return; }
         if (!primaryDisabled && !closed && !(reply && reply.waiting) && !(s.barOpen && reply)) this.check(); },
-      isList: mode === "list",
-      listFields: mode === "list" ? Array.from({ length: part.count || 4 }, (_, i) => { const key = "l" + i; const it = s.edited[key] ? null : itemsBy[key]; const sp = stampOf(it);
-        return { n: i + 1, value: s.list[i] || "", aria: "Answer " + (i + 1), enterHint: i === nFields - 1 ? "done" : "next",
-          hasStamp: !!sp, stamp: sp ? sp.t : "", stampColor: sp ? sp.c : "", stampBg: sp ? sp.bg : "", border: sp ? sp.b : "var(--line2)",
-          onChange: e => { const l = this.state.list.slice(); l[i] = e.target.value; this.setState({ list: l, edited: Object.assign({}, this.state.edited, { [key]: true }) }); } }; }) : [],
-      isRubric: mode === "rubric", written: s.written, onWritten: e => this.setState({ written: e.target.value }), writtenCount: s.written.length + " characters",
       isMatch: mode === "match", matchCols: phone ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))",
       matchLeft: mode === "match" ? part.match.left.map((t, l) => { const r = s.matchPairs[l]; const on = s.matchSel === l; const it = itemsBy["m" + l]; const sp = stampOf(it);
         return { text: t, on: on, paired: sp ? sp.t : r != null ? "→ " + String.fromCharCode(65 + r) : "", pairColor: sp ? sp.c : "var(--tint)",
@@ -1280,7 +1653,8 @@ class Component extends DCLogic {
         return { key: String.fromCharCode(65 + r), text: t, border: usedBy != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: "rgba(32,35,39,0.72)",
           pick: () => { if (locked || this.state.matchSel == null) return; const mp = Object.assign({}, this.state.matchPairs); Object.keys(mp).forEach(k => { if (mp[k] === r) delete mp[k]; }); mp[this.state.matchSel] = r; this.setState({ matchPairs: mp, matchSel: null }); } }; }) : [],
       isDraw: draw,
-      hasReveal: !!(reply && reply.reveal && closed && (outcome !== "out" || s.memoSeen)),
+      ...this.layer2Vals(s, phone, tablet, part, reply, res, closed, mode, locked, stampOf, hall),
+      hasReveal: !!(reply && reply.reveal && closed && !hall && (outcome !== "out" || s.memoSeen)),
       // the footer
       showBar: showBar, showCheck: !showBar,
       barBorder: BAR.border, barBg: BAR.bg, barColor: BAR.color, barIconBg: BAR.icon, barBodyColor: "#e6e8ea",
@@ -1446,7 +1820,7 @@ class Component extends DCLogic {
       finishTop: f(items[items.length - 1].y - 18) + "px",
       // The pad's centre is the road's first point; the ticket hangs below the pad.
       padTop: f(items[0].y - 60) + "px", startTicketTop: f(items[0].y + 58) + "px",
-      startPaperName: paper ? paper.title + " · " + paper.sitting : "",
+      startPaperName: paper ? paper.title + " · " + paper.sitting : "", startProv: paper ? paper.prov || PROVENANCE : "",
       startLabel: suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id,
       startHasPopup: suggestedIdx < 0 ? "false" : "dialog",
       startAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ": " + missions[suggestedIdx].title)
@@ -1547,7 +1921,9 @@ class Component extends DCLogic {
     const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next part" : "Finish mission")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next part" : "Check";
     const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
-      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0 : true;
+      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0
+      : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
+      : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : true;
     const primaryDisabled = !part || s.marking || (!closed && !(reply && reply.waiting) && !canCheck);
     const flyOn = !s.reduced && reply && reply.xp_awarded > 0 && s.screen === "play";
 
@@ -1686,7 +2062,7 @@ class Component extends DCLogic {
       // The paper ticket: one button that names the choice and says it can change.
       ticketSubj: subj ? subj.name : "",
       ticketLine: paper0 ? (phone ? paper0.sitting : paper0.sitting + " · " + paper0.total_marks + " marks · " + hours(paper0)) : "No paper yet",
-      ticketLineColor: paper0 ? "#b9cdf0" : "var(--text3)", hasTicketPaper: !!paper0,
+      ticketLineColor: paper0 ? "#b9cdf0" : "var(--text3)", hasTicketPaper: !!paper0, ticketProv: paper0 ? paper0.provenance_label : "",
       ticketAria: "Paper: " + (subj ? subj.name : "none") + (paper0 ? ", " + paper0.sitting : ", no paper yet") + ". Change paper",
       ticketKey: "t" + s.swap + (paper0 ? paper0.id : "none"),
       swapAnim: s.reduced || !s.swap ? "none" : "pop 380ms cubic-bezier(0.34,1.56,0.64,1) both",
@@ -1783,7 +2159,7 @@ class Component extends DCLogic {
       // Per-point lines belong in the bar only for AI-marked written answers; lists are stamped in place.
       revealLines: revealLines, points: pointLines, hasPoints: pointLines.length > 0 && !!(res && res.marker === "ai"),
       pointsFoot: res && res.marker === "ai" ? "Marked by AI against the memo" : "",
-      showFly: !!flyOn, flyKey: String(s.flySeq), flyText: reply ? "+" + reply.xp_awarded : ""
+      showFly: !!flyOn && s.sitting !== "hall", flyKey: String(s.flySeq), flyText: reply ? "+" + reply.xp_awarded : ""
     };
   }
 }
