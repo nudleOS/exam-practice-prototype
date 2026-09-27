@@ -64,6 +64,7 @@
     .glass-card[data-float] { background:rgba(32,35,42,0.98); box-shadow:inset 0 1px 0 rgba(255,255,255,0.07), 0 18px 44px rgba(0,0,0,0.5); }
     .glass-card[data-tone="top"] { background:rgba(40,35,24,0.98); border-color:rgba(255,212,121,0.45); }
     .glass-dot[data-tone="top"] { background:#ffd479; }
+    [role^="menuitem"]:hover, [role^="menuitem"]:focus-visible { background:rgba(255,255,255,0.07) !important; }
     .glass-card[data-size="row"] { border-radius:16px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.06); }
     .glass-dot { flex:none; width:8px; height:8px; border-radius:50%; background:#81b1ff; }
     .glass-dot[data-tone="live"] { background:#4d9bff; animation:livedot 2.4s ease-in-out infinite; }
@@ -81,7 +82,10 @@
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
 
-  <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:10px; padding:10px {{ pad }}; background:rgba(25,27,30,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
+  <sc-if value="{{ mapPopOn }}" hint-placeholder-val="{{ false }}">
+    <span onClick="{{ closePops }}" aria-hidden="true" style="position:fixed; inset:0; z-index:19"></span>
+  </sc-if>
+  <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:{{ headGap }}; padding:10px {{ pad }}; background:rgba(25,27,30,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
     <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ goBack }}" aria-label="{{ backLabel }}" style="height:44px; min-width:44px; padding:0 12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:600">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
@@ -89,10 +93,73 @@
       </button>
     </sc-if>
     <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
+    <sc-if value="{{ mapHead }}" hint-placeholder-val="{{ false }}">
+      <span style="flex:1; min-width:0; display:flex">
+        <button data-trigger="mapview" onClick="{{ toggleMapView }}" aria-haspopup="menu" aria-expanded="{{ mapViewOpen }}" aria-label="{{ mapViewAria }}" style="max-width:100%; min-width:0; min-height:44px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:2px 10px 2px 8px; margin-left:-8px; border:none; border-radius:12px; background:{{ mapViewBtnBg }}; color:var(--text); cursor:pointer; text-align:left">
+          <span style="display:flex; align-items:center; gap:4px; max-width:100%; font-size:14px; font-weight:700"><span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ headTitle }}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m6 9 6 6 6-6"></path></svg></span>
+          <span style="max-width:100%; font-size:12px; color:#9aa0a6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ mapHeadSub }}</span>
+        </button>
+      </span>
+      <sc-if value="{{ mapViewOpen }}" hint-placeholder-val="{{ false }}">
+        <div role="menu" aria-label="Map view" data-menu="mapview" onKeyDown="{{ menuKeys }}" class="glass-card" data-float="true" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; left:12px; width:min(260px, calc(100vw - 24px))">
+          <sc-for list="{{ mapViews }}" as="mv" hint-placeholder-count="2">
+            <button role="menuitemradio" aria-checked="{{ mv.on }}" onClick="{{ mv.pickClose }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer">
+              <span style="display:flex; flex-direction:column; gap:1px"><span>{{ mv.label }}</span><span style="font-size:12px; font-weight:500; color:#9aa0a6">{{ mv.hint }}</span></span>
+              <sc-if value="{{ mv.isOn }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none; margin-left:auto"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ctMapOn }}" hint-placeholder-val="{{ false }}">
+        <button data-trigger="ctinfo" onClick="{{ toggleCtInfo }}" aria-haspopup="dialog" aria-expanded="{{ ctInfoOpen }}" aria-label="{{ ctMapLine }}" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ ctInfoBg }}"><span class="glass-dot" data-tone="live" aria-hidden="true"></span></button>
+      </sc-if>
+      <sc-if value="{{ ctInfoOpen }}" hint-placeholder-val="{{ false }}">
+        <div role="dialog" aria-label="Class test" data-menu="ctinfo" class="glass-card" data-float="true" data-tone="live" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; right:12px; width:min(300px, calc(100vw - 24px)); gap:6px; padding:14px">
+          <span style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:#b9bec4"><span class="glass-dot" data-tone="live" aria-hidden="true"></span>Class test</span>
+          <span style="font-size:15px; font-weight:700; line-height:1.35">{{ ctMapLine }}</span>
+          <span style="font-size:13px; line-height:1.45; color:#c9cdd2">{{ ctMapLock }}</span>
+          <button data-classgo="map" onClick="{{ ctGoClose }}" class="glass-cta" style="margin-top:6px; min-height:46px; border:none; border-radius:13px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:700; cursor:pointer">{{ ctAction }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
+        <button data-trigger="zoommenu" onClick="{{ toggleZoomMenu }}" aria-haspopup="menu" aria-expanded="{{ zoomMenuOpen }}" aria-label="{{ zoomMenuAria }}" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ zoomMenuBg }}">
+          <sc-if value="{{ zoomIsDetail }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="3.5"></rect></svg></sc-if><sc-if value="{{ zoomIsSections }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h12"></path></svg></sc-if><sc-if value="{{ zoomIsPaper }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect></svg></sc-if>
+        </button>
+      </sc-if>
+      <sc-if value="{{ zoomMenuOpen }}" hint-placeholder-val="{{ false }}">
+        <div role="menu" aria-label="Zoom level" data-menu="zoommenu" onKeyDown="{{ menuKeys }}" class="glass-card" data-float="true" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; right:12px; width:min(240px, calc(100vw - 24px))">
+          <sc-for list="{{ zoomSegs }}" as="zs" hint-placeholder-count="3">
+            <button role="menuitemradio" aria-checked="{{ zs.on }}" data-zoomlevel="{{ zs.id }}" onClick="{{ zs.goClose }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer">
+              <sc-if value="{{ zs.isDetail }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="3.5"></rect></svg></sc-if><sc-if value="{{ zs.isSections }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h12"></path></svg></sc-if><sc-if value="{{ zs.isPaper }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect></svg></sc-if>
+              <span>{{ zs.label }}</span>
+              <sc-if value="{{ zs.isOn }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none; margin-left:auto"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <button data-trigger="more" onClick="{{ toggleMore }}" aria-haspopup="menu" aria-expanded="{{ moreOpen }}" aria-label="More: paper kit, the Hall, review" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ moreBg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"></circle><circle cx="12" cy="12" r="1.9"></circle><circle cx="19" cy="12" r="1.9"></circle></svg></button>
+      <sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
+        <div role="menu" aria-label="More" data-menu="more" onKeyDown="{{ menuKeys }}" class="glass-card" data-float="true" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; right:12px; width:min(270px, calc(100vw - 24px))">
+          <sc-if value="{{ moreXpOn }}" hint-placeholder-val="{{ false }}">
+            <span style="display:flex; align-items:center; gap:8px; padding:8px 10px 10px; font-size:14px; font-weight:700; color:var(--text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ xp }} XP</span>
+            <span aria-hidden="true" style="height:1px; margin:0 8px 4px; background:rgba(255,255,255,0.08)"></span>
+          </sc-if>
+          <button role="menuitem" onClick="{{ moreKit }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>Paper kit</button>
+          <sc-if value="{{ hallDockOn }}" hint-placeholder-val="{{ false }}">
+            <button role="menuitem" data-halldock="true" aria-label="{{ hallDockAria }}" onClick="{{ moreHall }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V9l7-5 7 5v12"></path><path d="M9 21v-6h6v6"></path></svg>{{ hallMenuLabel }}</button>
+          </sc-if>
+          <button role="menuitem" onClick="{{ moreReview }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 15l4-4 3 3 5-6"></path></svg>Review my paper</button>
+          <span aria-hidden="true" style="height:1px; margin:4px 8px; background:rgba(255,255,255,0.08)"></span>
+          <button role="menuitemcheckbox" aria-checked="{{ pvOpen }}" data-trigger="preview" onClick="{{ morePreview }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer; color:#9aa0a6; font-weight:500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Design preview</button>
+        </div>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ notMapHead }}" hint-placeholder-val="{{ true }}">
     <span style="flex:1; min-width:0; display:flex; flex-direction:column">
       <span style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headTitle }}</span>
       <span style="font-size:12px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ headSub }}</span>
     </span>
+    </sc-if>
     <sc-if value="{{ showMeter }}" hint-placeholder-val="{{ false }}">
       <span aria-label="{{ meterLabel }}" style="display:{{ ringDisplay }}; align-items:center; gap:6px; height:36px; padding:0 10px 0 5px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(32,35,39,0.72); font-size:12.5px; font-weight:800; white-space:nowrap">
         <span aria-hidden="true" style="width:24px; height:24px; flex:none; border-radius:50%; background:conic-gradient(#81b1ff {{ ringDeg }}, rgba(255,255,255,0.1) 0); display:flex; align-items:center; justify-content:center"><span style="width:16px; height:16px; border-radius:50%; background:#202327"></span></span>{{ earnedNum }}<span style="font-size:12px; font-weight:600; color:var(--text3)">/{{ totalMarks }}</span>
@@ -113,7 +180,7 @@
         <span style="display:{{ backTextDisplay }}">Paper kit</span>
       </button>
     </sc-if>
-    <span data-xppill="true" title="XP earned" aria-label="{{ xp }} XP" style="height:44px; padding:0 {{ xpPad }}; flex:none; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:6px; font-size:14px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
+    <span data-xppill="true" title="XP earned" aria-label="{{ xp }} XP" style="height:44px; padding:0 {{ xpPad }}; flex:none; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:{{ xpPillDisplay }}; align-items:center; gap:6px; font-size:14px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>
       <span>{{ xp }}</span><span style="font-size:12px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
     </span>
@@ -330,35 +397,8 @@
       <span style="position:absolute; left:-60%; right:-60%; bottom:-6%; height:62%; background-image:linear-gradient(rgba(129,177,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(129,177,255,0.10) 1px, transparent 1px); background-size:56px 56px; transform:perspective(520px) rotateX(64deg); transform-origin:50% 100%; -webkit-mask-image:linear-gradient(to top, #000 8%, transparent 78%); mask-image:linear-gradient(to top, #000 8%, transparent 78%)"></span>
     </div>
     <main data-map="true" style="position:relative; z-index:1; box-sizing:border-box; padding:0 {{ mapPadR }} 120px 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
-      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 0 14px; margin:0 calc(-1 * {{ mapPadR }}) 0 -16px; background:linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%); pointer-events:none">
-        <div style="box-sizing:border-box; width:min(560px, calc(100% - 32px)); display:flex; align-items:center; justify-content:{{ subRowJustify }}; gap:10px">
-        <div role="group" aria-label="Map view" style="pointer-events:auto; display:flex; padding:2px; border-radius:14px; background:rgba(255,255,255,0.07)">
-          <sc-for list="{{ mapViews }}" as="mv" hint-placeholder-count="2">
-            <button data-mapview="{{ mv.id }}" onClick="{{ mv.pick }}" aria-pressed="{{ mv.on }}" style="min-width:84px; min-height:44px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; transition:background 180ms ease, color 180ms ease, box-shadow 180ms ease; background:{{ mv.bg }}; box-shadow:{{ mv.shadow }}; color:{{ mv.color }}; font-size:14px; font-weight:{{ mv.weight }}; white-space:nowrap">{{ mv.label }}</button>
-          </sc-for>
-        </div>
-        <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
-          <div role="group" aria-label="Zoom level" style="pointer-events:auto; display:flex; padding:2px; border-radius:14px; background:rgba(255,255,255,0.07)">
-            <sc-for list="{{ zoomSegs }}" as="zs" hint-placeholder-count="3">
-              <button data-zoomlevel="{{ zs.id }}" onClick="{{ zs.go }}" aria-pressed="{{ zs.on }}" aria-label="{{ zs.label }}" title="{{ zs.label }}" style="width:44px; height:44px; padding:0; border:none; border-radius:12px; cursor:pointer; transition:background 180ms ease, color 180ms ease, box-shadow 180ms ease; background:{{ zs.bg }}; box-shadow:{{ zs.shadow }}; color:{{ zs.color }}; display:flex; align-items:center; justify-content:center">
-                <sc-if value="{{ zs.isDetail }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="3.5"></rect></svg></sc-if>
-                <sc-if value="{{ zs.isSections }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h12"></path></svg></sc-if>
-                <sc-if value="{{ zs.isPaper }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="5" width="5.5" height="5.5" rx="1.4"></rect><rect x="5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect><rect x="13.5" y="13.5" width="5.5" height="5.5" rx="1.4"></rect></svg></sc-if>
-              </button>
-            </sc-for>
-          </div>
-        </sc-if>
-        </div>
+      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ subPad }}; margin:0 calc(-1 * {{ mapPadR }}) 0 -16px; background:{{ subBg }}; pointer-events:none">
         <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ zoomLive }}</p>
-        <sc-if value="{{ ctMapOn }}" hint-placeholder-val="{{ false }}">
-          <div data-classcard="map" style="pointer-events:auto; box-sizing:border-box; width:min(560px, calc(100vw - 32px)); display:flex; align-items:center; gap:10px; padding:8px 8px 8px 14px; border-radius:16px; border:1px solid rgba(129,177,255,0.55); background:rgba(20,30,52,0.94); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px">
-              <span style="font-size:12.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ctMapLine }}</span>
-              <span style="font-size:12px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ctMapLock }}</span>
-            </span>
-            <button data-classgo="map" onClick="{{ ctGo }}" style="flex:none; min-height:40px; padding:0 14px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap">{{ ctAction }}</button>
-          </div>
-        </sc-if>
         <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
         <div role="group" aria-label="Preview state" style="pointer-events:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:14px; background:rgba(25,27,30,0.78); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
           <sc-for list="{{ mapModes }}" as="mm" hint-placeholder-count="3">
@@ -541,24 +581,6 @@
         </div>
       </div>
     </sc-if>
-    <div style="position:fixed; left:0; right:{{ dockRight }}; bottom:0; z-index:16; display:{{ dockDisplay }}; justify-content:center; padding:0 16px max(14px, env(safe-area-inset-bottom)); pointer-events:none; transition:right 300ms ease">
-      <div style="pointer-events:auto; display:flex; gap:6px; padding:6px; border-radius:20px; background:rgba(25,27,30,0.97); border:1px solid rgba(255,255,255,0.09); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)">
-        <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ openKit }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text); display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; cursor:pointer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>{{ kitDockLabel }}
-          </button>
-        </sc-if>
-        <sc-if value="{{ hallDockOn }}" hint-placeholder-val="{{ false }}">
-          <button data-halldock="true" onClick="{{ hallDockGo }}" aria-label="{{ hallDockAria }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid {{ hallDockBorder }}; background:{{ hallDockBg }}; color:#ffffff; display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; font-variant-numeric:tabular-nums; cursor:pointer; white-space:nowrap">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V9l7-5 7 5v12"></path><path d="M9 21v-6h6v6"></path></svg>{{ hallDockLabel }}
-          </button>
-        </sc-if>
-        <button onClick="{{ openSummary }}" style="min-height:46px; padding:0 16px; border-radius:15px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.14); color:#ffffff; display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; cursor:pointer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 15l4-4 3 3 5-6"></path></svg>{{ reviewLabel }}
-        </button>
-      </div>
-    </div>
-
     <sc-if value="{{ cardOpen }}" hint-placeholder-val="{{ false }}">
       <div style="position:fixed; inset:0; z-index:70; display:grid; align-items:{{ cOvAlign }}; justify-items:{{ cOvJustify }}; padding:{{ cOvPad }}; pointer-events:{{ cOvEvents }}">
         <sc-if value="{{ cardDim }}" hint-placeholder-val="{{ true }}">
@@ -1941,6 +1963,11 @@ class Component extends DCLogic {
       if (f) f.focus();
     }
     this._lastSheet = sheet;
+    const pop = this.state.pop;
+    if (pop !== this._lastPop && ["mapview", "zoommenu", "more", "ctinfo"].indexOf(pop) !== -1) {
+      const m = document.querySelector('[data-menu="' + pop + '"]'), f = m && (m.querySelector('[role^="menuitem"][aria-checked="true"]') || m.querySelector('[role^="menuitem"], button'));
+      if (f) f.focus(); }
+    this._lastPop = pop;
     const scr = this.state.screen;
     if (scr === "map" && this._lastScreen !== "map") {
       if (this._lastScreen === "done") {
@@ -2006,10 +2033,11 @@ class Component extends DCLogic {
   // Fit: the whole road between the sticky bars (page header 64 + map sub-header ~70) and the dock (~96).
   zoomFitZ() { const B = this.zoomBand(); return Math.max(0.08, Math.min(1, (B.bottom - B.top - 80) / (this._roadH || 3000))); }
   // The band the map shows through: below the page header + map sub-header, above the dock.
-  zoomBand() { const vh = this.state.vh || window.innerHeight, sub = document.querySelector("[data-map] > div");
-    const top = sub ? Math.round(sub.getBoundingClientRect().bottom) : 134, card = document.querySelector("[data-finishcard] [role=dialog]");
+  zoomBand() { const vh = this.state.vh || window.innerHeight, sub = document.querySelector("[data-map] > div"), hdr = document.querySelector("header");
+    const hb = hdr ? Math.round(hdr.getBoundingClientRect().bottom) : 64, sb = sub && sub.getBoundingClientRect().height > 4 ? Math.round(sub.getBoundingClientRect().bottom) : 0;
+    const top = Math.max(hb + 12, sb), card = document.querySelector("[data-finishcard] [role=dialog]");
     const side = card && card.getBoundingClientRect().left > window.innerWidth * 0.4;
-    const bottom = card && !side ? Math.min(vh - 96, Math.round(card.getBoundingClientRect().top) - 12) : vh - 96; return { top: Math.max(100, top), bottom: bottom }; }
+    const bottom = card && !side ? Math.min(vh - 16, Math.round(card.getBoundingClientRect().top) - 12) : vh - 16; return { top: top, bottom: bottom }; }
   zoomWord(z) { return { detail: "Mission view", sections: "Sections", paper: "Whole paper" }[this.zoomTier(z)]; }
   // The road point under the focus line stays under it while the scale changes.
   zoomAnchor(fy) { const box = document.querySelector("[data-zoombox]"); if (!box) return null;
@@ -2612,12 +2640,13 @@ class Component extends DCLogic {
       ctLineColor: live ? "#81b1ff" : ph.k === "released" ? "#5fe6ab" : "var(--text2)",
       ctBorder: live ? "rgba(129,177,255,0.6)" : "var(--line2)", ctBg: live ? "rgba(14,24,44,0.88)" : "rgba(29,32,35,0.86)",
       ctBtnBg: live ? "var(--grad)" : "rgba(0,104,248,0.14)", ctBtnBorder: live ? "none" : "1px solid rgba(129,177,255,0.4)",
+      ctGoClose: () => { this.setState({ pop: null }); const g = C[2]; if (g) g(); },
       ctMapLine: ph.k === "inprogress" ? "Class test in progress · " + clock + " left" : "Class test open · closes " + fmt(A.closesAt),
       ctMapLock: "Practice on this paper pauses until it closes.",
     };
     // The Hall on the same paper pauses too: a released Hall would show the memo mid-window.
     if (lock && !(s.hall && s.hall.kind !== "class" && s.hall.paperId === pid && s.hall.phase === "sitting") && paper && paper.id === pid) Object.assign(v, {
-      hallDockLabel: phone ? "Paused" : "Hall · paused for your test", hallDockAria: "The Hall is paused while your class test is open", hallDockGo: () => this.openClassNotice(),
+      hallDockLabel: phone ? "Paused" : "Hall · paused for your test", hallMenuLabel: "Hall · paused for your test", hallDockAria: "The Hall is paused while your class test is open", hallDockGo: () => this.openClassNotice(),
       hallDockBorder: "var(--line2)", hallDockBg: "rgba(255,255,255,0.04)",
       sumHallTitle: "The Hall is paused", sumHallBody: "Your class test on this paper is open until " + fmt(A.closesAt) + ".", });
     if (s.screen === "hallgate" && s.gateKind !== "class" && lock && paper && paper.id === pid) Object.assign(v, {
@@ -3573,6 +3602,7 @@ class Component extends DCLogic {
     const R = released ? H.result : null;
     const vals = {
       hallDockOn: !!pid && (avail || mine),
+      hallMenuLabel: live ? "Back to the Hall · " + clock : R ? "Hall report · " + R.marks + " of " + R.total_marks : handed ? "Hall paper · being marked" : "Sit it in the Hall",
       hallDockLabel: live ? (phone ? clock : "Back to the Hall · " + clock) : R ? (phone ? R.marks + "/" + R.total_marks : "Hall report · " + R.marks + " of " + R.total_marks)
         : handed ? (phone ? "Marking" : "Hall paper · being marked") : (phone ? "The Hall" : "Sit it in the Hall"),
       hallDockAria: live ? "Back to the Hall, " + clock + " left" : R ? "Hall report, " + R.marks + " of " + R.total_marks : handed ? "Hall paper, being marked" : "Sit this paper in the Hall",
@@ -3887,7 +3917,9 @@ class Component extends DCLogic {
       zoomSegs: [["detail", "Mission view"], ["sections", "Sections"], ["paper", "Whole paper"]].filter(x => x[0] !== "sections" || fitZ < 0.45).map(x => { const on = tier === x[0];
         return { id: x[0], label: x[1], on: on ? "true" : "false", isDetail: x[0] === "detail", isSections: x[0] === "sections", isPaper: x[0] === "paper",
           bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6", shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none",
-          go: () => this.zoomToLevel(x[0]) }; }),
+          go: () => this.zoomToLevel(x[0]), isOn: on, goClose: () => { this.setState({ pop: null }); this.zoomToLevel(x[0]); } }; }),
+      zoomIsDetail: tier === "detail", zoomIsSections: tier === "sections", zoomIsPaper: tier === "paper",
+      zoomMenuAria: "Zoom level: " + { detail: "Mission view", sections: "Sections", paper: "Whole paper" }[tier] + ". Change",
       zoomIn: () => this.zoomStep(1), zoomOut: () => this.zoomStep(-1), zoomFit: () => this.zoomFitToggle(),
     };
     return {
@@ -4109,7 +4141,7 @@ class Component extends DCLogic {
       brandTextDisplay: phone ? "none" : "inline",
       pvOpen: !!s.pvOpen, pvTop: phone ? "64px" : "68px",
       // Design-only: the screens whose state switches live behind a Preview toggle in the shared header.
-      pvToggleOn: s.screen === "map" || s.screen === "hallout",
+      pvToggleOn: s.screen === "hallout",
       togglePreview: () => s.pvOpen ? this.closePreview() : this.setState({ pvOpen: true }),
       pillWordDisplay: phone ? "none" : "inline",
       dispXp: s.disp.xp, dispMarks: s.disp.marks, resumeTotal: rs.total_marks, dispDays: s.disp.days,
@@ -4196,10 +4228,10 @@ class Component extends DCLogic {
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
       headTitle: headTitle, headSub: headSub,
-      showMeter: !!paper && s.screen !== "pick" && !onHallScreen, meterLabel: earned + " of " + total + " marks",
+      showMeter: !!paper && s.screen !== "pick" && s.screen !== "map" && !onHallScreen, meterLabel: earned + " of " + total + " marks",
       ringDisplay: phone ? "flex" : "none", kitHeadDisplay: phone && s.screen === "map" ? "none" : "flex",
       xpPad: phone ? "10px" : "13px", xpWordDisplay: phone ? "none" : "inline", ringDeg: Math.round(360 * earned / Math.max(1, total)) + "deg", earnedNum: earned, meterPct: (total ? Math.round(100 * earned / total) : 0) + "%",
-      showKitBtn: !!paper && (s.screen === "map" || s.screen === "play" || s.screen === "hallgate"), openKit: () => this.setState({ kit: true }),
+      showKitBtn: !!paper && (s.screen === "play" || s.screen === "hallgate"), openKit: () => this.setState({ kit: true }),
       xp: s.xp, pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
 
       onPick: s.screen === "pick", onMap: s.screen === "map" && !!paper, onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
@@ -4225,9 +4257,36 @@ class Component extends DCLogic {
       ...this.hallScreenVals(s, phone, paper, missions),
       hallLive: s.hallLive,
       onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
+      // Brief 21: the map's controls live in the top bar; the map itself is never covered.
+      mapHead: s.screen === "map" && !!paper, notMapHead: !(s.screen === "map" && !!paper),
+      mapHeadSub: ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + " · " + earned + " of " + total + " marks",
+      mapViewOpen: s.pop === "mapview", mapViewAria: "View: " + ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + ". Change view",
+      mapViewBtnBg: s.pop === "mapview" ? "rgba(255,255,255,0.07)" : "transparent",
+      toggleMapView: () => s.pop === "mapview" ? this.closeLayer() : this.setState({ pop: "mapview" }),
+      ctInfoOpen: s.pop === "ctinfo", ctInfoBg: s.pop === "ctinfo" ? "rgba(255,255,255,0.07)" : "transparent",
+      toggleCtInfo: () => s.pop === "ctinfo" ? this.closeLayer() : this.setState({ pop: "ctinfo" }),
+      zoomMenuOpen: s.pop === "zoommenu", zoomMenuBg: s.pop === "zoommenu" ? "rgba(255,255,255,0.07)" : "transparent",
+      toggleZoomMenu: () => s.pop === "zoommenu" ? this.closeLayer() : this.setState({ pop: "zoommenu" }),
+      moreOpen: s.pop === "more", moreBg: s.pop === "more" ? "rgba(255,255,255,0.07)" : "transparent",
+      toggleMore: () => s.pop === "more" ? this.closeLayer() : this.setState({ pop: "more" }),
+      mapPopOn: s.screen === "map" && ["mapview", "ctinfo", "zoommenu", "more"].indexOf(s.pop) !== -1,
+      // Popovers start clear of the 67px bar; on the phone map the bar drops XP (it moves into ⋯) so the title can breathe.
+      popTop: "74px", headGap: phone && s.screen === "map" ? "6px" : "10px",
+      xpPillDisplay: phone && s.screen === "map" ? "none" : "flex", moreXpOn: phone,
+      moreKit: () => { this.setState({ pop: null }); this.setState({ kit: true }); },
+      moreReview: () => { this.setState({ pop: null }); this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); },
+      morePreview: () => this.setState({ pop: null, pvOpen: !s.pvOpen }),
+      // Arrow keys move through a menu; Home/End jump; Tab leaves it closed.
+      menuKeys: e => { const items = [].slice.call(e.currentTarget.querySelectorAll('[role^="menuitem"]')); const k = items.indexOf(document.activeElement);
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); const n = items.length; if (n) items[(k + (e.key === "ArrowDown" ? 1 : -1) + n) % n].focus(); }
+        else if (e.key === "Home" && items.length) { e.preventDefault(); items[0].focus(); } else if (e.key === "End" && items.length) { e.preventDefault(); items[items.length - 1].focus(); }
+        else if (e.key === "Tab") this.setState({ pop: null }); },
+      subPad: s.pvOpen ? "10px 0 14px" : "0", subBg: s.pvOpen ? "linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%)" : "none",
       mapViews: [["paper", "Paper"], ["topics", "Topics"]].map(x => { const on = (s.mapView || "paper") === x[0];
         return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6",
           shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", weight: on ? "600" : "500",
+          isOn: on, hint: x[0] === "paper" ? "The road through every question" : "Practise one topic at a time",
+          pickClose: () => { this.setState({ pop: null }); this.setState({ mapView: x[0], card: null }, () => { if (x[0] === "paper") this.scrollToNode(this.suggested(), false); else window.scrollTo(0, 0); }); },
           pick: () => this.setState({ mapView: x[0], card: null }, () => { if (x[0] === "paper") this.scrollToNode(this.suggested(), false); else window.scrollTo(0, 0); }) }; }),
       ...(s.screen === "map" && s.mapView === "topics" ? this.topicsVals(s, paper) : {}),
       ...this.drillVals(s),
