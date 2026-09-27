@@ -1055,6 +1055,10 @@ class Component extends DCLogic {
     // A smooth curve through every centre (Catmull-Rom as cubic Beziers), drawn bottom-up so the
     // lit dash starts at Start.
     const f = n => Math.round(n * 10) / 10, pts = items.map(it => [it.x, it.y]);
+    // The road starts just above the launch pad's back rim (its shadow layers included), so it
+    // rises out of the pad's beam instead of standing on the disc; the pad keeps its own centre.
+    const PAD_RAISE = 56;
+    pts[0] = [pts[0][0], pts[0][1] - PAD_RAISE];
     let d = "M" + f(pts[0][0]) + " " + f(pts[0][1]);
     for (let j = 0; j < pts.length - 1; j++) {
       const p0 = pts[j - 1] || pts[j], p1 = pts[j], p2 = pts[j + 1], p3 = pts[j + 2] || p2;
