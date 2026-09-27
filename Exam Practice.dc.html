@@ -131,6 +131,7 @@
           <sc-for list="{{ ctModes }}" as="cm" hint-placeholder-count="6">
             <button onClick="{{ cm.pick }}" aria-pressed="{{ cm.on }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ cm.bg }}; color:{{ cm.color }}; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">{{ cm.label }}</button>
           </sc-for>
+          <button data-busreset="true" onClick="{{ ctReset }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap">Reset shared demo</button>
         </div>
       </div>
 
@@ -164,7 +165,7 @@
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
         <sc-if value="{{ ctHomeOn }}" hint-placeholder-val="{{ false }}">
           <div data-classcard="home" style="box-sizing:border-box; width:{{ startW }}; display:flex; flex-direction:column; gap:5px; padding:11px 14px 12px; border-radius:18px; border:1px solid {{ ctBorder }}; background:{{ ctBg }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); text-align:left">
-            <span style="display:flex; align-items:center; gap:8px"><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Set by your teacher</span><span style="flex:1"></span><span style="font-size:11px; font-weight:700; color:var(--text3)">not an ICASS task</span></span>
+            <span style="display:flex; align-items:center; gap:8px"><span style="font-size:10.5px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Set by your teacher</span><sc-if value="{{ ctLive }}" hint-placeholder-val="{{ false }}"><span data-livetag="true" style="padding:1px 7px; border-radius:7px; background:rgba(61,220,151,0.14); color:#5fe6ab; font-size:10.5px; font-weight:800">Live from the teacher tool</span></sc-if><span style="flex:1"></span><span style="font-size:11px; font-weight:700; color:var(--text3)">not an ICASS task</span></span>
             <span style="font-size:14.5px; font-weight:800; line-height:1.3">{{ ctTitle }}</span>
             <span style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
               <span style="flex:1; min-width:150px; font-size:12.5px; font-weight:700; color:{{ ctLineColor }}">{{ ctLine }}</span>
@@ -1483,6 +1484,16 @@ const HALL_MINUTES = { fm: 180, aet: 180, ls: 150 };
 // reward for a full paper sat under conditions and for a finished fix round, never one scaled to the score.
 // MOCK of GET /v1/me/assignments: one class test on FM N6. The teacher's display name comes from the
 // platform BFF, never from the exam service (ARCH §7); "Ms Rivera" is a SAMPLE.
+// ── MOCK: the exam service, shared by the two prototypes on this origin (brief 15). One versioned
+// key; every access guarded (private windows and blocked storage must not break either prototype).
+// Only what the real service would send each side is read; no memo, key or expected value is stored.
+const BUS_KEY = "nexera.proto.v1";
+const BUS_BLOCKED = /[?&]nostorage=1/.test(location.search); // design-only: simulate blocked storage
+const busEmpty = () => ({ v: 1, assignments: [], submissions: [] });
+const busRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const raw = localStorage.getItem(BUS_KEY), d = raw ? JSON.parse(raw) : null;
+  return d && d.v === 1 && Array.isArray(d.assignments) && Array.isArray(d.submissions) ? d : busEmpty(); } catch (e) { return busEmpty(); } };
+const busWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(BUS_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
+const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY); } catch (e) {} };
 const CLASS_TEST = { ref: "asg-fm-n6-mock-1", kind: "class_test", mode: "assessment", paperId: "fm", teacher: "Ms Rivera", minutes: 180 };
 const HALL_REWARD_XP = 300, FIX_REWARD_XP = 100, HALL_ANSWERED_MIN = 0.8;
 const EMPTY_UI = { inputs: {}, list: [], written: "", matchPairs: {}, drawn: false, pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "" };
@@ -1505,7 +1516,7 @@ const HALL_API = {
     if (cls && now > opts.closesAt) return { status: 409, body: { error: "window_closed" } };
     if (cls && Object.keys(this.db).some(k => this.db[k].asgRef === opts.asgRef)) return { status: 409, body: { error: "already_sat" } };
     const id = (cls ? "class-" : "hall-") + paperId + "-" + now, ends = cls ? Math.min(now + minutes * 60000, opts.closesAt) : now + minutes * 60000;
-    this.db[id] = { id: id, paper: paperId, kind: cls ? "class" : "hall", asgRef: cls ? opts.asgRef : null, closes_at: cls ? opts.closesAt : null,
+    this.db[id] = { id: id, paper: paperId, kind: cls ? "class" : "hall", asgRef: cls ? opts.asgRef : null, closes_at: cls ? opts.closesAt : null, live: !!(cls && opts.live), released_at: null,
       started_at: now, ends_at: ends, parts: parts, answers: {}, events: [], submitted_at: null, marked: null };
     return { status: 201, body: { sitting_id: id, started_at: now, ends_at: ends, parts: parts.map(q => ({ key: q.key, number: q.number, marks: q.marks })) } };
   },
@@ -1534,8 +1545,9 @@ const HALL_API = {
   progress(r, now) {
     // A class test releases only after the window closes and the moderation sample (R2 b). No standing policy.
     if (r.kind === "class") {
-      const t = this.force === "window_open" ? -1 : this.force === "moderation" ? 1000 : this.force === "released" ? 1e12 : now - r.closes_at;
       const n = r.marked.length;
+      if (r.live && !this.force) return { status: now < r.closes_at ? "window_open" : r.released_at ? "released" : "moderation", final: n, total: n };
+      const t = this.force === "window_open" ? -1 : this.force === "moderation" ? 1000 : this.force === "released" ? 1e12 : now - r.closes_at;
       return { status: t < 0 ? "window_open" : t < 6000 ? "moderation" : "released", final: n, total: n };
     }
     const total = r.marked.length, model = r.marked.filter(m => m.route === "model").length, person = r.marked.filter(m => m.route === "person").length;
@@ -1728,13 +1740,15 @@ class Component extends DCLogic {
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: true, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", asg: null, gateKind: "hall", testPreview: "open", homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", asg: null, gateKind: "hall", testPreview: "open", bus: busEmpty(), liveAsg: null, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
     // ?sitting=hall opens the Hall entrance (a design preview switch); &paper=ls picks Life Sciences.
     const qs = new URLSearchParams(location.search), sitQ = qs.get("sitting"), paperQ = HALL_FULL[qs.get("paper")] ? qs.get("paper") : "fm";
     const testQ = qs.get("test"), testK = ["upcoming", "open", "inprogress", "handed", "released", "missed"].indexOf(testQ) !== -1 ? testQ : "open";
     const ready = () => { this.papers = buildPapers(); this.setTestPreview(testK);
+      // A class test approved in the teacher tool wins over the preview seed (unless ?test= asked for one).
+      const b = busRead(), L = this.liveFromBus(b); this.setState({ bus: b }); if (L && !testQ) this.goLive(L);
       if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ paperId: paperQ, screen: "hallgate", gateKind: "hall" }, () => window.scrollTo(0, 0)); else this.forceUpdate(); };
     if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
@@ -1758,7 +1772,7 @@ class Component extends DCLogic {
       this.setState({ hall: Object.assign({}, h, { endsAt: e }) }); },
       // Close the class-test window in N seconds; an open sitting's clock is capped at the close, as the server would.
       closeIn: sec => { const A = this.state.asg; if (!A) return; const c = Date.now() + sec * 1000, h = this.state.hall;
-        Object.keys(HALL_API.db).forEach(k => { const r = HALL_API.db[k]; if (r.asgRef === CLASS_TEST.ref) { r.closes_at = c; r.ends_at = Math.min(r.ends_at, c); } });
+        Object.keys(HALL_API.db).forEach(k => { const r = HALL_API.db[k]; if (r.asgRef === this.ct().ref) { r.closes_at = c; r.ends_at = Math.min(r.ends_at, c); } });
         this.setState({ asg: Object.assign({}, A, { closesAt: c }), hall: h && h.kind === "class" ? Object.assign({}, h, { closesAt: c, endsAt: Math.min(h.endsAt, c) }) : h }); } };
     this._esc = e => {
       if (e.key !== "Escape") return;
@@ -1768,6 +1782,9 @@ class Component extends DCLogic {
       if (this.state.sheet || this.state.pop) { e.preventDefault(); this.closeLayer(); }
     };
     document.addEventListener("keydown", this._esc);
+    // The teacher tool's writes arrive as a storage event (a tab never hears its own writes).
+    this._st = e => { if (e.key === BUS_KEY || e.key === null) this.onBus(busRead()); };
+    window.addEventListener("storage", this._st);
   }
   // Closing returns focus to the control that opened the layer.
   closeLayer() {
@@ -1980,7 +1997,7 @@ class Component extends DCLogic {
     this._cu = requestAnimationFrame(step);
   }
   componentWillUnmount() { clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
-    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); clearInterval(this._tick); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
+    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
@@ -2156,10 +2173,31 @@ class Component extends DCLogic {
 
   // ── Teacher class tests, the learner side (brief 11). The Hall's engine, started by an
   // assignment with a window; released by the college's moderator after the window closes.
+  // The class test in play: the live one from the teacher tool, or the preview seed.
+  ct() { const L = this.state.liveAsg; return L ? { ref: L.ref, paperId: "fm", teacher: L.setterName, minutes: L.minutes || 180, live: true } : Object.assign({ live: false }, CLASS_TEST); }
+  liveFromBus(b) { return ((b || this.state.bus).assignments || []).filter(a => a.kind === "class_test" && a.paperId === "fm-n6-2022-11" && a.state === "open")
+    .sort((x, y) => (y.opensAt || 0) - (x.opensAt || 0))[0] || null; }
+  // Follow the live assignment: its window, its teacher, and (for a sitting already made) its close and release.
+  goLive(L) {
+    if (!L) return; this._lastLive = L.ref;
+    Object.keys(HALL_API.db).forEach(id => { const r = HALL_API.db[id]; if (r.kind === "class" && r.asgRef !== L.ref) delete HALL_API.db[id]; });
+    let h = this.state.hall;
+    if (h && h.kind === "class" && h.asgRef !== L.ref) h = null;
+    if (h && h.kind === "class") { const r = HALL_API.db[h.sittingId];
+      if (r) { r.closes_at = L.closesAt; r.ends_at = Math.min(r.ends_at, L.closesAt); r.released_at = L.releasedAt || null; }
+      h = Object.assign({}, h, { closesAt: L.closesAt, endsAt: Math.min(h.endsAt, L.closesAt) }); }
+    HALL_API.force = null;
+    this.setState({ liveAsg: L, asg: { opensAt: L.opensAt, closesAt: L.closesAt }, testPreview: "live", hall: h, hallNow: Date.now() }, () => { if (h && h.phase === "handed") this.hallPoll(); });
+  }
+  onBus(b) {
+    const L = this.liveFromBus(b); this.setState({ bus: b });
+    if (!L) { if (this.state.testPreview === "live") this.setTestPreview("open"); return; }
+    if (this.state.testPreview === "live" || L.ref !== this._lastLive) this.goLive(L);
+  }
   classPhase(now) {
     const A = this.state.asg; if (!A) return { k: "none", H: null };
     now = now || Date.now();
-    const H = this.state.hall, mine = H && H.kind === "class" && H.asgRef === CLASS_TEST.ref ? H : null;
+    const H = this.state.hall, mine = H && H.kind === "class" && H.asgRef === this.ct().ref ? H : null;
     if (now < A.opensAt) return { k: "upcoming", H: null };
     if (mine && mine.phase === "sitting") return { k: "inprogress", H: mine };
     if (mine && mine.phase === "handed") return { k: mine.status === "released" && mine.result ? "released" : "handed", H: mine };
@@ -2173,11 +2211,12 @@ class Component extends DCLogic {
     const A = this.state.asg, now = Date.now(), pid = CLASS_TEST.paperId, ph = this.classPhase(now);
     if (ph.k === "inprogress") { this.resumeHall(); return; }
     const ps = this.hallParts(pid);
-    const r = HALL_API.create(pid, ps.map(x => ({ key: x.key, number: x.number, marks: x.marks })), now, CLASS_TEST.minutes,
-      { kind: "class", opensAt: A.opensAt, closesAt: A.closesAt, asgRef: CLASS_TEST.ref });
+    const C = this.ct();
+    const r = HALL_API.create(pid, ps.map(x => ({ key: x.key, number: x.number, marks: x.marks })), now, C.minutes,
+      { kind: "class", opensAt: A.opensAt, closesAt: A.closesAt, asgRef: C.ref, live: C.live });
     if (r.status !== 201) { this.setState({ hallErr: { window_not_open: "This test isn't open yet.", window_closed: "This test has closed.", already_sat: "You've already sat this test.",
       version_disclosed: "This paper can't be used for a test." }[r.body.error] || "The test couldn't open. Try again." }); return; }
-    const h = { kind: "class", asgRef: CLASS_TEST.ref, closesAt: A.closesAt, paperId: pid, sittingId: r.body.sitting_id, phase: "sitting", startedAt: r.body.started_at, endsAt: r.body.ends_at,
+    const h = { kind: "class", asgRef: C.ref, closesAt: A.closesAt, paperId: pid, sittingId: r.body.sitting_id, phase: "sitting", startedAt: r.body.started_at, endsAt: r.body.ends_at,
       drafts: {}, flags: {}, cur: 0, warned: {}, left: 0, status: null, final: 0, total: ps.length, result: null, paid: false, fixDone: false, fixPaid: false };
     this.setState({ hall: h, hallErr: "", hallNow: now, hoOpen: {} }, () => this.hallGo(0, { hallLive: "Your class test has started. The clock is running." }));
   }
@@ -2204,7 +2243,7 @@ class Component extends DCLogic {
         hall = Object.assign(hall, { phase: "handed", handedAt: at, handedBy: "you", answered: 3, status: sub.body.status, final: sub.body.final, total: sub.body.total });
       }
     }
-    this.setState({ asg: win, hall: hall, testPreview: k, hoOpen: {}, hallNow: now }, () => { if (k === "handed" || k === "released") this.hallPoll(); });
+    this.setState({ asg: win, hall: hall, testPreview: k, liveAsg: null, hoOpen: {}, hallNow: now }, () => { if (k === "handed" || k === "released") this.hallPoll(); });
   }
   classVals(s, phone, paper) {
     const A = s.asg; if (!A) return { ctHomeOn: false, ctMapOn: false, ctModes: [] };
@@ -2223,8 +2262,9 @@ class Component extends DCLogic {
       missed: ["Closed · you didn't sit this one", "Practise this paper", () => this.setState({ paperId: pid, screen: "map", mapView: "paper" })] }[ph.k];
     const live = ph.k === "open" || ph.k === "inprogress", lock = this.classLock(pid);
     const v = {
-      ctModes: [["upcoming", "Upcoming"], ["open", "Open"], ["inprogress", "In progress"], ["handed", "Handed in"], ["released", "Released"], ["missed", "Missed"]].map(x => { const on = s.testPreview === x[0];
-        return { label: x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)", pick: () => this.setTestPreview(x[0]) }; }),
+      ctLive: !!s.liveAsg, ctReset: () => { busReset(); this._lastLive = null; this.onBus(busEmpty()); this.setState({ hallLive: "The shared demo is reset." }); },
+      ctModes: (this.liveFromBus() ? [["live", "Live"]] : []).concat([["upcoming", "Upcoming"], ["open", "Open"], ["inprogress", "In progress"], ["handed", "Handed in"], ["released", "Released"], ["missed", "Missed"]]).map(x => { const on = s.testPreview === x[0];
+        return { label: x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)", pick: () => x[0] === "live" ? this.goLive(this.liveFromBus()) : this.setTestPreview(x[0]) }; }),
       ctHomeOn: s.screen === "pick",
       // Phones: the card shares one screen with the companion, so the stage gives up the room.
       ...(phone && s.screen === "pick" ? { stageMin: "22vh" } : {}),
@@ -2250,7 +2290,7 @@ class Component extends DCLogic {
         screenLabel: "09 Class test · notice", headTitle: "Class test", headSub: P.title + " · " + P.sitting,
         gateBubble: "Good luck. I'll be here after.", gateKicker: "Class test · set by your teacher", gateTitle: P.title, gateMeta: "Mock / class test · not an ICASS task",
         // Transparency first: the learner knows who sees the marks before anything else (the name comes from the platform).
-        gateLead: "Your teacher, " + CLASS_TEST.teacher + ", will see your marks for this.", gateLeadColor: "#ffffff", gateLeadWeight: "700",
+        gateLead: "Your teacher, " + this.ct().teacher + ", will see your marks for this.", gateLeadColor: "#ffffff", gateLeadWeight: "700",
         gateReadyTitle: "Before you start",
         gateReady: [Object.assign({}, info, { icon: "◷", head: P.time + ", in one go", body: "The clock stops at " + fmt(A.closesAt) + " if that comes first." }),
           Object.assign({}, info, { icon: "1", head: "One attempt, no hints", body: "Change your answers as often as you like until you hand in." }),
@@ -2606,6 +2646,11 @@ class Component extends DCLogic {
     const h = (by === "you" && this.hallSaved()) || h0, now = Date.now();
     const r = HALL_API.submit(h.sittingId, now, (q, a) => this.hallMarkOne(q, a));
     const answered = Object.keys(h.drafts).filter(k => h.drafts[k].answered).length;
+    if (h.kind === "class" && this.ct().live && h.asgRef === this.ct().ref) { const row = HALL_API.db[h.sittingId], byPart = {};
+      (row && row.marked || []).forEach(m => { if (m.route !== "offline") byPart[m.key.replace(/^fm:/, "")] = m.awarded; });
+      const d = busRead(); d.submissions = d.submissions.filter(x => !(x.ref === h.asgRef && x.sub === "learner-this-browser"));
+      d.submissions.push({ ref: h.asgRef, sub: "learner-this-browser", submittedAt: Math.min(now, h.endsAt), byPart: byPart, answered: answered });
+      busWrite(d); this.setState({ bus: d }); }
     this.setState({ hall: Object.assign({}, h, { phase: "handed", handedAt: Math.min(now, h.endsAt), handedBy: by, answered: answered, status: r.body.status, final: r.body.final, total: r.body.total }),
       hallSheet: null, sitting: "practice", screen: "hallout", kp: null,
       hallLive: by === "time" ? "Time is up. Your paper has been handed in." : "Your paper has been handed in." }, () => { window.scrollTo(0, 0); this.hallPoll(); });

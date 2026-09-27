@@ -57,6 +57,7 @@
         <h1 data-h1="true" tabIndex="-1" style="flex:1; min-width:200px; margin:0; font-size:22px; font-weight:800; outline:none">{{ homeTitle }}</h1>
         <button data-assign="true" onClick="{{ startAssign }}" style="min-height:44px; padding:0 18px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">Assign a paper</button>
       </div>
+      <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--text3)"><span>{{ busLine }}</span><button data-busreset="true" onClick="{{ resetBus }}" style="min-height:32px; padding:0 10px; border-radius:9px; border:1px dashed var(--line2); background:transparent; color:var(--text3); font-size:11.5px; font-weight:700; cursor:pointer">Reset the shared demo</button></span>
       <p style="margin:0; padding:10px 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.3); background:rgba(0,104,248,0.08); font-size:13px; line-height:1.55; color:#cfe0ff">Classes aren't on the platform yet, so you assign to your whole college or a campus. Tests here are mocks and practice, not ICASS tasks.</p>
       <div style="display:grid; grid-template-columns:{{ homeCols }}; gap:14px; align-items:start">
         <section aria-labelledby="h-wait" style="display:flex; flex-direction:column; gap:8px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
@@ -160,7 +161,7 @@
           </div>
           <span style="font-size:12.5px; color:var(--text2)">{{ durationLine }}</span>
           <sc-if value="{{ hasWindowNote }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:12.5px; line-height:1.5; color:{{ windowNoteColor }}">{{ windowNote }}</span></sc-if>
-          <span style="font-size:12px; color:var(--text3)">Extra time per learner needs per-learner data the platform doesn't have yet.</span>
+          <span style="display:flex; align-items:center; gap:10px; flex-wrap:wrap"><button data-opensnow="true" onClick="{{ opensNow }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.10); color:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer">Opens now · closes in 2 hours</button><span style="font-size:12px; color:var(--text3)">Extra time per learner needs per-learner data the platform doesn't have yet.</span></span>
         </sc-if>
 
         <sc-if value="{{ step4 }}" hint-placeholder-val="{{ false }}">
@@ -186,6 +187,16 @@
 
     <sc-if value="{{ onModerate }}" hint-placeholder-val="{{ false }}">
       <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Moderate</h1>
+      <sc-if value="{{ hasPicker }}" hint-placeholder-val="{{ false }}">
+        <div role="group" aria-label="Which assignment" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center">
+          <span style="font-size:12px; font-weight:700; color:var(--text3)">Assignment</span>
+          <sc-for list="{{ pickRows }}" as="pk" hint-placeholder-count="2">
+            <button data-pick="{{ pk.ref }}" onClick="{{ pk.pick }}" aria-pressed="{{ pk.on }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px solid {{ pk.border }}; background:{{ pk.bg }}; color:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer">{{ pk.label }}</button>
+          </sc-for>
+          <sc-if value="{{ canCloseNow }}" hint-placeholder-val="{{ false }}"><button data-closenow="true" onClick="{{ closeNow }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px dashed var(--line2); background:transparent; color:var(--text3); font-size:12px; font-weight:700; cursor:pointer">Preview: close this window now</button></sc-if>
+        </div>
+      </sc-if>
+
       <sc-if value="{{ modNotAdmin }}" hint-placeholder-val="{{ false }}">
         <p style="margin:0; font-size:13.5px; color:var(--text2)">Moderation is done by your college's institution admin. Switch "Viewing as" to see it.</p>
       </sc-if>
@@ -277,6 +288,16 @@
 
     <sc-if value="{{ onResults }}" hint-placeholder-val="{{ false }}">
       <h1 data-h1="true" tabIndex="-1" style="margin:0; font-size:22px; font-weight:800; outline:none">Results</h1>
+      <sc-if value="{{ hasPicker }}" hint-placeholder-val="{{ false }}">
+        <div role="group" aria-label="Which assignment" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center">
+          <span style="font-size:12px; font-weight:700; color:var(--text3)">Assignment</span>
+          <sc-for list="{{ pickRows }}" as="pk" hint-placeholder-count="2">
+            <button data-pick="{{ pk.ref }}" onClick="{{ pk.pick }}" aria-pressed="{{ pk.on }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px solid {{ pk.border }}; background:{{ pk.bg }}; color:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer">{{ pk.label }}</button>
+          </sc-for>
+          <sc-if value="{{ canCloseNow }}" hint-placeholder-val="{{ false }}"><button data-closenow="true" onClick="{{ closeNow }}" style="min-height:36px; padding:0 12px; border-radius:10px; border:1px dashed var(--line2); background:transparent; color:var(--text3); font-size:12px; font-weight:700; cursor:pointer">Preview: close this window now</button></sc-if>
+        </div>
+      </sc-if>
+
       <sc-if value="{{ resNotYet }}" hint-placeholder-val="{{ false }}"><p style="margin:0; font-size:14px; color:var(--text2)">No results yet. Marks appear here after they are released.</p></sc-if>
       <sc-if value="{{ resReady }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex; flex-direction:column; gap:4px">
@@ -287,6 +308,7 @@
         <div style="display:grid; grid-template-columns:{{ resCols }}; gap:14px; align-items:start">
           <section aria-labelledby="h-hist" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
             <span style="display:flex; align-items:center; gap:8px"><h2 id="h-hist" style="flex:1; margin:0; font-size:14px; font-weight:800">Marks · {{ resN }} learners</h2><button data-tabletoggle="true" onClick="{{ toggleTable }}" aria-pressed="{{ tableOn }}" style="min-height:34px; padding:0 10px; border-radius:9px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:12px; font-weight:700; cursor:pointer">{{ tableLabel }}</button></span>
+            <sc-if value="{{ histHidden }}" hint-placeholder-val="{{ false }}"><span data-hidden="hist" style="font-size:13px; color:var(--text3)">Fewer than 5 learners · hidden to protect privacy</span></sc-if>
             <sc-if value="{{ showChart }}" hint-placeholder-val="{{ true }}">
               <div role="img" aria-label="{{ histAria }}" style="position:relative; display:grid; grid-template-columns:28px 1fr; gap:6px">
                 <div aria-hidden="true" style="position:relative; height:180px; font-size:10.5px; color:var(--text3)"><span style="position:absolute; right:0; top:-6px">{{ yMax }}</span><span style="position:absolute; right:0; top:84px">{{ yMid }}</span><span style="position:absolute; right:0; bottom:-6px">0</span></div>
@@ -311,6 +333,7 @@
           </section>
           <section aria-labelledby="h-byq" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
             <h2 id="h-byq" style="margin:0; font-size:14px; font-weight:800">By question · average</h2>
+            <sc-if value="{{ slicesHidden }}" hint-placeholder-val="{{ false }}"><span data-hidden="slices" style="font-size:13px; color:var(--text3)">Fewer than 5 learners · hidden to protect privacy (by question and by topic)</span></sc-if>
             <sc-for list="{{ byQ }}" as="bq" hint-placeholder-count="4">
               <span title="{{ bq.tip }}" style="display:grid; grid-template-columns:96px 1fr 44px; align-items:center; gap:8px; font-size:12.5px"><span style="color:var(--text2)">{{ bq.label }}</span><span aria-hidden="true" style="height:10px; border-radius:0 4px 4px 0; background:rgba(255,255,255,0.05)"><span style="display:block; height:100%; width:{{ bq.pct }}; border-radius:0 4px 4px 0; background:var(--bar)"></span></span><span style="text-align:right; font-weight:800">{{ bq.val }}</span></span>
             </sc-for>
@@ -591,6 +614,16 @@ KIND_WORD.agreement = "The memo disagrees with an independent solve";
 KIND_WORD.overlap = "Shares words with a past paper";
 // The 12-word shingle check (C-no-verbatim-overlap, ENGINE §4.2) against the bank's FM paper text.
 const wordsOf = t => String(t || "").toLowerCase().replace(/[.,;:()"“”]/g, " ").split(/\s+/).filter(Boolean);
+// ── MOCK: the exam service, shared by the two prototypes on this origin (brief 15). One versioned
+// key; every access guarded (private windows and blocked storage must not break either prototype).
+// Only what the real service would send each side is read; no memo, key or expected value is stored.
+const BUS_KEY = "nexera.proto.v1";
+const BUS_BLOCKED = /[?&]nostorage=1/.test(location.search); // design-only: simulate blocked storage
+const busEmpty = () => ({ v: 1, assignments: [], submissions: [] });
+const busRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const raw = localStorage.getItem(BUS_KEY), d = raw ? JSON.parse(raw) : null;
+  return d && d.v === 1 && Array.isArray(d.assignments) && Array.isArray(d.submissions) ? d : busEmpty(); } catch (e) { return busEmpty(); } };
+const busWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(BUS_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
+const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY); } catch (e) {} };
 const SAMPLE_NAMES = ["Aisha Bello", "Liam Chen", "Naledi Dube", "Mateo García", "Priya Nair", "Tomás Silva", "Zanele Khumalo", "Omar Haddad", "Yuki Tanaka", "Grace Mensah",
   "Lucas Moreau", "Amara Okoye", "Sofia Rossi", "Kwame Asante", "Mei Lin", "Daniel Cohen", "Fatima Zahra", "Noah Müller", "Chloé Martin", "Ravi Patel",
   "Thandiwe Ndlovu", "Ahmed Karim", "Elena Petrova", "Samuel Adeyemi", "Hana Kim", "Diego López", "Leila Farouk", "Jonas Berg", "Ana Costa", "Kofi Boateng",
@@ -627,7 +660,7 @@ const QUEUE = [
 const partOf = n => { const src = window.PAPER_FM_N6_2022; let hit = null; if (src) src.sections.forEach(sec => (sec.missions || []).forEach(m => (m.parts || m.items || []).forEach(q => { if (q.n === n) hit = q; }))); return hit; };
 
 class Component extends DCLogic {
-  state = { role: "teacher", view: "home", vw: 1280, asgs: [], sample: {}, marks: {}, queueDone: {}, crit: {}, qi: 0, draft: null, confirm: null, live: "", tableOn: false, seeded: false, uploads: [], upCur: null, upSel: null, upForm: { mode: "clean", err: "", noMemo: false, paper: null, memo: null }, rvEdit: null, changesNote: "", quota: 7,
+  state = { role: "teacher", view: "home", vw: 1280, asgs: [], sample: {}, marks: {}, queueDone: {}, crit: {}, qi: 0, draft: null, confirm: null, live: "", tableOn: false, seeded: false, uploads: [], upCur: null, upSel: null, upForm: { mode: "clean", err: "", noMemo: false, paper: null, memo: null }, rvEdit: null, changesNote: "", quota: 7, bus: busEmpty(), modRef: null, marksBy: {},
     genForm: { outcome: "success", topics: { pipes: { on: true, marks: "3" }, open: { on: true, marks: "4" }, pumps: { on: true, marks: "7" } }, total: "14", notes: "", rights: false, err: "" } };
 
   componentDidMount() {
@@ -637,8 +670,11 @@ class Component extends DCLogic {
     if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._esc = e => { if (e.key === "Escape" && this.state.confirm) { e.preventDefault(); this.closeConfirm(); } };
     document.addEventListener("keydown", this._esc);
+    // The other prototype's writes arrive as a storage event (a tab never hears its own writes).
+    this._st = e => { if (e.key === BUS_KEY || e.key === null) this.setState({ bus: busRead() }); };
+    window.addEventListener("storage", this._st); this.setState({ bus: busRead() });
   }
-  componentWillUnmount() { clearTimeout(this._rt); window.removeEventListener("resize", this._rs); document.removeEventListener("keydown", this._esc); clearInterval(this._p); }
+  componentWillUnmount() { window.removeEventListener("storage", this._st); clearTimeout(this._rt); window.removeEventListener("resize", this._rs); document.removeEventListener("keydown", this._esc); clearInterval(this._p); }
   componentDidUpdate() {
     if (this.state.view !== this._lastView) { this._lastView = this.state.view; const h = document.querySelector("[data-h1]"); if (h) h.focus({ preventScroll: true }); window.scrollTo(0, 0); }
     const st = this.state.draft ? this.state.draft.step : 0;
@@ -651,7 +687,9 @@ class Component extends DCLogic {
   seed() {
     const now = Date.now(), D = 86400000;
     this.setState({ seeded: true, asgs: [
-      { ref: "asg-fm-n6-mock-1", paperId: "fm-n6-2022-11", kind: "class_test", audience: "college", opensAt: now - 6 * D, closesAt: now - D, setter: "t1", state: "open", approvedBy: "a1", eligible: 40, released: false } ] });
+      { ref: "asg-fm-n6-mock-1", paperId: "fm-n6-2022-11", kind: "class_test", audience: "college", opensAt: now - 6 * D, closesAt: now - D, setter: "t1", state: "open", approvedBy: "a1", eligible: 40, released: false } ]
+      .concat(busRead().assignments.map(b => ({ ref: b.ref, paperId: b.paperId, kind: b.kind, audience: "college", opensAt: b.opensAt, closesAt: b.closesAt,
+        setter: b.setterName === PEOPLE.a1.name ? "a1" : "t1", state: b.state === "open" ? "open" : "awaiting_moderation", approvedBy: b.state === "open" ? "a1" : null, eligible: 40, released: !!b.releasedAt, releasedAt: b.releasedAt }))) });
   }
   // ── One review for every draft (brief 14 generalises brief 13): these accessors are the only
   // place an upload and a generated draft differ.
@@ -765,7 +803,17 @@ class Component extends DCLogic {
     if (a.state === "awaiting_moderation") return "awaiting_moderation";
     if (a.released) return "released";
     return now < a.opensAt ? "scheduled" : now <= a.closesAt ? "open" : "closed"; }
-  closed() { return this.state.asgs.filter(a => a.ref === "asg-fm-n6-mock-1")[0]; }
+  // The assignment being moderated or reported on: the seeded closed test, or a live one picked in T3/T5.
+  curRef() { return this.state.modRef || "asg-fm-n6-mock-1"; }
+  closed() { const r = this.curRef(); return this.state.asgs.filter(a => a.ref === r)[0] || this.state.asgs.filter(a => a.ref === "asg-fm-n6-mock-1")[0]; }
+  isLive(a) { return !!a && a.ref !== "asg-fm-n6-mock-1"; }
+  busSubs(ref) { return (this.state.bus.submissions || []).filter(x => x.ref === ref); }
+  // Scripts: the 38 seeded ones, or the bus's hand-ins for a live assignment (names joined by the "BFF").
+  scripts() { const a = this.closed(); if (!this.isLive(a)) return this.data ? this.data.scripts : [];
+    return this.busSubs(a.ref).map(x => ({ id: x.sub, name: "You (this browser) · sample", campus: "North", submittedAt: x.submittedAt, byPart: x.byPart })); }
+  marksOf() { return this.state.marksBy[this.curRef()] || {}; }
+  setMarks(m) { this.setState({ marksBy: Object.assign({}, this.state.marksBy, { [this.curRef()]: m }) }); }
+  busPatchAsg(ref, patch) { const d = busRead(); d.assignments = d.assignments.map(a => a.ref === ref ? Object.assign({}, a, patch) : a); busWrite(d); this.setState({ bus: d }); }
 
   // ── MOCK exam-service routes (brief 12 §6). Each returns { status, body }.
   api = {
@@ -781,7 +829,7 @@ class Component extends DCLogic {
     approve: (a, actor) => actor.role !== "institution_admin" ? { status: 403, body: { error: "not_moderator" } } : actor.id === a.setter ? { status: 403, body: { error: "setter_cannot_moderate" } } : { status: 200, body: { state: "open" } },
     // GET /v1/assignments/{ref}/sample: 10% of submitted scripts or at least 5, stratified by AI total.
     sample: () => {
-      const S = this.data.scripts, n = S.length, k = n < 5 ? n : Math.max(5, Math.ceil(n * 0.1));
+      const S = this.scripts(), n = S.length, k = n < 5 ? n : Math.max(5, Math.ceil(n * 0.1));
       const order = S.map((sc, i) => ({ i: i, t: Object.values(sc.byPart).reduce((x, y) => x + y, 0) })).sort((x, y) => y.t - x.t);
       return { status: 200, body: Array.from({ length: k }, (_, j) => order[Math.round(j * (n - 1) / Math.max(1, k - 1))].i) };
     },
@@ -791,45 +839,49 @@ class Component extends DCLogic {
       : !gates.samplePass ? { status: 409, body: { error: "sample_failed" } } : !gates.queueDone ? { status: 409, body: { error: "disagreements_open" } } : { status: 200, body: { released_at: Date.now() } },
     // GET /v1/assignments/{ref}/results: k >= 5 applied HERE, server-side; names only for the setter (the BFF joins them).
     results: (a, actor) => {
-      const parts = this.data.parts, S = this.data.scripts.map((sc, i) => { const fin = this.finalByPart(i); return { sc: sc, byPart: fin, total: Object.values(fin).reduce((x, y) => x + y, 0) }; });
+      const parts = this.data.parts, S = this.scripts().map((sc, i) => { const fin = this.finalByPart(i); return { sc: sc, byPart: fin, total: Object.values(fin).reduce((x, y) => x + y, 0) }; });
       const K = 5, avg = arr => arr.length ? arr.reduce((x, y) => x + y, 0) / arr.length : 0;
       const bins = Array.from({ length: 10 }, (_, b) => S.filter(x => Math.min(9, Math.floor(x.total / 10)) === b).length);
       const byQ = Object.keys(QOF).map(q => ({ q: q, avg: avg(S.map(x => qTotals(parts, x.byPart)[q] || 0)) / QOF[q] }));
       const topics = {}; parts.forEach(p => { const t = FM_TOPIC_OF[p.n]; if (!t) return; topics[t] = topics[t] || { got: 0, of: 0 }; S.forEach(x => { topics[t].got += x.byPart[p.n] || 0; topics[t].of += p.marks; }); });
       const byCampus = COLLEGE.campuses.map(c => { const g = S.filter(x => x.sc.campus === c); return g.length < K ? { campus: c, hidden: true } : { campus: c, n: g.length, avg: avg(g.map(x => x.total)) }; });
-      return { status: 200, body: { n: S.length, bins: S.length >= K ? bins : null, byQ: byQ, byTopic: Object.keys(topics).map(t => ({ topic: t, avg: topics[t].got / topics[t].of })), byCampus: byCampus,
+      const small = S.length < K;
+      return { status: 200, body: { n: S.length, bins: small ? null : bins, byQ: small ? [] : byQ, byTopic: small ? [] : Object.keys(topics).map(t => ({ topic: t, avg: topics[t].got / topics[t].of })), byCampus: byCampus, small: small,
         learners: actor.id === a.setter ? S.map(x => ({ name: x.sc.name, campus: x.sc.campus, when: x.sc.submittedAt, total: x.total })).sort((p, q) => q.total - p.total) : null } };
     },
   };
   // A sampled script's final mark is the moderator's where the moderator re-marked it (scaled per question).
   finalByPart(i) {
-    const sc = this.data.scripts[i], m = this.state.marks[i];
+    const sc = this.scripts()[i], m = this.marksOf()[i];
     if (!m || !m.saved) return sc.byPart;
     const parts = this.data.parts, ai = qTotals(parts, sc.byPart), out = Object.assign({}, sc.byPart);
     parts.forEach(p => { const a = ai[p.q] || 0, y = Number(m.q[p.q]); if (!isNaN(y) && a > 0) out[p.n] = Math.round(sc.byPart[p.n] * y / a * 100) / 100; });
     return out;
   }
-  sampleIdx() { if (!this._sample) this._sample = this.api.sample().body; return this._sample; }
+  sampleIdx() { const r = this.curRef(); this._sample = this._sample || {};
+    // A live assignment's sample is re-drawn while scripts arrive; the seeded one is fixed.
+    if (!this._sample[r] || (r !== "asg-fm-n6-mock-1" && this._sample[r].n !== this.scripts().length)) this._sample[r] = { idx: this.api.sample().body, n: this.scripts().length };
+    return this._sample[r].idx; }
   gates() {
-    const a = this.closed(), idx = this.sampleIdx(), marks = this.state.marks;
+    const a = this.closed(), idx = this.sampleIdx(), marks = this.marksOf();
     const done = idx.filter(i => marks[i] && marks[i].saved), over = done.filter(i => marks[i].variance > 0.05).length;
-    return { closed: !!a && Date.now() > a.closesAt, sampleDone: done.length === idx.length, samplePass: done.length === idx.length && over <= idx.length / 2,
-      queueDone: QUEUE.every(q => this.state.queueDone[q.key]), over: over, done: done.length, k: idx.length };
+    return { closed: !!a && Date.now() > a.closesAt, sampleDone: idx.length > 0 && done.length === idx.length, samplePass: idx.length > 0 && done.length === idx.length && over <= idx.length / 2,
+      queueDone: this.isLive(a) || QUEUE.every(q => this.state.queueDone[q.key]), over: over, done: done.length, k: idx.length };
   }
   saveScript(i) {
-    const m = this.state.marks[i] || { q: {} }, parts = this.data.parts, ai = qTotals(parts, this.data.scripts[i].byPart);
+    const m = this.marksOf()[i] || { q: {} }, parts = this.data.parts, ai = qTotals(parts, this.scripts()[i].byPart);
     const aiT = Object.values(ai).reduce((x, y) => x + y, 0), you = Object.keys(QOF).reduce((x, q) => x + (Number(m.q[q]) || 0), 0);
     const variance = Math.abs(aiT - you) / 100;
-    this.setState({ marks: Object.assign({}, this.state.marks, { [i]: Object.assign({}, m, { saved: true, ai: aiT, you: you, variance: variance }) }),
-      live: "Saved. AI " + aiT + ", you " + you + ", " + Math.round(variance * 100) + "% apart." });
+    this.setMarks(Object.assign({}, this.marksOf(), { [i]: Object.assign({}, m, { saved: true, ai: aiT, you: you, variance: variance }) }));
+    this.setState({ live: "Saved. AI " + aiT + ", you " + you + ", " + Math.round(variance * 100) + "% apart." });
   }
   // Design preview: fill the whole sample close to, or far from, the AI's marks.
   fillSample(far) {
     const idx = this.sampleIdx(), parts = this.data.parts, marks = {};
-    idx.forEach((i, j) => { const ai = qTotals(parts, this.data.scripts[i].byPart), shift = far && j < 3 ? 3 : j % 2 ? 1 : 0, q = {};
+    idx.forEach((i, j) => { const ai = qTotals(parts, this.scripts()[i].byPart), shift = far && j < 3 ? 3 : j % 2 ? 1 : 0, q = {};
       Object.keys(QOF).forEach(k => { q[k] = String(Math.max(0, Math.min(QOF[k], (ai[k] || 0) + (j % 2 ? -shift : shift)))); });
       marks[i] = { q: q, saved: false }; });
-    this.setState({ marks: marks }, () => idx.forEach(i => this.saveScript(i)));
+    this.setState({ marksBy: Object.assign({}, this.state.marksBy, { [this.curRef()]: marks }) }, () => idx.forEach(i => this.saveScript(i)));
   }
   closeConfirm() { this.setState({ confirm: null }, () => { const b = document.querySelector(this._confirmBack || "[data-release]"); if (b) b.focus(); }); }
 
@@ -1074,7 +1126,7 @@ class Component extends DCLogic {
         .map(w => ({ label: w[0], count: String(w[1]), none: w[1] === 0, color: w[1] ? "var(--text)" : "var(--text3)", chev: w[1] ? "›" : "", cursor: w[1] ? "pointer" : "default", go: go(w[2]) })),
       asgTitle: isAdmin ? "Assignments at your college" : "Your assignments",
       asgRows: s.asgs.filter(a => isAdmin || a.setter === me.id).map(a => { const st = this.asgState(a, now), S = STATE[st], p = P(a.paperId);
-        const sub = a.ref === "asg-fm-n6-mock-1" && this.data ? this.data.scripts.length : 0;
+        const sub = a.ref === "asg-fm-n6-mock-1" ? (this.data ? this.data.scripts.length : 0) : this.busSubs(a.ref).length;
         const line = audWord(a.audience) + " · " + (st === "open" || st === "scheduled" ? "closes " + fmtWhen(a.closesAt) : st === "awaiting_moderation" ? "opens " + fmtWhen(a.opensAt) : "closed " + fmtWhen(a.closesAt))
           + (sub ? " · " + sub + " of " + a.eligible + " handed in" : "") + " · set by " + PEOPLE[a.setter].name;
         const goTo = st === "awaiting_moderation" && isAdmin ? ["Review", go("moderate")] : st === "closed" && isAdmin ? ["Moderate", go("moderate")] : st === "released" ? ["Results", go("results")] : null;
@@ -1117,6 +1169,7 @@ class Component extends DCLogic {
           .map(o => { const on = d.audience === o[0], st = radioSty(on, o[3]); return Object.assign({ id: o[0], label: o[1], note: o[2], on: on ? "true" : "false", disabled: o[3], pick: () => { if (!o[3]) set({ audience: o[0] }); } }, st); }),
         opensVal: toLocalInput(d.opensAt), closesVal: toLocalInput(d.closesAt),
         onOpens: e => { const t = new Date(e.target.value).getTime(); if (!isNaN(t)) set({ opensAt: t }); }, onCloses: e => { const t = new Date(e.target.value).getTime(); if (!isNaN(t)) set({ closesAt: t }); },
+        opensNow: () => { const t = Date.now(); set({ opensAt: t, closesAt: t + 2 * 3600000 }); },
         durationLine: p ? "Duration: the paper's own, " + p.minutes + " minutes, from when each learner starts." : "",
         hasWindowNote: !winOk || !!winShort, windowNoteColor: !winOk ? "var(--danger)" : "#f3c14f",
         windowNote: !winOk ? "The test must close after it opens." : "The window is shorter than the paper's " + (p ? p.minutes : 0) + " minutes. Learners who start late get less time.",
@@ -1131,22 +1184,27 @@ class Component extends DCLogic {
         nextBg: canNext ? "var(--grad)" : "var(--panel2)", nextColor: canNext ? "#ffffff" : "var(--text4)", nextCursor: canNext ? "pointer" : "not-allowed",
         stepNext: () => { if (!canNext) return; if (d.step < 4) { set({ step: d.step + 1 }); return; }
           const r = this.api.create(d, me); if (r.status !== 201) { this.setState({ live: "This version can't be used for a test." }); return; }
+          // MOCK service write: only an FM class test (the learner prototype holds FM's content).
+          if (r.body.kind === "class_test" && r.body.paperId === "fm-n6-2022-11") { const d = busRead();
+            d.assignments.push({ ref: r.body.ref, paperId: r.body.paperId, kind: "class_test", opensAt: r.body.opensAt, closesAt: r.body.closesAt, minutes: 180, setterName: me.name, state: "awaiting_moderation", releasedAt: null });
+            busWrite(d); this.setState({ bus: d }); }
           this.setState({ asgs: this.state.asgs.concat([r.body]), draft: null, view: "home", live: isTest ? "Sent for moderation. An institution admin must approve it before learners see it." : "Published to learners." }); },
       });
     }
 
     // ── T3 · Moderate (institution admin)
     if (s.view === "moderate" && this.data) {
-      const idx = this.sampleIdx(), parts = this.data.parts, band = j => j === 0 ? "Best" : j === idx.length - 1 ? "Weakest" : "Middle";
+      const idx = this.sampleIdx(), parts = this.data.parts, band = j => idx.length === 1 ? "Every script" : j === 0 ? "Best" : j === idx.length - 1 ? "Weakest" : "Middle";
       Object.assign(vals, {
         modIsAdmin: isAdmin, modNotAdmin: !isAdmin, noApprove: toApproveList.length === 0,
         toApprove: toApproveList.map(a => { const own = a.setter === me.id;
           return { ref: a.ref, title: P(a.paperId).title + " · mock / class test", line: audWord(a.audience) + " · opens " + fmtWhen(a.opensAt) + " · closes " + fmtWhen(a.closesAt) + " · set by " + PEOPLE[a.setter].name,
             own: own, canApprove: !own, approve: () => { const r = this.api.approve(a, me); if (r.status !== 200) return;
+              this.busPatchAsg(a.ref, { state: "open" });
               this.setState({ asgs: this.state.asgs.map(x => x.ref === a.ref ? Object.assign({}, x, { state: "open", approvedBy: me.id }) : x), live: "Approved. Learners see it when it opens." }); } }; }),
         sampleTitle: a1 ? P(a1.paperId).title : "", qCols: phone ? "repeat(2, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))",
-        sampleRule: this.data.scripts.length + " scripts submitted · the sample is " + idx.length + " (10% or at least 5, whichever is larger), spread across best, middle and weakest by AI total. Re-mark each question's total; the AI's marks show only after you save.",
-        sampleRows: idx.map((i, j) => { const m = s.marks[i] || { q: {} }, saved = !!m.saved, ai = qTotals(parts, this.data.scripts[i].byPart);
+        sampleRule: this.scripts().length + (this.scripts().length === 1 ? " script" : " scripts") + " submitted · the sample is " + idx.length + " (10% or at least 5, whichever is larger; every script when fewer than 5), spread across best, middle and weakest by AI total. Re-mark each question's total; the AI's marks show only after you save.",
+        sampleRows: idx.map((i, j) => { const m = this.marksOf()[i] || { q: {} }, saved = !!m.saved, ai = qTotals(parts, this.scripts()[i].byPart);
           const filled = Object.keys(QOF).every(q => String(m.q[q] == null ? "" : m.q[q]).trim() !== "" && !isNaN(Number(m.q[q])));
           return { idx: String(j), label: "Script " + (j + 1) + " of " + idx.length, band: band(j),
             border: saved ? (m.variance > 0.05 ? "rgba(242,119,122,0.5)" : "rgba(61,220,151,0.45)") : "var(--line)",
@@ -1154,8 +1212,8 @@ class Component extends DCLogic {
             resultColor: saved ? (m.variance > 0.05 ? "#ff9a9c" : "#5fe6ab") : "var(--text3)",
             qs: Object.keys(QOF).map(q => ({ id: j + "-" + q, label: q.replace("Question ", "Q") + " · of " + QOF[q], value: m.q[q] == null ? "" : String(m.q[q]), disabled: saved,
               aria: "Script " + (j + 1) + ", " + q + ", your mark out of " + QOF[q],
-              onChange: e => { const v = e.target.value.replace(/[^\d.,]/g, "").replace(",", "."); const mm = Object.assign({ q: {} }, this.state.marks[i]); mm.q = Object.assign({}, mm.q, { [q]: v });
-                this.setState({ marks: Object.assign({}, this.state.marks, { [i]: mm }) }); } })),
+              onChange: e => { const v = e.target.value.replace(/[^\d.,]/g, "").replace(",", "."); const mm = Object.assign({ q: {} }, this.marksOf()[i]); mm.q = Object.assign({}, mm.q, { [q]: v });
+                this.setMarks(Object.assign({}, this.marksOf(), { [i]: mm })); } })),
             hint: saved ? "AI by question: " + Object.keys(QOF).map(q => q.replace("Question ", "Q") + " " + (ai[q] || 0)).join(" · ") : filled ? "Ready to save." : "Enter a mark for every question.",
             canSave: !saved && filled, save: () => this.saveScript(i) }; }),
         sampleSum: g.done < g.k ? "Moderation sample: " + g.done + " of " + g.k + " re-marked." : g.samplePass ? g.over + " of " + g.k + " over 5% · release allowed" : g.over + " of " + g.k + " over 5% · re-mark the batch before release",
@@ -1199,7 +1257,8 @@ class Component extends DCLogic {
         Object.assign(vals, {
           resTitle: P(a.paperId).title + " · Mock / class test · not an ICASS task", resLine: "Closed " + fmtWhen(a.closesAt) + " · " + R.n + " of " + a.eligible + " submitted · marks released " + fmtWhen(a.releasedAt) + " · AI-marked, moderated sample n = " + g.k,
           gradebookLabel: "FM N6 Nov 2022 mock · AI-marked, moderated sample n = " + g.k + " · not ICASS", resN: String(R.n), resCols: wide ? "1.2fr 1fr" : "minmax(0, 1fr)",
-          yMax: String(top), yMid: String(top / 2), tableOn: s.tableOn, showChart: !s.tableOn, tableLabel: s.tableOn ? "Show as chart" : "Show as table", toggleTable: () => this.setState({ tableOn: !this.state.tableOn }),
+          yMax: String(top), yMid: String(top / 2), tableOn: s.tableOn && !!R.bins, showChart: !s.tableOn && !!R.bins, tableLabel: s.tableOn ? "Show as chart" : "Show as table", toggleTable: () => this.setState({ tableOn: !this.state.tableOn }),
+          histHidden: !R.bins, slicesHidden: !!R.small,
           bins: (R.bins || []).map((n, b) => ({ idx: String(b), n: String(n), h: Math.round(100 * n / top) + "%", minH: n ? "3px" : "0", short: String(b * 10), range: b * 10 + "–" + (b === 9 ? 100 : b * 10 + 9),
             tip: (b * 10) + "–" + (b === 9 ? 100 : b * 10 + 9) + " marks: " + n + (n === 1 ? " learner" : " learners") })),
           histAria: "Histogram of marks: " + (R.bins || []).map((n, b) => b * 10 + " to " + (b === 9 ? 100 : b * 10 + 9) + ", " + n).join("; "),
@@ -1212,15 +1271,30 @@ class Component extends DCLogic {
     }
 
     Object.assign(vals, this.uploadVals(s, phone, wide, me, isAdmin), this.genVals(s));
+    // ── Brief 15: pick the assignment (seeded or live), close a live window, reset the shared demo.
+    const pickable = s.asgs.filter(a => a.ref === "asg-fm-n6-mock-1" || (a.kind === "class_test" && a.paperId === "fm-n6-2022-11" && this.asgState(a, now) !== "awaiting_moderation"));
+    const cur = this.closed();
+    Object.assign(vals, {
+      hasPicker: pickable.length > 1, canCloseNow: isAdmin && this.isLive(cur) && this.asgState(cur, now) === "open",
+      pickRows: pickable.map(a => { const on = cur && cur.ref === a.ref, st = this.asgState(a, now);
+        return { ref: a.ref, on: on ? "true" : "false", border: on ? "rgba(129,177,255,0.8)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.2)" : "transparent",
+          label: (a.ref === "asg-fm-n6-mock-1" ? "Seeded test · 38 scripts" : "Live test · " + this.busSubs(a.ref).length + " handed in") + " · " + (st === "released" ? "released" : st === "open" ? "open" : st === "scheduled" ? "scheduled" : "closed"),
+          pick: () => this.setState({ modRef: a.ref === "asg-fm-n6-mock-1" ? null : a.ref }) }; }),
+      closeNow: () => { const t = Date.now() - 1000; this.busPatchAsg(cur.ref, { closesAt: t }); this.setState({ asgs: this.state.asgs.map(x => x.ref === cur.ref ? Object.assign({}, x, { closesAt: t }) : x), live: "The window is closed." }); },
+      busLine: BUS_BLOCKED ? "Shared demo: storage is blocked, so this runs on its own." : "Shared demo with the learner prototype: " + (s.bus.assignments || []).length + " test" + ((s.bus.assignments || []).length === 1 ? "" : "s") + " · " + (s.bus.submissions || []).length + " hand-in" + ((s.bus.submissions || []).length === 1 ? "" : "s"),
+      resetBus: () => { busReset(); const d = busEmpty(), live = s.asgs.filter(a => a.kind === "class_test" && a.paperId === "fm-n6-2022-11" && a.ref !== "asg-fm-n6-mock-1").map(a => a.ref);
+        this.setState({ bus: d, asgs: s.asgs.filter(a => live.indexOf(a.ref) === -1), modRef: null, live: "The shared demo is reset." }); },
+    });
     // Waiting: papers to approve count for the admin.
     if (isAdmin) vals.waiting = vals.waiting.concat([{ label: "Papers to approve", count: String(vals.nPapersWaiting), none: vals.nPapersWaiting === 0, color: vals.nPapersWaiting ? "var(--text)" : "var(--text3)", chev: vals.nPapersWaiting ? "›" : "", cursor: vals.nPapersWaiting ? "pointer" : "default", go: go("moderate") }]);
     // ── The release confirm (irreversible: releasing shows the memo)
     Object.assign(vals, {
-      confirmOpen: s.confirm === "release", confirmTitle: "Release marks to " + (this.data ? this.data.scripts.length : 0) + " learners?",
+      confirmOpen: s.confirm === "release", confirmTitle: "Release marks to " + this.scripts().length + (this.scripts().length === 1 ? " learner?" : " learners?"),
       confirmBody: "They'll see their marks and the memo. This can't be undone.", confirmOkLabel: "Release marks",
       closeConfirm: () => this.closeConfirm(),
       confirmOk: () => { const r = this.api.release(a1, me, g); if (r.status !== 200) { this.setState({ confirm: null, live: "Release refused: " + r.body.error }); return; }
-        this.setState({ confirm: null, asgs: this.state.asgs.map(x => x.ref === a1.ref ? Object.assign({}, x, { released: true, releasedAt: r.body.released_at }) : x), live: "Marks released to " + this.data.scripts.length + " learners." }); },
+        if (this.isLive(a1)) this.busPatchAsg(a1.ref, { releasedAt: r.body.released_at });
+        this.setState({ confirm: null, asgs: this.state.asgs.map(x => x.ref === a1.ref ? Object.assign({}, x, { released: true, releasedAt: r.body.released_at }) : x), live: "Marks released to " + this.scripts().length + (this.scripts().length === 1 ? " learner." : " learners.") }); },
       confirmKeys: e => { if (e.key !== "Tab") return; const fs = [].slice.call(document.querySelectorAll("[data-confirm] button")); const f = fs[0], l = fs[fs.length - 1];
         if (e.shiftKey && document.activeElement === f) { e.preventDefault(); l.focus(); } else if (!e.shiftKey && document.activeElement === l) { e.preventDefault(); f.focus(); } },
     });
