@@ -1293,6 +1293,9 @@
           </sc-if>
           <span style="display:flex; align-items:baseline; gap:8px"><span data-hallmark="true" style="font-size:52px; font-weight:800; letter-spacing:-0.02em; line-height:1.1">{{ hoMark }}</span><span style="font-size:16px; font-weight:700; color:var(--text2)">of {{ hoOf }}</span></span>
           <span style="font-size:13.5px; font-weight:700; color:var(--text2)">{{ hoPctText }}</span>
+          <sc-if value="{{ hoHasSeen }}" hint-placeholder-val="{{ false }}">
+            <span data-seenline="true" style="max-width:460px; font-size:12.5px; line-height:1.5; color:{{ hoSeenColor }}">{{ hoSeen }}</span>
+          </sc-if>
           <sc-if value="{{ hoHasOffline }}" hint-placeholder-val="{{ false }}">
             <span style="font-size:12px; line-height:1.5; color:var(--text3)">{{ hoOffline }}</span>
           </sc-if>
@@ -2350,7 +2353,7 @@ class Component extends DCLogic {
     const x = Math.max(0, (x0 - g) / (1 - g));
     let c = 1;
     if (part.recipe) c = Object.keys(this.state.prog).some(k => k.indexOf("tpl:" + part.recipe + ":") === 0 && k !== part.key && (this.state.prog[k].obs || []).length) ? 0.7 : 1;
-    else if (pr.replay || pr.revealed) c = 0.3;
+    else if (pr.replay || pr.revealed || pr.memoSeen) c = 0.3;
     return { x: x, c: c, src: part.recipe ? "recipe:" + part.recipe : (this.state.paperId || "") };
   }
   topicEvidence(pid, slug) {
@@ -2370,7 +2373,7 @@ class Component extends DCLogic {
     const meta = (TOPIC_META[pid] || []).filter(t => t.slug === slug)[0]; if (!meta) return null;
     const own = [];
     this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === slug) own.push(Object.assign({}, q, { _mid: m.id, _context: m.context || "" })); }));
-    const seen = q => { const g = this.pg(q.key); return g.tries > 0 || g.closed || g.waiting; };
+    const seen = q => { const g = this.pg(q.key); return g.tries > 0 || g.closed || g.waiting || !!g.memoSeen; };
     const unseen = own.filter(q => !seen(q)), repeats = own.filter(seen);
     const out = [], base = (Date.now() % 1000003) * 13 + round * 101;
     let n = 0, u = 0;
@@ -2416,7 +2419,7 @@ class Component extends DCLogic {
     const maxW = Math.max.apply(null, metas.map(t => t.weight));
     const rows = metas.map(t => {
       const own = []; this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === t.slug) own.push(q); }));
-      const unseen = own.filter(q => { const g = this.pg(q.key); return !(g.tries > 0 || g.closed || g.waiting); }).length;
+      const unseen = own.filter(q => { const g = this.pg(q.key); return !(g.tries > 0 || g.closed || g.waiting || g.memoSeen); }).length;
       const ev = this.topicEvidence(pid, t.slug), canDrill = own.length > 0 || !!t.recipe;
       const serve = t.recipe ? "Fresh numbers every time · sample recipe" + (unseen ? " · " + unseen + " new to you on the paper" : "")
         : unseen ? unseen + (unseen === 1 ? " part" : " parts") + " new to you · " + own.length + " on this paper"
@@ -2624,8 +2627,9 @@ class Component extends DCLogic {
     const q = parseFloat(new URLSearchParams(location.search).get("hallMinutes"));
     const r = HALL_API.create(p.id, ps.map(x => ({ key: x.key, number: x.number, marks: x.marks })), Date.now(), q > 0 ? q : HALL_MINUTES[p.id]);
     if (r.status !== 201) { this.setState({ hallErr: r.body.error === "version_disclosed" ? "This paper's memo has been published, so it can be practised but not sat in the Hall." : "The Hall couldn't open. Try again." }); return; }
+    const ms = this.missions(), seenN = ms.filter(m => m.parts.some(q => { const g = this.pg(q.key); return g.tries > 0 || g.closed || g.waiting; })).length;
     const h = { paperId: p.id, sittingId: r.body.sitting_id, phase: "sitting", startedAt: r.body.started_at, endsAt: r.body.ends_at, drafts: {}, flags: {}, cur: 0,
-      warned: {}, left: 0, status: null, final: 0, total: ps.length, result: null, paid: false, fixDone: false, fixPaid: false };
+      warned: {}, left: 0, status: null, final: 0, total: ps.length, result: null, paid: false, fixDone: false, fixPaid: false, practised: { n: seenN, of: ms.length } };
     this.setState({ hall: h, hallErr: "", hallNow: Date.now(), hoOpen: {} }, () => this.hallGo(0, { hallLive: "You're in the Hall. The clock has started." }));
   }
   leaveHall() {
@@ -2701,7 +2705,7 @@ class Component extends DCLogic {
     const h = this.state.hall; if (!h || !h.result) return;
     const keys = h.result.fix_parts.slice(); if (!keys.length) return;
     const backup = {}, prog = Object.assign({}, this.state.prog);
-    keys.forEach(k => { backup[k] = prog[k] || null; delete prog[k]; });
+    keys.forEach(k => { backup[k] = prog[k] || null; prog[k] = { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false, memoSeen: true }; });
     this.setState({ fix: { keys: keys, i: 0, backup: backup, paperId: h.paperId }, prog: prog, paperId: h.paperId, sitting: "practice" }, () => this.fixGo(0));
   }
   fixGo(i) {
@@ -3323,6 +3327,11 @@ class Component extends DCLogic {
       return lines.length ? "The memo:\n" + lines.join("\n") : "The memo for this part arrives when its text is transcribed."; };
     const secs = this.hallSections(H.paperId);
     return {
+      // Ruling L12 (2026-09-27): while a subject has one paper, the Hall runs on the practised paper and says so.
+      hoHasSeen: H.kind !== "class" && !!H.practised,
+      hoSeen: !H.practised ? "" : H.practised.n > 0 ? "You'd practised " + H.practised.n + " of " + H.practised.of + " missions on this paper before sitting it, so this mark may run high. It isn't counted towards your readiness."
+        : "You hadn't practised this paper before sitting it. Hall marks aren't counted towards your readiness yet.",
+      hoSeenColor: H.practised && H.practised.n > 0 ? "#f3c14f" : "var(--text3)",
       hoMark: String(R.marks), hoOf: String(R.total_marks), hoPctText: (R.total_marks ? Math.round(100 * R.marks / R.total_marks) : 0) + "%",
       hoHasOffline: offline.length > 0, hoOffline: offline.length ? "Drawings (" + offline.reduce((a, x) => a + x.of, 0) + " marks) are marked on paper, so they're not in this total." : "",
       hoRewards: rewards,
@@ -3330,7 +3339,10 @@ class Component extends DCLogic {
       hoFixBody: "Practise the parts that lost marks, with tries and hints. Your Hall mark stays as it is.", startFix: () => this.startFix(),
       hoQuestions: R.by_question.map((q, qi) => { const open = !!s.hoOpen[q.q];
         return { title: q.q, label: q.marks + " of " + q.of, pct: (q.of ? Math.round(100 * q.marks / q.of) : 0) + "%", open: open, chev: open ? "−" : "+",
-          toggle: () => this.setState({ hoOpen: Object.assign({}, this.state.hoOpen, { [q.q]: !open }) }),
+          // Opening a question shows its memo: its parts are "seen" from now on (drills and evidence respect that).
+          toggle: () => { const prog = Object.assign({}, this.state.prog);
+            if (!open) secs[qi].keys.forEach(k => { prog[k] = Object.assign({ tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }, prog[k], { memoSeen: true }); });
+            this.setState({ hoOpen: Object.assign({}, this.state.hoOpen, { [q.q]: !open }), prog: prog }); },
           parts: open ? secs[qi].keys.map(k => { const part = this.partByKey(k), b = byPart[k] || { marks: 0, of: 0, route: "auto" };
             return { number: part ? part.number : k, route: ROUTE_WORD[b.route] || "", marks: b.route === "offline" ? "on paper" : b.marks + " of " + b.of,
               color: b.route === "offline" ? "var(--text3)" : b.marks >= b.of ? "#5fe6ab" : b.marks > 0 ? "#f3c14f" : "#ff9a9c", memo: part ? memoOf(part) : "" }; }) : [] }; }),
