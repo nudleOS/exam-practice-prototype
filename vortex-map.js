@@ -299,6 +299,9 @@ const json = (s, d) => { if (!s || s.charAt(0) === "{" && s.charAt(1) === "{") r
 // ══ The road model ═══════════════════════════════════════════════════════════════════════════════════════════════
 const ELEV = 35;                  // the vortex seen from 35° above
 const LIP_S = 0.62;               // a medal's size by the time it reaches the vortex's centre
+const CORE_R = 0.2;               // the core light's radius, of the mouth's (was 0.36: too big, too bright)
+const DROP = 0.45;
+const SWING = 0.3;                // how far the road swings along the far wall as it runs down the mouth (of its radius)                // how far down the far wall the road has run by the lip (of the funnel's depth)
 const FIELD_FAR = -4500, Z_FIN = -4250;   // the field's far edge; the finish's depth at the start (at the end of the wave)
 const waveH = (x, z, ph) => Math.sin(((x + AX * SEP / 2) / SEP + ph) * FX) * AMP + Math.sin(((z + AY * SEP / 2) / SEP + ph) * FY) * AMP;
 
@@ -449,24 +452,29 @@ class VortexMap extends HTMLElement {
   _place(ry, o) {
     o = o || {}; const S = this._S, G = S.G, p0 = this._at(ry), sx = G.left + p0.x, l0 = p0.l, ryLip = G.cy - G.top + S.SY, zBend = ryLip - G.BEND;
     if (ry <= ryLip) { const k = E(clamp((ry - zBend) / G.BEND, 0, 1)), rimTop = G.cy - G.R0 * G.sf, rg = this._roadGeo();
-      let x, y, persp = 1, fog = 1;
+      let x, y, persp = 1, fog = 1; o.h = 0;
       if (!rg) { x = sx + (G.cx - sx) * k; y = G.top + ry - S.SY; }                                   // before the field is ready: the flat map
       else { const d = ryLip - ry, g = rg.g, wz = g.vz - rg.KZ * rg.D0 * Math.log(1 + d / rg.D0);
-        // The bends narrow with distance at ~65% of true perspective: near medals swing wide, the far road still winds.
+        // The bends narrow with distance at ~45% of true perspective: near medals swing wide, the far road still winds wide.
         const C = rg.pr(g.vx, -wz * SLOPE, wz, rg.s1), C2 = rg.pr(g.vx + 10, -wz * SLOPE, wz, rg.s2), perspC = Math.hypot(C2[0] - C[0], C2[1] - C[1]) / 10 * rg.KX;
-        const wx = g.vx + (sx - G.cx) * (1 - k) * rg.KX * Math.pow(Math.max(perspC, 0.05), -0.35);
-        const dn = (g.vz - wz) / g.vRf, calm = dn <= 1 ? 0 : 1 - Math.pow(1 - clamp((dn - 1) / 2, 0, 1), 2);   // the wave calms near the hole
-        const wy = waveH(wx, wz, S.bgPhase || 0) * calm - wz * SLOPE + 6 * calm, P = rg.pr(wx, wy, wz, rg.s3), P2 = rg.pr(wx + 10, wy, wz, rg.s4);
-        x = P[0]; y = P[1]; persp = Math.hypot(P2[0] - P[0], P2[1] - P[1]) / 10 * rg.KX;
+        const wx = g.vx + (sx - G.cx) * (1 - k) * rg.KX * Math.pow(Math.max(perspC, 0.05), -0.55);
+        const dn = (g.vz - wz) / g.vRf, w = dn <= 1 ? 1 : Math.pow(1 - clamp((dn - 1) / (INFL - 1), 0, 1), 2), calm = 1 - w;   // the wave calms near the hole
+        // The field's own sink: near the far lip the surface curves down into the hole (dots and road alike).
+        const h = waveH(wx, wz, S.bgPhase || 0) * calm, wy = h - wz * SLOPE + 6 * calm - 0.3 * g.vRx * Math.pow(w, 1.5), P = rg.pr(wx, wy, wz, rg.s3), P2 = rg.pr(wx + 10, wy, wz, rg.s4);
+        x = P[0]; y = P[1]; persp = Math.hypot(P2[0] - P[0], P2[1] - P[1]) / 10 * rg.KX; o.h = h;
+        // Over the mouth the road runs down the far wall: it drops (faster as it goes) toward the lip.
+        // ... and swings along the wall with the flow (the arms turn that way): zero at the rim and at the lip, so both joins
+        // stay smooth, widest halfway down.
+        if (dn < 1) { y += G.HD * G.cf * DROP * E(1 - dn); x += G.R0 * SWING * Math.sin(Math.PI * (1 - dn)) * (1 - 0.3 * (1 - dn)); }
         const dist = Math.hypot(wx, wy - 355, wz - 1220); fog = clamp((wz - FIELD_FAR) / 1500, 0, 1) * (1 - 0.6 * clamp((dist - 3200) / 7800, 0, 1));
         if (wz > FIELD_FAR) fog = 0.45 + 0.55 * fog; }                                                  // the track stays readable to its end
       const u = clamp((y - rimTop) / (G.cy - rimTop), 0, 1), s = 1 - (1 - LIP_S) * (1 - (1 - u) * (1 - u));   // shrinks at once on contact with the rim
       // Medals shrink much slower than true perspective (far ones stay clear to see); the road keeps its true width (rs).
       const pp = Math.pow(persp, 0.6); o.x = x; o.y = y; o.s = s * pp; o.rs = s * persp; o.persp = pp; o.fog = fog; o.p = 0; o.w = 1; o.l = l0; return o; }
     // Past the lip: down the vortex's axis into the core, shrinking, twisting and orbiting.
-    const p = clamp((ry - ryLip) / G.ZS, 0, 1), depth = G.throatY - G.cy, kx = G.ZS / depth;
-    const F = 1 - Math.pow(1 - p, kx), rho = G.R0 * 0.16 * Math.sin(Math.PI * p), th = p * 2.6 * Math.PI + S.spin;
-    o.x = G.cx + rho * Math.cos(th); o.y = G.cy + depth * F + rho * Math.sin(th) * G.sf; o.s = LIP_S * (1 - 0.88 * E(p)); o.rs = null; o.persp = 1; o.fog = 1; o.p = p;
+    const p = clamp((ry - ryLip) / G.ZS, 0, 1), yLip = G.cy + G.HD * G.cf * DROP, depth = G.throatY - yLip, kx = G.ZS / Math.max(depth, 1);
+    const F = 1 - Math.pow(1 - p, kx), rho = G.R0 * 0.26 * Math.sin(Math.PI * p) * (1 - 0.35 * p), th = p * 2.2 * Math.PI + S.spin;
+    o.x = G.cx + rho * Math.cos(th); o.y = yLip + depth * F + rho * Math.sin(th) * G.sf; o.h = 0; o.s = LIP_S * (1 - 0.88 * E(p)); o.rs = null; o.persp = 1; o.fog = 1; o.p = p;
     o.w = 0.42 + 0.58 * Math.abs(Math.cos(p * 1.6 * Math.PI)); o.l = l0; return o;
   }
   _band(x, P, extra, dy, from) {
@@ -478,6 +486,14 @@ class VortexMap extends HTMLElement {
     for (let i = n - 1; i >= i0; i--) x.lineTo(R[i * 2], R[i * 2 + 1]);
     x.closePath(); return true;
   }
+  // The wave's light on the road: crests catch the field's violet, troughs darken (the dots' own colour rule, faint),
+  // one quad per segment so the road visibly crests as the wave rolls under it.
+  _crests(x, P) { const G = this._S.G; let last = 0;
+    for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], hm = (a.h + b.h) / 2 / (AMP * 2); if (Math.abs(hm) < 0.08 || b.p > 0) continue;
+      const tx = b.x - a.x, ty = b.y - a.y, tl = Math.hypot(tx, ty) || 1, nx = -ty / tl, ny = tx / tl, ha = G.RW * (a.rs != null ? a.rs : a.s) / 2, hb = G.RW * (b.rs != null ? b.rs : b.s) / 2;
+      const al = Math.min(1, Math.abs(hm)) * 0.16, st = hm > 0 ? "rgba(170,150,255," + al.toFixed(3) + ")" : "rgba(0,0,0," + (al * 1.2).toFixed(3) + ")";
+      if (st !== last) { x.fillStyle = st; last = st; }
+      x.beginPath(); x.moveTo(a.x - nx * ha, a.y - ny * ha); x.lineTo(b.x - nx * hb, b.y - ny * hb); x.lineTo(b.x + nx * hb, b.y + ny * hb); x.lineTo(a.x + nx * ha, a.y + ny * ha); x.fill(); } }
   _drawRoad() {
     const S = this._S, G = S.G, r = this._r; if (!S.els.length) return;
     const ryLip = G.cy - G.top + S.SY, flatEnd = Math.min(S.y1, ryLip), P = S.P || (S.P = []), far = S.far || (S.far = []); let top = flatEnd;
@@ -494,6 +510,7 @@ class VortexMap extends HTMLElement {
     if (this._band(x, P, 8, 3)) { x.fillStyle = "rgba(0,0,0,0.42)"; x.fill(); }
     if (this._band(x, P, 5, 2)) { x.fillStyle = "#121418"; x.fill(); }
     if (this._band(x, P, 0, 0)) { x.fillStyle = "#2f343d"; x.fill(); }
+    this._crests(x, P);
     const litLen = S.total * (S.litNow || 0); let li = P.length; if (litLen > 1) while (li > 0 && P[li - 1].l <= litLen) li--;
     if (this._band(x, P, 0, 0, li)) { const y0 = P[P.length - 1].y, g = x.createLinearGradient(0, y0, 0, Math.min(P[li].y, y0 - 1));
       g.addColorStop(0, "#00b5ff"); g.addColorStop(0.5, "#3839ff"); g.addColorStop(1, "#8911ff"); x.fillStyle = g; x.fill(); }
@@ -504,6 +521,10 @@ class VortexMap extends HTMLElement {
     if (P.length && P[0].fog < 0.999) { const g = x.createLinearGradient(0, P[0].y, 0, qf ? Math.max(qf.y, P[0].y + 1) : P[0].y + 1);
       g.addColorStop(0, "rgba(0,0,0," + P[0].fog.toFixed(3) + ")"); g.addColorStop(1, "rgba(0,0,0,1)");
       x.globalCompositeOperation = "destination-in"; x.fillStyle = g; x.fillRect(0, 0, innerWidth, innerHeight); x.globalCompositeOperation = "source-over"; }
+    // Down the hole the road falls into shadow, as the funnel's own wall does.
+    x.save(); x.beginPath(); x.ellipse(G.cx, G.cy, G.R0, G.R0 * G.sf, 0, 0, TAU); x.clip(); x.globalCompositeOperation = "source-atop";
+    const sh = x.createLinearGradient(0, G.cy - G.R0 * G.sf, 0, G.throatY); sh.addColorStop(0, "rgba(4,5,8,0)"); sh.addColorStop(0.55, "rgba(4,5,8,0.45)"); sh.addColorStop(1, "rgba(4,5,8,0.8)");
+    x.fillStyle = sh; x.fillRect(G.cx - G.R0, G.cy - G.R0 * G.sf, G.R0 * 2, G.throatY - G.cy + G.R0 * G.sf + 4); x.restore();
     // Medals, labels and plaques ride the same model.
     S.els.forEach(e => {
       const q = this._place(e._ry, e._qo || (e._qo = {}));
@@ -593,8 +614,8 @@ class VortexMap extends HTMLElement {
     // Concentric on the hole, out over the field to 1.8 rims: nothing at an arm's outer tip, full down the wall.
     const fade = (peak, lit) => grad(0, 0, 0, 0, 0, G.R0 * ARM_OUT, [[0, hero(0.9, 0, lit)], [0.2, hero(0.86, peak * 0.6, lit)], [0.4, hero(0.8, peak, lit)],
       [0.58, hero(0.72, peak * 0.75, lit)], [0.8, hero(0.64, peak * 0.2, lit)], [1, hero(0.6, 0, lit)]]);
-    const core = x.createRadialGradient(0, 0, 0, 0, 0, G.R0 * 0.36); core.addColorStop(0, "rgba(255,255,255,0.95)"); core.addColorStop(0.3 / 0.72, "rgba(169,200,255,0.9)");
-    core.addColorStop(0.58 / 0.72, hero(0.8, 0.33, 0)); core.addColorStop(1, hero(0.8, 0, 0));
+    const core = x.createRadialGradient(0, 0, 0, 0, 0, G.R0 * CORE_R); core.addColorStop(0, "rgba(236,242,255,0.8)"); core.addColorStop(0.3, "rgba(169,200,255,0.5)");
+    core.addColorStop(0.7, hero(0.8, 0.16, 0)); core.addColorStop(1, hero(0.8, 0, 0));
     const er = x.createLinearGradient(G.cx - G.R0 * 1.8, 0, G.cx - G.R0 * 0.15, 0); er.addColorStop(0, "rgba(0,0,0,0.92)"); er.addColorStop(0.55, "rgba(0,0,0,0.6)"); er.addColorStop(1, "rgba(0,0,0,0)");
     S.VX = { N, R, Y, L, core, er,
       // A hole in the grey ground: the mouth falls to a deep near-black (the lighter the ground, the more it reads as depth).
@@ -642,7 +663,7 @@ class VortexMap extends HTMLElement {
     xb.fillStyle = VX.er; xb.fillRect(0, S.cTop, G.cx, S.cH); xb.restore();
     // The core: a steady light at the bottom of the hole.
     xb.save(); xb.globalAlpha = 1; xb.translate(G.cx, G.throatY); xb.scale(1, G.sf * 1.25); xb.globalCompositeOperation = "lighter";
-    xb.fillStyle = VX.core; xb.beginPath(); xb.arc(0, 0, G.R0 * 0.36, 0, TAU); xb.fill(); xb.restore();
+    xb.fillStyle = VX.core; xb.beginPath(); xb.arc(0, 0, G.R0 * CORE_R, 0, TAU); xb.fill(); xb.restore();
   }
 
   // ── The governor: when frames keep running long (an average over 24ms for ~1.5s) it steps quality down one level
@@ -688,8 +709,7 @@ class VortexMap extends HTMLElement {
     if (Math.abs(bgTarget - S.bgScroll) > 0.0015) S.bgScroll += (bgTarget - S.bgScroll) * (1 - Math.exp(-dt * 3)); else S.bgScroll = bgTarget;
     S.bgPhase = S.bgScroll + S.drift;
     if (Q < 3 || moved) FIELD.draw(S.bgPhase, 4 + S.spin, S.spin);                                   // +4: the whirl is already drawing the grid in
-    const calm = !moved && S.boost < 0.03 && !S.roadDirty; S.roadSkip = calm ? (S.roadSkip || 0) + 1 : 0;
-    if (moved || S.roadDirty || (S.bgPhase !== S.roadPhase && (!calm || S.roadSkip % (every >= 3 ? 2 : 3) === 0))) { this._drawRoad(); S.roadDirty = false; S.roadPhase = S.bgPhase; }   // once: the road rides this frame's wave
+    if (moved || S.roadDirty || S.bgPhase !== S.roadPhase) { this._drawRoad(); S.roadDirty = false; S.roadPhase = S.bgPhase; }   // once: the road rides this frame's wave, in step with the dots
   }
   // The scrollY that brings a mission to the upper third of the view, clear of the vortex (the first one: onto it).
   _syncBox() { const S = this._S, box = this._roadBox(); if (!box || !S.G) return;
