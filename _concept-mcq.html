@@ -83,6 +83,12 @@
   .tile.sel .face { --top:rgba(75,92,255,0.34); --low:rgba(56,57,255,0.14);
     box-shadow:0 24px 40px -18px rgba(38,50,255,0.55), 0 0 0 2px #4b5cff, var(--glass-in); }
   .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
+  /* The verdict, before anything moves: the border glows red (wrong) or green (right), the rim tinted to match */
+  .tile.no { --vc:var(--danger); --vg:rgba(242,119,122,0.6); } .tile.yes { --vc:var(--ok); --vg:rgba(61,220,151,0.55); }
+  .tile.no .face, .tile.yes .face { box-shadow:0 0 0 2px var(--vc), 0 0 30px var(--vg), 0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in); animation:verdict 440ms ease-out both; }
+  .tile.no .face::before, .tile.yes .face::before { background:linear-gradient(145deg, #fff, var(--vc) 26%, var(--vc) 74%, #fff); }
+  @keyframes verdict { 0% { box-shadow:0 0 0 0 var(--vc), 0 0 0 var(--vg), 0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in); }
+    45% { box-shadow:0 0 0 3px var(--vc), 0 0 44px var(--vg), 0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in); } }
   /* The back, in the medal the try earned. Colours are the design's medals (Exam Practice: gold / silver / bronze). */
   .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid transparent;
     background:linear-gradient(180deg,#262a30,#1f2226); box-shadow:0 0 0 2px var(--line2); }
@@ -288,6 +294,7 @@ function noise(dur, vol, hp, at = 0) { const A = ac(); if (!A) return; const n =
   const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain(), t = A.currentTime + at; s.buffer = b; f.type = "highpass"; f.frequency.value = hp; g.gain.value = vol;
   out(A, s.connect(f).connect(g)); s.start(t); }
 const sfx = { pick: () => tone(880, 0.07, "triangle", 0.05), lock: () => tone(180, 0.14, "sine", 0.12, 0.6),
+  yes: () => { tone(784, 0.12, "sine", 0.05, 1.5); }, no: () => { tone(196, 0.2, "triangle", 0.06, 0.8); },
   right: () => { tone(660, 0.18, "triangle", 0.07); tone(990, 0.28, "triangle", 0.07, 0, 0.11); },
   crack: () => { noise(0.08, 0.35, 2500); tone(2400, 0.05, "square", 0.02); },
   shatter: () => { noise(0.45, 0.5, 1800); [3100, 4200, 5300, 3700, 4800].forEach((f, k) => tone(f, 0.16, "sine", 0.025, 0.9, 0.02 + k * 0.035)); },
@@ -422,7 +429,8 @@ document.addEventListener("keydown", e => { if (!S) return; if (S.done) { if (e.
 
 function submit() {
   const i = S.sel; if (i == null || S.done) return;
-  const it = S.it, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; at(t, sfx.lock); buzz(HAPTIC.lock);
+  const it = S.it, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; buzz(HAPTIC.lock);
+  t.classList.add(ok ? "yes" : "no"); at(t, ok ? sfx.yes : sfx.no);                              // the verdict glows on the border first
   if (ok) {
     S.done = true; const gain = XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = S.tries === 1 ? S.it.marks : 0;
     streak = S.tries === 1 ? streak + 1 : 0; setHint(null);
@@ -430,7 +438,7 @@ function submit() {
     t.querySelector(".ok").innerHTML = `<span class="medal" aria-hidden="true"></span><span>${name} · +${gain} XP · ${mkText}</span>`;
     fillBack(t, it);
     live(`Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
-    present(t, tier).then(() => {
+    S.busy = true; wait(reduced ? 0 : VERDICT_MS).then(() => present(t, tier)).then(() => {
       sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
@@ -438,7 +446,7 @@ function submit() {
   } else {
     streak = 0; S.sel = null; S.gone.add(i);
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
-    shatter(t, S.hit[i]).then(() => {
+    wait(reduced ? 0 : VERDICT_MS).then(() => shatter(t, S.hit[i])).then(() => {
       if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`);
         r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0, "none"); fillBack(r, it); setHint(null);
         live(`The answer is ${L[it.a]}. ${whyOf(it)}`); present(r, null).then(showNext); }
@@ -518,6 +526,7 @@ function buddyGo(t) { S.landed = true; if (PAL.el && t.contains(PAL.el)) PAL.el.
 function killWrong() { [...document.querySelectorAll("#tiles .tile")].filter(x => +x.dataset.i !== S.it.a && !S.gone.has(+x.dataset.i) && !x.classList.contains("dead"))
   .forEach((x, k) => { x.style.setProperty("--dd", (k * 0.12).toFixed(2) + "s"); x.classList.add("dead"); }); }
 
+const VERDICT_MS = 420;                 // the border glows red / green this long before anything moves
 const SPIN = 540;                       // "flips two times revealing the back": it passes the back, the front, lands on the back
 const FLIP_MS = 2400, SHINE_MS = 900, GROW_MS = 800, BACK_MS = 700;
 
@@ -549,7 +558,7 @@ function present(t, tier) {
   return g.then(() => {
     palJump(t).then(() => buddyIn(t, true));                                                  // it dives into the card, then rides the spin frozen
     if (!tier) return wait(650);
-    t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);                                          // the shine, before it turns
+    t.classList.remove("yes"); t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
     return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
   }).then(() => {
     t.classList.remove("sel", "shine"); t.classList.add("flipped");                          // the class holds the end state (180 = 540 mod 360)
@@ -659,12 +668,14 @@ function shatter(tile, hit) {
       const bin = Math.round((r.left + c.x + dx / dd * 60) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + Math.min(3.2, size * 0.05 + rnd(0.6, 1.4)));
       const floor = innerHeight - 6 - level - (r.top + c.y), e = small ? 0.34 : 0.16;
       // 2D on purpose: a true rotateX on a clip-path piece is re-rasterised every frame (measured: 17-26 fps vs 57 without the
-      // clip). Squashing along its own axis by cos(rx) reads as the same tumble, and lying flat is cos(86°): a thin sliver.
-      const T = () => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${rz.toFixed(1)}deg) scaleY(${Math.cos(rx * Math.PI / 180).toFixed(3)})`;
+      // clip). Squashing along its own axis by cos(rx) reads as the same tumble, and lying flat is cos(80°): a flat sliver.
+      // Order matters: spin (rotate) first, THEN squash along the screen's vertical, so a resting piece is a flat horizontal
+      // sliver however it spun (squashing first then spinning stood pieces up as needles).
+      const T = () => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scaleY(${Math.cos(rx * Math.PI / 180).toFixed(3)}) rotate(${rz.toFixed(1)}deg)`;
       const frames = [{ offset: 0, transform: "none" }]; let t = 0, landed = false, flat = null, rest = 0;
       while (t < 3000) {                                                                        // 16 ms steps; a keyframe every 32 ms
         for (let k = 0; k < 2; k++) { t += 16; x += vx * 16; y += vy * 16; vy += G * 16; rx += wx * 16; rz += wz * 16;
-          if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: r.left + c.x + x }); flat = 86 + 180 * Math.round((rx - 86) / 180); }   // the nearest lying-flat angle (86°: a thin sliver)
+          if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: r.left + c.x + x }); flat = 80 + 180 * Math.round((rx - 80) / 180); }   // the nearest lying-flat angle (80°: flat, but with body; 86° read as a line)
             if (vy > 0.06) { vy = -vy * e; vx *= 0.55; wx *= 0.4; wz *= 0.5; } else { vy = 0; vx *= 0.8; wx *= 0.6; wz *= 0.6; }
             rx += ((flat ?? rx) - rx) * 0.3; }
           if (landed && Math.abs(vy) < 0.001 && Math.abs(vx) < 0.004) rest++; }
