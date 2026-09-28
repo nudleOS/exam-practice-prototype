@@ -15,6 +15,7 @@
   html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
   body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.16), transparent 70%), var(--bg); }
   .top, .pick, .stage, .dock { position:relative; z-index:1; }
+  .top { z-index:40; }   /* above the scrim, so XP and marks stay lit while the hero card is up */
   /* EXPERIMENT · backdrop: graph paper (minor 28px, major 140px, white at 3.5% / 6%) fading out at the edges, and a low
      glow in the page's own blue (the top glow's colour) behind the cards. Something for the glass to bend. */
   .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; display:none;
@@ -103,6 +104,25 @@
   .back .why { font-size:14px; line-height:1.45; font-weight:600; color:var(--text); }
   .tile.gold .why { color:#f3ead2; }
   @keyframes deal { from { opacity:0; transform:translateY(70px) rotateX(-35deg) rotateZ(var(--rz)) scale(0.9); } to { opacity:1; transform:none; } }
+  /* The hero: the right card, lifted out of the grid (its slot stays), large and centred over a scrim */
+  .scrim { position:fixed; inset:0; z-index:30; background:rgba(12,13,15,0.66); -webkit-backdrop-filter:blur(5px); backdrop-filter:blur(5px);
+    opacity:0; transition:opacity 420ms ease; pointer-events:none; }
+  .scrim.on { opacity:1; }
+  .hero-layer { position:fixed; inset:0; z-index:35; display:grid; place-items:center; padding:90px 16px 110px; perspective:1400px; pointer-events:none; }
+  .tile.hero { width:min(580px, 100%); transform:none; transition:none; pointer-events:auto; }
+  .tile.hero.flipped { transform:rotateY(180deg); }
+  .tile.hero .face { padding:22px 22px 22px 20px; gap:16px; }
+  .tile.hero .letter { width:42px; height:42px; font-size:17px; border-radius:12px; }
+  .tile.hero .txt { font-size:20px; padding-top:7px; }
+  .tile.hero .back { position:relative; inset:auto; min-height:220px; padding:22px 24px; gap:10px; justify-content:flex-start; }   /* in flow: its text sets the card's height */
+  .back .ans, .back .not { display:none; }
+  .tile.hero .back .ans, .tile.hero .back .not { display:block; }
+  .tile.hero .back .ok { font-size:14px; } .tile.hero .medal { width:24px; height:24px; }
+  .back .ans { font-size:19px; font-weight:800; line-height:1.35; color:#fff; }
+  .tile.hero .back .why { font-size:16px; line-height:1.55; font-weight:500; }
+  .back .not { font-size:13.5px; line-height:1.5; color:var(--text2); padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); }
+  .back .not b { color:var(--text); font-weight:700; }
+  .slot { min-height:96px; }
   .tile.dealt { animation:deal 520ms cubic-bezier(.2,.9,.25,1.1) both; animation-delay:var(--d); }
   /* The break: cracks drawn on the card, then shards on their own layer */
   .cracks { position:absolute; inset:0; z-index:3; pointer-events:none; overflow:visible; }
@@ -132,7 +152,7 @@
   .sw .track::after { content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cfd3d7; transition:left 220ms cubic-bezier(.2,.8,.2,1); }
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
-  .dock { position:fixed; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
+  .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
   .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; }
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
   .clue { font-size:13.5px; line-height:1.5; color:#dfe6ff; background:rgba(56,57,255,0.14); border:1px solid rgba(92,110,255,0.35); border-radius:14px; padding:10px 14px; display:none; }
@@ -146,18 +166,20 @@
   @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
   .next { font:inherit; font-size:16px; font-weight:800; color:#fff; border:none; border-radius:16px; height:56px; background:var(--grad); cursor:pointer; display:none; }
   .next.show { display:block; }
-  .toast { position:fixed; left:50%; top:74px; transform:translate(-50%,-20px); opacity:0; padding:10px 16px; border-radius:14px; font-weight:800; font-size:14px; transition:all 260ms; pointer-events:none; z-index:30; }
+  .toast { position:fixed; left:50%; top:74px; transform:translate(-50%,-20px); opacity:0; padding:10px 16px; border-radius:14px; font-weight:800; font-size:14px; transition:all 260ms; pointer-events:none; z-index:45; }
   .toast.show { opacity:1; transform:translate(-50%,0); }
   .toast.ok { background:rgba(61,220,151,0.15); color:var(--ok); border:1px solid rgba(61,220,151,0.4); }
   .toast.no { background:rgba(242,119,122,0.14); color:var(--danger); border:1px solid rgba(242,119,122,0.4); }
-  .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:31; }
-  canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:25; }
+  .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:46; }
+  canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:38; }
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
   @media (prefers-reduced-motion: reduce) { .tile, .tile * { transition:none !important; animation:none !important; } }
 </style>
 </head>
 <body>
 <div class="backdrop" aria-hidden="true"></div>
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+<div class="hero-layer" id="heroLayer"></div>
 <canvas id="fx"></canvas>
 <div class="shards" id="shards" aria-hidden="true"></div>
 <div class="top">
@@ -187,6 +209,15 @@ const P = window.PAPER_LS_P1_2026, ITEMS = {};
 P.sections.forEach(s => s.missions.forEach(m => m.items.forEach(it => ITEMS[it.n] = it)));
 const XP_BY_TRY = [100, 60, 20, 0], L = "ABCDEFGH";
 let S = null, xp = 0, streak = 0;
+// CONCEPT-ONLY explanations: the paper's memo for an MCQ is just the letter, so these are written here from CAPS Gr 12
+// Life Sciences content, NOT added to the paper file ("nothing invented"). A Life Sciences teacher must check them before use.
+const WHY = {
+  "1.1.1": { why: "Gibberellins trigger germination: they switch on the enzymes that break down the seed's stored starch, which feeds the embryo as it starts to grow.",
+             not: "<b>Tropisms</b> are caused by auxins. <b>Seed dormancy</b> is kept by abscisic acid. <b>Lateral branches</b> are held back by auxin from the tip (apical dominance)." },
+  "1.1.5": { why: "The pupil is larger in Y, so it dilated. A pupil dilates in dim light to let more light in: the radial muscles contract and the circular muscles relax.",
+             not: "In <b>bright light</b> the pupil gets smaller: the circular muscles contract and the radial muscles relax, the opposite of what Y shows." },
+  "1.3.1": { why: "Growth hormone acts on the whole body: it makes the skeleton grow (the long bones lengthen) and it builds muscle.",
+             not: "<b>A only</b> and <b>B only</b> each leave one out; <b>None</b> leaves out both." } };
 const TIER_BY_TRY = ["gold", "silver", "bronze"];                          // the XP tiers: 100 / 60 / 20
 const book = {};                                                           // marks per question, first sitting only
 const $ = id => document.getElementById(id), live = t => { $("live").textContent = t; };
@@ -230,7 +261,7 @@ function load(n) {
   const it = ITEMS[n];
   S = { it, shape: shapeOf(it), sel: null, gone: new Set(), tries: 0, done: false, dialSel: [], sw: [false, false], hit: {} };
   document.querySelectorAll(".pick button[data-q]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === n)));
-  setHint(null); $("next").classList.remove("show");
+  setHint(null); $("next").classList.remove("show"); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");
   render(true);
 }
 
@@ -257,7 +288,7 @@ function render(deal) {
     const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
     t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
     t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
-      <div class="side back" aria-hidden="true"><div class="ok"></div><div class="why"></div></div>`;
+      <div class="side back" aria-hidden="true"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div></div>`;
     const face = t.querySelector(".face");
     face.addEventListener("pointermove", e => { const r = face.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       face.style.setProperty("--mx", x + "px"); face.style.setProperty("--my", y + "px");
@@ -314,21 +345,20 @@ function submit() {
     streak = S.tries === 1 ? streak + 1 : 0; setHint(null);
     const name = tier[0].toUpperCase() + tier.slice(1), mkText = mk ? "+" + mk + (mk === 1 ? " mark" : " marks") : "0 marks";
     t.querySelector(".ok").innerHTML = `<span class="medal" aria-hidden="true"></span><span>${name} · +${gain} XP · ${mkText}</span>`;
-    t.querySelector(".why").textContent = "Why · " + (S.it.clues[0] || "");
-    t.querySelector(".back").removeAttribute("aria-hidden");
-    live(`Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. Why: ${S.it.clues[0] || ""}`);
-    shineAndTurn(t, tier).then(() => {
+    fillBack(t, it);
+    live(`Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
+    present(t, tier).then(() => {
       sfx.right(); buzz([20, 40, 30]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
-      setTimeout(() => score(it, mk), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); $("next").classList.add("show"); });
+      setTimeout(() => score(it, mk), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); });
   } else {
     streak = 0; S.sel = null; S.gone.add(i);
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
     shatter(t, S.hit[i]).then(() => {
       if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`);
-        r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0); r.querySelector(".why").textContent = "Why · " + (S.it.clues[0] || ""); r.querySelector(".back").removeAttribute("aria-hidden");
-        r.classList.add("flipped"); $("next").classList.add("show"); setHint(null); }
+        r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0); fillBack(r, it); setHint(null);
+        live(`The answer is ${L[it.a]}. ${whyOf(it)}`); present(r, null).then(showNext); }
       const first = [...document.querySelectorAll(".tile")].find(x => !S.gone.has(+x.dataset.i));
       if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
       paintTiles(); say(); });
@@ -339,22 +369,39 @@ function submit() {
   paintTop(); say();
 }
 
-// The right card: it shines in its medal colour, then turns with a lift and a slight overshoot, landing on its back.
-const SEL = "translateY(-6px) translateZ(26px) scale(1.02)";
-function shineAndTurn(t, tier) {
-  t.classList.add(tier);
+// The back: the medal line (set by the caller), the answer, why it is right, and why the others are not.
+const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
+function fillBack(t, it) { const w = WHY[it.n] || {};
+  t.querySelector(".ans").textContent = L[it.a] + " · " + it.opts[it.a]; t.querySelector(".why").textContent = whyOf(it);
+  t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
+function showNext() { $("next").classList.add("show"); $("next").focus({ preventScroll: true }); }
+
+// The hero: the card leaves its slot (an empty slot keeps the grid still), grows to the centre over a scrim, then
+// (right answer) shines in its medal colour and flips twice, landing on its back; (revealed answer) turns once, calmly.
+const SPIN = 540;                       // "flips two times revealing the back": it passes the back, the front, lands on the back
+function present(t, tier) {
+  if (tier) t.classList.add(tier);
+  const r0 = t.getBoundingClientRect(), slot = document.createElement("div"); slot.className = "slot"; slot.style.height = r0.height + "px";
+  t.replaceWith(slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
+  ["--tx", "--ty", "--px"].forEach(k => t.querySelector(".face").style.removeProperty(k));
   if (reduced) { t.classList.remove("sel"); t.classList.add("flipped"); return Promise.resolve(); }
-  t.classList.add("sel", "shine"); t.style.zIndex = "5"; sfx.shine(); buzz(10);
-  t.animate([{ transform: SEL }, { transform: "translateY(-10px) translateZ(40px) scale(1.05)", offset: 0.45 }, { transform: SEL }], { duration: 620, easing: "ease-in-out" });
-  return wait(640).then(() => {
-    t.classList.remove("sel", "shine"); t.classList.add("flipped");               // the class holds the end state; the animation draws the way there
-    return t.animate([
-      { transform: SEL + " rotateY(0deg)" },
-      { transform: "translateY(-12px) translateZ(60px) scale(1.06) rotateY(-14deg)", offset: 0.16 },   // a small wind-up the other way
-      { transform: "translateY(-16px) translateZ(90px) scale(1.08) rotateY(196deg)", offset: 0.68 },   // over the top, a touch past
-      { transform: "translateY(0) translateZ(0) scale(1) rotateY(176deg)", offset: 0.86 },             // settles back
-      { transform: "rotateY(180deg)" }], { duration: 980, easing: "cubic-bezier(.45,.05,.35,1)" }).finished;
-  }).then(() => { t.style.zIndex = ""; });
+  const r1 = t.getBoundingClientRect(), dx = r0.left + r0.width / 2 - (r1.left + r1.width / 2), dy = r0.top + r0.height / 2 - (r1.top + r1.height / 2);
+  const grow = t.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${r0.width / r1.width}, ${r0.height / r1.height})` },
+    { transform: "translate(0, 0) scale(1.03)", offset: 0.8 }, { transform: "none" }], { duration: 620, easing: "cubic-bezier(.2,.8,.2,1)" }).finished;
+  return grow.then(() => {
+    if (!tier) return;
+    t.classList.add("shine"); sfx.shine(); buzz(10);                                          // the shine, before it turns
+    return t.animate([{ transform: "none" }, { transform: "scale(1.035)", offset: 0.45 }, { transform: "none" }], { duration: 640, easing: "ease-in-out" }).finished;
+  }).then(() => {
+    t.classList.remove("sel", "shine"); t.classList.add("flipped");                          // the class holds the end state (180 = 540 mod 360)
+    const kf = tier ? [{ transform: "rotateY(0deg)" },
+        { transform: "translateZ(80px) scale(1.05) rotateY(200deg)", offset: 0.38 },
+        { transform: "translateZ(60px) scale(1.04) rotateY(400deg)", offset: 0.7 },
+        { transform: `translateZ(0) scale(1) rotateY(${SPIN + 12}deg)`, offset: 0.88 },         // a touch past, then settles
+        { transform: `rotateY(${SPIN}deg)` }]
+      : [{ transform: "rotateY(0deg)" }, { transform: "translateZ(40px) rotateY(90deg)", offset: 0.5 }, { transform: "rotateY(180deg)" }];
+    return t.animate(kf, { duration: tier ? 1500 : 800, easing: "cubic-bezier(.35,0,.25,1)" }).finished;
+  });
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
 // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
