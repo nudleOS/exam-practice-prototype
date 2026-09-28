@@ -52,6 +52,9 @@
   .tile.sel { --cast:rgba(90,110,255,0.7); } .tile.gold { --cast:rgba(227,179,65,0.55); } .tile.silver { --cast:rgba(210,216,224,0.5); } .tile.bronze { --cast:rgba(217,155,108,0.5); }
   .tile.dead::before { opacity:0.12; }
   .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
+  /* Selected: larger, on top of its neighbours, leaning a little toward the middle (as D in Murci's screenshot 2) */
+  .tile.raised { z-index:6; transform:translate(var(--lx, 0px), var(--ly, 0px)) translateZ(40px) scale(1.16); }
+  .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 2px #4b5cff, var(--glass-in); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
   .surface { background:var(--panel); border:1px solid var(--line); }
@@ -456,7 +459,8 @@ document.addEventListener("keydown", e => { if (!S) return; if (S.done) { if (e.
 function submit() {
   const i = S.sel; if (i == null || S.done) return;
   const it = S.it, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; buzz(HAPTIC.lock);
-  t.classList.add(ok ? "yes" : "no"); at(t, ok ? sfx.yes : sfx.no); if (ok) greenLight(t, S.hit[i]);   // the verdict: green light, or red in the cracks
+  const SQ = S, up = raise(t);                                      // it rises over the others first, then the verdict
+  setTimeout(() => { if (S !== SQ) return; t.classList.add(ok ? "yes" : "no"); at(t, ok ? sfx.yes : sfx.no); if (ok) greenLight(t, S.hit[i]); }, up);   // the verdict: green light, or red in the cracks
   if (ok) {
     S.done = true; const gain = XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = S.tries === 1 ? S.it.marks : 0;
     streak = S.tries === 1 ? streak + 1 : 0; setHint(null);
@@ -465,7 +469,7 @@ function submit() {
     fillBack(t, it);
     live(`Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
     const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
-    wait(reduced ? 0 : VERDICT_MS).then(() => { if (S !== S0) throw 0; return present(t, tier); }).then(() => {
+    wait(up + (reduced ? 0 : VERDICT_MS)).then(() => { if (S !== S0) throw 0; return present(t, tier); }).then(() => {
       sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
@@ -474,9 +478,9 @@ function submit() {
     streak = 0; S.sel = null; S.gone.add(i);
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
     let rb = null;
-    if (PAL.el && !PAL.sweeping && !reduced) { const tx = palUnder(t), n = S.tries; rb = { ...palHead(tx), minHold: palRunMs(tx) + 140, onHit: () => palHit(n, last) }; palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card
+    if (PAL.el && !PAL.sweeping && !reduced) { const tx = palUnder(t), n = S.tries; rb = { ...palHead(tx), minHold: Math.max(0, palRunMs(tx) + 140 - up), onHit: () => palHit(n, last) }; palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card
     S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
-    shatter(t, S.hit[i], rb).then(() => { if (!last) S.busy = false;
+    wait(up).then(() => shatter(t, S.hit[i], rb)).then(() => { if (!last) S.busy = false;
       if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
         r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0, "none"); fillBack(r, it); setHint(null);
         live(`The answer is ${L[it.a]}. ${whyOf(it)}`); wait(PAL.down ? 1700 : 0).then(() => present(r, null)).then(showNext); }   // the answer rises as it hits the ground
@@ -613,6 +617,13 @@ function buddyGo(t) { S.landed = true; if (PAL.el && t.contains(PAL.el)) PAL.el.
 function killWrong() { [...document.querySelectorAll("#tiles .tile")].filter(x => +x.dataset.i !== S.it.a && !S.gone.has(+x.dataset.i) && !x.classList.contains("dead"))
   .forEach((x, k) => { x.style.setProperty("--dd", (k * 0.12).toFixed(2) + "s"); x.classList.add("dead"); }); }
 
+const RAISE_MS = 380;
+// Raise the selected card: larger, on top, leaning 12% of the way toward the grid's middle. Returns when it is up (ms).
+function raise(t) { if (reduced) return 0; const g = $("tiles").getBoundingClientRect(), r = t.getBoundingClientRect();
+  const cx = r.left + r.width / 2, half = r.width * 1.16 / 2, lean = ((g.left + g.width / 2) - cx) * 0.12;
+  t.style.setProperty("--lx", Math.max(g.left + half - cx, Math.min(g.right - half - cx, lean)).toFixed(1) + "px");   // leans in, and stays inside the grid
+  t.style.setProperty("--ly", (((g.top + g.height / 2) - (r.top + r.height / 2)) * 0.12).toFixed(1) + "px");
+  t.classList.add("raised"); return RAISE_MS; }
 const VERDICT_MS = 440;                 // the green light shows this long before the right card moves
 // The right answer: a green hairline runs round the rim from the fingertip, both ways, meeting opposite, while green
 // light fills the glass from that point. (Perimeter position from the straight edges; the corners are small.)
@@ -640,7 +651,7 @@ function glide(t, r0, ms, rot) { const r1 = t.getBoundingClientRect();
     { duration: ms, easing: "cubic-bezier(.22,.8,.25,1)" }).finished; }
 // Lift a card out of its slot (the slot keeps the grid still) to the centre, over the scrim.
 function grow(t) {
-  const r0 = t.getBoundingClientRect(); if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
+  const r0 = t.getBoundingClientRect(); t.classList.remove("raised"); if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
   S.slot.style.height = r0.height + "px"; S.heroT = t;
   t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
   t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
@@ -690,7 +701,7 @@ function score(it, mk, tier) { if (it.n in book) return; book[it.n] = { got: mk,
 // 3 · The fall is simulated: gravity, spin (small pieces spin fast, big ones slowly), a bounce (small pieces more),
 //     friction, then lying flat on the pile at the bottom of the screen. A few pieces clink.
 function shatter(tile, hit, rb) {                                                        // rb: the robot under it (head curve, minHold, onHit), or null
-  const face = tile.querySelector(".face"), r = face.getBoundingClientRect(), w = r.width, h = r.height, NS = "http://www.w3.org/2000/svg";
+  const face = tile.querySelector(".face"), r = face.getBoundingClientRect(), w = face.offsetWidth, h = face.offsetHeight, k = r.width / w, NS = "http://www.w3.org/2000/svg";
   const p = hit && hit.x > 0 ? { x: Math.min(w - 10, Math.max(10, hit.x)), y: Math.min(h - 10, Math.max(10, hit.y)) } : { x: w * 0.5, y: h * 0.45 };
   if (reduced) { tile.style.transition = "opacity 200ms"; tile.style.opacity = "0"; return wait(220).then(() => leaveGap(tile)); }
   const inside = q => q.x >= 0 && q.x <= w && q.y >= 0 && q.y <= h;
@@ -730,7 +741,7 @@ function shatter(tile, hit, rb) {                                               
   crush.animate([{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1)" }], { duration: 90, fill: "forwards" });
   const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
   fl.animate([{ opacity: 0, transform: "scale(0.3)" }, { opacity: 1, transform: "scale(1)", offset: 0.25 }, { opacity: 0, transform: "scale(1.4)" }], { duration: 300, easing: "ease-out", fill: "forwards" });
-  tile.animate([{ transform: "translateX(0)" }, { transform: "translateX(-4px) rotate(-0.5deg)" }, { transform: "translateX(3px) rotate(0.4deg)" }, { transform: "translateX(0)" }], { duration: 200 });
+  tile.animate([{ translate: "0 0", rotate: "0deg" }, { translate: "-4px 0", rotate: "-0.5deg" }, { translate: "3px 0", rotate: "0.4deg" }, { translate: "0 0", rotate: "0deg" }], { duration: 200 });   // translate/rotate, not transform: it shudders ON the raised card instead of undoing its lift
   const crackMs = Math.max(...rays.map(ry => ry.len)) / SPEED;
   // The pieces are built while the learner looks at the cracked glass (invisible), so the instant of breaking only
   // shows and moves them. Measured before: building 33 full-card clones at that instant dropped the fall to 19 fps.
@@ -755,7 +766,7 @@ function shatter(tile, hit, rb) {                                               
       const bx = Math.max(0, Math.floor(Math.min(...poly.map(q => q.x))) - 2), by = Math.max(0, Math.floor(Math.min(...poly.map(q => q.y))) - 2);
       const bw = Math.min(w, Math.ceil(Math.max(...poly.map(q => q.x))) + 2) - bx, bh = Math.min(h, Math.ceil(Math.max(...poly.map(q => q.y))) + 2) - by;
       const el = document.createElement("div"); el.className = "shard";
-      Object.assign(el.style, { left: (r.left + bx) + "px", top: (r.top + by) + "px", width: bw + "px", height: bh + "px", opacity: "0.01",   /* 1%, not 0: painted in advance (0 is skipped, then all 33 paint in one frame) */
+      Object.assign(el.style, { width: bw + "px", height: bh + "px", opacity: "0.01",   /* 1%, not 0: painted in advance (0 is skipped, then all 33 paint in one frame) */
         clipPath: "polygon(" + poly.map(q => (q.x - bx).toFixed(1) + "px " + (q.y - by).toFixed(1) + "px").join(",") + ")" });
       const inner = face.cloneNode(true); inner.removeAttribute("role"); inner.className = "shard-in"; inner.querySelectorAll(".cracks, .crush, .impact, .gleam, .buddy").forEach(g => g.remove());
       Object.assign(inner.style, { left: -bx + "px", top: -by + "px", width: w + "px", height: h + "px", display: "flex", gap: "12px", padding: "16px 16px 16px 14px", visibility: "visible", transform: "none" });
@@ -766,24 +777,26 @@ function shatter(tile, hit, rb) {                                               
       let area = 0; poly.forEach((q, i) => { const n = poly[(i + 1) % poly.length]; area += q.x * n.y - n.x * q.y; }); area = Math.abs(area) / 2;
       const c = poly.reduce((m, q) => ({ x: m.x + q.x / poly.length, y: m.y + q.y / poly.length }), { x: 0, y: 0 }), size = Math.sqrt(area), small = size < 22;
       el.style.transformOrigin = `${(c.x - bx).toFixed(1)}px ${(c.y - by).toFixed(1)}px`;
+      el.style.left = (r.left + c.x * k - (c.x - bx)).toFixed(1) + "px"; el.style.top = (r.top + c.y * k - (c.y - by)).toFixed(1) + "px";   // its centre where it sits on the raised card
       const dx = c.x - p.x, dy = c.y - p.y, dd = Math.hypot(dx, dy) || 1, near = 1 - Math.min(1, dd / maxD);
       const speed = (0.05 + near * 0.3) * rnd(0.7, 1.2), delay = (ring * 45 + (1 - near) * 70 + rnd(0, 40));   // inner pieces leave first and fastest
       let x = dx / dd * 2, y = dy / dd * 2, vx = dx / dd * speed + rnd(-0.04, 0.04), vy = dy / dd * speed * 0.5 - rnd(0.05, 0.22);        // the gap opens (2 px), then it flies
       const spin = small ? 1.8 : 0.8; let rx = 0, rz = 0, wx = rnd(0.25, 0.9) * spin * (Math.random() < 0.5 ? -1 : 1), wz = rnd(-0.4, 0.4) * spin;
-      const bin = Math.round((r.left + c.x + dx / dd * 60) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + Math.min(3.2, size * 0.05 + rnd(0.6, 1.4)));
-      const floor = innerHeight - 6 - level - (r.top + c.y), e = small ? 0.34 : 0.16;
+      const bin = Math.round((r.left + c.x * k + dx / dd * 60) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + Math.min(3.2, size * 0.05 + rnd(0.6, 1.4)));
+      const floor = innerHeight - 6 - level - (r.top + c.y * k), e = small ? 0.34 : 0.16;
       // 2D on purpose: a true rotateX on a clip-path piece is re-rasterised every frame (measured: 17-26 fps vs 57 without the
       // clip). Squashing along its own axis by cos(rx) reads as the same tumble, and lying flat is cos(80°): a flat sliver.
       // Order matters: spin (rotate) first, THEN squash along the screen's vertical, so a resting piece is a flat horizontal
       // sliver however it spun (squashing first then spinning stood pieces up as needles).
-      const T = () => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scaleY(${Math.cos(rx * Math.PI / 180).toFixed(3)}) rotate(${rz.toFixed(1)}deg)`;
-      const frames = [{ offset: 0, transform: "none" }]; let t = 0, landed = false, flat = null, rest = 0;
+      // It starts at the raised card's size (k) and comes back to its true size as it falls away to the floor (~0.5 s).
+      const T = () => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${(1 + (k - 1) * Math.max(0, 1 - t / 520)).toFixed(3)}) scaleY(${Math.cos(rx * Math.PI / 180).toFixed(3)}) rotate(${rz.toFixed(1)}deg)`;
+      const frames = [{ offset: 0, transform: `scale(${k.toFixed(3)})` }]; let t = 0, landed = false, flat = null, rest = 0;
       while (t < 3000) {                                                                        // 16 ms steps; a keyframe every 32 ms
         for (let k = 0; k < 2; k++) { const y0 = y; t += 16; x += vx * 16; y += vy * 16; vy += G * 16; rx += wx * 16; rz += wz * 16;
-          if (rb && vy > 0) { const u = (r.left + c.x + x - rb.cx) / rb.halfW;                       // its head and shoulders: a curve the glass meets
-            if (Math.abs(u) < 1) { const ys = rb.headY + rb.drop * u * u - (r.top + c.y);
+          if (rb && vy > 0) { const u = (r.left + c.x * k + x - rb.cx) / rb.halfW;                       // its head and shoulders: a curve the glass meets
+            if (Math.abs(u) < 1) { const ys = rb.headY + rb.drop * u * u - (r.top + c.y * k);
               if (y >= ys && y0 < ys) { y = ys; vy = -vy * 0.28; vx += (u >= 0 ? 1 : -1) * rnd(0.1, 0.22); wx *= 1.3; hits.push(t + delay); } } }
-          if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: r.left + c.x + x }); flat = 80 + 180 * Math.round((rx - 80) / 180); }   // the nearest lying-flat angle (80°: flat, but with body; 86° read as a line)
+          if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: r.left + c.x * k + x }); flat = 80 + 180 * Math.round((rx - 80) / 180); }   // the nearest lying-flat angle (80°: flat, but with body; 86° read as a line)
             if (vy > 0.06) { vy = -vy * e; vx *= 0.55; wx *= 0.4; wz *= 0.5; } else { vy = 0; vx *= 0.8; wx *= 0.6; wz *= 0.6; }
             rx += ((flat ?? rx) - rx) * 0.3; }
           if (landed && Math.abs(vy) < 0.001 && Math.abs(vx) < 0.004) rest++; }
