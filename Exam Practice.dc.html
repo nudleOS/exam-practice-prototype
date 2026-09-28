@@ -86,7 +86,7 @@
   <sc-if value="{{ mapPopOn }}" hint-placeholder-val="{{ false }}">
     <span onClick="{{ closePops }}" aria-hidden="true" style="position:fixed; inset:0; z-index:19"></span>
   </sc-if>
-  <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:{{ headGap }}; padding:10px {{ pad }}; background:rgba(25,27,30,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
+  <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:{{ headGap }}; padding:10px {{ pad }}; background:{{ headBg }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
     <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ goBack }}" aria-label="{{ backLabel }}" style="height:44px; min-width:44px; padding:0 12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:600">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
@@ -379,7 +379,7 @@
 
   <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ vmOn }}" hint-placeholder-val="{{ false }}">
-      <vortex-map active="{{ vmActive }}" geom="{{ vmGeom }}" paint="{{ vmPaint }}" finish="{{ vmFinish }}" next="{{ vmNext }}" lit="{{ vmLit }}" anchor="[data-startbtn]" hdr="64" bg="radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), #23262b" fade="#23262b"></vortex-map>
+      <vortex-map active="{{ vmActive }}" geom="{{ vmGeom }}" paint="{{ vmPaint }}" finish="{{ vmFinish }}" next="{{ vmNext }}" lit="{{ vmLit }}" anchor="[data-startbtn]" hdr="64" bg="{{ vmBg }}" fade="{{ vmFade }}"></vortex-map>
     </sc-if>
     <sc-if value="{{ vmOff }}" hint-placeholder-val="{{ true }}">
     <div aria-hidden="true" data-map-bg="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:radial-gradient(1100px 620px at 50% 112%, rgba(30,70,255,0.20), transparent 62%), radial-gradient(900px 520px at 50% -12%, rgba(103,29,255,0.13), transparent 60%), radial-gradient(600px 600px at 8% 40%, rgba(0,104,248,0.06), transparent 70%), radial-gradient(600px 600px at 92% 60%, rgba(103,29,255,0.06), transparent 70%)">
@@ -1616,6 +1616,9 @@ const busRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const
 const busWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(BUS_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
 const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY); } catch (e) {} };
 // Brief 20: pass marks with their sources. A paper without one gets no pass wording (a practice mark is not an exam result).
+// Brief 22: the vortex map's ground (one step lighter than the page's --bg #191b1e). The map, the colour its dots fade
+// into, the header and the preview strip on the map all take it from here.
+const MAP_GROUND = { hex: "#23262b", rgb: "35,38,43" };
 const PASS_MARKS = {
   fm: { pct: 40, source: "DHET, Report 191 ICASS Guidelines (Jan 2026) p.20: pass 40% or higher; Report 191 Part 2 lists no override for Fluid Mechanics N6 (08190216)" },
   aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
@@ -3815,6 +3818,7 @@ class Component extends DCLogic {
     // The vortex map's inputs: the same geometry and paint as the classic road, as data (see vortex-map.js).
     const finIt = items[items.length - 1], done = earned >= total && total;
     const vmVals = {
+      vmBg: "radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), " + MAP_GROUND.hex, vmFade: MAP_GROUND.hex,
       vmOn: VM, vmOff: !VM, trackLux: VM ? "vm-lux" : "", mapPadB: VM ? "0px" : "120px",
       mainZ: VM && s.mapView !== "topics" ? "5" : "1", mainPE: VM && s.mapView !== "topics" ? "none" : "auto",
       vmActive: s.mapView !== "topics" ? "true" : "false", vmNext: String(suggestedIdx),
@@ -4161,6 +4165,7 @@ class Component extends DCLogic {
       hallLive: s.hallLive,
       onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
       // Brief 21: the map's controls live in the top bar; the map itself is never covered.
+      headBg: s.screen === "map" && !!paper && !s.classicMap ? "rgba(" + MAP_GROUND.rgb + ",0.97)" : "rgba(25,27,30,0.97)",
       mapHead: s.screen === "map" && !!paper, notMapHead: !(s.screen === "map" && !!paper),
       mapHeadSub: ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + " · " + earned + " of " + total + " marks",
       mapViewOpen: s.pop === "mapview", mapViewAria: "View: " + ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + ". Change view",
@@ -4182,7 +4187,8 @@ class Component extends DCLogic {
         if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); const n = items.length; if (n) items[(k + (e.key === "ArrowDown" ? 1 : -1) + n) % n].focus(); }
         else if (e.key === "Home" && items.length) { e.preventDefault(); items[0].focus(); } else if (e.key === "End" && items.length) { e.preventDefault(); items[items.length - 1].focus(); }
         else if (e.key === "Tab") this.setState({ pop: null }); },
-      subPad: s.pvOpen ? "10px 0 14px" : "0", subBg: s.pvOpen ? "linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%)" : "none",
+      subPad: s.pvOpen ? "10px 0 14px" : "0", subBg: !s.pvOpen ? "none" : s.classicMap ? "linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%)"
+        : "linear-gradient(180deg, " + MAP_GROUND.hex + " 0%, " + MAP_GROUND.hex + " 78%, rgba(" + MAP_GROUND.rgb + ",0) 100%)",
       mapViews: [["paper", "Paper"], ["topics", "Topics"]].map(x => { const on = (s.mapView || "paper") === x[0];
         return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6",
           shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", weight: on ? "600" : "500",
