@@ -21,7 +21,13 @@
   /* A low glow in the page's own blue (the top glow's colour) behind the cards: kept from the backdrop experiment */
   .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(520px 300px at 50% 46%, rgba(56,57,255,0.13), transparent 72%); }
   .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
-  .seg { flex:1; display:flex; gap:6px; } .seg i { flex:1; height:6px; border-radius:6px; background:var(--line2); } .seg i.on { background:var(--grad); }
+  .seg { flex:1; display:flex; gap:6px; } .seg i { flex:1; height:6px; border-radius:6px; background:var(--line2); position:relative; overflow:hidden; }
+  .seg i.on { background:var(--line2); box-shadow:0 0 12px rgba(56,57,255,0.45); }
+  .seg i.on::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--grad); transform-origin:left; }
+  .seg i.on.arrive::after { animation:fillseg 700ms cubic-bezier(.3,.7,.2,1) both; }                  /* the path runs on to the next question */
+  @keyframes fillseg { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  .seg i.gold { background:#e3b341; } .seg i.silver { background:#c3c8cf; } .seg i.bronze { background:#b0764a; } .seg i.none { background:rgba(242,119,122,0.5); }
+  .stage.enter .meta, .stage.enter h1 { animation:rise 460ms cubic-bezier(.2,.8,.2,1) both; } .stage.enter h1 { animation-delay:70ms; }
   .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .marks .of { color:var(--text3); font-weight:600; } .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
   .bump { animation:bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes bump { 40% { transform:scale(1.14); } }
@@ -239,6 +245,7 @@ const WHY = {
              not: "In <b>bright light</b> the pupil gets smaller: the circular muscles contract and the radial muscles relax, the opposite of what Y shows." },
   "1.3.1": { why: "Growth hormone acts on the whole body: it makes the skeleton grow (the long bones lengthen) and it builds muscle.",
              not: "<b>A only</b> and <b>B only</b> each leave one out; <b>None</b> leaves out both." } };
+const ORDER = ["1.1.1", "1.1.5", "1.3.1"];                                  // the concept's questions, in paper order
 const TIER_BY_TRY = ["gold", "silver", "bronze"];                          // the XP tiers: 100 / 60 / 20
 const book = {};                                                           // marks per question, first sitting only
 const $ = id => document.getElementById(id), live = t => { $("live").textContent = t; };
@@ -382,7 +389,8 @@ function syncSwitches() {
 function paintTiles() { document.querySelectorAll(".tile").forEach(t => { const i = +t.dataset.i, on = S.sel === i && !S.done;
   t.classList.toggle("sel", on); t.querySelector(".face").setAttribute("aria-checked", String(S.sel === i)); }); }
 function say() { $("say").textContent = S.done ? "" : S.sel == null ? "Pick an answer" : `Tap ${L[S.sel]} to answer`; }
-function paintTop() { $("seg").innerHTML = Array.from({ length: 9 }, (_, i) => `<i class="${i === 0 ? "on" : ""}"></i>`).join(""); $("xp").textContent = xp;
+function paintTop() { $("seg").innerHTML = ORDER.map(n => { const b = book[n], c = n === S.it.n ? "on" : b ? b.tier : "";
+    return `<i class="${c}" title="${n}${b ? " · " + b.tier : ""}"></i>`; }).join(""); $("xp").textContent = xp;
   $("streak").textContent = streak >= 2 ? `${streak} in a row` : "";
   const tr = document.querySelector(".tries"), left = Math.max(0, 3 - S.tries);
   if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${i >= S.tries ? "live" : ""}"></i>`).join(""); tr.setAttribute("aria-label", `${left} ${left === 1 ? "try" : "tries"} left`); } }
@@ -405,13 +413,13 @@ function submit() {
       sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
-      setTimeout(() => score(it, mk), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); });
+      setTimeout(() => score(it, mk, tier), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); });
   } else {
     streak = 0; S.sel = null; S.gone.add(i);
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
     shatter(t, S.hit[i]).then(() => {
       if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`);
-        r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0); fillBack(r, it); setHint(null);
+        r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0, "none"); fillBack(r, it); setHint(null);
         live(`The answer is ${L[it.a]}. ${whyOf(it)}`); present(r, null).then(showNext); }
       const first = [...document.querySelectorAll(".tile")].find(x => !S.gone.has(+x.dataset.i));
       if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
@@ -502,7 +510,7 @@ function present(t, tier) {
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
 // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
-function score(it, mk) { if (it.n in book) return; book[it.n] = { got: mk, of: it.marks };   // `it` captured at answer time: a question switch mid-animation can't misfile it
+function score(it, mk, tier) { if (it.n in book) return; book[it.n] = { got: mk, of: it.marks, tier };   // `it` captured at answer time: a question switch mid-animation can't misfile it
   $("mk").textContent = Object.values(book).reduce((a, b) => a + b.got, 0);
   bump("marksBox"); $("marksBox").setAttribute("aria-label", `${$("mk").textContent} of ${$("mkOf").textContent} marks`); }
 
@@ -571,7 +579,21 @@ function edge(p, a, w, h) { const cx = Math.cos(a), cy = Math.sin(a); let t = In
   if (cx > 1e-6) t = Math.min(t, (w - p.x) / cx); if (cx < -1e-6) t = Math.min(t, -p.x / cx); if (cy > 1e-6) t = Math.min(t, (h - p.y) / cy); if (cy < -1e-6) t = Math.min(t, -p.y / cy);
   return { x: p.x + cx * t, y: p.y + cy * t }; }
 
-function next() { const order = ["1.1.1", "1.1.5", "1.3.1"]; load(order[(order.indexOf(S.it.n) + 1) % order.length]); }
+// Between questions: the table clears (the big card lifts away, the cards sweep off one by one, the question fades up),
+// the progress bar runs on to the next segment, and the next question rises in and deals its cards.
+let leaving = false;
+function next() { go(ORDER[(ORDER.indexOf(S.it.n) + 1) % ORDER.length]); }
+function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = true;
+  $("next").classList.remove("show"); setHint(null); $("scrim").classList.remove("on");
+  const outs = [], hero = $("heroLayer").firstElementChild, flip = x => x.classList.contains("flipped") ? "rotateY(180deg) " : "";
+  if (hero) outs.push(hero.animate([{ transform: flip(hero), opacity: 1 }, { transform: flip(hero) + "translateY(-36px) scale(0.9)", opacity: 0 }], { duration: 360, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
+  [...document.querySelectorAll("#tiles .tile")].forEach((x, k) => outs.push(x.animate([{ transform: flip(x), opacity: 1 },
+    { transform: flip(x) + "translateX(-34px) translateY(-6px) rotate(-2deg)", opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
+  document.querySelectorAll("#stage .meta, #stage h1, #stage .hint, #stage .builder, #stage .switches, #stage .readout").forEach(x =>
+    outs.push(x.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
+  Promise.all(outs).then(() => arrive(n)).catch(() => arrive(n)); }
+function arrive(n) { leaving = false; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n);
+  const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
 $("next").onclick = next;
 $("scrim").onclick = () => dismiss();
 // The hint: after a miss a small Hint button appears (with a nudge); the clue shows only when the learner asks for it.
@@ -595,7 +617,7 @@ function fly(t, text, box) { if (text === "+0") return; const r = t.getBoundingC
   requestAnimationFrame(() => { e.style.transform = `translate(${to.left - r.left - r.width / 2}px, ${to.top - r.top}px) scale(0.7)`; e.style.opacity = "0.2"; });
   setTimeout(() => e.remove(), 950); }
 
-document.querySelectorAll(".pick button[data-q]").forEach(b => b.onclick = () => load(b.dataset.q));
+document.querySelectorAll(".pick button[data-q]").forEach(b => b.onclick = () => { if (b.dataset.q !== S.it.n) go(b.dataset.q); });
 try { localStorage.removeItem("mcq.backdrop"); } catch (e) {}           // the retired backdrop switch's saved choice
 load("1.1.1");
 </script>
