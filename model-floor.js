@@ -6,7 +6,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 // share one camera: orbit the object and the rings turn with it, flattening toward edge-on
 // as the camera drops — which is what makes the floor read as ground rather than wallpaper.
 class ModelFloor extends HTMLElement {
-  static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift", "paused", "fit"]; }
+  static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift", "paused", "fit", "speed"]; }
   connectedCallback() {
     // A move (removed here, added there in the same task) keeps the live renderer: see disconnectedCallback.
     clearTimeout(this._tdT);
@@ -305,7 +305,7 @@ class ModelFloor extends HTMLElement {
       // Derived, not clock.getDelta() — that would consume the same tick the rings read.
       if (this._mixer) { this._mixer.update(Math.min(0.1, Math.max(0, t - (this._lastT || t))));
         const a = this._action;
-        if (this._holdAt != null && a && !a.paused && a.time >= this._holdAt) { a.time = this._holdAt; a.paused = true; this._mixer.update(0); } }
+        if (this._holdAt != null && a && !a.paused && (a.timeScale >= 0 ? a.time >= this._holdAt : a.time <= this._holdAt) /* either direction */) { a.time = this._holdAt; a.paused = true; this._mixer.update(0); } }
       this._lastT = t;
       if (floorMode() === "ripple") rings.forEach(r => {
         const p = ((t / RING_CYCLE) + r.phase) % 1;
@@ -352,6 +352,7 @@ class ModelFloor extends HTMLElement {
     };
   }
   reset() { if (this._controls) this._controls.reset(); }
+  _rate() { const r = parseFloat(this.getAttribute("speed")); return isFinite(r) && r !== 0 ? r : 1; }
   attributeChangedCallback(name, was, now) {
     if (was === now) return;
     if (name === "floor") { if (this._applyFloor) this._applyFloor(); return; }
@@ -359,6 +360,9 @@ class ModelFloor extends HTMLElement {
     // paused (optional): the figure holds the current frame of its clip until the attribute is removed —
     // e.g. frozen in its first pose while a card spins, moving the instant the card lands.
     if (name === "paused") { if (this._action) this._action.paused = now !== null; return; }
+    // speed (optional): playback rate of the clip, e.g. 1.6 to run faster (legs and all), or negative to play it backwards
+    // (a fall played backwards reads as getting up). fade (optional, read at play): the crossfade in seconds (default 0.3).
+    if (name === "speed") { if (this._action) this._action.timeScale = this._rate(); return; }
     if (name === "yaw") { this._yawTarget = parseFloat(now) || 0; return; }
     if (name === "fit") { if (this._frame) this._frame(); return; }
     if (name === "lift") { this._liftTarget = parseFloat(now) || 0; return; }
@@ -389,11 +393,12 @@ class ModelFloor extends HTMLElement {
     // with reduced motion the figure starts already in that pose rather than playing into it.
     const hold = once ? parseFloat(this.getAttribute("hold")) : NaN;
     this._holdAt = isFinite(hold) ? Math.min(hold, hit.duration) : null;
-    next.fadeIn(0.3).play();
+    next.timeScale = this._rate(); const fade = parseFloat(this.getAttribute("fade")) || 0.3;
+    next.fadeIn(fade).play();
     if (this.hasAttribute("paused")) next.paused = true;
     if (this._holdAt != null && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       next.time = this._holdAt; next.paused = true; next.setEffectiveWeight(1); }
-    if (this._action) this._action.crossFadeTo(next, 0.3, false);
+    if (this._action) this._action.crossFadeTo(next, fade, false);
     this._action = next;
   }
   // A reload does not always fire disconnectedCallback, and the context survives long enough
