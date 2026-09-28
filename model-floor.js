@@ -6,7 +6,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 // share one camera: orbit the object and the rings turn with it, flattening toward edge-on
 // as the camera drops — which is what makes the floor read as ground rather than wallpaper.
 class ModelFloor extends HTMLElement {
-  static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift"]; }
+  static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift", "paused"]; }
   connectedCallback() {
     // Self-healing: a live mount is one that still has its canvas. Returning on `_up` alone
     // left the element permanently blank if the canvas was ever lost.
@@ -144,19 +144,21 @@ class ModelFloor extends HTMLElement {
 
     const clock = new THREE.Clock();
     let ringScale = 2.4;
-    // The floor is three states, not a flag: the travelling ripple, a single still disc, or
-    // nothing at all when the avatar is furniture beside a question rather than the subject.
+    // The floor is four states, not a flag: the travelling ripple, a single still disc, only its
+    // first ring ("ring": for a small box the wide pool would be cut by the edges), or nothing at
+    // all when the avatar is furniture beside a question rather than the subject.
     const floorMode = () => this.getAttribute("floor") || "ripple";
     this._applyFloor = () => {
       const mode = floorMode();
       rings.forEach(r => { r.mesh.visible = mode === "ripple"; });
-      pool.visible = mode !== "none";
+      pool.visible = mode !== "none" && mode !== "ring";
       // No floor, no disc: a shadow with nothing to fall on reads as a hole under the feet.
       shadow.visible = mode !== "none";
-      if (mode === "still") {
+      if (mode === "still" || mode === "ring") {
         // One resting ring at the pool's edge reads as a plinth, not a pulse.
         rings[0].mesh.visible = true;
-        rings[0].mesh.scale.setScalar(1.55 * (ringScale / 2.4));
+        // "ring" is drawn small enough (radius ~0.96 of the 2.4 figure) to sit inside a narrow box.
+        rings[0].mesh.scale.setScalar((mode === "ring" ? 1.0 : 1.55) * (ringScale / 2.4));
         rings[0].mesh.material.opacity = 0.34;
       }
     };
@@ -330,6 +332,9 @@ class ModelFloor extends HTMLElement {
     if (was === now) return;
     if (name === "floor") { if (this._applyFloor) this._applyFloor(); return; }
     if (name === "clip") { this.playClip(now); return; }
+    // paused (optional): the figure holds the current frame of its clip until the attribute is removed —
+    // e.g. frozen in its first pose while a card spins, moving the instant the card lands.
+    if (name === "paused") { if (this._action) this._action.paused = now !== null; return; }
     if (name === "yaw") { this._yawTarget = parseFloat(now) || 0; return; }
     if (name === "lift") { this._liftTarget = parseFloat(now) || 0; return; }
     if (name !== "src" || !this._load) return;
@@ -360,6 +365,7 @@ class ModelFloor extends HTMLElement {
     const hold = once ? parseFloat(this.getAttribute("hold")) : NaN;
     this._holdAt = isFinite(hold) ? Math.min(hold, hit.duration) : null;
     next.fadeIn(0.3).play();
+    if (this.hasAttribute("paused")) next.paused = true;
     if (this._holdAt != null && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       next.time = this._holdAt; next.paused = true; next.setEffectiveWeight(1); }
     if (this._action) this._action.crossFadeTo(next, 0.3, false);
