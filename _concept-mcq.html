@@ -25,6 +25,7 @@
   .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .marks .of { color:var(--text3); font-weight:600; } .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
   .bump { animation:bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes bump { 40% { transform:scale(1.14); } }
+  .mute[hidden] { display:none; } #motion { color:var(--text3); } #motion[aria-pressed="true"] { color:var(--tint); border-color:rgba(129,177,255,0.5); }
   .mute { width:40px; height:38px; justify-content:center; font:inherit; cursor:pointer; padding:0; }
   .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; }
   .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; flex-wrap:wrap; padding:0 12px; }
@@ -205,6 +206,7 @@
 <div class="top">
   <div class="seg" id="seg"></div>
   <div class="streak" id="streak"></div>
+  <button class="mute" id="motion" hidden aria-pressed="false" aria-label="Tilt the glass with your phone" title="Tilt"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="18" rx="2" transform="rotate(-14 12 12)"/><path d="M3.5 9.5a9 9 0 0 0 0 5M20.5 9.5a9 9 0 0 1 0 5"/></svg></button>
   <button class="mute" id="mute" aria-pressed="false" aria-label="Sound on" title="Sound">🔊</button>
   <div class="xp marks" id="marksBox" aria-label="Marks"><span><span id="mk">0</span><span class="of">/<span id="mkOf"></span></span></span><span class="lbl">marks</span></div>
   <div class="xp" id="xpBox"><span aria-hidden="true">⚡</span><span id="xp">0</span><span style="color:var(--tint)">XP</span></div>
@@ -269,6 +271,31 @@ const buzz = ms => { if (!muted && navigator.vibrate) navigator.vibrate(ms); }; 
 // One vibration pattern per moment (ms on/off): a tick for a pick, a burst for a shatter, rising for gold, heavy for defeat.
 const HAPTIC = { pick: 6, lock: 14, crack: 10, shatter: [14, 24, 40], shine: 8, gold: [20, 50, 30, 50, 70], silver: [20, 60, 35], bronze: 30, defeat: [70, 90, 140] };
 $("mute").onclick = () => { muted = !muted; $("mute").textContent = muted ? "🔇" : "🔊"; $("mute").setAttribute("aria-pressed", String(muted)); $("mute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); };
+
+// Tilt (phones): the glass tilts with the phone and its reflection slides against it, like the mouse tilt on desktop.
+// Android: on by default (no permission needed). iOS: needs a tap to allow motion (DeviceOrientationEvent.requestPermission).
+// The neutral angle follows how the phone is held (a slow re-centre), so the glass doesn't stay tipped when you lean back.
+const TILT = { on: false, base: null, x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
+const TILT_OK = !reduced && matchMedia("(pointer: coarse)").matches && "DeviceOrientationEvent" in window;
+const TILT_ASK = TILT_OK && typeof DeviceOrientationEvent.requestPermission === "function";      // iOS
+function onOrient(e) { if (e.beta == null || e.gamma == null) return;
+  if (!TILT.base) TILT.base = { b: e.beta, g: e.gamma };
+  TILT.base.b += (e.beta - TILT.base.b) * 0.01; TILT.base.g += (e.gamma - TILT.base.g) * 0.01;   // re-centre slowly
+  TILT.tx = Math.max(-1, Math.min(1, (e.gamma - TILT.base.g) / 18)); TILT.ty = Math.max(-1, Math.min(1, (e.beta - TILT.base.b) / 18));
+  if (!TILT.raf) TILT.raf = requestAnimationFrame(tiltFrame); }
+function tiltFrame() { TILT.raf = 0; TILT.x += (TILT.tx - TILT.x) * 0.18; TILT.y += (TILT.ty - TILT.y) * 0.18;
+  document.querySelectorAll("#tiles .tile:not(.dead):not(.sel):not(.flipped) .face").forEach(f => {
+    f.style.setProperty("--ty", (TILT.x * 5).toFixed(2) + "deg"); f.style.setProperty("--tx", (-TILT.y * 4).toFixed(2) + "deg");
+    f.style.setProperty("--px", (-TILT.x * 30).toFixed(1) + "px"); f.style.setProperty("--mx", (50 + TILT.x * 40).toFixed(1) + "%"); f.style.setProperty("--my", (-10 + TILT.y * 30).toFixed(1) + "%"); });
+  if (Math.abs(TILT.tx - TILT.x) + Math.abs(TILT.ty - TILT.y) > 0.002) TILT.raf = requestAnimationFrame(tiltFrame); }
+function setTilt(on) { TILT.on = on; TILT.base = null; $("motion").setAttribute("aria-pressed", String(on));
+  if (on) addEventListener("deviceorientation", onOrient); else { removeEventListener("deviceorientation", onOrient); TILT.tx = TILT.ty = 0; tiltFrame(); }
+  try { localStorage.setItem("mcq.tilt", on ? "1" : "0"); } catch (e) {} }
+if (TILT_OK) { $("motion").hidden = false; let saved = null; try { saved = localStorage.getItem("mcq.tilt"); } catch (e) {}
+  if (saved !== "0" && !TILT_ASK) setTilt(true);                                                 // Android: on unless switched off
+  $("motion").onclick = () => { if (TILT.on) return setTilt(false);
+    if (!TILT_ASK) return setTilt(true);
+    DeviceOrientationEvent.requestPermission().then(r => { if (r === "granted") setTilt(true); }).catch(() => {}); }; }
 
 function shapeOf(it) {
   const parts = it.opts.map(o => o.replace(/\.$/, "").split(" · "));
