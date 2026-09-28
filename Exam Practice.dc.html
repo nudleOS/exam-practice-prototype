@@ -11,8 +11,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
+  <script type="module" src="vortex-map.js?v=9"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
@@ -377,10 +378,15 @@
   </sc-if>
 
   <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ vmOn }}" hint-placeholder-val="{{ false }}">
+      <vortex-map active="{{ vmActive }}" geom="{{ vmGeom }}" paint="{{ vmPaint }}" finish="{{ vmFinish }}" next="{{ vmNext }}" lit="{{ vmLit }}" anchor="[data-startbtn]" hdr="64"></vortex-map>
+    </sc-if>
+    <sc-if value="{{ vmOff }}" hint-placeholder-val="{{ true }}">
     <div aria-hidden="true" data-map-bg="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:radial-gradient(1100px 620px at 50% 112%, rgba(30,70,255,0.20), transparent 62%), radial-gradient(900px 520px at 50% -12%, rgba(103,29,255,0.13), transparent 60%), radial-gradient(600px 600px at 8% 40%, rgba(0,104,248,0.06), transparent 70%), radial-gradient(600px 600px at 92% 60%, rgba(103,29,255,0.06), transparent 70%)">
       <span style="position:absolute; left:-60%; right:-60%; bottom:-6%; height:62%; background-image:linear-gradient(rgba(129,177,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(129,177,255,0.10) 1px, transparent 1px); background-size:56px 56px; transform:perspective(520px) rotateX(64deg); transform-origin:50% 100%; -webkit-mask-image:linear-gradient(to top, #000 8%, transparent 78%); mask-image:linear-gradient(to top, #000 8%, transparent 78%)"></span>
     </div>
-    <main data-map="true" style="position:relative; z-index:1; box-sizing:border-box; padding:0 {{ mapPadR }} 120px 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
+    </sc-if>
+    <main data-map="true" style="position:relative; z-index:{{ mainZ }}; pointer-events:{{ mainPE }}; box-sizing:border-box; padding:0 {{ mapPadR }} {{ mapPadB }} 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ subPad }}; margin:0 calc(-1 * {{ mapPadR }}) 0 -16px; background:{{ subBg }}; pointer-events:none">
         <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ mapLive }}</p>
         <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
@@ -397,6 +403,7 @@
       </sc-if>
 
       <div data-road="true" style="position:relative; width:{{ roadWpx }}; height:{{ roadHpx }}; margin:0 auto">
+        <sc-if value="{{ vmOff }}" hint-placeholder-val="{{ true }}">
         <sc-for list="{{ roadZones }}" as="z" hint-placeholder-count="4">
           <span aria-hidden="true" style="position:absolute; left:-12%; right:-12%; top:{{ z.top }}; height:{{ z.h }}; pointer-events:none; background:radial-gradient(50% 50% at 50% 50%, {{ z.tint }}, transparent 72%)"></span>
         </sc-for>
@@ -490,6 +497,7 @@
         <span style="visibility:{{ bubVis }}; position:absolute; left:{{ bubLeft }}; top:{{ bubTop }}; width:{{ bubWpx }}; transform:{{ bubShift }}; z-index:3; pointer-events:none; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
           <p data-key="{{ mapBubbleKey }}" aria-live="polite" style="margin:0 auto; width:fit-content; max-width:100%; padding:9px 13px; border-radius:16px; border:1px solid transparent; background:linear-gradient(rgba(34,38,45,0.96), rgba(28,31,37,0.96)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.3)) border-box; box-shadow:0 12px 28px rgba(0,0,0,0.45); font-size:13px; font-weight:600; line-height:1.45; color:var(--text); text-wrap:pretty; animation:pop 380ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">{{ mapBubble }}</p>
         </span>
+        </sc-if>
       </div>
       </sc-if>
       <sc-if value="{{ onTopics }}" hint-placeholder-val="{{ false }}">
@@ -542,7 +550,8 @@
     </sc-if>
     <sc-if value="{{ trackerOn }}" hint-placeholder-val="{{ true }}">
       <div data-tracker="true" style="position:fixed; left:0; right:{{ dockRight }}; bottom:0; z-index:16; display:flex; justify-content:center; padding:0 12px max(12px, env(safe-area-inset-bottom)); pointer-events:none; transition:right 300ms ease">
-        <button data-startbtn="true" onClick="{{ startGo }}" aria-haspopup="{{ startHasPopup }}" aria-label="{{ trackerAria }}" class="glass-card" data-float="true" style="pointer-events:auto; box-sizing:border-box; width:min(520px, 100%); min-height:64px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px; border-radius:18px; color:var(--text); text-align:left; cursor:pointer">
+        <button data-startbtn="true" onClick="{{ startGo }}" aria-haspopup="{{ startHasPopup }}" aria-label="{{ trackerAria }}" class="glass-card {{ trackLux }}" data-float="true" style="pointer-events:auto; box-sizing:border-box; width:min(520px, 100%); min-height:64px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px; border-radius:18px; color:var(--text); text-align:left; cursor:pointer">
+          <sc-if value="{{ vmOn }}" hint-placeholder-val="{{ false }}"><img class="vm-standee" src="assets/companion-stand.webp" alt="" aria-hidden="true" width="240" height="340" decoding="async" /></sc-if>
           <span aria-hidden="true" style="flex:none; width:44px; height:44px; border-radius:50%; background:radial-gradient(closest-side, #22252c 74%, transparent 77%), conic-gradient(#4d9bff {{ trackerDeg }}, rgba(255,255,255,0.12) 0); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800">{{ trackerMarks }}</span>
           <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px">
             <span style="font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ trackerTitle }}</span>
@@ -1873,7 +1882,7 @@ class Component extends DCLogic {
     window.addEventListener("resize", this._rs); this._rs();
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const saveData = !!(navigator.connection && navigator.connection.saveData);
-    this.setState({ reduced: mq.matches, saveData: saveData, home: HOME.resume ? "returning" : "first", pvOpen: qs.get("preview") === "1" });
+    this.setState({ classicMap: qs.get("map") === "classic", reduced: mq.matches, saveData: saveData, home: HOME.resume ? "returning" : "first", pvOpen: qs.get("preview") === "1" });
     // The 3D companion swaps in over the poster only once it has actually loaded.
     this._ld = () => this.setState({ modelReady: true });
     document.addEventListener("loaded", this._ld);
@@ -1905,6 +1914,9 @@ class Component extends DCLogic {
     // The tracker follows the scroll (one check per frame at most).
     this._tsc = () => { cancelAnimationFrame(this._tscR); this._tscR = requestAnimationFrame(() => this.trackerCheck()); };
     window.addEventListener("scroll", this._tsc, { passive: true });
+    // Brief 22: the vortex map says when a medal is tapped and where the next mission is drawn.
+    this._vopen = e => this.openCard(e.detail.index); window.addEventListener("vortex-open", this._vopen);
+    this._vdir = () => this.trackerCheck(); window.addEventListener("vortex-dir", this._vdir);
     // The teacher tool's writes arrive as a storage event (a tab never hears its own writes).
     this._st = e => { if (e.key === BUS_KEY || e.key === null) this.onBus(busRead()); };
     window.addEventListener("storage", this._st);
@@ -1993,13 +2005,19 @@ class Component extends DCLogic {
     }
   }
   suggested() { return this.missions().findIndex(m => !m.parts.every(p => this.pg(p.key).closed)); }
+  // The vortex map (brief 22), once it has laid out its road; null on the classic map.
+  vm() { const v = document.querySelector("vortex-map"); return v && v.ready ? v : null; }
   // The pinned tracker's arrow: is the next mission above, below, or on screen?
-  trackerCheck() { if (this.state.screen !== "map") return; const i = this.suggested(), n = i >= 0 && document.querySelector('[data-node="' + i + '"]');
+  trackerCheck() { if (this.state.screen !== "map") return; const i = this.suggested(), vm = this.vm(), n = !vm && i >= 0 && document.querySelector('[data-node="' + i + '"]');
+    // On the vortex map the arrow settles once the view does: a re-render of this page is a long task on a modest
+    // phone (30-50 ms measured on a 3.4 GB laptop), so it must not land mid-scroll.
+    if (vm) { clearTimeout(this._tdT); this._tdT = setTimeout(() => { const w = vm.where || "here"; if (this.state.screen === "map" && w !== (this.state.trackDir || "here")) this.setState({ trackDir: w }); }, 180); return; }
     let d = "here"; if (n) { const r = n.getBoundingClientRect(), hdr = document.querySelector("header"), top = hdr ? hdr.getBoundingClientRect().bottom : 64;
       if (r.bottom < top) d = "up"; else if (r.top > window.innerHeight - 90) d = "down"; }
     if (d !== (this.state.trackDir || "here")) this.setState({ trackDir: d }); }
   earnedNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => b + (this.pg(p.key).best || 0), 0), 0); }
   scrollToNode(i, smooth) {
+    const vm = this.vm(); if (vm && vm.scrollToMission(i, smooth)) return;              // a fixed medal can't scroll the page: the map does
     const n = document.querySelector('[data-node="' + i + '"]');
     if (n) n.scrollIntoView({ block: "center", behavior: smooth && !this.state.reduced ? "smooth" : "auto" });
   }
@@ -2092,7 +2110,7 @@ class Component extends DCLogic {
   finishBeats() {
     const F = this.finishData(); this.finishClear();
     this.setState({ finishRun: true, finishCard: null, cel: null, mapClip: "", mapClipOpts: null, mapLive: "You reached the finish line." }, () => {
-      const b = document.querySelector("[data-finishbadge]"); if (b) b.scrollIntoView({ block: "center", behavior: "smooth" }); });
+      const vm = this.vm(), b = document.querySelector("[data-finishbadge]"); if (vm) vm.scrollToFinish(true); else if (b) b.scrollIntoView({ block: "center", behavior: "smooth" }); });
     this._fb1 = setTimeout(() => {
       // Finished (below the line): the raised-hand wave; otherwise the dance, held on its arms-wide "yes".
       if (F.tier === "finished") this.setState({ mapClip: "greet", mapClipOpts: { hold: 1.95 } });
@@ -2111,7 +2129,7 @@ class Component extends DCLogic {
       const h = document.getElementById("finish-title"); if (h) h.focus({ preventScroll: true });
       // A bottom-sheet card (phones): bring the flag and the dancing companion into the space above it.
       const b = document.querySelector("[data-finishbadge]"), cd = document.querySelector("[data-finishcard] [role=dialog]"), hd = document.querySelector("header");
-      if (b && cd && cd.getBoundingClientRect().left < window.innerWidth * 0.4) { const br = b.getBoundingClientRect(), top = hd ? hd.getBoundingClientRect().bottom : 64;
+      if (b && cd && !this.vm() && cd.getBoundingClientRect().left < window.innerWidth * 0.4) { const br = b.getBoundingClientRect(), top = hd ? hd.getBoundingClientRect().bottom : 64;
         window.scrollBy({ top: br.top + br.height / 2 - (top + cd.getBoundingClientRect().top) / 2 - 40, behavior: this.state.reduced ? "auto" : "smooth" }); }
       if (this.state.reduced) return; const t0 = performance.now();
       const step = now => { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); this.setState({ finishShown: Math.round(F.earned * e) }); if (k < 1) this._fcu = requestAnimationFrame(step); };
@@ -2217,7 +2235,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
@@ -3624,13 +3642,16 @@ class Component extends DCLogic {
   // ── The map: one road, bottom to top, through question capsules and mission spheres.
   mapVals(paper, missions, suggestedIdx, missionState, earned, total, phone, tablet, desk, vw) {
     const s = this.state;
+    const VM = !s.classicMap;                                     // brief 22: the road runs across the wave into the vortex
     const roadW = Math.max(280, Math.min(desk ? 560 : tablet ? 520 : 360, vw - 32));
-    const cx = roadW / 2, amp = phone ? Math.min(64, roadW * 0.19) : tablet ? 104 : 124;
+    // On the vortex map the bends swing wider (labels are placed around the medals, not under a fixed slot).
+    const cx = roadW / 2, amp = VM ? Math.min(phone ? 124 : 172, roadW * 0.41) : phone ? Math.min(64, roadW * 0.19) : tablet ? 104 : 124;
     const nodeR = phone ? 31 : 35, STEP = phone ? 158 : 168, CAPH = 124;
     // Spheres sit high in their slot so the two-line label below them has room.
     const LIFT = phone ? 26 : 28, CLEAR = phone ? 90 : 100;
     const ZIG = [0, 0.6, 1, 0.6, 0, -0.6, -1, -0.6];
-    const items = [{ kind: "start", h: 244, anchor: 120 }];
+    // The vortex map has no launch pad: the first mission sits right on the vortex, over the start card.
+    const items = [VM ? { kind: "start", h: 0 } : { kind: "start", h: 244, anchor: 120 }];
     let k = 0;
     (paper ? paper.sections : []).forEach(sec => {
       // Every plaque after the first leaves headroom below it, so the companion can stand at the
@@ -3672,7 +3693,7 @@ class Component extends DCLogic {
       const closed = m.parts.every(q => this.pg(q.key).closed);
       const next = i === nextIdx;
       const label = next ? (st.label === "Not started" ? "Next up" : st.label) : closed && mm ? st.label + " · " + g + "/" + mm : st.label;
-      return { idx: String(i), number: m.id, title: m.title, tags: m.tags, state: label,
+      return { idx: String(i), number: m.id, title: m.title, tags: m.tags, state: label, vmBig: next,
         stateBg: next ? "rgba(0,104,248,0.18)" : st.bg, stateColor: next ? "#ffffff" : st.color,
         left: f(it.x - 75) + "px", top: f(it.y - nodeR) + "px", size: nodeR * 2 + "px", numSize: phone ? "15px" : "16px",
         ring: (next ? ORB.next : ORB[st.label] || ORB["Not started"]).rim,
@@ -3791,8 +3812,21 @@ class Component extends DCLogic {
       finishPrimaryGo: () => (FC && FC.tier === "finished" ? this.finishToSummary() : this.finishToHall()),
       finishSecondaryGo: () => (FC && FC.tier === "finished" ? this.finishToHall() : this.finishToSummary()),
     };
+    // The vortex map's inputs: the same geometry and paint as the classic road, as data (see vortex-map.js).
+    const finIt = items[items.length - 1], done = earned >= total && total;
+    const vmVals = {
+      vmOn: VM, vmOff: !VM, trackLux: VM ? "vm-lux" : "", mapPadB: VM ? "0px" : "120px",
+      mainZ: VM && s.mapView !== "topics" ? "5" : "1", mainPE: VM && s.mapView !== "topics" ? "none" : "auto",
+      vmActive: s.mapView !== "topics" ? "true" : "false", vmNext: String(suggestedIdx),
+      vmLit: String(Math.round(1000 * lit / Math.max(1, total || 100)) / 1000),
+      vmGeom: JSON.stringify({ nodes: items.filter(it => it.kind === "m").map(it => ({ i: it.i, x: f(it.x), y: f(it.y) })), fin: { x: f(finIt.x), y: f(finIt.y) },
+        caps: items.filter(it => it.kind === "cap").map(it => ({ y: f(it.y), label: it.sec.title + (it.sec.total ? " · " + it.sec.total + " marks" : "") })) }),
+      vmPaint: JSON.stringify(roadNodes.map(n => ({ i: +n.idx, id: n.number, title: n.title, chip: n.state, chipBg: n.stateBg, chipColor: n.stateColor, tags: n.tags,
+        titleColor: n.titleColor, fill: n.fill, ring: n.ring, lip: n.lip, num: n.numColor, big: n.vmBig, halo: n.halo, badge: n.hasBadge, anim: n.anim, aria: n.aria }))),
+      vmFinish: JSON.stringify({ title: done ? "Paper done · " + earned + " of " + total : "Finish · " + total + " marks", sub: (s.xp || 0) + " XP earned",
+        aria: "Finish line. " + total + " marks on this paper" + (done ? ", all banked" : "") + ". " + (s.xp || 0) + " XP earned." }) };
     return {
-      ...finishVals,
+      ...finishVals, ...vmVals,
       roadW: roadW, roadH: roadH, roadWpx: roadW + "px", roadHpx: roadH + "px", roadViewBox: "0 0 " + roadW + " " + roadH,
       roadD: d, roadStroke: phone ? "18" : "22", roadEdgeW: phone ? "24" : "28", roadShadowW: phone ? "30" : "36",
       roadBevelW: phone ? "8" : "10", roadGlowW: phone ? "34" : "40", roadZones: roadZones, subTop: "64px",
