@@ -134,7 +134,7 @@
   .scrim { position:fixed; inset:0; z-index:30; background:rgba(12,13,15,0.66); -webkit-backdrop-filter:blur(5px); backdrop-filter:blur(5px);
     opacity:0; transition:opacity 420ms ease; pointer-events:none; }
   .scrim.on { opacity:1; pointer-events:auto; cursor:pointer; }
-  .hero-layer { position:fixed; inset:0; z-index:35; display:grid; place-items:center; padding:90px 16px 110px; perspective:1400px; pointer-events:none; }
+  .hero-layer { position:fixed; inset:0; z-index:35; display:grid; place-items:center; align-content:center; gap:22px; padding:90px 16px 110px; perspective:1400px; pointer-events:none; }   /* the card, and Next under it */
   .tile.hero { width:min(580px, 100%); transform:none; transition:none; pointer-events:auto; }
   .tile.hero.flipped { transform:rotateY(180deg); }
   .tile.hero .face { padding:22px 22px 22px 20px; gap:16px; }
@@ -219,8 +219,29 @@
   .hint.new { animation:nudge 1.1s ease 2; }
   @keyframes nudge { 0%, 100% { box-shadow:0 0 0 0 rgba(129,177,255,0); } 40% { box-shadow:0 0 0 7px rgba(129,177,255,0.22); } }
   @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-  .next { font:inherit; font-size:16px; font-weight:800; color:#fff; border:none; border-radius:16px; height:56px; background:var(--grad); cursor:pointer; display:none; }
-  .next.show { display:block; }
+  /* Next: a small liquid-glass pill under the cards, centred. A brand-gradient rim turns slowly around it; the arrow nudges. */
+  @property --na { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  .next { position:relative; display:none; align-items:center; gap:12px; width:max-content; margin:26px auto 0; height:46px; padding:0 7px 0 22px;
+    border:0; border-radius:999px; font:inherit; font-size:14px; font-weight:800; letter-spacing:0.02em; color:#fff; cursor:pointer; pointer-events:auto;
+    background:radial-gradient(120% 90% at 30% -20%, rgba(255,255,255,0.22), transparent 60%), linear-gradient(180deg, rgba(75,92,255,0.3), rgba(56,57,255,0.12));
+    -webkit-backdrop-filter:blur(16px) saturate(170%); backdrop-filter:blur(16px) saturate(170%);
+    box-shadow:0 14px 30px -12px rgba(56,57,255,0.75), inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -6px 14px -8px rgba(160,190,255,0.3);
+    transition:transform 160ms ease, box-shadow 240ms ease; }
+  .next::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px; pointer-events:none;
+    background:conic-gradient(from var(--na), #0068f8, #671dff, #00b5ff, #ffffff 70%, #0068f8);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:nspin 5s linear infinite; }
+  @keyframes nspin { to { --na:360deg; } }
+  .next .arr { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:var(--grad);
+    box-shadow:0 4px 12px rgba(56,57,255,0.6), inset 0 1px 0 rgba(255,255,255,0.45); animation:nnudge 2.6s ease-in-out 1.4s infinite; }
+  .next .arr svg { width:16px; height:16px; }
+  @keyframes nnudge { 0%, 72%, 100% { transform:none; } 82% { transform:translateX(4px); } 90% { transform:translateX(-1px); } }
+  .next:hover { box-shadow:0 16px 36px -12px rgba(56,57,255,0.95), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -6px 14px -8px rgba(160,190,255,0.35); }
+  .next:active { transform:scale(0.97); }
+  .next:focus-visible { outline:2px solid var(--tint); outline-offset:4px; }
+  .next.show { display:flex; animation:nextIn 520ms cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes nextIn { from { opacity:0; transform:translateY(10px) scale(0.96); } to { opacity:1; transform:none; } }
+  .hero-layer .next { justify-self:center; margin:0; }
+  @media (prefers-reduced-motion: reduce) { .next::before, .next .arr { animation:none; } }
   .toast { position:fixed; left:50%; top:74px; transform:translate(-50%,-20px); opacity:0; padding:10px 16px; border-radius:14px; font-weight:800; font-size:14px; transition:all 260ms; pointer-events:none; z-index:45; }
   .toast.show { opacity:1; transform:translate(-50%,0); }
   .toast.ok { background:rgba(61,220,151,0.15); color:var(--ok); border:1px solid rgba(61,220,151,0.4); }
@@ -235,6 +256,7 @@
 <div class="backdrop" aria-hidden="true"></div>
 <div class="scrim" id="scrim" aria-hidden="true"></div>
 <div class="hero-layer" id="heroLayer"></div>
+<button class="next" id="next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
 <div class="pal" id="pal" aria-hidden="true"><div class="pal-body" id="palBody"></div></div>
 <canvas id="fx"></canvas>
 <div class="shards" id="shards" aria-hidden="true"></div>
@@ -256,7 +278,6 @@
   <div class="pal-say" id="clue"></div>
   <button class="hint surface" id="hint" aria-expanded="false" aria-controls="clue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span>Hint</span></button>
   <div class="say" id="say"></div>
-  <button class="next" id="next">Next question</button>
 </div></div>
 <div class="toast" id="toast" role="status"></div>
 <p class="sr" id="live" aria-live="polite"></p>
@@ -277,6 +298,7 @@ const WHY = {
 const ORDER = ["1.1.1", "1.1.5", "1.3.1"];                                  // the concept's questions, in paper order
 const TIER_BY_TRY = ["gold", "silver", "bronze"];                          // the XP tiers: 100 / 60 / 20
 const book = {};                                                           // marks per question, first sitting only
+const NEXT = document.getElementById("next");                      // one Next button, moved to wherever the cards are
 const $ = id => document.getElementById(id), live = t => { $("live").textContent = t; };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 $("mkOf").textContent = P.total; $("marksBox").setAttribute("aria-label", `0 of ${P.total} marks`);
@@ -351,7 +373,7 @@ function load(n) {
   const it = ITEMS[n];
   S = { it, shape: shapeOf(it), sel: null, gone: new Set(), tries: 0, done: false, dialSel: [], sw: [false, false], hit: {} };
   document.querySelectorAll(".pick button[data-q]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === n)));
-  setHint(null); $("next").classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
+  setHint(null); NEXT.classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
   render(true);
 }
 
@@ -395,7 +417,7 @@ function render(deal) {
     t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) dismiss(); else if (t.classList.contains("flipped")) lift(t); });
     g.appendChild(t);
   });
-  st.appendChild(g); paintTiles(); paintTop(); say();
+  st.appendChild(g); st.appendChild(NEXT); paintTiles();                  // Next lives just under the cards paintTop(); say();
 }
 
 function press(i) {
@@ -473,7 +495,8 @@ const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
 function fillBack(t, it) { const w = WHY[it.n] || {};
   t.querySelector(".ans").textContent = L[it.a] + " · " + it.opts[it.a]; t.querySelector(".why").textContent = whyOf(it);
   t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
-function showNext() { $("next").classList.add("show"); $("next").focus({ preventScroll: true }); }
+function placeNext() { const hero = $("heroLayer").querySelector(".tile.hero"); (hero ? $("heroLayer") : $("stage")).appendChild(NEXT); }
+function showNext() { placeNext(); NEXT.classList.add("show"); NEXT.focus({ preventScroll: true }); }
 
 // The hero: the card leaves its slot (an empty slot keeps the grid still), grows to the centre over a scrim, then
 // (right answer) shines in its medal colour and flips twice, landing on its back; (revealed answer) turns once, calmly.
@@ -628,8 +651,8 @@ function grow(t) {
 function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
   const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on");
   if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
-  glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); }); }
-function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => palJump(t)).then(() => { buddyIn(t, false); S.busy = false; }); }
+  placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); }); }   // Next goes back under the grid with it
+function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { placeNext(); return palJump(t); }).then(() => { buddyIn(t, false); S.busy = false; }); }
 
 function present(t, tier) {
   if (tier) t.classList.add(tier); S.busy = true; S.tier = tier || "none";
@@ -794,7 +817,7 @@ function edge(p, a, w, h) { const cx = Math.cos(a), cy = Math.sin(a); let t = In
 let leaving = false;
 function next() { go(ORDER[(ORDER.indexOf(S.it.n) + 1) % ORDER.length]); }
 function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = true;
-  $("next").classList.remove("show"); setHint(null); $("scrim").classList.remove("on");
+  NEXT.classList.remove("show"); setHint(null); $("scrim").classList.remove("on");
   const outs = [], hero = $("heroLayer").firstElementChild, flip = x => x.classList.contains("flipped") ? "rotateY(180deg) " : "";
   // Fading a card flattens its 3D (opacity groups it), so backface hiding stops working and the far side would show
   // through mirrored: hide the side facing away first.
@@ -809,7 +832,7 @@ function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = t
   Promise.all(outs).then(() => arrive(n)).catch(() => arrive(n)); }
 function arrive(n) { leaving = false; if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n);
   const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
-$("next").onclick = next;
+NEXT.onclick = next;
 $("scrim").onclick = () => dismiss();
 // The hint: after a miss a small Hint button appears (with a nudge); tapping it, the robot says the clue in its bubble.
 function setHint(text) { const h = $("hint"), c = $("clue"); c.classList.remove("show"); h.setAttribute("aria-expanded", "false"); h.classList.remove("new");
