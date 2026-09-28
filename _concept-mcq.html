@@ -219,21 +219,35 @@
      Measured: the head top is 18% down, its right edge 63% across. Two puffs rise up-right from there, then the bubble
      grows out of the last one (its bottom-left corner). */
   .pal-say { position:absolute; inset:0; display:none; pointer-events:none; }
-  .pal-say .puff, .pal-say .say-txt { position:absolute; background:radial-gradient(120% 120% at 25% 0%, rgba(255,255,255,0.16), transparent 60%), rgba(56,57,255,0.22);
-    border:1px solid rgba(140,160,255,0.45); -webkit-backdrop-filter:blur(12px) saturate(160%); backdrop-filter:blur(12px) saturate(160%);
-    box-shadow:0 10px 26px -12px rgba(56,57,255,0.75), inset 0 1px 0 rgba(255,255,255,0.3); }
-  .pal-say .puff { border-radius:50%; }
-  .pal-say .p1 { left:64%; top:14%; width:7px; height:7px; }
-  .pal-say .p2 { left:70%; top:6%; width:12px; height:12px; }
-  .pal-say .say-txt { left:78%; bottom:98%; width:max-content; max-width:min(340px, calc(100vw - 130px)); padding:11px 15px; border-radius:20px;
-    font-size:13.5px; line-height:1.5; color:#e6ebff; transform-origin:0 100%; text-wrap:balance; }   /* even lines, no lone last word */
+  /* Light blue cloud. The text box holds the words; its ::before (12 px wider each side, 16 px taller on top) is the
+     cloud: fixed-radius bumps (px from its edges, so any clue length keeps them round) over a rect under the words. */
+  .pal-say { --cloud:#cfe4ff; }
+  .pal-say .puff, .pal-say .say-txt { position:absolute; filter:drop-shadow(0 8px 16px rgba(40,70,200,0.45)) drop-shadow(0 0 1px rgba(255,255,255,0.9)); }
+  .pal-say .puff { border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff, var(--cloud) 55%); }
+  .pal-say .p1 { left:64%; top:14%; width:8px; height:8px; }
+  .pal-say .p2 { left:70%; top:5%; width:14px; height:14px; }
+  .pal-say .say-txt { left:calc(78% + 12px); bottom:calc(98% + 10px); width:max-content; max-width:min(320px, calc(100vw - 150px)); padding:9px 15px 7px;
+    border-radius:24px; background:var(--cloud); font-size:13.5px; line-height:1.45; font-weight:700; color:#12204a; transform-origin:0 100%;
+    text-wrap:balance; isolation:isolate; }   /* the cloud's body; JS fits its width to the longest line */
+  .pal-say .say-txt::before { content:""; position:absolute; inset:-14px -10px -10px; z-index:-1; background:
+      radial-gradient(circle 19px at 14% 22px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 24px at 32% 25px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 20px at 52% 21px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 23px at 71% 24px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 18px at 88% 22px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 16px at 22% calc(100% - 17px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 18px at 44% calc(100% - 19px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 15px at 66% calc(100% - 16px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 17px at 85% calc(100% - 18px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 16px at 17px 52%, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 16px at calc(100% - 17px) 50%, var(--cloud) 97%, #0000 100%); }
   .pal-say.show { display:block; }
   .pal-say.show .p1 { animation:puff 200ms cubic-bezier(.2,.8,.3,1.3) both; }
   .pal-say.show .p2 { animation:puff 200ms cubic-bezier(.2,.8,.3,1.3) 110ms both; }
   .pal-say.show .say-txt { animation:thought 340ms cubic-bezier(.2,.9,.3,1.15) 210ms both; }
   @keyframes puff { from { opacity:0; transform:scale(0.2); } to { opacity:1; transform:none; } }
   @keyframes thought { from { opacity:0; transform:translate(-8px, 8px) scale(0.55); } to { opacity:1; transform:none; } }
-  @media (max-width:600px) { .pal-say .p1 { width:5px; height:5px; } .pal-say .p2 { width:9px; height:9px; } .pal-say .say-txt { font-size:13px; padding:9px 13px; border-radius:17px; } }
+  @media (max-width:600px) { .pal-say .p1 { width:6px; height:6px; } .pal-say .p2 { width:10px; height:10px; } .pal-say .say-txt { font-size:13px; } }
   @media (prefers-reduced-motion: reduce) { .pal-say.show .puff, .pal-say.show .say-txt { animation:none; } }
   @media (max-width:600px) { .pal { width:110px; height:154px; left:6px; bottom:-22px; } }
   @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
@@ -872,7 +886,13 @@ $("scrim").onclick = () => dismiss();
 // The hint: after a miss the robot thinks the clue on its own, in a bubble out of its head, once it is back on its feet in its
 // spot (it was just hit by the glass). It stays while the learner chooses, and goes when they answer.
 function setHint(text) { $("clue").classList.remove("show"); if (text) $("clueTxt").textContent = text; }
-function sayHint(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show");
+// A wrapped box keeps its max width; the cloud should hug the words, so measure the lines and set the width to the longest.
+function fitCloud(el) { el.style.animation = "none"; el.style.width = "";
+  const rg = document.createRange(); rg.selectNodeContents(el); const rs = [...rg.getClientRects()];
+  if (rs.length) { const cs = getComputedStyle(el), pad = cs.boxSizing === "border-box" ? parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) : 0;
+    el.style.width = Math.ceil(Math.max(...rs.map(r => r.right)) - Math.min(...rs.map(r => r.left)) + pad + 1) + "px"; }
+  void el.offsetWidth; el.style.animation = ""; }
+function sayHint(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
   live("Hint: " + text); palGreet(); }                                                           // it turns to you and says it
 function toast(t, k) { const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
 
