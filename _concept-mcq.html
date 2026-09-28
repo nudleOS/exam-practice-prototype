@@ -161,6 +161,7 @@
   .back .not { font-size:13.5px; line-height:1.5; color:var(--text2); padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); }
   .back .not b { color:var(--text); font-weight:700; }
   .slot { min-height:96px; }
+  .tile.nobuddy .buddy { display:none !important; }                      /* the robot is down on the floor: the answer rises alone */
   .tile.dealt { animation:deal 520ms cubic-bezier(.2,.9,.25,1.1) both; animation-delay:var(--d); }
   /* The break: cracks drawn on the card, then shards on their own layer */
   .cracks { position:absolute; inset:0; z-index:3; pointer-events:none; overflow:visible; }
@@ -198,19 +199,19 @@
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
   .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
-  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:104px; min-height:128px; align-content:end; }
-  @media (max-width:600px) { .dock-in { padding-left:86px; min-height:108px; } }
+  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:164px; min-height:128px; align-content:end; }
+  @media (max-width:600px) { .dock-in { padding-left:116px; min-height:108px; } }
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
   /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
      behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
-  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:38px; width:92px; height:128px; z-index:41; pointer-events:none; }
+  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:-31px; width:150px; height:210px; z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
   .pal-body { position:absolute; inset:0; } .pal.away .pal-body { visibility:hidden; }
   .pal-body model-floor, .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
   .pal-body img { object-fit:contain; object-position:center bottom; }
   .pal-say { justify-self:start; max-width:min(440px, 100%); padding:10px 14px; border-radius:14px 14px 14px 4px; font-size:13.5px; line-height:1.5; color:#dfe6ff;
     background:rgba(56,57,255,0.18); border:1px solid rgba(92,110,255,0.42); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); display:none; }
   .pal-say.show { display:block; animation:rise 240ms cubic-bezier(.2,.8,.2,1); }
-  @media (max-width:600px) { .pal { width:76px; height:108px; left:10px; } }
+  @media (max-width:600px) { .pal { width:110px; height:154px; left:6px; bottom:-22px; } }
   .hint { justify-self:center; display:none; align-items:center; gap:6px; min-height:40px; padding:0 14px 0 11px; border-radius:999px; font:inherit; font-size:13px; font-weight:800;
     color:var(--tint); cursor:pointer; }
   .hint.show { display:inline-flex; } .hint svg { width:16px; height:16px; } .hint:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
@@ -398,7 +399,7 @@ function render(deal) {
 }
 
 function press(i) {
-  if (S.done || S.gone.has(i)) return;
+  if (S.done || S.busy || S.gone.has(i)) return;                   // busy: one answer's consequence plays out before the next is taken
   S.sel = i; palLook(document.querySelector(`.tile[data-i="${i}"]`));                                                  // one tap answers (Murci): no second tap, no Lock in
   if (S.shape.kind === "switches") { S.sw = [i === 0 || i === 2, i === 1 || i === 2]; syncSwitches(); }
   else if (S.shape.kind === "dials") { S.dialSel = [...S.shape.parts[i]]; syncDials(); }
@@ -450,15 +451,18 @@ function submit() {
   } else {
     streak = 0; S.sel = null; S.gone.add(i);
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
-    shatter(t, S.hit[i]).then(() => {
-      if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`);
+    let rb = null;
+    if (PAL.el && !PAL.sweeping && !reduced) { const tx = palUnder(t), n = S.tries; rb = { ...palHead(tx), minHold: palRunMs(tx) + 140, onHit: () => palHit(n, last) }; palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card
+    S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
+    shatter(t, S.hit[i], rb).then(() => { if (!last) S.busy = false;
+      if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
         r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0, "none"); fillBack(r, it); setHint(null);
-        live(`The answer is ${L[it.a]}. ${whyOf(it)}`); present(r, null).then(showNext); }
+        live(`The answer is ${L[it.a]}. ${whyOf(it)}`); wait(PAL.down ? 1700 : 0).then(() => present(r, null)).then(showNext); }   // the answer rises as it hits the ground
       const first = [...document.querySelectorAll(".tile")].find(x => !S.gone.has(+x.dataset.i));
       if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
       paintTiles(); say(); });
     if (last) toast("Answer: " + L[S.it.a], "no");
-    else { toast("Not that one · " + (3 - S.tries) + " left", "no"); setHint(clue); if (3 - S.tries === 1) setTimeout(palGreet, 900); }   // one try left: it waves at you
+    else { toast("Not that one · " + (3 - S.tries) + " left", "no"); setHint(clue); }
     live(`${L[i]} is wrong and removed. ${last ? "The answer is " + L[S.it.a] + "." : (3 - S.tries) + (3 - S.tries === 1 ? " try" : " tries") + " left. A hint is ready."}`);
   }
   paintTop(); say();
@@ -482,26 +486,80 @@ if (BUDDY_3D) (window.requestIdleCallback || setTimeout)(() => fetch(BUDDY.src).
 function buddyStill(box) { box.replaceChildren(Object.assign(document.createElement("img"), { src: BUDDY.still, alt: "" })); }
 // ONE robot element (PAL.el) for the whole page: it lives in its corner and moves into the big card and back.
 // model-floor keeps its renderer through a move and re-frames on a `fit` change, so it never reloads or doubles.
-const PAL = { el: null };
+const PAL = { el: null, x: 0, anim: null, timer: 0, down: false, hurt: false, sweeping: false };
 function palMake() { const body = $("palBody"); if (!BUDDY_3D) { buddyStill(body); return; }
   const mf = document.createElement("model-floor");
   [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "ring"], ["fit", "0.8"], ["inplace", ""]].forEach(([k, v]) => mf.setAttribute(k, v));   // inplace: it stays centred in its box and turns about itself
   mf.addEventListener("failed", () => { PAL.el = null; buddyStill(body); }); body.appendChild(mf); PAL.el = mf; palGreet(); }
 // Play a clip: clear the play options, set this one's, then ask for "" then the clip (so the same clip restarts).
 function palClip(clip, o = {}) { const m = PAL.el; if (!m) return;
-  ["loop", "hold", "from", "paused"].forEach(k => m.removeAttribute(k));
+  ["loop", "hold", "from", "paused", "speed", "fade"].forEach(k => m.removeAttribute(k));
   if (o.once) m.setAttribute("loop", "once"); if (o.hold != null) m.setAttribute("hold", o.hold); if (o.from) m.setAttribute("from", o.from); if (o.paused) m.setAttribute("paused", "");
+  if (o.speed) m.setAttribute("speed", o.speed); if (o.fade) m.setAttribute("fade", o.fade);
   m.setAttribute("fit", String(o.fit || 0.8)); m.setAttribute("clip", ""); m.setAttribute("clip", clip); }
-const palGreet = () => palClip("greet", { once: true, hold: 2.7 });                         // waves, then stands (greet_04 is 2.79 s)
+const palGreet = () => { if (!palFree()) return; palClip("greet", { once: true, hold: 2.7 }); };   // waves, then stands (greet_04 is 2.79 s)
+const palIdle = () => palClip("greet", { once: true, from: 2.62, hold: 2.7, fade: 0.25 });  // just standing (greet's last pose)
+// Free = standing in its spot: not running, hurt, down, sweeping or inside a card.
+const palFree = () => !PAL.anim && !PAL.down && !PAL.sweeping && !PAL.hurt && !$("pal").classList.contains("away");
+// Movement. The run clip is authored in place; measured, its planted foot moves 3.51 units/s, and the box shows 2·H·fit
+// units (H 2.4, fit 0.8) over its height, so px/s = 3.51 · rate · boxHeight / 3.84. Moving the box at exactly that pace
+// is what keeps the feet from sliding. `translate` (not transform) carries the position, so the jump arcs compose with it.
+const RUN_RATE = 1.9, SWEEP_RATE = 2.2;
+const palSpeed = rate => 3.513 * rate * ($("pal").offsetHeight / 3.84);
+function palBase() { const r = $("pal").getBoundingClientRect(); return { left: r.left - PAL.x, top: r.top, w: r.width, h: r.height }; }
+function palStop() { const pal = $("pal"); if (PAL.anim) { PAL.x = parseFloat(getComputedStyle(pal).translate) || 0; PAL.anim.cancel(); PAL.anim = null; pal.style.translate = `${PAL.x}px 0`; } }
+function palRunTo(tx, rate = RUN_RATE) { const pal = $("pal"), m = PAL.el; clearTimeout(PAL.timer); palStop();
+  const from = PAL.x, d = tx - from; PAL.x = tx; pal.style.translate = `${tx}px 0`;
+  if (Math.abs(d) < 6 || reduced || !m) { if (m) m.setAttribute("yaw", "0"); return Promise.resolve(); }
+  m.setAttribute("yaw", d > 0 ? "1.35" : "-1.35"); palClip("run", { speed: rate, fade: 0.18 });        // three-quarters: its face stays in view
+  PAL.anim = pal.animate([{ translate: `${from}px 0` }, { translate: `${tx}px 0` }], { duration: Math.abs(d) / palSpeed(rate) * 1000, easing: "cubic-bezier(.3,.05,.45,1)" });
+  const a = PAL.anim; return a.finished.then(() => { if (PAL.anim === a) { PAL.anim = null; m.setAttribute("yaw", "0"); } }, () => {}); }
+const palRunMs = (tx, rate = RUN_RATE) => Math.abs(tx - PAL.x) / palSpeed(rate) * 1000;
+// Under a card: its centre below the card's centre, kept on screen.
+function palUnder(tile) { const B = palBase(), c = tile.getBoundingClientRect(); return Math.max(4 - B.left, Math.min(innerWidth - B.left - B.w - 4, c.left + c.width / 2 - B.left - B.w / 2)); }
+// Its head and shoulders, as the glass meets them: a curve from the top of the head down to the shoulders (screen px).
+// The figure fills 2.4 / 3.84 = 62.5% of the box height, centred, so its head top is 18.75% down the box.
+function palHead(tx) { const B = palBase(); return { cx: B.left + tx + B.w / 2, headY: B.top + B.h * 0.1875, halfW: B.h * 0.15, drop: B.h * 0.12 }; }
+function tink() { at_($("pal"), () => { tone(2900, 0.08, "sine", 0.035); tone(4350, 0.05, "triangle", 0.018, 1, 0.01); noise(0.05, 0.16, 5000); }); }
+function jolt() { if (reduced) return; const kf = [{ transform: "none" }, { transform: "translate(-6px,4px)" }, { transform: "translate(5px,-3px)" }, { transform: "translate(-3px,2px)" }, { transform: "translate(1px,-1px)" }, { transform: "none" }];
+  [$("stage"), $("shards"), $("palBody")].forEach(e => e.animate(kf, { duration: 360, easing: "ease-out" })); }
+// Hit by the glass. Measured on defeat_03: 0.55 s the head snaps back, 0.8-1.3 s it jolts, 1.6-2.0 s it slumps, 2.5-3.1 s it
+// goes down, 4.0 s+ it lies on the floor. So a first miss flinches, a second staggers, the last knocks it down.
+const HURT = [{ hold: 1.1, back: 760 }, { hold: 2.2, back: 1900 }];
+function palHit(n, last) { tink(); const m = PAL.el; if (!m) return;
+  if (last) { PAL.down = true; PAL.hurt = false; palClip("defeat", { once: true, from: 0.4, fade: 0.12 }); jolt(); buzz(HAPTIC.defeat); return; }
+  const H = HURT[Math.min(n, 2) - 1]; PAL.hurt = true; palClip("defeat", { once: true, from: 0.4, hold: H.hold, fade: 0.12 });
+  PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(0).then(() => { if (!PAL.anim && !PAL.down) palIdle(); }); }, H.back); }
+// Next: it gets up if it is down (the fall played backwards), runs to the left of the pile, then sprints right pushing every
+// piece off the floor, and comes back round from the left to its spot. The next question is already up meanwhile.
+function palCleanUp() { const m = PAL.el, pieces = [...$("shards").children];
+  if (!m || PAL.sweeping) return; clearTimeout(PAL.timer); PAL.hurt = false;
+  if (m.parentElement !== $("palBody")) palHome(null);                                     // it was inside the answer card: home first
+  if (!pieces.length && !PAL.down) { palRunTo(0).then(() => { if (palFree()) palGreet(); }); return; }
+  PAL.sweeping = true;
+  const up = PAL.down ? (palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }), wait(1650)) : Promise.resolve();
+  PAL.down = false;
+  up.then(() => { const B = palBase(), xs = pieces.map(el => { const b = el.getBoundingClientRect(); return b.left + b.width / 2; });
+    const leftOfPile = Math.min(...xs) - B.left - B.w * 0.9;
+    return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile)) : Promise.resolve()).then(() => sweepRight(pieces)); })
+  .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => { if (palFree()) palGreet(); });
+}
+function sweepRight(pieces) { const pal = $("pal"), B = palBase(), exit = innerWidth - B.left + 40, v = palSpeed(SWEEP_RATE), start = PAL.x;
+  const front0 = B.left + start + B.w * 0.62;                                                   // its leading foot
+  pieces.forEach(el => { const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, when = Math.max(0, (cx - front0) / v * 1000);
+    if (cx > innerWidth + 4 || cx < -4) { el.remove(); return; }                                // thrown off-screen in the break: nothing to sweep, don't keep it
+    setTimeout(() => { const dist = innerWidth + 60 - cx;                                          // pushed ahead of it, a little hop, off the edge
+      el.animate([{ translate: "0 0" }, { translate: `${(dist * 0.15).toFixed(0)}px -7px`, offset: 0.14 }, { translate: `${dist.toFixed(0)}px 0` }],
+        { duration: dist / (v * 1.12) * 1000, easing: "cubic-bezier(.2,.6,.4,1)", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove()); }, when); });
+  return palRunTo(exit, SWEEP_RATE).then(() => {                                                // off the right edge; back round from the left
+    pal.classList.add("away"); PAL.x = -B.left - B.w - 30; pal.style.translate = `${PAL.x}px 0`; void pal.offsetWidth; pal.classList.remove("away"); });
+}
 // It turns to look at a card: yaw (radians) from where the card is relative to the robot.
-function palLook(el) { const m = PAL.el; if (!m) return; if (!el) { m.setAttribute("yaw", "0"); return; }
+function palLook(el) { const m = PAL.el; if (!m || !palFree()) return; if (!el) { m.setAttribute("yaw", "0"); return; }
   const r = el.getBoundingClientRect(), p = $("pal").getBoundingClientRect();
   m.setAttribute("yaw", Math.max(-0.6, Math.min(0.9, ((r.left + r.width / 2) - (p.left + p.width / 2)) / innerWidth * 1.6)).toFixed(2)); }
-// A card cracks: it hops back and glances away.
-function palHop() { const m = PAL.el; if (!m || $("pal").classList.contains("away")) return;
-  m.setAttribute("lift", "0.35"); m.setAttribute("yaw", "-0.45"); setTimeout(() => m.setAttribute("lift", "0"), 170); setTimeout(() => m.setAttribute("yaw", "0"), 750); }
 // Into the card: an arc from its corner to the card's centre, shrinking and fading as it dives in.
-function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show");
+function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show"); palStop(); PAL.sweeping = false; clearTimeout(PAL.timer); PAL.hurt = false;
   if (reduced || pal.classList.contains("away")) { pal.classList.add("away"); return Promise.resolve(); }
   const a = pal.getBoundingClientRect(), b = t.getBoundingClientRect(), dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
   palLook(t);
@@ -510,9 +568,11 @@ function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show");
     .then(() => pal.classList.add("away"), () => pal.classList.add("away")); }
 // Home: back to its corner (an arc out of the card when it came from one), and it greets.
 function palHome(fromEl) { const pal = $("pal"), body = $("palBody"), wasAway = pal.classList.contains("away");
-  if (PAL.el && PAL.el.parentElement !== body) body.appendChild(PAL.el);
   if (fromEl) { const box = fromEl.querySelector(".buddy"); if (box && box.querySelector("img")) box.replaceChildren(); }
-  pal.classList.remove("away"); palLook(null); palGreet();
+  const inCard = !!(PAL.el && PAL.el.parentElement !== body);
+  if (!inCard && !wasAway) return;                                                              // it never left: it's on the floor (standing, down or sweeping)
+  if (inCard) body.appendChild(PAL.el);
+  PAL.x = 0; pal.style.translate = "0px 0"; pal.classList.remove("away"); palLook(null); palGreet();
   if (!wasAway || !fromEl || reduced) return;
   const a = pal.getBoundingClientRect(), b = fromEl.getBoundingClientRect(), dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
   pal.animate([{ transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0 }, { transform: `translate(${(dx * 0.45).toFixed(0)}px, ${(dy * 0.45 - 90).toFixed(0)}px) scale(1.06)`, opacity: 1, offset: 0.5 },
@@ -576,7 +636,7 @@ function present(t, tier) {
   if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); palJump(t); buddyIn(t, false); S.busy = false; return Promise.resolve(); }
   const g = grow(t); palLook(t);
   return g.then(() => {
-    palJump(t).then(() => buddyIn(t, true));                                                  // it dives into the card, then rides the spin frozen
+    if (!PAL.down) palJump(t).then(() => buddyIn(t, true));                                  // it dives into the card, then rides the spin frozen (not when it's down)
     if (!tier) return wait(650);
     t.querySelectorAll(".vline, .vfill").forEach(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished.then(() => x.remove()));
     t.classList.remove("yes"); t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
@@ -588,7 +648,7 @@ function present(t, tier) {
     const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);
       return { offset: q, transform: `translateZ(${(a * rise).toFixed(1)}px) scale(${(1 + a * swell).toFixed(4)}) rotateY(${(turn * q).toFixed(1)}deg)` }; });
     return t.animate(kf, { duration: tier ? FLIP_MS : 1100, easing: "cubic-bezier(.45,0,.25,1)" }).finished;
-  }).then(() => { buddyGo(t); if (!tier) { sfx.defeat(); buzz(HAPTIC.defeat); } S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
+  }).then(() => { buddyGo(t); if (!tier && !PAL.down) { sfx.defeat(); buzz(HAPTIC.defeat); } S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
 // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
@@ -606,7 +666,7 @@ function score(it, mk, tier) { if (it.n in book) return; book[it.n] = { got: mk,
 //     cut edge. The hairline gaps open first, then the inner pieces leave, the outer ones a beat later.
 // 3 · The fall is simulated: gravity, spin (small pieces spin fast, big ones slowly), a bounce (small pieces more),
 //     friction, then lying flat on the pile at the bottom of the screen. A few pieces clink.
-function shatter(tile, hit) {
+function shatter(tile, hit, rb) {                                                        // rb: the robot under it (head curve, minHold, onHit), or null
   const face = tile.querySelector(".face"), r = face.getBoundingClientRect(), w = r.width, h = r.height, NS = "http://www.w3.org/2000/svg";
   const p = hit && hit.x > 0 ? { x: Math.min(w - 10, Math.max(10, hit.x)), y: Math.min(h - 10, Math.max(10, hit.y)) } : { x: w * 0.5, y: h * 0.45 };
   if (reduced) { tile.style.transition = "opacity 200ms"; tile.style.opacity = "0"; return wait(220).then(() => leaveGap(tile)); }
@@ -642,7 +702,7 @@ function shatter(tile, hit) {
       draw(pts, 0.7, t0); } });
   RING.forEach((_, j) => rays.forEach((ry, k) => { const nx = rays[(k + 1) % N]; draw([ry.q[j], nx.q[j]], 0.9, Math.max(ry.ring[j], nx.ring[j]), rnd(0.55, 1)); }));
   for (let n = 0; n < 8; n++) { const a = rnd(0, Math.PI * 2), l = rnd(4, 11); draw([p, { x: p.x + Math.cos(a) * l, y: p.y + Math.sin(a) * l }], 0.6, 0); }   // micro-cracks
-  face.appendChild(svg); at_(tile, sfx.crack); buzz(HAPTIC.crack); palHop();
+  face.appendChild(svg); at_(tile, sfx.crack); buzz(HAPTIC.crack);
   const crush = document.createElement("div"); crush.className = "crush"; crush.style.left = p.x + "px"; crush.style.top = p.y + "px"; face.appendChild(crush);
   crush.animate([{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1)" }], { duration: 90, fill: "forwards" });
   const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
@@ -666,7 +726,7 @@ function shatter(tile, hit) {
       cells.push({ poly: [...slice(A, 0, A.ring[0]), ...slice(B, 0, B.ring[0]).reverse()], ring: 0 });
       cells.push({ poly: [...slice(A, A.ring[0], A.ring[1]), ...slice(B, B.ring[0], B.ring[1]).reverse()], ring: 1 });
       cells.push({ poly: [...slice(A, A.ring[1], A.len), ...between, ...slice(B, B.ring[1], B.len).reverse()], ring: 2 }); }
-    const layer = $("shards"), G = 0.0026, maxD = Math.hypot(w, h) / 2, landings = [], pieces = [];
+    const layer = $("shards"), G = 0.0026, maxD = Math.hypot(w, h) / 2, landings = [], pieces = [], hits = [];
     const make = ({ poly, ring }) => {
       // A window the size of the piece, clipped to its shape, holding a full-size copy of the card offset into place.
       const bx = Math.max(0, Math.floor(Math.min(...poly.map(q => q.x))) - 2), by = Math.max(0, Math.floor(Math.min(...poly.map(q => q.y))) - 2);
@@ -696,7 +756,10 @@ function shatter(tile, hit) {
       const T = () => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scaleY(${Math.cos(rx * Math.PI / 180).toFixed(3)}) rotate(${rz.toFixed(1)}deg)`;
       const frames = [{ offset: 0, transform: "none" }]; let t = 0, landed = false, flat = null, rest = 0;
       while (t < 3000) {                                                                        // 16 ms steps; a keyframe every 32 ms
-        for (let k = 0; k < 2; k++) { t += 16; x += vx * 16; y += vy * 16; vy += G * 16; rx += wx * 16; rz += wz * 16;
+        for (let k = 0; k < 2; k++) { const y0 = y; t += 16; x += vx * 16; y += vy * 16; vy += G * 16; rx += wx * 16; rz += wz * 16;
+          if (rb && vy > 0) { const u = (r.left + c.x + x - rb.cx) / rb.halfW;                       // its head and shoulders: a curve the glass meets
+            if (Math.abs(u) < 1) { const ys = rb.headY + rb.drop * u * u - (r.top + c.y);
+              if (y >= ys && y0 < ys) { y = ys; vy = -vy * 0.28; vx += (u >= 0 ? 1 : -1) * rnd(0.1, 0.22); wx *= 1.3; hits.push(t + delay); } } }
           if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: r.left + c.x + x }); flat = 80 + 180 * Math.round((rx - 80) / 180); }   // the nearest lying-flat angle (80°: flat, but with body; 86° read as a line)
             if (vy > 0.06) { vy = -vy * e; vx *= 0.55; wx *= 0.4; wz *= 0.5; } else { vy = 0; vx *= 0.8; wx *= 0.6; wz *= 0.6; }
             rx += ((flat ?? rx) - rx) * 0.3; }
@@ -705,12 +768,13 @@ function shatter(tile, hit) {
       frames.forEach(f => { f.offset = f.offset / t; });
       pieces.push({ el, frames, t, delay });
     };
-    return { pieces, landings, cells, make, next: 0 };
+    return { pieces, landings, hits, cells, make, next: 0 };
   }
-  return wait(crackMs + 420).then(() => {                                                     // the web finishes spreading; a beat to see it; it gives
+  return wait(Math.max(crackMs + 420, (rb && rb.minHold) || 0)).then(() => {                 // it waits for the robot to arrive under it                                                     // the web finishes spreading; a beat to see it; it gives
     clearTimeout(hold); cancelAnimationFrame(raf); const B = built || build(); while (B.next < B.cells.length) B.make(B.cells[B.next++]);   // finish any not yet built
     face.style.visibility = "hidden"; at_(tile, sfx.shatter); buzz(HAPTIC.shatter);
     B.pieces.forEach(pc => { pc.el.style.opacity = "1"; pc.el.animate(pc.frames, { duration: pc.t, delay: pc.delay, easing: "linear", fill: "both" }); });
+    if (rb && rb.onHit) setTimeout(rb.onHit, B.hits.length ? Math.min(...B.hits) : B.landings.length ? Math.min(...B.landings.map(L => L.t)) : 400);   // the first piece that meets it
     // A few pieces clink where and when they land (not all 33: that would be a rattle, not glass).
     B.landings.sort((u, v) => u.t - v.t).filter((_, k) => k % 6 === 0).slice(0, 6).forEach(L => setTimeout(() => { PAN = Math.max(-0.8, Math.min(0.8, L.x / innerWidth * 2 - 1)); tone(rnd(3800, 6400), 0.06, "sine", 0.014); PAN = 0; }, L.t));
     leaveGap(tile); return wait(950);                                                          // the question moves on; the pieces finish on their own
@@ -740,9 +804,10 @@ function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = t
     { transform: flip(x) + "translateX(-34px) translateY(-6px) rotate(-2deg)", opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
   document.querySelectorAll("#stage .meta, #stage h1, #stage .hint, #stage .builder, #stage .switches, #stage .readout").forEach(x =>
     outs.push(x.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
-  if ($("shards").firstChild) outs.push($("shards").animate([{ transform: "none", opacity: 1 }, { transform: "translateX(-34px)", opacity: 0 }], { duration: 360, delay: 120, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
+  if ($("shards").firstChild && !PAL.el) outs.push($("shards").animate([{ transform: "none", opacity: 1 }, { transform: "translateX(-34px)", opacity: 0 }], { duration: 360, delay: 120, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
+  palCleanUp();                                                                                // the robot gets up and sweeps the glass away
   Promise.all(outs).then(() => arrive(n)).catch(() => arrive(n)); }
-function arrive(n) { leaving = false; $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); PILE = {}; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n);
+function arrive(n) { leaving = false; if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n);
   const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
 $("next").onclick = next;
 $("scrim").onclick = () => dismiss();
@@ -768,7 +833,7 @@ function fly(t, text, box) { if (text === "+0") return; const r = t.getBoundingC
   requestAnimationFrame(() => { e.style.transform = `translate(${to.left - r.left - r.width / 2}px, ${to.top - r.top}px) scale(0.7)`; e.style.opacity = "0.2"; });
   setTimeout(() => e.remove(), 950); }
 
-document.querySelectorAll(".pick button[data-q]").forEach(b => b.onclick = () => { if (b.dataset.q !== S.it.n) go(b.dataset.q); });
+document.querySelectorAll(".pick button[data-q]").forEach(b => b.onclick = () => { if (b.dataset.q !== S.it.n && !S.busy) go(b.dataset.q); });
 try { localStorage.removeItem("mcq.backdrop"); } catch (e) {}           // the retired backdrop switch's saved choice
 palMake();
 load("1.1.1");

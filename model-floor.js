@@ -210,9 +210,12 @@ class ModelFloor extends HTMLElement {
         // inplace (optional): pin the hips' x/z to the first frame, keeping their height, so a clip that walks the body
         // around (measured: the companion robot's greet ends ~1.9 units from where it starts) plays in place. A figure
         // standing in a box then stays centred and turns about itself. Without the attribute, clips play as authored.
+        // Pinned to the skeleton's REST hip position, the same for every clip (pinning each clip to its own first frame left
+        // clips offset from each other: measured, the robot's run starts 0.34 units off-centre and swung out of its box).
         if (this.hasAttribute("inplace")) clips.forEach(c => c.tracks.forEach(t => {
           if (!/hips\.position$/i.test(t.name)) return;
-          const v = t.values; for (let i = 3; i < v.length; i += 3) { v[i] = v[0]; v[i + 2] = v[2]; }
+          const bone = obj.getObjectByName(t.name.replace(/\.position$/, "")), rx = bone ? bone.position.x : t.values[0], rz = bone ? bone.position.z : t.values[2];
+          const v = t.values; for (let i = 0; i < v.length; i += 3) { v[i] = rx; v[i + 2] = rz; }
         }));
         if (clips.length) {
           this._mixer = new THREE.AnimationMixer(obj);
