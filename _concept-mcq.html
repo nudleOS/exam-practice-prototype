@@ -46,14 +46,16 @@
   /* Cards: a front (the option) and a back (the why) */
   .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
   @media (max-width:600px) { .tiles { grid-template-columns:1fr; } h1 { font-size:19px; } }
-  .tile { position:relative; min-height:96px; transform-style:preserve-3d; transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 260ms; }
+  .tile { position:relative; min-height:96px; transform-style:preserve-3d; transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 260ms, filter 420ms ease; }
   .tile::before { content:""; position:absolute; left:10%; right:10%; bottom:-24px; height:30px; border-radius:50%; pointer-events:none;   /* the light it casts below */
     background:radial-gradient(closest-side, var(--cast, rgba(170,190,255,0.5)), transparent); filter:blur(7px); transition:opacity 520ms ease var(--dd, 0s); }
   .tile.sel { --cast:rgba(90,110,255,0.7); } .tile.gold { --cast:rgba(227,179,65,0.55); } .tile.silver { --cast:rgba(210,216,224,0.5); } .tile.bronze { --cast:rgba(217,155,108,0.5); }
   .tile.dead::before { opacity:0.12; }
   .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
   /* Selected: larger, on top of its neighbours, leaning a little toward the middle (as D in Murci's screenshot 2) */
-  .tile.raised { z-index:6; transform:translate(var(--lx, 0px), var(--ly, 0px)) translateZ(40px) scale(1.16); }
+  .tile.raised { z-index:6; transform:translate(var(--lx, 0px), var(--ly, 0px)) translateY(-6px) translateZ(40px) scale(1.24); }
+  /* The others gather in toward the middle and stack a little on top of each other, dimmed: the chosen card is on top of them all */
+  .tiles.gather .tile:not(.raised) { transform:translate(var(--gx, 0px), var(--gy, 0px)) scale(0.96); filter:brightness(0.82) saturate(0.9); }
   .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 2px #4b5cff, var(--glass-in); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
@@ -619,11 +621,19 @@ function killWrong() { [...document.querySelectorAll("#tiles .tile")].filter(x =
 
 const RAISE_MS = 380;
 // Raise the selected card: larger, on top, leaning 12% of the way toward the grid's middle. Returns when it is up (ms).
-function raise(t) { if (reduced) return 0; const g = $("tiles").getBoundingClientRect(), r = t.getBoundingClientRect();
-  const cx = r.left + r.width / 2, half = r.width * 1.16 / 2, lean = ((g.left + g.width / 2) - cx) * 0.12;
+const RAISE_K = 1.24, GATHER = { x: 0.13, y: 0.22 };   // how far the others move toward the middle (share of their distance)
+function raise(t) { if (reduced) return 0; const tiles = $("tiles"), g = tiles.getBoundingClientRect(), r = t.getBoundingClientRect(), mx = g.left + g.width / 2, my = g.top + g.height / 2;
+  // The others close in and stack: later cards over earlier ones (A under B under C under D), all under the chosen card.
+  [...tiles.querySelectorAll(".tile")].forEach((x, k) => { if (x === t || S.gone.has(+x.dataset.i)) return; const b = x.getBoundingClientRect();
+    x.style.setProperty("--gx", ((mx - (b.left + b.width / 2)) * GATHER.x).toFixed(1) + "px"); x.style.setProperty("--gy", ((my - (b.top + b.height / 2)) * GATHER.y).toFixed(1) + "px"); x.style.zIndex = String(1 + k); });
+  tiles.classList.add("gather");
+  const cx = r.left + r.width / 2, half = r.width * RAISE_K / 2, lean = (mx - cx) * 0.16;
   t.style.setProperty("--lx", Math.max(g.left + half - cx, Math.min(g.right - half - cx, lean)).toFixed(1) + "px");   // leans in, and stays inside the grid
   t.style.setProperty("--ly", (((g.top + g.height / 2) - (r.top + r.height / 2)) * 0.12).toFixed(1) + "px");
   t.classList.add("raised"); return RAISE_MS; }
+// The verdict moment has passed: the others go back to their places (the grid is never rearranged).
+function ungather() { const tiles = $("tiles"); if (!tiles || !tiles.classList.contains("gather")) return; tiles.classList.remove("gather");
+  setTimeout(() => tiles.querySelectorAll(".tile").forEach(x => { if (!x.classList.contains("raised")) x.style.zIndex = ""; }), 440); }
 const VERDICT_MS = 440;                 // the green light shows this long before the right card moves
 // The right answer: a green hairline runs round the rim from the fingertip, both ways, meeting opposite, while green
 // light fills the glass from that point. (Perimeter position from the straight edges; the corners are small.)
@@ -651,7 +661,7 @@ function glide(t, r0, ms, rot) { const r1 = t.getBoundingClientRect();
     { duration: ms, easing: "cubic-bezier(.22,.8,.25,1)" }).finished; }
 // Lift a card out of its slot (the slot keeps the grid still) to the centre, over the scrim.
 function grow(t) {
-  const r0 = t.getBoundingClientRect(); t.classList.remove("raised"); if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
+  const r0 = t.getBoundingClientRect(); t.classList.remove("raised"); ungather(); if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
   S.slot.style.height = r0.height + "px"; S.heroT = t;
   t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
   t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
@@ -808,7 +818,7 @@ function shatter(tile, hit, rb) {                                               
   }
   return wait(Math.max(crackMs + 420, (rb && rb.minHold) || 0)).then(() => {                 // it waits for the robot to arrive under it                                                     // the web finishes spreading; a beat to see it; it gives
     clearTimeout(hold); cancelAnimationFrame(raf); const B = built || build(); while (B.next < B.cells.length) B.make(B.cells[B.next++]);   // finish any not yet built
-    face.style.visibility = "hidden"; at_(tile, sfx.shatter); buzz(HAPTIC.shatter);
+    face.style.visibility = "hidden"; at_(tile, sfx.shatter); buzz(HAPTIC.shatter); ungather();   // it gives: the others go back
     B.pieces.forEach(pc => { pc.el.style.opacity = "1"; pc.el.animate(pc.frames, { duration: pc.t, delay: pc.delay, easing: "linear", fill: "both" }); });
     if (rb && rb.onHit) setTimeout(rb.onHit, B.hits.length ? Math.min(...B.hits) : B.landings.length ? Math.min(...B.landings.map(L => L.t)) : 400);   // the first piece that meets it
     // A few pieces clink where and when they land (not all 33: that would be a rattle, not glass).
