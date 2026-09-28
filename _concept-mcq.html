@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCQ concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="paper-ls-p1-2026.js"></script>
+<style>
+  :root { --bg:#191b1e; --panel:#202327; --field:#23262a; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
+    --tint:#81b1ff; --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451; --n1:#00b5ff; --n3:#3839ff; --n5:#8911ff;
+    --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  body { min-height:100vh; background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.16), transparent 70%), var(--bg); }
+  .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
+  .seg { flex:1; display:flex; gap:6px; } .seg i { flex:1; height:6px; border-radius:6px; background:var(--line2); }
+  .seg i.on { background:var(--grad); } .seg i.done { background:var(--ok); }
+  .xp { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); font-weight:700; font-size:14px; }
+  .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; }
+  .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; }
+  .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:7px 11px; cursor:pointer; }
+  .pick button[aria-pressed="true"] { color:#fff; border-color:#4a5cff; }
+  .stage { max-width:760px; margin:0 auto; padding:6px 18px 140px; }
+  .meta { display:flex; align-items:center; gap:10px; color:var(--text2); font-size:13px; font-weight:600; }
+  .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
+  .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
+  h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; }
+  .hint { font-size:12.5px; color:var(--text3); margin:-10px 0 16px; }
+  /* Tiles: real buttons in a radio group, in shallow 3D */
+  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:900px; }
+  @media (max-width:600px) { .tiles { grid-template-columns:1fr; } h1 { font-size:19px; } }
+  .tile { position:relative; transform-style:preserve-3d; transition:transform 260ms cubic-bezier(.2,.8,.2,1), opacity 260ms, filter 260ms; }
+  .tile .face { position:relative; display:flex; gap:12px; align-items:flex-start; width:100%; min-height:86px; text-align:left; font:inherit; color:var(--text);
+    padding:16px 16px 16px 14px; border-radius:18px; border:1px solid var(--line2); background:linear-gradient(180deg,#262a30,#1f2226); cursor:pointer;
+    box-shadow:0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06); transition:box-shadow 200ms, border-color 200ms, background 200ms; }
+  .tile .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
+  .tile .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
+    background:#2f343b; color:var(--text2); transition:background 200ms, color 200ms; }
+  .tile .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; padding-right:24px; }
+  .tile .x { position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:9px; border:1px solid var(--line2); background:#23272c; color:var(--text3);
+    display:flex; align-items:center; justify-content:center; font:inherit; font-size:13px; cursor:pointer; transform:translateZ(8px); }
+  .tile .x:hover { color:var(--text); }
+  .tile.sel .face { border-color:transparent; background:linear-gradient(180deg,#27305a,#211f45);
+    box-shadow:0 18px 40px rgba(38,50,255,0.35), 0 0 0 2px #4b5cff, inset 0 1px 0 rgba(255,255,255,0.12); }
+  .tile.sel .letter { background:var(--grad); color:#fff; }
+  .tile.out { opacity:0.38; filter:saturate(0.2); }
+  .tile.out .txt { text-decoration:line-through; text-decoration-thickness:2px; }
+  .tile.out .x { color:var(--tint); }
+  .tile.wrong .face { border-color:rgba(242,119,122,0.6); }
+  .tile.right .face { border-color:transparent; background:linear-gradient(180deg,#3a3016,#2a220d); box-shadow:0 20px 48px rgba(245,196,81,0.28), 0 0 0 2px var(--gold); }
+  .tile.right .letter { background:var(--gold); color:#2a1f00; }
+  @keyframes crack { 0% { transform:translateZ(0) } 20% { transform:translateX(-7px) rotateZ(-2deg) } 40% { transform:translateX(6px) rotateZ(2deg) } 70% { transform:translateY(10px) rotateX(18deg) } 100% { transform:translateY(6px) rotateX(12deg) } }
+  @keyframes flip { 0% { transform:rotateY(0) } 50% { transform:rotateY(90deg) scale(1.04) } 100% { transform:rotateY(0) scale(1.02) } }
+  .tile.anim-wrong { animation:crack 520ms ease-out forwards; }
+  .tile.anim-right { animation:flip 560ms ease-out forwards; }
+  /* Dials (two-part options) and switches (A, B, both or none) */
+  .builder { display:grid; gap:12px; margin:0 0 18px; }
+  .dial { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; background:var(--panel); border:1px solid var(--line); }
+  .dial .lbl { width:110px; font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; }
+  .dial .opts { display:flex; gap:8px; flex-wrap:wrap; }
+  .chip { font:inherit; font-size:14px; font-weight:700; padding:9px 14px; border-radius:12px; border:1px solid var(--line2); background:#262a2f; color:var(--text2); cursor:pointer; }
+  .chip[aria-pressed="true"] { background:var(--grad); color:#fff; border-color:transparent; box-shadow:0 8px 20px rgba(38,50,255,0.35); }
+  .readout { font-size:13px; color:var(--text2); min-height:20px; }
+  .readout b { color:var(--text); } .readout .no { color:var(--danger); }
+  .switches { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:0 0 16px; }
+  .sw { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px; border-radius:18px; background:var(--panel); border:1px solid var(--line); font:inherit; color:var(--text); cursor:pointer; text-align:left; }
+  .sw .k { font-size:12px; color:var(--text3); font-weight:700; } .sw .v { font-size:16px; font-weight:700; margin-top:3px; }
+  .sw .track { flex:none; width:54px; height:30px; border-radius:30px; background:#30353c; position:relative; transition:background 200ms; }
+  .sw .track::after { content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cfd3d7; transition:left 220ms cubic-bezier(.2,.8,.2,1); }
+  .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
+  /* The dock: hold to lock in */
+  .dock { position:fixed; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); }
+  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; }
+  .clue { font-size:13.5px; line-height:1.5; color:#dfe6ff; background:rgba(56,57,255,0.14); border:1px solid rgba(92,110,255,0.35); border-radius:14px; padding:10px 14px; display:none; }
+  .clue.show { display:block; }
+  .lock { position:relative; overflow:hidden; font:inherit; font-size:16px; font-weight:800; color:#fff; border:none; border-radius:16px; height:56px; background:#2b2f35; cursor:pointer; user-select:none; touch-action:none; }
+  .lock.ready { background:var(--grad); }
+  .lock .fill { position:absolute; inset:0; width:0; background:rgba(255,255,255,0.22); }
+  .lock span { position:relative; }
+  .toast { position:fixed; left:50%; top:74px; transform:translate(-50%,-20px); opacity:0; padding:10px 16px; border-radius:14px; font-weight:800; font-size:14px; transition:all 260ms; pointer-events:none; }
+  .toast.show { opacity:1; transform:translate(-50%,0); }
+  .toast.ok { background:rgba(61,220,151,0.15); color:var(--ok); border:1px solid rgba(61,220,151,0.4); }
+  .toast.no { background:rgba(242,119,122,0.14); color:var(--danger); border:1px solid rgba(242,119,122,0.4); }
+  .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:9; }
+  canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:8; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  @media (prefers-reduced-motion: reduce) { .tile, .tile * { transition:none !important; animation:none !important; } }
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="top">
+  <div class="seg" id="seg"></div>
+  <div class="streak" id="streak"></div>
+  <div class="xp"><span>⚡</span><span id="xp">0</span><span style="color:var(--tint)">XP</span></div>
+</div>
+<div class="pick" role="group" aria-label="Concept question">
+  <button data-q="1.1.1" aria-pressed="true">Classic · 1.1.1</button>
+  <button data-q="1.1.5" aria-pressed="false">Two-part · 1.1.5</button>
+  <button data-q="1.3.1" aria-pressed="false">A, B, both · 1.3.1</button>
+</div>
+<main class="stage" id="stage"></main>
+<div class="dock"><div class="dock-in">
+  <div class="clue" id="clue" role="status"></div>
+  <button class="lock" id="lock"><div class="fill" id="fill"></div><span id="lockTxt">Pick an answer</span></button>
+</div></div>
+<div class="toast" id="toast" role="status"></div>
+<p class="sr" id="live" aria-live="polite"></p>
+<script>
+const P = window.PAPER_LS_P1_2026, ITEMS = {};
+P.sections.forEach(s => s.missions.forEach(m => m.items.forEach(it => ITEMS[it.n] = it)));
+const XP_BY_TRY = [100, 60, 20, 0], L = "ABCDEFGH";
+let S = null, xp = 0, streak = 0;
+const $ = id => document.getElementById(id), live = t => { $("live").textContent = t; };
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// The shape of an MCQ, read from the paper's own text (never hand-set per question).
+function shapeOf(it) {
+  const parts = it.opts.map(o => o.replace(/\.$/, "").split(" · "));
+  if (parts.every(p => p.length === parts[0].length) && parts[0].length >= 2) {           // two-part options
+    const dials = parts[0].map((_, k) => [...new Set(parts.map(p => p[k]))]);
+    if (dials.every(d => d.length >= 2)) return { kind: "dials", parts, dials };
+  }
+  if (it.opts.join("|") === "A only|B only|Both A and B|None") {                            // A, B, both or none
+    const m = it.q.match(/A:\s*(.+?)\s*·\s*B:\s*(.+)$/);
+    if (m) return { kind: "switches", a: m[1], b: m[2], stem: it.q.slice(0, m.index).trim().replace(/\.$/, "") };
+  }
+  return { kind: "classic" };
+}
+
+function load(n) {
+  const it = ITEMS[n];
+  S = { it, shape: shapeOf(it), sel: null, out: new Set(), tries: 0, done: false, dialSel: [], sw: [false, false] };
+  document.querySelectorAll(".pick button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === n)));
+  $("clue").classList.remove("show");
+  render();
+}
+
+function render() {
+  const { it, shape } = S, st = $("stage");
+  const stem = shape.kind === "switches" ? shape.stem : it.q;
+  st.innerHTML = `<div class="meta"><span class="num">${it.n}</span><span>${it.marks} marks</span><span class="tries" aria-label="${3 - S.tries === 1 ? "1 try" : (3 - S.tries) + " tries"} left">${[0,1,2].map(i => `<i class="${i >= S.tries ? "live" : ""}"></i>`).join("")}</span></div>
+    <h1>${stem}</h1>`;
+  if (shape.kind === "dials") {
+    st.insertAdjacentHTML("beforeend", `<p class="hint">Build the answer one part at a time. The option that matches lights up.</p><div class="builder" id="builder"></div><div class="readout" id="readout"></div>`);
+    shape.dials.forEach((vals, k) => {
+      const d = document.createElement("div"); d.className = "dial"; d.setAttribute("role", "group");
+      d.innerHTML = `<span class="lbl">Part ${k + 1}</span><span class="opts">${vals.map(v => `<button class="chip" aria-pressed="${S.dialSel[k] === v}">${v}</button>`).join("")}</span>`;
+      d.querySelectorAll(".chip").forEach((c, i) => c.onclick = () => { if (S.done) return; S.dialSel[k] = vals[i]; syncDials(); });
+      $("builder").appendChild(d);
+    });
+  }
+  if (shape.kind === "switches") {
+    st.insertAdjacentHTML("beforeend", `<p class="hint">Switch on each one it applies to.</p><div class="switches">
+      ${[shape.a, shape.b].map((v, k) => `<button class="sw" role="switch" aria-checked="${S.sw[k]}" data-k="${k}"><span><span class="k">${"AB"[k]}</span><div class="v">${v}</div></span><span class="track"></span></button>`).join("")}</div>`);
+    st.querySelectorAll(".sw").forEach(b => b.onclick = () => { if (S.done) return; S.sw[+b.dataset.k] = !S.sw[+b.dataset.k]; syncSwitches(); });
+  }
+  const g = document.createElement("div"); g.className = "tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
+  it.opts.forEach((o, i) => {
+    const t = document.createElement("div"); t.className = "tile"; t.dataset.i = i;
+    t.innerHTML = `<button class="face" role="radio" aria-checked="false"><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
+      <button class="x" aria-label="Cross out ${L[i]}" title="Cross out">✕</button>`;
+    t.querySelector(".face").onclick = () => choose(i);
+    t.querySelector(".x").onclick = e => { e.stopPropagation(); toggleOut(i); };
+    tilt(t); swipeOut(t, i); g.appendChild(t);
+  });
+  st.appendChild(g); paintTiles(); paintLock(); paintTop();
+  if (shape.kind === "dials") syncDials(); if (shape.kind === "switches") syncSwitches();
+}
+
+function syncDials() {
+  const { shape } = S; document.querySelectorAll(".dial").forEach((d, k) => d.querySelectorAll(".chip").forEach((c, i) => c.setAttribute("aria-pressed", String(shape.dials[k][i] === S.dialSel[k]))));
+  const full = shape.dials.every((_, k) => S.dialSel[k]);
+  const idx = full ? shape.parts.findIndex(p => p.every((v, k) => v === S.dialSel[k])) : -1;
+  $("readout").innerHTML = !full ? "" : idx < 0 ? `<span class="no">That combination isn't one of the paper's options. Change a part.</span>` : `Matches option <b>${L[idx]}</b>.`;
+  S.sel = idx >= 0 && !S.out.has(idx) ? idx : null; paintTiles(); paintLock();
+}
+function syncSwitches() {
+  document.querySelectorAll(".sw").forEach(b => b.setAttribute("aria-checked", String(S.sw[+b.dataset.k])));
+  const [a, b] = S.sw; S.sel = a && b ? 2 : a ? 0 : b ? 1 : 3; paintTiles(); paintLock();
+}
+function choose(i) { if (S.done || S.out.has(i)) return; S.sel = i; if (S.shape.kind === "switches") { S.sw = [i === 0 || i === 2, i === 1 || i === 2]; syncSwitches(); return; }
+  if (S.shape.kind === "dials") { S.dialSel = [...S.shape.parts[i]]; syncDials(); return; } paintTiles(); paintLock(); live(`Option ${L[i]} picked. Hold to lock it in.`); }
+function toggleOut(i) { if (S.done) return; S.out.has(i) ? S.out.delete(i) : S.out.add(i); if (S.sel === i) S.sel = null; paintTiles(); paintLock(); live(S.out.has(i) ? `${L[i]} crossed out` : `${L[i]} back in`); }
+function paintTiles() { document.querySelectorAll(".tile").forEach(t => { const i = +t.dataset.i;
+  t.classList.toggle("sel", S.sel === i && !S.done); t.classList.toggle("out", S.out.has(i)); t.querySelector(".face").setAttribute("aria-checked", String(S.sel === i)); }); }
+function paintLock() { const b = $("lock"); b.classList.toggle("ready", S.done || S.sel != null);
+  $("lockTxt").textContent = S.done ? "Next question" : S.sel == null ? "Pick an answer" : `Hold to lock in ${L[S.sel]}`; }
+function paintTop() { const n = Object.keys(ITEMS).filter(k => ITEMS[k].t === "mcq").length;
+  $("seg").innerHTML = Array.from({ length: 9 }, (_, i) => `<i class="${i === 0 ? "on" : ""}"></i>`).join(""); $("xp").textContent = xp;
+  $("streak").textContent = streak >= 2 ? `${streak} in a row` : "";
+  const tr = document.querySelector(".tries");                                   // tries left, redrawn after every try
+  if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${i >= S.tries ? "live" : ""}"></i>`).join(""); const left = Math.max(0, 3 - S.tries); tr.setAttribute("aria-label", `${left} ${left === 1 ? "try" : "tries"} left`); } }
+
+// Hold to lock in (keyboard: Enter locks at once), so a stray tap never submits.
+let holdT = null, holdStart = 0;
+function holdBegin(e) { if (S.done) { next(); return; } if (S.sel == null) return; e.preventDefault(); holdStart = performance.now();
+  const step = () => { const k = Math.min(1, (performance.now() - holdStart) / 420); $("fill").style.width = (k * 100) + "%"; if (k >= 1) { holdEnd(); submit(); } else holdT = requestAnimationFrame(step); };
+  holdT = requestAnimationFrame(step); }
+function holdEnd() { cancelAnimationFrame(holdT); $("fill").style.width = "0"; }
+$("lock").addEventListener("pointerdown", holdBegin); ["pointerup", "pointerleave", "pointercancel"].forEach(t => $("lock").addEventListener(t, holdEnd));
+$("lock").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); S.done ? next() : S.sel != null && submit(); } });
+document.addEventListener("keydown", e => { if (!S || S.done) return; const i = "abcd".indexOf(e.key.toLowerCase()); if (i >= 0 && i < S.it.opts.length) choose(i); });
+
+function submit() {
+  const i = S.sel, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a;
+  S.tries++;
+  if (ok) {
+    S.done = true; const gain = XP_BY_TRY[S.tries - 1]; xp += gain; streak = S.tries === 1 ? streak + 1 : 0;
+    t.classList.remove("sel"); t.classList.add("right"); if (!reduced) t.classList.add("anim-right");
+    toast(S.tries === 1 ? "First try · +" + gain + " XP" : "Got it · +" + gain + " XP", "ok"); burst(t); flyXP(t, gain); live(`Correct. Option ${L[i]}. Plus ${gain} XP.`);
+  } else {
+    streak = 0; t.classList.add("wrong"); if (!reduced) t.classList.add("anim-wrong");
+    setTimeout(() => { t.classList.remove("anim-wrong", "wrong"); S.out.add(i); S.sel = null; paintTiles(); paintLock(); }, reduced ? 0 : 540);
+    const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)];
+    if (S.tries >= 3) { S.done = true; toast("Answer: " + L[S.it.a], "no"); document.querySelector(`.tile[data-i="${S.it.a}"]`).classList.add("right"); }
+    else { toast("Not that one · " + (3 - S.tries) + " left", "no"); $("clue").textContent = "Clue · " + clue; $("clue").classList.add("show"); }
+    live(`Not ${L[i]}. ${S.tries >= 3 ? "The answer is " + L[S.it.a] : clue}`);
+  }
+  paintLock(); paintTop();
+}
+function next() { const order = ["1.1.1", "1.1.5", "1.3.1"]; load(order[(order.indexOf(S.it.n) + 1) % order.length]); }
+function toast(t, k) { const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
+
+// Depth: tiles lean toward the pointer (off with reduced motion); flick a tile down to cross it out.
+function tilt(t) { if (reduced) return; t.addEventListener("pointermove", e => { if (t.classList.contains("out")) return; const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+  t.style.transform = `rotateX(${(-y * 8).toFixed(2)}deg) rotateY(${(x * 10).toFixed(2)}deg) translateZ(${t.classList.contains("sel") ? 18 : 6}px)`; });
+  t.addEventListener("pointerleave", () => t.style.transform = ""); }
+function swipeOut(t, i) { let y0 = null; t.addEventListener("touchstart", e => y0 = e.touches[0].clientY, { passive: true });
+  t.addEventListener("touchend", e => { if (y0 != null && e.changedTouches[0].clientY - y0 > 60) toggleOut(i); y0 = null; }); }
+
+// The reward: a gold burst from the tile and the XP flying to the counter.
+const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
+function size() { fx.width = innerWidth * devicePixelRatio; fx.height = innerHeight * devicePixelRatio; cx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); } size(); addEventListener("resize", size);
+function burst(t) { if (reduced) return; const r = t.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+  for (let k = 0; k < 46; k++) { const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 5; parts.push({ x: ox, y: oy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 1, c: ["#f5c451", "#00b5ff", "#8911ff", "#ffffff"][k % 4] }); }
+  if (parts.length === 46) requestAnimationFrame(loop); }
+function loop() { cx.clearRect(0, 0, innerWidth, innerHeight); parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.life -= 0.018; cx.globalAlpha = Math.max(0, p.life); cx.fillStyle = p.c; cx.fillRect(p.x, p.y, 4, 4); });
+  parts = parts.filter(p => p.life > 0); cx.globalAlpha = 1; if (parts.length) requestAnimationFrame(loop); }
+function flyXP(t, gain) { if (!gain) return; const r = t.getBoundingClientRect(), to = $("xp").getBoundingClientRect(), e = document.createElement("div"); e.className = "fly"; e.textContent = "+" + gain;
+  e.style.left = (r.left + r.width / 2) + "px"; e.style.top = (r.top) + "px"; document.body.appendChild(e);
+  requestAnimationFrame(() => { e.style.transform = `translate(${to.left - r.left - r.width / 2}px, ${to.top - r.top}px) scale(0.7)`; e.style.opacity = "0.2"; });
+  setTimeout(() => e.remove(), 950); }
+
+document.querySelectorAll(".pick button").forEach(b => b.onclick = () => load(b.dataset.q));
+load("1.1.1");
+</script>
+</body>
+</html>
