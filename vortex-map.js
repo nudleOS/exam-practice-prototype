@@ -14,6 +14,7 @@ import * as THREE from "three";
 //   road    CSS selector of the page's road box (its position is the road's origin; default [data-road])
 //   anchor  CSS selector of the start card (the vortex's core sits 16px above its top; its border turns with the road)
 //   hdr     px of sticky bars at the top      active  "false" hides it and stops its clock
+//   bg      CSS background under the field     fade    "#rrggbb" the dots dissolve into (the background's base colour)
 // Hooks the page already uses keep working: each medal is a light-DOM <button data-node="i">, the arch is
 // [data-finishbadge], so focus return, bursts and "is it on screen" checks find them where they are DRAWN.
 // Events (window): "vortex-open" { index }   "vortex-dir" { where: "up" | "down" | "here" }
@@ -67,7 +68,8 @@ function makeField() {
   const dc = document.createElement("canvas"); dc.width = dc.height = 64; const dx = dc.getContext("2d"), gr = dx.createRadialGradient(32, 32, 0, 32, 32, 32);
   gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.78, "rgba(255,255,255,1)"); gr.addColorStop(1, "rgba(255,255,255,0)"); dx.fillStyle = gr; dx.fillRect(0, 0, 64, 64);
   const uni = { phase: { value: 0 }, size: { value: 10 * renderer.getPixelRatio() }, scale: { value: innerHeight * 0.5 }, map: { value: new THREE.CanvasTexture(dc) },
-    fogNear: { value: 3200 }, fogFar: { value: 11000 } };
+    fogNear: { value: 3200 }, fogFar: { value: 11000 }, fogColor: { value: new THREE.Vector3(0, 0, 0) } };
+  let BG = [0, 0, 0];                                                 // the fade colour, linear (the drain's thinning dots)
   const mat = new THREE.ShaderMaterial({ uniforms: uni, transparent: true, depthWrite: false,
     vertexShader: `attribute vec3 color; attribute vec3 grid; uniform float phase, size, scale; varying vec3 vColor; varying float vFog;
       void main() {
@@ -81,11 +83,11 @@ function makeField() {
         gl_PointSize = size * (scale / -mv.z);
         gl_Position = projectionMatrix * mv; vColor = c; vFog = -mv.z;
       }`,
-    fragmentShader: `uniform sampler2D map; uniform float fogNear, fogFar; varying vec3 vColor; varying float vFog;
+    fragmentShader: `uniform sampler2D map; uniform float fogNear, fogFar; uniform vec3 fogColor; varying vec3 vColor; varying float vFog;
       void main() {
         vec4 t = texture2D(map, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));
         gl_FragColor = linearToOutputTexel(vec4(vColor * t.rgb, t.a));
-        gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.0), smoothstep(fogNear, fogFar, vFog));
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, smoothstep(fogNear, fogFar, vFog));
       }` });
   const pts = new THREE.Points(geo, mat); pts.frustumCulled = false; scene.add(pts);
   const BX = new Float32Array(count), BZ = new Float32Array(count);
@@ -190,7 +192,7 @@ function makeField() {
   function draw(phase, flowT = 0, spin = 0) {
     last = [phase, flowT, spin];
     camera.updateMatrixWorld(); PV.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); IPV.copy(PV).invert();
-    const bg = [0, 0, 0]; uni.phase.value = phase;
+    const bg = BG; uni.phase.value = phase;
     if (vOn) { for (let n = 0, N = DR.length; n < N; n++) { const j = DR[n];
         shade(pos, col, j, BX[j], BZ[j], (j / AY) | 0, j % AY, GD[j], GT[j], GL[j], phase, flowT, spin, bg, false); }
       if (DR.length) { geo.attributes.position.needsUpdate = true; geo.attributes.color.needsUpdate = true; } }
@@ -205,7 +207,10 @@ function makeField() {
   function lowRes(on) { renderer.setPixelRatio(ratio(on)); renderer.setSize(innerWidth, innerHeight); sizeUni(); staticDirty = true; }
   // The road lies on this same surface: it is projected with this camera (PV) around this vortex.
   const geoOf = () => vOn ? { e: PV.elements, vx, vz, vRx, vRf, vRn } : null;
-  return { draw, setVortex, resize, lowRes, geo: geoOf, canvas: renderer.domElement, renderer };
+  // "#rrggbb": the colour the dots dissolve into (the page's background under the field).
+  function setFade(hex) { const m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); const v = m ? [0, 2, 4].map(i => parseInt(m[1].substr(i, 2), 16) / 255) : [0, 0, 0];
+    uni.fogColor.value.set(v[0], v[1], v[2]); BG = v.map(c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)); draw(...last); }
+  return { draw, setVortex, resize, lowRes, setFade, geo: geoOf, canvas: renderer.domElement, renderer };
 }
 
 // ══ Styles ═══════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -219,7 +224,7 @@ const SHADOW_CSS = `
   --hair:rgba(255,255,255,0.08); --card-shadow:0 14px 34px rgba(0,0,0,0.5); --road-shadow:rgba(0,0,0,0.42); --road-edge:#121418; --road-top:#2f343d;
   --road-dash:rgba(255,255,255,0.10); --lbl-shadow:0 2px 8px rgba(0,0,0,0.8); color:var(--text); }
 .stage { position:fixed; left:0; top:0; width:100vw; height:100vh; pointer-events:none; }
-.bg { z-index:0; background:#0a0a0a; } .bg canvas { display:block; width:100% !important; height:100% !important; }
+.bg { z-index:0; background:#0a0a0a; }                       /* overridden by the bg attribute */ .bg canvas { display:block; width:100% !important; height:100% !important; }
 .back { z-index:1; } .road { z-index:2; overflow:visible; } .nodes { z-index:3; } .front { z-index:4; }
 `;
 const DOC_CSS = `
@@ -292,7 +297,10 @@ const FIELD_FAR = -4500, Z_FIN = -3300;   // the field's far edge; the finish's 
 const waveH = (x, z, ph) => Math.sin(((x + AX * SEP / 2) / SEP + ph) * FX) * AMP + Math.sin(((z + AY * SEP / 2) / SEP + ph) * FY) * AMP;
 
 class VortexMap extends HTMLElement {
-  static get observedAttributes() { return ["geom", "paint", "finish", "next", "lit", "anchor", "hdr", "active", "road"]; }
+  static get observedAttributes() { return ["geom", "paint", "finish", "next", "lit", "anchor", "hdr", "active", "road", "bg", "fade"]; }
+  // bg: the CSS background painted under the field (the page's own); fade: the "#rrggbb" its dots dissolve into.
+  _colours() { const bg = this.getAttribute("bg"), fade = this.getAttribute("fade"), ok = v => v && !(v.charAt(0) === "{" && v.charAt(1) === "{");
+    this._r.bg.style.background = ok(bg) ? bg : ""; if (FIELD) FIELD.setFade(ok(fade) ? fade : "#000000"); }
   connectedCallback() {
     if (!document.getElementById("vortex-map-css")) { const st = document.createElement("style"); st.id = "vortex-map-css"; st.textContent = DOC_CSS; document.head.appendChild(st); }
     if (!this.shadowRoot) {
@@ -312,6 +320,7 @@ class VortexMap extends HTMLElement {
     }
     if (!FIELD) FIELD = makeField();
     this._r.bg.appendChild(FIELD.canvas);                                                    // the page's one field, re-attached
+    this._colours();
     this._S.vortexSet = false; this._S.RG = null;
     // Per-visit listeners, removed again on disconnect.
     this._onPoke = () => { this._S.poke = Math.min(this._S.poke + 0.03, 0.2); };
@@ -330,6 +339,7 @@ class VortexMap extends HTMLElement {
   attributeChangedCallback(name, a, b) {
     if (!this._S || a === b) return;
     if (name === "active") { b === "false" ? this._stop() : this._start(); return; }
+    if (name === "bg" || name === "fade") { this._colours(); return; }
     if (name === "lit") { const S = this._S, to = clamp(+b || 0, 0, 1); S.litFrom = S.litNow == null ? to : S.litNow; S.litTo = to; S.litT0 = performance.now(); if (S.litNow == null) S.litNow = to; S.roadDirty = true; return; }
     this._build(false);
   }
