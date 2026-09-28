@@ -244,24 +244,30 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 $("mkOf").textContent = P.total; $("marksBox").setAttribute("aria-label", `0 of ${P.total} marks`);
 const rnd = (a, b) => a + Math.random() * (b - a);
 
-// Sound, made in the browser (no files).
-let AC = null, muted = false;
+// Sound, made in the browser (no files). Every sound is placed where it happens: panned left/right by the x of the
+// element that made it (at(el, ...)), up to ±0.8 so nothing sits entirely in one ear.
+let AC = null, muted = false, PAN = 0;
+const panOf = el => { if (!el) return 0; const r = el.getBoundingClientRect(); return Math.max(-0.8, Math.min(0.8, ((r.left + r.width / 2) / innerWidth) * 2 - 1)); };
+const at = (el, f) => { PAN = panOf(el); try { f(); } finally { PAN = 0; } };
+const out = (A, node) => { if (PAN && A.createStereoPanner) { const p = A.createStereoPanner(); p.pan.value = PAN; node.connect(p).connect(A.destination); } else node.connect(A.destination); };
 const ac = () => { if (muted) return null; try { return AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } };
 function tone(freq, dur, type = "sine", vol = 0.08, glide = 0, at = 0) { const A = ac(); if (!A) return;
   const o = A.createOscillator(), g = A.createGain(), t = A.currentTime + at; o.type = type; o.frequency.setValueAtTime(freq, t);
   if (glide) o.frequency.exponentialRampToValueAtTime(freq * glide, t + dur); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  o.connect(g).connect(A.destination); o.start(t); o.stop(t + dur); }
+  out(A, o.connect(g)); o.start(t); o.stop(t + dur); }
 function noise(dur, vol, hp, at = 0) { const A = ac(); if (!A) return; const n = Math.floor(A.sampleRate * dur), b = A.createBuffer(1, n, A.sampleRate), d = b.getChannelData(0);
   for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
   const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain(), t = A.currentTime + at; s.buffer = b; f.type = "highpass"; f.frequency.value = hp; g.gain.value = vol;
-  s.connect(f).connect(g).connect(A.destination); s.start(t); }
+  out(A, s.connect(f).connect(g)); s.start(t); }
 const sfx = { pick: () => tone(880, 0.07, "triangle", 0.05), lock: () => tone(180, 0.14, "sine", 0.12, 0.6),
   right: () => { tone(660, 0.18, "triangle", 0.07); tone(990, 0.28, "triangle", 0.07, 0, 0.11); },
   crack: () => { noise(0.08, 0.35, 2500); tone(2400, 0.05, "square", 0.02); },
   shatter: () => { noise(0.45, 0.5, 1800); [3100, 4200, 5300, 3700, 4800].forEach((f, k) => tone(f, 0.16, "sine", 0.025, 0.9, 0.02 + k * 0.035)); },
   defeat: () => { tone(330, 0.5, "triangle", 0.05, 0.55); tone(196, 0.8, "sine", 0.05, 0.7, 0.28); },
   shine: () => { [1320, 1760, 2640].forEach((f, k) => tone(f, 0.32, "sine", 0.035, 1.02, k * 0.07)); } };
-const buzz = ms => { if (!muted && navigator.vibrate) navigator.vibrate(ms); };
+const buzz = ms => { if (!muted && navigator.vibrate) navigator.vibrate(ms); };   // Android only: iOS ignores vibrate from the web
+// One vibration pattern per moment (ms on/off): a tick for a pick, a burst for a shatter, rising for gold, heavy for defeat.
+const HAPTIC = { pick: 6, lock: 14, crack: 10, shatter: [14, 24, 40], shine: 8, gold: [20, 50, 30, 50, 70], silver: [20, 60, 35], bronze: 30, defeat: [70, 90, 140] };
 $("mute").onclick = () => { muted = !muted; $("mute").textContent = muted ? "🔇" : "🔊"; $("mute").setAttribute("aria-pressed", String(muted)); $("mute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); };
 
 function shapeOf(it) {
@@ -294,14 +300,14 @@ function render(deal) {
     shape.dials.forEach((vals, k) => {
       const d = document.createElement("div"); d.className = "dial surface"; d.setAttribute("role", "group");
       d.innerHTML = `<span class="lbl">Part ${k + 1}</span><span class="opts">${vals.map(v => `<button class="chip" aria-pressed="false">${v}</button>`).join("")}</span>`;
-      d.querySelectorAll(".chip").forEach((c, i) => c.onclick = () => { if (S.done) return; S.dialSel[k] = vals[i]; sfx.pick(); syncDials(); });
+      d.querySelectorAll(".chip").forEach((c, i) => c.onclick = () => { if (S.done) return; S.dialSel[k] = vals[i]; at(c, sfx.pick); buzz(HAPTIC.pick); syncDials(); });
       $("builder").appendChild(d);
     });
   }
   if (shape.kind === "switches") {
     st.insertAdjacentHTML("beforeend", `<p class="hint">Switch on each one it applies to.</p><div class="switches">
       ${[shape.a, shape.b].map((v, k) => `<button class="sw surface" role="switch" aria-checked="false" data-k="${k}"><span><span class="k">${"AB"[k]}</span><div class="v">${v}</div></span><span class="track"></span></button>`).join("")}</div>`);
-    st.querySelectorAll(".sw").forEach(b => b.onclick = () => { if (S.done) return; S.sw[+b.dataset.k] = !S.sw[+b.dataset.k]; sfx.pick(); syncSwitches(); });
+    st.querySelectorAll(".sw").forEach(b => b.onclick = () => { if (S.done) return; S.sw[+b.dataset.k] = !S.sw[+b.dataset.k]; at(b, sfx.pick); buzz(HAPTIC.pick); syncSwitches(); });
   }
   const g = document.createElement("div"); g.className = "tiles"; g.id = "tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
   it.opts.forEach((o, i) => {
@@ -360,7 +366,7 @@ document.addEventListener("keydown", e => { if (!S) return; if (S.done) { if (e.
 
 function submit() {
   const i = S.sel; if (i == null || S.done) return;
-  const it = S.it, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; sfx.lock(); buzz(18);
+  const it = S.it, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; at(t, sfx.lock); buzz(HAPTIC.lock);
   if (ok) {
     S.done = true; const gain = XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = S.tries === 1 ? S.it.marks : 0;
     streak = S.tries === 1 ? streak + 1 : 0; setHint(null);
@@ -369,7 +375,7 @@ function submit() {
     fillBack(t, it);
     live(`Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
     present(t, tier).then(() => {
-      sfx.right(); buzz([20, 40, 30]); burst(t, tier); fly(t, "+" + gain, "xpBox");
+      sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
       setTimeout(() => score(it, mk), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); });
@@ -456,7 +462,7 @@ function present(t, tier) {
   const g = grow(t); buddyIn(t, true);                                                      // the robot rides the back, frozen, through the spin
   return g.then(() => {
     if (!tier) return;
-    t.classList.add("shine"); sfx.shine(); buzz(10);                                          // the shine, before it turns
+    t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);                                          // the shine, before it turns
     return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
   }).then(() => {
     t.classList.remove("sel", "shine"); t.classList.add("flipped");                          // the class holds the end state (180 = 540 mod 360)
@@ -465,7 +471,7 @@ function present(t, tier) {
     const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);
       return { offset: q, transform: `translateZ(${(a * rise).toFixed(1)}px) scale(${(1 + a * swell).toFixed(4)}) rotateY(${(turn * q).toFixed(1)}deg)` }; });
     return t.animate(kf, { duration: tier ? FLIP_MS : 1100, easing: "cubic-bezier(.45,0,.25,1)" }).finished;
-  }).then(() => { buddyGo(t); if (!tier) sfx.defeat(); S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
+  }).then(() => { buddyGo(t); if (!tier) { sfx.defeat(); buzz(HAPTIC.defeat); } S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
 // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
@@ -491,7 +497,7 @@ function shatter(tile, hit) {
   paths.concat(fine).forEach((pts, n) => { const d = document.createElementNS(svg.namespaceURI, "path"); if (n >= paths.length) d.setAttribute("class", "fine"); d.setAttribute("d", "M" + pts.map(q => q.x.toFixed(1) + " " + q.y.toFixed(1)).join(" L"));
     const len = pts.reduce((s, q, k) => k ? s + Math.hypot(q.x - pts[k - 1].x, q.y - pts[k - 1].y) : 0, 0); d.style.strokeDasharray = len; d.style.strokeDashoffset = len; svg.appendChild(d);
     d.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 220, easing: "ease-out", fill: "forwards" }); });
-  face.appendChild(svg); sfx.crack(); buzz(12);
+  face.appendChild(svg); at(tile, sfx.crack); buzz(HAPTIC.crack);
   const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
   fl.animate([{ opacity: 0, transform: "scale(0.3)" }, { opacity: 1, transform: "scale(1)", offset: 0.25 }, { opacity: 0, transform: "scale(1.4)" }], { duration: 300, easing: "ease-out", fill: "forwards" });
   tile.animate([{ transform: "translateX(0)" }, { transform: "translateX(-5px) rotate(-0.6deg)" }, { transform: "translateX(4px) rotate(0.5deg)" }, { transform: "translateX(0)" }], { duration: 200 });
@@ -502,7 +508,7 @@ function shatter(tile, hit) {
     for (let k = 0; k < N; k++) { const A = rays[k], B = rays[(k + 1) % N], a0 = norm(A.a), a1 = norm(B.a);
       const between = corners.filter(c => a1 > a0 ? c.a > a0 && c.a < a1 : c.a > a0 || c.a < a1).sort((u, v) => ((u.a - a0 + 2 * Math.PI) % (2 * Math.PI)) - ((v.a - a0 + 2 * Math.PI) % (2 * Math.PI)));
       polys.push([p, A.ring, B.ring]); polys.push([A.ring, A.e, ...between, B.e, B.ring]); }
-    const layer = $("shards"); face.style.visibility = "hidden"; sfx.shatter(); buzz([30, 30, 50]);
+    const layer = $("shards"); face.style.visibility = "hidden"; at(tile, sfx.shatter); buzz(HAPTIC.shatter);
     const anims = polys.map(poly => {
       const s = face.cloneNode(true); s.removeAttribute("role"); s.className = "shard"; s.querySelector(".cracks")?.remove(); s.querySelectorAll(".gleam, .buddy").forEach(g => g.remove()); s.style.visibility = "visible";
       Object.assign(s.style, { left: r.left + "px", top: r.top + "px", width: w + "px", height: h + "px", display: "flex", gap: "12px", padding: "16px 16px 16px 14px",
