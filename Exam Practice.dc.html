@@ -219,6 +219,7 @@
           </sc-for>
           <button data-second="true" onClick="{{ toggleSecond }}" aria-pressed="{{ secondOn }}" style="min-height:32px; padding:0 8px; border:none; border-radius:9px; background:{{ secondBg }}; color:{{ secondColor }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">+ 2nd test</button>
           <button data-busreset="true" onClick="{{ ctReset }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">Reset shared demo</button>
+          <button data-studyreset="true" onClick="{{ studyResetGo }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">Ask "Your studies" again</button>
         </div>
       </div>
       </sc-if>
@@ -328,7 +329,50 @@
             <button onClick="{{ closePops }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
           </div>
 
+          <sc-if value="{{ sheetStudies }}" hint-placeholder-val="{{ false }}">
+            <div data-studies="true" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:12px; overflow-y:auto; overscroll-behavior:contain">
+              <span style="font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text4)">{{ studyStepLabel }}</span>
+              <sc-if value="{{ studyStep1 }}" hint-placeholder-val="{{ true }}">
+                <div role="radiogroup" aria-label="Qualification" style="display:flex; flex-direction:column; gap:8px">
+                  <sc-for list="{{ studyQuals }}" as="sq" hint-placeholder-count="2">
+                    <button role="radio" aria-checked="{{ sq.on }}" onClick="{{ sq.pick }}" style="box-sizing:border-box; min-height:56px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; padding:8px 14px; border-radius:14px; border:{{ sq.border }}; background:{{ sq.bg }}; color:var(--text); text-align:left; cursor:pointer"><span style="font-size:15px; font-weight:800">{{ sq.label }}</span><span style="font-size:13px; color:var(--text2)">{{ sq.sub }}</span></button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ studyHasLevels }}" hint-placeholder-val="{{ false }}">
+                  <span id="study-level-label" style="font-size:13px; font-weight:700; color:var(--text2)">Your level</span>
+                  <div role="radiogroup" aria-labelledby="study-level-label" style="display:flex; flex-wrap:wrap; gap:8px">
+                    <sc-for list="{{ studyLevels }}" as="sl" hint-placeholder-count="3">
+                      <button role="radio" aria-checked="{{ sl.on }}" onClick="{{ sl.pick }}" style="min-height:44px; padding:0 16px; border-radius:22px; border:{{ sl.border }}; background:{{ sl.bg }}; color:#ffffff; font-size:14px; font-weight:700; cursor:pointer">{{ sl.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </sc-if>
+              <sc-if value="{{ studyStep2 }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13.5px; line-height:1.5; color:var(--text2)">{{ studyHint }}</span>
+                <div role="{{ studyListRole }}" aria-label="{{ studyOptsLabel }}" style="display:flex; flex-direction:column; gap:6px">
+                  <sc-for list="{{ studyOpts }}" as="so" hint-placeholder-count="3">
+                    <button role="{{ so.role }}" aria-checked="{{ so.on }}" onClick="{{ so.pick }}" style="box-sizing:border-box; min-height:52px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; padding:8px 14px; border-radius:14px; border:{{ so.border }}; background:{{ so.bg }}; color:var(--text); text-align:left; cursor:pointer"><span style="font-size:14px; font-weight:700; text-wrap:pretty">{{ so.label }}</span><span style="font-size:12.5px; font-weight:700; color:{{ so.subColor }}">{{ so.sub }}</span></button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ studyEmpty }}" hint-placeholder-val="{{ false }}">
+                  <span role="status" style="padding:10px 12px; border-radius:12px; background:rgba(255,255,255,0.04); font-size:13.5px; line-height:1.5; color:var(--text2)">{{ studyEmptyText }}</span>
+                </sc-if>
+              </sc-if>
+              <sc-if value="{{ studyHasErr }}" hint-placeholder-val="{{ false }}">
+                <span role="alert" style="font-size:13px; font-weight:700; color:var(--danger)">{{ studyErr }}</span>
+              </sc-if>
+            </div>
+            <div style="flex:none; display:flex; gap:8px">
+              <sc-if value="{{ studyStep2 }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ studyBackGo }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Back</button>
+              </sc-if>
+              <button data-studies-primary="true" onClick="{{ studyPrimaryGo }}" style="flex:1; min-height:52px; padding:0 22px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:15px; font-weight:800; cursor:pointer">{{ studyPrimary }}</button>
+            </div>
+            <button onClick="{{ skipStudiesGo }}" style="flex:none; align-self:center; min-height:44px; padding:0 14px; border:none; border-radius:12px; background:transparent; color:#b9cdf0; font-size:13.5px; font-weight:700; cursor:pointer">Show me every paper</button>
+          </sc-if>
+
           <sc-if value="{{ sheetSubj }}" hint-placeholder-val="{{ true }}">
+            <button data-studies-chip="true" onClick="{{ editStudies }}" aria-label="{{ studyChipAria }}" style="flex:none; align-self:flex-start; min-height:36px; display:flex; align-items:center; gap:6px; padding:0 12px; border-radius:18px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.10); color:#dfe6f3; font-size:13px; font-weight:700; cursor:pointer">{{ studyChip }}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
             <input data-sheet-search="true" value="{{ query }}" onChange="{{ onQuery }}" placeholder="Fluid, engineering, N6…" aria-label="Search subjects" aria-controls="subj-list" style="flex:none; height:48px; padding:0 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
             <div id="subj-list" role="listbox" aria-label="Subjects" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:2px; overflow-y:auto; overscroll-behavior:contain; margin:0 -4px; padding:0 4px">
               <sc-for list="{{ subjRows }}" as="sr" hint-placeholder-count="6">
@@ -1504,7 +1548,7 @@ const SAMPLE_REPLY = {"part":"1.1.1","try":1,"tries_left":2,"closed":false,"reve
  "clue":"With shock losses ignored, the whole difference in level between the reservoirs is used up by pipe friction.",
  "reveal":null,"xp_awarded":0,"multiplier":1,"streak":0};
 
-const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","programme":"nated","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","programme":"ncv","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"ls-p1-2026","title":"Life Sciences P1","programme":"nsc","level_detail":"Grade 12","sitting":"May/June 2026","total_marks":150,"duration_minutes":150,"parts":85,"provenance_label":"Design sample · a DBE NSC paper, not a TVET paper"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","programme":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","programme":"ncv","paper_ids":["aet-l4-2019-02"]},{"name":"Life Sciences P1 (design sample)","programme":"nsc","paper_ids":["ls-p1-2026"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
+const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","subject":"Fluid Mechanics","qualification":"nated","level":"N6","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","subject":"Applied Engineering Technology","qualification":"ncv","level":"L4","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"ls-p1-2026","title":"Life Sciences P1","subject":"Life Sciences","qualification":"nsc","level":"G12","level_detail":"Grade 12","sitting":"May/June 2026","total_marks":150,"duration_minutes":150,"parts":85,"provenance_label":"Design sample · a DBE NSC paper, not a TVET paper"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","qualification":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","qualification":"ncv","paper_ids":["aet-l4-2019-02"]},{"name":"Life Sciences P1 (design sample)","qualification":"nsc","paper_ids":["ls-p1-2026"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
 // Home paper id → the in-page paper it opens.
 // Missions are only stated where the whole paper is transcribed; otherwise parts, which are known.
 // The companion's greet still (≤60 KB, rendered from avatar-lite.glb, same framing as the 3D
@@ -1713,7 +1757,41 @@ const PROGRAMMES = { nated: "NATED (Report 191)", ncv: "NC(V)", nsc: "NSC (desig
 const OTHER_SUBJECTS = {
   nated: ["Financial Management", "Farming Management", "Management Assistant", "Marketing Management", "Public Management", "Tourism", "Civil Engineering", "Electrical Engineering", "Mechanical Engineering", "Multi-Disciplinary Drawing Office Practice"],
   ncv: ["Finance, Economics and Accounting", "Marketing", "Management", "Office Administration", "Information Technology and Computer Science", "Civil Engineering & Building Construction", "Electrical Infrastructure Construction", "Education and Development", "Hospitality", "Primary Agriculture", "Tourism"] };
-const subjectName = p => p.programme === "nated" ? p.title : p.title + " (" + p.level_detail + ")";
+// ── Brief 23: "Your studies". What learners are OFFERED: NC(V) L2-L4 and NATED N4-N6 (the service also accepts
+// NATED N1-N3, occupational and NSC; NSC stays hidden until there is a real NSC paper and a school on the platform).
+const STUDY_QUALS = [{ id: "ncv", label: "NC(V)", sub: "Levels 2 to 4", levels: ["L2", "L3", "L4"] },
+  { id: "nated", label: "NATED", sub: "N4 to N6", levels: ["N4", "N5", "N6"] }];
+const LEVEL_LABEL = c => c.charAt(0) === "L" ? "Level " + c.slice(1) : c;
+// NC(V) programmes. UNVERIFIED FIXTURE: the programme list, and which programme a paper belongs to, must come from
+// DHET's NC(V) programme list as a data pack before this ships. Nothing in these two lines is confirmed.
+const NCV_PROGRAMMES = ["Engineering and Related Design"].concat(OTHER_SUBJECTS.ncv);
+const PAPER_PROGRAMME = { "aet-l4-2019-02": "Engineering and Related Design" };
+// A paper's own wording ("N6", "Level 4", "Grade 12") as the service's level code ("N6", "L4", "G12").
+const levelCode = d => { const m = /\b(N|LEVEL|L|GRADE|G)\s*(\d{1,2})\b/.exec(String(d || "").toUpperCase());
+  return m ? { N: "N", LEVEL: "L", L: "L", GRADE: "G", G: "G" }[m[1]] + Number(m[2]) : null; };
+// MOCK of GET/PUT/DELETE /v1/me/studies (nexera-exam-service 65ae467, docs/API.md): one row per learner; the level
+// must be one of its qualification's; whitespace folded; duplicate subjects dropped (case-insensitive); at most 12.
+// "Show me every paper" is DELETE plus a device-only note that the learner was asked: the service stores answers,
+// never "didn't answer", so the skip lives with the client.
+const SERVICE_LEVELS = { nated: ["N1", "N2", "N3", "N4", "N5", "N6"], ncv: ["L2", "L3", "L4"], nsc: ["G10", "G11", "G12"],
+  occupational: ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8"] };
+const fold = t => String(t || "").split(/\s+/).join(" ").trim();
+const STUDIES_API = {
+  get() { try { return JSON.parse(localStorage.getItem("exam.studies") || "null"); } catch (e) { return null; } },
+  asked() { try { return localStorage.getItem("exam.studiesAsked") === "1"; } catch (e) { return false; } },
+  put(b) {
+    const levels = SERVICE_LEVELS[b.qualification], level = fold(b.level).toUpperCase();
+    if (!levels) throw { status: 422, code: "invalid", message: "Pick what you're studying first." };
+    if (levels.indexOf(level) === -1) throw { status: 422, code: "studies_level_invalid", message: "Pick your level first." };
+    const seen = {}, subjects = (b.subjects || []).map(fold).filter(n => n && !seen[n.toLowerCase()] && (seen[n.toLowerCase()] = true));
+    if (subjects.length > 12) throw { status: 422, code: "invalid", message: "Pick at most 12 subjects." };
+    const row = { qualification: b.qualification, level: level, study_programme: fold(b.study_programme) || null, subjects: subjects, updated_at: new Date().toISOString() };
+    try { localStorage.setItem("exam.studies", JSON.stringify(row)); localStorage.setItem("exam.studiesAsked", "1"); } catch (e) {}
+    return row; },
+  del() { try { localStorage.removeItem("exam.studies"); localStorage.setItem("exam.studiesAsked", "1"); } catch (e) {} },
+  // Design-only: forget the answer AND the "asked", to show the first visit again.
+  reset() { try { localStorage.removeItem("exam.studies"); localStorage.removeItem("exam.studiesAsked"); } catch (e) {} } };
+const subjectName = p => p.qualification === "nated" ? p.title : p.title + " (" + p.level_detail + ")";
 const XP_LADDER = [100, 60, 20];
 const PROVENANCE = "DHET question paper · marking reviewed by Nexera";
 const FM_RULES = ["Round to THREE decimal places", "g = 9,81 m/s²"];
@@ -1869,7 +1947,8 @@ class Component extends DCLogic {
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
-    home: null, menu: null, selProg: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: false, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
+    studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyErr: "",
+    home: null, menu: null, selQual: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", sound: false, lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", asg: null, gateKind: "hall", testPreview: "open", bus: busEmpty(), liveAsg: null, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   componentDidMount() {
@@ -1891,6 +1970,7 @@ class Component extends DCLogic {
     document.addEventListener("loaded", this._ld);
     this.countUp();
     try { if (localStorage.getItem("exam.sound") === "on") this.setState({ sound: true }); } catch (e) {}
+    this.setState({ studies: STUDIES_API.get(), studiesAsked: STUDIES_API.asked() });   // brief 23 (mock of GET /v1/me/studies)
     // Keep the footer above the on-screen keyboard (the visual viewport shrinks, the layout one doesn't).
     const vv = window.visualViewport;
     if (vv) { this._vv = () => { const off = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)); if (off !== this.state.kbOff) this.setState({ kbOff: off }); };
@@ -1941,11 +2021,14 @@ class Component extends DCLogic {
     // componentDidUpdate runs after the DOM is committed, so focus can move now; waiting for a
     // frame would fail wherever frames are throttled.
     if (sheet && sheet !== this._lastSheet) {
-      const f = sheet === "subj" ? document.querySelector("[data-sheet-search]")
+      const f = sheet === "studies" ? document.querySelector('[data-studies] [aria-checked="true"]') || document.querySelector("[data-studies] button")
+        : sheet === "subj" ? document.querySelector("[data-sheet-search]")
         : document.querySelector('[data-sheet] [role="option"][aria-selected="true"]') || document.querySelector('[data-sheet] [role="option"]');
       if (f) f.focus();
     }
     this._lastSheet = sheet;
+    if (sheet === "studies" && this.state.studyStep !== this._lastStudyStep) { const f = document.querySelector("[data-studies] button"); if (f && this._lastStudyStep != null) f.focus(); }
+    this._lastStudyStep = sheet === "studies" ? this.state.studyStep : null;
     const pop = this.state.pop;
     if (pop !== this._lastPop && ["mapview", "more", "ctinfo"].indexOf(pop) !== -1) {
       const m = document.querySelector('[data-menu="' + pop + '"]'), f = m && (m.querySelector('[role^="menuitem"][aria-checked="true"]') || m.querySelector('[role^="menuitem"], button'));
@@ -2008,6 +2091,55 @@ class Component extends DCLogic {
     }
   }
   suggested() { return this.missions().findIndex(m => !m.parts.every(p => this.pg(p.key).closed)); }
+  // ── Brief 23: the picker opens on "Your studies" until the learner has answered (or chosen every paper).
+  openPicker(extra) {
+    this.setState(Object.assign({ sheet: this.state.studiesAsked ? "subj" : "studies", studyStep: 1, studyDraft: this.studyDraftFrom(this.state.studies),
+      studyErr: "", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }, extra || {}));
+  }
+  studyDraftFrom(st) { return st ? { qualification: st.qualification, level: st.level, study_programme: st.study_programme, subjects: (st.subjects || []).slice() }
+    : { qualification: null, level: null, study_programme: null, subjects: [] }; }
+  editStudies() { this.setState({ sheet: "studies", studyStep: 1, studyDraft: this.studyDraftFrom(this.state.studies), studyErr: "", optIdx: 0 }); }
+  saveStudies() {
+    try { const row = STUDIES_API.put(this.state.studyDraft || {}); this.setState({ studies: row, studiesAsked: true, sheet: "subj", studyErr: "", optIdx: 0, query: "" }); }
+    catch (e) { this.setState({ studyErr: e && e.message ? e.message : "That didn't save. Try again." }); }
+  }
+  skipStudies() { STUDIES_API.del(); this.setState({ studies: null, studiesAsked: true, sheet: "subj", studyErr: "", optIdx: 0, query: "" }); }
+  // Brief 23: the two steps of "Your studies" (step 1: qualification + level; step 2: the NC(V) programme or the NATED
+  // subjects), the chip that reopens them, and the design-only reset.
+  studyVals(s) {
+    const st = s.studies, dr = s.studyDraft || this.studyDraftFrom(st), step = s.studyStep === 2 ? 2 : 1;
+    const q = STUDY_QUALS.filter(x => x.id === dr.qualification)[0] || null, ncv = dr.qualification === "ncv";
+    const set = patch => this.setState({ studyDraft: Object.assign({}, dr, patch), studyErr: "" });
+    const onOff = on => ({ on: on ? "true" : "false", border: on ? "2px solid rgba(129,177,255,0.75)" : "1px solid var(--line2)", bg: on ? "rgba(0,104,248,0.16)" : "transparent" });
+    const levelPapers = HOME.papers.filter(p => q && p.qualification === q.id && p.level === dr.level);
+    const opts = !q || !dr.level ? [] : ncv
+      ? NCV_PROGRAMMES.map(name => { const n = levelPapers.filter(p => PAPER_PROGRAMME[p.id] === name).length;
+          return Object.assign({ role: "radio", label: name, sub: n ? n + (n === 1 ? " paper" : " papers") : "No paper yet", subColor: n ? "#81b1ff" : "var(--text3)",
+            pick: () => set({ study_programme: dr.study_programme === name ? null : name }) }, onOff(dr.study_programme === name)); })
+      : levelPapers.map(p => p.subject).filter((v, i, a) => a.indexOf(v) === i).map(name => { const on = dr.subjects.indexOf(name) !== -1;
+          return Object.assign({ role: "checkbox", label: name, sub: "1 paper", subColor: "#81b1ff",
+            pick: () => set({ subjects: on ? dr.subjects.filter(x => x !== name) : dr.subjects.concat([name]) }) }, onOff(on)); });
+    const chip = st ? PROG_SHORT[st.qualification] + " " + LEVEL_LABEL(st.level)
+      + (st.study_programme ? " · " + st.study_programme.split(" ")[0] : st.subjects && st.subjects.length ? " · " + st.subjects.length + (st.subjects.length === 1 ? " subject" : " subjects") : "") : "Set your studies";
+    return { title: step === 1 ? "What are you studying?" : ncv ? "Your programme" : "Your subjects", vals: {
+      sheetStudies: s.sheet === "studies", studyStep1: step === 1, studyStep2: step === 2, studyStepLabel: "Your studies · " + step + " of 2",
+      studyQuals: STUDY_QUALS.map(x => Object.assign({ label: x.label, sub: x.sub,
+        pick: () => set({ qualification: x.id, level: x.levels.indexOf(dr.level) !== -1 ? dr.level : null, study_programme: null, subjects: [] }) }, onOff(dr.qualification === x.id))),
+      studyHasLevels: !!q, studyLevels: (q ? q.levels : []).map(c => Object.assign({ label: LEVEL_LABEL(c), pick: () => set({ level: c, study_programme: null, subjects: [] }) }, onOff(dr.level === c))),
+      studyOpts: opts, studyListRole: ncv ? "radiogroup" : "group", studyOptsLabel: ncv ? "Programmes" : "Subjects",
+      studyHint: ncv ? "Your 7 subjects come with your programme. Pick it, or skip this and we'll use your level."
+        : opts.length ? "Tick the subjects you're taking. Leave them all unticked to see every paper at your level." : "",
+      studyEmpty: step === 2 && !ncv && !opts.length, studyEmptyText: "Nexera has no NATED " + (dr.level || "") + " paper yet. You'll see every paper until one arrives.",
+      studyErr: s.studyErr || "", studyHasErr: !!s.studyErr,
+      studyPrimary: step === 1 ? "Next" : "Done",
+      studyPrimaryGo: () => { if (step === 1) { if (!q || !dr.level) { this.setState({ studyErr: "Pick what you're studying and your level first." }); return; }
+        this.setState({ studyStep: 2, studyErr: "" }); return; } this.saveStudies(); },
+      studyBackGo: () => this.setState({ studyStep: 1, studyErr: "" }),
+      skipStudiesGo: () => this.skipStudies(),
+      studyChip: chip, studyChipAria: st ? "Your studies: " + chip + ". Change them" : "Set your studies to see your papers first",
+      editStudies: () => this.editStudies(),
+      studyResetGo: () => { STUDIES_API.reset(); this.setState({ studies: null, studiesAsked: false, hallLive: "Your studies will be asked again." }); } } };
+  }
   // The vortex map (brief 22), once it has laid out its road; null on the classic map.
   vm() { const v = document.querySelector("vortex-map"); return v && v.ready ? v : null; }
   // The pinned tracker's arrow: is the next mission above, below, or on screen?
@@ -2489,8 +2621,9 @@ class Component extends DCLogic {
   }
   // "Practise another paper": the picker opens on the paper being resumed.
   changePaperFrom(rs) { const s = this.state, cur = HOME.subjects.filter(x => x.paper_ids.indexOf(rs.paper_id) !== -1)[0];
-    this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selProg: cur ? cur.programme : s.selProg, selPaper: rs.paper_id, bubbleMsg: "",
-      sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); }
+    this.setState({ picking: true, selSubj: cur ? cur.name : s.selSubj, selQual: cur ? cur.qualification : s.selQual, selPaper: rs.paper_id, bubbleMsg: "",
+      sheet: this.state.studiesAsked ? "subj" : "studies", studyStep: 1, studyDraft: this.studyDraftFrom(this.state.studies), studyErr: "",
+      sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); }
   // The one-card rule (brief 17): only what the learner can act on now may take the card.
   testRank(t) { return t.k === "inprogress" ? 0 : t.k === "open" ? 1 : t.k === "released" && !(this.state.resultSeen || {})[t.ref] ? 2 : -1; }
   // Whether a test the learner can't act on still belongs in "Your class tests" and the footer count.
@@ -3971,21 +4104,29 @@ class Component extends DCLogic {
     const glow = Math.min(7, HOME.me.days_practised_this_week);
     const modelOn = !s.reduced && !s.saveData;
     // Every subject Nexera knows: the ones with a paper first, then the rest, honestly tagged.
-    const withPaper = HOME.subjects.map(x => ({ name: x.name, programme: x.programme, paper_ids: x.paper_ids }));
+    const withPaper = HOME.subjects.map(x => ({ name: x.name, qualification: x.qualification, paper_ids: x.paper_ids }));
     const without = [];
-    Object.keys(OTHER_SUBJECTS).forEach(k => OTHER_SUBJECTS[k].forEach(n => without.push({ name: n, programme: k, paper_ids: [] })));
+    Object.keys(OTHER_SUBJECTS).forEach(k => OTHER_SUBJECTS[k].forEach(n => without.push({ name: n, qualification: k, paper_ids: [] })));
+    // Brief 23: a paper is "yours" when it matches your qualification and level (and your programme or subjects, when
+    // you gave them and the paper's are known). A teacher's class test is yours whatever you picked.
+    const st = s.studies, paperById = id => HOME.papers.filter(p => p.id === id)[0];
+    const ctPaperId = Object.keys(HOME_TO_LOCAL).filter(k => HOME_TO_LOCAL[k] === this.ct().paperId)[0];
+    const paperMine = p => !!(st && p && p.qualification === st.qualification && p.level === st.level
+      && (st.qualification !== "ncv" || !st.study_programme || !PAPER_PROGRAMME[p.id] || PAPER_PROGRAMME[p.id] === st.study_programme)
+      && (st.qualification !== "nated" || !(st.subjects || []).length || st.subjects.indexOf(p.subject) !== -1));
+    const isCt = x => x.paper_ids.indexOf(ctPaperId) !== -1, isMine = x => isCt(x) || x.paper_ids.some(id => paperMine(paperById(id)));
     const subj = withPaper.concat(without).filter(x => x.name === s.selSubj)[0] || withPaper[0];
     const papersOf = x => (x ? x.paper_ids : []).map(id => HOME.papers.filter(p => p.id === id)[0]).filter(Boolean);
     const sp = papersOf(subj);
     const paper0 = sp.filter(p => p.id === s.selPaper)[0] || sp[0] || null;
     const q = norm(s.query);
-    const match = x => !q || norm(x.name + " " + PROG_SHORT[x.programme] + " " + (x.name.match(/N\d|Level \d/) || [""])[0]).indexOf(q) !== -1;
+    const match = x => !q || norm(x.name + " " + PROG_SHORT[x.qualification] + " " + (x.name.match(/N\d|Level \d/) || [""])[0]).indexOf(q) !== -1;
     const rowsA = withPaper.filter(match), rowsB = without.filter(match);
     // Step 1 → step 2 only when the subject has more than one sitting to choose from.
     const pickSubj = x => {
       const ps = papersOf(x);
-      if (ps.length > 1) { this.setState({ selSubj: x.name, selProg: x.programme, selPaper: ps[0].id, sheet: "paper", sheetBack: true, optIdx: 0, query: "", bubbleMsg: "" }); return; }
-      this.setState({ selSubj: x.name, selProg: x.programme, selPaper: ps.length ? ps[0].id : null, bubbleMsg: "", swap: s.swap + 1 }, () => {
+      if (ps.length > 1) { this.setState({ selSubj: x.name, selQual: x.qualification, selPaper: ps[0].id, sheet: "paper", sheetBack: true, optIdx: 0, query: "", bubbleMsg: "" }); return; }
+      this.setState({ selSubj: x.name, selQual: x.qualification, selPaper: ps.length ? ps[0].id : null, bubbleMsg: "", swap: s.swap + 1 }, () => {
         if (ps.length) this.nod();
         this.closeLayer();
       });
@@ -3993,12 +4134,18 @@ class Component extends DCLogic {
     let idx = 0;
     const optRow = x => { const i = idx++; const on = x.name === s.selSubj; const has = x.paper_ids.length > 0;
       return { isHead: false, isOpt: true, idx: String(i), on: on, tab: i === s.optIdx ? "0" : "-1", label: x.name,
-        tag: PROG_SHORT[x.programme] + " · " + (has ? x.paper_ids.length + (x.paper_ids.length === 1 ? " paper" : " papers") : "No paper yet"),
+        tag: (st && isCt(x) ? "Class test · " : "") + PROG_SHORT[x.qualification] + " · " + (has ? x.paper_ids.length + (x.paper_ids.length === 1 ? " paper" : " papers") : "No paper yet"),
         tagBg: has ? "rgba(129,177,255,0.14)" : "rgba(255,255,255,0.05)", tagColor: has ? "#81b1ff" : "var(--text3)",
         weight: has ? "700" : "500", color: has ? "#ffffff" : "var(--text2)",
         bg: on ? "rgba(0,104,248,0.16)" : "transparent", pick: () => pickSubj(x) }; };
-    const subjRows = rowsA.map(optRow).concat(rowsB.length ? [{ isHead: true, isOpt: false, label: "Also on Nexera" }] : [], rowsB.map(optRow));
+    const head = label => ({ isHead: true, isOpt: false, label: label });
+    let subjRows;
+    if (!st) subjRows = rowsA.map(optRow).concat(rowsB.length ? [head("Also on Nexera")] : [], rowsB.map(optRow));
+    else { const mine = rowsA.filter(isMine), rest = rowsA.filter(x => !isMine(x)).concat(rowsB);
+      subjRows = (mine.length ? [head("Your papers")].concat(mine.map(optRow)) : [head("No paper for your studies yet · everything is below")])
+        .concat(rest.length ? [head("Also on Nexera")] : [], rest.map(optRow)); }
     const optCount = idx;
+    const studyVals = this.studyVals(s);
     const facts = p => p ? p.total_marks + " marks · " + (p.duration_minutes / 60) + " hours · " + (PAPER_UNITS[p.id] || p.parts + " parts") : "";
     const bubble = s.bubbleMsg ? s.bubbleMsg
       : showPicker ? "Pick your paper here, then tap Start."
@@ -4064,7 +4211,7 @@ class Component extends DCLogic {
       homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"], ["picker", "Picker open"]].map(m => {
         const on = m[0] === "picker" ? s.sheet === "subj" && home === "first" : home === m[0] && !(s.sheet === "subj" && home === "first");
         return { label: m[1], on: on,
-          pick: () => { if (m[0] === "picker") { this.setState({ home: "first", picking: false, sheet: "subj", sheetBack: false, optIdx: 0, pop: null, bubbleMsg: "", ticketSeen: true }); return; }
+          pick: () => { if (m[0] === "picker") { this.openPicker({ home: "first", picking: false, bubbleMsg: "" }); return; }
             this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }); },
           bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
@@ -4081,7 +4228,7 @@ class Component extends DCLogic {
         if (!Object.keys(this.state.prog).length) this.seedMap("progress", go); else go(); },
       changePaper: () => this.changePaperFrom(rs),
       // One quiet link under the card: a returning learner changes paper; a first visit opens the picker.
-      practiseGo: () => { if (returning) this.changePaperFrom(rs); else this.setState({ sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }); },
+      practiseGo: () => { if (returning) this.changePaperFrom(rs); else this.openPicker(); },
       resumeSubj: resumeName, resumeSitting: resumePaper ? resumePaper.sitting + " · " + resumePaper.total_marks + " marks" : "",
       resumeTicketAria: "Paper: " + resumeName + (resumePaper ? ", " + resumePaper.sitting : "") + ". Change paper",
       backToContinue: () => this.setState({ picking: false, bubbleMsg: "" }),
@@ -4095,7 +4242,7 @@ class Component extends DCLogic {
       swapAnim: s.reduced || !s.swap ? "none" : "pop 380ms cubic-bezier(0.34,1.56,0.64,1) both",
       // Two gentle glows on a first visit only, then still for good.
       ticketAnim: !s.reduced && home === "first" && !s.ticketSeen ? "suggest 1.6s ease-out 900ms 2" : "none",
-      openTicket: () => this.setState({ sheet: "subj", sheetBack: false, query: "", optIdx: 0, pop: null, ticketSeen: true }),
+      openTicket: () => this.openPicker(),
       sheetBack: s.sheet === "paper" && s.sheetBack,
       sheetGoBack: () => this.setState({ sheet: "subj", sheetBack: false, optIdx: 0 }),
       startW: phone ? "100%" : "min(460px, 100%)",
@@ -4105,7 +4252,9 @@ class Component extends DCLogic {
       },
       isPhone: phone,
       sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPaper: s.sheet === "paper", sheetTests: s.sheet === "tests",
-      sheetTitle: onSubjSheet ? "What are you studying?" : s.sheet === "tests" ? "Your class tests" : "Which sitting?",
+      sheetTitle: onSubjSheet ? "Pick a paper" : s.sheet === "tests" ? "Your class tests"
+        : s.sheet === "studies" ? studyVals.title : "Which sitting?",
+      ...studyVals.vals,
       // The overlay grid does the centring; the sheet itself only animates.
       ovAlign: phone ? "end" : "center", ovJustify: phone ? "stretch" : "center", ovPad: phone ? "0" : "24px",
       sheetPos: phone ? "width:100%; max-height:calc(100dvh - 24px); border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
@@ -4115,7 +4264,7 @@ class Component extends DCLogic {
       subjRows: subjRows, noResults: onSubjSheet && optCount === 0,
       // Arrow keys move through the listbox; Tab stays inside the dialog.
       sheetKeys: e => {
-        const n = onSubjSheet ? optCount : s.sheet === "tests" ? 0 : sp.length;
+        const n = onSubjSheet ? optCount : s.sheet === "tests" || s.sheet === "studies" ? 0 : sp.length;
         if ((e.key === "ArrowDown" || e.key === "ArrowUp") && n) { e.preventDefault(); this._arrow = true;
           const cur = document.activeElement && document.activeElement.getAttribute("data-opt");
           const base = cur == null ? (e.key === "ArrowDown" ? -1 : n) : parseInt(cur, 10);
