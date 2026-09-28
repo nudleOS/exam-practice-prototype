@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="paper-ls-p1-2026.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<script type="module" src="model-floor.js"></script>
 <style>
   :root { --bg:#191b1e; --panel:#202327; --field:#23262a; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
     --tint:#81b1ff; --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451;
@@ -95,6 +97,13 @@
   .back .why { font-size:14px; line-height:1.45; font-weight:600; color:var(--text); }
   .tile.gold .why { color:#f3ead2; }
   @keyframes deal { from { opacity:0; transform:translateY(70px) rotateX(-35deg) rotateZ(var(--rz)) scale(0.9); } to { opacity:1; transform:none; } }
+  /* Dead wrong answers: when the right card goes home, the wrong cards still standing go dark, one by one */
+  .tile.dead .face::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:3;
+    background:rgba(7,8,10,0.66); animation:die 520ms ease both; animation-delay:var(--dd, 0s); }
+  .tile.dead .gleam { display:none; }
+  .tile.dead .face::before { opacity:0.15; transition:opacity 520ms ease var(--dd, 0s); }
+  .tile.dead .face { box-shadow:0 1px 1px rgba(0,0,0,0.4), 0 10px 20px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); transition:box-shadow 520ms ease var(--dd, 0s); cursor:default; }
+  @keyframes die { from { opacity:0; } to { opacity:1; } }
   /* The glass keeps shining: a slow gleam crosses each card now and then (staggered per card via --gd) */
   .gleam { position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; z-index:1; }
   .gleam::before { content:""; position:absolute; top:-40%; bottom:-40%; left:0; width:36%;
@@ -113,7 +122,16 @@
   .tile.hero .face { padding:22px 22px 22px 20px; gap:16px; }
   .tile.hero .letter { width:42px; height:42px; font-size:17px; border-radius:12px; }
   .tile.hero .txt { font-size:20px; padding-top:7px; }
-  .tile.hero .back { position:relative; inset:auto; min-height:220px; padding:22px 24px; gap:10px; justify-content:flex-start; }   /* in flow: its text sets the card's height */
+  .tile.hero .back { position:relative; inset:auto; min-height:230px; padding:18px 24px 18px 12px; gap:14px; flex-direction:row; align-items:stretch; }   /* in flow: its content sets the card's height */
+  .copy { flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; justify-content:center; position:relative; z-index:2; }
+  .tile.hero .copy { gap:10px; justify-content:center; padding:4px 0; }
+  /* The companion: on the big card only, standing on the glass beside the text (above it on phones) */
+  .buddy { display:none; }
+  .tile.hero .buddy { display:block; position:relative; flex:none; width:204px; margin:-6px 0; transition:opacity 180ms ease; }
+  .buddy.leaving { opacity:0; }
+  .buddy model-floor, .buddy img { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .buddy img { object-fit:contain; object-position:center bottom; }
+  @media (max-width:600px) { .tile.hero .back { flex-direction:column; padding:14px 18px 20px; } .tile.hero .buddy { width:auto; height:180px; margin:0 -6px -4px; } }
   .back .not, .back .more { display:none; }
   .tile.hero .back .not { display:block; }
   .tile:not(.hero) .back .why { display:none; }                        /* small: medal line + answer; the why is one tap away */
@@ -241,6 +259,7 @@ const sfx = { pick: () => tone(880, 0.07, "triangle", 0.05), lock: () => tone(18
   right: () => { tone(660, 0.18, "triangle", 0.07); tone(990, 0.28, "triangle", 0.07, 0, 0.11); },
   crack: () => { noise(0.08, 0.35, 2500); tone(2400, 0.05, "square", 0.02); },
   shatter: () => { noise(0.45, 0.5, 1800); [3100, 4200, 5300, 3700, 4800].forEach((f, k) => tone(f, 0.16, "sine", 0.025, 0.9, 0.02 + k * 0.035)); },
+  defeat: () => { tone(330, 0.5, "triangle", 0.05, 0.55); tone(196, 0.8, "sine", 0.05, 0.7, 0.28); },
   shine: () => { [1320, 1760, 2640].forEach((f, k) => tone(f, 0.32, "sine", 0.035, 1.02, k * 0.07)); } };
 const buzz = ms => { if (!muted && navigator.vibrate) navigator.vibrate(ms); };
 $("mute").onclick = () => { muted = !muted; $("mute").textContent = muted ? "🔇" : "🔊"; $("mute").setAttribute("aria-pressed", String(muted)); $("mute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); };
@@ -289,7 +308,7 @@ function render(deal) {
     const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
     t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--gd", (1.2 + i * 0.85).toFixed(2) + "s"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
     t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
-      <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div>`;
+      <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="buddy" aria-hidden="true"></div><div class="copy"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div></div>`;
     const face = t.querySelector(".face");
     face.addEventListener("pointermove", e => { const r = face.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       face.style.setProperty("--mx", x + "px"); face.style.setProperty("--my", y + "px");
@@ -304,7 +323,7 @@ function render(deal) {
     t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) dismiss(); else if (t.classList.contains("flipped")) lift(t); });
     g.appendChild(t);
   });
-  st.appendChild(g); g.querySelectorAll(".face").forEach(lens); paintTiles(); paintTop(); say();
+  st.appendChild(g); paintTiles(); paintTop(); say();
 }
 
 function press(i) {
@@ -371,36 +390,6 @@ function submit() {
   paintTop(); say();
 }
 
-// The glass lens (Chromium only; verified in Chromium 152, Safari/Firefox not verified, so they keep the CSS blur).
-// A displacement map at the card's exact size: flat in the middle; within B px of the rim each pixel samples the
-// backdrop from further in along the edge normal, strongest at the rim ((1 - d/B)^2). R/G carry x/y around 128.
-const LENS_OK = !reduced && !!(navigator.userAgentData && navigator.userAgentData.brands.some(b => b.brand === "Chromium"));
-const lensDefs = (() => { if (!LENS_OK) return null; const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
-  svg.setAttribute("width", "0"); svg.setAttribute("height", "0"); svg.setAttribute("aria-hidden", "true"); svg.style.position = "absolute";
-  const d = document.createElementNS(NS, "defs"); svg.appendChild(d); document.body.appendChild(svg); return d; })();
-const lensCache = {};
-function lensId(w, h) {
-  const key = w + "x" + h; if (lensCache[key]) return lensCache[key];
-  const c = document.createElement("canvas"); c.width = w; c.height = h;
-  const g = c.getContext("2d"), img = g.createImageData(w, h), D = img.data, R = 18, B = 18, hx = w / 2 - R, hy = h / 2 - R;
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const px = x + 0.5 - w / 2, py = y + 0.5 - h / 2, qx = Math.abs(px) - hx, qy = Math.abs(py) - hy; let out, nx, ny;
-    if (qx > 0 && qy > 0) { const l = Math.hypot(qx, qy); out = l - R; nx = Math.sign(px) * qx / l; ny = Math.sign(py) * qy / l; }   // a corner
-    else { out = Math.max(qx, qy) - R; if (qx > qy) { nx = Math.sign(px); ny = 0; } else { nx = 0; ny = Math.sign(py); } }     // a side
-    const d = -out, m = d > 0 && d < B ? (1 - d / B) ** 2 : 0, k = (y * w + x) * 4;
-    D[k] = 128 - nx * m * 127; D[k + 1] = 128 - ny * m * 127; D[k + 2] = 128; D[k + 3] = 255; }
-  g.putImageData(img, 0, 0);
-  const id = "lens-" + key, f = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-  [["id", id], ["x", 0], ["y", 0], ["width", w], ["height", h], ["filterUnits", "userSpaceOnUse"], ["primitiveUnits", "userSpaceOnUse"],
-   ["color-interpolation-filters", "sRGB"]].forEach(([k, v]) => f.setAttribute(k, v));                       // sRGB: the map's values are read as written
-  f.innerHTML = `<feImage href="${c.toDataURL()}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="map"/>` +
-    `<feDisplacementMap in="SourceGraphic" in2="map" scale="30" xChannelSelector="R" yChannelSelector="G" result="bent"/><feGaussianBlur in="bent" stdDeviation="0.4"/>`;
-  lensDefs.appendChild(f); return lensCache[key] = id;
-}
-function lens(face) { if (!LENS_OK) return; const w = face.offsetWidth, h = face.offsetHeight; if (!w || !h) return;
-  const v = `url(#${lensId(w, h)}) saturate(150%) brightness(1.08)`; face.style.backdropFilter = v; face.style.webkitBackdropFilter = v; }
-let lensT = 0; addEventListener("resize", () => { clearTimeout(lensT); lensT = setTimeout(() => document.querySelectorAll(".tile .face").forEach(lens), 150); });
-
 // The back: the medal line (set by the caller), the answer, why it is right, and why the others are not.
 const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
 function fillBack(t, it) { const w = WHY[it.n] || {};
@@ -410,6 +399,33 @@ function showNext() { $("next").classList.add("show"); $("next").focus({ prevent
 
 // The hero: the card leaves its slot (an empty slot keeps the grid still), grows to the centre over a scrim, then
 // (right answer) shines in its medal colour and flips twice, landing on its back; (revealed answer) turns once, calmly.
+// The companion on the big card. One 3D view only (phones cap WebGL contexts); none on the small cards.
+const BUDDY = { src: "assets/companion-robot.glb", still: "assets/companion-stand.webp" };
+const BUDDY_3D = !reduced && !(navigator.connection && navigator.connection.saveData);
+const MOVE = { gold: { clip: "dance", from: 4.5 }, silver: { clip: "clap" }, bronze: { clip: "clap" }, none: { clip: "defeat", end: 5.5, fit: 0.85 } };   // lying down it spans ~2.1 units: framed wider
+// Warm the cache while the learner reads the question, so the robot is there when the card lands.
+if (BUDDY_3D) (window.requestIdleCallback || setTimeout)(() => fetch(BUDDY.src).catch(() => {}));
+function buddyStill(box) { box.replaceChildren(Object.assign(document.createElement("img"), { src: BUDDY.still, alt: "" })); }
+// Mount the robot on the back. frozen: holds the clip's first pose (it spins with the card); otherwise it is already
+// moving, or already down (lifting a small card again shows the end state, it does not replay the whole scene).
+function buddyIn(t, frozen) { const box = t.querySelector(".buddy"); if (!box || box.firstChild) return;
+  box.classList.remove("leaving");
+  if (!BUDDY_3D) { buddyStill(box); return; }
+  const m = MOVE[S.tier], mf = document.createElement("model-floor");
+  [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "ring"], ["fit", String(m.fit || 0.72)]].forEach(([k, v]) => mf.setAttribute(k, v));
+  if (m.end) mf.setAttribute("loop", "once");
+  const from = m.end ? (frozen ? 0 : m.end) : m.from; if (from) mf.setAttribute("from", from);
+  if (frozen) mf.setAttribute("paused", "");
+  mf.setAttribute("clip", m.clip);
+  mf.addEventListener("failed", () => buddyStill(box));
+  box.appendChild(mf); }
+function buddyGo(t) { const mf = t.querySelector(".buddy model-floor"); if (mf) mf.removeAttribute("paused"); }
+function buddyOut(t) { const box = t.querySelector(".buddy"); if (!box || !box.firstChild) return;   // removing it frees its WebGL context
+  box.classList.add("leaving"); setTimeout(() => { if (box.classList.contains("leaving")) box.replaceChildren(); }, 190); }
+// The wrong cards still standing go dark, one by one, once the right card is home.
+function killWrong() { [...document.querySelectorAll("#tiles .tile")].filter(x => +x.dataset.i !== S.it.a && !S.gone.has(+x.dataset.i) && !x.classList.contains("dead"))
+  .forEach((x, k) => { x.style.setProperty("--dd", (k * 0.12).toFixed(2) + "s"); x.classList.add("dead"); }); }
+
 const SPIN = 540;                       // "flips two times revealing the back": it passes the back, the front, lands on the back
 const FLIP_MS = 2400, SHINE_MS = 900, GROW_MS = 800, BACK_MS = 700;
 
@@ -424,20 +440,21 @@ function grow(t) {
   S.slot.style.height = r0.height + "px"; S.heroT = t;
   t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
   t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
-  ["--tx", "--ty", "--px"].forEach(k => t.querySelector(".face").style.removeProperty(k)); lens(t.querySelector(".face"));
+  ["--tx", "--ty", "--px"].forEach(k => t.querySelector(".face").style.removeProperty(k));
   return reduced ? Promise.resolve() : glide(t, r0, GROW_MS, t.classList.contains("flipped") ? " rotateY(180deg)" : "");
 }
 // Back to its slot, still flipped (tap outside, tap the card, or Esc). Tapping the small card lifts it again.
 function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
-  const r0 = t.getBoundingClientRect(); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on"); lens(t.querySelector(".face"));
-  if (reduced) return; S.busy = true; $("stage").style.zIndex = "36";                     // the card glides home above the fading scrim, never under its blur
-  glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; }); }
-function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { S.busy = false; }); }
+  buddyOut(t); const r0 = t.getBoundingClientRect(); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on");
+  if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
+  glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); }); }
+function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { buddyIn(t, false); S.busy = false; }); }
 
 function present(t, tier) {
-  if (tier) t.classList.add(tier); S.busy = true;
-  if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); S.busy = false; return Promise.resolve(); }
-  return grow(t).then(() => {
+  if (tier) t.classList.add(tier); S.busy = true; S.tier = tier || "none";
+  if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); buddyIn(t, false); S.busy = false; return Promise.resolve(); }
+  const g = grow(t); buddyIn(t, true);                                                      // the robot rides the back, frozen, through the spin
+  return g.then(() => {
     if (!tier) return;
     t.classList.add("shine"); sfx.shine(); buzz(10);                                          // the shine, before it turns
     return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
@@ -448,7 +465,7 @@ function present(t, tier) {
     const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);
       return { offset: q, transform: `translateZ(${(a * rise).toFixed(1)}px) scale(${(1 + a * swell).toFixed(4)}) rotateY(${(turn * q).toFixed(1)}deg)` }; });
     return t.animate(kf, { duration: tier ? FLIP_MS : 1100, easing: "cubic-bezier(.45,0,.25,1)" }).finished;
-  }).then(() => { S.busy = false; });
+  }).then(() => { buddyGo(t); if (!tier) sfx.defeat(); S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
 // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
@@ -487,7 +504,7 @@ function shatter(tile, hit) {
       polys.push([p, A.ring, B.ring]); polys.push([A.ring, A.e, ...between, B.e, B.ring]); }
     const layer = $("shards"); face.style.visibility = "hidden"; sfx.shatter(); buzz([30, 30, 50]);
     const anims = polys.map(poly => {
-      const s = face.cloneNode(true); s.removeAttribute("role"); s.className = "shard"; s.querySelector(".cracks")?.remove(); s.querySelectorAll(".gleam").forEach(g => g.remove()); s.style.visibility = "visible";
+      const s = face.cloneNode(true); s.removeAttribute("role"); s.className = "shard"; s.querySelector(".cracks")?.remove(); s.querySelectorAll(".gleam, .buddy").forEach(g => g.remove()); s.style.visibility = "visible";
       Object.assign(s.style, { left: r.left + "px", top: r.top + "px", width: w + "px", height: h + "px", display: "flex", gap: "12px", padding: "16px 16px 16px 14px",
         clipPath: "polygon(" + poly.map(q => (q.x / w * 100).toFixed(2) + "% " + (q.y / h * 100).toFixed(2) + "%").join(",") + ")" });
       layer.appendChild(s);
