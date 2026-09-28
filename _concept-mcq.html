@@ -37,7 +37,7 @@
   .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; flex-wrap:wrap; padding:0 12px; }
   .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:7px 11px; cursor:pointer; }
   .pick button[aria-pressed="true"] { color:#fff; border-color:#4a5cff; }
-  .stage { max-width:760px; margin:0 auto; padding:6px 18px 200px; }   /* room to scroll the last card above the dock */
+  .stage { max-width:760px; margin:0 auto; padding:6px 18px 224px; }   /* room to scroll the last card above the dock */
   .meta { display:flex; align-items:center; gap:10px; color:var(--text2); font-size:13px; font-weight:600; }
   .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
   .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
@@ -52,16 +52,14 @@
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
   .surface { background:var(--panel); border:1px solid var(--line); }
   .face { display:flex; gap:12px; align-items:flex-start; width:100%; height:100%; text-align:left; font:inherit; color:var(--text); padding:16px 16px 16px 14px; cursor:pointer; overflow:hidden;
-    /* Real glass, in layers (top to bottom): a glint where the pointer is (--mx/--my); a hard-edged reflection band that
-       slides against the tilt (--px); a sky sheen on the top third; the body, clear with a faint green-cyan cast low down
-       (a pane's thickness, like float glass); a fine grain. The rim is ::before; bevel + inner bounce light are insets. */
+    /* Real glass, in layers (top to bottom): a glint where the pointer is (--mx/--my, it follows the
+       tilt too); a sky sheen on the top third; the body, clear, fading
+       toward the bottom; a fine grain. The rim is ::before; bevel + inner bounce light are insets. */
     --top:rgba(255,255,255,0.035); --low:rgba(255,255,255,0.008);
     --glass-in:inset 0 1px 0 rgba(255,255,255,0.5), inset 1px 0 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.38),
       inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(255,255,255,0.14);
     border:1px solid transparent;
     background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.13), transparent 70%),
-      linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.035) 26%, transparent 26.5%, transparent 63%, rgba(255,255,255,0.04) 63.5%, transparent 70%)
-        calc(50% + var(--px, 0px)) 0 / 150% 100% no-repeat,
       linear-gradient(180deg, rgba(255,255,255,0.07), transparent 38%),
       linear-gradient(180deg, var(--top), var(--low)),
       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
@@ -92,8 +90,7 @@
   .tile.silver .back { background:linear-gradient(180deg,#34383e,#24272b); box-shadow:0 20px 48px rgba(210,216,224,0.18), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
   .tile.bronze .back { background:linear-gradient(180deg,#3a2618,#28180e); box-shadow:0 20px 48px rgba(217,155,108,0.22), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
   .back::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-    background:linear-gradient(118deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 26%, transparent 26.5%, transparent 63%, rgba(255,255,255,0.045) 63.5%, transparent 70%),
-      linear-gradient(180deg, rgba(255,255,255,0.08), transparent 40%); }
+    background:linear-gradient(180deg, rgba(255,255,255,0.08), transparent 40%); }
   .back .ok { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--ink, var(--text2)); }
   .medal { flex:none; width:20px; height:20px; border-radius:50%; background:var(--medal); box-shadow:0 0 0 1.5px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.4); }
   /* The shine before the turn: a glow in the medal colour and a sweep of light across the card */
@@ -157,10 +154,10 @@
   .cracks path.fine { stroke-width:1.1; stroke:rgba(255,255,255,0.8); }
   .impact { position:absolute; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; pointer-events:none; z-index:3;
     background:radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(200,215,255,0.35) 45%, rgba(255,255,255,0) 100%); }
-  .shards { position:fixed; inset:0; z-index:20; pointer-events:none; perspective:900px; }
+  .shards { position:fixed; inset:0; z-index:42; pointer-events:none; perspective:900px; }   /* above the dock: the pile lies at the screen's bottom edge, by the robot's feet */
   /* Shards: pieces of the picked glass (flat tint, no backdrop blur: 18 moving blurs would stutter on low-end phones) */
   .shard { position:fixed; margin:0; border-radius:18px; border:1px solid rgba(160,175,255,0.85);
-    background:linear-gradient(118deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 26%, transparent 26.5%), linear-gradient(180deg, rgba(255,255,255,0.1), transparent 38%),
+    background:linear-gradient(180deg, rgba(255,255,255,0.1), transparent 38%),
       linear-gradient(180deg, rgba(75,92,255,0.38), rgba(56,57,255,0.18)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(255,255,255,0.14); will-change:transform, opacity; }
   .shard .letter { background:var(--grad); border-color:transparent; color:#fff; }
@@ -179,13 +176,13 @@
   .sw .track::after { content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cfd3d7; transition:left 220ms cubic-bezier(.2,.8,.2,1); }
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
-  .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
+  .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
   .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:104px; min-height:128px; align-content:end; }
   @media (max-width:600px) { .dock-in { padding-left:86px; min-height:108px; } }
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
   /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
      behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
-  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:16px; width:92px; height:128px; z-index:41; pointer-events:none; }
+  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:38px; width:92px; height:128px; z-index:41; pointer-events:none; }
   .pal-body { position:absolute; inset:0; } .pal.away .pal-body { visibility:hidden; }
   .pal-body model-floor, .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
   .pal-body img { object-fit:contain; object-position:center bottom; }
@@ -289,7 +286,7 @@ const buzz = ms => { if (!muted && navigator.vibrate) navigator.vibrate(ms); }; 
 const HAPTIC = { pick: 6, lock: 14, crack: 10, shatter: [14, 24, 40], shine: 8, gold: [20, 50, 30, 50, 70], silver: [20, 60, 35], bronze: 30, defeat: [70, 90, 140] };
 $("mute").onclick = () => { muted = !muted; $("mute").textContent = muted ? "🔇" : "🔊"; $("mute").setAttribute("aria-pressed", String(muted)); $("mute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); };
 
-// Tilt (phones): the glass tilts with the phone and its reflection slides against it, like the mouse tilt on desktop.
+// Tilt (phones): the glass tilts with the phone and its glint follows the light, like the mouse tilt on desktop.
 // Android: on by default (no permission needed). iOS: needs a tap to allow motion (DeviceOrientationEvent.requestPermission).
 // The neutral angle follows how the phone is held (a slow re-centre), so the glass doesn't stay tipped when you lean back.
 const TILT = { on: false, base: null, x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
@@ -303,7 +300,7 @@ function onOrient(e) { if (e.beta == null || e.gamma == null) return;
 function tiltFrame() { TILT.raf = 0; TILT.x += (TILT.tx - TILT.x) * 0.18; TILT.y += (TILT.ty - TILT.y) * 0.18;
   document.querySelectorAll("#tiles .tile:not(.dead):not(.sel):not(.flipped) .face").forEach(f => {
     f.style.setProperty("--ty", (TILT.x * 5).toFixed(2) + "deg"); f.style.setProperty("--tx", (-TILT.y * 4).toFixed(2) + "deg");
-    f.style.setProperty("--px", (-TILT.x * 30).toFixed(1) + "px"); f.style.setProperty("--mx", (50 + TILT.x * 40).toFixed(1) + "%"); f.style.setProperty("--my", (-10 + TILT.y * 30).toFixed(1) + "%"); });
+    f.style.setProperty("--mx", (50 + TILT.x * 40).toFixed(1) + "%"); f.style.setProperty("--my", (-10 + TILT.y * 30).toFixed(1) + "%"); });
   if (Math.abs(TILT.tx - TILT.x) + Math.abs(TILT.ty - TILT.y) > 0.002) TILT.raf = requestAnimationFrame(tiltFrame); }
 function setTilt(on) { TILT.on = on; TILT.base = null; $("motion").setAttribute("aria-pressed", String(on));
   if (on) addEventListener("deviceorientation", onOrient); else { removeEventListener("deviceorientation", onOrient); TILT.tx = TILT.ty = 0; tiltFrame(); }
@@ -364,8 +361,8 @@ function render(deal) {
       face.style.setProperty("--mx", x + "px"); face.style.setProperty("--my", y + "px");
       if (e.pointerType === "touch" || reduced || S.done || t.classList.contains("sel")) return;
       const u = x / r.width - 0.5, v = y / r.height - 0.5;
-      face.style.setProperty("--ty", (u * 10).toFixed(2) + "deg"); face.style.setProperty("--tx", (-v * 8).toFixed(2) + "deg"); face.style.setProperty("--px", (-u * 60).toFixed(1) + "px"); });
-    face.addEventListener("pointerleave", () => ["--mx", "--my", "--tx", "--ty", "--px"].forEach(k => face.style.removeProperty(k)));
+      face.style.setProperty("--ty", (u * 10).toFixed(2) + "deg"); face.style.setProperty("--tx", (-v * 8).toFixed(2) + "deg"); });
+    face.addEventListener("pointerleave", () => ["--mx", "--my", "--tx", "--ty"].forEach(k => face.style.removeProperty(k)));
     face.addEventListener("pointerenter", () => { if (!S.done) palLook(t); }); face.addEventListener("focus", () => { if (!S.done) palLook(t); });
     face.addEventListener("pointerleave", () => { if (!S.done) palLook(null); });
     face.addEventListener("pointerdown", () => ["--tx", "--ty"].forEach(k => face.style.removeProperty(k)));   // flat before it answers
@@ -523,7 +520,7 @@ function grow(t) {
   S.slot.style.height = r0.height + "px"; S.heroT = t;
   t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
   t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
-  ["--tx", "--ty", "--px"].forEach(k => t.querySelector(".face").style.removeProperty(k));
+  ["--tx", "--ty"].forEach(k => t.querySelector(".face").style.removeProperty(k));
   return reduced ? Promise.resolve() : glide(t, r0, GROW_MS, t.classList.contains("flipped") ? " rotateY(180deg)" : "");
 }
 // Back to its slot, still flipped (tap outside, tap the card, or Esc). Tapping the small card lifts it again.
@@ -593,30 +590,32 @@ function shatter(tile, hit) {
         clipPath: "polygon(" + poly.map(q => (q.x / w * 100).toFixed(2) + "% " + (q.y / h * 100).toFixed(2) + "%").join(",") + ")" });
       layer.appendChild(s);
       const c = poly.reduce((m, q) => ({ x: m.x + q.x / poly.length, y: m.y + q.y / poly.length }), { x: 0, y: 0 });
-      // Pop out from the impact, fall under gravity to the floor of the card's own (now empty) slot, bounce once,
-      // slide, settle lying flat (rotateX ~70deg in the layer's perspective reads as glass on a table), then fade.
-      const dx = c.x - p.x, dy = c.y - p.y, d = Math.hypot(dx, dy) || 1, push = rnd(30, 90), ox = dx / d * push;
-      const fy = Math.max(18, h + 10 - c.y + rnd(-4, 6)), bounce = Math.max(6, Math.min(22, fy * 0.14)), rz = rnd(-60, 60), flat = rnd(62, 78) * (Math.random() < 0.5 ? -1 : 1), ry = rnd(-40, 40);
+      // Pop out from the impact, fall under gravity to the bottom of the screen, bounce once, slide, and settle lying
+      // flat (rotateX ~80deg in the layer's perspective reads as glass on the floor). It STAYS: each landing raises its
+      // spot of the floor a little, so later pieces land on earlier ones and the pile grows. Next sweeps it away.
+      const dx = c.x - p.x, dy = c.y - p.y, d = Math.hypot(dx, dy) || 1, push = rnd(30, 90), ox = dx / d * push + rnd(-40, 40);
+      const bin = Math.round((r.left + c.x + ox) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + rnd(1.2, 2.6));
+      const fy = Math.max(24, innerHeight - 6 - level - (r.top + c.y)), bounce = Math.max(8, Math.min(34, fy * 0.08)), rz = rnd(-80, 80), flat = rnd(74, 84) * (Math.random() < 0.5 ? -1 : 1), ry = rnd(-30, 30);
       const O = { transformOrigin: `${c.x}px ${c.y}px` }, T = (x, y, z, rxv, ryv, rzv) => `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z}px) rotateX(${rxv.toFixed(1)}deg) rotateY(${ryv.toFixed(1)}deg) rotate(${rzv.toFixed(1)}deg)`;
-      const dur = rnd(1500, 1900);
+      const dur = rnd(1300, 1700);
       return s.animate([
-        { ...O, offset: 0, transform: T(0, 0, 0, 0, 0, 0), opacity: 1, easing: "cubic-bezier(.2,.7,.4,1)" },                            // pop
-        { ...O, offset: 0.16, transform: T(ox * 0.5, dy / d * 18 - 16, 30, flat * 0.25, ry * 0.4, rz * 0.3), easing: "cubic-bezier(.5,0,.9,.6)" },   // falls (gravity)
-        { ...O, offset: 0.46, transform: T(ox, fy, 0, flat, ry, rz), easing: "cubic-bezier(.2,.6,.4,1)" },                            // hits the floor
-        { ...O, offset: 0.58, transform: T(ox * 1.08, fy - bounce, 0, flat * 0.9, ry, rz * 1.1), easing: "cubic-bezier(.5,0,.9,.6)" },     // one bounce
-        { ...O, offset: 0.7, transform: T(ox * 1.14, fy, 0, flat, ry, rz * 1.15), easing: "cubic-bezier(.2,.6,.4,1)" },
-        { ...O, offset: 0.8, transform: T(ox * 1.18, fy, 0, flat, ry, rz * 1.18), opacity: 1 },                                        // slides, settles
-        { ...O, offset: 1, transform: T(ox * 1.18, fy, 0, flat, ry, rz * 1.18), opacity: 0 }],                                          // fades where it lies
-        { duration: dur, fill: "forwards" }).finished.then(() => s.remove());
+        { ...O, offset: 0, transform: T(0, 0, 0, 0, 0, 0), easing: "cubic-bezier(.2,.7,.4,1)" },                                        // pop
+        { ...O, offset: 0.12, transform: T(ox * 0.4, dy / d * 18 - 18, 30, flat * 0.2, ry * 0.4, rz * 0.25), easing: "cubic-bezier(.5,0,.95,.55)" },  // falls (gravity)
+        { ...O, offset: 0.58, transform: T(ox, fy, 0, flat, ry, rz), easing: "cubic-bezier(.2,.6,.4,1)" },                            // hits the floor
+        { ...O, offset: 0.68, transform: T(ox * 1.06, fy - bounce, 0, flat * 0.9, ry, rz * 1.08), easing: "cubic-bezier(.5,0,.9,.6)" },     // one bounce
+        { ...O, offset: 0.78, transform: T(ox * 1.1, fy, 0, flat, ry, rz * 1.12), easing: "cubic-bezier(.2,.6,.4,1)" },
+        { ...O, offset: 1, transform: T(ox * 1.16, fy, 0, flat, ry, rz * 1.15) }],                                                      // slides, settles, and stays
+        { duration: dur, fill: "forwards" }).finished;
     });
     // A few pieces clink as they land, placed where they land (not all 18: that would be a rattle, not glass).
-    [0, 3, 7, 12].forEach((k, n) => setTimeout(() => at(tile, () => tone(rnd(3800, 6200), 0.06, "sine", 0.014)), 700 + n * 70 + rnd(0, 60)));
+    [0, 3, 7, 12].forEach((k, n) => setTimeout(() => at(tile, () => tone(rnd(3800, 6200), 0.06, "sine", 0.014)), 820 + n * 70 + rnd(0, 60)));
     leaveGap(tile); return wait(950);                                                            // the question moves on; the pieces finish on their own
   });
 }
 function leaveGap(tile) { // the broken card keeps its slot, empty: the others stay where the learner last saw them
   tile.style.visibility = "hidden"; tile.style.pointerEvents = "none"; tile.setAttribute("aria-hidden", "true");
 }
+let PILE = {};                                                                               // floor height per 34 px strip of the screen's bottom edge
 const norm = a => (a + 2 * Math.PI) % (2 * Math.PI), wait = ms => new Promise(r => setTimeout(r, ms));
 function edge(p, a, w, h) { const cx = Math.cos(a), cy = Math.sin(a); let t = Infinity;
   if (cx > 1e-6) t = Math.min(t, (w - p.x) / cx); if (cx < -1e-6) t = Math.min(t, -p.x / cx); if (cy > 1e-6) t = Math.min(t, (h - p.y) / cy); if (cy < -1e-6) t = Math.min(t, -p.y / cy);
@@ -637,8 +636,9 @@ function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = t
     { transform: flip(x) + "translateX(-34px) translateY(-6px) rotate(-2deg)", opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
   document.querySelectorAll("#stage .meta, #stage h1, #stage .hint, #stage .builder, #stage .switches, #stage .readout").forEach(x =>
     outs.push(x.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
+  if ($("shards").firstChild) outs.push($("shards").animate([{ transform: "none", opacity: 1 }, { transform: "translateX(-34px)", opacity: 0 }], { duration: 360, delay: 120, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
   Promise.all(outs).then(() => arrive(n)).catch(() => arrive(n)); }
-function arrive(n) { leaving = false; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n);
+function arrive(n) { leaving = false; $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); PILE = {}; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n);
   const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
 $("next").onclick = next;
 $("scrim").onclick = () => dismiss();
