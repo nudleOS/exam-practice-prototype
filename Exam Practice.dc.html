@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
-  <script type="module" src="vortex-map.js?v=12"></script>
+  <script type="module" src="vortex-map.js?v=13"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
@@ -379,7 +379,7 @@
 
   <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ vmOn }}" hint-placeholder-val="{{ false }}">
-      <vortex-map active="{{ vmActive }}" geom="{{ vmGeom }}" paint="{{ vmPaint }}" finish="{{ vmFinish }}" next="{{ vmNext }}" lit="{{ vmLit }}" anchor="[data-startbtn]" hdr="64" bg="radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), #191b1e" fade="#191b1e"></vortex-map>
+      <vortex-map active="{{ vmActive }}" geom="{{ vmGeom }}" paint="{{ vmPaint }}" finish="{{ vmFinish }}" next="{{ vmNext }}" lit="{{ vmLit }}" anchor="[data-startbtn]" hdr="64" bg="radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), #23262b" fade="#23262b"></vortex-map>
     </sc-if>
     <sc-if value="{{ vmOff }}" hint-placeholder-val="{{ true }}">
     <div aria-hidden="true" data-map-bg="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:radial-gradient(1100px 620px at 50% 112%, rgba(30,70,255,0.20), transparent 62%), radial-gradient(900px 520px at 50% -12%, rgba(103,29,255,0.13), transparent 60%), radial-gradient(600px 600px at 8% 40%, rgba(0,104,248,0.06), transparent 70%), radial-gradient(600px 600px at 92% 60%, rgba(103,29,255,0.06), transparent 70%)">

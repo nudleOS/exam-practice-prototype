@@ -582,8 +582,8 @@ class VortexMap extends HTMLElement {
     core.addColorStop(0.58 / 0.72, hero(0.8, 0.33, 0)); core.addColorStop(1, hero(0.8, 0, 0));
     const er = x.createLinearGradient(G.cx - G.R0 * 1.8, 0, G.cx - G.R0 * 0.15, 0); er.addColorStop(0, "rgba(0,0,0,0.92)"); er.addColorStop(0.55, "rgba(0,0,0,0.6)"); er.addColorStop(1, "rgba(0,0,0,0)");
     S.VX = { N, R, Y, L, core, er,
-      // The mouth barely darkens on the page's grey ground (a heavy black disc at 0.55; still dark at 0.26).
-      hole: grad(0, (G.throatY - G.cy) / G.sf, 0, 0, 0, G.R0, [[0, hero(0.8, 0.28, 0)], [0.45, "rgba(6,7,10,0.12)"], [1, "rgba(6,7,10,0)"]]),
+      // A hole in the grey ground: the mouth falls to a deep near-black (the lighter the ground, the more it reads as depth).
+      hole: grad(0, (G.throatY - G.cy) / G.sf, 0, 0, 0, G.R0, [[0, hero(0.8, 0.26, 0)], [0.45, "rgba(4,5,8,0.62)"], [0.8, "rgba(4,5,8,0.22)"], [1, "rgba(4,5,8,0)"]]),
       sheen: grad(0, -G.R0 * 0.62, 0, 0, -G.R0 * 0.62, G.R0 * 0.75, [[0, hero(0.72, 0.12, 0.25)], [1, hero(0.72, 0, 0)]]),
       sheet: fade(0.22, 0), foam: fade(0.7, 0.25), streak: fade(0.55, 0.1) };
   }
