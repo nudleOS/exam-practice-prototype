@@ -230,12 +230,12 @@ const SHADOW_CSS = `
 const DOC_CSS = `
 @property --a { syntax:"<angle>"; inherits:true; initial-value:0deg; }
 vortex-map .vm-node { position:absolute; left:0; top:0; width:180px; display:flex; flex-direction:column; align-items:center; gap:8px; will-change:transform; pointer-events:none; }
-vortex-map .vm-orb { pointer-events:auto; position:relative; width:62px; height:62px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; border:4px solid; cursor:pointer;
+vortex-map .vm-orb { pointer-events:auto; position:relative; width:70px; height:70px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; border:4px solid; cursor:pointer;
   font-size:16px; font-weight:800; letter-spacing:-0.02em;
   box-shadow:0 7px 0 var(--lip), 0 16px 24px rgba(0,0,0,0.35), inset 0 -9px 14px rgba(0,0,0,0.3), inset 0 7px 12px rgba(255,255,255,0.16); transition:transform 160ms cubic-bezier(0.34,1.56,0.64,1); }
 vortex-map .vm-orb:hover { transform:translateY(-2px); } vortex-map .vm-orb:active { transform:scale(0.95); }
 vortex-map .vm-orb::before { content:""; position:absolute; left:16%; top:9%; width:46%; height:30%; border-radius:50%; background:radial-gradient(closest-side, rgba(255,255,255,0.5), rgba(255,255,255,0)); pointer-events:none; }
-vortex-map .vm-node.big .vm-orb { width:86px; height:86px; font-size:20px; }
+vortex-map .vm-node.big .vm-orb { width:96px; height:96px; font-size:20px; }
 vortex-map .vm-halo { position:absolute; inset:-12px; border-radius:50%; border:2px solid var(--n3); pointer-events:none; animation:halo 2.4s ease-out infinite; }
 vortex-map .vm-tick { position:absolute; right:-7px; bottom:-7px; width:24px; height:24px; border-radius:50%; border:2px solid #191b1e; display:flex; align-items:center; justify-content:center; }
 vortex-map .vm-num { position:relative; }
@@ -300,8 +300,9 @@ const json = (s, d) => { if (!s || s.charAt(0) === "{" && s.charAt(1) === "{") r
 const ELEV = 35;                  // the vortex seen from 35° above
 const LIP_S = 0.62;               // a medal's size by the time it reaches the vortex's centre
 const CORE_R = 0.2;               // the core light's radius, of the mouth's (was 0.36: too big, too bright)
-const DROP = 0.45;
-const SWING = 0.3;                // how far the road swings along the far wall as it runs down the mouth (of its radius)                // how far down the far wall the road has run by the lip (of the funnel's depth)
+// The swallow follows the arms' own spiral (a = 1.9·ln(R0/r), the same turn the water takes, clockwise on screen),
+// turned so it passes the top of the mouth at the lip. T_LIP: how far down the funnel (0 = rim, 1 = core) the lip is.
+const T_LIP = 0.2, LN_LIP = Math.log(1 / (1 - 0.8 * Math.pow(T_LIP, 0.72)));
 const FIELD_FAR = -4500, Z_FIN = -4250;   // the field's far edge; the finish's depth at the start (at the end of the wave)
 const waveH = (x, z, ph) => Math.sin(((x + AX * SEP / 2) / SEP + ph) * FX) * AMP + Math.sin(((z + AY * SEP / 2) / SEP + ph) * FY) * AMP;
 
@@ -368,7 +369,7 @@ class VortexMap extends HTMLElement {
     if (r && r.height) S.trackTop = r.top; if (!S.trackTop) S.trackTop = innerHeight - 84;
     const cy = S.trackTop - 16 - HD * cf;                                                            // the core's light sits 16px above the card
     const box = this._roadBox(), br = box ? box.getBoundingClientRect() : { top: 0, left: 0 };
-    S.G = { phone, sf, cf, R0, HD, cx: innerWidth / 2, cy, throatY: cy + HD * cf, RW: phone ? 30 : 38, BEND: phone ? 150 : 180, ZS: 240, trackTop: S.trackTop,
+    S.G = { phone, sf, cf, R0, HD, cx: innerWidth / 2, cy, throatY: cy + HD * cf, RW: phone ? 36 : 46, BEND: phone ? 150 : 180, ZS: 300, trackTop: S.trackTop,
       top: br.top + scrollY, left: br.left, hdr: +this.getAttribute("hdr") || 64 };
   }
   _build(force) {
@@ -403,7 +404,7 @@ class VortexMap extends HTMLElement {
     geom.nodes.forEach(n => { const e = document.createElement("div"); e.className = "vm-node";
       e.innerHTML = '<button class="vm-orb" data-node="' + n.i + '" data-orb="true" aria-haspopup="dialog"><span class="vm-num"></span></button><div class="vm-lbl"></div><div class="vm-chips"></div>';
       e.firstChild.onclick = () => dispatchEvent(new CustomEvent("vortex-open", { detail: { index: n.i } }));
-      add(e, n.y, 180, 31)._i = n.i; e._txt = [e.children[1], e.children[2]]; });
+      add(e, n.y, 180, 35)._i = n.i; e._txt = [e.children[1], e.children[2]]; });
     this._sizeCanvas(); S.RG = null; S.roadDirty = true; S.vortexSet = false;
   }
   // Each medal as the page paints it (status colours, label, chips, tick, halo, the celebration's stamp), in place.
@@ -413,7 +414,7 @@ class VortexMap extends HTMLElement {
       if (e._fin) { e.querySelector(".fin-t").textContent = F.title || ""; e.querySelector(".fin-s").textContent = F.sub || ""; e.setAttribute("aria-label", F.aria || "Finish line"); return; }
       const p = e._i != null && byI[e._i]; if (!p) return;
       const sig = JSON.stringify(p); if (sig === e._sig) return; e._sig = sig;
-      const b = e.firstChild, big = !!p.big; e.classList.toggle("big", big); e.style.zIndex = String(Math.round(e._ry / 10) + (big ? 100000 : 0)); e._ay = big ? 43 : 31; e.style.transformOrigin = "90px " + e._ay + "px";
+      const b = e.firstChild, big = !!p.big; e.classList.toggle("big", big); e.style.zIndex = String(Math.round(e._ry / 10) + (big ? 100000 : 0)); e._ay = big ? 48 : 35; e.style.transformOrigin = "90px " + e._ay + "px";
       b.setAttribute("aria-label", p.aria || ""); b.style.cssText = "--lip:" + p.lip + "; background:" + p.fill + "; border-color:" + p.ring + "; color:" + p.num + (p.anim && p.anim !== "none" ? "; animation:" + p.anim : "");
       b.innerHTML = (p.halo ? '<span class="vm-halo" aria-hidden="true"></span>' : "") + '<span class="vm-num" style="text-shadow:' + (p.num === "#ffffff" ? "0 1px 2px rgba(0,0,0,0.55)" : "0 1px 0 rgba(255,255,255,0.35)") + '">' + esc(p.id) + '</span>'
         + (p.badge ? '<span class="vm-tick" aria-hidden="true" style="background:radial-gradient(circle at 35% 30%, #ffffff55, transparent 55%), ' + p.ring + '; box-shadow:0 3px 0 ' + p.lip + '">' + TICK + '</span>' : "");
@@ -462,20 +463,23 @@ class VortexMap extends HTMLElement {
         // The field's own sink: near the far lip the surface curves down into the hole (dots and road alike).
         const h = waveH(wx, wz, S.bgPhase || 0) * calm, wy = h - wz * SLOPE + 6 * calm - 0.3 * g.vRx * Math.pow(w, 1.5), P = rg.pr(wx, wy, wz, rg.s3), P2 = rg.pr(wx + 10, wy, wz, rg.s4);
         x = P[0]; y = P[1]; persp = Math.hypot(P2[0] - P[0], P2[1] - P[1]) / 10 * rg.KX; o.h = h;
-        // Over the mouth the road runs down the far wall: it drops (faster as it goes) toward the lip.
-        // ... and swings along the wall with the flow (the arms turn that way): zero at the rim and at the lip, so both joins
-        // stay smooth, widest halfway down.
-        if (dn < 1) { y += G.HD * G.cf * DROP * E(1 - dn); x += G.R0 * SWING * Math.sin(Math.PI * (1 - dn)) * (1 - 0.3 * (1 - dn)); }
+        // Over the mouth the road leaves the surface for the funnel's spiral: all surface at the rim, all spiral at the lip.
+        if (dn < 1) { const sp = this._spiral(T_LIP * (1 - dn), this._spO || (this._spO = {})), e = E(1 - dn); x += (sp.x - x) * e; y += (sp.y - y) * e; }
         const dist = Math.hypot(wx, wy - 355, wz - 1220); fog = clamp((wz - FIELD_FAR) / 1500, 0, 1) * (1 - 0.6 * clamp((dist - 3200) / 7800, 0, 1));
         if (wz > FIELD_FAR) fog = 0.45 + 0.55 * fog; }                                                  // the track stays readable to its end
       const u = clamp((y - rimTop) / (G.cy - rimTop), 0, 1), s = 1 - (1 - LIP_S) * (1 - (1 - u) * (1 - u));   // shrinks at once on contact with the rim
       // Medals shrink much slower than true perspective (far ones stay clear to see); the road keeps its true width (rs).
       const pp = Math.pow(persp, 0.6); o.x = x; o.y = y; o.s = s * pp; o.rs = s * persp; o.persp = pp; o.fog = fog; o.p = 0; o.w = 1; o.l = l0; return o; }
-    // Past the lip: down the vortex's axis into the core, shrinking, twisting and orbiting.
-    const p = clamp((ry - ryLip) / G.ZS, 0, 1), yLip = G.cy + G.HD * G.cf * DROP, depth = G.throatY - yLip, kx = G.ZS / Math.max(depth, 1);
-    const F = 1 - Math.pow(1 - p, kx), rho = G.R0 * 0.26 * Math.sin(Math.PI * p) * (1 - 0.35 * p), th = p * 2.2 * Math.PI + S.spin;
-    o.x = G.cx + rho * Math.cos(th); o.y = yLip + depth * F + rho * Math.sin(th) * G.sf; o.h = 0; o.s = LIP_S * (1 - 0.88 * E(p)); o.rs = null; o.persp = 1; o.fog = 1; o.p = p;
-    o.w = 0.42 + 0.58 * Math.abs(Math.cos(p * 1.6 * Math.PI)); o.l = l0; return o;
+    // Past the lip: on down the same spiral into the core. It only ever tightens, so the road never crosses itself;
+    // it narrows as it goes (it used to orbit with the whirl's spin and loop back over its own descent).
+    const p = clamp((ry - ryLip) / G.ZS, 0, 1), sp = this._spiral(T_LIP + (1 - T_LIP) * p, o);
+    const rimTop = G.cy - G.R0 * G.sf, u = clamp((sp.y - rimTop) / (G.cy - rimTop), 0, 1), s0 = 1 - (1 - LIP_S) * (1 - (1 - u) * (1 - u));   // as on the surface, so the lip joins
+    o.h = 0; o.s = s0 * (1 - 0.88 * E(p)); o.rs = null; o.persp = 1; o.fog = 1; o.p = p; o.w = 1 - 0.6 * E(p); o.l = l0; return o;
+  }
+  // A point on the funnel's spiral, t from 0 (rim) to 1 (core): the vortex's own rings and the arms' own turn. The last
+  // 15% draws it in to the centre of the core light.
+  _spiral(t, o) { const G = this._S.G, r = G.R0 * (1 - 0.8 * Math.pow(t, 0.72)), a = -Math.PI / 2 + 1.9 * (Math.log(G.R0 / r) - LN_LIP);
+    const rr = r * (1 - E(clamp((t - 0.85) / 0.15, 0, 1))); o.x = G.cx + rr * Math.cos(a); o.y = G.cy + G.HD * G.cf * Math.pow(t, 1.15) + rr * G.sf * Math.sin(a); return o;
   }
   _band(x, P, extra, dy, from) {
     const i0 = from || 0, n = P.length; x.beginPath(); if (n - i0 < 2) return false; const G = this._S.G;
@@ -551,7 +555,8 @@ class VortexMap extends HTMLElement {
         const ti = q.p > 0.3 || q.fog < 0.3 ? -1 : 0; if (e._ti !== ti) { e._ti = ti; e.firstChild.tabIndex = ti; }   // a medal you can see is one you can reach by keyboard
         // A medal shrinking into the vortex loses its text rather than dropping below the 12px floor (gone by 72%).
         const rimS = q.s / Math.max(q.persp, 0.01);
-        if (rimS < 0.999) { const keep = clamp((rimS - 0.72) / 0.22, 0, 1); e._txt.forEach(t => t._o = Math.min(+t._o, keep).toFixed(3)); }
+        // (The next mission's name always reads while it waits at the lip.)
+        if (rimS < 0.999 && !(e._i === this._next && q.p === 0)) { const keep = clamp((rimS - 0.72) / 0.22, 0, 1); e._txt.forEach(t => t._o = Math.min(+t._o, keep).toFixed(3)); }
         // Text near the start card fades out instead of being cut off by it (the card's top is a fixed line: no layout read).
         if (q.p === 0) { const bottom = q.y + (e._ay + 60) * q.s, under = clamp((bottom - (G.trackTop - 6)) / 14, 0, 1); if (under > 0) e._txt.forEach(t => t._o = Math.min(+t._o, 1 - under).toFixed(3)); }
         const over = q.p === 0 && q.y + e._ay + 60 > G.cy - G.R0 * G.sf; if (over !== !!e._plate) { e._plate = over; e.classList.toggle("plate", over); } }
