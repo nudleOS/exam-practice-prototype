@@ -6,8 +6,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 // share one camera: orbit the object and the rings turn with it, flattening toward edge-on
 // as the camera drops — which is what makes the floor read as ground rather than wallpaper.
 class ModelFloor extends HTMLElement {
-  static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift", "paused"]; }
+  static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift", "paused", "fit"]; }
   connectedCallback() {
+    // A move (removed here, added there in the same task) keeps the live renderer: see disconnectedCallback.
+    clearTimeout(this._tdT);
     // Self-healing: a live mount is one that still has its canvas. Returning on `_up` alone
     // left the element permanently blank if the canvas was ever lost.
     if (this._up && this.shadowRoot && this.shadowRoot.querySelector("canvas")) return;
@@ -205,11 +207,29 @@ class ModelFloor extends HTMLElement {
         pivot.add(obj);
 
         const clips = gltf.animations || [];
+        // inplace (optional): pin the hips' x/z to the first frame, keeping their height, so a clip that walks the body
+        // around (measured: the companion robot's greet ends ~1.9 units from where it starts) plays in place. A figure
+        // standing in a box then stays centred and turns about itself. Without the attribute, clips play as authored.
+        if (this.hasAttribute("inplace")) clips.forEach(c => c.tracks.forEach(t => {
+          if (!/hips\.position$/i.test(t.name)) return;
+          const v = t.values; for (let i = 3; i < v.length; i += 3) { v[i] = v[0]; v[i + 2] = v[2]; }
+        }));
         if (clips.length) {
           this._mixer = new THREE.AnimationMixer(obj);
           this._clips = clips;
           this._action = null;
           this.playClip(this.getAttribute("clip"));
+          // Turn about the figure, not the file's origin. A clip can stand the body well away from where its bind
+          // pose was centred (measured: the companion robot's greet stands it 1.95 units forward), so `yaw` swung it
+          // round a wide circle, out of its box. The pivot moves under the posed body and the model moves back by the
+          // same amount: the picture is unchanged at yaw 0, and turning now happens in place.
+          // Measured at the clip's full weight (its fade-in starts at 0, which would measure the bind pose instead).
+          if (this._action) this._action.setEffectiveWeight(1);
+          this._mixer.update(0); obj.updateMatrixWorld(true);
+          const posed = new THREE.Box3().setFromObject(obj, true).getCenter(new THREE.Vector3());
+          const local = pivot.worldToLocal(posed.clone());
+          obj.position.x -= local.x; obj.position.z -= local.z;
+          pivot.position.x = posed.x; pivot.position.z = posed.z;
         }
         this.dispatchEvent(new CustomEvent("loaded", { bubbles: true }));
         // Nothing is shown until there is something to show — otherwise the empty canvas
@@ -223,6 +243,8 @@ class ModelFloor extends HTMLElement {
         // Frame the model to FILL its box: the visible extent is 2·d·tan(fov/2), so the
         // padding factor decides how much of the canvas the figure occupies. 1.35 left it at
         // ~37%; 0.62 fills roughly 80%. `fit` overrides per mount.
+        // Framing is re-runnable: a moved figure can be re-framed for its new box without reloading (fit changes).
+        this._frame = () => {
         const pad = parseFloat(this.getAttribute("fit")) || 0.62;
         const fov = camera.fov * Math.PI / 180;
         const d = Math.max((H * pad) / Math.tan(fov / 2), H * 1.05);
@@ -241,6 +263,8 @@ class ModelFloor extends HTMLElement {
         controls.target.set(0, aimY, 0);
         controls.update();
         controls.saveState();
+        };
+        this._frame();
         // The ripple spreads relative to the object, so a hand tool and a haul truck each
         // get a floor at their own scale.
         ringScale = H;
@@ -336,6 +360,7 @@ class ModelFloor extends HTMLElement {
     // e.g. frozen in its first pose while a card spins, moving the instant the card lands.
     if (name === "paused") { if (this._action) this._action.paused = now !== null; return; }
     if (name === "yaw") { this._yawTarget = parseFloat(now) || 0; return; }
+    if (name === "fit") { if (this._frame) this._frame(); return; }
     if (name === "lift") { this._liftTarget = parseFloat(now) || 0; return; }
     if (name !== "src" || !this._load) return;
     this._src = now;
@@ -377,9 +402,16 @@ class ModelFloor extends HTMLElement {
     this._onHide = () => { if (this._teardown) { this._teardown(); this._teardown = null; this._up = false; } };
     window.addEventListener("pagehide", this._onHide);
   }
+  // Teardown waits one task: if the element is re-attached first (moved from one container to another, e.g. the
+  // companion jumping from the page into a card), it keeps its renderer, model and clip instead of reloading.
+  // Removed for good, it tears down as before and gives its WebGL context back.
   disconnectedCallback() {
-    if (this._teardown) { this._teardown(); this._teardown = null; }
-    this._up = false;
+    clearTimeout(this._tdT);
+    this._tdT = setTimeout(() => {
+      if (this.isConnected) return;
+      if (this._teardown) { this._teardown(); this._teardown = null; }
+      this._up = false;
+    }, 0);
   }
 }
 if (!customElements.get("model-floor")) customElements.define("model-floor", ModelFloor);
