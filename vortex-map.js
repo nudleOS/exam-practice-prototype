@@ -359,7 +359,7 @@ class VortexMap extends HTMLElement {
     if (r && r.height) S.trackTop = r.top; if (!S.trackTop) S.trackTop = innerHeight - 84;
     const cy = S.trackTop - 16 - HD * cf;                                                            // the core's light sits 16px above the card
     const box = this._roadBox(), br = box ? box.getBoundingClientRect() : { top: 0, left: 0 };
-    S.G = { phone, sf, cf, R0, HD, cx: innerWidth / 2, cy, throatY: cy + HD * cf, RW: phone ? 24 : 30, BEND: phone ? 150 : 180, ZS: 240, trackTop: S.trackTop,
+    S.G = { phone, sf, cf, R0, HD, cx: innerWidth / 2, cy, throatY: cy + HD * cf, RW: phone ? 30 : 38, BEND: phone ? 150 : 180, ZS: 240, trackTop: S.trackTop,
       top: br.top + scrollY, left: br.left, hdr: +this.getAttribute("hdr") || 64 };
   }
   _build(force) {

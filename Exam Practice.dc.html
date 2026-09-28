@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
-  <script type="module" src="vortex-map.js?v=14"></script>
+  <script type="module" src="vortex-map.js?v=15"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
@@ -3785,7 +3785,9 @@ class Component extends DCLogic {
     const nodeR = phone ? 31 : 35, STEP = phone ? 158 : 168, CAPH = 124;
     // Spheres sit high in their slot so the two-line label below them has room.
     const LIFT = phone ? 26 : 28, CLEAR = phone ? 90 : 100;
-    const ZIG = [0, 0.6, 1, 0.6, 0, -0.6, -1, -0.6];
+    // The zig-zag the road follows. On the vortex map it turns twice as often (a full swing every 4 missions, not 8),
+    // so the track reads as a winding road even far back in perspective (Murci: "turns more that show the track").
+    const ZIG = VM ? [0, 1, 0, -1] : [0, 0.6, 1, 0.6, 0, -0.6, -1, -0.6];
     // The vortex map has no launch pad: the first mission sits right on the vortex, over the start card.
     const items = [VM ? { kind: "start", h: 0 } : { kind: "start", h: 244, anchor: 120 }];
     let k = 0;
@@ -3798,7 +3800,7 @@ class Component extends DCLogic {
     items.push({ kind: "finish", h: 90 + CLEAR, anchor: 90 });
     const roadH = items.reduce((a, it) => a + it.h, 0) + 40;
     let acc = 20;
-    items.forEach(it => { it.y = it.anchor ? roadH - (acc + it.h) + it.anchor / 2 : roadH - (acc + it.h / 2) - (it.kind === "m" ? LIFT : 0); it.x = it.kind === "m" ? cx + amp * ZIG[it.k % 8] : cx; acc += it.h; });
+    items.forEach(it => { it.y = it.anchor ? roadH - (acc + it.h) + it.anchor / 2 : roadH - (acc + it.h / 2) - (it.kind === "m" ? LIFT : 0); it.x = it.kind === "m" ? cx + amp * ZIG[it.k % ZIG.length] : cx; acc += it.h; });
     // A smooth curve through every centre (Catmull-Rom as cubic Beziers), drawn bottom-up so the
     // lit dash starts at Start.
     const f = n => Math.round(n * 10) / 10, pts = items.map(it => [it.x, it.y]);
@@ -3877,7 +3879,7 @@ class Component extends DCLogic {
     const clampX = (x, w) => Math.max(0, Math.min(roadW - w, x));
     // Candidates: each side, standing level with the sphere or a little lower, full size or 85 %.
     // The small penalty keeps the preferred pose when several are equally clear.
-    const flipSide = tIt.kind === "m" && ZIG[tIt.k % 8] < 0;
+    const flipSide = tIt.kind === "m" && ZIG[tIt.k % ZIG.length] < 0;
     const cands = [];
     [1, 0.85].forEach((sc, si) => [0, 30, 60].forEach((dy, di) => [0, 1].forEach(sideIdx => {
       const h = Math.round(compH0 * sc), w = Math.round(h / 1.7), side = flipSide ? 1 - sideIdx : sideIdx;
