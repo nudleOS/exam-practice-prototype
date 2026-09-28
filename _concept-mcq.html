@@ -271,7 +271,7 @@ function submit() {
     live(`Correct, ${L[i]}. Plus ${gain} XP. Why: ${S.it.clues[0] || ""}`);
     $("next").classList.add("show"); $("clue").classList.remove("show");
   } else {
-    streak = 0; S.sel = null; S.gone.add(i); S.out.delete(i);
+    streak = 0; S.sel = null; S.gone.add(i); S.out.delete(i); t.classList.remove("sel");   // answered: drop the pick tint + Lock in, crack clear glass
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
     shatter(t, S.hit[i]).then(() => {
       if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`);
