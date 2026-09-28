@@ -8,67 +8,54 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="paper-ls-p1-2026.js"></script>
 <style>
-  :root { --bg:#15171a; --panel:#202327; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
+  :root { --bg:#191b1e; --panel:#202327; --field:#23262a; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
     --tint:#81b1ff; --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451;
     --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
   * { box-sizing:border-box; }
   html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
-  body { min-height:100vh; overflow-x:hidden; }
-  /* The light behind the glass: slow colour so the panes have something to bend */
-  .aura { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
-  .aura i { position:absolute; width:46vmax; height:46vmax; border-radius:50%; filter:blur(70px); opacity:0.5; animation:drift 18s ease-in-out infinite alternate; }
-  .aura i:nth-child(1) { left:-10vmax; top:10vh; background:#1e46ff; }
-  .aura i:nth-child(2) { right:-12vmax; top:25vh; background:#671dff; animation-duration:22s; animation-delay:-6s; }
-  .aura i:nth-child(3) { left:30vw; bottom:-24vmax; background:#00b5ff; opacity:0.28; animation-duration:26s; }
-  @keyframes drift { from { transform:translate(0,0) scale(1); } to { transform:translate(6vmax,-4vmax) scale(1.12); } }
+  body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.16), transparent 70%), var(--bg); }
   .top, .pick, .stage, .dock { position:relative; z-index:1; }
   .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
-  .seg { flex:1; display:flex; gap:6px; } .seg i { flex:1; height:6px; border-radius:6px; background:rgba(255,255,255,0.12); } .seg i.on { background:var(--grad); }
-  .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.04); font-weight:700; font-size:14px; color:var(--text); }
+  .seg { flex:1; display:flex; gap:6px; } .seg i { flex:1; height:6px; border-radius:6px; background:var(--line2); } .seg i.on { background:var(--grad); }
+  .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .mute { width:40px; height:38px; justify-content:center; font:inherit; cursor:pointer; padding:0; }
   .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; }
   .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; flex-wrap:wrap; padding:0 12px; }
-  .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:7px 11px; cursor:pointer; }
-  .pick button[aria-pressed="true"] { color:#fff; border-color:#6a78ff; }
+  .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:7px 11px; cursor:pointer; }
+  .pick button[aria-pressed="true"] { color:#fff; border-color:#4a5cff; }
   .stage { max-width:760px; margin:0 auto; padding:6px 18px 150px; }
   .meta { display:flex; align-items:center; gap:10px; color:var(--text2); font-size:13px; font-weight:600; }
-  .num { color:var(--tint); background:rgba(129,177,255,0.14); padding:3px 9px; border-radius:8px; font-weight:700; }
-  .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,0.14); } .tries i.live { background:var(--tint); }
+  .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
+  .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
   h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; }
   .hint { font-size:12.5px; color:var(--text3); margin:-10px 0 16px; }
-  /* Glass cards: a front (the option) and a back (the why) */
+  /* Cards: a front (the option) and a back (the why) */
   .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
   @media (max-width:600px) { .tiles { grid-template-columns:1fr; } h1 { font-size:19px; } }
   .tile { position:relative; min-height:96px; transform-style:preserve-3d; transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 260ms; }
   .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
-  .glass { background:linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035) 55%, rgba(255,255,255,0.07));
-    border:1px solid rgba(255,255,255,0.16); box-shadow:0 14px 34px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(255,255,255,0.05);
-    -webkit-backdrop-filter:blur(16px) saturate(150%); backdrop-filter:blur(16px) saturate(150%); }
+  .surface { background:var(--panel); border:1px solid var(--line); }
   .face { display:flex; gap:12px; align-items:flex-start; width:100%; height:100%; text-align:left; font:inherit; color:var(--text); padding:16px 16px 16px 14px; cursor:pointer; overflow:hidden;
+    border:1px solid var(--line2); background:linear-gradient(180deg,#262a30,#1f2226); box-shadow:0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
     transition:box-shadow 240ms, border-color 240ms, background 240ms; }
-  .face::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-    background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.16) 45%, transparent 58%); transform:translateX(-120%); transition:transform 700ms ease; }
-  .face:hover::after, .tile.sel .face::after { transform:translateX(120%); }
   .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
   .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
-    background:rgba(255,255,255,0.1); color:var(--text); border:1px solid rgba(255,255,255,0.14); transition:background 240ms; }
-  .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; padding-right:30px; text-shadow:0 1px 2px rgba(0,0,0,0.35); }
+    background:#2f343b; color:var(--text2); transition:background 240ms, color 240ms; }
+  .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; padding-right:30px; }
   .x { position:absolute; top:4px; right:4px; width:44px; height:44px; border:none; background:transparent; padding:8px; cursor:pointer; z-index:2; }
-  .x span { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:9px; border:1px solid rgba(255,255,255,0.18); background:rgba(0,0,0,0.18); color:var(--text2); font-size:13px; }
-  .x:hover span { color:#fff; } .x:focus-visible span { outline:2px solid var(--tint); }
-  .tile.sel .face { border-color:rgba(140,160,255,0.75); background:linear-gradient(145deg, rgba(90,110,255,0.34), rgba(103,29,255,0.16) 60%, rgba(0,181,255,0.14));
-    box-shadow:0 26px 52px rgba(38,50,255,0.4), 0 0 0 1px rgba(140,160,255,0.55), inset 0 1px 0 rgba(255,255,255,0.38); }
-  .tile.sel .letter { background:var(--grad); border-color:transparent; }
-  /* Crossed out: the glass frosts over (reversible), it doesn't break */
-  .tile.out .face { background:rgba(210,220,235,0.1); -webkit-backdrop-filter:blur(4px) saturate(40%); backdrop-filter:blur(4px) saturate(40%); }
-  .tile.out .txt, .tile.out .letter { opacity:0.4; } .tile.out .txt { text-decoration:line-through; text-decoration-thickness:2px; } .tile.out .x span { color:var(--tint); }
-  .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid rgba(245,196,81,0.7);
-    background:linear-gradient(145deg, rgba(245,196,81,0.3), rgba(160,110,20,0.2)); box-shadow:0 22px 50px rgba(245,196,81,0.3), inset 0 1px 0 rgba(255,240,200,0.5);
-    -webkit-backdrop-filter:blur(16px) saturate(150%); backdrop-filter:blur(16px) saturate(150%); }
+  .x span { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:9px; border:1px solid var(--line2); background:#23272c; color:var(--text3); font-size:13px; }
+  .x:hover span { color:var(--text); } .x:focus-visible span { outline:2px solid var(--tint); }
+  .tile.sel .face { border-color:transparent; background:linear-gradient(180deg,#27305a,#211f45);
+    box-shadow:0 18px 40px rgba(38,50,255,0.35), 0 0 0 2px #4b5cff, inset 0 1px 0 rgba(255,255,255,0.12); }
+  .tile.sel .letter { background:var(--grad); color:#fff; }
+  /* Crossed out: dimmed and struck through (reversible); the ✕ stays bright so it can be undone */
+  .tile.out .face { opacity:0.38; filter:saturate(0.2); } .tile.out .txt { text-decoration:line-through; text-decoration-thickness:2px; } .tile.out .x span { color:var(--tint); }
+  .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid transparent;
+    background:linear-gradient(180deg,#3a3016,#2a220d); box-shadow:0 20px 48px rgba(245,196,81,0.28), 0 0 0 2px var(--gold); }
   .back .ok { font-size:13px; font-weight:800; color:var(--gold); }
-  .back .why { font-size:14px; line-height:1.45; font-weight:600; color:#fbf1d6; }
+  .back .why { font-size:14px; line-height:1.45; font-weight:600; color:#f3ead2; }
   @keyframes deal { from { opacity:0; transform:translateY(70px) rotateX(-35deg) rotateZ(var(--rz)) scale(0.9); } to { opacity:1; transform:none; } }
   .tile.dealt { animation:deal 520ms cubic-bezier(.2,.9,.25,1.1) both; animation-delay:var(--d); }
   /* The break: cracks drawn on the card, then shards on their own layer */
@@ -78,27 +65,28 @@
   .impact { position:absolute; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; pointer-events:none; z-index:3;
     background:radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(200,215,255,0.35) 45%, rgba(255,255,255,0) 100%); }
   .shards { position:fixed; inset:0; z-index:20; pointer-events:none; perspective:900px; }
-  .shard { position:fixed; margin:0; border-radius:18px; background:linear-gradient(145deg, rgba(220,230,255,0.24), rgba(255,255,255,0.06));
-    border:1px solid rgba(255,255,255,0.3); box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); -webkit-backdrop-filter:none; backdrop-filter:none; will-change:transform, opacity; }
+  .shard { position:fixed; margin:0; border-radius:18px; background:linear-gradient(180deg,#27305a,#211f45); border:2px solid #4b5cff;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.12); will-change:transform, opacity; }
+  .shard .letter { background:var(--grad); color:#fff; }
   /* Dials and switches */
   .builder { display:grid; gap:12px; margin:0 0 18px; }
   .dial { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; }
   .dial .lbl { width:110px; font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; }
   .dial .opts { display:flex; gap:8px; flex-wrap:wrap; }
-  .chip { font:inherit; font-size:14px; font-weight:700; padding:9px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05); color:var(--text2); cursor:pointer; }
+  .chip { font:inherit; font-size:14px; font-weight:700; padding:9px 14px; border-radius:12px; border:1px solid var(--line2); background:#262a2f; color:var(--text2); cursor:pointer; }
   .chip[aria-pressed="true"] { background:var(--grad); color:#fff; border-color:transparent; box-shadow:0 8px 20px rgba(38,50,255,0.35); }
   .readout { font-size:13px; color:var(--text2); min-height:20px; margin-bottom:8px; } .readout b { color:var(--text); } .readout .no { color:var(--danger); }
   .switches { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:0 0 16px; }
   .sw { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px; border-radius:18px; font:inherit; color:var(--text); cursor:pointer; text-align:left; }
   .sw .k { font-size:12px; color:var(--text3); font-weight:700; } .sw .v { font-size:16px; font-weight:700; margin-top:3px; }
-  .sw .track { flex:none; width:54px; height:30px; border-radius:30px; background:rgba(255,255,255,0.14); position:relative; transition:background 200ms; }
+  .sw .track { flex:none; width:54px; height:30px; border-radius:30px; background:#30353c; position:relative; transition:background 200ms; }
   .sw .track::after { content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cfd3d7; transition:left 220ms cubic-bezier(.2,.8,.2,1); }
-  .sw[aria-checked="true"] { border-color:#6a78ff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
+  .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
-  .dock { position:fixed; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 55%, rgba(21,23,26,0)); pointer-events:none; }
+  .dock { position:fixed; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
   .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; }
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
-  .clue { font-size:13.5px; line-height:1.5; color:#dfe6ff; border-radius:14px; padding:10px 14px; display:none; }
+  .clue { font-size:13.5px; line-height:1.5; color:#dfe6ff; background:rgba(56,57,255,0.14); border:1px solid rgba(92,110,255,0.35); border-radius:14px; padding:10px 14px; display:none; }
   .clue.show { display:block; animation:rise 220ms cubic-bezier(.2,.8,.2,1); }
   .hint { justify-self:center; display:none; align-items:center; gap:6px; min-height:40px; padding:0 14px 0 11px; border-radius:999px; font:inherit; font-size:13px; font-weight:800;
     color:var(--tint); cursor:pointer; }
@@ -116,11 +104,10 @@
   .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:31; }
   canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:25; }
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
-  @media (prefers-reduced-motion: reduce) { .tile, .tile *, .aura i { transition:none !important; animation:none !important; } }
+  @media (prefers-reduced-motion: reduce) { .tile, .tile * { transition:none !important; animation:none !important; } }
 </style>
 </head>
 <body>
-<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
 <canvas id="fx"></canvas>
 <div class="shards" id="shards" aria-hidden="true"></div>
 <div class="top">
@@ -136,8 +123,8 @@
 </div>
 <main class="stage" id="stage"></main>
 <div class="dock"><div class="dock-in">
-  <div class="clue glass" id="clue"></div>
-  <button class="hint glass" id="hint" aria-expanded="false" aria-controls="clue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span>Hint</span></button>
+  <div class="clue" id="clue"></div>
+  <button class="hint surface" id="hint" aria-expanded="false" aria-controls="clue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span>Hint</span></button>
   <div class="say" id="say"></div>
   <button class="next" id="next">Next question</button>
 </div></div>
@@ -199,7 +186,7 @@ function render(deal) {
   if (shape.kind === "dials") {
     st.insertAdjacentHTML("beforeend", `<p class="hint">Build the answer one part at a time. The option that matches lights up.</p><div class="builder" id="builder"></div><div class="readout" id="readout"></div>`);
     shape.dials.forEach((vals, k) => {
-      const d = document.createElement("div"); d.className = "dial glass"; d.setAttribute("role", "group");
+      const d = document.createElement("div"); d.className = "dial surface"; d.setAttribute("role", "group");
       d.innerHTML = `<span class="lbl">Part ${k + 1}</span><span class="opts">${vals.map(v => `<button class="chip" aria-pressed="false">${v}</button>`).join("")}</span>`;
       d.querySelectorAll(".chip").forEach((c, i) => c.onclick = () => { if (S.done) return; S.dialSel[k] = vals[i]; sfx.pick(); syncDials(); });
       $("builder").appendChild(d);
@@ -207,14 +194,14 @@ function render(deal) {
   }
   if (shape.kind === "switches") {
     st.insertAdjacentHTML("beforeend", `<p class="hint">Switch on each one it applies to.</p><div class="switches">
-      ${[shape.a, shape.b].map((v, k) => `<button class="sw glass" role="switch" aria-checked="false" data-k="${k}"><span><span class="k">${"AB"[k]}</span><div class="v">${v}</div></span><span class="track"></span></button>`).join("")}</div>`);
+      ${[shape.a, shape.b].map((v, k) => `<button class="sw surface" role="switch" aria-checked="false" data-k="${k}"><span><span class="k">${"AB"[k]}</span><div class="v">${v}</div></span><span class="track"></span></button>`).join("")}</div>`);
     st.querySelectorAll(".sw").forEach(b => b.onclick = () => { if (S.done) return; S.sw[+b.dataset.k] = !S.sw[+b.dataset.k]; sfx.pick(); syncSwitches(); });
   }
   const g = document.createElement("div"); g.className = "tiles"; g.id = "tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
   it.opts.forEach((o, i) => {
     const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
     t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
-    t.innerHTML = `<button class="side face glass" role="radio" aria-checked="false"><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
+    t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
       <div class="side back" aria-hidden="true"><div class="ok"></div><div class="why"></div></div>
       <button class="x" aria-label="Cross out ${L[i]}" title="Cross out"><span>✕</span></button>`;
     const face = t.querySelector(".face");
@@ -290,7 +277,7 @@ function submit() {
   paintTop(); say();
 }
 
-// The glass breaks: a spider-web of cracks from where it was tapped, then shards along those cracks fly, spin and fall;
+// The card breaks like glass: a spider-web of cracks from where it was tapped, then shards along those cracks fly, spin and fall;
 // the card is taken out and the others close the gap. Shards carry their own piece of the text (a clipped copy).
 function shatter(tile, hit) {
   const face = tile.querySelector(".face"), r = face.getBoundingClientRect(), w = r.width, h = r.height;
