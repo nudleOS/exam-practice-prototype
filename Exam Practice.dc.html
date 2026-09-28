@@ -3978,8 +3978,12 @@ class Component extends DCLogic {
         caps: items.filter(it => it.kind === "cap").map(it => ({ y: f(it.y), label: it.sec.title + (it.sec.total ? " · " + it.sec.total + " marks" : "") })) }),
       vmPaint: JSON.stringify(roadNodes.map(n => ({ i: +n.idx, id: n.number, title: n.title, chip: n.state, chipBg: n.stateBg, chipColor: n.stateColor, tags: n.tags,
         titleColor: n.titleColor, fill: n.fill, ring: n.ring, lip: n.lip, num: n.numColor, big: n.vmBig, halo: n.halo, badge: n.hasBadge, anim: n.anim, aria: n.aria }))),
-      vmFinish: JSON.stringify({ title: done ? "Paper done · " + earned + " of " + total : "Finish · " + total + " marks", sub: (s.xp || 0) + " XP earned",
-        aria: "Finish line. " + total + " marks on this paper" + (done ? ", all banked" : "") + ". " + (s.xp || 0) + " XP earned." }) };
+      // The finish shows the learner's mark against the paper's total as well as the XP (Murci: they should know the marks
+      // they got as per the paper total, not only the XP). The percentage is the paper's own arithmetic, not a pass/fail.
+      vmFinish: JSON.stringify({ title: (done ? "Paper done · " : "Finish · ") + earned + " / " + (total || 0) + " marks",
+        sub: Math.round(100 * earned / Math.max(1, total || 0)) + "% · " + (s.xp || 0) + " XP earned",
+        aria: "Finish line. You have " + earned + " of " + (total || 0) + " marks on this paper" + (done ? ", all banked" : "") + ", "
+          + Math.round(100 * earned / Math.max(1, total || 0)) + " percent. " + (s.xp || 0) + " XP earned." }) };
     return {
       ...finishVals, ...vmVals,
       roadW: roadW, roadH: roadH, roadWpx: roadW + "px", roadHpx: roadH + "px", roadViewBox: "0 0 " + roadW + " " + roadH,
