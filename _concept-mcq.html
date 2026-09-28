@@ -515,15 +515,25 @@ function shatter(tile, hit) {
         clipPath: "polygon(" + poly.map(q => (q.x / w * 100).toFixed(2) + "% " + (q.y / h * 100).toFixed(2) + "%").join(",") + ")" });
       layer.appendChild(s);
       const c = poly.reduce((m, q) => ({ x: m.x + q.x / poly.length, y: m.y + q.y / poly.length }), { x: 0, y: 0 });
-      const dx = c.x - p.x, dy = c.y - p.y, d = Math.hypot(dx, dy) || 1, push = rnd(40, 110), fall = rnd(240, 420);
-      const ox = dx / d * push, oy = dy / d * push, rz = rnd(-70, 70), rx = rnd(-80, 80), ry = rnd(-80, 80);
+      // Pop out from the impact, fall under gravity to the floor of the card's own (now empty) slot, bounce once,
+      // slide, settle lying flat (rotateX ~70deg in the layer's perspective reads as glass on a table), then fade.
+      const dx = c.x - p.x, dy = c.y - p.y, d = Math.hypot(dx, dy) || 1, push = rnd(30, 90), ox = dx / d * push;
+      const fy = Math.max(18, h + 10 - c.y + rnd(-4, 6)), bounce = Math.max(6, Math.min(22, fy * 0.14)), rz = rnd(-60, 60), flat = rnd(62, 78) * (Math.random() < 0.5 ? -1 : 1), ry = rnd(-40, 40);
+      const O = { transformOrigin: `${c.x}px ${c.y}px` }, T = (x, y, z, rxv, ryv, rzv) => `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z}px) rotateX(${rxv.toFixed(1)}deg) rotateY(${ryv.toFixed(1)}deg) rotate(${rzv.toFixed(1)}deg)`;
+      const dur = rnd(1500, 1900);
       return s.animate([
-        { transform: "translate3d(0,0,0) rotate(0deg)", opacity: 1, transformOrigin: `${c.x}px ${c.y}px` },
-        { transform: `translate3d(${ox * 0.55}px, ${oy * 0.55 - 12}px, 40px) rotateX(${rx * 0.3}deg) rotateY(${ry * 0.3}deg) rotate(${rz * 0.3}deg)`, opacity: 1, offset: 0.25, transformOrigin: `${c.x}px ${c.y}px` },
-        { transform: `translate3d(${ox}px, ${oy + fall}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) rotate(${rz}deg)`, opacity: 0, transformOrigin: `${c.x}px ${c.y}px` }],
-        { duration: rnd(720, 980), easing: "cubic-bezier(.25,.6,.45,1)", fill: "forwards" }).finished.then(() => s.remove());
+        { ...O, offset: 0, transform: T(0, 0, 0, 0, 0, 0), opacity: 1, easing: "cubic-bezier(.2,.7,.4,1)" },                            // pop
+        { ...O, offset: 0.16, transform: T(ox * 0.5, dy / d * 18 - 16, 30, flat * 0.25, ry * 0.4, rz * 0.3), easing: "cubic-bezier(.5,0,.9,.6)" },   // falls (gravity)
+        { ...O, offset: 0.46, transform: T(ox, fy, 0, flat, ry, rz), easing: "cubic-bezier(.2,.6,.4,1)" },                            // hits the floor
+        { ...O, offset: 0.58, transform: T(ox * 1.08, fy - bounce, 0, flat * 0.9, ry, rz * 1.1), easing: "cubic-bezier(.5,0,.9,.6)" },     // one bounce
+        { ...O, offset: 0.7, transform: T(ox * 1.14, fy, 0, flat, ry, rz * 1.15), easing: "cubic-bezier(.2,.6,.4,1)" },
+        { ...O, offset: 0.8, transform: T(ox * 1.18, fy, 0, flat, ry, rz * 1.18), opacity: 1 },                                        // slides, settles
+        { ...O, offset: 1, transform: T(ox * 1.18, fy, 0, flat, ry, rz * 1.18), opacity: 0 }],                                          // fades where it lies
+        { duration: dur, fill: "forwards" }).finished.then(() => s.remove());
     });
-    leaveGap(tile); return Promise.all(anims);
+    // A few pieces clink as they land, placed where they land (not all 18: that would be a rattle, not glass).
+    [0, 3, 7, 12].forEach((k, n) => setTimeout(() => at(tile, () => tone(rnd(3800, 6200), 0.06, "sine", 0.014)), 700 + n * 70 + rnd(0, 60)));
+    leaveGap(tile); return wait(950);                                                            // the question moves on; the pieces finish on their own
   });
 }
 function leaveGap(tile) { // the broken card keeps its slot, empty: the others stay where the learner last saw them
