@@ -252,7 +252,7 @@ vortex-map .vm-cap { position:absolute; left:0; top:0; width:220px; text-align:c
   font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; box-shadow:var(--card-shadow); pointer-events:none; white-space:nowrap; }
 /* The finish: a marathon arch (checkered banner, posts, tape), the cup on its podium, and the paper's pill. */
 vortex-map .vm-fin { position:absolute; left:0; top:0; width:320px; height:250px; will-change:transform; pointer-events:none; transform-origin:50% 236px; }
-vortex-map .fin-xp { position:absolute; left:50%; top:0; transform:translateX(-50%); display:flex; align-items:center; gap:10px; padding:7px 14px 7px 8px; border-radius:16px; background:var(--surface); border:1px solid var(--hair); box-shadow:var(--card-shadow); white-space:nowrap; }
+vortex-map .fin-xp { position:absolute; left:50%; top:0; transform:translateX(-50%); transform-origin:50% 100%; z-index:2; display:flex; align-items:center; gap:10px; padding:7px 14px 7px 8px; border-radius:16px; background:var(--surface); border:1px solid var(--hair); box-shadow:var(--card-shadow); white-space:nowrap; }
 vortex-map .fin-xp .bolt { width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--n1), var(--n3) 55%, var(--n5)); }
 vortex-map .fin-xp b { display:block; font-size:14px; } vortex-map .fin-xp small { display:block; font-size:12px; color:var(--muted); font-weight:600; }
 vortex-map .fin-banner { position:absolute; left:34px; right:34px; top:62px; height:40px; display:flex; align-items:stretch; overflow:hidden; border-radius:12px; background:var(--surface); box-shadow:var(--card-shadow); }
@@ -267,8 +267,14 @@ vortex-map .fin-cup { position:absolute; left:50%; top:112px; width:86px; height
 vortex-map .fin-cup::before { content:""; position:absolute; left:-30px; right:-30px; top:-18px; height:110px; border-radius:50%; background:radial-gradient(closest-side, rgba(251,227,154,0.35), rgba(251,227,154,0)); }
 vortex-map .fin-cup .shine { animation:vmcupshine 4.8s ease-in-out infinite 1s; }
 @keyframes vmcupshine { 0%, 62% { transform:translateX(-70px); } 86%, 100% { transform:translateX(90px); } }
+/* The glow: a gold halo round the cup and a pool of light on the line, breathing slowly (its own layer). */
+vortex-map .fin-glow { position:absolute; left:50%; border-radius:50%; pointer-events:none; will-change:transform, opacity; animation:vmglow 3.6s ease-in-out infinite; }
+vortex-map .fin-glow.halo { top:152px; width:340px; height:340px; margin:-170px 0 0 -170px; background:radial-gradient(closest-side, rgba(255,226,140,0.62), rgba(255,196,72,0.26) 38%, rgba(255,186,60,0.08) 70%, rgba(255,186,60,0) 100%); }
+vortex-map .fin-glow.pool { top:236px; width:360px; height:90px; margin:-45px 0 0 -180px; background:radial-gradient(closest-side, rgba(255,214,110,0.5), rgba(255,196,72,0.14) 60%, rgba(255,196,72,0) 100%); animation-delay:-1.8s; }
+@keyframes vmglow { 0%, 100% { opacity:0.72; } 50% { opacity:1; } }
+vortex-map .fin-cup svg { filter:drop-shadow(0 0 7px rgba(255,214,110,0.85)); }
 vortex-map .fin-tape { position:absolute; left:0; top:0; width:320px; height:250px; overflow:visible; }
-vortex-map .fin-line { position:absolute; left:50%; top:230px; width:150px; height:12px; margin-left:-75px; border-radius:3px; background:repeating-conic-gradient(var(--text) 0 25%, var(--surface) 0 50%) 0 0 / 12px 12px; box-shadow:0 2px 8px rgba(0,0,0,0.25); }
+vortex-map .fin-line { position:absolute; left:50%; top:230px; width:150px; height:12px; margin-left:-75px; border-radius:3px; background:repeating-conic-gradient(var(--text) 0 25%, var(--surface) 0 50%) 0 0 / 12px 12px; box-shadow:0 0 14px 2px rgba(255,208,96,0.55), 0 2px 8px rgba(0,0,0,0.25); }
 /* The start card's border: the Nexera logo's colours, turning only while the road moves (its angle is set per frame). */
 .vm-lux { --n1:#00b5ff; --n2:#1c62ff; --n3:#3839ff; --n4:#5d22ff; --n5:#8911ff; }
 .vm-lux::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px; pointer-events:none;
@@ -293,7 +299,7 @@ const json = (s, d) => { if (!s || s.charAt(0) === "{" && s.charAt(1) === "{") r
 // ══ The road model ═══════════════════════════════════════════════════════════════════════════════════════════════
 const ELEV = 35;                  // the vortex seen from 35° above
 const LIP_S = 0.62;               // a medal's size by the time it reaches the vortex's centre
-const FIELD_FAR = -4500, Z_FIN = -3300;   // the field's far edge; the finish's depth at the start (far back, still in the haze)
+const FIELD_FAR = -4500, Z_FIN = -4250;   // the field's far edge; the finish's depth at the start (at the end of the wave)
 const waveH = (x, z, ph) => Math.sin(((x + AX * SEP / 2) / SEP + ph) * FX) * AMP + Math.sin(((z + AY * SEP / 2) / SEP + ph) * FY) * AMP;
 
 class VortexMap extends HTMLElement {
@@ -388,7 +394,7 @@ class VortexMap extends HTMLElement {
     const add = (e, ry, w, ay) => { e._ry = ry; e._w = w; e._ay = ay; e.style.transformOrigin = (w / 2) + "px " + ay + "px"; e.style.zIndex = String(Math.round(ry / 10)); this.appendChild(e); S.els.push(e); return e; };
     const fe = document.createElement("div"); fe.className = "vm-fin"; fe.setAttribute("data-finishbadge", "true"); fe.setAttribute("role", "img");
     fe.innerHTML = '<div class="fin-xp"><span class="bolt"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><span><b class="fin-t"></b><small class="fin-s"></small></span></div>'
-      + '<div class="fin-banner"><i class="chk"></i><span>FINISH</span><i class="chk"></i></div><i class="fin-post l"></i><i class="fin-post r"></i><div class="fin-cup">' + CUP + '</div>' + TAPE + '<i class="fin-line"></i>';
+      + '<i class="fin-glow halo"></i><i class="fin-glow pool"></i><div class="fin-banner"><i class="chk"></i><span>FINISH</span><i class="chk"></i></div><i class="fin-post l"></i><i class="fin-post r"></i><div class="fin-cup">' + CUP + '</div>' + TAPE + '<i class="fin-line"></i>';
     add(fe, fin.y, 320, 236)._fin = true; fe._txt = [];
     (geom.caps || []).forEach(c => { const e = document.createElement("div"); e.className = "vm-cap"; e.setAttribute("aria-hidden", "true"); e.textContent = c.label; add(e, c.y, 220, 18)._cap = true; });
     geom.nodes.forEach(n => { const e = document.createElement("div"); e.className = "vm-node";
@@ -452,7 +458,8 @@ class VortexMap extends HTMLElement {
         const dn = (g.vz - wz) / g.vRf, calm = dn <= 1 ? 0 : 1 - Math.pow(1 - clamp((dn - 1) / 2, 0, 1), 2);   // the wave calms near the hole
         const wy = waveH(wx, wz, S.bgPhase || 0) * calm - wz * SLOPE + 6 * calm, P = rg.pr(wx, wy, wz, rg.s3), P2 = rg.pr(wx + 10, wy, wz, rg.s4);
         x = P[0]; y = P[1]; persp = Math.hypot(P2[0] - P[0], P2[1] - P[1]) / 10 * rg.KX;
-        const dist = Math.hypot(wx, wy - 355, wz - 1220); fog = clamp((wz - FIELD_FAR) / 1500, 0, 1) * (1 - 0.6 * clamp((dist - 3200) / 7800, 0, 1)); }
+        const dist = Math.hypot(wx, wy - 355, wz - 1220); fog = clamp((wz - FIELD_FAR) / 1500, 0, 1) * (1 - 0.6 * clamp((dist - 3200) / 7800, 0, 1));
+        if (wz > FIELD_FAR) fog = 0.45 + 0.55 * fog; }                                                  // the track stays readable to its end
       const u = clamp((y - rimTop) / (G.cy - rimTop), 0, 1), s = 1 - (1 - LIP_S) * (1 - (1 - u) * (1 - u));   // shrinks at once on contact with the rim
       // Medals shrink much slower than true perspective (far ones stay clear to see); the road keeps its true width (rs).
       const pp = Math.pow(persp, 0.6); o.x = x; o.y = y; o.s = s * pp; o.rs = s * persp; o.persp = pp; o.fog = fog; o.p = 0; o.w = 1; o.l = l0; return o; }
@@ -504,7 +511,7 @@ class VortexMap extends HTMLElement {
         if (e._i != null) e.firstChild.tabIndex = -1; return; }
       e.style.visibility = "";
       let tf = "translate3d(" + (q.x - e._w / 2).toFixed(1) + "px," + (q.y - e._ay).toFixed(1) + "px,0)";
-      if (e._fin) tf += " scale(" + Math.max(q.s, 0.42).toFixed(3) + ")";                          // the finish stays a landmark, even far away
+      if (e._fin) { const k = Math.max(q.s, 0.04); tf += " scale(" + k.toFixed(3) + ")"; this._finScale(e, k, q.persp); }   // shrinks as the medals do: small at the far end
       else if (e._cap) { /* plaques keep their size (their text is the whole plaque); they fade instead */ }
       else if (q.p === 0 && q.s < 0.999) tf += " scale(" + q.s.toFixed(3) + ")";
       else if (q.p > 0) tf += reduced ? " scale(" + q.s.toFixed(3) + ")" : " perspective(600px) rotateX(" + (48 * E(q.p)).toFixed(1) + "deg) rotateZ(" + (300 * E(q.p)).toFixed(1) + "deg) scale(" + q.s.toFixed(3) + ")";
@@ -512,7 +519,7 @@ class VortexMap extends HTMLElement {
       const readable = e._i === this._next && q.fog > 0.4 ? 1 : clamp((q.persp - 0.34) / 0.1, 0, 1);   // the next mission always; the collision pass thins the rest
       e._q = q;
       if (e._i != null) { const far = q.p === 0 && q.s < 0.36; if (far !== !!e._far) { e._far = far; e.classList.toggle("far", far); } }
-      if (e._fin) { e.style.opacity = (q.fog * (q.p > 0.86 ? 1 - (q.p - 0.86) / 0.14 : 1)).toFixed(3); }
+      if (e._fin) { e.style.opacity = (q.p > 0.86 ? 1 - (q.p - 0.86) / 0.14 : 1).toFixed(3); }          // it glows: the haze does not dim it
       else if (e._cap) { const u = clamp(((e._ry - (ryLip - G.BEND)) / G.BEND - 0.35) / 0.65, 0, 1), near = clamp((q.persp - 0.55) / 0.12, 0, 1);   // plaques: the near road only
         e.style.opacity = q.p > 0 ? "0" : (q.fog * near * (1 - E(u))).toFixed(3); }
       else { e.style.opacity = (q.fog * (q.p > 0.86 ? 1 - (q.p - 0.86) / 0.14 : 1)).toFixed(3); const to = ((1 - clamp(q.p / 0.3, 0, 1)) * readable).toFixed(3);
@@ -539,6 +546,14 @@ class VortexMap extends HTMLElement {
     const where = !nq ? "here" : nq.p > 0 || nq.y > G.trackTop - 40 ? "down" : nq.y < G.hdr + 20 || nq.fog < 0.5 || nq.s < 0.3 ? "up" : "here";
     if (S.where !== where) { S.where = where; dispatchEvent(new CustomEvent("vortex-dir", { detail: { where } })); }
   }
+  // Inside the scaled finish: the pill is full size (its text never drops below 12px) and, like a far medal's label,
+  // shows only once it is near enough to read; the glow never shrinks below 45%, so the cup shines from the horizon.
+  // Written only when the scale changes.
+  _finScale(e, k, persp) { const kk = k.toFixed(3); if (e._k === kk) return; e._k = kk;
+    if (!e._pill) { e._pill = e.querySelector(".fin-xp"); e._glow = e.querySelectorAll(".fin-glow"); }
+    const o = clamp((persp - 0.34) / 0.1, 0, 1); e._pill.style.opacity = o.toFixed(3);
+    if (o > 0) e._pill.style.transform = "translateX(-50%) scale(" + (1 / k).toFixed(3) + ")";
+    const g = " scale(" + (Math.max(k, 0.45) / k).toFixed(3) + ")"; e._glow.forEach(x => { x.style.transform = g; }); }
   // Labels on the runway: placed nearest-first (the next mission first) below the medal, else beside it on the outside
   // of the bend, else the inside; a label shows only where it clears every label already placed and every medal.
   _labels() {
