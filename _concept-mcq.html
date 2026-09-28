@@ -53,9 +53,10 @@
   .tile.dead::before { opacity:0.12; }
   .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
   /* Selected: larger, on top of its neighbours, leaning a little toward the middle (as D in Murci's screenshot 2) */
-  .tile.raised { z-index:6; transform:translate(var(--lx, 0px), var(--ly, 0px)) translateY(-6px) translateZ(40px) scale(1.24); }
-  /* The others gather in toward the middle and stack a little on top of each other, dimmed: the chosen card is on top of them all */
-  .tiles.gather .tile:not(.raised) { transform:translate(var(--gx, 0px), var(--gy, 0px)) scale(0.96); filter:brightness(0.82) saturate(0.9); }
+  /* Selected: its glass grows into the space around it and lies over its neighbours (Murci's screenshot 2). The pane grows,
+     not the content: the letter and text stay their size at top-left, with more glass around them. Offsets per card (JS). */
+  .tile.raised { z-index:6; transform:none; }
+  .tile.raised .side { top:var(--rt, 0px); right:var(--rr, 0px); bottom:var(--rb, 0px); left:var(--rl, 0px); width:auto; height:auto; }   /* the edges decide its size, not 100% */
   .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 2px #4b5cff, var(--glass-in); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
@@ -74,7 +75,7 @@
     box-shadow:0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in);
     -webkit-backdrop-filter:blur(24px) saturate(170%) brightness(1.08); backdrop-filter:blur(24px) saturate(170%) brightness(1.08);
     transform:perspective(700px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
-    transition:box-shadow 240ms, border-color 240ms, transform 260ms cubic-bezier(.2,.8,.2,1); }
+    transition:box-shadow 240ms, border-color 240ms, transform 260ms cubic-bezier(.2,.8,.2,1), top 400ms cubic-bezier(.2,.8,.2,1), right 400ms cubic-bezier(.2,.8,.2,1), bottom 400ms cubic-bezier(.2,.8,.2,1), left 400ms cubic-bezier(.2,.8,.2,1); }
   /* The rim: a thick 2px ring drawn with a mask, bright where light hits (top-left), dim along the sides, bright again
      on the far edge (bottom-right), as a thick pane's edge carries light. */
   .face::before, .back::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; z-index:2;
@@ -416,7 +417,7 @@ function render(deal) {
     face.addEventListener("pointerenter", () => { if (!S.done) palLook(t); }); face.addEventListener("focus", () => { if (!S.done) palLook(t); });
     face.addEventListener("pointerleave", () => { if (!S.done) palLook(null); });
     face.addEventListener("pointerdown", () => ["--tx", "--ty"].forEach(k => face.style.removeProperty(k)));   // flat before it answers
-    face.addEventListener("pointerdown", e => { const r = face.getBoundingClientRect(); S.hit[i] = { x: e.clientX - r.left, y: e.clientY - r.top }; });
+    face.addEventListener("pointerdown", e => { S.hit[i] = { cx: e.clientX, cy: e.clientY }; });   // screen coordinates: the pane grows under the finger
     face.onclick = () => press(i);
     t.addEventListener("animationend", ev => { if (ev.animationName === "deal") t.classList.remove("dealt"); });
     t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) dismiss(); else if (t.classList.contains("flipped")) lift(t); });
@@ -475,7 +476,7 @@ function submit() {
       sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
-      setTimeout(() => score(it, mk, tier), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(() => {});   // a stale card (question switched) just stops
+      setTimeout(() => score(it, mk, tier), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(e => { if (e !== 0) console.error(e); });   // a stale card (question switched, thrown as 0) just stops; anything else is a real error and is reported
   } else {
     streak = 0; S.sel = null; S.gone.add(i);
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
@@ -621,24 +622,23 @@ function killWrong() { [...document.querySelectorAll("#tiles .tile")].filter(x =
 
 const RAISE_MS = 380;
 // Raise the selected card: larger, on top, leaning 12% of the way toward the grid's middle. Returns when it is up (ms).
-const RAISE_K = 1.24, GATHER = { x: 0.13, y: 0.22 };   // how far the others move toward the middle (share of their distance)
-function raise(t) { if (reduced) return 0; const tiles = $("tiles"), g = tiles.getBoundingClientRect(), r = t.getBoundingClientRect(), mx = g.left + g.width / 2, my = g.top + g.height / 2;
-  // The others close in and stack: later cards over earlier ones (A under B under C under D), all under the chosen card.
-  [...tiles.querySelectorAll(".tile")].forEach((x, k) => { if (x === t || S.gone.has(+x.dataset.i)) return; const b = x.getBoundingClientRect();
-    x.style.setProperty("--gx", ((mx - (b.left + b.width / 2)) * GATHER.x).toFixed(1) + "px"); x.style.setProperty("--gy", ((my - (b.top + b.height / 2)) * GATHER.y).toFixed(1) + "px"); x.style.zIndex = String(1 + k); });
-  tiles.classList.add("gather");
-  const cx = r.left + r.width / 2, half = r.width * RAISE_K / 2, lean = (mx - cx) * 0.16;
-  t.style.setProperty("--lx", Math.max(g.left + half - cx, Math.min(g.right - half - cx, lean)).toFixed(1) + "px");   // leans in, and stays inside the grid
-  t.style.setProperty("--ly", (((g.top + g.height / 2) - (r.top + r.height / 2)) * 0.12).toFixed(1) + "px");
+// Measured on screenshot 2 (D, bottom-right, on a 355×96 card): its glass reached 73 px toward the middle, 41 px up over
+// B's lower strip, 13 px down, and pulled in 8 px on its outer side. Mirrored for the other corners; on one column it
+// grows a little each side instead.
+const PANE = { in: 73, out: -8, vin: 41, vout: 13 };
+function raise(t) { if (reduced) return 0; const g = $("tiles").getBoundingClientRect(), r = t.getBoundingClientRect();
+  const leftSide = r.left + r.width / 2 < g.left + g.width / 2, topRow = r.top + r.height / 2 < g.top + g.height / 2, oneCol = r.width > g.width * 0.7;
+  const h = oneCol ? [12, 12] : leftSide ? [PANE.out, PANE.in] : [PANE.in, PANE.out];          // [grow left, grow right]
+  const v = topRow ? [PANE.vout, PANE.vin] : [PANE.vin, PANE.vout];                            // [grow up, grow down]
+  // Inset values are negative to grow. Clamp so it never passes the grid's edges.
+  const L = Math.min(h[0], r.left - g.left), R = Math.min(h[1], g.right - r.right);
+  [["--rl", -L], ["--rr", -R], ["--rt", -v[0]], ["--rb", -v[1]]].forEach(([k, px]) => t.style.setProperty(k, px + "px"));
   t.classList.add("raised"); return RAISE_MS; }
-// The verdict moment has passed: the others go back to their places (the grid is never rearranged).
-function ungather() { const tiles = $("tiles"); if (!tiles || !tiles.classList.contains("gather")) return; tiles.classList.remove("gather");
-  setTimeout(() => tiles.querySelectorAll(".tile").forEach(x => { if (!x.classList.contains("raised")) x.style.zIndex = ""; }), 440); }
 const VERDICT_MS = 440;                 // the green light shows this long before the right card moves
 // The right answer: a green hairline runs round the rim from the fingertip, both ways, meeting opposite, while green
 // light fills the glass from that point. (Perimeter position from the straight edges; the corners are small.)
 function greenLight(t, hit) { const face = t.querySelector(".face"), w = face.offsetWidth, h = face.offsetHeight, NS = "http://www.w3.org/2000/svg";
-  const p = hit && hit.x > 0 ? hit : { x: w / 2, y: h / 2 }, R = 17, P = 2 * (w + h - 4 * R);
+  const fr = face.getBoundingClientRect(), p = hit && hit.cx != null ? { x: hit.cx - fr.left, y: hit.cy - fr.top } : hit && hit.x > 0 ? hit : { x: w / 2, y: h / 2 }, R = 17, P = 2 * (w + h - 4 * R);
   const d = [p.y, w - p.x, h - p.y, p.x], edge = d.indexOf(Math.min(...d));                                   // nearest edge: top, right, bottom, left
   const along = [Math.max(0, p.x - R), (w - 2 * R) + Math.max(0, p.y - R), (w - 2 * R) + (h - 2 * R) + Math.max(0, w - R - p.x), 2 * (w - 2 * R) + (h - 2 * R) + Math.max(0, h - R - p.y)][edge];
   const f = along / P * 1000;
@@ -661,7 +661,7 @@ function glide(t, r0, ms, rot) { const r1 = t.getBoundingClientRect();
     { duration: ms, easing: "cubic-bezier(.22,.8,.25,1)" }).finished; }
 // Lift a card out of its slot (the slot keeps the grid still) to the centre, over the scrim.
 function grow(t) {
-  const r0 = t.getBoundingClientRect(); t.classList.remove("raised"); ungather(); if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
+  const r0 = (t.classList.contains("raised") ? t.querySelector(".face") : t).getBoundingClientRect(); t.classList.remove("raised"); /* the grow starts from the grown pane */ if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
   S.slot.style.height = r0.height + "px"; S.heroT = t;
   t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
   t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
@@ -712,7 +712,8 @@ function score(it, mk, tier) { if (it.n in book) return; book[it.n] = { got: mk,
 //     friction, then lying flat on the pile at the bottom of the screen. A few pieces clink.
 function shatter(tile, hit, rb) {                                                        // rb: the robot under it (head curve, minHold, onHit), or null
   const face = tile.querySelector(".face"), r = face.getBoundingClientRect(), w = face.offsetWidth, h = face.offsetHeight, k = r.width / w, NS = "http://www.w3.org/2000/svg";
-  const p = hit && hit.x > 0 ? { x: Math.min(w - 10, Math.max(10, hit.x)), y: Math.min(h - 10, Math.max(10, hit.y)) } : { x: w * 0.5, y: h * 0.45 };
+  const hp = hit && hit.cx != null ? { x: hit.cx - r.left, y: hit.cy - r.top } : hit;
+  const p = hp && hp.x > 0 ? { x: Math.min(w - 10, Math.max(10, hp.x)), y: Math.min(h - 10, Math.max(10, hp.y)) } : { x: w * 0.5, y: h * 0.45 };
   if (reduced) { tile.style.transition = "opacity 200ms"; tile.style.opacity = "0"; return wait(220).then(() => leaveGap(tile)); }
   const inside = q => q.x >= 0 && q.x <= w && q.y >= 0 && q.y <= h;
   // Radial cracks: a random walk from the impact, each step pulled back toward the ray's own heading so rays never cross.
@@ -818,7 +819,7 @@ function shatter(tile, hit, rb) {                                               
   }
   return wait(Math.max(crackMs + 420, (rb && rb.minHold) || 0)).then(() => {                 // it waits for the robot to arrive under it                                                     // the web finishes spreading; a beat to see it; it gives
     clearTimeout(hold); cancelAnimationFrame(raf); const B = built || build(); while (B.next < B.cells.length) B.make(B.cells[B.next++]);   // finish any not yet built
-    face.style.visibility = "hidden"; at_(tile, sfx.shatter); buzz(HAPTIC.shatter); ungather();   // it gives: the others go back
+    face.style.visibility = "hidden"; at_(tile, sfx.shatter); buzz(HAPTIC.shatter);
     B.pieces.forEach(pc => { pc.el.style.opacity = "1"; pc.el.animate(pc.frames, { duration: pc.t, delay: pc.delay, easing: "linear", fill: "both" }); });
     if (rb && rb.onHit) setTimeout(rb.onHit, B.hits.length ? Math.min(...B.hits) : B.landings.length ? Math.min(...B.landings.map(L => L.t)) : 400);   // the first piece that meets it
     // A few pieces clink where and when they land (not all 33: that would be a rattle, not glass).
