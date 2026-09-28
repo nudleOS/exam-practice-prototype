@@ -359,7 +359,7 @@ class VortexMap extends HTMLElement {
     if (r && r.height) S.trackTop = r.top; if (!S.trackTop) S.trackTop = innerHeight - 84;
     const cy = S.trackTop - 16 - HD * cf;                                                            // the core's light sits 16px above the card
     const box = this._roadBox(), br = box ? box.getBoundingClientRect() : { top: 0, left: 0 };
-    S.G = { phone, sf, cf, R0, HD, cx: innerWidth / 2, cy, throatY: cy + HD * cf, RW: phone ? 18 : 22, BEND: phone ? 150 : 180, ZS: 240, trackTop: S.trackTop,
+    S.G = { phone, sf, cf, R0, HD, cx: innerWidth / 2, cy, throatY: cy + HD * cf, RW: phone ? 24 : 30, BEND: phone ? 150 : 180, ZS: 240, trackTop: S.trackTop,
       top: br.top + scrollY, left: br.left, hdr: +this.getAttribute("hdr") || 64 };
   }
   _build(force) {
@@ -454,8 +454,8 @@ class VortexMap extends HTMLElement {
         x = P[0]; y = P[1]; persp = Math.hypot(P2[0] - P[0], P2[1] - P[1]) / 10 * rg.KX;
         const dist = Math.hypot(wx, wy - 355, wz - 1220); fog = clamp((wz - FIELD_FAR) / 1500, 0, 1) * (1 - 0.6 * clamp((dist - 3200) / 7800, 0, 1)); }
       const u = clamp((y - rimTop) / (G.cy - rimTop), 0, 1), s = 1 - (1 - LIP_S) * (1 - (1 - u) * (1 - u));   // shrinks at once on contact with the rim
-      // Medals shrink a little slower than true perspective (far ones stay legible); the road keeps its true width (rs).
-      const pp = Math.pow(persp, 0.75); o.x = x; o.y = y; o.s = s * pp; o.rs = s * persp; o.persp = pp; o.fog = fog; o.p = 0; o.w = 1; o.l = l0; return o; }
+      // Medals shrink much slower than true perspective (far ones stay clear to see); the road keeps its true width (rs).
+      const pp = Math.pow(persp, 0.6); o.x = x; o.y = y; o.s = s * pp; o.rs = s * persp; o.persp = pp; o.fog = fog; o.p = 0; o.w = 1; o.l = l0; return o; }
     // Past the lip: down the vortex's axis into the core, shrinking, twisting and orbiting.
     const p = clamp((ry - ryLip) / G.ZS, 0, 1), depth = G.throatY - G.cy, kx = G.ZS / depth;
     const F = 1 - Math.pow(1 - p, kx), rho = G.R0 * 0.16 * Math.sin(Math.PI * p), th = p * 2.6 * Math.PI + S.spin;
