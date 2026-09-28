@@ -345,10 +345,10 @@ class ModelFloor extends HTMLElement {
     if (!hit) { if (this._action) { this._action.fadeOut(0.3); this._action = null; } return; }
     if (this._action && this._action.getClip() === hit) return;
     const next = this._mixer.clipAction(hit);
-    // A fall stays fallen — it holds its last frame until something else is asked for.
-    // Anything else loops, because a greet or a dance that freezes looks like a crash.
+    // A fall (or the robot's defeat) stays down — it holds its last frame until something else
+    // is asked for. Anything else loops, because a greet or a dance that freezes looks like a crash.
     // loop="once" plays any clip one time and holds its last frame (the home greeting must not visibly loop).
-    const once = key === "fall" || this.getAttribute("loop") === "once";
+    const once = key === "fall" || key === "defeat" || this.getAttribute("loop") === "once";
     next.reset();
     // from="seconds" starts the clip part-way (the finish plays only the dance's best stretch).
     const from = parseFloat(this.getAttribute("from"));

@@ -22,7 +22,7 @@
 <x-dc>
 <helmet>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="ext-resource-dependency" content="assets/avatar-lite.glb" data-resource-id="avatarGlb" />
+  <meta name="ext-resource-dependency" content="assets/companion-robot.glb" data-resource-id="avatarGlb" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
@@ -116,7 +116,7 @@
   <sc-if value="{{ onPick }}" hint-placeholder-val="{{ true }}">
   <div data-screen-label="Choose a paper" style="position:relative; height:100vh; display:flex; flex-direction:column; overflow:hidden">
 
-    <model-floor src="assets/avatar-lite.glb" clip="greet" autorotate="off" face="user" floor="still" fit="0.95" style="position:fixed; left:0; right:0; top:8%; bottom:-8%; z-index:0"></model-floor>
+    <model-floor src="assets/companion-robot.glb" clip="greet" autorotate="off" face="user" floor="still" fit="0.95" style="position:fixed; left:0; right:0; top:8%; bottom:-8%; z-index:0"></model-floor>
     <span style="position:fixed; inset:0; z-index:0; pointer-events:none; background:linear-gradient(180deg, rgba(25,27,30,0.55) 0%, rgba(25,27,30,0) 30%, rgba(25,27,30,0) 52%, rgba(25,27,30,0.94) 100%)"></span>
 
     <div style="position:relative; display:flex; align-items:center; gap:12px; padding:22px 30px">
@@ -771,7 +771,7 @@ const PAPERS = [
 ];
 
 const AVATARS = [
-  { id: "default", name: "Nexera", src: (window.__resources && window.__resources.avatarGlb) || "assets/avatar-lite.glb", unlock: 0 },
+  { id: "default", name: "Nexera", src: (window.__resources && window.__resources.avatarGlb) || "assets/companion-robot.glb", unlock: 0 },
   { id: "field", name: "Field Guide", slot: "avatar-field", unlock: 1500 },
   { id: "lab", name: "Lab Partner", slot: "avatar-lab", unlock: 4000 }
 ];

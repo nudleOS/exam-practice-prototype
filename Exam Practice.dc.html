@@ -245,7 +245,7 @@
           </sc-if>
         </span>
         <sc-if value="{{ mountModel }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/avatar-lite.glb" clip="{{ homeClip }}" loop="once" hold="1.95" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
+          <model-floor src="assets/companion-robot.glb" clip="{{ homeClip }}" loop="once" hold="1.95" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
         </sc-if>
         <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; box-sizing:border-box; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(30,33,40,0.90); border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); box-shadow:0 8px 24px rgba(0,0,0,0.3); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}<span aria-hidden="true" style="display:{{ tailDisplay }}; position:absolute; left:calc(50% - 7px); bottom:-7px; width:12px; height:12px; transform:rotate(45deg); background:rgb(34,37,42); border-right:1px solid rgba(129,177,255,0.28); border-bottom:1px solid rgba(129,177,255,0.28)"></span></p>
       </div>
@@ -529,7 +529,7 @@
 
         <div aria-hidden="true" style="position:absolute; left:{{ compLeft }}; top:{{ compTop }}; width:{{ compWpx }}; height:{{ compHpx }}; pointer-events:none; z-index:2; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
           <sc-if value="{{ mapModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/avatar-lite.glb" from="{{ mapClipFrom }}" hold="{{ mapClipHold }}" loop="{{ mapClipLoop }}" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
+            <model-floor src="assets/companion-robot.glb" from="{{ mapClipFrom }}" hold="{{ mapClipHold }}" loop="{{ mapClipLoop }}" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
           </sc-if>
           <sc-if value="{{ mapPoster }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -718,7 +718,7 @@
       <aside aria-label="Your companion" style="position:{{ coachPos }}; top:{{ coachTop }}; align-self:start; z-index:2; display:flex; flex-direction:{{ coachDir }}; align-items:{{ coachAlign }}; gap:{{ coachGap }}; margin-bottom:{{ coachMb }}">
         <div aria-hidden="true" style="position:relative; width:{{ coachW }}; height:{{ coachH }}; flex:none">
           <sc-if value="{{ coachModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/avatar-lite.glb" clip="{{ playClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 4px 0"></model-floor>
+            <model-floor src="assets/companion-robot.glb" clip="{{ playClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 4px 0"></model-floor>
           </sc-if>
           <sc-if value="{{ coachPoster }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -1226,7 +1226,7 @@
     <main data-done="true" style="box-sizing:border-box; max-width:{{ doneMaxW }}; margin:0 auto; padding:{{ donePad }}; display:grid; grid-template-columns:{{ doneCols }}; gap:{{ doneGap }}; align-items:center; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div aria-hidden="true" data-donecomp="true" style="position:relative; width:{{ doneCompW }}; height:{{ doneCompH }}; justify-self:center">
         <sc-if value="{{ doneModelOn }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/avatar-lite.glb" clip="{{ doneClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
+          <model-floor src="assets/companion-robot.glb" clip="{{ doneClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
         </sc-if>
         <sc-if value="{{ donePoster }}" hint-placeholder-val="{{ true }}">
           <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0 0 6px 0; width:100%; height:calc(100% - 6px)">
@@ -1551,7 +1551,7 @@ const SAMPLE_REPLY = {"part":"1.1.1","try":1,"tries_left":2,"closed":false,"reve
 const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","subject":"Fluid Mechanics","qualification":"nated","level":"N6","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","subject":"Applied Engineering Technology","qualification":"ncv","level":"L4","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"ls-p1-2026","title":"Life Sciences P1","subject":"Life Sciences","qualification":"nsc","level":"G12","level_detail":"Grade 12","sitting":"May/June 2026","total_marks":150,"duration_minutes":150,"parts":85,"provenance_label":"Design sample · a DBE NSC paper, not a TVET paper"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","qualification":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","qualification":"ncv","paper_ids":["aet-l4-2019-02"]},{"name":"Life Sciences P1 (design sample)","qualification":"nsc","paper_ids":["ls-p1-2026"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
 // Home paper id → the in-page paper it opens.
 // Missions are only stated where the whole paper is transcribed; otherwise parts, which are known.
-// The companion's greet still (≤60 KB, rendered from avatar-lite.glb, same framing as the 3D
+// The companion's greet still (≤60 KB, rendered from companion-robot.glb, same framing as the 3D
 // model). Set to "assets/companion-greet.webp" once it exists; until then the silhouette holds
 // its place so nothing jumps and no request 404s.
 const POSTER_SRC = null;
@@ -2529,11 +2529,11 @@ class Component extends DCLogic {
         prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
           firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay,
           obs: tryNo === 1 && !draw ? (pr.obs || []).concat([this.obsOf(part, pr, result)]) : pr.obs } }) });
-      // Reactions come from the marks: full dances, partial encourages, zero falls, the memo greets.
+      // Reactions come from the marks: full dances, partial encourages, zero is defeated (the robot slumps down), the memo greets.
       const got = result.marks_awarded || 0;
       // The Hall gives no instant verdicts: no reaction, no chime.
       if (this.state.sitting === "hall") { this.react("greet"); return; }
-      this.react(draw || revealed ? "greet" : result.full ? "dance" : got > 0 ? "greet" : "fall");
+      this.react(draw || revealed ? "greet" : result.full ? "dance" : got > 0 ? "greet" : "defeat");
       if (!draw) this.chime(result.full ? "full" : got > 0 ? "partial" : "zero");
     };
     this.audioInit();
