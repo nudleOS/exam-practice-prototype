@@ -26,7 +26,8 @@
   .seg i.on::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--grad); transform-origin:left; }
   .seg i.on.arrive::after { animation:fillseg 700ms cubic-bezier(.3,.7,.2,1) both; }                  /* the path runs on to the next question */
   @keyframes fillseg { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-  .seg i.gold { background:#e3b341; } .seg i.silver { background:#c3c8cf; } .seg i.bronze { background:#b0764a; } .seg i.none { background:rgba(242,119,122,0.5); }
+  .seg i.gold { background:#e3b341; } .seg i.silver { background:#c3c8cf; } .seg i.bronze { background:#b0764a; } .seg i.none { background:#f2777a; }
+  .seg i.cur.gold { box-shadow:0 0 12px rgba(227,179,65,0.6); } .seg i.cur.silver { box-shadow:0 0 12px rgba(195,200,207,0.5); } .seg i.cur.bronze { box-shadow:0 0 12px rgba(176,118,74,0.6); } .seg i.cur.none { box-shadow:0 0 12px rgba(242,119,122,0.6); }
   .stage.enter .meta, .stage.enter h1 { animation:rise 460ms cubic-bezier(.2,.8,.2,1) both; } .stage.enter h1 { animation-delay:70ms; }
   .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .marks .of { color:var(--text3); font-weight:600; } .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
@@ -37,11 +38,17 @@
   .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; flex-wrap:wrap; padding:0 12px; }
   .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:7px 11px; cursor:pointer; }
   .pick button[aria-pressed="true"] { color:#fff; border-color:#4a5cff; }
-  .stage { max-width:760px; margin:0 auto; padding:6px 18px 224px; }   /* room to scroll the last card above the dock */
+  /* Its result, once the question is finished: green answered, red failed (the current one keeps its ring, in that colour) */
+  .pick button.ok { color:#9ff5cf; border-color:rgba(61,220,151,0.55); background:rgba(61,220,151,0.1); }
+  .pick button.bad { color:#ffb3b6; border-color:rgba(242,119,122,0.55); background:rgba(242,119,122,0.1); }
+  .pick button.ok[aria-pressed="true"] { color:#fff; border-color:#3ddc97; box-shadow:0 0 12px rgba(61,220,151,0.45); }
+  .pick button.bad[aria-pressed="true"] { color:#fff; border-color:#f2777a; box-shadow:0 0 12px rgba(242,119,122,0.45); }
+  .stage { max-width:760px; margin:0 auto; padding:6px 18px 250px; }   /* room to scroll the last card above the dock */
   .meta { display:flex; align-items:center; gap:10px; color:var(--text2); font-size:13px; font-weight:600; }
   .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
   .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
-  h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; }
+  h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; display:flex; align-items:flex-start; gap:12px; }
+  h1 .num { flex:none; font-size:13px; line-height:1.3; letter-spacing:0; margin-top:3px; }   /* the number, level with the first line; the text wraps beside it */
   .hint { font-size:12.5px; color:var(--text3); margin:-10px 0 16px; }
   /* Cards: a front (the option) and a back (the why) */
   .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
@@ -168,6 +175,7 @@
   .back .not { font-size:13.5px; line-height:1.5; color:var(--text2); padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); }
   .back .not b { color:var(--text); font-weight:700; }
   .slot { min-height:96px; }
+  @media (max-width:600px) { .tile, .slot { min-height:74px; } .face { padding:12px 14px 12px 12px; } }   /* one column: thinner cards (after .tile/.face/.slot, so it wins) */
   .tile.nobuddy .buddy { display:none !important; }                      /* the robot is down on the floor: the answer rises alone */
   .tile.dealt { animation:deal 520ms cubic-bezier(.2,.9,.25,1.1) both; animation-delay:var(--d); }
   /* The break: cracks drawn on the card, then shards on their own layer */
@@ -206,12 +214,12 @@
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
   .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
-  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:164px; min-height:128px; align-content:end; }
-  @media (max-width:600px) { .dock-in { padding-left:116px; min-height:108px; } }
+  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:194px; min-height:128px; align-content:end; }
+  @media (max-width:600px) { .dock-in { padding-left:146px; min-height:108px; } }
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
   /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
      behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
-  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:-31px; width:150px; height:210px; z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
+  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:-37px; width:180px; height:252px; z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
   .pal-body { position:absolute; inset:0; } .pal, .buddy { transform-origin:50% 100%; } .pal.away .pal-body { visibility:hidden; }
   .pal-body model-floor, .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
   .pal-body img { object-fit:contain; object-position:center bottom; }
@@ -224,23 +232,23 @@
   .pal-say { --cloud:#cfe4ff; }
   .pal-say .puff, .pal-say .say-txt { position:absolute; filter:drop-shadow(0 8px 16px rgba(40,70,200,0.45)) drop-shadow(0 0 1px rgba(255,255,255,0.9)); }
   .pal-say .puff { border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff, var(--cloud) 55%); }
-  .pal-say .p1 { left:64%; top:14%; width:8px; height:8px; }
-  .pal-say .p2 { left:70%; top:5%; width:14px; height:14px; }
-  .pal-say .say-txt { left:calc(78% + 12px); bottom:calc(98% + 10px); width:max-content; max-width:min(320px, calc(100vw - 150px)); padding:9px 15px 7px;
-    border-radius:24px; background:var(--cloud); font-size:13.5px; line-height:1.45; font-weight:700; color:#12204a; transform-origin:0 100%;
+  .pal-say .p1 { left:64%; top:22%; width:8px; height:8px; }   /* beside the head, rising right (above it there is no room once the cards reach down) */
+  .pal-say .p2 { left:71%; top:15%; width:14px; height:14px; }
+  .pal-say .say-txt { left:calc(84% + 4px); bottom:86%; width:max-content; max-width:min(320px, calc(100vw - 150px)); padding:8px 16px;
+    border-radius:999px; background:var(--cloud); font-size:13.5px; line-height:1.45; font-weight:700; color:#12204a; transform-origin:0 100%;
     text-wrap:balance; isolation:isolate; }   /* the cloud's body; JS fits its width to the longest line */
-  .pal-say .say-txt::before { content:""; position:absolute; inset:-14px -10px -10px; z-index:-1; background:
-      radial-gradient(circle 19px at 14% 22px, var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 24px at 32% 25px, var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 20px at 52% 21px, var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 23px at 71% 24px, var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 18px at 88% 22px, var(--cloud) 97%, #0000 100%),
+  .pal-say .say-txt::before { content:""; position:absolute; inset:-12px -12px -12px; z-index:-1; background:
+      radial-gradient(circle 18px at 15% 19px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 21px at 33% 22px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 22px at 52% 23px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 21px at 70% 22px, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 18px at 86% 19px, var(--cloud) 97%, #0000 100%),
       radial-gradient(circle 16px at 22% calc(100% - 17px), var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 18px at 44% calc(100% - 19px), var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 15px at 66% calc(100% - 16px), var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 17px at 85% calc(100% - 18px), var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 16px at 17px 52%, var(--cloud) 97%, #0000 100%),
-      radial-gradient(circle 16px at calc(100% - 17px) 50%, var(--cloud) 97%, #0000 100%); }
+      radial-gradient(circle 18px at 41% calc(100% - 19px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 18px at 60% calc(100% - 19px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 16px at 78% calc(100% - 17px), var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 20px at 21px 50%, var(--cloud) 97%, #0000 100%),
+      radial-gradient(circle 20px at calc(100% - 21px) 50%, var(--cloud) 97%, #0000 100%); }
   .pal-say.show { display:block; }
   .pal-say.show .p1 { animation:puff 200ms cubic-bezier(.2,.8,.3,1.3) both; }
   .pal-say.show .p2 { animation:puff 200ms cubic-bezier(.2,.8,.3,1.3) 110ms both; }
@@ -249,7 +257,7 @@
   @keyframes thought { from { opacity:0; transform:translate(-8px, 8px) scale(0.55); } to { opacity:1; transform:none; } }
   @media (max-width:600px) { .pal-say .p1 { width:6px; height:6px; } .pal-say .p2 { width:10px; height:10px; } .pal-say .say-txt { font-size:13px; } }
   @media (prefers-reduced-motion: reduce) { .pal-say.show .puff, .pal-say.show .say-txt { animation:none; } }
-  @media (max-width:600px) { .pal { width:110px; height:154px; left:6px; bottom:-22px; } }
+  @media (max-width:600px) { .pal { width:140px; height:196px; left:6px; bottom:-28px; } }
   @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
   /* Next: a small liquid-glass pill under the cards, centred. A brand-gradient rim turns slowly around it; the arrow nudges. */
   @property --na { syntax:'<angle>'; inherits:false; initial-value:0deg; }
@@ -404,13 +412,13 @@ function load(n) {
   S = { it, shape: shapeOf(it), sel: null, gone: new Set(), tries: 0, done: false, dialSel: [], sw: [false, false], hit: {} };
   document.querySelectorAll(".pick button[data-q]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === n)));
   setHint(null); NEXT.classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
-  render(true);
+  render(!book[n]);                                                   // a finished question comes back as it ended
 }
 
 function render(deal) {
   const { it, shape } = S, st = $("stage");
   const stem = shape.kind === "switches" ? shape.stem : it.q;
-  st.innerHTML = `<div class="meta"><span class="num">${it.n}</span><span>${it.marks} marks</span><span class="tries"></span></div><h1>${stem}</h1>`;
+  st.innerHTML = `<div class="meta"><span>${it.marks} marks</span><span class="tries"></span></div><h1><span class="num">${it.n}</span><span>${stem}</span></h1>`;
   if (shape.kind === "dials") {
     st.insertAdjacentHTML("beforeend", `<p class="hint">Build the answer one part at a time. The option that matches lights up.</p><div class="builder" id="builder"></div><div class="readout" id="readout"></div>`);
     shape.dials.forEach((vals, k) => {
@@ -448,6 +456,7 @@ function render(deal) {
     g.appendChild(t);
   });
   st.appendChild(g); st.appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
+  if (book[it.n] && book[it.n].gone) restore(book[it.n]);
 }
 
 function press(i) {
@@ -473,8 +482,9 @@ function syncSwitches() {
 function paintTiles() { document.querySelectorAll(".tile").forEach(t => { const i = +t.dataset.i, on = S.sel === i && !S.done;
   t.classList.toggle("sel", on); t.querySelector(".face").setAttribute("aria-checked", String(S.sel === i)); }); }
 function say() { $("say").textContent = S.done ? "" : S.sel == null ? "" : `Tap ${L[S.sel]} to answer`; }
-function paintTop() { $("seg").innerHTML = ORDER.map(n => { const b = book[n], c = n === S.it.n ? "on" : b ? b.tier : "";
+function paintTop() { $("seg").innerHTML = ORDER.map(n => { const b = book[n], cur = n === S.it.n, c = b ? b.tier + (cur ? " cur" : "") : cur ? "on" : "";   // scored: its medal, or red
     return `<i class="${c}" title="${n}${b ? " · " + b.tier : ""}"></i>`; }).join(""); $("xp").textContent = xp;
+  document.querySelectorAll(".pick button[data-q]").forEach(el => { const b = book[el.dataset.q]; el.classList.toggle("ok", !!b && b.tier !== "none"); el.classList.toggle("bad", !!b && b.tier === "none"); });
   $("streak").textContent = streak >= 2 ? `${streak} in a row` : "";
   const tr = document.querySelector(".tries"), left = Math.max(0, 3 - S.tries);
   if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${i >= S.tries ? "live" : ""}"></i>`).join(""); tr.setAttribute("aria-label", `${left} ${left === 1 ? "try" : "tries"} left`); } }
@@ -493,23 +503,23 @@ function submit() {
     streak = S.tries === 1 ? streak + 1 : 0; setHint(null);
     const name = tier[0].toUpperCase() + tier.slice(1), mkText = mk ? "+" + mk + (mk === 1 ? " mark" : " marks") : "0 marks";
     t.querySelector(".ok").innerHTML = `<span class="medal" aria-hidden="true"></span><span>${name} · +${gain} XP · ${mkText}</span>`;
-    fillBack(t, it);
+    fillBack(t, it); const rec = { gone: [...S.gone], tries: S.tries, ok: t.querySelector(".ok").innerHTML };
     live(`Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
     const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
     wait(up + (reduced ? 0 : VERDICT_MS)).then(() => { if (S !== S0) throw 0; return present(t, tier); }).then(() => {
       sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); fly(t, "+" + gain, "xpBox");
       setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700);   // counts up as the +XP lands
       if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
-      setTimeout(() => score(it, mk, tier), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(e => { if (e !== 0) console.error(e); });   // a stale card (question switched, thrown as 0) just stops; anything else is a real error and is reported
+      setTimeout(() => score(it, mk, tier, rec), mk && !reduced ? 860 : 0); toast(name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(e => { if (e !== 0) console.error(e); });   // a stale card (question switched, thrown as 0) just stops; anything else is a real error and is reported
   } else {
-    streak = 0; S.sel = null; S.gone.add(i);
+    streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: "The answer · 0 XP · 0 marks" };
     const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
     let rb = null;
     if (PAL.el && !PAL.sweeping && !reduced) { const tx = palUnder(t), n = S.tries; rb = { ...palHead(tx), minHold: Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last); if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card
     S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
     wait(up).then(() => shatter(t, S.hit[i], rb)).then(() => { if (!last) S.busy = false;
       if (last) { S.done = true; const r = document.querySelector(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
-        r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0, "none"); fillBack(r, it); setHint(null);
+        r.querySelector(".ok").textContent = "The answer · 0 XP · 0 marks"; score(it, 0, "none", rec); fillBack(r, it); setHint(null);
         live(`The answer is ${L[it.a]}. ${whyOf(it)}`); wait(PAL.down ? 1700 : 0).then(() => present(r, null)).then(showNext); }   // the answer rises as it hits the ground
       const first = [...document.querySelectorAll(".tile")].find(x => !S.gone.has(+x.dataset.i));
       if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
@@ -524,6 +534,11 @@ function submit() {
 
 // The back: the medal line (set by the caller), the answer, why it is right, and why the others are not.
 const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
+// A finished question, revisited: its end state (as after the big card was put back), to look at; the marks stand.
+function restore(b) { const it = S.it, tile = i => document.querySelector(`.tile[data-i="${i}"]`), r = tile(it.a);
+  S.done = true; S.tries = b.tries || 0; S.tier = b.tier; (b.gone || []).forEach(i => { S.gone.add(i); leaveGap(tile(i)); });
+  fillBack(r, it); r.querySelector(".ok").innerHTML = b.ok || ""; if (b.tier !== "none") r.classList.add(b.tier); r.classList.add("flipped");
+  killWrong(); paintTiles(); paintTop(); say(); showNext(); }
 function fillBack(t, it) { const w = WHY[it.n] || {};
   t.querySelector(".ans").textContent = L[it.a] + " · " + it.opts[it.a]; t.querySelector(".why").textContent = whyOf(it);
   t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
@@ -559,7 +574,7 @@ const palFree = () => !PAL.anim && !PAL.down && !PAL.sweeping && !PAL.hurt && !$
 // Movement. The run clip is authored in place; measured, its planted foot moves 3.51 units/s, and the box shows 2·H·fit
 // units (H 2.4, fit 0.8) over its height, so px/s = 3.51 · rate · boxHeight / 3.84. Moving the box at exactly that pace
 // is what keeps the feet from sliding. `translate` (not transform) carries the position, so the jump arcs compose with it.
-const RUN_RATE = 1.3, SWEEP_RATE = 1.6;   // an unhurried jog (Murci: slower); the sweep a little quicker
+const RUN_RATE = 1.1, SWEEP_RATE = 1.35;   // an unhurried jog (Murci: slower); the sweep a little quicker
 const palSpeed = rate => 3.513 * rate * ($("pal").offsetHeight / 3.84);
 function palBase() { const r = $("pal").getBoundingClientRect(); return { left: r.left - PAL.x, top: r.top, w: r.width, h: r.height }; }
 function palStop() { const pal = $("pal"); if (PAL.anim) { PAL.x = parseFloat(getComputedStyle(pal).translate) || 0; PAL.anim.cancel(); PAL.anim = null; pal.style.translate = `${PAL.x}px 0`; } }
@@ -721,7 +736,7 @@ function present(t, tier) {
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
 // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
-function score(it, mk, tier) { if (it.n in book) return; book[it.n] = { got: mk, of: it.marks, tier };   // `it` captured at answer time: a question switch mid-animation can't misfile it
+function score(it, mk, tier, rec = {}) { if (it.n in book) return; book[it.n] = { got: mk, of: it.marks, tier, ...rec }; paintTop();   // `it` captured at answer time: a question switch mid-animation can't misfile it
   $("mk").textContent = Object.values(book).reduce((a, b) => a + b.got, 0);
   bump("marksBox"); $("marksBox").setAttribute("aria-label", `${$("mk").textContent} of ${$("mkOf").textContent} marks`); }
 
@@ -893,7 +908,7 @@ function fitCloud(el) { el.style.animation = "none"; el.style.width = "";
     el.style.width = Math.ceil(Math.max(...rs.map(r => r.right)) - Math.min(...rs.map(r => r.left)) + pad + 1) + "px"; }
   void el.offsetWidth; el.style.animation = ""; }
 function sayHint(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
-  live("Hint: " + text); palGreet(); }                                                           // it turns to you and says it
+  live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
 function toast(t, k) { const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
 
 const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
