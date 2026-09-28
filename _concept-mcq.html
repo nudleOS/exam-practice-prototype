@@ -212,7 +212,7 @@
   /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
      behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
   .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:-31px; width:150px; height:210px; z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
-  .pal-body { position:absolute; inset:0; } .pal.away .pal-body { visibility:hidden; }
+  .pal-body { position:absolute; inset:0; } .pal, .buddy { transform-origin:50% 100%; } .pal.away .pal-body { visibility:hidden; }
   .pal-body model-floor, .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
   .pal-body img { object-fit:contain; object-position:center bottom; }
   .pal-say { justify-self:start; max-width:min(440px, 100%); padding:10px 14px; border-radius:14px 14px 14px 4px; font-size:13.5px; line-height:1.5; color:#dfe6ff;
@@ -584,14 +584,15 @@ function palLook(el) { const m = PAL.el; if (!m || !palFree()) return; if (!el) 
   const r = el.getBoundingClientRect(), p = $("pal").getBoundingClientRect();
   m.setAttribute("yaw", Math.max(-0.6, Math.min(0.9, ((r.left + r.width / 2) - (p.left + p.width / 2)) / innerWidth * 1.6)).toFixed(2)); }
 // Into the card: an arc from its corner to the card's centre, shrinking and fading as it dives in.
+// Between the floor and a card the robot does not travel: it dissolves (brightens, blurs, fades, sinking a touch toward
+// its feet) and materialises at the other end, the same frames reversed.
+const BLINK_MS = 300, BLINK_OUT = [{ opacity: 1, filter: "blur(0px) brightness(1)", transform: "none" }, { opacity: 0, filter: "blur(7px) brightness(1.8)", transform: "scale(0.94)" }],
+  BLINK_IN = [...BLINK_OUT].reverse();
 function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show"); palStop(); PAL.sweeping = false; clearTimeout(PAL.timer); PAL.hurt = false;
   if (reduced || pal.classList.contains("away")) { pal.classList.add("away"); return Promise.resolve(); }
-  const a = pal.getBoundingClientRect(), b = t.getBoundingClientRect(), dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
-  palLook(t);
-  return pal.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${(dx * 0.45).toFixed(0)}px, ${(dy * 0.45 - 110).toFixed(0)}px) scale(1.08)`, opacity: 1, offset: 0.5 },
-    { transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0 }], { duration: 650, easing: "cubic-bezier(.3,.1,.3,1)" }).finished
+  return pal.animate(BLINK_OUT, { duration: BLINK_MS, easing: "cubic-bezier(.5,0,.75,0)" }).finished     // it dissolves where it stands
     .then(() => pal.classList.add("away"), () => pal.classList.add("away")); }
-// Home: back to its corner (an arc out of the card when it came from one), and it greets.
+// Home: back in its corner (it materialises there when it was in a card), and it greets.
 function palHome(fromEl) { const pal = $("pal"), body = $("palBody"), wasAway = pal.classList.contains("away");
   if (fromEl) { const box = fromEl.querySelector(".buddy"); if (box && box.querySelector("img")) box.replaceChildren(); }
   const inCard = !!(PAL.el && PAL.el.parentElement !== body);
@@ -599,9 +600,7 @@ function palHome(fromEl) { const pal = $("pal"), body = $("palBody"), wasAway = 
   if (inCard) body.appendChild(PAL.el);
   PAL.x = 0; pal.style.translate = "0px 0"; pal.classList.remove("away"); palLook(null); palGreet();
   if (!wasAway || !fromEl || reduced) return;
-  const a = pal.getBoundingClientRect(), b = fromEl.getBoundingClientRect(), dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
-  pal.animate([{ transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0 }, { transform: `translate(${(dx * 0.45).toFixed(0)}px, ${(dy * 0.45 - 90).toFixed(0)}px) scale(1.06)`, opacity: 1, offset: 0.5 },
-    { transform: "none", opacity: 1 }], { duration: 600, easing: "cubic-bezier(.3,.1,.3,1)" }); }
+  pal.animate(BLINK_IN, { duration: BLINK_MS + 60, easing: "cubic-bezier(.2,.8,.2,1)" }); }             // gone from the card, it materialises in its spot
 // Mount the robot on the back. frozen: holds the clip's first pose (it spins with the card); otherwise it is already
 // moving, or already down (lifting a small card again shows the end state, it does not replay the whole scene).
 // Into the card's back: the same robot element moves in. frozen: it holds the clip's first pose while the card spins
@@ -609,6 +608,7 @@ function palHome(fromEl) { const pal = $("pal"), body = $("palBody"), wasAway = 
 function buddyIn(t, frozen) { const box = t.querySelector(".buddy"); if (!box) return;
   if (!PAL.el) { buddyStill(box); return; }
   const m = MOVE[S.tier], hold = frozen && !S.landed; box.appendChild(PAL.el); palLook(null);
+  if (!reduced) box.animate(BLINK_IN, { duration: BLINK_MS + 60, delay: 80, fill: "backwards", easing: "cubic-bezier(.2,.8,.2,1)" });   // it materialises in the card, after the ~70 ms its 3D view takes to set up there (measured)
   palClip(m.clip, { once: !!m.end, from: m.end ? (hold ? 0 : m.end) : m.from, paused: hold, fit: m.fit || 0.72 }); }
 function buddyGo(t) { S.landed = true; if (PAL.el && t.contains(PAL.el)) PAL.el.removeAttribute("paused"); }
 // The wrong cards still standing go dark, one by one, once the right card is home.
@@ -675,7 +675,7 @@ function present(t, tier) {
   if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); palJump(t); buddyIn(t, false); S.busy = false; return Promise.resolve(); }
   const g = grow(t); palLook(t);
   return g.then(() => {
-    if (!PAL.down) palJump(t).then(() => buddyIn(t, true));                                  // it dives into the card, then rides the spin frozen (not when it's down)
+    if (!PAL.down) palJump(t).then(() => buddyIn(t, true));                                  // it vanishes and appears in the card, then rides the spin frozen (not when it's down)
     if (!tier) return wait(650);
     t.querySelectorAll(".vline, .vfill").forEach(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished.then(() => x.remove()));
     t.classList.remove("yes"); t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
