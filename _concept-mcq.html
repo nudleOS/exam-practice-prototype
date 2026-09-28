@@ -37,7 +37,7 @@
   .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; flex-wrap:wrap; padding:0 12px; }
   .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:7px 11px; cursor:pointer; }
   .pick button[aria-pressed="true"] { color:#fff; border-color:#4a5cff; }
-  .stage { max-width:760px; margin:0 auto; padding:6px 18px 150px; }
+  .stage { max-width:760px; margin:0 auto; padding:6px 18px 200px; }   /* room to scroll the last card above the dock */
   .meta { display:flex; align-items:center; gap:10px; color:var(--text2); font-size:13px; font-weight:600; }
   .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
   .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
@@ -180,10 +180,19 @@
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
   .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 20px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
-  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; }
+  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:104px; min-height:128px; align-content:end; }
+  @media (max-width:600px) { .dock-in { padding-left:86px; min-height:108px; } }
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
-  .clue { font-size:13.5px; line-height:1.5; color:#dfe6ff; background:rgba(56,57,255,0.14); border:1px solid rgba(92,110,255,0.35); border-radius:14px; padding:10px 14px; display:none; }
-  .clue.show { display:block; animation:rise 220ms cubic-bezier(.2,.8,.2,1); }
+  /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
+     behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
+  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:16px; width:92px; height:128px; z-index:41; pointer-events:none; }
+  .pal-body { position:absolute; inset:0; } .pal.away .pal-body { visibility:hidden; }
+  .pal-body model-floor, .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
+  .pal-body img { object-fit:contain; object-position:center bottom; }
+  .pal-say { justify-self:start; max-width:min(440px, 100%); padding:10px 14px; border-radius:14px 14px 14px 4px; font-size:13.5px; line-height:1.5; color:#dfe6ff;
+    background:rgba(56,57,255,0.18); border:1px solid rgba(92,110,255,0.42); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); display:none; }
+  .pal-say.show { display:block; animation:rise 240ms cubic-bezier(.2,.8,.2,1); }
+  @media (max-width:600px) { .pal { width:76px; height:108px; left:10px; } }
   .hint { justify-self:center; display:none; align-items:center; gap:6px; min-height:40px; padding:0 14px 0 11px; border-radius:999px; font:inherit; font-size:13px; font-weight:800;
     color:var(--tint); cursor:pointer; }
   .hint.show { display:inline-flex; } .hint svg { width:16px; height:16px; } .hint:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
@@ -207,6 +216,7 @@
 <div class="backdrop" aria-hidden="true"></div>
 <div class="scrim" id="scrim" aria-hidden="true"></div>
 <div class="hero-layer" id="heroLayer"></div>
+<div class="pal" id="pal" aria-hidden="true"><div class="pal-body" id="palBody"></div></div>
 <canvas id="fx"></canvas>
 <div class="shards" id="shards" aria-hidden="true"></div>
 <div class="top">
@@ -224,7 +234,7 @@
 </div>
 <main class="stage" id="stage"></main>
 <div class="dock"><div class="dock-in">
-  <div class="clue" id="clue"></div>
+  <div class="pal-say" id="clue"></div>
   <button class="hint surface" id="hint" aria-expanded="false" aria-controls="clue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></svg><span>Hint</span></button>
   <div class="say" id="say"></div>
   <button class="next" id="next">Next question</button>
@@ -321,7 +331,7 @@ function load(n) {
   const it = ITEMS[n];
   S = { it, shape: shapeOf(it), sel: null, gone: new Set(), tries: 0, done: false, dialSel: [], sw: [false, false], hit: {} };
   document.querySelectorAll(".pick button[data-q]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === n)));
-  setHint(null); $("next").classList.remove("show"); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");
+  setHint(null); $("next").classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
   render(true);
 }
 
@@ -356,6 +366,8 @@ function render(deal) {
       const u = x / r.width - 0.5, v = y / r.height - 0.5;
       face.style.setProperty("--ty", (u * 10).toFixed(2) + "deg"); face.style.setProperty("--tx", (-v * 8).toFixed(2) + "deg"); face.style.setProperty("--px", (-u * 60).toFixed(1) + "px"); });
     face.addEventListener("pointerleave", () => ["--mx", "--my", "--tx", "--ty", "--px"].forEach(k => face.style.removeProperty(k)));
+    face.addEventListener("pointerenter", () => { if (!S.done) palLook(t); }); face.addEventListener("focus", () => { if (!S.done) palLook(t); });
+    face.addEventListener("pointerleave", () => { if (!S.done) palLook(null); });
     face.addEventListener("pointerdown", () => ["--tx", "--ty"].forEach(k => face.style.removeProperty(k)));   // flat before it answers
     face.addEventListener("pointerdown", e => { const r = face.getBoundingClientRect(); S.hit[i] = { x: e.clientX - r.left, y: e.clientY - r.top }; });
     face.onclick = () => press(i);
@@ -368,7 +380,7 @@ function render(deal) {
 
 function press(i) {
   if (S.done || S.gone.has(i)) return;
-  S.sel = i;                                                  // one tap answers (Murci): no second tap, no Lock in
+  S.sel = i; palLook(document.querySelector(`.tile[data-i="${i}"]`));                                                  // one tap answers (Murci): no second tap, no Lock in
   if (S.shape.kind === "switches") { S.sw = [i === 0 || i === 2, i === 1 || i === 2]; syncSwitches(); }
   else if (S.shape.kind === "dials") { S.dialSel = [...S.shape.parts[i]]; syncDials(); }
   else paintTiles();                                          // the card takes the picked colour, then answers
@@ -425,7 +437,7 @@ function submit() {
       if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
       paintTiles(); say(); });
     if (last) toast("Answer: " + L[S.it.a], "no");
-    else { toast("Not that one · " + (3 - S.tries) + " left", "no"); setHint(clue); }
+    else { toast("Not that one · " + (3 - S.tries) + " left", "no"); setHint(clue); if (3 - S.tries === 1) setTimeout(palGreet, 900); }   // one try left: it waves at you
     live(`${L[i]} is wrong and removed. ${last ? "The answer is " + L[S.it.a] + "." : (3 - S.tries) + (3 - S.tries === 1 ? " try" : " tries") + " left. A hint is ready."}`);
   }
   paintTop(); say();
@@ -447,22 +459,52 @@ const MOVE = { gold: { clip: "dance", from: 4.5 }, silver: { clip: "clap" }, bro
 // Warm the cache while the learner reads the question, so the robot is there when the card lands.
 if (BUDDY_3D) (window.requestIdleCallback || setTimeout)(() => fetch(BUDDY.src).catch(() => {}));
 function buddyStill(box) { box.replaceChildren(Object.assign(document.createElement("img"), { src: BUDDY.still, alt: "" })); }
+// ONE robot element (PAL.el) for the whole page: it lives in its corner and moves into the big card and back.
+// model-floor keeps its renderer through a move and re-frames on a `fit` change, so it never reloads or doubles.
+const PAL = { el: null };
+function palMake() { const body = $("palBody"); if (!BUDDY_3D) { buddyStill(body); return; }
+  const mf = document.createElement("model-floor");
+  [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "ring"], ["fit", "0.8"], ["inplace", ""]].forEach(([k, v]) => mf.setAttribute(k, v));   // inplace: it stays centred in its box and turns about itself
+  mf.addEventListener("failed", () => { PAL.el = null; buddyStill(body); }); body.appendChild(mf); PAL.el = mf; palGreet(); }
+// Play a clip: clear the play options, set this one's, then ask for "" then the clip (so the same clip restarts).
+function palClip(clip, o = {}) { const m = PAL.el; if (!m) return;
+  ["loop", "hold", "from", "paused"].forEach(k => m.removeAttribute(k));
+  if (o.once) m.setAttribute("loop", "once"); if (o.hold != null) m.setAttribute("hold", o.hold); if (o.from) m.setAttribute("from", o.from); if (o.paused) m.setAttribute("paused", "");
+  m.setAttribute("fit", String(o.fit || 0.8)); m.setAttribute("clip", ""); m.setAttribute("clip", clip); }
+const palGreet = () => palClip("greet", { once: true, hold: 2.7 });                         // waves, then stands (greet_04 is 2.79 s)
+// It turns to look at a card: yaw (radians) from where the card is relative to the robot.
+function palLook(el) { const m = PAL.el; if (!m) return; if (!el) { m.setAttribute("yaw", "0"); return; }
+  const r = el.getBoundingClientRect(), p = $("pal").getBoundingClientRect();
+  m.setAttribute("yaw", Math.max(-0.6, Math.min(0.9, ((r.left + r.width / 2) - (p.left + p.width / 2)) / innerWidth * 1.6)).toFixed(2)); }
+// A card cracks: it hops back and glances away.
+function palHop() { const m = PAL.el; if (!m || $("pal").classList.contains("away")) return;
+  m.setAttribute("lift", "0.35"); m.setAttribute("yaw", "-0.45"); setTimeout(() => m.setAttribute("lift", "0"), 170); setTimeout(() => m.setAttribute("yaw", "0"), 750); }
+// Into the card: an arc from its corner to the card's centre, shrinking and fading as it dives in.
+function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show");
+  if (reduced || pal.classList.contains("away")) { pal.classList.add("away"); return Promise.resolve(); }
+  const a = pal.getBoundingClientRect(), b = t.getBoundingClientRect(), dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+  palLook(t);
+  return pal.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${(dx * 0.45).toFixed(0)}px, ${(dy * 0.45 - 110).toFixed(0)}px) scale(1.08)`, opacity: 1, offset: 0.5 },
+    { transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0 }], { duration: 650, easing: "cubic-bezier(.3,.1,.3,1)" }).finished
+    .then(() => pal.classList.add("away"), () => pal.classList.add("away")); }
+// Home: back to its corner (an arc out of the card when it came from one), and it greets.
+function palHome(fromEl) { const pal = $("pal"), body = $("palBody"), wasAway = pal.classList.contains("away");
+  if (PAL.el && PAL.el.parentElement !== body) body.appendChild(PAL.el);
+  if (fromEl) { const box = fromEl.querySelector(".buddy"); if (box && box.querySelector("img")) box.replaceChildren(); }
+  pal.classList.remove("away"); palLook(null); palGreet();
+  if (!wasAway || !fromEl || reduced) return;
+  const a = pal.getBoundingClientRect(), b = fromEl.getBoundingClientRect(), dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+  pal.animate([{ transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0 }, { transform: `translate(${(dx * 0.45).toFixed(0)}px, ${(dy * 0.45 - 90).toFixed(0)}px) scale(1.06)`, opacity: 1, offset: 0.5 },
+    { transform: "none", opacity: 1 }], { duration: 600, easing: "cubic-bezier(.3,.1,.3,1)" }); }
 // Mount the robot on the back. frozen: holds the clip's first pose (it spins with the card); otherwise it is already
 // moving, or already down (lifting a small card again shows the end state, it does not replay the whole scene).
-function buddyIn(t, frozen) { const box = t.querySelector(".buddy"); if (!box || box.firstChild) return;
-  box.classList.remove("leaving");
-  if (!BUDDY_3D) { buddyStill(box); return; }
-  const m = MOVE[S.tier], mf = document.createElement("model-floor");
-  [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "ring"], ["fit", String(m.fit || 0.72)]].forEach(([k, v]) => mf.setAttribute(k, v));
-  if (m.end) mf.setAttribute("loop", "once");
-  const from = m.end ? (frozen ? 0 : m.end) : m.from; if (from) mf.setAttribute("from", from);
-  if (frozen) mf.setAttribute("paused", "");
-  mf.setAttribute("clip", m.clip);
-  mf.addEventListener("failed", () => buddyStill(box));
-  box.appendChild(mf); }
-function buddyGo(t) { const mf = t.querySelector(".buddy model-floor"); if (mf) mf.removeAttribute("paused"); }
-function buddyOut(t) { const box = t.querySelector(".buddy"); if (!box || !box.firstChild) return;   // removing it frees its WebGL context
-  box.classList.add("leaving"); setTimeout(() => { if (box.classList.contains("leaving")) box.replaceChildren(); }, 190); }
+// Into the card's back: the same robot element moves in. frozen: it holds the clip's first pose while the card spins
+// (unless the card has already landed). Otherwise it is already moving, or already down (the end state).
+function buddyIn(t, frozen) { const box = t.querySelector(".buddy"); if (!box) return;
+  if (!PAL.el) { buddyStill(box); return; }
+  const m = MOVE[S.tier], hold = frozen && !S.landed; box.appendChild(PAL.el); palLook(null);
+  palClip(m.clip, { once: !!m.end, from: m.end ? (hold ? 0 : m.end) : m.from, paused: hold, fit: m.fit || 0.72 }); }
+function buddyGo(t) { S.landed = true; if (PAL.el && t.contains(PAL.el)) PAL.el.removeAttribute("paused"); }
 // The wrong cards still standing go dark, one by one, once the right card is home.
 function killWrong() { [...document.querySelectorAll("#tiles .tile")].filter(x => +x.dataset.i !== S.it.a && !S.gone.has(+x.dataset.i) && !x.classList.contains("dead"))
   .forEach((x, k) => { x.style.setProperty("--dd", (k * 0.12).toFixed(2) + "s"); x.classList.add("dead"); }); }
@@ -486,17 +528,18 @@ function grow(t) {
 }
 // Back to its slot, still flipped (tap outside, tap the card, or Esc). Tapping the small card lifts it again.
 function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
-  buddyOut(t); const r0 = t.getBoundingClientRect(); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on");
+  const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on");
   if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
   glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); }); }
-function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { buddyIn(t, false); S.busy = false; }); }
+function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => palJump(t)).then(() => { buddyIn(t, false); S.busy = false; }); }
 
 function present(t, tier) {
   if (tier) t.classList.add(tier); S.busy = true; S.tier = tier || "none";
-  if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); buddyIn(t, false); S.busy = false; return Promise.resolve(); }
-  const g = grow(t); buddyIn(t, true);                                                      // the robot rides the back, frozen, through the spin
+  if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); palJump(t); buddyIn(t, false); S.busy = false; return Promise.resolve(); }
+  const g = grow(t); palLook(t);
   return g.then(() => {
-    if (!tier) return;
+    palJump(t).then(() => buddyIn(t, true));                                                  // it dives into the card, then rides the spin frozen
+    if (!tier) return wait(650);
     t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);                                          // the shine, before it turns
     return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
   }).then(() => {
@@ -532,7 +575,7 @@ function shatter(tile, hit) {
   paths.concat(fine).forEach((pts, n) => { const d = document.createElementNS(svg.namespaceURI, "path"); if (n >= paths.length) d.setAttribute("class", "fine"); d.setAttribute("d", "M" + pts.map(q => q.x.toFixed(1) + " " + q.y.toFixed(1)).join(" L"));
     const len = pts.reduce((s, q, k) => k ? s + Math.hypot(q.x - pts[k - 1].x, q.y - pts[k - 1].y) : 0, 0); d.style.strokeDasharray = len; d.style.strokeDashoffset = len; svg.appendChild(d);
     d.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 220, easing: "ease-out", fill: "forwards" }); });
-  face.appendChild(svg); at(tile, sfx.crack); buzz(HAPTIC.crack);
+  face.appendChild(svg); at(tile, sfx.crack); buzz(HAPTIC.crack); palHop();
   const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
   fl.animate([{ opacity: 0, transform: "scale(0.3)" }, { opacity: 1, transform: "scale(1)", offset: 0.25 }, { opacity: 0, transform: "scale(1.4)" }], { duration: 300, easing: "ease-out", fill: "forwards" });
   tile.animate([{ transform: "translateX(0)" }, { transform: "translateX(-5px) rotate(-0.6deg)" }, { transform: "translateX(4px) rotate(0.5deg)" }, { transform: "translateX(0)" }], { duration: 200 });
@@ -586,6 +629,9 @@ function next() { go(ORDER[(ORDER.indexOf(S.it.n) + 1) % ORDER.length]); }
 function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = true;
   $("next").classList.remove("show"); setHint(null); $("scrim").classList.remove("on");
   const outs = [], hero = $("heroLayer").firstElementChild, flip = x => x.classList.contains("flipped") ? "rotateY(180deg) " : "";
+  // Fading a card flattens its 3D (opacity groups it), so backface hiding stops working and the far side would show
+  // through mirrored: hide the side facing away first.
+  [hero, ...document.querySelectorAll("#tiles .tile")].forEach(x => { if (!x) return; const away = x.querySelector(x.classList.contains("flipped") ? ".face" : ".back"); if (away) away.style.visibility = "hidden"; });
   if (hero) outs.push(hero.animate([{ transform: flip(hero), opacity: 1 }, { transform: flip(hero) + "translateY(-36px) scale(0.9)", opacity: 0 }], { duration: 360, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
   [...document.querySelectorAll("#tiles .tile")].forEach((x, k) => outs.push(x.animate([{ transform: flip(x), opacity: 1 },
     { transform: flip(x) + "translateX(-34px) translateY(-6px) rotate(-2deg)", opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
@@ -596,12 +642,13 @@ function arrive(n) { leaving = false; scrollTo({ top: 0 }); const st = $("stage"
   const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
 $("next").onclick = next;
 $("scrim").onclick = () => dismiss();
-// The hint: after a miss a small Hint button appears (with a nudge); the clue shows only when the learner asks for it.
+// The hint: after a miss a small Hint button appears (with a nudge); tapping it, the robot says the clue in its bubble.
 function setHint(text) { const h = $("hint"), c = $("clue"); c.classList.remove("show"); h.setAttribute("aria-expanded", "false"); h.classList.remove("new");
   if (!text) { h.classList.remove("show"); return; }
   c.textContent = text; h.classList.add("show"); void h.offsetWidth; h.classList.add("new"); }
 $("hint").onclick = () => { const h = $("hint"), open = !$("clue").classList.contains("show");
-  $("clue").classList.toggle("show", open); h.setAttribute("aria-expanded", String(open)); h.classList.remove("new"); sfx.pick(); if (open) live("Hint: " + $("clue").textContent); };
+  $("clue").classList.toggle("show", open); h.setAttribute("aria-expanded", String(open)); h.classList.remove("new"); sfx.pick();
+  if (open) { live("Hint: " + $("clue").textContent); palGreet(); } };                         // the robot says it
 function toast(t, k) { const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
 
 const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
@@ -619,6 +666,7 @@ function fly(t, text, box) { if (text === "+0") return; const r = t.getBoundingC
 
 document.querySelectorAll(".pick button[data-q]").forEach(b => b.onclick = () => { if (b.dataset.q !== S.it.n) go(b.dataset.q); });
 try { localStorage.removeItem("mcq.backdrop"); } catch (e) {}           // the retired backdrop switch's saved choice
+palMake();
 load("1.1.1");
 </script>
 </body>
