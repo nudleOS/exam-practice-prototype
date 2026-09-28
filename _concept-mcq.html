@@ -47,38 +47,41 @@
   .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
   @media (max-width:600px) { .tiles { grid-template-columns:1fr; } h1 { font-size:19px; } }
   .tile { position:relative; min-height:96px; transform-style:preserve-3d; transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 260ms; }
+  .tile::before { content:""; position:absolute; left:10%; right:10%; bottom:-24px; height:30px; border-radius:50%; pointer-events:none;   /* the light it casts below */
+    background:radial-gradient(closest-side, var(--cast, rgba(170,190,255,0.5)), transparent); filter:blur(7px); transition:opacity 520ms ease var(--dd, 0s); }
+  .tile.sel { --cast:rgba(90,110,255,0.7); } .tile.gold { --cast:rgba(227,179,65,0.55); } .tile.silver { --cast:rgba(210,216,224,0.5); } .tile.bronze { --cast:rgba(217,155,108,0.5); }
+  .tile.dead::before { opacity:0.12; }
   .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
   .surface { background:var(--panel); border:1px solid var(--line); }
   .face { display:flex; gap:12px; align-items:flex-start; width:100%; height:100%; text-align:left; font:inherit; color:var(--text); padding:16px 16px 16px 14px; cursor:pointer; overflow:hidden;
-    /* Real glass, in layers (top to bottom): a glint where the pointer is (--mx/--my, it follows the
-       tilt too); a sky sheen on the top third; the body, clear, fading
-       toward the bottom; a fine grain. The rim is ::before; bevel + inner bounce light are insets. */
-    --top:rgba(255,255,255,0.035); --low:rgba(255,255,255,0.008);
-    --glass-in:inset 0 1px 0 rgba(255,255,255,0.5), inset 1px 0 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.38),
-      inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(255,255,255,0.14);
+    /* Liquid glass (Murci's pick), in layers (top to bottom): a glint where the pointer is (--mx/--my, it follows the
+       tilt too); a soft light pooled at the top; the body, very clear; a fine grain. The 2px rim is ::before, the
+       window reflection is .gleam::after, the soft glowing inner edge is the insets, the light under it is .tile::before. */
+    --top:rgba(255,255,255,0.05); --low:rgba(255,255,255,0.02);
+    --glass-in:inset 0 0 14px rgba(255,255,255,0.07), inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -8px 16px -10px rgba(160,190,255,0.25);
     border:1px solid transparent;
-    background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.13), transparent 70%),
-      linear-gradient(180deg, rgba(255,255,255,0.07), transparent 38%),
+    background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.1), transparent 70%),
+      radial-gradient(130% 70% at 28% -28%, rgba(255,255,255,0.2), transparent 58%),
       linear-gradient(180deg, var(--top), var(--low)),
       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
-    box-shadow:0 1px 1px rgba(0,0,0,0.4), 0 20px 36px -12px rgba(0,0,0,0.65), var(--glass-in);
-    -webkit-backdrop-filter:blur(10px) saturate(150%) brightness(1.06); backdrop-filter:blur(10px) saturate(150%) brightness(1.06);
+    box-shadow:0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in);
+    -webkit-backdrop-filter:blur(24px) saturate(170%) brightness(1.08); backdrop-filter:blur(24px) saturate(170%) brightness(1.08);
     transform:perspective(700px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
     transition:box-shadow 240ms, border-color 240ms, transform 260ms cubic-bezier(.2,.8,.2,1); }
-  /* The rim: a 1.2px ring drawn with a mask, bright where light hits (top-left), dim along the sides, and glowing again on
-     the far edge (bottom-right) with a hint of dispersion, cyan to pink, as a prism's edge does. */
-  .face::before, .back::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.2px; pointer-events:none;
-    background:linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.18) 22%, rgba(255,255,255,0.06) 48%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.32));
+  /* The rim: a thick 2px ring drawn with a mask, bright where light hits (top-left), dim along the sides, bright again
+     on the far edge (bottom-right), as a thick pane's edge carries light. */
+  .face::before, .back::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; z-index:2;
+    background:linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.28) 18%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.12) 70%, rgba(255,255,255,0.6));
     -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
   .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
   .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
-    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); color:var(--text2); transition:background 240ms, color 240ms; }
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); transition:background 240ms, color 240ms; }
   .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; }
   /* Picked: the same glass tinted in the first palette's blue, with its #4b5cff ring */
   .tile.sel .face { --top:rgba(75,92,255,0.34); --low:rgba(56,57,255,0.14);
-    box-shadow:0 1px 1px rgba(0,0,0,0.4), 0 20px 40px -10px rgba(38,50,255,0.5), 0 0 0 2px #4b5cff, var(--glass-in); }
+    box-shadow:0 24px 40px -18px rgba(38,50,255,0.55), 0 0 0 2px #4b5cff, var(--glass-in); }
   .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* The back, in the medal the try earned. Colours are the design's medals (Exam Practice: gold / silver / bronze). */
   .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid transparent;
@@ -94,7 +97,7 @@
   .back .ok { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--ink, var(--text2)); }
   .medal { flex:none; width:20px; height:20px; border-radius:50%; background:var(--medal); box-shadow:0 0 0 1.5px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.4); }
   /* The shine before the turn: a glow in the medal colour and a sweep of light across the card */
-  .tile.shine .face { box-shadow:0 0 0 2px var(--ring), 0 0 46px var(--glow), 0 20px 36px -12px rgba(0,0,0,0.65), var(--glass-in); }
+  .tile.shine .face { box-shadow:0 0 0 2px var(--ring), 0 0 46px var(--glow), 0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in); }
   .tile.shine .face::after { content:""; position:absolute; inset:-30% -10%; pointer-events:none;
     background:linear-gradient(105deg, transparent 40%, var(--sheen) 50%, transparent 60%); animation:sweep 850ms cubic-bezier(.4,.1,.3,1) forwards; }
   @keyframes sweep { from { transform:translateX(-75%); } to { transform:translateX(75%); } }
@@ -113,6 +116,8 @@
   .gleam::before { content:""; position:absolute; top:-40%; bottom:-40%; left:0; width:36%;
     background:linear-gradient(105deg, transparent, rgba(255,255,255,0.16) 50%, transparent); transform:translateX(-170%) skewX(-14deg);
     animation:gleam 6.5s cubic-bezier(.45,.05,.35,1) infinite; animation-delay:var(--gd, 0s); }
+  .gleam::after { content:""; position:absolute; left:8%; top:5px; width:48%; height:42%; max-height:60px; border-radius:14px; filter:blur(5px);
+    background:linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.02)); }   /* a window's reflection */
   .back .gleam::before { background:linear-gradient(105deg, transparent, var(--sheen, rgba(255,255,255,0.2)) 50%, transparent); opacity:0.6; }
   @keyframes gleam { 0%, 64% { transform:translateX(-170%) skewX(-14deg); } 84%, 100% { transform:translateX(430%) skewX(-14deg); } }
   @media (prefers-reduced-motion: reduce) { .gleam { display:none; } }
