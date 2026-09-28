@@ -1762,10 +1762,22 @@ const OTHER_SUBJECTS = {
 const STUDY_QUALS = [{ id: "ncv", label: "NC(V)", sub: "Levels 2 to 4", levels: ["L2", "L3", "L4"] },
   { id: "nated", label: "NATED", sub: "N4 to N6", levels: ["N4", "N5", "N6"] }];
 const LEVEL_LABEL = c => c.charAt(0) === "L" ? "Level " + c.slice(1) : c;
-// NC(V) programmes. UNVERIFIED FIXTURE: the programme list, and which programme a paper belongs to, must come from
-// DHET's NC(V) programme list as a data pack before this ships. Nothing in these two lines is confirmed.
-const NCV_PROGRAMMES = ["Engineering and Related Design"].concat(OTHER_SUBJECTS.ncv);
-const PAPER_PROGRAMME = { "aet-l4-2019-02": "Engineering and Related Design" };
+// MOCK of GET /v1/curricula/ncv (nexera-exam-service 70977de, data/curricula/ncv.json): DHET's NC(V) programmes,
+// researched and cited. 17 are verified (DHET's 2026 ICASS Guidelines, Annex F); 3 are single-source and kept. A
+// programme's paper_ids are the approved papers carrying one of its subjects' codes (AET, 6021024, is Engineering and
+// Related Design L4, per DHET's own past-paper archive). Subject lists per level wait for DHET's subject matrix.
+const CURRICULUM_NCV = { version: 1, programmes: [
+  ["Civil Engineering and Building Construction", "verified"], ["Drawing Office Practice", "verified"], ["Education and Development", "verified"],
+  ["Electrical Infrastructure Construction", "verified"], ["Engineering and Related Design", "verified", ["aet-l4-2019-02"]],
+  ["Finance, Economics and Accounting", "verified"], ["Hospitality", "verified"], ["Information Technology and Computer Science", "verified"],
+  ["Management", "verified"], ["Marketing", "verified"], ["Mechatronics", "verified"], ["Office Administration", "verified"],
+  ["Primary Agriculture", "verified"], ["Process Plant Operations", "verified"], ["Safety in Society", "verified"], ["Tourism", "verified"],
+  ["Transport and Logistics", "verified"], ["Process Instrumentation", "single_source"], ["Primary Health", "single_source"],
+  ["Programming and Robotics", "single_source"]].map(x => ({ name: x[0], status: x[1], paper_ids: x[2] || [] })) };
+// The list step 2 offers: programmes with a paper first, then A to Z (a single-source programme is offered like the rest:
+// a learner who studies it must be able to say so).
+const NCV_PROGRAMMES = CURRICULUM_NCV.programmes.slice().sort((a, b) => (b.paper_ids.length > 0) - (a.paper_ids.length > 0) || a.name.localeCompare(b.name)).map(x => x.name);
+const PAPER_PROGRAMME = {}; CURRICULUM_NCV.programmes.forEach(x => x.paper_ids.forEach(id => { PAPER_PROGRAMME[id] = x.name; }));
 // A paper's own wording ("N6", "Level 4", "Grade 12") as the service's level code ("N6", "L4", "G12").
 const levelCode = d => { const m = /\b(N|LEVEL|L|GRADE|G)\s*(\d{1,2})\b/.exec(String(d || "").toUpperCase());
   return m ? { N: "N", LEVEL: "L", L: "L", GRADE: "G", G: "G" }[m[1]] + Number(m[2]) : null; };
@@ -1785,7 +1797,11 @@ const STUDIES_API = {
     if (levels.indexOf(level) === -1) throw { status: 422, code: "studies_level_invalid", message: "Pick your level first." };
     const seen = {}, subjects = (b.subjects || []).map(fold).filter(n => n && !seen[n.toLowerCase()] && (seen[n.toLowerCase()] = true));
     if (subjects.length > 12) throw { status: 422, code: "invalid", message: "Pick at most 12 subjects." };
-    const row = { qualification: b.qualification, level: level, study_programme: fold(b.study_programme) || null, subjects: subjects, updated_at: new Date().toISOString() };
+    let prog = fold(b.study_programme) || null;
+    if (prog && b.qualification === "ncv") { const known = CURRICULUM_NCV.programmes.filter(x => x.name.toLowerCase() === prog.toLowerCase())[0];
+      if (!known) throw { status: 422, code: "studies_programme_unknown", message: "That programme isn't on our list. Pick one from the list." };
+      prog = known.name; }
+    const row = { qualification: b.qualification, level: level, study_programme: prog, subjects: subjects, updated_at: new Date().toISOString() };
     try { localStorage.setItem("exam.studies", JSON.stringify(row)); localStorage.setItem("exam.studiesAsked", "1"); } catch (e) {}
     return row; },
   del() { try { localStorage.removeItem("exam.studies"); localStorage.setItem("exam.studiesAsked", "1"); } catch (e) {} },
