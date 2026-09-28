@@ -40,24 +40,35 @@
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
   .surface { background:var(--panel); border:1px solid var(--line); }
   .face { display:flex; gap:12px; align-items:flex-start; width:100%; height:100%; text-align:left; font:inherit; color:var(--text); padding:16px 16px 16px 14px; cursor:pointer; overflow:hidden;
-    border:1px solid var(--line2); background:linear-gradient(180deg,#262a30,#1f2226); box-shadow:0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    /* Clear glass: see-through, lit on its top edge, dark on its bottom edge, a faint green-cyan edge for the pane's
+       thickness (float glass), a hard-edged reflection (::before) and a glint that follows the pointer (--mx, --my). */
+    border:1px solid rgba(255,255,255,0.16);
+    background:radial-gradient(240px 150px at var(--mx, 28%) var(--my, 0%), rgba(255,255,255,0.10), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.02));
+    box-shadow:0 14px 30px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -1px 0 rgba(0,0,0,0.4),
+      inset 0 0 0 1px rgba(190,235,225,0.07), inset 0 0 18px rgba(190,235,225,0.05);
+    -webkit-backdrop-filter:blur(8px) saturate(140%); backdrop-filter:blur(8px) saturate(140%);
     transition:box-shadow 240ms, border-color 240ms, background 240ms; }
+  .face::before, .back::before { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(118deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.045) 30%, transparent 30.6%, transparent 62%, rgba(255,255,255,0.045) 62.6%, transparent 71%); }
   .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
   .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
-    background:#2f343b; color:var(--text2); transition:background 240ms, color 240ms; }
+    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); color:var(--text2); transition:background 240ms, color 240ms; }
   .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; }
-  .tile.sel .face { border-color:transparent; background:linear-gradient(180deg,#27305a,#211f45);
-    box-shadow:0 18px 40px rgba(38,50,255,0.35), 0 0 0 2px #4b5cff, inset 0 1px 0 rgba(255,255,255,0.12); }
-  .tile.sel .letter { background:var(--grad); color:#fff; }
+  /* Picked: the same glass tinted in the first palette's blue, with its #4b5cff ring */
+  .tile.sel .face { border-color:rgba(140,155,255,0.7);
+    background:radial-gradient(240px 150px at var(--mx, 28%) var(--my, 0%), rgba(255,255,255,0.12), transparent 70%), linear-gradient(180deg, rgba(75,92,255,0.32), rgba(56,57,255,0.16));
+    box-shadow:0 18px 40px rgba(38,50,255,0.35), 0 0 0 2px #4b5cff, inset 0 1px 0 rgba(255,255,255,0.42), inset 0 -1px 0 rgba(0,0,0,0.3); }
+  .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* The back, in the medal the try earned. Colours are the design's medals (Exam Practice: gold / silver / bronze). */
   .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid transparent;
     background:linear-gradient(180deg,#262a30,#1f2226); box-shadow:0 0 0 2px var(--line2); }
   .tile.gold   { --ring:#e3b341; --ink:#e3b341; --glow:rgba(227,179,65,0.55);  --sheen:rgba(255,236,170,0.6);  --medal:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%); }
   .tile.silver { --ring:#c3c8cf; --ink:#d5d9de; --glow:rgba(210,216,224,0.45); --sheen:rgba(255,255,255,0.6);  --medal:radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%); }
   .tile.bronze { --ring:#b0764a; --ink:#d99b6c; --glow:rgba(217,155,108,0.45); --sheen:rgba(243,191,152,0.55); --medal:radial-gradient(circle at 35% 28%, #f3bf98, #bb7a4c 46%, #683b1d 100%); }
-  .tile.gold .back   { background:linear-gradient(180deg,#3a3016,#2a220d); box-shadow:0 20px 48px rgba(227,179,65,0.28), 0 0 0 2px var(--ring); }
-  .tile.silver .back { background:linear-gradient(180deg,#34383e,#24272b); box-shadow:0 20px 48px rgba(210,216,224,0.18), 0 0 0 2px var(--ring); }
-  .tile.bronze .back { background:linear-gradient(180deg,#3a2618,#28180e); box-shadow:0 20px 48px rgba(217,155,108,0.22), 0 0 0 2px var(--ring); }
+  .tile.gold .back   { background:linear-gradient(180deg,#3a3016,#2a220d); box-shadow:0 20px 48px rgba(227,179,65,0.28), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
+  .tile.silver .back { background:linear-gradient(180deg,#34383e,#24272b); box-shadow:0 20px 48px rgba(210,216,224,0.18), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
+  .tile.bronze .back { background:linear-gradient(180deg,#3a2618,#28180e); box-shadow:0 20px 48px rgba(217,155,108,0.22), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
   .back .ok { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--ink, var(--text2)); }
   .medal { flex:none; width:20px; height:20px; border-radius:50%; background:var(--medal); box-shadow:0 0 0 1.5px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.4); }
   /* The shine before the turn: a glow in the medal colour and a sweep of light across the card */
@@ -76,9 +87,11 @@
   .impact { position:absolute; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; pointer-events:none; z-index:3;
     background:radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(200,215,255,0.35) 45%, rgba(255,255,255,0) 100%); }
   .shards { position:fixed; inset:0; z-index:20; pointer-events:none; perspective:900px; }
-  .shard { position:fixed; margin:0; border-radius:18px; background:linear-gradient(180deg,#27305a,#211f45); border:2px solid #4b5cff;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.12); will-change:transform, opacity; }
-  .shard .letter { background:var(--grad); color:#fff; }
+  /* Shards: pieces of the picked glass (flat tint, no backdrop blur: 18 moving blurs would stutter on low-end phones) */
+  .shard { position:fixed; margin:0; border-radius:18px; border:1px solid rgba(160,175,255,0.85);
+    background:linear-gradient(118deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 30%, transparent 30.6%), linear-gradient(180deg, rgba(75,92,255,0.36), rgba(56,57,255,0.2));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), inset 0 0 0 1px rgba(190,235,225,0.12); will-change:transform, opacity; }
+  .shard .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* Dials and switches */
   .builder { display:grid; gap:12px; margin:0 0 18px; }
   .dial { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; }
@@ -125,7 +138,7 @@
   <div class="seg" id="seg"></div>
   <div class="streak" id="streak"></div>
   <button class="mute" id="mute" aria-pressed="false" aria-label="Sound on" title="Sound">🔊</button>
-  <div class="xp marks" id="marksBox" aria-label="Marks"><span><span id="mk">0</span><span class="of">/<span id="mkOf">0</span></span></span><span class="lbl">marks</span></div>
+  <div class="xp marks" id="marksBox" aria-label="Marks"><span><span id="mk">0</span><span class="of">/<span id="mkOf"></span></span></span><span class="lbl">marks</span></div>
   <div class="xp" id="xpBox"><span aria-hidden="true">⚡</span><span id="xp">0</span><span style="color:var(--tint)">XP</span></div>
 </div>
 <div class="pick" role="group" aria-label="Concept question">
@@ -151,6 +164,7 @@ const TIER_BY_TRY = ["gold", "silver", "bronze"];                          // th
 const book = {};                                                           // marks per question, first sitting only
 const $ = id => document.getElementById(id), live = t => { $("live").textContent = t; };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+$("mkOf").textContent = P.total; $("marksBox").setAttribute("aria-label", `0 of ${P.total} marks`);
 const rnd = (a, b) => a + Math.random() * (b - a);
 
 // Sound, made in the browser (no files).
@@ -218,6 +232,8 @@ function render(deal) {
     t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
       <div class="side back" aria-hidden="true"><div class="ok"></div><div class="why"></div></div>`;
     const face = t.querySelector(".face");
+    face.addEventListener("pointermove", e => { const r = face.getBoundingClientRect(); face.style.setProperty("--mx", (e.clientX - r.left) + "px"); face.style.setProperty("--my", (e.clientY - r.top) + "px"); });
+    face.addEventListener("pointerleave", () => { face.style.removeProperty("--mx"); face.style.removeProperty("--my"); });
     face.addEventListener("pointerdown", e => { const r = face.getBoundingClientRect(); S.hit[i] = { x: e.clientX - r.left, y: e.clientY - r.top }; });
     face.onclick = () => press(i);
     t.addEventListener("animationend", ev => { if (ev.animationName === "deal") t.classList.remove("dealt"); });
@@ -309,9 +325,9 @@ function shineAndTurn(t, tier) {
   }).then(() => { t.style.zIndex = ""; });
 }
 function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
-// Marks: a question counts once (its first sitting); a later sitting of the same question changes nothing.
+// Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
 function score(it, mk) { if (it.n in book) return; book[it.n] = { got: mk, of: it.marks };   // `it` captured at answer time: a question switch mid-animation can't misfile it
-  const v = Object.values(book); $("mk").textContent = v.reduce((a, b) => a + b.got, 0); $("mkOf").textContent = v.reduce((a, b) => a + b.of, 0);
+  $("mk").textContent = Object.values(book).reduce((a, b) => a + b.got, 0);
   bump("marksBox"); $("marksBox").setAttribute("aria-label", `${$("mk").textContent} of ${$("mkOf").textContent} marks`); }
 
 // The card breaks like glass: a spider-web of cracks from where it was tapped, then shards along those cracks fly, spin and fall;
