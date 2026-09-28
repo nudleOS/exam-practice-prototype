@@ -20,8 +20,8 @@
      glow in the page's own blue (the top glow's colour) behind the cards. Something for the glass to bend. */
   .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; display:none;
     background:radial-gradient(520px 300px at 50% 46%, rgba(56,57,255,0.13), transparent 72%),
-      linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 140px 140px,
-      linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 140px 140px,
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px) 0 0 / 140px 140px,
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px) 0 0 / 140px 140px,
       linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 28px 28px,
       linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 28px 28px;
     -webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 42%, #000 35%, transparent 85%); mask-image:radial-gradient(ellipse 75% 65% at 50% 42%, #000 35%, transparent 85%); }
@@ -55,16 +55,16 @@
     /* Real glass, in layers (top to bottom): a glint where the pointer is (--mx/--my); a hard-edged reflection band that
        slides against the tilt (--px); a sky sheen on the top third; the body, clear with a faint green-cyan cast low down
        (a pane's thickness, like float glass); a fine grain. The rim is ::before; bevel + inner bounce light are insets. */
-    --top:rgba(255,255,255,0.055); --low:rgba(255,255,255,0.012);
+    --top:rgba(255,255,255,0.035); --low:rgba(255,255,255,0.008);
     --glass-in:inset 0 1px 0 rgba(255,255,255,0.5), inset 1px 0 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.38),
       inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(170,235,225,0.28);
     border:1px solid transparent;
     background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.13), transparent 70%),
       linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.035) 26%, transparent 26.5%, transparent 63%, rgba(255,255,255,0.04) 63.5%, transparent 70%)
         calc(50% + var(--px, 0px)) 0 / 150% 100% no-repeat,
-      linear-gradient(180deg, rgba(255,255,255,0.09), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.07), transparent 38%),
       linear-gradient(180deg, var(--top), var(--low) 62%, rgba(180,235,225,0.035)),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
     box-shadow:0 1px 1px rgba(0,0,0,0.4), 0 20px 36px -12px rgba(0,0,0,0.65), var(--glass-in);
     -webkit-backdrop-filter:blur(10px) saturate(150%) brightness(1.06); backdrop-filter:blur(10px) saturate(150%) brightness(1.06);
     transform:perspective(700px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
@@ -134,7 +134,7 @@
   /* Shards: pieces of the picked glass (flat tint, no backdrop blur: 18 moving blurs would stutter on low-end phones) */
   .shard { position:fixed; margin:0; border-radius:18px; border:1px solid rgba(160,175,255,0.85);
     background:linear-gradient(118deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 26%, transparent 26.5%), linear-gradient(180deg, rgba(255,255,255,0.1), transparent 38%),
-      linear-gradient(180deg, rgba(75,92,255,0.38), rgba(56,57,255,0.18)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
+      linear-gradient(180deg, rgba(75,92,255,0.38), rgba(56,57,255,0.18)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(170,235,225,0.3); will-change:transform, opacity; }
   .shard .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* Dials and switches */
@@ -302,7 +302,7 @@ function render(deal) {
     t.addEventListener("animationend", ev => { if (ev.animationName === "deal") t.classList.remove("dealt"); });
     g.appendChild(t);
   });
-  st.appendChild(g); paintTiles(); paintTop(); say();
+  st.appendChild(g); g.querySelectorAll(".face").forEach(lens); paintTiles(); paintTop(); say();
 }
 
 function press(i) {
@@ -369,6 +369,36 @@ function submit() {
   paintTop(); say();
 }
 
+// The glass lens (Chromium only; verified in Chromium 152, Safari/Firefox not verified, so they keep the CSS blur).
+// A displacement map at the card's exact size: flat in the middle; within B px of the rim each pixel samples the
+// backdrop from further in along the edge normal, strongest at the rim ((1 - d/B)^2). R/G carry x/y around 128.
+const LENS_OK = !reduced && !!(navigator.userAgentData && navigator.userAgentData.brands.some(b => b.brand === "Chromium"));
+const lensDefs = (() => { if (!LENS_OK) return null; const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("width", "0"); svg.setAttribute("height", "0"); svg.setAttribute("aria-hidden", "true"); svg.style.position = "absolute";
+  const d = document.createElementNS(NS, "defs"); svg.appendChild(d); document.body.appendChild(svg); return d; })();
+const lensCache = {};
+function lensId(w, h) {
+  const key = w + "x" + h; if (lensCache[key]) return lensCache[key];
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d"), img = g.createImageData(w, h), D = img.data, R = 18, B = 18, hx = w / 2 - R, hy = h / 2 - R;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const px = x + 0.5 - w / 2, py = y + 0.5 - h / 2, qx = Math.abs(px) - hx, qy = Math.abs(py) - hy; let out, nx, ny;
+    if (qx > 0 && qy > 0) { const l = Math.hypot(qx, qy); out = l - R; nx = Math.sign(px) * qx / l; ny = Math.sign(py) * qy / l; }   // a corner
+    else { out = Math.max(qx, qy) - R; if (qx > qy) { nx = Math.sign(px); ny = 0; } else { nx = 0; ny = Math.sign(py); } }     // a side
+    const d = -out, m = d > 0 && d < B ? (1 - d / B) ** 2 : 0, k = (y * w + x) * 4;
+    D[k] = 128 - nx * m * 127; D[k + 1] = 128 - ny * m * 127; D[k + 2] = 128; D[k + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  const id = "lens-" + key, f = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+  [["id", id], ["x", 0], ["y", 0], ["width", w], ["height", h], ["filterUnits", "userSpaceOnUse"], ["primitiveUnits", "userSpaceOnUse"],
+   ["color-interpolation-filters", "sRGB"]].forEach(([k, v]) => f.setAttribute(k, v));                       // sRGB: the map's values are read as written
+  f.innerHTML = `<feImage href="${c.toDataURL()}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="map"/>` +
+    `<feDisplacementMap in="SourceGraphic" in2="map" scale="30" xChannelSelector="R" yChannelSelector="G" result="bent"/><feGaussianBlur in="bent" stdDeviation="0.4"/>`;
+  lensDefs.appendChild(f); return lensCache[key] = id;
+}
+function lens(face) { if (!LENS_OK) return; const w = face.offsetWidth, h = face.offsetHeight; if (!w || !h) return;
+  const v = `url(#${lensId(w, h)}) saturate(150%) brightness(1.08)`; face.style.backdropFilter = v; face.style.webkitBackdropFilter = v; }
+let lensT = 0; addEventListener("resize", () => { clearTimeout(lensT); lensT = setTimeout(() => document.querySelectorAll(".tile .face").forEach(lens), 150); });
+
 // The back: the medal line (set by the caller), the answer, why it is right, and why the others are not.
 const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
 function fillBack(t, it) { const w = WHY[it.n] || {};
@@ -382,9 +412,11 @@ const SPIN = 540;                       // "flips two times revealing the back":
 function present(t, tier) {
   if (tier) t.classList.add(tier);
   const r0 = t.getBoundingClientRect(), slot = document.createElement("div"); slot.className = "slot"; slot.style.height = r0.height + "px";
+  t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
   t.replaceWith(slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
   ["--tx", "--ty", "--px"].forEach(k => t.querySelector(".face").style.removeProperty(k));
   if (reduced) { t.classList.remove("sel"); t.classList.add("flipped"); return Promise.resolve(); }
+  lens(t.querySelector(".face"));                                                         // the lens at the hero's size
   const r1 = t.getBoundingClientRect(), dx = r0.left + r0.width / 2 - (r1.left + r1.width / 2), dy = r0.top + r0.height / 2 - (r1.top + r1.height / 2);
   const grow = t.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${r0.width / r1.width}, ${r0.height / r1.height})` },
     { transform: "translate(0, 0) scale(1.03)", offset: 0.8 }, { transform: "none" }], { duration: 620, easing: "cubic-bezier(.2,.8,.2,1)" }).finished;
