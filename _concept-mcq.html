@@ -54,6 +54,7 @@
   .tile.out .face { opacity:0.38; filter:saturate(0.2); } .tile.out .txt { text-decoration:line-through; text-decoration-thickness:2px; } .tile.out .x span { color:var(--tint); }
   .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid transparent;
     background:linear-gradient(180deg,#3a3016,#2a220d); box-shadow:0 20px 48px rgba(245,196,81,0.28), 0 0 0 2px var(--gold); }
+  .tile.flipped .x { visibility:hidden; }                   /* the ✕ is not on a face: without this it shows through the flipped card */
   .back .ok { font-size:13px; font-weight:800; color:var(--gold); }
   .back .why { font-size:14px; line-height:1.45; font-weight:600; color:#f3ead2; }
   @keyframes deal { from { opacity:0; transform:translateY(70px) rotateX(-35deg) rotateZ(var(--rz)) scale(0.9); } to { opacity:1; transform:none; } }
@@ -216,11 +217,11 @@ function render(deal) {
 
 function press(i) {
   if (S.done || S.out.has(i) || S.gone.has(i)) return;
-  if (S.sel === i) { submit(); return; }
-  S.sel = i; sfx.pick();
-  if (S.shape.kind === "switches") { S.sw = [i === 0 || i === 2, i === 1 || i === 2]; syncSwitches(); return; }
-  if (S.shape.kind === "dials") { S.dialSel = [...S.shape.parts[i]]; syncDials(); return; }
-  paintTiles(); say(); live(`${L[i]} picked. Tap it again to answer.`);
+  S.sel = i;                                                  // one tap answers (Murci): no second tap, no Lock in
+  if (S.shape.kind === "switches") { S.sw = [i === 0 || i === 2, i === 1 || i === 2]; syncSwitches(); }
+  else if (S.shape.kind === "dials") { S.dialSel = [...S.shape.parts[i]]; syncDials(); }
+  else paintTiles();                                          // the card takes the picked colour, then answers
+  submit();
 }
 function syncDials() {
   const { shape } = S; document.querySelectorAll(".dial").forEach((d, k) => d.querySelectorAll(".chip").forEach((c, i) => c.setAttribute("aria-pressed", String(shape.dials[k][i] === S.dialSel[k]))));
@@ -238,7 +239,7 @@ function toggleOut(i) { if (S.done || S.gone.has(i)) return; S.out.has(i) ? S.ou
   live(S.out.has(i) ? `${L[i]} crossed out` : `${L[i]} back in`); }
 function paintTiles() { document.querySelectorAll(".tile").forEach(t => { const i = +t.dataset.i, on = S.sel === i && !S.done;
   t.classList.toggle("sel", on); t.classList.toggle("out", S.out.has(i)); t.querySelector(".face").setAttribute("aria-checked", String(S.sel === i)); }); }
-function say() { $("say").textContent = S.done ? "" : S.sel == null ? "Pick an answer" : S.shape.kind === "classic" ? `Tap ${L[S.sel]} again to answer` : `Tap ${L[S.sel]} to answer`; }
+function say() { $("say").textContent = S.done ? "" : S.sel == null ? "Pick an answer" : `Tap ${L[S.sel]} to answer`; }
 function paintTop() { $("seg").innerHTML = Array.from({ length: 9 }, (_, i) => `<i class="${i === 0 ? "on" : ""}"></i>`).join(""); $("xp").textContent = xp;
   $("streak").textContent = streak >= 2 ? `${streak} in a row` : "";
   const tr = document.querySelector(".tries"), left = Math.max(0, 3 - S.tries);
@@ -246,7 +247,7 @@ function paintTop() { $("seg").innerHTML = Array.from({ length: 9 }, (_, i) => `
 document.addEventListener("keydown", e => { if (!S) return; if (S.done) { if (e.key === "Enter") next(); return; }
   const i = "abcd".indexOf(e.key.toLowerCase()); if (i >= 0 && i < S.it.opts.length && !e.metaKey && !e.ctrlKey) { press(i); return; }
   const a = document.activeElement;
-  if (e.key === "Enter" && S.sel != null && (a === document.body || a?.classList?.contains("face"))) { e.preventDefault(); submit(); } });
+  if (e.key === "Enter" && S.sel != null && a === document.body) { e.preventDefault(); submit(); } });
 
 function submit() {
   const i = S.sel; if (i == null || S.done) return;
