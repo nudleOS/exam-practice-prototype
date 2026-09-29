@@ -13,6 +13,9 @@
      onAttempt({ n, pick, correct, tries, practice, final })   every try
      onScore({ n, marks, tier, gone, tries })                  once per question, the first time it is finished
      onNext({ from, to, sameGroup })   the learner moves on (default: the next in order); onMap()  the Map button
+     judge(item, pick, tryNo) -> { correct, xp, marks, clue, closed, answer, replay }   a host that marks (Exam Practice):
+                 the component never holds the answer key; it learns the answer only once the host reveals it (closed)
+     onMarksLanded(marks)   the earned marks reached the host's counter (update its number now)
      targets     { xpBox, marksBox } host elements the "+XP" / "+marks" fly to; back / retry: false to switch off
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
@@ -51,28 +54,6 @@
     $("mkOf").textContent = P.total; $("marksBox").setAttribute("aria-label", `0 of ${P.total} marks`);
     const rnd = (a, b) => a + Math.random() * (b - a);
 
-    // Sound, made in the browser (no files). Every sound is placed where it happens: panned left/right by the x of the
-    // element that made it (at(el, ...)), up to ±0.8 so nothing sits entirely in one ear.
-    let AC = null, PAN = 0;
-    const panOf = el => { if (!el) return 0; const r = el.getBoundingClientRect(); return Math.max(-0.8, Math.min(0.8, ((r.left + r.width / 2) / innerWidth) * 2 - 1)); };
-    const at = (el, f) => { PAN = panOf(el); try { f(); } finally { PAN = 0; } }, at_ = at;   // at_: the same, for code that has its own `at`
-    const out = (A, node) => { if (PAN && A.createStereoPanner) { const p = A.createStereoPanner(); p.pan.value = PAN; node.connect(p).connect(A.destination); } else node.connect(A.destination); };
-    const ac = () => { try { return AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } };
-    function tone(freq, dur, type = "sine", vol = 0.08, glide = 0, at = 0) { const A = ac(); if (!A) return;
-      const o = A.createOscillator(), g = A.createGain(), t = A.currentTime + at; o.type = type; o.frequency.setValueAtTime(freq, t);
-      if (glide) o.frequency.exponentialRampToValueAtTime(freq * glide, t + dur); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      out(A, o.connect(g)); o.start(t); o.stop(t + dur); }
-    function noise(dur, vol, hp, at = 0) { const A = ac(); if (!A) return; const n = Math.floor(A.sampleRate * dur), b = A.createBuffer(1, n, A.sampleRate), d = b.getChannelData(0);
-      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
-      const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain(), t = A.currentTime + at; s.buffer = b; f.type = "highpass"; f.frequency.value = hp; g.gain.value = vol;
-      out(A, s.connect(f).connect(g)); s.start(t); }
-    const sfx = { pick: () => tone(880, 0.07, "triangle", 0.05), lock: () => tone(180, 0.14, "sine", 0.12, 0.6),
-      yes: () => { tone(784, 0.12, "sine", 0.05, 1.5); }, no: () => { tone(196, 0.2, "triangle", 0.06, 0.8); },
-      right: () => { tone(660, 0.18, "triangle", 0.07); tone(990, 0.28, "triangle", 0.07, 0, 0.11); },
-      crack: () => { noise(0.08, 0.35, 2500); tone(2400, 0.05, "square", 0.02); },
-      shatter: () => { noise(0.45, 0.5, 1800); [3100, 4200, 5300, 3700, 4800].forEach((f, k) => tone(f, 0.16, "sine", 0.025, 0.9, 0.02 + k * 0.035)); },
-      defeat: () => { tone(330, 0.5, "triangle", 0.05, 0.55); tone(196, 0.8, "sine", 0.05, 0.7, 0.28); },
-      shine: () => { [1320, 1760, 2640].forEach((f, k) => tone(f, 0.32, "sine", 0.035, 1.02, k * 0.07)); } };
     const buzz = ms => { if (navigator.vibrate) navigator.vibrate(ms); };   // Android only: iOS ignores vibrate from the web
     // One vibration pattern per moment (ms on/off): a tick for a pick, a burst for a shatter, rising for gold, heavy for defeat.
     const HAPTIC = { pick: 6, lock: 14, crack: 10, shatter: [14, 24, 40], shine: 8, gold: [20, 50, 30, 50, 70], silver: [20, 60, 35], bronze: 30, defeat: [70, 90, 140] };
@@ -173,26 +154,27 @@
 
     function submit() {
       const i = S.sel; if (i == null || S.done) return;
-      const it = S.it, t = RQ(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; buzz(HAPTIC.lock);
-      if (opts.onAttempt) opts.onAttempt({ n: it.n, item: it, pick: i, correct: ok, tries: S.tries, practice: !!S.practice, final: ok || S.tries >= 3 || S.gone.size + 1 >= it.opts.length - 1 });
+      const it = S.it, t = RQ(`.tile[data-i="${i}"]`), J = opts.judge ? opts.judge(it, i, S.tries + 1) : null, ok = J ? !!J.correct : i === S.it.a; S.tries++; buzz(HAPTIC.lock);
+      if (J) { if (ok) it.a = i; else if (J.closed && J.answer != null) it.a = J.answer; }   // the host marks: the answer is known only once it is revealed
+      if (opts.onAttempt) opts.onAttempt({ n: it.n, item: it, pick: i, correct: ok, tries: S.tries, practice: !!S.practice, final: J ? !!(ok || J.closed) : ok || S.tries >= 3 || S.gone.size + 1 >= it.opts.length - 1 });
       const SQ = S, up = raise(t); setHint(null); $("pal").classList.remove("small");   // it grows back to act                                      // it rises over the others first, then the verdict
-      setTimeout(() => { if (S !== SQ) return; t.classList.add(ok ? "yes" : "no"); at(t, ok ? sfx.yes : sfx.no); verdictLight(t, S.hit[i], ok); }, up);   // the verdict: green light, or red in the cracks
+      setTimeout(() => { if (S !== SQ) return; t.classList.add(ok ? "yes" : "no"); verdictLight(t, S.hit[i], ok); }, up);   // the verdict: green light, or red in the cracks
       if (ok) {
-        S.done = true; const pr = S.practice, gain = pr ? 0 : opts.xpFor ? opts.xpFor({ item: S.it, tries: S.tries }) : XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = pr ? 0 : S.tries === 1 ? S.it.marks : 0;
+        S.done = true; const pr = S.practice || !!(J && J.replay), gain = pr ? 0 : J ? (J.xp || 0) : opts.xpFor ? opts.xpFor({ item: S.it, tries: S.tries }) : XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = pr ? 0 : J ? (J.marks || 0) : S.tries === 1 ? S.it.marks : 0;
         if (!pr) streak = S.tries === 1 ? streak + 1 : 0; setHint(null);   // practice: the medal shows how it went, nothing is added
         const name = tier[0].toUpperCase() + tier.slice(1), mkText = mk ? "+" + mk + (mk === 1 ? " mark" : " marks") : "0 marks";
         t.querySelector(".ok").innerHTML = `<span class="medal" aria-hidden="true"></span><span>${pr ? name + " · practice, no XP" : `${name} · +${gain} XP · ${mkText}`}</span>`;
         fillBack(t, it); const rec = { gone: [...S.gone], tries: S.tries, ok: t.querySelector(".ok").innerHTML };
         live(pr ? `Correct, ${L[i]}. ${name}, practice: no XP or marks. ${whyOf(it)}` : `Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
         const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
-        if (mk && !reduced) setTimeout(() => { if (S === S0) flyMarks(mk); }, up);   // the marks go to the counter as the card turns green
+        if (mk) { if (!reduced) setTimeout(() => { if (S === S0) flyMarks(mk); }, up); else if (opts.onMarksLanded) opts.onMarksLanded(mk); }   // the marks go to the counter as the card turns green
         wait(up + (reduced ? 0 : VERDICT_MS)).then(() => { if (S !== S0) throw 0; return present(t, tier); }).then(() => {
-          sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); if (!pr) { fly(t, "+" + gain, "xpBox");
+          buzz(HAPTIC[tier]); burst(t, tier); if (!pr) { fly(t, "+" + gain, "xpBox");
           setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700); }   // counts up as the +XP lands
           setTimeout(() => score(it, mk, tier, rec), mk && !reduced ? 860 : 0); toast(pr ? name + " · practice" : name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(e => { if (e !== 0) console.error(e); });   // a stale card (question switched, thrown as 0) just stops; anything else is a real error and is reported
       } else {
         if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: "The answer · 0 XP · 0 marks" };
-        const clue = S.it.clues[Math.min(S.tries - 1, S.it.clues.length - 1)], last = S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
+        const clues = S.it.clues || [], clue = J ? (J.clue || "") : clues[Math.min(S.tries - 1, clues.length - 1)] || "", last = J ? !!J.closed : S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
         let rb = null;
         if (PAL.el && !PAL.sweeping && !reduced) { const tx = palUnder(t), n = S.tries; rb = { ...palHead(tx), minHold: Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last); if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card
         S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
@@ -212,7 +194,7 @@
     }
 
     // The back: the medal line (set by the caller), the answer, why it is right, and why the others are not.
-    const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
+    const whyOf = it => (WHY[it.n] || {}).why || (it.clues || [])[0] || "";
     // A finished question, revisited: its end state (as after the big card was put back), to look at; the marks stand.
     function restore(b) { const it = S.it, tile = i => RQ(`.tile[data-i="${i}"]`), r = tile(it.a);
       S.done = true; S.tries = b.tries || 0; S.tier = b.tier; (b.gone || []).forEach(i => { S.gone.add(i); leaveGap(tile(i), false); });   // revisit: already closed up
@@ -297,13 +279,12 @@
     // Its head and shoulders, as the glass meets them: a curve from the top of the head down to the shoulders (screen px).
     // The figure fills 2.4 / 3.84 = 62.5% of the box height, centred, so its head top is 18.75% down the box.
     function palHead(tx) { const B = palBase(); return { cx: B.left + tx + B.w / 2, headY: B.top + B.h * 0.1875, halfW: B.h * 0.15, drop: B.h * 0.12 }; }
-    function tink() { at_($("pal"), () => { tone(2900, 0.08, "sine", 0.035); tone(4350, 0.05, "triangle", 0.018, 1, 0.01); noise(0.05, 0.16, 5000); }); }
     function jolt() { if (reduced) return; const kf = [{ transform: "none" }, { transform: "translate(-6px,4px)" }, { transform: "translate(5px,-3px)" }, { transform: "translate(-3px,2px)" }, { transform: "translate(1px,-1px)" }, { transform: "none" }];
       [$("stage"), $("shards"), $("palBody")].forEach(e => e.animate(kf, { duration: 360, easing: "ease-out" })); }
     // Hit by the glass. Measured on defeat_03: 0.55 s the head snaps back, 0.8-1.3 s it jolts, 1.6-2.0 s it slumps, 2.5-3.1 s it
     // goes down, 4.0 s+ it lies on the floor. So a first miss flinches, a second staggers, the last knocks it down.
     const HURT = [{ hold: 1.1, back: 760 }, { hold: 2.2, back: 1900 }];
-    function palHit(n, last) { tink(); const m = PAL.el; if (!m) return;
+    function palHit(n, last) { const m = PAL.el; if (!m) return;
       if (last) { PAL.down = true; PAL.hurt = false; palClip("defeat", { once: true, from: 0.4, fade: 0.12 }); jolt(); buzz(HAPTIC.defeat); return; }
       const H = HURT[Math.min(n, 2) - 1]; PAL.hurt = true; palClip("defeat", { once: true, from: 0.4, hold: H.hold, fade: 0.12 });
       return new Promise(home => { PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(0).then(() => { if (!PAL.anim && !PAL.down) palIdle(); palSize(); home(); }); }, H.back); }); }
@@ -436,7 +417,7 @@
         if (!PAL.down) palJump(t).then(() => buddyIn(t, true));                                  // it vanishes and appears in the card, then rides the spin frozen (not when it's down)
         if (!tier) return wait(650);
         t.querySelectorAll(".vline, .vfill").forEach(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished.then(() => x.remove()));
-        t.classList.remove("yes"); t.classList.add("shine"); sfx.shine(); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
+        t.classList.remove("yes"); t.classList.add("shine"); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
         return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
       }).then(() => {
         t.classList.remove("sel", "shine"); t.classList.add("flipped");                          // the class holds the end state (180 = 540 mod 360)
@@ -445,7 +426,7 @@
         const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);
           return { offset: q, transform: `translateZ(${(a * rise).toFixed(1)}px) scale(${(1 + a * swell).toFixed(4)}) rotateY(${(turn * q).toFixed(1)}deg)` }; });
         return t.animate(kf, { duration: tier ? FLIP_MS : 1100, easing: "cubic-bezier(.45,0,.25,1)" }).finished;
-      }).then(() => { buddyGo(t); if (!tier && !PAL.down) { sfx.defeat(); buzz(HAPTIC.defeat); } S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
+      }).then(() => { buddyGo(t); if (!tier && !PAL.down) buzz(HAPTIC.defeat); S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
     }
     function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
     // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
@@ -457,7 +438,7 @@
     // A host's own counter (opts.targets.marksBox) gets the ring; the host updates its number itself.
     function flyMarks(mk) {
       const src = RQ(".qmarks"), host = (opts.targets || {}).marksBox, to = host || $("marksBox");
-      if (!src || !to) return Promise.resolve();
+      if (!src || !to) { if (opts.onMarksLanded) opts.onMarksLanded(mk); return Promise.resolve(); }
       src.classList.add("earned");
       return wait(420).then(() => {   // lifts off before the answer card grows over the label
         const a = src.getBoundingClientRect(), b = to.getBoundingClientRect(), c = document.createElement("div");
@@ -469,7 +450,7 @@
           { transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0.85 }], { duration: 860, easing: "cubic-bezier(.35,.1,.3,1)", fill: "forwards" }).finished
           .then(() => { c.remove();
             to.animate([{ boxShadow: "0 0 0 0 rgba(245,196,81,0.8)", scale: "1" }, { boxShadow: "0 0 0 10px rgba(245,196,81,0)", scale: "1.12", offset: 0.35 }, { boxShadow: "0 0 0 16px rgba(245,196,81,0)", scale: "1" }], { duration: 620, easing: "ease-out" });
-            if (!host) { S.marksFlown = true; countUp($("mk"), Object.values(book).reduce((x, y) => x + y.got, 0) + mk); } }); }); }
+            if (!host) { S.marksFlown = true; countUp($("mk"), Object.values(book).reduce((x, y) => x + y.got, 0) + mk); } if (opts.onMarksLanded) opts.onMarksLanded(mk); }); }); }
     function countUp(el, to) { let v = parseInt(el.textContent, 10) || 0; if (to <= v) { el.textContent = to; return; } const step = () => { v++; el.textContent = v; if (v < to) setTimeout(step, 110); }; step(); }
 
     // The card breaks like glass: a spider-web of cracks from where it was tapped, then shards along those cracks fly, spin and fall;
@@ -527,9 +508,8 @@
         draw([at(ry, ta), at(nx, tb)], 0.6, Math.max(ta, tb), rnd(0.45, 0.85), Math.max(ry.d0, nx.d0) + 120); });
       rays.forEach((ry, k) => { const nx = rays[(k + 1) % N], m = { x: (ry.q[0].x + nx.q[0].x) / 2, y: (ry.q[0].y + nx.q[0].y) / 2 }, a = Math.atan2(m.y - p.y, m.x - p.x) + rnd(-0.3, 0.3), l = rnd(8, 22);   // hairlines off the inner ring
         draw([m, { x: m.x + Math.cos(a) * l, y: m.y + Math.sin(a) * l }], 0.5, Math.max(ry.ring[0], nx.ring[0]), rnd(0.5, 0.9), Math.max(ry.d0, nx.d0) + 160); });
-      setTimeout(() => at_(tile, sfx.crack), 190);                                                                            // the second wave: another crack sound
       for (let n = 0; n < 8; n++) { const a = rnd(0, Math.PI * 2), l = rnd(4, 11); draw([p, { x: p.x + Math.cos(a) * l, y: p.y + Math.sin(a) * l }], 0.6, 0); }   // micro-cracks
-      face.appendChild(svg); at_(tile, sfx.crack); buzz(HAPTIC.crack);
+      face.appendChild(svg); buzz(HAPTIC.crack);
       const crush = document.createElement("div"); crush.className = "crush"; crush.style.left = p.x + "px"; crush.style.top = p.y + "px"; face.appendChild(crush);
       crush.animate([{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1)" }], { duration: 90, fill: "forwards" });
       const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
@@ -601,11 +581,10 @@
       }
       return wait(Math.max(crackMs + 420, (rb && rb.minHold) || 0)).then(() => {                 // it waits for the robot to arrive under it                                                     // the web finishes spreading; a beat to see it; it gives
         clearTimeout(hold); cancelAnimationFrame(raf); const B = built || build(); while (B.next < B.cells.length) B.make(B.cells[B.next++]);   // finish any not yet built
-        face.style.visibility = "hidden"; at_(tile, sfx.shatter); buzz(HAPTIC.shatter);
+        face.style.visibility = "hidden"; buzz(HAPTIC.shatter);
         B.pieces.forEach(pc => { pc.el.style.opacity = "1"; pc.el.animate(pc.frames, { duration: pc.t, delay: pc.delay, easing: "linear", fill: "both" }); });
         if (rb && rb.onHit) setTimeout(rb.onHit, B.hits.length ? Math.min(...B.hits) : B.landings.length ? Math.min(...B.landings.map(L => L.t)) : 400);   // the first piece that meets it
         // A few pieces clink where and when they land (not all 33: that would be a rattle, not glass).
-        B.landings.sort((u, v) => u.t - v.t).filter((_, k) => k % 6 === 0).slice(0, 6).forEach(L => setTimeout(() => { PAN = Math.max(-0.8, Math.min(0.8, L.x / innerWidth * 2 - 1)); tone(rnd(3800, 6400), 0.06, "sine", 0.014); PAN = 0; }, L.t));
         leaveGap(tile); return wait(950);                                                          // the question moves on; the pieces finish on their own
       });
     }
@@ -668,7 +647,7 @@
       "Growth hormone is not picky about tissue.": "Growth hormone isn't picky. Would it stop at just one of these?",
       "Bones AND muscles grow.": "Think about growing up: longer bones, and bigger muscles too.",
     };
-    function sayHint(text) { text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
+    function sayHint(text) { if (!text) return; text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
       live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
     function toast(t, k) { if (k === "ok" && (innerWidth <= 600 || innerHeight <= 520) && $("heroLayer").querySelector(".tile.hero")) return;   // phone (upright or on its side): no room above the big card, and it already says this
       const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
