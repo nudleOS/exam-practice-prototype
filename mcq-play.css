@@ -278,6 +278,9 @@
   .mcqp .pal.sayleft .pal-say .p1 { left:auto; right:64%; } .mcqp .pal.sayleft .pal-say .p2 { left:auto; right:71%; }
   .mcqp .pal.sayleft .pal-say .say-txt { left:auto; right:calc(84% + 4px); transform-origin:100% 100%; }
   .mcqp .pal.sayleft .pal-say.show .say-txt { animation-name:mq-thoughtL; }
+  /* pointAtHint: mirrored while it thinks a hint on its right, so the raised hand points at the bubble; a quick squash through
+     zero width reads as a turn. On the model only (the bubble and the jolt stay put). */
+  .mcqp .pal-body model-floor { transition:transform 220ms ease-in-out; } .mcqp .pal.pointr .pal-body model-floor { transform:scaleX(-1); }
   @keyframes mq-thoughtL { from { opacity:0; transform:translate(8px, 8px) scale(0.55); } to { opacity:1; transform:none; } }
   .mcqp .pal-say.show .p1 { animation:mq-puff 200ms cubic-bezier(.2,.8,.3,1.3) both; }
   .mcqp .pal-say.show .p2 { animation:mq-puff 200ms cubic-bezier(.2,.8,.3,1.3) 110ms both; }

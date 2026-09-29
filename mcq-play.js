@@ -22,6 +22,8 @@
                  of the screen, as if to get away (the learner-colours standalone; default off: the robot runs under the card)
      slideIn     true = moving on, the question slides out to the left and the next slides in from the right, against the
                  robot sweeping the glass off to the right (default: it rises and its cards are dealt from below)
+     pointAtHint true = while it thinks a hint, the robot's raised hand points at the bubble: its standing pose raises the
+                 hand on the screen's left, so with the bubble on its right it is mirrored (a quick turn), and back as it moves
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
@@ -272,7 +274,7 @@
       pal.classList.toggle("small", on); }
     function palBase() { const r = $("pal").getBoundingClientRect(); return { left: r.left - PAL.x, top: r.top, w: r.width, h: r.height }; }
     function palStop() { const pal = $("pal"); if (PAL.anim) { PAL.x = parseFloat(getComputedStyle(pal).translate) || 0; PAL.anim.cancel(); PAL.anim = null; pal.style.translate = `${PAL.x}px 0`; } }
-    function palRunTo(tx, rate = RUN_RATE) { const pal = $("pal"), m = PAL.el; clearTimeout(PAL.timer); palStop();
+    function palRunTo(tx, rate = RUN_RATE) { const pal = $("pal"), m = PAL.el; clearTimeout(PAL.timer); palStop(); palPoint(false);
       const from = PAL.x, d = tx - from; PAL.x = tx; pal.style.translate = `${tx}px 0`;
       if (Math.abs(d) < 6 || reduced || !m) { if (m) m.setAttribute("yaw", "0"); return Promise.resolve(); }
       m.setAttribute("yaw", d > 0 ? "1.35" : "-1.35"); palClip("run", { speed: rate, fade: 0.18 });        // three-quarters: its face stays in view
@@ -294,7 +296,7 @@
     function palAway() { const B = palBase(), me = B.left + PAL.x + B.w / 2; return me < innerWidth / 2 ? Math.max(0, innerWidth - B.left - B.w - 4) : 0; }
     // The thought bubble opens toward the room: to its left when the robot stands on the right half (glassRain only).
     function palSide() { if (!opts.glassRain) return; const B = palBase(); $("pal").classList.toggle("sayleft", B.left + PAL.x + B.w / 2 > innerWidth / 2); }
-    function palHit(n, last, to = 0) { const m = PAL.el; if (!m) return;
+    function palHit(n, last, to = 0) { const m = PAL.el; if (!m) return; palPoint(false); $("clue").classList.remove("show");
       if (last) { PAL.down = true; PAL.hurt = false; palClip("defeat", { once: true, from: 0.4, fade: 0.12 }); jolt(); buzz(HAPTIC.defeat); return; }
       const H = HURT[Math.min(n, 2) - 1]; PAL.hurt = true; palClip("defeat", { once: true, from: 0.4, hold: H.hold, fade: 0.12 });
       return new Promise(home => { PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(to).then(() => { if (!PAL.anim && !PAL.down) palIdle(); palSize(); palSide(); home(); }); }, H.back); }); }
@@ -331,7 +333,7 @@
     // its feet) and materialises at the other end, the same frames reversed.
     const BLINK_MS = 300, BLINK_OUT = [{ opacity: 1, filter: "blur(0px) brightness(1)", transform: "none" }, { opacity: 0, filter: "blur(7px) brightness(1.8)", transform: "scale(0.94)" }],
       BLINK_IN = [...BLINK_OUT].reverse();
-    function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show"); palStop(); PAL.sweeping = false; clearTimeout(PAL.timer); PAL.hurt = false;
+    function palJump(t) { const pal = $("pal"); $("clue").classList.remove("show"); palPoint(false); palStop(); PAL.sweeping = false; clearTimeout(PAL.timer); PAL.hurt = false;
       if (reduced || pal.classList.contains("away")) { pal.classList.add("away"); return Promise.resolve(); }
       return pal.animate(BLINK_OUT, { duration: BLINK_MS, easing: "cubic-bezier(.5,0,.75,0)" }).finished     // it dissolves where it stands
         .then(() => pal.classList.add("away"), () => pal.classList.add("away")); }
@@ -658,7 +660,10 @@
     $("heroLayer").addEventListener("click", e => { if (e.target === e.currentTarget) tapOut(); });   // phone: the layer takes taps (it scrolls); its empty area = the scrim
     // The hint: after a miss the robot thinks the clue on its own, in a bubble out of its head, once it is back on its feet in its
     // spot (it was just hit by the glass). It stays while the learner chooses, and goes when they answer.
-    function setHint(text) { $("clue").classList.remove("show"); if (text) $("clueTxt").textContent = text; }
+    function setHint(text) { $("clue").classList.remove("show"); palPoint(false); if (text) $("clueTxt").textContent = text; }
+    // pointAtHint: the standing pose (greet_04 held) raises the hand on the screen's left, so it points at a bubble on its
+    // left (.sayleft); a bubble on its right gets the robot mirrored (.pointr), for as long as the bubble is up.
+    function palPoint(on) { if (opts.pointAtHint) $("pal").classList.toggle("pointr", !!on); }
     // A wrapped box keeps its max width; the cloud should hug the words, so measure the lines and set the width to the longest.
     function fitCloud(el) { el.style.animation = "none"; el.style.width = "";
       const rg = document.createRange(); rg.selectNodeContents(el); const rs = [...rg.getClientRects()];
@@ -675,7 +680,7 @@
       "Growth hormone is not picky about tissue.": "Growth hormone isn't picky. Would it stop at just one of these?",
       "Bones AND muscles grow.": "Think about growing up: longer bones, and bigger muscles too.",
     };
-    function sayHint(text) { if (!text) return; text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
+    function sayHint(text) { if (!text) return; text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt")); palPoint(!$("pal").classList.contains("sayleft"));
       live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
     function toast(t, k) { if (k === "ok" && (innerWidth <= 600 || innerHeight <= 520) && $("heroLayer").querySelector(".tile.hero")) return;   // phone (upright or on its side): no room above the big card, and it already says this
       const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
