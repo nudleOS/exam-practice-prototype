@@ -16,7 +16,7 @@
    dotted outlines each (not the prompt's 96 layers per pixel). 30 frames a second, paused while the tab is hidden;
    reduced motion: one still frame.
    Murci, same day: "slow and not that fast, seamless ... not a lot of particles because the cards are small": 5 rings, a new
-   one about every 5 s; 22 dots per ring spaced by the ring's own perimeter (a fixed spacing made the dots crawl along
+   one about every 5 s; 30 dots per ring (22 at first; Murci: "increase ... just a bit"), 8 per corner line (6) spaced by the ring's own perimeter (a fixed spacing made the dots crawl along
    the outline as the ring grew: now they only spread apart, as perspective does); smooth fades; a slow drift. */
 (function () {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -74,7 +74,7 @@ void main() {
     if (f.querySelector(":scope > .tun")) return; const c = document.createElement("canvas"); c.className = "tun"; c.setAttribute("aria-hidden", "true"); f.prepend(c); }); }
   new MutationObserver(addCanvases).observe(document.body, { childList: true, subtree: true }); addCanvases();
 
-  const D = Math.min(devicePixelRatio || 1, 2), RINGS = 5, DOTS = 22, CYCLE = 26, R = 18;   // CYCLE: seconds for a ring from the back to the edge   // R: the card's corner radius (mcq-play.css .side)
+  const D = Math.min(devicePixelRatio || 1, 2), RINGS = 5, DOTS = 30, CYCLE = 26, R = 18;   // CYCLE: seconds for a ring from the back to the edge   // R: the card's corner radius (mcq-play.css .side)
   function box(x, w, h, cx, cy, s, rad) {                                  // a rounded rectangle, the card shrunk by s toward (cx, cy)
     const bw = w * s, bh = h * s, x0 = cx + (w / 2 - cx) * s - bw / 2, y0 = cy + (h / 2 - cy) * s - bh / 2;
     const r = Math.max(1, rad * s); x.beginPath(); if (x.roundRect) x.roundRect(x0, y0, bw, bh, r); else x.rect(x0, y0, bw, bh);   /* roundRect: Safari 16+, Chrome 99+ */ return 2 * (bw + bh) - (8 - 2 * Math.PI) * r; }   // its perimeter
@@ -91,7 +91,7 @@ void main() {
     const inner = [cx + (w / 2 - cx) * 0.06 - w * 0.03, cy + (h / 2 - cy) * 0.06 - h * 0.03, w * 0.06, h * 0.06];
     [[R * 0.3, R * 0.3, inner[0], inner[1]], [w - R * 0.3, R * 0.3, inner[0] + inner[2], inner[1]], [R * 0.3, h - R * 0.3, inner[0], inner[1] + inner[3]], [w - R * 0.3, h - R * 0.3, inner[0] + inner[2], inner[1] + inner[3]]].forEach(([ax, ay, bx, by]) => {
       const g = x.createLinearGradient(ax, ay, bx, by); g.addColorStop(0, `rgba(${c._rgb},0.34)`); g.addColorStop(1, `rgba(${c._rgb},0)`);
-      x.strokeStyle = g; x.setLineDash([0.01, Math.hypot(bx - ax, by - ay) / 6]); x.beginPath(); x.moveTo(ax, ay); x.lineTo(bx, by); x.stroke(); });   // 6 dots a line
+      x.strokeStyle = g; x.setLineDash([0.01, Math.hypot(bx - ax, by - ay) / 8]); x.beginPath(); x.moveTo(ax, ay); x.lineTo(bx, by); x.stroke(); });   // 8 dots a line
     // The rings: the card's outline at every depth, moving toward you (a ring is born at the vanishing point, grows to the
     // card's edge and fades there); perspective: s = p^2, so they speed up as they come near, and their dots spread out.
     for (let k = 0; k < RINGS; k++) {
