@@ -44,8 +44,8 @@ body.mcqp-ideate.page-blue .mcqp .backdrop { background:none; }
 
 /* ?page=tunnel: the tunnel-hero prompt's own tunnel behind the whole page (mcq-ideate.js), on its black (bg-black); the
    cards have none. Its canvas sits where the TopoField would (fixed, behind everything). */
-body.mcqp-ideate.page-prompt { background:#17171b; }   /* a softer black than the prompt's (Murci), the shader's base too */
+body.mcqp-ideate.page-prompt { background:#070d1c; }   /* a very dark blue (Murci), the shader's base too (#17171b softer black before) */
 body.mcqp-ideate.page-prompt::before { content:none; }
-body.mcqp-ideate.page-prompt .mcqp { --bg:#17171b; --bg0:rgba(23,23,27,0); }
+body.mcqp-ideate.page-prompt .mcqp { --bg:#070d1c; --bg0:rgba(7,13,28,0); }
 body.mcqp-ideate.page-prompt .mcqp .backdrop { background:none; }
 .pagetun { position:fixed; inset:0; z-index:-1; width:100%; height:100%; pointer-events:none; }

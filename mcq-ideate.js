@@ -150,13 +150,16 @@ void main() {
   // animation with as many particles as it has"): its fragment shader as given (96 rings x 128 points, white / 0.7 grey
   // points, SPEED 0.7), iTime advanced at 0.5 x real time (its demo's speedMultiplier), pixel ratio capped at 2 (its
   // renderer), on black. Only ported from three.js to raw WebGL 1 (three's ShaderMaterial adds the precision line).
-  // Then (Murci: "slow the speed ... lighter black not that pure black"): its clock at 0.12 x (asked twice), and a softer black #17171b.
+  // Then (Murci: "slow the speed ... lighter black not that pure black"): its clock at 0.12 x (asked twice), a softer
+  // black #17171b, then "refine it more ... a dark blue ... very dark": #070d1c, a soft vignette, the nearest points capped.
   // The one change in its shader: points faded toward black (ptColor * shade), which on a lighter base would show the far
   // ones as DARK dots, so they now fade from the base toward white (mix(u_bg, ptColor, shade)); shape and count as given.
   const PROMPT_FS = `precision highp float;
 uniform float iTime;
 uniform vec3 iResolution;
 uniform vec3 u_bg;
+uniform float u_warp; uniform vec3 u_streak; uniform float u_dim;   // the reward streaks (0..1, the medal colour), the miss dim
+uniform vec4 u_zone; uniform vec4 u_zone2; uniform float u_feather;   // the calm reading zones (px, GL origin bottom-left), their soft edge
 #define TAU 6.2831853071795865
 #define TUNNEL_LAYERS 96
 #define RING_POINTS 128
@@ -183,7 +186,10 @@ vec2 TunnelPath(float x){
   offs *= smoothstep(1.0, 4.0, x);
   return offs;
 }
+float boxDist(vec2 p, vec4 b){ vec2 c = (b.xy + b.zw) * 0.5, h = (b.zw - b.xy) * 0.5; vec2 q = abs(p - c) - h; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0); }
 void main(){
+  float calm = max(1.0 - smoothstep(0.0, u_feather, boxDist(gl_FragCoord.xy, u_zone)), 1.0 - smoothstep(0.0, u_feather, boxDist(gl_FragCoord.xy, u_zone2)));
+  if (calm > 0.995) { gl_FragColor = vec4(u_bg, 1.0); return; }   // deep inside a reading zone: nothing to draw, the loop is skipped
   vec2 res = iResolution.xy / iResolution.y;
   vec2 uv = gl_FragCoord.xy / iResolution.y - res/2.0;
   vec3 color = u_bg;
@@ -196,14 +202,21 @@ void main(){
     pz -= mod(camZ, 4.0 / float(TUNNEL_LAYERS));
     vec2 offs = TunnelPath(camZ + pz) - camOffs;
     float ringRad = 0.15 * (1.0 / sq(pz * 0.8 + 0.4));
-    if(abs(length(uv + offs) - ringRad) < pointSize * 1.5){
+    float len = u_warp * min(ringRad * 0.55, 0.22);   // the reward: each point stretched into a streak trailing back toward the centre;
+                                                     // capped (0.22): uncapped, the near rings' streaks were bars piling into a grey mass at the bottom
+    float dr = length(uv + offs) - ringRad;
+    if(dr < pointSize * 1.5 && dr > -(pointSize * 1.5 + len)){
       vec2 aruv = AngRep(uv + offs, repAngle);
-      float pdist = sdCircle(aruv - vec2(ringRad, 0), pointSize);
-      vec3 ptColor = (mod(float(i/2), 2.0) == 0.0) ? POINT_COLOR_A : POINT_COLOR_B;
-      float shade = (1.0 - pz);
+      vec2 sp = aruv - vec2(ringRad - len, 0.0); float hh = len > 0.0 ? clamp(sp.x / len, 0.0, 1.0) : 1.0;
+      float pdist = length(sp - vec2(len * hh, 0.0)) - pointSize;   // a point (len 0) or a streak: the distance to a segment
+      vec3 ptColor = mix((mod(float(i/2), 2.0) == 0.0) ? POINT_COLOR_A : POINT_COLOR_B, u_streak, u_warp);
+      float shade = min(1.0 - pz, 0.85);   // the nearest, biggest points glow rather than glitter (refined: capped at 0.85)
       color = MixShape(pdist, mix(u_bg, ptColor, shade), color);
     }
   }
+  color = mix(color, u_bg, u_dim * 0.6);                             // a miss: the tunnel dims for a beat
+  vec2 vc = gl_FragCoord.xy / iResolution.xy - 0.5; color = mix(color, u_bg, clamp(dot(vc, vc) * 1.1, 0.0, 0.45));   // a soft vignette: depth, and quieter edges
+  color = mix(color, u_bg, calm * 0.85);                            // the reading zones: the tunnel at 15%, soft-edged
   gl_FragColor = vec4(color, 1.0);
 }`;
   let pageT = null;
@@ -217,16 +230,37 @@ void main(){
       if (!pg.getProgramParameter(pp, pg.LINK_STATUS)) throw new Error("mcq-ideate tunnel link: " + pg.getProgramInfoLog(pp));
       pg.useProgram(pp); pg.bindBuffer(pg.ARRAY_BUFFER, pg.createBuffer()); pg.bufferData(pg.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), pg.STATIC_DRAW);
       const at = pg.getAttribLocation(pp, "a"); pg.enableVertexAttribArray(at); pg.vertexAttribPointer(at, 2, pg.FLOAT, false, 0, 0);
-      pageT = { c: pc, gl: pg, time: pg.getUniformLocation(pp, "iTime"), res: pg.getUniformLocation(pp, "iResolution"), iTime: 0, lastS: 0 };
-      pg.uniform3f(pg.getUniformLocation(pp, "u_bg"), 0x17 / 255, 0x17 / 255, 0x1b / 255);   // #17171b: a softer black than the prompt's
-      const size = () => { const d = Math.min(devicePixelRatio || 1, 2); pc.width = Math.round(innerWidth * d); pc.height = Math.round(innerHeight * d);
+      const U = n => pg.getUniformLocation(pp, n);
+      pageT = { c: pc, gl: pg, time: U("iTime"), res: U("iResolution"), warp: U("u_warp"), streak: U("u_streak"), dim: U("u_dim"), zone: U("u_zone"), zone2: U("u_zone2"), feather: U("u_feather"), iTime: 0, lastS: 0, d: 1 };
+      pg.uniform3f(pg.getUniformLocation(pp, "u_bg"), 0x07 / 255, 0x0d / 255, 0x1c / 255);   // #070d1c: a very dark blue (Murci; #17171b softer black before)
+      const size = () => { const d = pageT.d = Math.min(devicePixelRatio || 1, 2); pg.uniform1f(pageT.feather, 110 * d); pc.width = Math.round(innerWidth * d); pc.height = Math.round(innerHeight * d);
         pg.viewport(0, 0, pc.width, pc.height); pg.uniform3f(pageT.res, pc.width, pc.height, 1); };
       size(); addEventListener("resize", size);
     } catch (e) { console.error(e); }
   }
+  // Motion with meaning (Murci chose it, 2026-09-29): calm while reading; a right answer = a warp (the points stretch
+  // into streaks in the medal colour and the tunnel surges, ~1.2 s, from ~0.35 s after the tap, as the card turns right);
+  // a miss = a short dim as the glass breaks; the next question = a glide forward. The page hears the tries from
+  // mcq-play's onAttempt (the page passes them on as an "mq-attempt" event). Reduced motion: none of it.
+  const MEDAL = [[0.89, 0.70, 0.25], [0.76, 0.78, 0.81], [0.85, 0.61, 0.42]];   // gold #e3b341, silver #c3c8cf, bronze #d99b6c (mcq-play.css)
+  const env = (t, t0, up, hold, down) => { const u = t - t0; return u < 0 || u > up + hold + down ? 0 : u < up ? u / up : u < up + hold ? 1 : 1 - (u - up - hold) / down; };
+  const FX = { warpAt: -99, dimAt: -99, glideAt: -99, medal: MEDAL[0], q: null };
+  addEventListener("mq-attempt", e => { if (reduced || !pageT) return; const a = e.detail || {}, now = (performance.now() - t0) / 1000;   // the frame loop's clock (seconds since t0), not performance.now()'s
+    if (a.correct) { FX.warpAt = now + 0.35; FX.medal = MEDAL[Math.min(Math.max((a.tries || 1) - 1, 0), 2)]; } else FX.dimAt = now + 0.45; });
+  // The calm zones: the question + cards + "2 marks" (one box), and the header bar, in the canvas's pixels (GL: y up).
+  function zones() { const d = pageT.d, H = pageT.c.height, box = (els, pad) => { let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
+      els.forEach(e => { if (!e) return; const q = e.getBoundingClientRect(); if (!q.width) return; l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom); });
+      return l > r ? [-9, -9, -9, -9] : [(l - pad) * d, H - (b + pad) * d, (r + pad) * d, H - (t - pad) * d]; };
+    const st = document.querySelector(".mcqp #mq-stage");
+    return [box(st ? [st.querySelector(".qhead"), st.querySelector("h1"), st.querySelector(".qdesc"), st.querySelector("#mq-tiles"), st.querySelector(".qmarks")] : [], 14), box([document.querySelector(".mcqp .top")], 4)]; }
   function drawPage(sec) {   // the prompt's clock (iTime += delta * 0.5), slowed to 0.12 (Murci, twice: "slow the speed", "slower"): 24% of its pace
-    const d = sec - (pageT.lastS || sec); pageT.lastS = sec; pageT.iTime += d * 0.12;
-    pageT.gl.uniform1f(pageT.time, pageT.iTime); pageT.gl.drawArrays(pageT.gl.TRIANGLE_STRIP, 0, 4);
+    const g = pageT.gl, d = sec - (pageT.lastS || sec); pageT.lastS = sec;
+    const q = (document.querySelector(".mcqp h1 .num") || {}).textContent; if (q !== FX.q) { if (FX.q != null && !reduced) FX.glideAt = sec; FX.q = q; }   // a new question: glide
+    const warp = env(sec, FX.warpAt, 0.22, 0.45, 0.55), dim = env(sec, FX.dimAt, 0.25, 0.4, 0.6), glide = env(sec, FX.glideAt, 0.3, 0.2, 0.5);
+    pageT.iTime += d * 0.12 * (1 + 7 * warp + 3 * glide) * (1 - 0.6 * dim);   // the warp surges, the glide moves on, the dim slows
+    g.uniform1f(pageT.time, pageT.iTime); g.uniform1f(pageT.warp, warp); g.uniform3f(pageT.streak, ...FX.medal); g.uniform1f(pageT.dim, dim);
+    const [z1, z2] = zones(); g.uniform4f(pageT.zone, ...z1); g.uniform4f(pageT.zone2, ...z2);
+    g.drawArrays(g.TRIANGLE_STRIP, 0, 4);
   }
 
   const t0 = performance.now(); let last = 0;
