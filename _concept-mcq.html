@@ -23,24 +23,22 @@
   /* A low glow in the page's own blue (the top glow's colour) behind the cards: kept from the backdrop experiment */
   .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(560px 320px at 50% 44%, rgba(30,70,255,0.16), transparent 72%); }   /* B: cobalt light behind the glass (the glass takes its colour from here) */
   .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
-  .seg { flex:1; display:flex; gap:6px; padding:11px 0; margin:-11px 0; cursor:pointer; }   /* a 28 px tap band round the 6 px bar */ .seg i { flex:1; height:6px; border-radius:6px; background:var(--line2); position:relative; overflow:hidden; }
-  .seg i.on { background:var(--line2); box-shadow:0 0 12px rgba(30,70,255,0.45); }
-  .seg i.on::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--grad); transform-origin:left; }
-  .seg i.on.arrive::after { animation:fillseg 700ms cubic-bezier(.3,.7,.2,1) both; }                  /* the path runs on to the next question */
-  @keyframes fillseg { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-  .seg i { background:#626a73; } .seg i.on { background:#626a73; }   /* unfilled segments at 3:1 on the page (were 1.6:1) */
-  .seg i.gold { background:#e3b341; } .seg i.silver { background:#c3c8cf; } .seg i.bronze { background:#b0764a; } .seg i.none { background:#f2777a; }
-  .seg i.cur.gold { box-shadow:0 0 12px rgba(227,179,65,0.6); } .seg i.cur.silver { box-shadow:0 0 12px rgba(195,200,207,0.5); } .seg i.cur.bronze { box-shadow:0 0 12px rgba(176,118,74,0.6); } .seg i.cur.none { box-shadow:0 0 12px rgba(242,119,122,0.6); }
   .stage.enter .qhead, .stage.enter .qdesc, .stage.enter h1, .stage.enter .ab { animation:rise 460ms cubic-bezier(.2,.8,.2,1) both; } .stage.enter h1, .stage.enter .ab { animation-delay:70ms; }
   .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .marks .of { color:var(--text3); font-weight:600; } .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
   .bump { animation:bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes bump { 40% { transform:scale(1.14); } }
   .mute[hidden] { display:none; } #motion { color:var(--text3); } #motion[aria-pressed="true"] { color:var(--tint); border-color:rgba(96,150,248,0.5); }
   .mute { width:40px; height:38px; justify-content:center; font:inherit; cursor:pointer; padding:0; }
+  .mapbtn { display:flex; align-items:center; gap:7px; height:38px; padding:0 13px 0 11px; margin-right:auto; border-radius:12px; border:1px solid var(--line2);
+    background:transparent; color:var(--text); font:inherit; font-size:14px; font-weight:800; cursor:pointer; }
+  .mapbtn:hover { border-color:var(--text3); } .mapbtn:focus-visible { outline:2px solid var(--tint); outline-offset:2px; }
   .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; } .streak:empty { display:none; }   /* no streak: no reserved space */
   /* Phone: the bar needs ~377 px in one row, so the progress runs full width on its own row and the rest sits under it
      (in one row it pushed the page to 407 px on a 375 px phone, and every full-screen layer, the hero included, with it). */
-  @media (max-width:600px) { .top { flex-wrap:wrap; justify-content:flex-end; row-gap:10px; gap:8px; padding:12px 14px; } .top .seg { flex:1 0 100%; } .top:has(.streak:not(:empty)) .seg { flex-basis:calc(100% - 84px); } .top .streak { font-size:11px; line-height:6px; }   /* as tall as the bar: a streak appearing moves nothing (it moved the chips 9 px) */   /* a streak shares the progress row (it follows .seg), never the crowded second row */ .top > :not(.seg) { flex-shrink:0; } .xp, .mute { padding:7px 10px; } .mute { width:38px; height:36px; padding:0; } }
+  @media (max-width:600px) { .mapbtn { width:38px; padding:0; justify-content:center; } .mapbtn .lbl { display:none; }
+    .streak { position:absolute; top:3px; right:8px; min-width:0; font-size:0; } .streak::after { content:"\00d7" attr(data-n); font-size:10px; font-weight:800; color:#1b1400; background:var(--gold); padding:1px 5px; border-radius:6px; } }
+  @media (max-width:340px) { .marks .lbl { display:none; } }
+  @media (max-width:600px) { .top { flex-wrap:wrap; justify-content:flex-end; row-gap:10px; gap:8px; padding:12px 14px; } .top > * { flex-shrink:0; } .xp, .mute { padding:7px 10px; } .mute { width:38px; height:36px; padding:0; } }
   .stage { max-width:760px; margin:0 auto; padding:6px 18px 270px; }   /* room to scroll the last card above the dock */
   /* Above the question, as on the paper: its group ("Question 1.1") and the paper's description, if it has one */
   .qhead { display:flex; align-items:center; gap:10px; }
@@ -359,44 +357,60 @@
   /* ===================== Light mode ===================== The platform's light palette; every surface redrawn for a
      light page: frosted white glass with a darker hairline (a white rim vanishes on white), lighter shadows, pale medal
      backs with darker ink, a light scrim, a solid Next. */
-  html[data-theme="light"] { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f4f5f7; --panel:#ffffff; --field:#fbfcfd; --line:#e3e5ea; --line2:#a9b0bb;
+  html[data-theme="light"] { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f1f3f6; --panel:#f8f9fb; --field:#f6f7fa; --line:#e3e5ea; --line2:#a9b0bb;
     --text:#14161a; --text2:#41464c; --text3:#5f656c; --tint:#1e46ff; --ok:#1d8757; --danger:#d23f45; --gold:#a8760c; }
-  html[data-theme="light"] body { background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.08), transparent 70%), var(--bg); }
-  html[data-theme="light"] .backdrop { background:radial-gradient(520px 300px at 50% 46%, rgba(30,70,255,0.06), transparent 72%); }
-  html[data-theme="light"] .seg i:not(.gold):not(.silver):not(.bronze):not(.none) { background:#858d99; }   /* unfinished only: the medal colours stay */ html[data-theme="light"] .seg i.silver { background:#9aa3ae; } html[data-theme="light"] .num { background:rgba(30,70,255,0.08); }
-  html[data-theme="light"] .retry { background:#ffffff; }
+  html[data-theme="light"] body { background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.1), transparent 70%), var(--bg); }
+  html[data-theme="light"] .backdrop { background:radial-gradient(560px 320px at 50% 44%, rgba(30,70,255,0.12), transparent 72%); }   /* stronger on a light page: it is what tints the glass */
+  html[data-theme="light"] .num { background:rgba(30,70,255,0.08); }
+  html[data-theme="light"] .retry { background:var(--panel); }
   /* the glass: frosted white, a dark-edged hairline, a soft cool shadow */
-  html[data-theme="light"] .face { --top:rgba(255,255,255,0.78); --low:rgba(255,255,255,0.52);
+  html[data-theme="light"] .face { --top:rgba(232,237,248,0.82); --low:rgba(221,228,244,0.62);   /* cool grey-blue glass (it takes the cobalt light behind it), never white */
     --glass-in:inset 0 -8px 16px -12px rgba(30,60,160,0.16);
-    box-shadow:0 18px 32px -20px rgba(20,30,70,0.28), var(--glass-in); }
-  html[data-theme="light"] .face::before, html[data-theme="light"] .back::before { background:linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.24) 22%, rgba(20,30,60,0.18) 60%, rgba(20,30,60,0.3)); }
+    box-shadow:0 16px 30px -16px rgba(20,30,70,0.34), var(--glass-in); }
+  html[data-theme="light"] .face::before, html[data-theme="light"] .back::before { background:linear-gradient(145deg, rgba(255,255,255,0.7), rgba(20,30,60,0.3) 22%, rgba(20,30,60,0.24) 60%, rgba(20,30,60,0.36)); }
   html[data-theme="light"] .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before { background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(60,90,255,0.75) 330deg, transparent 350deg),
-    linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.24) 22%, rgba(20,30,60,0.18) 60%, rgba(20,30,60,0.3)); }
-  html[data-theme="light"] .letter { background:rgba(20,30,60,0.05); border-color:rgba(20,30,60,0.34); color:var(--text); box-shadow:inset 0 1px 0 #fff; }
+    linear-gradient(145deg, rgba(255,255,255,0.7), rgba(20,30,60,0.3) 22%, rgba(20,30,60,0.24) 60%, rgba(20,30,60,0.36)); }
+  html[data-theme="light"] .letter { background:rgba(20,30,60,0.06); border-color:rgba(20,30,60,0.36); color:var(--text); box-shadow:inset 0 1px 0 rgba(255,255,255,0.55); }
   html[data-theme="light"] .tile.sel .face { box-shadow:0 24px 38px -18px rgba(20,30,70,0.38), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
   html[data-theme="light"] .tile.raised .face { box-shadow:0 30px 48px -20px rgba(20,30,70,0.42), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
   html[data-theme="light"] .tile.sel { --cast:rgba(60,80,140,0.35); }
   html[data-theme="light"] .tile.no .face, html[data-theme="light"] .tile.yes .face { box-shadow:0 18px 32px -20px rgba(20,30,70,0.3), var(--glass-in); }
   html[data-theme="light"] .tile.yes .face { --top:rgba(61,220,151,0.2); --low:rgba(61,220,151,0.06); }
   html[data-theme="light"] .vline rect { stroke:#16a36a; filter:drop-shadow(0 0 2px rgba(22,163,106,0.6)); } html[data-theme="light"] .vline.no rect { stroke:#e0454b; filter:drop-shadow(0 0 2px rgba(224,69,75,0.6)); }
-  html[data-theme="light"] .gleam::after { background:linear-gradient(180deg, transparent, rgba(255,255,255,0.7) 14%, rgba(255,255,255,0.15) 70%, transparent); }
+  html[data-theme="light"] .gleam::after { background:linear-gradient(180deg, transparent, rgba(255,255,255,0.4) 14%, rgba(255,255,255,0.08) 70%, transparent); }
   html[data-theme="light"] .cracks .lo { stroke:rgba(20,25,50,0.55); }
   html[data-theme="light"] .tile.dead .face::after { background:rgba(244,245,247,0.5); }   /* dimmed, still readable (at 0.72 the words all but vanished) */
   html[data-theme="light"] .tile.dead .face { box-shadow:0 1px 1px rgba(20,30,60,0.08), 0 8px 16px -12px rgba(20,30,60,0.2); }
   html[data-theme="light"] .scrim { background:rgba(20,24,32,0.32); }
   /* the answer's back: pale, the ink darker; the medal colours stay */
-  html[data-theme="light"] .back { background:linear-gradient(180deg,#ffffff,#f2f4f7); box-shadow:0 0 0 1px var(--line2); }
+  html[data-theme="light"] .back { background:linear-gradient(180deg,#f5f6f9,#e8ebf1); box-shadow:0 0 0 1px var(--line2); }
   html[data-theme="light"] .tile.gold { --ink:#8f6200; --glow:rgba(227,179,65,0.35); } html[data-theme="light"] .tile.silver { --ink:#56606b; --glow:rgba(150,160,175,0.35); } html[data-theme="light"] .tile.bronze { --ink:#8f4f24; --glow:rgba(200,130,80,0.35); }
-  html[data-theme="light"] .tile.gold .back { background:linear-gradient(180deg,#fff9e8,#f9ecc8); box-shadow:0 18px 40px rgba(200,150,40,0.22), 0 0 0 2px var(--ring), inset 0 1px 0 #fff; }
-  html[data-theme="light"] .tile.silver .back { background:linear-gradient(180deg,#fafbfc,#eceff3); box-shadow:0 18px 40px rgba(120,130,150,0.2), 0 0 0 2px var(--ring), inset 0 1px 0 #fff; }
-  html[data-theme="light"] .tile.bronze .back { background:linear-gradient(180deg,#fff4ec,#f5e0cf); box-shadow:0 18px 40px rgba(180,110,60,0.2), 0 0 0 2px var(--ring), inset 0 1px 0 #fff; }
+  html[data-theme="light"] .tile.gold .back { background:linear-gradient(180deg,#faefd3,#f1dca6); box-shadow:0 18px 40px rgba(200,150,40,0.25), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.5); }
+  html[data-theme="light"] .tile.silver .back { background:linear-gradient(180deg,#eef0f4,#dde1e8); box-shadow:0 18px 40px rgba(120,130,150,0.24), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.5); }
+  html[data-theme="light"] .tile.bronze .back { background:linear-gradient(180deg,#f8e6d8,#edd0b8); box-shadow:0 18px 40px rgba(180,110,60,0.24), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.5); }
   html[data-theme="light"] .back .ans, html[data-theme="light"] .tile.gold .why { color:var(--text); } html[data-theme="light"] .back .not { border-top-color:rgba(20,30,60,0.12); }
   html[data-theme="light"] .tile.shine .face { box-shadow:0 0 0 2px var(--ring), 0 0 36px var(--glow), 0 18px 32px -20px rgba(20,30,70,0.3), var(--glass-in); }
   /* the thought bubble: the same lit oval, a firmer outline and shadow so white reads on a light page */
-  html[data-theme="light"] .pal-say { --cloudShadow:drop-shadow(0 8px 14px rgba(20,30,70,0.2)) drop-shadow(0 0 0.7px rgba(20,30,70,0.55)); }
+  html[data-theme="light"] .pal-say { --c0:#f6f8fb; --c1:#e8ecf3; --c2:#d0d7e2; --c3:#aab4c3; --cloudShadow:drop-shadow(0 8px 14px rgba(20,30,70,0.2)) drop-shadow(0 0 0.7px rgba(20,30,70,0.55)); }
   /* Next: solid blue on a light page (the dark theme's translucent pill would leave white text on pale blue) */
   html[data-theme="light"] .next { background:linear-gradient(180deg,#3d57ff,#2539f0); box-shadow:0 12px 26px -12px rgba(37,57,240,0.6), inset 0 1px 1px rgba(255,255,255,0.45); }
+  html[data-theme="light"] .ms-in { box-shadow:0 24px 60px -20px rgba(20,30,70,0.35); } html[data-theme="light"] .mapsheet { background:rgba(20,24,32,0.35); }
   html[data-theme="light"] .toast.ok { background:#e6f6ee; color:#156543; } html[data-theme="light"] .toast.no { background:#fdecec; color:#ad2a31; }
+  /* The map (here a sheet; in the prototype, its map screen): every question group and its sub-questions, with results */
+  .mapsheet { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:18px; background:rgba(10,12,16,0.55); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .mapsheet[hidden] { display:none; }
+  .ms-in { width:min(420px, 100%); max-height:80vh; overflow:auto; background:var(--panel); border:1px solid var(--line2); border-radius:18px; padding:14px 16px 16px; box-shadow:0 24px 60px -20px rgba(0,0,0,0.6); }
+  .ms-head { display:flex; align-items:center; justify-content:space-between; font-size:18px; font-weight:800; margin-bottom:6px; }
+  .ms-x { width:34px; height:34px; border-radius:10px; border:0; background:transparent; color:var(--text2); font:inherit; font-size:24px; line-height:1; cursor:pointer; }
+  .ms-x:hover { background:var(--line); color:var(--text); }
+  .ms-grp { margin-top:12px; font-size:13px; font-weight:800; color:var(--text2); letter-spacing:0.02em; }
+  .ms-q { display:flex; align-items:center; gap:10px; width:100%; margin-top:6px; padding:10px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text); font:inherit; font-size:14px; text-align:left; cursor:pointer; }
+  .ms-q:hover { border-color:var(--text3); } .ms-q:focus-visible { outline:2px solid var(--tint); outline-offset:2px; }
+  .ms-q .n { flex:none; font-size:12px; font-weight:800; color:var(--tint); } .ms-q .t { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ms-q .d { flex:none; width:12px; height:12px; border-radius:50%; box-shadow:inset 0 0 0 2px var(--line2); }   /* hollow: not answered yet; a filled dot is always a result */
+  html[data-theme="light"] .ms-q.silver .d { background:#8e98a5; }
+  .ms-q.gold .d { background:#e3b341; } .ms-q.silver .d { background:#c3c8cf; } .ms-q.bronze .d { background:#b0764a; } .ms-q.none .d { background:var(--danger); }
+  .ms-q.cur { border-color:var(--tint); }
 </style>
 </head>
 <body>
@@ -414,7 +428,7 @@
 <canvas id="fx"></canvas>
 <div class="shards" id="shards" aria-hidden="true"></div>
 <div class="top">
-  <div class="seg" id="seg"></div>
+  <button class="mapbtn" id="mapBtn" aria-haspopup="dialog" aria-label="Map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span class="lbl">Map</span></button>
   <div class="streak" id="streak"></div>
   <button class="mute" id="motion" hidden aria-pressed="false" aria-label="Tilt the glass with your phone" title="Tilt"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="18" rx="2" transform="rotate(-14 12 12)"/><path d="M3.5 9.5a9 9 0 0 0 0 5M20.5 9.5a9 9 0 0 1 0 5"/></svg></button>
   <button class="mute" id="mute" aria-pressed="false" aria-label="Sound on" title="Sound">🔊</button>
@@ -426,6 +440,8 @@
   <div class="say" id="say"></div>
 </div></div>
 <div class="toast" id="toast" role="status"></div>
+<div class="mapsheet" id="mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="msTitle">
+  <div class="ms-head"><span id="msTitle">Map</span><button class="ms-x" id="msX" aria-label="Close map">&times;</button></div><div id="msList"></div></div></div>
 <p class="sr" id="live" aria-live="polite"></p>
 <script>
 const P = window.PAPER_LS_P1_2026, ITEMS = {};
@@ -559,9 +575,8 @@ function press(i) {
 function paintTiles() { document.querySelectorAll(".tile").forEach(t => { const i = +t.dataset.i, on = S.sel === i && !S.done;
   t.classList.toggle("sel", on); t.querySelector(".face").setAttribute("aria-checked", String(S.sel === i)); }); }
 function say() { $("say").textContent = S.done ? "" : S.sel == null ? "" : `Tap ${L[S.sel]} to answer`; }
-function paintTop() { $("seg").innerHTML = ORDER.map(n => { const b = book[n], cur = n === S.it.n, c = b ? b.tier + (cur ? " cur" : "") : cur ? "on" : "";   // scored: its medal, or red
-    return `<i class="${c}" title="${n}${b ? " · " + b.tier : ""}" aria-label="Question ${n}${b ? ", " + (b.tier === "none" ? "not answered" : b.tier) : ""}"></i>`; }).join(""); $("xp").textContent = xp;
-  $("streak").textContent = streak >= 2 ? `${streak} in a row` : "";
+function paintTop() { $("xp").textContent = xp;
+  $("streak").textContent = streak >= 2 ? `${streak} in a row` : ""; $("streak").dataset.n = streak;
   const tr = document.querySelector(".tries"), left = Math.max(0, 3 - S.tries);
   // a dot per try: red for each wrong one, green for the right one, the tries still to come in the tint
   const wrong = S.gone.size, right = S.done && S.tries > wrong;
@@ -630,6 +645,17 @@ function placeNext() { const hero = $("heroLayer").querySelector(".tile.hero"), 
   if (cont) { $("heroLayer").appendChild(c); NEXT.remove(); } else { if (c) c.remove(); (hero ? $("heroLayer") : $("after") || $("stage")).appendChild(NEXT); }
   if ($("retry")) $("retry").hidden = !(S.done && !hero); }
 // A tap outside the open card, or on it: inside a group it continues; between groups it puts the card back.
+// The map: every group (as on the paper) and its sub-questions, each with its result; a tap opens that question.
+function openMap() { if (S.busy) return; const groups = [];
+  ORDER.forEach(n => { const g = GROUP[n] || {}; let row = groups.find(x => x.g === g); if (!row) groups.push(row = { g, items: [] }); row.items.push(n); });
+  $("msList").innerHTML = groups.map(({ g, items }) => `<div class="ms-grp">${g.title || ""}${g.kind ? " · " + g.kind : ""}</div>` + items.map(n => { const b = book[n], it = ITEMS[n];
+    return `<button class="ms-q ${b ? b.tier : ""}${n === S.it.n ? " cur" : ""}" data-q="${n}"><span class="n">${n}</span><span class="t">${it.q.replace(/<[^>]+>/g, "")}</span><span class="d" aria-label="${b ? (b.tier === "none" ? "not answered" : b.tier) : n === S.it.n ? "current" : "not started"}"></span></button>`; }).join("")).join("");
+  $("msList").querySelectorAll(".ms-q").forEach(b => b.onclick = () => { closeMap(); if (b.dataset.q !== S.it.n) go(b.dataset.q); });
+  $("mapSheet").hidden = false; $("msX").focus(); }
+function closeMap() { $("mapSheet").hidden = true; $("mapBtn").focus({ preventScroll: true }); }
+$("mapBtn").onclick = openMap; $("msX").onclick = closeMap;
+$("mapSheet").addEventListener("click", e => { if (e.target === e.currentTarget) closeMap(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("mapSheet").hidden) { e.stopImmediatePropagation(); closeMap(); } }, true);
 function tapOut() { if (S.done && !S.busy && $("cont") && $("cont").isConnected) next(); else dismiss(); }
 function showNext() { placeNext(); NEXT.classList.add("show"); ($("cont") && $("cont").isConnected ? $("cont") : NEXT).focus({ preventScroll: true }); nextInView(); }
 // Under the grid, Next can land behind the dock's solid fade (a tall question on a short screen): bring it up into view.
@@ -1013,7 +1039,7 @@ function go(n, practice = false) { if (leaving) return; if (reduced) return arri
   palCleanUp();                                                                                // the robot gets up and sweeps the glass away
   Promise.all(outs).then(() => arrive(n, practice)).catch(() => arrive(n, practice)); }
 function arrive(n, practice = false) { leaving = false; if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n, practice);
-  const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
+  setTimeout(() => st.classList.remove("enter"), 900); }
 NEXT.onclick = next;
 $("scrim").onclick = () => tapOut();
 $("heroLayer").addEventListener("click", e => { if (e.target === e.currentTarget) tapOut(); });   // phone: the layer takes taps (it scrolls); its empty area = the scrim
@@ -1054,10 +1080,6 @@ function fly(t, text, box) { if (text === "+0") return; const r = t.getBoundingC
   requestAnimationFrame(() => { e.style.transform = `translate(${to.left - r.left - r.width / 2}px, ${to.top - r.top}px) scale(0.7)`; e.style.opacity = "0.2"; });
   setTimeout(() => e.remove(), 950); }
 
-// The progress bar is the question list: a tap on a segment opens that question (the segment under the finger, with a
-// taller hit band than the 6 px bar). The back arrow beside "Question 1.1" opens the one before.
-$("seg").addEventListener("click", e => { const k = [...$("seg").children].findIndex(i => { const b = i.getBoundingClientRect(); return e.clientX >= b.left - 3 && e.clientX <= b.right + 3; });
-  if (k >= 0 && ORDER[k] !== S.it.n && !S.busy) go(ORDER[k]); });
 try { localStorage.removeItem("mcq.backdrop"); } catch (e) {}           // the retired backdrop switch's saved choice
 palMake();
 load("1.1.1");
