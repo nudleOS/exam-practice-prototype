@@ -37,7 +37,13 @@ html[data-nx="light"] body.nx-play {
    the body's box, which is short here (the play screen is mostly fixed layers), so the html's charcoal showed around it. */
 body.nx-play { background:transparent !important; }
 .nx-bg { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; color:var(--nx-doodle); background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)); }
-.nx-doodle { position:absolute; fill:none; stroke:currentColor; stroke-width:1.15; stroke-linecap:round; stroke-linejoin:round; overflow:visible; }
+/* the doodles (Murci, 2026-09-29: sharp, many, not too large): two tiles of Lucide icons (assets/scenery/life-sciences/doodles-a/b.svg,
+   16 icons each, 22-34 px, each line drawn at 1.4 px whatever the icon's size), used as a MASK so the theme's --nx-doodle colours
+   them. Two tile sizes (360 and 470 px), offset, so the repeat does not read as a grid. Before: 18 icons up to 120 px, their 1.15
+   line scaled with them to ~5.75 px, soft and thick. */
+.nx-doodles { position:absolute; inset:0; background:var(--nx-doodle);
+  -webkit-mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat;
+  mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat; }
 /* Rendered art (Gemini, 2026-09-29), cut off its magenta by assets/scenery/cutout.py: rocks-left 633x375 (the flat-topped
    rock the robot stands on), rocks-right 613x322. A CSS background, not an <img>: the browser downloads only the pair of
    the theme in use (a hidden <img> still downloads). Light uses the render as is; dark uses the night grade (rocks darkened
@@ -51,7 +57,7 @@ html[data-nx="dark"] .nx-rocks-r { background-image:url("assets/scenery/life-sci
    rocks-left: the flat top's middle is at x 0.864 and 0.560 up, as fractions of the art's height; the art starts 0.3 of its
    height off the left edge (the ferns bleed off-screen, as the mockup's rocks do), so the feet are 0.564 across. */
 body.nx-play { --nx-rh:min(30vh, 250px); --nx-rl:-0.3; --nx-fx:calc(0.864 + var(--nx-rl)); --nx-fy:0.56; }
-@media (max-width:600px) { body.nx-play { --nx-rh:min(22svh, 170px); } .nx-doodle { opacity:0.8; } }
+@media (max-width:600px) { body.nx-play { --nx-rh:min(22svh, 170px); } .nx-doodles { opacity:0.8; } }
 /* a short phone (360x640, 375x667): a lower rock, so the robot's corner takes less of the height */
 @media (max-width:600px) and (max-height:740px) { body.nx-play { --nx-rh:min(18svh, 170px); } }
 
