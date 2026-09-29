@@ -1,0 +1,410 @@
+/* mcq-play: the MCQ experience (glass cards, the break, the robot, the answer card), scoped under .mcqp.
+   Built from the concept page on 2026-09-29; edit here from now on. */
+.mcqp { color-scheme:dark; --bg0:rgba(25,27,30,0); --bg:#191b1e; --panel:#202327; --field:#23262a; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
+    --tint:color-mix(in oklch, #0068f8 55%, #ffffff); --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451;
+    --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
+  .mcqp, .mcqp * { box-sizing:border-box; }
+  
+  /* The robot's height: 280 desktop, 218 phone, never more than half a short screen (a phone on its side) */
+  .mcqp { --ph:min(280px, 50vh); } @media (max-width:600px) { .mcqp { --ph:min(218px, 40vh); } }
+  
+  .mcqp .top, .mcqp .stage, .mcqp .dock { position:relative; z-index:1; }
+  .mcqp .top { z-index:40; }   /* above the scrim: XP and marks stay lit while the hero card is up, and a question chip takes the tap (not the scrim) */
+  /* A low glow in the page's own blue (the top glow's colour) behind the cards: kept from the backdrop experiment */
+  .mcqp .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(560px 320px at 50% 44%, rgba(30,70,255,0.16), transparent 72%); }   /* B: cobalt light behind the glass (the glass takes its colour from here) */
+  .mcqp .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
+  .mcqp .stage.enter .qhead, .mcqp .stage.enter .qdesc, .mcqp .stage.enter h1, .mcqp .stage.enter .ab { animation:mq-rise 460ms cubic-bezier(.2,.8,.2,1) both; } .mcqp .stage.enter h1, .mcqp .stage.enter .ab { animation-delay:70ms; }
+  .mcqp .xp, .mcqp .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
+  .mcqp .marks .of { color:var(--text3); font-weight:600; } .mcqp .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
+  .mcqp .bump { animation:mq-bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes mq-bump { 40% { transform:scale(1.14); } }
+  .mcqp .mute[hidden] { display:none; } .mcqp #mq-motion { color:var(--text3); } .mcqp #mq-motion[aria-pressed="true"] { color:var(--tint); border-color:rgba(96,150,248,0.5); }
+  .mcqp .mute { width:40px; height:38px; justify-content:center; font:inherit; cursor:pointer; padding:0; }
+  .mcqp .mapbtn { display:flex; align-items:center; gap:7px; height:38px; padding:0 13px 0 11px; margin-right:auto; border-radius:12px; border:1px solid var(--line2);
+    background:transparent; color:var(--text); font:inherit; font-size:14px; font-weight:800; cursor:pointer; }
+  .mcqp .mapbtn:hover { border-color:var(--text3); } .mcqp .mapbtn:focus-visible { outline:2px solid var(--tint); outline-offset:2px; }
+  .mcqp .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; } .mcqp .streak:empty { display:none; }   /* no streak: no reserved space */
+  /* Phone: the bar needs ~377 px in one row, so the progress runs full width on its own row and the rest sits under it
+     (in one row it pushed the page to 407 px on a 375 px phone, and every full-screen layer, the hero included, with it). */
+  @media (max-width:600px) { .mcqp .mapbtn { width:38px; padding:0; justify-content:center; } .mcqp .mapbtn .lbl { display:none; }
+    .mcqp .streak { position:absolute; top:3px; right:8px; min-width:0; font-size:0; } .mcqp .streak::after { content:"\00d7" attr(data-n); font-size:10px; font-weight:800; color:#1b1400; background:var(--gold); padding:1px 5px; border-radius:6px; } }
+  @media (max-width:340px) { .mcqp .marks .lbl { display:none; } }
+  @media (max-width:600px) { .mcqp .top { flex-wrap:wrap; justify-content:flex-end; row-gap:10px; gap:8px; padding:12px 14px; } .mcqp .top > * { flex-shrink:0; } .mcqp .xp, .mcqp .mute { padding:7px 10px; } .mcqp .mute { width:38px; height:36px; padding:0; } }
+  .mcqp .stage { max-width:760px; margin:0 auto; padding:6px 18px 270px; }   /* room to scroll the last card above the dock */
+  /* Above the question, as on the paper: its group ("Question 1.1") and the paper's description, if it has one */
+  .mcqp .qhead { display:flex; align-items:center; gap:10px; }
+  .mcqp .qback { display:grid; place-items:center; width:28px; height:28px; margin:-4px 0 -4px -6px; border:0; border-radius:9px; background:transparent; color:var(--text2); font:inherit; font-size:22px; line-height:1; cursor:pointer; }
+  .mcqp .qback:hover { background:var(--line); color:var(--text); } .mcqp .qback:focus-visible { outline:2px solid var(--tint); outline-offset:2px; }
+  .mcqp .after { display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .mcqp .after .next { margin:0; }
+  .mcqp .retry { height:46px; padding:0 18px; border-radius:999px; font:inherit; font-size:14px; font-weight:800; color:var(--text); cursor:pointer;
+    background:rgba(255,255,255,0.05); border:1px solid var(--line2); }
+  .mcqp .retry:hover { border-color:var(--text3); } .mcqp .retry:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
+  .mcqp .cont { justify-self:center; border:0; background:transparent; font:inherit; font-size:13px; font-weight:700; color:var(--text2); letter-spacing:0.02em; padding:10px 16px; cursor:pointer; pointer-events:auto; animation:mq-rise 400ms ease 300ms both; }
+  .mcqp .cont:focus-visible { outline:2px solid var(--tint); outline-offset:2px; border-radius:10px; }
+  .mcqp .qtitle { font-size:24px; font-weight:800; color:var(--text); letter-spacing:-0.01em; }   /* the group: a step above the question's own text */
+  .mcqp .qdesc { margin:8px 0 0; font-size:14px; line-height:1.5; color:var(--text2); max-width:62ch; }
+  .mcqp .ab { display:grid; gap:6px; margin:-8px 0 18px 0; font-size:16px; font-weight:600; color:var(--text); }   /* Column II's A and B */
+  .mcqp .ab b { display:inline-block; width:26px; color:var(--tint); font-weight:800; }
+  .mcqp .qmarks { margin-top:12px; text-align:right; font-size:12.5px; font-weight:700; color:var(--text3); }
+  .mcqp .num { color:var(--tint); background:rgba(96,150,248,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
+  .mcqp .tries { margin-left:auto; display:flex; gap:5px; } .mcqp .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .mcqp .tries i.live { background:var(--tint); }
+  .mcqp .tries i.no { background:var(--danger); } .mcqp .tries i.yes { background:var(--ok); }
+  .mcqp h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+  .mcqp h1 .num { font-size:13px; line-height:1.3; letter-spacing:0; }   /* the sub-question's number on its own line; the question under it, from the same left edge */
+  /* Cards: a front (the option) and a back (the why) */
+  .mcqp .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
+  @media (max-width:600px) { .mcqp .tiles { grid-template-columns:1fr; } .mcqp h1 { font-size:19px; } }
+  .mcqp .tile { position:relative; min-height:96px; transform-style:preserve-3d; transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 260ms, filter 420ms ease; }
+  .mcqp .tile::before { content:""; position:absolute; left:16%; right:16%; bottom:-11px; height:5px; border-radius:50%; pointer-events:none;   /* its reflection on the glossy floor: a crisp line, not a glow */
+    background:radial-gradient(closest-side, var(--cast, rgba(170,190,255,0.55)), transparent); filter:blur(1.5px); opacity:0.8; transition:opacity 520ms ease var(--dd, 0s); }
+  .mcqp .tile.sel { --cast:rgba(215,225,255,0.75); } .mcqp .tile.gold { --cast:rgba(227,179,65,0.55); } .mcqp .tile.silver { --cast:rgba(210,216,224,0.5); } .mcqp .tile.bronze { --cast:rgba(217,155,108,0.5); }
+  .mcqp .tile.dead::before { opacity:0.12; }
+  .mcqp .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
+  /* Selected: larger, on top of its neighbours, leaning a little toward the middle (as D in Murci's screenshot 2) */
+  /* Selected: its glass grows into the space around it and lies over its neighbours (Murci's screenshot 2). The pane grows,
+     not the content: the letter and text stay their size at top-left, with more glass around them. Offsets per card (JS). */
+  .mcqp .tile.raised { z-index:6; transform:none; }
+  .mcqp .tile.raised .side { top:var(--rt, 0px); right:var(--rr, 0px); bottom:var(--rb, 0px); left:var(--rl, 0px); width:auto; height:auto; }   /* the edges decide its size, not 100% */
+  .mcqp .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.55), 0 0 18px rgba(255,255,255,0.12), var(--glass-in); }
+  .mcqp .tile.flipped { transform:rotateY(180deg); }
+  .mcqp .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+  .mcqp .surface { background:var(--panel); border:1px solid var(--line); }
+  .mcqp .face { display:flex; gap:12px; align-items:flex-start; width:100%; height:100%; text-align:left; font:inherit; color:var(--text); padding:16px 16px 16px 14px; cursor:pointer; overflow:hidden;
+    /* Liquid glass (Murci's pick), in layers (top to bottom): a glint where the pointer is (--mx/--my, it follows the
+       tilt too); a soft light pooled at the top; the body, very clear; a fine grain. The 2px rim is ::before, the
+       window reflection is .gleam::after, the soft glowing inner edge is the insets, the light under it is .tile::before. */
+    --top:rgba(255,255,255,0.05); --low:rgba(255,255,255,0.02);
+    --glass-in:inset 0 0 14px rgba(255,255,255,0.07), inset 0 -8px 16px -10px rgba(120,165,250,0.25);
+    border:0;   /* no border: the rim alone is the edge (a transparent border let the glass show a second line) */
+    background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.1), transparent 70%),
+      linear-gradient(115deg, transparent 0 34%, rgba(255,255,255,0.09) 38%, rgba(255,255,255,0.02) 46%, transparent 47%),   /* a crisp diagonal glint, not a soft pool */
+      linear-gradient(180deg, rgba(255,255,255,0.08), transparent 26%),
+      linear-gradient(180deg, var(--top), var(--low)) 0 0 / 180px 180px;
+    box-shadow:0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in);
+    -webkit-backdrop-filter:blur(24px) saturate(170%) brightness(1.08); backdrop-filter:blur(24px) saturate(170%) brightness(1.08);
+    transform:perspective(700px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg));
+    transition:box-shadow 240ms, border-color 240ms, transform 260ms cubic-bezier(.2,.8,.2,1), top 400ms cubic-bezier(.2,.8,.2,1), right 400ms cubic-bezier(.2,.8,.2,1), bottom 400ms cubic-bezier(.2,.8,.2,1), left 400ms cubic-bezier(.2,.8,.2,1); }
+  /* The rim: a thick 2px ring drawn with a mask, bright where light hits (top-left), dim along the sides, bright again
+     on the far edge (bottom-right), as a thick pane's edge carries light. */
+  .mcqp .face::before, .mcqp .back::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; z-index:2;   /* 1 px: a knife edge */
+    background:linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2) 18%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.09) 70%, rgba(255,255,255,0.42));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+  /* The shine: a short bright arc runs around the edge of each waiting card (a conic gradient turned by an animated
+     angle, inside the same 1 px ring). Each card starts at a different point of the lap so they never flash together. */
+  @property --ga { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+    background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(255,255,255,0.95) 330deg, transparent 350deg),
+      linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2) 18%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.09) 70%, rgba(255,255,255,0.42));
+    animation:mq-edgeShine 6s linear infinite; }
+  .mcqp .tile:nth-child(2) .face::before { animation-delay:-1.5s; } .mcqp .tile:nth-child(3) .face::before { animation-delay:-3s; } .mcqp .tile:nth-child(4) .face::before { animation-delay:-4.5s; }
+  @keyframes mq-edgeShine { to { --ga:360deg; } }
+  @media (prefers-reduced-motion: reduce) { .mcqp .face::before { animation:none !important; } }
+  @media (min-resolution: 2dppx) { .mcqp .face::before, .mcqp .back::before { padding:0.5px; } }   /* a sharp screen: one device pixel, a knife edge */
+  .mcqp .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
+  .mcqp .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); transition:background 240ms, color 240ms; }
+  .mcqp .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; }
+  /* Picked: the same glass tinted in the first palette's blue, with its #2a52ff ring */
+  .mcqp .tile.sel .face { box-shadow:0 28px 44px -18px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.55), 0 0 18px rgba(255,255,255,0.12), var(--glass-in); }   /* picked: clear glass, a bright rim (no blue fill: glass takes colour only from behind it) */
+  .mcqp .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
+  /* The verdict, as thin light inside the glass (not a border): red lines in the cracks; for the right answer a green
+     hairline traces the rim from the fingertip while green light fills the glass from there. The floor light matches. */
+  .mcqp .tile.no { --cast:rgba(242,119,122,0.55); } .mcqp .tile.yes { --cast:rgba(61,220,151,0.5); }
+  .mcqp .tile.no .face, .mcqp .tile.yes .face { box-shadow:0 24px 40px -18px rgba(0,0,0,0.7), var(--glass-in); }   /* the blue pick ring hands over: the verdict is the edge now */
+  .mcqp .tile.yes .face { --top:rgba(61,220,151,0.16); --low:rgba(30,70,255,0.1); }                             /* the tint turns toward green */
+  .mcqp .vline { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:3; }
+  .mcqp .vline rect { fill:none; stroke:#7ff0bf; stroke-width:1.6; stroke-linecap:round; filter:drop-shadow(0 0 2.5px rgba(61,220,151,0.95)) drop-shadow(0 0 7px rgba(61,220,151,0.45)); }
+  .mcqp .vline.no rect { stroke:#ff7a80; filter:drop-shadow(0 0 2.5px rgba(255,70,80,0.95)) drop-shadow(0 0 7px rgba(255,40,60,0.45)); }   /* the same hairline, red: it stays on the broken pieces' edges */
+  .mcqp .vfill { position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:1; opacity:0;
+    background:radial-gradient(circle at var(--vx) var(--vy), rgba(61,220,151,0.45), rgba(61,220,151,0.14) 45%, transparent 78%); }
+  /* The back, in the medal the try earned. Colours are the design's medals (Exam Practice: gold / silver / bronze). */
+  .mcqp .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:0;
+    background:linear-gradient(180deg,#262a30,#1f2226); box-shadow:0 0 0 2px var(--line2); }
+  .mcqp .tile.gold { --ring:#e3b341; --ink:#e3b341; --glow:rgba(227,179,65,0.55);  --sheen:rgba(255,236,170,0.6);  --medal:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%); }
+  .mcqp .tile.silver { --ring:#c3c8cf; --ink:#d5d9de; --glow:rgba(210,216,224,0.45); --sheen:rgba(255,255,255,0.6);  --medal:radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%); }
+  .mcqp .tile.bronze { --ring:#b0764a; --ink:#d99b6c; --glow:rgba(217,155,108,0.45); --sheen:rgba(243,191,152,0.55); --medal:radial-gradient(circle at 35% 28%, #f3bf98, #bb7a4c 46%, #683b1d 100%); }
+  .mcqp .tile.gold .back { background:linear-gradient(180deg,#3a3016,#2a220d); box-shadow:0 20px 48px rgba(227,179,65,0.28), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
+  .mcqp .tile.silver .back { background:linear-gradient(180deg,#34383e,#24272b); box-shadow:0 20px 48px rgba(210,216,224,0.18), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
+  .mcqp .tile.bronze .back { background:linear-gradient(180deg,#3a2618,#28180e); box-shadow:0 20px 48px rgba(217,155,108,0.22), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35); }
+  .mcqp .back::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,0.08), transparent 40%); }
+  .mcqp .back .ok { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--ink, var(--text2)); }
+  .mcqp .medal { flex:none; width:20px; height:20px; border-radius:50%; background:var(--medal); box-shadow:0 0 0 1.5px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.4); }
+  /* The shine before the turn: a glow in the medal colour and a sweep of light across the card */
+  .mcqp .tile.shine .face { box-shadow:0 0 0 2px var(--ring), 0 0 46px var(--glow), 0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in); }
+  .mcqp .tile.shine .face::after { content:""; position:absolute; inset:-30% -10%; pointer-events:none;
+    background:linear-gradient(105deg, transparent 40%, var(--sheen) 50%, transparent 60%); animation:mq-sweep 850ms cubic-bezier(.4,.1,.3,1) forwards; }
+  @keyframes mq-sweep { from { transform:translateX(-75%); } to { transform:translateX(75%); } }
+  .mcqp .back .why { font-size:14px; line-height:1.45; font-weight:600; color:var(--text); }
+  .mcqp .tile.gold .why { color:#f3ead2; }
+  @keyframes mq-deal { from { opacity:0; transform:translateY(70px) rotateX(-35deg) rotateZ(var(--rz)) scale(0.9); } to { opacity:1; transform:none; } }
+  /* Dead wrong answers: when the right card goes home, the wrong cards still standing go dark, one by one */
+  .mcqp .tile.dead .face::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:3;
+    background:rgba(7,8,10,0.66); animation:mq-die 520ms ease both; animation-delay:var(--dd, 0s); }
+  .mcqp .tile.dead .gleam { display:none; }
+  .mcqp .tile.dead .face::before { opacity:0.15; transition:opacity 520ms ease var(--dd, 0s); }
+  .mcqp .tile.dead .face { box-shadow:0 1px 1px rgba(0,0,0,0.4), 0 10px 20px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); transition:box-shadow 520ms ease var(--dd, 0s); cursor:default; }
+  @keyframes mq-die { from { opacity:0; } to { opacity:1; } }
+  /* The glass keeps shining: a slow gleam crosses each card now and then (staggered per card via --gd) */
+  .mcqp .gleam { position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; z-index:1; }
+  .mcqp .gleam::before { content:""; position:absolute; top:-40%; bottom:-40%; left:0; width:36%;
+    background:linear-gradient(105deg, transparent, rgba(255,255,255,0.16) 50%, transparent); transform:translateX(-170%) skewX(-14deg);
+    animation:mq-gleam 6.5s cubic-bezier(.45,.05,.35,1) infinite; animation-delay:var(--gd, 0s); }
+  .mcqp .gleam::after { content:""; position:absolute; left:2px; right:2px; top:2px; height:44%; border-radius:16px 16px 40% 40% / 16px 16px 12px 12px;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,0.11) 14%, rgba(255,255,255,0.03) 70%, transparent); }   /* fades in below the rim: never a second line on the edge (it was a blurred patch: the "smoke") */
+  .mcqp .back .gleam::before { background:linear-gradient(105deg, transparent, var(--sheen, rgba(255,255,255,0.2)) 50%, transparent); opacity:0.6; }
+  @keyframes mq-gleam { 0%, 64% { transform:translateX(-170%) skewX(-14deg); } 84%, 100% { transform:translateX(430%) skewX(-14deg); } }
+  @media (prefers-reduced-motion: reduce) { .mcqp .gleam { display:none; } }
+  /* The hero: the right card, lifted out of the grid (its slot stays), large and centred over a scrim */
+  .mcqp .scrim { position:fixed; inset:0; z-index:30; background:rgba(12,13,15,0.66); -webkit-backdrop-filter:blur(5px); backdrop-filter:blur(5px);
+    opacity:0; transition:opacity 420ms ease; pointer-events:none; }
+  .mcqp .scrim.on { opacity:1; pointer-events:auto; cursor:pointer; }
+  .mcqp .hero-layer { position:fixed; inset:0; z-index:35; display:grid; place-items:center; align-content:center; gap:22px; padding:90px 16px 110px; perspective:1400px; pointer-events:none; }   /* the card, and Next under it */
+  .mcqp .tile.hero { width:min(580px, 100%); transform:none; transition:none; pointer-events:auto; }
+  .mcqp .tile.hero.flipped { transform:rotateY(180deg); }
+  .mcqp .tile.hero .face { padding:22px 22px 22px 20px; gap:16px; }
+  .mcqp .tile.hero .letter { width:42px; height:42px; font-size:17px; border-radius:12px; }
+  .mcqp .tile.hero .txt { font-size:20px; padding-top:7px; }
+  .mcqp .tile.hero .back { position:relative; inset:auto; min-height:230px; padding:18px 24px 18px 12px; gap:14px; flex-direction:row; align-items:stretch; }   /* in flow: its content sets the card's height */
+  .mcqp .copy { flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; justify-content:center; position:relative; z-index:2; }
+  .mcqp .tile.hero .copy { gap:10px; justify-content:center; padding:4px 0; }
+  /* The companion: on the big card only, standing on the glass beside the text (above it on phones) */
+  .mcqp .buddy { display:none; }
+  .mcqp .tile.hero .buddy { display:block; position:relative; flex:none; width:204px; margin:-6px 0; transition:opacity 180ms ease; }
+  .mcqp .buddy.leaving { opacity:0; }
+  .mcqp .buddy model-floor, .mcqp .buddy img { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .mcqp .buddy img { object-fit:contain; object-position:center bottom; }
+  @media (max-width:600px) { .mcqp .tile.hero .back { flex-direction:column; padding:14px 18px 20px; } .mcqp .tile.hero .buddy { width:auto; height:180px; margin:0 -6px -4px; } }
+  /* Phone: the hero starts under the chips (they sit above the scrim), keeps 22 px sides so the spin's swell stays on
+     screen (measured -3..378 at 16 px), a smaller robot; if it is still taller than the screen, its layer scrolls
+     (safe: never centred off the top) and a tap on the empty layer still puts the card back. */
+  @media (max-width:600px) { .mcqp .hero-layer { padding:var(--ht, 118px) 22px 24px; grid-auto-rows:max-content; align-content:safe center; overflow-y:auto; overscroll-behavior:contain; }   /* max-content rows: auto rows shrank to the space left (430 for a 510 card), so it spilled over the chips and never scrolled */
+    .mcqp .hero-layer:has(.tile.hero) { pointer-events:auto; } .mcqp .tile.hero .buddy { height:140px; } }
+  .mcqp .back .not, .mcqp .back .more { display:none; }
+  .mcqp .tile.hero .back .not { display:block; }
+  .mcqp .tile:not(.hero) .back .why { display:none; }                        /* small: medal line + answer; the why is one tap away */
+  .mcqp .tile.flipped:not(.hero) .back .more { display:block; font-size:12px; font-weight:700; color:var(--text3); }
+  .mcqp .tile.flipped:not(.hero) { cursor:pointer; }
+  .mcqp .tile.hero .back .ok { font-size:14px; } .mcqp .tile.hero .medal { width:24px; height:24px; }
+  .mcqp .back .ans { font-size:15px; font-weight:800; line-height:1.35; color:#fff; } .mcqp .tile.hero .back .ans { font-size:19px; }
+  .mcqp .tile.hero .back .why { font-size:16px; line-height:1.55; font-weight:500; }
+  .mcqp .back .not { font-size:13.5px; line-height:1.5; color:var(--text2); padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); }
+  .mcqp .back .not b { color:var(--text); font-weight:700; }
+  /* Phone: the answer card was too long (the robot's own 140-180 px row over the text). The robot sits beside the
+     medal line and the answer; the why and "why not the others" run full width under them. .copy steps aside
+     (display:contents) so its lines join the back's grid. */
+  @media (max-width:600px) {
+    .mcqp .tile.hero .back { display:grid; grid-template-columns:96px minmax(0, 1fr); grid-template-areas:"bud ok" "bud ans" "why why" "not not";
+      column-gap:12px; row-gap:8px; align-items:center; padding:14px 16px 16px; min-height:0; }
+    .mcqp .tile.hero .copy { display:contents; }
+    .mcqp .tile.hero .back .copy > * { position:relative; z-index:2; }
+    .mcqp .tile.hero .buddy { grid-area:bud; width:96px; height:118px; margin:0; }
+    .mcqp .tile.hero .back .ok { grid-area:ok; align-self:end; font-size:13px; } .mcqp .tile.hero .medal { width:20px; height:20px; }
+    .mcqp .tile.hero .back .ans { grid-area:ans; align-self:start; font-size:17px; }
+    .mcqp .tile.hero .back .why { grid-area:why; font-size:15px; line-height:1.5; margin-top:4px; }
+    .mcqp .tile.hero .back .not { display:none; }   /* it cost ~90 px: the robot and Next must be on screen without scrolling */
+  }
+  /* A narrow phone: the bar's second row must hold the widest values ("150/150 marks", "1000 XP") without wrapping,
+     or the chips drop under the open card when the XP grows (seen at 320 px: "0 XP" -> "60 XP" wrapped it). */
+  @media (max-width:360px) { .mcqp .top { gap:6px; padding:12px 10px; } .mcqp .xp { padding:6px 8px; font-size:13px; gap:4px; } .mcqp .mute { width:34px; height:34px; } .mcqp .marks .lbl { font-size:11px; } }
+  .mcqp .slot { min-height:96px; }
+  @media (max-width:600px) { .mcqp .tile, .mcqp .slot { min-height:74px; } .mcqp .face { padding:12px 14px 12px 12px; } }   /* one column: thinner cards (after .tile/.face/.slot, so it wins) */
+  .mcqp .tile.nobuddy .buddy { display:none !important; }                      /* the robot is down on the floor: the answer rises alone */
+  .mcqp .tile.dealt { animation:mq-deal 520ms cubic-bezier(.2,.9,.25,1.1) both; animation-delay:var(--d); }
+  /* The break: cracks drawn on the card, then shards on their own layer */
+  .mcqp .cracks { position:absolute; inset:0; z-index:3; pointer-events:none; overflow:visible; }
+  /* A crack has depth: a dark line (the split) under a thin bright one (light caught in the fracture), offset a hair */
+  .mcqp .cracks path { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .mcqp .cracks .lo { stroke:rgba(6,8,28,0.5); } .mcqp .cracks .hi { stroke:rgba(255,245,245,0.95); } .mcqp .cracks .rd { stroke:#ff4e57; }   /* a thin red line glowing in each fracture */
+  .mcqp .cracks g.glow { filter:drop-shadow(0 0 1.5px rgba(255,210,210,0.9)); } .mcqp .cracks g.redglow { filter:drop-shadow(0 0 2.5px rgba(255,70,80,0.95)) drop-shadow(0 0 7px rgba(255,40,60,0.45)); }
+  .mcqp .crush { position:absolute; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; z-index:3; pointer-events:none;   /* the crushed spot where it was hit */
+    background:radial-gradient(closest-side, rgba(255,255,255,0.98), rgba(255,110,118,0.8) 45%, rgba(255,60,70,0.3) 70%, transparent); }   /* red-hot */
+  .mcqp .shard .edge { position:absolute; left:0; top:0; overflow:visible; pointer-events:none; }                              /* a piece's cut edges catch the light */
+  .mcqp .shard .edge polygon { fill:none; stroke:rgba(255,255,255,0.85); stroke-width:1.6; stroke-linejoin:round; }
+  .mcqp .impact { position:absolute; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; pointer-events:none; z-index:3;
+    background:radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(200,215,255,0.35) 45%, rgba(255,255,255,0) 100%); }
+  .mcqp .shards { position:fixed; inset:0; z-index:42; pointer-events:none; perspective:900px; }   /* above the dock: the pile lies at the screen's bottom edge, by the robot's feet */
+  /* Shards: pieces of the picked glass (flat tint, no backdrop blur: 18 moving blurs would stutter on low-end phones) */
+  .mcqp .shard { position:fixed; margin:0; overflow:hidden; will-change:transform; }   /* sized to the piece's own bounds: a card's worth of pixels in total, not 33 */
+  .mcqp .shard-in { position:absolute; margin:0; border-radius:18px; border:1px solid rgba(160,175,255,0.85);
+    background:linear-gradient(180deg, rgba(255,255,255,0.1), transparent 38%),
+      linear-gradient(180deg, rgba(42,82,255,0.38), rgba(30,70,255,0.18)) 0 0 / 180px 180px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(255,255,255,0.14); }
+  .mcqp .shard .letter { background:var(--grad); border-color:transparent; color:#fff; }
+  /* The dock */
+  @media (min-width:601px) and (max-height:520px) {   /* a phone on its side: the desktop layout, short */
+    .mcqp .tile, .mcqp .slot { min-height:74px; } .mcqp .face { padding:12px 14px 12px 12px; } .mcqp h1 { margin:8px 0 14px; }
+    .mcqp .hero-layer { padding:var(--ht, 70px) 22px 16px; grid-auto-rows:max-content; align-content:safe center; overflow-y:auto; overscroll-behavior:contain; gap:14px; }
+    .mcqp .hero-layer:has(.tile.hero) { pointer-events:auto; } .mcqp .tile.hero .back { min-height:0; padding:12px 20px 12px 10px; } .mcqp .tile.hero .buddy { width:150px; }
+    .mcqp .tile.hero .back .not { display:none; } }
+  .mcqp .scrim.on ~ .dock { opacity:0; }   /* a big card is up: the dock is empty and its solid fade would cover the card's end and Next */
+  .mcqp .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, var(--bg0)); pointer-events:none; }
+  .mcqp .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:none; padding-left:calc(var(--ph) * 0.7143 + 14px); min-height:128px; align-content:end; }
+  @media (max-width:600px) { .mcqp .dock-in { min-height:108px; } }
+  /* Nothing in the dock takes a tap now (the Hint button went): taps pass through it, or its box would sit over Next when
+     the big card's Next falls in the bottom ~190 px of a short screen (found by a real click; next() from JS never saw it). */
+  .mcqp .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
+  /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
+     behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
+  .mcqp .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:calc(var(--ph) * -0.148); width:calc(var(--ph) * 0.7143); height:var(--ph); z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
+  .mcqp .pal-body { position:absolute; inset:0; } .mcqp .pal, .mcqp .buddy { transform-origin:50% 100%; } .mcqp .pal.away .pal-body { visibility:hidden; }
+  .mcqp .pal-body model-floor, .mcqp .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
+  .mcqp .pal-body img { object-fit:contain; object-position:center bottom; }
+  /* The thought bubble, out of its head: it lives in the robot's box (so it moves with it), placed in % of the box.
+     Measured: the head top is 18% down, its right edge 63% across. Two puffs rise up-right from there, then the bubble
+     grows out of the last one (its bottom-left corner). */
+  .mcqp .pal-say { position:absolute; inset:0; display:none; pointer-events:none; }
+  /* Light blue cloud. The text box holds the words; its ::before (12 px wider each side, 16 px taller on top) is the
+     cloud: fixed-radius bumps (px from its edges, so any clue length keeps them round) over a rect under the words. */
+  .mcqp .pal-say { --cloud:#cfe4ff; }
+  /* A 3D cloud: every lobe is a lit sphere (smoke-white core, cool grey toward its rim, so the edges read darker and the
+     seams between lobes shade), the underside a shade darker (it is in its own shadow). Theme-proof: the shadow carries
+     it on a dark page, the outline on a light one. */
+  .mcqp .pal-say { --c0:#ffffff; --c1:#f1f4f9; --c2:#d6dde8; --c3:#b3bdcb; --u1:#e6ebf2; --u2:#c3ccd8; --u3:#a2adbd;
+    --cloudShadow:drop-shadow(0 10px 18px rgba(10,20,60,0.45)) drop-shadow(0 0 1px rgba(255,255,255,0.6)); }
+  .mcqp .pal-say .puff, .mcqp .pal-say .say-txt { position:absolute; filter:var(--cloudShadow); }
+  .mcqp .pal-say .puff { border-radius:50%; background:radial-gradient(circle at 36% 30%, var(--c0) 0 18%, var(--c1) 40%, var(--c2) 72%, var(--c3) 100%); }
+  .mcqp .pal-say .p1 { left:64%; top:22%; width:8px; height:8px; }   /* beside the head, rising right (above it there is no room once the cards reach down) */
+  .mcqp .pal-say .p2 { left:71%; top:15%; width:14px; height:14px; }
+  /* A horizontal oval, lit from above like the puffs: white where the light falls, cool grey toward its rim, a soft
+     inner shadow along the underside. The words sit in the ellipse's inscribed box (padding ~15% of each side). */
+  .mcqp .pal-say .say-txt { left:calc(84% + 4px); bottom:86%; width:max-content; max-width:min(300px, calc(100vw - 130px)); padding:14px 30px 15px;
+    border-radius:50%; background:radial-gradient(ellipse 75% 85% at 44% 26%, var(--c0) 0 30%, var(--c1) 58%, var(--c2) 88%, var(--c3) 100%);
+    box-shadow:inset 0 -7px 12px -4px rgba(120,136,165,0.45), inset 0 5px 8px -3px rgba(255,255,255,0.95);
+    font-size:13.5px; line-height:1.42; font-weight:700; color:#15213f; text-align:center; transform-origin:0 100%; text-wrap:balance; }   /* JS fits its width to the longest line */
+  .mcqp .pal-say.show { display:block; }
+  .mcqp .pal-say.show .p1 { animation:mq-puff 200ms cubic-bezier(.2,.8,.3,1.3) both; }
+  .mcqp .pal-say.show .p2 { animation:mq-puff 200ms cubic-bezier(.2,.8,.3,1.3) 110ms both; }
+  .mcqp .pal-say.show .say-txt { animation:mq-thought 340ms cubic-bezier(.2,.9,.3,1.15) 210ms both; }
+  @keyframes mq-puff { from { opacity:0; transform:scale(0.2); } to { opacity:1; transform:none; } }
+  @keyframes mq-thought { from { opacity:0; transform:translate(-8px, 8px) scale(0.55); } to { opacity:1; transform:none; } }
+  @media (max-width:600px) { .mcqp .pal-say .p1 { width:6px; height:6px; } .mcqp .pal-say .p2 { width:10px; height:10px; } .mcqp .pal-say .say-txt { font-size:13px; } }
+  @media (prefers-reduced-motion: reduce) { .mcqp .pal-say.show .puff, .mcqp .pal-say.show .say-txt { animation:none; } }
+  @media (max-width:600px) { .mcqp .pal { left:6px; } }
+  @keyframes mq-rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  /* Next: a small liquid-glass pill under the cards, centred. A brand-gradient rim turns slowly around it; the arrow nudges. */
+  @property --na { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  .mcqp .next { position:relative; display:none; align-items:center; gap:12px; width:max-content; margin:26px auto 0; height:46px; padding:0 7px 0 22px;
+    border:0; border-radius:999px; font:inherit; font-size:14px; font-weight:800; letter-spacing:0.02em; color:#fff; cursor:pointer; pointer-events:auto;
+    background:radial-gradient(120% 90% at 30% -20%, rgba(255,255,255,0.22), transparent 60%), linear-gradient(180deg, rgba(42,82,255,0.3), rgba(30,70,255,0.12));
+    -webkit-backdrop-filter:blur(16px) saturate(170%); backdrop-filter:blur(16px) saturate(170%);
+    box-shadow:0 14px 30px -12px rgba(30,70,255,0.75), inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -6px 14px -8px rgba(120,165,250,0.3);
+    transition:transform 160ms ease, box-shadow 240ms ease; }
+  .mcqp .next::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px; pointer-events:none;
+    background:conic-gradient(from var(--na), #0068f8, #671dff, #2a52ff, #ffffff 70%, #0068f8);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:mq-nspin 5s linear infinite; }
+  @keyframes mq-nspin { to { --na:360deg; } }
+  .mcqp .next .arr { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:var(--grad);
+    box-shadow:0 4px 12px rgba(30,70,255,0.6), inset 0 1px 0 rgba(255,255,255,0.45); animation:mq-nnudge 2.6s ease-in-out 1.4s infinite; }
+  .mcqp .next .arr svg { width:16px; height:16px; }
+  @keyframes mq-nnudge { 0%, 72%, 100% { transform:none; } 82% { transform:translateX(4px); } 90% { transform:translateX(-1px); } }
+  .mcqp .next:hover { box-shadow:0 16px 36px -12px rgba(30,70,255,0.95), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -6px 14px -8px rgba(120,165,250,0.35); }
+  .mcqp .next:active { transform:scale(0.97); }
+  .mcqp .next:focus-visible { outline:2px solid var(--tint); outline-offset:4px; }
+  .mcqp .next.show { display:flex; animation:mq-nextIn 520ms cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes mq-nextIn { from { opacity:0; transform:translateY(10px) scale(0.96); } to { opacity:1; transform:none; } }
+  .mcqp .hero-layer .next { justify-self:center; margin:0; }
+  @media (prefers-reduced-motion: reduce) { .mcqp .next::before, .mcqp .next .arr { animation:none; } }
+  .mcqp .toast { position:fixed; left:50%; top:74px; transform:translate(-50%,-20px); opacity:0; padding:10px 16px; border-radius:14px; font-weight:800; font-size:14px; transition:all 260ms; pointer-events:none; z-index:45; }
+  .mcqp .toast.show { opacity:1; transform:translate(-50%,0); }
+  @media (max-width:600px) { .mcqp .toast { top:8px; } }   /* phone: over the top bar for its 1.5 s, not over the question */
+  .mcqp .toast.ok { background:rgba(61,220,151,0.15); color:var(--ok); border:1px solid rgba(61,220,151,0.4); }
+  .mcqp .toast.no { background:rgba(242,119,122,0.14); color:var(--danger); border:1px solid rgba(242,119,122,0.4); }
+  .mcqp .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:46; }
+  .mcqp canvas#mq-fx { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:38; }   /* inset alone does not stretch a canvas: without a CSS size it shows at its buffer size (innerWidth x DPR), so every burst drew DPR times too far out */
+  .mcqp .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  @media (prefers-reduced-motion: reduce) { .mcqp .tile, .mcqp .tile * { transition:none !important; animation:none !important; } }
+  /* Phone: a question fits the screen (baseline 360x640: last card ended at 560 under the robot's head): thinner cards,
+     tighter gaps, smaller question text. Only a question with a lot of information needs a scroll. */
+  @media (max-width:600px) {
+    .mcqp .top { padding-top:10px; padding-bottom:10px; row-gap:8px; } .mcqp .stage { padding-top:2px; }
+    .mcqp h1 { font-size:16.5px; line-height:1.4; margin:6px 0 12px; gap:5px; } .mcqp h1 .num { font-size:12px; }
+    .mcqp .qtitle { font-size:18.5px; } .mcqp .qdesc { font-size:13px; margin-top:6px; } .mcqp .ab { font-size:14.5px; margin:-4px 0 12px; gap:4px; }
+    .mcqp .tiles { gap:8px; } .mcqp .tile, .mcqp .slot { min-height:64px; } .mcqp .face { padding:12px 14px 12px 12px; gap:12px; align-items:center; } .mcqp .txt { font-size:14px; line-height:1.4; padding-top:0; }
+    .mcqp .letter { width:30px; height:30px; font-size:13px; border-radius:9px; }
+    .mcqp .qmarks { margin-top:8px; }
+    /* the small answer card is 64 px: its three lines (medal, answer, "Tap to see why") ran ~96 px and out of the card.
+       Two tight lines; the tap hint becomes a chevron at the right. */
+    .mcqp .tile.flipped:not(.hero) .back { padding:8px 40px 8px 14px; gap:3px; }
+    .mcqp .tile.flipped:not(.hero) .back .ok { font-size:12px; gap:6px; } .mcqp .tile.flipped:not(.hero) .medal { width:16px; height:16px; }
+    .mcqp .tile.flipped:not(.hero) .back .ans { font-size:14px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mcqp .tile.flipped:not(.hero) .back .more { position:absolute; right:14px; top:50%; translate:0 -50%; font-size:0; }
+    .mcqp .tile.flipped:not(.hero) .back .more::after { content:"›"; font-size:24px; font-weight:600; line-height:1; color:var(--text3); }
+    /* The dock holds one prompt line now (the Hint button and the robot's column left it): at its old ~166 px its solid
+       fade hid everything below ~468 px on a 568 px phone, cards included. Just the line, a short fade. */
+    .mcqp .dock { padding:6px 14px 10px; background:linear-gradient(0deg, var(--bg) 40%, var(--bg0)); } .mcqp .dock-in { min-height:0; padding-left:0; }
+    .mcqp .stage { padding-bottom:150px; }
+  }
+  /* While the learner chooses, a phone's robot stands at 70% (from its feet), so it does not cover the last card; it
+     grows back to act (runs to a card, is hit, sweeps, jumps in). "scale", not "transform": the hit's jolt animates
+     transform, and the two must compose. Its thought bubble follows the small head (the same points, mapped). */
+  .mcqp .pal-body { transition:scale 420ms cubic-bezier(.2,.8,.2,1); transform-origin:50% 100%; }
+  @media (max-width:600px), (max-height:520px) {
+    .mcqp .pal.small .pal-body { scale:0.7; }
+    .mcqp .pal.small .pal-say .p1 { left:59.8%; top:45.4%; } .mcqp .pal.small .pal-say .p2 { left:64.7%; top:40.5%; }
+    .mcqp .pal.small .pal-say .say-txt { left:calc(73.8% + 4px); bottom:60.2%; }
+  }
+  /* ===================== Light mode ===================== The platform's light palette; every surface redrawn for a
+     light page: frosted white glass with a darker hairline (a white rim vanishes on white), lighter shadows, pale medal
+     backs with darker ink, a light scrim, a solid Next. */
+  html[data-theme="light"] .mcqp { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f1f3f6; --panel:#f8f9fb; --field:#f6f7fa; --line:#e3e5ea; --line2:#a9b0bb;
+    --text:#14161a; --text2:#41464c; --text3:#5f656c; --tint:#1e46ff; --ok:#1d8757; --danger:#d23f45; --gold:#a8760c; }
+  
+  html[data-theme="light"] .mcqp .backdrop { background:radial-gradient(560px 320px at 50% 44%, rgba(30,70,255,0.12), transparent 72%); }   /* stronger on a light page: it is what tints the glass */
+  html[data-theme="light"] .mcqp .num { background:rgba(30,70,255,0.08); }
+  html[data-theme="light"] .mcqp .retry { background:var(--panel); }
+  /* the glass: frosted white, a dark-edged hairline, a soft cool shadow */
+  html[data-theme="light"] .mcqp .face { --top:rgba(232,237,248,0.82); --low:rgba(221,228,244,0.62);   /* cool grey-blue glass (it takes the cobalt light behind it), never white */
+    --glass-in:inset 0 -8px 16px -12px rgba(30,60,160,0.16);
+    box-shadow:0 16px 30px -16px rgba(20,30,70,0.34), var(--glass-in); }
+  html[data-theme="light"] .mcqp .face::before, html[data-theme="light"] .mcqp .back::before { background:linear-gradient(145deg, rgba(255,255,255,0.7), rgba(20,30,60,0.3) 22%, rgba(20,30,60,0.24) 60%, rgba(20,30,60,0.36)); }
+  html[data-theme="light"] .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before { background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(60,90,255,0.75) 330deg, transparent 350deg),
+    linear-gradient(145deg, rgba(255,255,255,0.7), rgba(20,30,60,0.3) 22%, rgba(20,30,60,0.24) 60%, rgba(20,30,60,0.36)); }
+  html[data-theme="light"] .mcqp .letter { background:rgba(20,30,60,0.06); border-color:rgba(20,30,60,0.36); color:var(--text); box-shadow:inset 0 1px 0 rgba(255,255,255,0.55); }
+  html[data-theme="light"] .mcqp .tile.sel .face { box-shadow:0 24px 38px -18px rgba(20,30,70,0.38), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
+  html[data-theme="light"] .mcqp .tile.raised .face { box-shadow:0 30px 48px -20px rgba(20,30,70,0.42), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
+  html[data-theme="light"] .mcqp .tile.sel { --cast:rgba(60,80,140,0.35); }
+  html[data-theme="light"] .mcqp .tile.no .face, html[data-theme="light"] .mcqp .tile.yes .face { box-shadow:0 18px 32px -20px rgba(20,30,70,0.3), var(--glass-in); }
+  html[data-theme="light"] .mcqp .tile.yes .face { --top:rgba(61,220,151,0.2); --low:rgba(61,220,151,0.06); }
+  html[data-theme="light"] .mcqp .vline rect { stroke:#16a36a; filter:drop-shadow(0 0 2px rgba(22,163,106,0.6)); } html[data-theme="light"] .mcqp .vline.no rect { stroke:#e0454b; filter:drop-shadow(0 0 2px rgba(224,69,75,0.6)); }
+  html[data-theme="light"] .mcqp .gleam::after { background:linear-gradient(180deg, transparent, rgba(255,255,255,0.4) 14%, rgba(255,255,255,0.08) 70%, transparent); }
+  html[data-theme="light"] .mcqp .cracks .lo { stroke:rgba(20,25,50,0.55); }
+  html[data-theme="light"] .mcqp .tile.dead .face::after { background:rgba(244,245,247,0.5); }   /* dimmed, still readable (at 0.72 the words all but vanished) */
+  html[data-theme="light"] .mcqp .tile.dead .face { box-shadow:0 1px 1px rgba(20,30,60,0.08), 0 8px 16px -12px rgba(20,30,60,0.2); }
+  html[data-theme="light"] .mcqp .scrim { background:rgba(20,24,32,0.32); }
+  /* the answer's back: pale, the ink darker; the medal colours stay */
+  html[data-theme="light"] .mcqp .back { background:linear-gradient(180deg,#f5f6f9,#e8ebf1); box-shadow:0 0 0 1px var(--line2); }
+  html[data-theme="light"] .mcqp .tile.gold { --ink:#8f6200; --glow:rgba(227,179,65,0.35); } html[data-theme="light"] .mcqp .tile.silver { --ink:#56606b; --glow:rgba(150,160,175,0.35); } html[data-theme="light"] .mcqp .tile.bronze { --ink:#8f4f24; --glow:rgba(200,130,80,0.35); }
+  html[data-theme="light"] .mcqp .tile.gold .back { background:linear-gradient(180deg,#faefd3,#f1dca6); box-shadow:0 18px 40px rgba(200,150,40,0.25), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.5); }
+  html[data-theme="light"] .mcqp .tile.silver .back { background:linear-gradient(180deg,#eef0f4,#dde1e8); box-shadow:0 18px 40px rgba(120,130,150,0.24), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.5); }
+  html[data-theme="light"] .mcqp .tile.bronze .back { background:linear-gradient(180deg,#f8e6d8,#edd0b8); box-shadow:0 18px 40px rgba(180,110,60,0.24), 0 0 0 2px var(--ring), inset 0 1px 0 rgba(255,255,255,0.5); }
+  html[data-theme="light"] .mcqp .back .ans, html[data-theme="light"] .mcqp .tile.gold .why { color:var(--text); } html[data-theme="light"] .mcqp .back .not { border-top-color:rgba(20,30,60,0.12); }
+  html[data-theme="light"] .mcqp .tile.shine .face { box-shadow:0 0 0 2px var(--ring), 0 0 36px var(--glow), 0 18px 32px -20px rgba(20,30,70,0.3), var(--glass-in); }
+  /* the thought bubble: the same lit oval, a firmer outline and shadow so white reads on a light page */
+  html[data-theme="light"] .mcqp .pal-say { --c0:#f6f8fb; --c1:#e8ecf3; --c2:#d0d7e2; --c3:#aab4c3; --cloudShadow:drop-shadow(0 8px 14px rgba(20,30,70,0.2)) drop-shadow(0 0 0.7px rgba(20,30,70,0.55)); }
+  /* Next: solid blue on a light page (the dark theme's translucent pill would leave white text on pale blue) */
+  html[data-theme="light"] .mcqp .next { background:linear-gradient(180deg,#3d57ff,#2539f0); box-shadow:0 12px 26px -12px rgba(37,57,240,0.6), inset 0 1px 1px rgba(255,255,255,0.45); }
+  html[data-theme="light"] .mcqp .ms-in { box-shadow:0 24px 60px -20px rgba(20,30,70,0.35); } html[data-theme="light"] .mcqp .mapsheet { background:rgba(20,24,32,0.35); }
+  html[data-theme="light"] .mcqp .toast.ok { background:#e6f6ee; color:#156543; } html[data-theme="light"] .mcqp .toast.no { background:#fdecec; color:#ad2a31; }
+  /* The map (here a sheet; in the prototype, its map screen): every question group and its sub-questions, with results */
+  .mcqp .mapsheet { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:18px; background:rgba(10,12,16,0.55); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .mcqp .mapsheet[hidden] { display:none; }
+  .mcqp .ms-in { width:min(420px, 100%); max-height:80vh; overflow:auto; background:var(--panel); border:1px solid var(--line2); border-radius:18px; padding:14px 16px 16px; box-shadow:0 24px 60px -20px rgba(0,0,0,0.6); }
+  .mcqp .ms-head { display:flex; align-items:center; justify-content:space-between; font-size:18px; font-weight:800; margin-bottom:6px; }
+  .mcqp .ms-x { width:34px; height:34px; border-radius:10px; border:0; background:transparent; color:var(--text2); font:inherit; font-size:24px; line-height:1; cursor:pointer; }
+  .mcqp .ms-x:hover { background:var(--line); color:var(--text); }
+  .mcqp .ms-grp { margin-top:12px; font-size:13px; font-weight:800; color:var(--text2); letter-spacing:0.02em; }
+  .mcqp .ms-q { display:flex; align-items:center; gap:10px; width:100%; margin-top:6px; padding:10px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text); font:inherit; font-size:14px; text-align:left; cursor:pointer; }
+  .mcqp .ms-q:hover { border-color:var(--text3); } .mcqp .ms-q:focus-visible { outline:2px solid var(--tint); outline-offset:2px; }
+  .mcqp .ms-q .n { flex:none; font-size:12px; font-weight:800; color:var(--tint); } .mcqp .ms-q .t { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mcqp .ms-q .d { flex:none; width:12px; height:12px; border-radius:50%; box-shadow:inset 0 0 0 2px var(--line2); }   /* hollow: not answered yet; a filled dot is always a result */
+  html[data-theme="light"] .mcqp .ms-q.silver .d { background:#8e98a5; }
+  .mcqp .ms-q.gold .d { background:#e3b341; } .mcqp .ms-q.silver .d { background:#c3c8cf; } .mcqp .ms-q.bronze .d { background:#b0764a; } .mcqp .ms-q.none .d { background:var(--danger); }
+  .mcqp .ms-q.cur { border-color:var(--tint); }
+
+  /* While MCQs play in a host page, its own companion steps aside: one robot, driven by the component */
+  body.mcqp-on [data-companion] { display:none !important; }
+  /* Host mode (the prototype): the question scrolls in its own fixed screen under the host's header */
+  .mcqp-screen { position:fixed; left:0; right:0; bottom:0; overflow-y:auto; overscroll-behavior:contain; z-index:3; }
+  .mcqp-screen .stage { padding-top:8px; }
+  .mcqp .top[hidden] { display:none !important; }
