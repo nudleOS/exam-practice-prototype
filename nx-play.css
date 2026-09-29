@@ -1,0 +1,183 @@
+/* nx-play: the practice play screen's look, from the boss's design (2026-09-30: 4 mockups, desktop + phone, dark + light).
+   Loaded by Exam Practice.dc.html; active on body.nx-play (practice play; the Hall keeps its own look). The theme is
+   html[data-nx="dark"|"light"]: dark by default (the rest of the app is dark), ?theme=light to review.
+   Colours are MEASURED from the mockups (median of 7x7 px patches), not guessed:
+     light  page #f4f9ff -> #e7f1fd, header #fbfcfe, panel #fdfdff, card #fdfdfd, picked fill #edf4fe, badge #0285fb (picked)
+            / #e9f3ff (idle), question #0d2666
+     dark   page #031432 -> #031a3a, header #021e43, panel #051c3b, card #0c1c36, picked fill #072959 + border #003079,
+            badge #0188fd (picked) / #224680 (idle), question #eff3fc
+     brand  Nudle #12d592; the Nexera wordmark is the GDD tool's own (nexera-wordmark.webp); accent #0066fe; level star #fb9208
+   His notes: subtle doodles in the background; the robot fixed in one corner, on a rock with plants; an icon on each card.
+   Only the LOOK changes: marking, tries, XP, marks, the glass break, the flip and the map work as before. */
+
+html[data-nx="dark"] body.nx-play {
+  --nx-top:#031432; --nx-bot:#031a3a; --nx-head:rgba(2,30,67,0.92); --nx-line:rgba(70,120,210,0.22); --nx-line2:rgba(120,160,230,0.35);
+  --nx-panel:#051c3b; --nx-panel-line:rgba(56,110,210,0.42); --nx-card:#0c1c36; --nx-card-line:#1a3052; --nx-card-hover:#27497d;
+  --nx-sel:#072959; --nx-sel-line:#1f7cf5; --nx-badge:#224680; --nx-badge-ink:#e4ecff; --nx-accent:#0188fd;
+  --nx-text:#eff3fc; --nx-text2:#b3c3e0; --nx-h1:#ffffff; --nx-ico:#4f78b8; --nx-radio:#5c77a6;
+  --nx-chip:#0b2553; --nx-chip-ink:#e4ecff; --nx-chip-num:#0a4bb1; --nx-chip-num-ink:#ffffff;
+  --nx-pill:rgba(12,32,70,0.72); --nx-pill-line:rgba(70,120,210,0.38); --nx-xp-ink:#8fc0ff; --nx-doodle:rgba(96,140,225,0.22);
+  --nx-bubble:#0b2350; --nx-bubble-line:rgba(88,140,235,0.6);
+  --nx-rock:#1c2944; --nx-rock-hi:#2f3e60; --nx-rock-sh:#121b30; --nx-leaf:#2e7a3e; --nx-leaf2:#46964a; --nx-cloud:rgba(10,38,84,0.85);
+  --nx-scrim:rgba(2,10,28,0.7); --nx-shadow:0 30px 60px -32px rgba(0,0,0,0.75);
+}
+html[data-nx="light"] body.nx-play {
+  --nx-top:#f4f9ff; --nx-bot:#e7f1fd; --nx-head:rgba(251,252,254,0.94); --nx-line:rgba(40,80,150,0.12); --nx-line2:rgba(40,80,150,0.22);
+  --nx-panel:#fdfdff; --nx-panel-line:#e2eaf5; --nx-card:#ffffff; --nx-card-line:#e5ecf6; --nx-card-hover:#b9d3f3;
+  --nx-sel:#edf4fe; --nx-sel-line:#7fb2f2; --nx-badge:#e9f3ff; --nx-badge-ink:#2b6be0; --nx-accent:#0285fb;
+  --nx-text:#15295a; --nx-text2:#51648a; --nx-h1:#0d2666; --nx-ico:#9ab9e6; --nx-radio:#b9c8de;
+  --nx-chip:#e3eefc; --nx-chip-ink:#2c4f8f; --nx-chip-num:#cfe2fd; --nx-chip-num-ink:#1b5fd9;
+  --nx-pill:#ffffff; --nx-pill-line:#e1e9f5; --nx-xp-ink:#1667e8; --nx-doodle:rgba(80,120,190,0.2);
+  --nx-bubble:#ffffff; --nx-bubble-line:#c9dcf5;
+  --nx-rock:#5b6782; --nx-rock-hi:#8591ab; --nx-rock-sh:#434c64; --nx-leaf:#3d8c48; --nx-leaf2:#62b15a; --nx-cloud:rgba(255,255,255,0.9);
+  --nx-scrim:rgba(214,226,244,0.72); --nx-shadow:0 26px 50px -30px rgba(20,50,110,0.35);
+  color-scheme:light;
+}
+
+/* ---- the page and its background: subtle doodles, rocks and plants (behind everything; the question scrolls over it) ---- */
+/* The page colour is painted by the background layer itself (fixed, full screen): the body's own background covered only
+   the body's box, which is short here (the play screen is mostly fixed layers), so the html's charcoal showed around it. */
+body.nx-play { background:transparent !important; }
+.nx-bg { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; color:var(--nx-doodle); background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)); }
+.nx-doodle { position:absolute; fill:none; stroke:currentColor; stroke-width:1.15; stroke-linecap:round; stroke-linejoin:round; overflow:visible; }
+.nx-rocks { position:absolute; bottom:0; height:var(--nx-rh); width:auto; overflow:visible; }
+.nx-rocks-l { left:0; } .nx-rocks-r { right:0; height:calc(var(--nx-rh) * 0.86); }
+.nx-rock { fill:var(--nx-rock); } .nx-rock-hi { fill:var(--nx-rock-hi); } .nx-rock-sh { fill:var(--nx-rock-sh); }
+.nx-leaf { fill:var(--nx-leaf); } .nx-leaf2 { fill:var(--nx-leaf2); } .nx-cloud { fill:var(--nx-cloud); }
+/* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). */
+body.nx-play { --nx-rh:min(30vh, 250px); }
+@media (max-width:600px) { body.nx-play { --nx-rh:min(22vh, 170px); } .nx-doodle { opacity:0.8; } }
+
+/* ---- the header: Nudle | Nexera, the map, the progress of this mission, marks, +XP, level, profile ---- */
+body.nx-play [data-playhead] { background:var(--nx-head) !important; border-bottom:1px solid var(--nx-line) !important; -webkit-backdrop-filter:blur(12px) !important; backdrop-filter:blur(12px) !important; }
+body.nx-play [data-playhead] > div:first-child { max-width:none !important; gap:12px !important; padding:10px 22px !important; }
+body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px solid var(--nx-pill-line) !important; color:var(--nx-text2) !important; border-radius:12px !important; }
+.nx-brand { display:flex; align-items:center; gap:10px; flex:none; margin-right:4px; }
+.nx-nudle { font-size:24px; font-weight:800; letter-spacing:-0.02em; color:#12d592; line-height:1; }
+.nx-sep { width:1.5px; height:24px; border-radius:1px; background:var(--nx-line2); }
+.nx-nexera { height:25px; width:auto; display:block; }
+.nx-prog { margin:0 auto; flex:0 1 auto; min-width:0; display:flex; align-items:center; gap:16px; height:44px; padding:0 20px; border-radius:999px; background:var(--nx-pill); border:1px solid var(--nx-pill-line); }
+.nx-dots { display:flex; align-items:center; gap:10px; min-width:0; flex:none; }
+.nx-dots i { flex:none; width:12px; height:12px; border-radius:50%; box-sizing:border-box; border:1.6px solid var(--nx-radio); transition:width 300ms cubic-bezier(.2,.8,.2,1), background 300ms; }
+.nx-dots i.done { background:var(--nx-accent); border-color:var(--nx-accent); }
+.nx-dots i.cur { width:46px; border-radius:6px; border:0; background:linear-gradient(90deg, #0066fe, #3b8cff); }
+.nx-count { flex:none; font-size:14.5px; font-weight:700; color:var(--nx-text); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.nx-pill { flex:none; height:44px; box-sizing:border-box; padding:0 16px; border-radius:14px; display:flex; align-items:center; gap:8px; background:var(--nx-pill); border:1px solid var(--nx-pill-line);
+  font-size:14.5px; font-weight:700; color:var(--nx-text); white-space:nowrap; }
+.nx-marks svg { color:var(--nx-text); } .nx-xp svg { color:#0a6cf5; } .nx-xp span { color:var(--nx-xp-ink); font-weight:800; }
+.nx-star { width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 35% 30%, #ffc24f, #fb9208 70%); box-shadow:0 0 0 2px rgba(251,146,8,0.25); }
+.nx-sep2 { flex:none; width:1px; height:30px; background:var(--nx-line2); margin:0 4px; }
+.nx-av { flex:none; width:42px; height:42px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 2px var(--nx-pill-line); }
+.nx-av svg { width:100%; height:100%; display:block; }
+/* phone: the progress takes its own row under the header's first row (as the mockup); marks move to the panel */
+@media (max-width:760px) { .nx-marks, .nx-sep2 { display:none !important; } }
+/* phone: two rows, as the phone mockup (brand, +XP, level, profile / the progress). Measured: in one wrapping row it took 3
+   rows (149 px) at 390 px. The mockup has no map button; the map is how a learner moves on, so it starts the second row. */
+@media (max-width:600px) {
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto; grid-template-areas:"brand brand xp lv av" "map prog prog prog prog";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
+    align-items:center; column-gap:8px !important; row-gap:10px !important; padding:10px 16px 12px !important; }
+  .nx-brand { grid-area:brand; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-av { grid-area:av; } .nx-prog { grid-area:prog; }
+  body.nx-play [data-playclose] { grid-area:map; width:38px !important; height:38px !important; }
+  .nx-nudle { font-size:19px; } .nx-nexera { height:18px; } .nx-sep { height:18px; }
+  .nx-prog { margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
+  .nx-dots { gap:9px; } .nx-dots i { width:11px; height:11px; } .nx-dots i.cur { width:38px; }
+  .nx-count { margin-left:auto; }
+  .nx-pill { height:38px; padding:0 11px; font-size:13.5px; gap:6px; } .nx-av { width:38px; height:38px; } .nx-star { width:22px; height:22px; }
+}
+@media (max-width:370px) { .nx-lv { display:none !important; } }
+
+/* ---- the MCQ on the panel (mcq-play look:"panel") ---- */
+/* The host's own MCQ input stays rendered under the component's screen; the old screen was opaque and hid it. This one is
+   see-through (the background shows), so while the component plays (mcqp-on) the host's main column is hidden. */
+body.nx-play.mcqp-on main:not(#mq-stage) { visibility:hidden; }   /* not the component's own stage, which is a <main> too */
+body.nx-play .mcqp-screen { background:transparent !important; }
+body.nx-play .mcqp { --text:var(--nx-text); --text2:var(--nx-text2); --text3:var(--nx-text2); --tint:var(--nx-accent); --bg:var(--nx-bot); --bg0:transparent; --ph:min(360px, 44vh); }
+body.nx-play .mcqp .backdrop { background:none; }
+body.nx-play .mcqp .dock { background:none; }
+/* The panel keeps clear of the robot's corner (as the mockup: the panel starts right of the robot): centred when the screen
+   is wide enough, otherwise it starts past the robot's box (its right edge = rock x + half the box) and narrows. */
+body.nx-play .mcqp { --nx-botR:calc(var(--nx-rh) * 0.584 + var(--ph) * 0.357 + 20px); }
+body.nx-play .mcqp .stage { max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)); margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)); margin-right:auto; }
+body.nx-play .mcqp .stage { box-sizing:border-box; margin-top:26px; margin-bottom:320px; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
+body.nx-play .mcqp .qhead { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+body.nx-play .mcqp .chip { display:inline-flex; align-items:stretch; border-radius:999px; background:var(--nx-chip); overflow:hidden; font-size:15.5px; line-height:1; }
+body.nx-play .mcqp .chip .num { padding:11px 20px; border-radius:999px; background:var(--nx-chip-num); color:var(--nx-chip-num-ink); font-weight:800; font-size:15.5px; }
+body.nx-play .mcqp .chip .topic { padding:11px 20px 11px 16px; color:var(--nx-chip-ink); font-weight:600; }
+body.nx-play .mcqp .qmarks { margin:0; display:flex; align-items:center; gap:8px; height:46px; box-sizing:border-box; padding:0 18px; border-radius:16px; border:1px solid var(--nx-pill-line);
+  background:var(--nx-pill); color:var(--nx-text); font-size:15.5px; font-weight:700; text-align:left; }
+body.nx-play .mcqp .qmarks.earned { color:#e3a412; }
+body.nx-play .mcqp .qlabel { margin:24px 0 6px; font-size:18px; font-weight:700; color:var(--nx-text); }
+body.nx-play .mcqp .qdesc { color:var(--nx-text2); }
+body.nx-play .mcqp h1 { font-size:clamp(25px, 3.3vw, 44px); line-height:1.14; font-weight:800; letter-spacing:-0.02em; color:var(--nx-h1); margin:0 0 24px; }
+body.nx-play .mcqp .tiles { gap:18px; }
+body.nx-play .mcqp .tile { min-height:104px; }
+body.nx-play .mcqp .tile::before { display:none; }   /* no floor reflection: flat cards */
+/* the card: flat, a hairline border (the ::before ring), no glass, no running light */
+body.nx-play .mcqp .face { background:var(--nx-card) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; box-shadow:0 12px 26px -20px rgba(10,40,100,0.45) !important;
+  align-items:center; gap:20px; padding:18px 22px !important; border-radius:18px; transform:none !important; transition:background 200ms, box-shadow 200ms; }
+body.nx-play .mcqp .face::before { background:var(--nx-card-line) !important; animation:none !important; }
+body.nx-play .mcqp .tile:not(.sel):not(.raised):not(.yes):not(.no):not(.dead) .face:hover::before { background:var(--nx-card-hover) !important; }
+body.nx-play .mcqp .gleam { display:none !important; }
+body.nx-play .mcqp .letter { width:58px; height:58px; border-radius:14px; border:0; background:var(--nx-badge); color:var(--nx-badge-ink); font-size:24px; font-weight:800; box-shadow:none; }
+body.nx-play .mcqp .txt { flex:1; min-width:0; padding:0; font-size:17.5px; line-height:1.35; font-weight:600; color:var(--nx-text); }
+body.nx-play .mcqp .ico { flex:none; width:56px; height:56px; color:var(--nx-ico); }
+body.nx-play .mcqp .ico svg { width:100%; height:100%; display:block; }
+body.nx-play .mcqp .radio { flex:none; width:28px; height:28px; border-radius:50%; box-sizing:border-box; border:2px solid var(--nx-radio); transition:border-color 200ms, box-shadow 200ms, background 200ms; }
+/* picked (one tap answers): the card lights in the accent, the badge fills, the radio fills */
+body.nx-play .mcqp .tile.sel .face, body.nx-play .mcqp .tile.raised:not(.no) .face { background:var(--nx-sel) !important; box-shadow:0 0 0 2px var(--nx-sel-line), 0 16px 34px -18px rgba(1,136,253,0.55) !important; }
+body.nx-play .mcqp .tile.sel .letter, body.nx-play .mcqp .tile.raised .letter { background:var(--nx-accent); color:#ffffff; }
+body.nx-play .mcqp .tile.sel .radio, body.nx-play .mcqp .tile.raised .radio { border-color:var(--nx-accent); background:var(--nx-accent); box-shadow:inset 0 0 0 5px var(--nx-sel); }
+/* the verdict keeps the prototype's light (green right, red cracks); a card gone dark fades on the panel */
+body.nx-play .mcqp .tile.dead .face::after { background:color-mix(in srgb, var(--nx-panel) 70%, transparent) !important; }
+/* broken glass: the pieces are the new card (its colour, its hairline) */
+body.nx-play .mcqp .shard-in { background:var(--nx-card) !important; border-color:var(--nx-card-line) !important; box-shadow:0 8px 18px -12px rgba(10,40,100,0.5) !important; }
+body.nx-play .mcqp .shard .letter { background:var(--nx-badge); color:var(--nx-badge-ink); }
+body.nx-play .mcqp .scrim { background:var(--nx-scrim); }
+/* light: the medal backs in light (the base draws them dark), with inks dark enough to read on them */
+html[data-nx="light"] body.nx-play .mcqp .tile.gold .back { background:linear-gradient(180deg, #fff8e3, #fdeec6); --ink:#8a6414; }
+html[data-nx="light"] body.nx-play .mcqp .tile.silver .back { background:linear-gradient(180deg, #f6f8fb, #e6ebf1); --ink:#4f5966; }
+html[data-nx="light"] body.nx-play .mcqp .tile.bronze .back { background:linear-gradient(180deg, #fcefe5, #f5dac7); --ink:#8a4f24; }
+html[data-nx="light"] body.nx-play .mcqp .back { background:linear-gradient(180deg, #ffffff, #f1f5fb); }
+html[data-nx="light"] body.nx-play .mcqp .back .ans, html[data-nx="light"] body.nx-play .mcqp .back .why { color:var(--nx-h1); }
+html[data-nx="light"] body.nx-play .mcqp .tile.gold .why { color:var(--nx-h1); }
+html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
+/* The cards adapt to the room, not only shrink. Measured at 1024 px: the panel is 719 px, each card 310 px, and after the
+   badge (58), icon (56), radio (28) and gaps the text had ~0 px (words ran under the icons). The mockup's cards are ~490 px.
+   Laptop widths: a compact card (smaller badge and icon, tighter gaps). A narrow tablet: one column, as the phone. Viewport
+   queries, not a container query: container-type adds layout containment, which re-anchors fixed layers inside it. */
+@media (min-width:601px) and (max-width:1250px) {
+  body.nx-play .mcqp .face { gap:12px; padding:14px 16px !important; }
+  body.nx-play .mcqp .letter { width:46px; height:46px; font-size:20px; border-radius:12px; }
+  body.nx-play .mcqp .ico { width:38px; height:38px; } body.nx-play .mcqp .radio { width:24px; height:24px; }
+  body.nx-play .mcqp .txt { font-size:16px; } body.nx-play .mcqp .tile { min-height:90px; }
+  body.nx-play .mcqp .stage { padding:24px 28px 26px; }
+}
+@media (min-width:601px) and (max-width:900px) { body.nx-play .mcqp .tiles { grid-template-columns:1fr; } }
+/* phone: no panel box (the question sits on the page, as the phone mockup), one column of cards */
+@media (max-width:600px) {
+  body.nx-play .mcqp .stage { max-width:none; margin:0; padding:14px 18px 300px; border-radius:0; background:none; border:0; box-shadow:none; }
+  body.nx-play .mcqp .chip, body.nx-play .mcqp .chip .num { font-size:14.5px; } body.nx-play .mcqp .chip .num { padding:10px 16px; } body.nx-play .mcqp .chip .topic { padding:10px 16px 10px 12px; }
+  body.nx-play .mcqp .qmarks { height:42px; padding:0 14px; font-size:14.5px; }
+  body.nx-play .mcqp .qlabel { margin:18px 0 4px; font-size:16px; }
+  body.nx-play .mcqp h1 { font-size:26px; margin-bottom:18px; }
+  body.nx-play .mcqp .tiles { gap:12px; } body.nx-play .mcqp .tile { min-height:62px; }
+  body.nx-play .mcqp .face { gap:14px; padding:8px 14px 8px 10px !important; }
+  body.nx-play .mcqp .letter { width:44px; height:44px; font-size:20px; border-radius:11px; }
+  body.nx-play .mcqp .txt { font-size:15.5px; } body.nx-play .mcqp .ico { width:40px; height:40px; } body.nx-play .mcqp .radio { width:24px; height:24px; }
+  body.nx-play .mcqp { --ph:min(250px, 30vh); }
+}
+
+/* ---- the robot: fixed on its rock, bottom-left (robotFixed); its feet on the rock's top ---- */
+/* The left rock: viewBox 420 x 220, drawn at height --nx-rh; its top is at y 96 (56% up) and x 128 (30% across). */
+body.nx-play .mcqp .pal { left:calc(var(--nx-rh) * 0.584 - var(--ph) * 0.357); bottom:calc(var(--nx-rh) * 0.5 - var(--ph) * 0.148); }
+body.nx-play .mcqp .pal.small .pal-body { scale:1; }   /* it keeps its size: it is not in the question's way in its corner */
+body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p1 { left:64%; top:22%; } body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p2 { left:71%; top:15%; }
+body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:6%; bottom:88%; }   /* the same place as the plain rule (this one outranks it) */
+/* its bubble: a speech bubble (the mockup's), not a thought cloud: "You got this!" at rest, the hint after a miss */
+body.nx-play .mcqp .pal-say .puff { display:none; }
+body.nx-play .mcqp .pal-say .say-txt { background:var(--nx-bubble) !important; border:1.5px solid var(--nx-bubble-line); border-radius:20px !important; box-shadow:0 12px 26px -14px rgba(8,30,80,0.5) !important;
+  filter:none !important; color:var(--nx-text) !important; font-size:14.5px; font-weight:700; padding:11px 18px !important; left:6%; bottom:88%;
+  width:max-content !important; max-width:min(280px, calc(var(--nx-botR) - 40px)) !important; text-align:left; text-wrap:balance; }   /* above its head, inside its own column (measured: to its right it sat over card A's badge): one line for a short line, a hint wraps */
+body.nx-play .mcqp .pal-say .say-txt::after { content:""; position:absolute; left:34px; bottom:-8px; width:14px; height:14px; background:var(--nx-bubble); border-right:1.5px solid var(--nx-bubble-line); border-bottom:1.5px solid var(--nx-bubble-line); transform:rotate(45deg); border-bottom-right-radius:3px; }
+@media (max-width:600px) { body.nx-play .mcqp .pal-say .say-txt, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(70% + 4px); bottom:62%; max-width:min(240px, 52vw) !important; }
+  body.nx-play .mcqp .pal-say .say-txt::after { left:-7px; bottom:18px; border:0; border-left:1.5px solid var(--nx-bubble-line); border-bottom:1.5px solid var(--nx-bubble-line); border-bottom-right-radius:0; border-bottom-left-radius:3px; } }   /* phone: to its right, as the phone mockup; the tail points back at it */
