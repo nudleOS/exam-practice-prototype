@@ -158,7 +158,7 @@
       if (J) { if (ok) it.a = i; else if (J.closed && J.answer != null) it.a = J.answer; }   // the host marks: the answer is known only once it is revealed
       if (opts.onAttempt) opts.onAttempt({ n: it.n, item: it, pick: i, correct: ok, tries: S.tries, practice: !!S.practice, final: J ? !!(ok || J.closed) : ok || S.tries >= 3 || S.gone.size + 1 >= it.opts.length - 1 });
       const SQ = S, up = raise(t); setHint(null); $("pal").classList.remove("small");   // it grows back to act                                      // it rises over the others first, then the verdict
-      setTimeout(() => { if (S !== SQ) return; t.classList.add(ok ? "yes" : "no"); verdictLight(t, S.hit[i], ok); }, up);   // the verdict: green light, or red in the cracks
+      setTimeout(() => { if (S !== SQ) return; if (ok) t.dataset.tier = TIER_BY_TRY[S.tries - 1]; t.classList.add(ok ? "yes" : "no"); verdictLight(t, S.hit[i], ok); }, up);   // the verdict: green light, or red in the cracks (data-tier: the medal this try earns, so a skin can light it in that colour)
       if (ok) {
         S.done = true; const pr = S.practice || !!(J && J.replay), gain = pr ? 0 : J ? (J.xp || 0) : opts.xpFor ? opts.xpFor({ item: S.it, tries: S.tries }) : XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = pr ? 0 : J ? (J.marks || 0) : S.tries === 1 ? S.it.marks : 0;
         if (!pr) streak = S.tries === 1 ? streak + 1 : 0; setHint(null);   // practice: the medal shows how it went, nothing is added
