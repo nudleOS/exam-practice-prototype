@@ -17,7 +17,7 @@
   html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
   body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.16), transparent 70%), var(--bg); }
   .top, .pick, .stage, .dock { position:relative; z-index:1; }
-  .top { z-index:40; }   /* above the scrim, so XP and marks stay lit while the hero card is up */
+  .top, .pick { z-index:40; }   /* above the scrim: XP and marks stay lit while the hero card is up, and a question chip takes the tap (not the scrim) */
   /* A low glow in the page's own blue (the top glow's colour) behind the cards: kept from the backdrop experiment */
   .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(520px 300px at 50% 46%, rgba(56,57,255,0.13), transparent 72%); }
   .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
@@ -214,8 +214,10 @@
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
   .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
-  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:auto; padding-left:194px; min-height:128px; align-content:end; }
+  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:none; padding-left:194px; min-height:128px; align-content:end; }
   @media (max-width:600px) { .dock-in { padding-left:146px; min-height:108px; } }
+  /* Nothing in the dock takes a tap now (the Hint button went): taps pass through it, or its box would sit over Next when
+     the big card's Next falls in the bottom ~190 px of a short screen (found by a real click; next() from JS never saw it). */
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
   /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
      behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
@@ -543,7 +545,10 @@ function fillBack(t, it) { const w = WHY[it.n] || {};
   t.querySelector(".ans").textContent = L[it.a] + " · " + it.opts[it.a]; t.querySelector(".why").textContent = whyOf(it);
   t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
 function placeNext() { const hero = $("heroLayer").querySelector(".tile.hero"); (hero ? $("heroLayer") : $("stage")).appendChild(NEXT); }
-function showNext() { placeNext(); NEXT.classList.add("show"); NEXT.focus({ preventScroll: true }); }
+function showNext() { placeNext(); NEXT.classList.add("show"); NEXT.focus({ preventScroll: true }); nextInView(); }
+// Under the grid, Next can land behind the dock's solid fade (a tall question on a short screen): bring it up into view.
+function nextInView() { if (NEXT.parentElement !== $("stage")) return; const d = document.querySelector(".dock").getBoundingClientRect(), clear = d.top + d.height * 0.4, r = NEXT.getBoundingClientRect();
+  if (r.bottom > clear) scrollBy({ top: r.bottom - clear + 12, behavior: reduced ? "auto" : "smooth" }); }
 
 // The hero: the card leaves its slot (an empty slot keeps the grid still), grows to the centre over a scrim, then
 // (right answer) shines in its medal colour and flips twice, landing on its back; (revealed answer) turns once, calmly.
@@ -712,7 +717,7 @@ function grow(t) {
 function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
   const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on");
   if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
-  placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); }); }   // Next goes back under the grid with it
+  placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); nextInView(); }); }   // Next goes back under the grid with it
 function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { placeNext(); return palJump(t); }).then(() => { buddyIn(t, false); S.busy = false; }); }
 
 function present(t, tier) {
