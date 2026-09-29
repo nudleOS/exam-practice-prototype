@@ -15,6 +15,8 @@
     --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
   * { box-sizing:border-box; }
   html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  /* The robot's height: 280 desktop, 218 phone, never more than half a short screen (a phone on its side) */
+  :root { --ph:min(280px, 50vh); } @media (max-width:600px) { :root { --ph:min(218px, 40vh); } }
   body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.16), transparent 70%), var(--bg); }
   .top, .pick, .stage, .dock { position:relative; z-index:1; }
   .top, .pick { z-index:40; }   /* above the scrim: XP and marks stay lit while the hero card is up, and a question chip takes the tap (not the scrim) */
@@ -28,7 +30,7 @@
   @keyframes fillseg { from { transform:scaleX(0); } to { transform:scaleX(1); } }
   .seg i.gold { background:#e3b341; } .seg i.silver { background:#c3c8cf; } .seg i.bronze { background:#b0764a; } .seg i.none { background:#f2777a; }
   .seg i.cur.gold { box-shadow:0 0 12px rgba(227,179,65,0.6); } .seg i.cur.silver { box-shadow:0 0 12px rgba(195,200,207,0.5); } .seg i.cur.bronze { box-shadow:0 0 12px rgba(176,118,74,0.6); } .seg i.cur.none { box-shadow:0 0 12px rgba(242,119,122,0.6); }
-  .stage.enter .meta, .stage.enter h1 { animation:rise 460ms cubic-bezier(.2,.8,.2,1) both; } .stage.enter h1 { animation-delay:70ms; }
+  .stage.enter .qhead, .stage.enter .qdesc, .stage.enter h1, .stage.enter .ab { animation:rise 460ms cubic-bezier(.2,.8,.2,1) both; } .stage.enter h1, .stage.enter .ab { animation-delay:70ms; }
   .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .marks .of { color:var(--text3); font-weight:600; } .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
   .bump { animation:bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes bump { 40% { transform:scale(1.14); } }
@@ -46,13 +48,18 @@
   .pick button.bad { color:#ffb3b6; border-color:rgba(242,119,122,0.55); background:rgba(242,119,122,0.1); }
   .pick button.ok[aria-pressed="true"] { color:#fff; border-color:#3ddc97; box-shadow:0 0 12px rgba(61,220,151,0.45); }
   .pick button.bad[aria-pressed="true"] { color:#fff; border-color:#f2777a; box-shadow:0 0 12px rgba(242,119,122,0.45); }
-  .stage { max-width:760px; margin:0 auto; padding:6px 18px 250px; }   /* room to scroll the last card above the dock */
-  .meta { display:flex; align-items:center; gap:10px; color:var(--text2); font-size:13px; font-weight:600; }
+  .stage { max-width:760px; margin:0 auto; padding:6px 18px 270px; }   /* room to scroll the last card above the dock */
+  /* Above the question, as on the paper: its group ("Question 1.1") and the paper's description, if it has one */
+  .qhead { display:flex; align-items:center; gap:10px; }
+  .qtitle { font-size:14px; font-weight:800; color:var(--text); letter-spacing:0.01em; }
+  .qdesc { margin:8px 0 0; font-size:14px; line-height:1.5; color:var(--text2); max-width:62ch; }
+  .ab { display:grid; gap:6px; margin:-8px 0 18px 0; font-size:16px; font-weight:600; color:var(--text); }   /* Column II's A and B */
+  .ab b { display:inline-block; width:26px; color:var(--tint); font-weight:800; }
+  .qmarks { margin-top:12px; text-align:right; font-size:12.5px; font-weight:700; color:var(--text3); }
   .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
   .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
   h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; display:flex; align-items:flex-start; gap:12px; }
   h1 .num { flex:none; font-size:13px; line-height:1.3; letter-spacing:0; margin-top:3px; }   /* the number, level with the first line; the text wraps beside it */
-  .hint { font-size:12.5px; color:var(--text3); margin:-10px 0 16px; }
   /* Cards: a front (the option) and a back (the why) */
   .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
   @media (max-width:600px) { .tiles { grid-template-columns:1fr; } h1 { font-size:19px; } }
@@ -67,7 +74,7 @@
      not the content: the letter and text stay their size at top-left, with more glass around them. Offsets per card (JS). */
   .tile.raised { z-index:6; transform:none; }
   .tile.raised .side { top:var(--rt, 0px); right:var(--rr, 0px); bottom:var(--rb, 0px); left:var(--rl, 0px); width:auto; height:auto; }   /* the edges decide its size, not 100% */
-  .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 2px #4b5cff, var(--glass-in); }
+  .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 1px #4b5cff, 0 0 14px rgba(75,92,255,0.45), var(--glass-in); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
   .surface { background:var(--panel); border:1px solid var(--line); }
@@ -76,7 +83,7 @@
        tilt too); a soft light pooled at the top; the body, very clear; a fine grain. The 2px rim is ::before, the
        window reflection is .gleam::after, the soft glowing inner edge is the insets, the light under it is .tile::before. */
     --top:rgba(255,255,255,0.05); --low:rgba(255,255,255,0.02);
-    --glass-in:inset 0 0 14px rgba(255,255,255,0.07), inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -8px 16px -10px rgba(160,190,255,0.25);
+    --glass-in:inset 0 0 14px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -8px 16px -10px rgba(160,190,255,0.25);
     border:1px solid transparent;
     background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.1), transparent 70%),
       radial-gradient(130% 70% at 28% -28%, rgba(255,255,255,0.2), transparent 58%),
@@ -88,16 +95,26 @@
     transition:box-shadow 240ms, border-color 240ms, transform 260ms cubic-bezier(.2,.8,.2,1), top 400ms cubic-bezier(.2,.8,.2,1), right 400ms cubic-bezier(.2,.8,.2,1), bottom 400ms cubic-bezier(.2,.8,.2,1), left 400ms cubic-bezier(.2,.8,.2,1); }
   /* The rim: a thick 2px ring drawn with a mask, bright where light hits (top-left), dim along the sides, bright again
      on the far edge (bottom-right), as a thick pane's edge carries light. */
-  .face::before, .back::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; z-index:2;
-    background:linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.28) 18%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.12) 70%, rgba(255,255,255,0.6));
+  .face::before, .back::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; z-index:2;   /* 1 px: a knife edge */
+    background:linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2) 18%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.09) 70%, rgba(255,255,255,0.42));
     -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+  /* The shine: a short bright arc runs around the edge of each waiting card (a conic gradient turned by an animated
+     angle, inside the same 1 px ring). Each card starts at a different point of the lap so they never flash together. */
+  @property --ga { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+    background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(255,255,255,0.95) 330deg, transparent 350deg),
+      linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2) 18%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.09) 70%, rgba(255,255,255,0.42));
+    animation:edgeShine 6s linear infinite; }
+  .tile:nth-child(2) .face::before { animation-delay:-1.5s; } .tile:nth-child(3) .face::before { animation-delay:-3s; } .tile:nth-child(4) .face::before { animation-delay:-4.5s; }
+  @keyframes edgeShine { to { --ga:360deg; } }
+  @media (prefers-reduced-motion: reduce) { .face::before { animation:none !important; } }
   .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
   .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
     background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); transition:background 240ms, color 240ms; }
   .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; }
   /* Picked: the same glass tinted in the first palette's blue, with its #4b5cff ring */
   .tile.sel .face { --top:rgba(75,92,255,0.34); --low:rgba(56,57,255,0.14);
-    box-shadow:0 24px 40px -18px rgba(38,50,255,0.55), 0 0 0 2px #4b5cff, var(--glass-in); }
+    box-shadow:0 24px 40px -18px rgba(38,50,255,0.55), 0 0 0 1px #4b5cff, 0 0 14px rgba(75,92,255,0.45), var(--glass-in); }
   .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* The verdict, as thin light inside the glass (not a border): red lines in the cracks; for the right answer a green
      hairline traces the rim from the fingertip while green light fills the glass from there. The floor light matches. */
@@ -194,7 +211,7 @@
     .tile.hero .back .ok { grid-area:ok; align-self:end; font-size:13px; } .tile.hero .medal { width:20px; height:20px; }
     .tile.hero .back .ans { grid-area:ans; align-self:start; font-size:17px; }
     .tile.hero .back .why { grid-area:why; font-size:15px; line-height:1.5; margin-top:4px; }
-    .tile.hero .back .not { grid-area:not; font-size:13px; }
+    .tile.hero .back .not { display:none; }   /* it cost ~90 px: the robot and Next must be on screen without scrolling */
   }
   /* A narrow phone: the bar's second row must hold the widest values ("150/150 marks", "1000 XP") without wrapping,
      or the chips drop under the open card when the XP grows (seen at 320 px: "0 XP" -> "60 XP" wrapped it). */
@@ -223,31 +240,22 @@
       linear-gradient(180deg, rgba(75,92,255,0.38), rgba(56,57,255,0.18)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(255,255,255,0.14); }
   .shard .letter { background:var(--grad); border-color:transparent; color:#fff; }
-  /* Dials and switches */
-  .builder { display:grid; gap:12px; margin:0 0 18px; }
-  .dial { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; }
-  .dial .lbl { width:110px; font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; }
-  .dial .opts { display:flex; gap:8px; flex-wrap:wrap; }
-  .chip { font:inherit; font-size:14px; font-weight:700; padding:9px 14px; border-radius:12px; border:1px solid var(--line2); background:#262a2f; color:var(--text2); cursor:pointer; }
-  .chip[aria-pressed="true"] { background:var(--grad); color:#fff; border-color:transparent; box-shadow:0 8px 20px rgba(38,50,255,0.35); }
-  .readout { font-size:13px; color:var(--text2); min-height:20px; margin-bottom:8px; } .readout b { color:var(--text); } .readout .no { color:var(--danger); }
-  .switches { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:0 0 16px; }
-  .sw { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px; border-radius:18px; font:inherit; color:var(--text); cursor:pointer; text-align:left; }
-  .sw .k { font-size:12px; color:var(--text3); font-weight:700; } .sw .v { font-size:16px; font-weight:700; margin-top:3px; }
-  .sw .track { flex:none; width:54px; height:30px; border-radius:30px; background:#30353c; position:relative; transition:background 200ms; }
-  .sw .track::after { content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cfd3d7; transition:left 220ms cubic-bezier(.2,.8,.2,1); }
-  .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
+  @media (min-width:601px) and (max-height:520px) {   /* a phone on its side: the desktop layout, short */
+    .tile, .slot { min-height:74px; } .face { padding:12px 14px 12px 12px; } h1 { margin:8px 0 14px; }
+    .hero-layer { padding:var(--ht, 70px) 22px 16px; grid-auto-rows:max-content; align-content:safe center; overflow-y:auto; overscroll-behavior:contain; gap:14px; }
+    .hero-layer:has(.tile.hero) { pointer-events:auto; } .tile.hero .back { min-height:0; padding:12px 20px 12px 10px; } .tile.hero .buddy { width:150px; }
+    .tile.hero .back .not { display:none; } }
   .scrim.on ~ .dock { opacity:0; }   /* a big card is up: the dock is empty and its solid fade would cover the card's end and Next */
   .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
-  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:none; padding-left:194px; min-height:128px; align-content:end; }
-  @media (max-width:600px) { .dock-in { padding-left:146px; min-height:108px; } }
+  .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:none; padding-left:calc(var(--ph) * 0.7143 + 14px); min-height:128px; align-content:end; }
+  @media (max-width:600px) { .dock-in { min-height:108px; } }
   /* Nothing in the dock takes a tap now (the Hint button went): taps pass through it, or its box would sit over Next when
      the big card's Next falls in the bottom ~190 px of a short screen (found by a real click; next() from JS never saw it). */
   .say { text-align:center; font-size:13px; font-weight:600; color:var(--text3); min-height:18px; }
   /* The companion's column: the dock's left edge, so it never stands on the question (long questions scroll up
      behind the dock instead). Hint, the prompt and Next sit to its right; the hint is its speech bubble, in the dock. */
-  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:-37px; width:180px; height:252px; z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
+  .pal { position:fixed; left:max(18px, calc((100vw - 760px) / 2)); bottom:calc(var(--ph) * -0.148); width:calc(var(--ph) * 0.7143); height:var(--ph); z-index:41; pointer-events:none; }   /* its feet on the floor line (the screen's bottom edge), where the glass lands */
   .pal-body { position:absolute; inset:0; } .pal, .buddy { transform-origin:50% 100%; } .pal.away .pal-body { visibility:hidden; }
   .pal-body model-floor, .pal-body img { position:absolute; inset:0; width:100%; height:100%; }
   .pal-body img { object-fit:contain; object-position:center bottom; }
@@ -285,7 +293,7 @@
   @keyframes thought { from { opacity:0; transform:translate(-8px, 8px) scale(0.55); } to { opacity:1; transform:none; } }
   @media (max-width:600px) { .pal-say .p1 { width:6px; height:6px; } .pal-say .p2 { width:10px; height:10px; } .pal-say .say-txt { font-size:13px; } }
   @media (prefers-reduced-motion: reduce) { .pal-say.show .puff, .pal-say.show .say-txt { animation:none; } }
-  @media (max-width:600px) { .pal { width:140px; height:196px; left:6px; bottom:-28px; } }
+  @media (max-width:600px) { .pal { left:6px; } }
   @keyframes rise { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
   /* Next: a small liquid-glass pill under the cards, centred. A brand-gradient rim turns slowly around it; the arrow nudges. */
   @property --na { syntax:'<angle>'; inherits:false; initial-value:0deg; }
@@ -337,9 +345,9 @@
   <div class="xp" id="xpBox"><span aria-hidden="true">⚡</span><span id="xp">0</span><span style="color:var(--tint)">XP</span></div>
 </div>
 <div class="pick" role="group" aria-label="Concept question">
-  <button data-q="1.1.1" aria-pressed="true">Classic · 1.1.1</button>
-  <button data-q="1.1.5" aria-pressed="false">Two-part · 1.1.5</button>
-  <button data-q="1.3.1" aria-pressed="false">A, B, both · 1.3.1</button>
+  <button data-q="1.1.1" aria-pressed="true">1.1.1</button>
+  <button data-q="1.1.5" aria-pressed="false">1.1.5</button>
+  <button data-q="1.3.1" aria-pressed="false">1.3.1</button>
 </div>
 <main class="stage" id="stage"></main>
 <div class="dock"><div class="dock-in">
@@ -349,7 +357,8 @@
 <p class="sr" id="live" aria-live="polite"></p>
 <script>
 const P = window.PAPER_LS_P1_2026, ITEMS = {};
-P.sections.forEach(s => s.missions.forEach(m => m.items.forEach(it => ITEMS[it.n] = it)));
+const GROUP = {};                                                   // each question's group on the paper ("Question 1.1", its extract)
+P.sections.forEach(s => s.missions.forEach(m => m.items.forEach(it => { ITEMS[it.n] = it; GROUP[it.n] = m; })));
 const XP_BY_TRY = [100, 60, 20, 0], L = "ABCDEFGH";
 let S = null, xp = 0, streak = 0;
 // CONCEPT-ONLY explanations: the paper's memo for an MCQ is just the letter, so these are written here from CAPS Gr 12
@@ -422,45 +431,23 @@ if (TILT_OK) { $("motion").hidden = false; let saved = null; try { saved = local
     if (!TILT_ASK) return setTilt(true);
     DeviceOrientationEvent.requestPermission().then(r => { if (r === "granted") setTilt(true); }).catch(() => {}); }; }
 
-function shapeOf(it) {
-  const parts = it.opts.map(o => o.replace(/\.$/, "").split(" · "));
-  if (parts.every(p => p.length === parts[0].length) && parts[0].length >= 2) {
-    const dials = parts[0].map((_, k) => [...new Set(parts.map(p => p[k]))]);
-    if (dials.every(d => d.length >= 2)) return { kind: "dials", parts, dials };
-  }
-  if (it.opts.join("|") === "A only|B only|Both A and B|None") {
-    const m = it.q.match(/A:\s*(.+?)\s*·\s*B:\s*(.+)$/);
-    if (m) return { kind: "switches", a: m[1], b: m[2], stem: it.q.slice(0, m.index).trim().replace(/\.$/, "") };
-  }
-  return { kind: "classic" };
-}
 
 function load(n) {
   const it = ITEMS[n];
-  S = { it, shape: shapeOf(it), sel: null, gone: new Set(), tries: 0, done: false, dialSel: [], sw: [false, false], hit: {} };
+  S = { it, sel: null, gone: new Set(), tries: 0, done: false, hit: {} };
   document.querySelectorAll(".pick button[data-q]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === n)));
   setHint(null); NEXT.classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
   render(!book[n]);                                                   // a finished question comes back as it ended
 }
 
 function render(deal) {
-  const { it, shape } = S, st = $("stage");
-  const stem = shape.kind === "switches" ? shape.stem : it.q;
-  st.innerHTML = `<div class="meta"><span>${it.marks} marks</span><span class="tries"></span></div><h1><span class="num">${it.n}</span><span>${stem}</span></h1>`;
-  if (shape.kind === "dials") {
-    st.insertAdjacentHTML("beforeend", `<p class="hint">Build the answer one part at a time. The option that matches lights up.</p><div class="builder" id="builder"></div><div class="readout" id="readout"></div>`);
-    shape.dials.forEach((vals, k) => {
-      const d = document.createElement("div"); d.className = "dial surface"; d.setAttribute("role", "group");
-      d.innerHTML = `<span class="lbl">Part ${k + 1}</span><span class="opts">${vals.map(v => `<button class="chip" aria-pressed="false">${v}</button>`).join("")}</span>`;
-      d.querySelectorAll(".chip").forEach((c, i) => c.onclick = () => { if (S.done) return; S.dialSel[k] = vals[i]; at(c, sfx.pick); buzz(HAPTIC.pick); syncDials(); });
-      $("builder").appendChild(d);
-    });
-  }
-  if (shape.kind === "switches") {
-    st.insertAdjacentHTML("beforeend", `<p class="hint">Switch on each one it applies to.</p><div class="switches">
-      ${[shape.a, shape.b].map((v, k) => `<button class="sw surface" role="switch" aria-checked="false" data-k="${k}"><span><span class="k">${"AB"[k]}</span><div class="v">${v}</div></span><span class="track"></span></button>`).join("")}</div>`);
-    st.querySelectorAll(".sw").forEach(b => b.onclick = () => { if (S.done) return; S.sw[+b.dataset.k] = !S.sw[+b.dataset.k]; at(b, sfx.pick); buzz(HAPTIC.pick); syncSwitches(); });
-  }
+  const { it } = S, st = $("stage"), grp = GROUP[it.n] || {}, desc = grp.extract || it.note || "";
+  // An "A: … · B: …" pair (Column II on the paper) sits under the stem as its two lines; the stem is otherwise as printed.
+  const ab = it.q.match(/^(.*?)\s*A:\s*(.+?)\s*·\s*B:\s*(.+)$/), stem = ab ? ab[1] : it.q;
+  st.innerHTML = `<div class="qhead"><span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>` +
+    (desc ? `<p class="qdesc">${desc}</p>` : "") +
+    `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
+    (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "");
   const g = document.createElement("div"); g.className = "tiles"; g.id = "tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
   it.opts.forEach((o, i) => {
     const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
@@ -483,29 +470,16 @@ function render(deal) {
     t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) dismiss(); else if (t.classList.contains("flipped")) lift(t); });
     g.appendChild(t);
   });
-  st.appendChild(g); st.appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
+  st.appendChild(g); st.insertAdjacentHTML("beforeend", `<div class="qmarks">${it.marks} marks</div>`);   // the marks, under the last card at its end
+  st.appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
   if (book[it.n] && book[it.n].gone) restore(book[it.n]);
 }
 
 function press(i) {
   if (S.done || S.busy || S.gone.has(i)) return;                   // busy: one answer's consequence plays out before the next is taken
   S.sel = i; palLook(document.querySelector(`.tile[data-i="${i}"]`));                                                  // one tap answers (Murci): no second tap, no Lock in
-  if (S.shape.kind === "switches") { S.sw = [i === 0 || i === 2, i === 1 || i === 2]; syncSwitches(); }
-  else if (S.shape.kind === "dials") { S.dialSel = [...S.shape.parts[i]]; syncDials(); }
-  else paintTiles();                                          // the card takes the picked colour, then answers
+  paintTiles();                                               // the card takes the picked colour, then answers
   submit();
-}
-function syncDials() {
-  const { shape } = S; document.querySelectorAll(".dial").forEach((d, k) => d.querySelectorAll(".chip").forEach((c, i) => c.setAttribute("aria-pressed", String(shape.dials[k][i] === S.dialSel[k]))));
-  const full = shape.dials.every((_, k) => S.dialSel[k]);
-  const idx = full ? shape.parts.findIndex(p => p.every((v, k) => v === S.dialSel[k])) : -1;
-  $("readout").innerHTML = !full ? "" : idx < 0 ? `<span class="no">That combination isn't one of the paper's options. Change a part.</span>`
-    : S.gone.has(idx) ? `<span class="no">That was option ${L[idx]}, already ruled out.</span>` : `Matches option <b>${L[idx]}</b>.`;
-  S.sel = idx >= 0 && !S.gone.has(idx) ? idx : null; paintTiles(); say();
-}
-function syncSwitches() {
-  document.querySelectorAll(".sw").forEach(b => b.setAttribute("aria-checked", String(S.sw[+b.dataset.k])));
-  const [a, b] = S.sw; const idx = a && b ? 2 : a ? 0 : b ? 1 : 3; S.sel = S.gone.has(idx) ? null : idx; paintTiles(); say();
 }
 function paintTiles() { document.querySelectorAll(".tile").forEach(t => { const i = +t.dataset.i, on = S.sel === i && !S.done;
   t.classList.toggle("sel", on); t.querySelector(".face").setAttribute("aria-checked", String(S.sel === i)); }); }
@@ -605,7 +579,7 @@ const palFree = () => !PAL.anim && !PAL.down && !PAL.sweeping && !PAL.hurt && !$
 // Movement. The run clip is authored in place; measured, its planted foot moves 3.51 units/s, and the box shows 2·H·fit
 // units (H 2.4, fit 0.8) over its height, so px/s = 3.51 · rate · boxHeight / 3.84. Moving the box at exactly that pace
 // is what keeps the feet from sliding. `translate` (not transform) carries the position, so the jump arcs compose with it.
-const RUN_RATE = 1.1, SWEEP_RATE = 1.35;   // an unhurried jog (Murci: slower); the sweep a little quicker
+const RUN_RATE = 1.0, SWEEP_RATE = 1.2;   // px/s = rate x box height: cut as the robot grew, so its pace on screen holds   // an unhurried jog (Murci: slower); the sweep a little quicker
 const palSpeed = rate => 3.513 * rate * ($("pal").offsetHeight / 3.84);
 function palBase() { const r = $("pal").getBoundingClientRect(); return { left: r.left - PAL.x, top: r.top, w: r.width, h: r.height }; }
 function palStop() { const pal = $("pal"); if (PAL.anim) { PAL.x = parseFloat(getComputedStyle(pal).translate) || 0; PAL.anim.cancel(); PAL.anim = null; pal.style.translate = `${PAL.x}px 0`; } }
@@ -925,7 +899,7 @@ function go(n) { if (leaving) return; if (reduced) return arrive(n); leaving = t
   if (hero) outs.push(hero.animate([{ transform: flip(hero), opacity: 1 }, { transform: flip(hero) + "translateY(-36px) scale(0.9)", opacity: 0 }], { duration: 360, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
   [...document.querySelectorAll("#tiles .tile")].forEach((x, k) => outs.push(x.animate([{ transform: flip(x), opacity: 1 },
     { transform: flip(x) + "translateX(-34px) translateY(-6px) rotate(-2deg)", opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
-  document.querySelectorAll("#stage .meta, #stage h1, #stage .hint, #stage .builder, #stage .switches, #stage .readout").forEach(x =>
+  document.querySelectorAll("#stage .qhead, #stage .qdesc, #stage h1, #stage .ab, #stage .qmarks").forEach(x =>
     outs.push(x.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
   if ($("shards").firstChild && !PAL.el) outs.push($("shards").animate([{ transform: "none", opacity: 1 }, { transform: "translateX(-34px)", opacity: 0 }], { duration: 360, delay: 120, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
   palCleanUp();                                                                                // the robot gets up and sweeps the glass away
@@ -946,7 +920,7 @@ function fitCloud(el) { el.style.animation = "none"; el.style.width = "";
   void el.offsetWidth; el.style.animation = ""; }
 function sayHint(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
   live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
-function toast(t, k) { if (k === "ok" && innerWidth <= 600 && $("heroLayer").querySelector(".tile.hero")) return;   // phone: no room above the big card, and it already says this
+function toast(t, k) { if (k === "ok" && (innerWidth <= 600 || innerHeight <= 520) && $("heroLayer").querySelector(".tile.hero")) return;   // phone (upright or on its side): no room above the big card, and it already says this
   const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
 
 const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
