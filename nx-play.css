@@ -11,7 +11,7 @@
    Only the LOOK changes: marking, tries, XP, marks, the glass break, the flip and the map work as before. */
 
 html[data-nx="dark"] body.nx-play {
-  --nx-top:#031432; --nx-bot:#031a3a; --nx-head:rgba(2,30,67,0.92); --nx-line:rgba(70,120,210,0.22); --nx-line2:rgba(120,160,230,0.35);
+  --nx-top:#020a1c; --nx-bot:#021027; --nx-head:rgba(3,16,40,0.94);   /* darker than the mockup's #031432 -> #031a3a (Murci, 2026-09-30: "more darker"), same hue */ --nx-line:rgba(70,120,210,0.22); --nx-line2:rgba(120,160,230,0.35);
   --nx-panel:#051c3b; --nx-panel-line:rgba(56,110,210,0.42); --nx-card:#0c1c36; --nx-card-line:#1a3052; --nx-card-hover:#27497d;
   --nx-sel:#072959; --nx-sel-line:#1f7cf5; --nx-badge:#224680; --nx-badge-ink:#e4ecff; --nx-accent:#0188fd;
   --nx-text:#eff3fc; --nx-text2:#b3c3e0; --nx-h1:#ffffff; --nx-ico:#4f78b8; --nx-radio:#5c77a6;
