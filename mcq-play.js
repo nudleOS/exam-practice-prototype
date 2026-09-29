@@ -20,6 +20,8 @@
      glassRain   true = a wrong card's glass rains over the whole screen (about 30% of it aimed at the robot's head): the
                  robot does not run to the card, it is hit wherever it stands, plays its hit, then runs to the other half
                  of the screen, as if to get away (the learner-colours standalone; default off: the robot runs under the card)
+     slideIn     true = moving on, the question slides out to the left and the next slides in from the right, against the
+                 robot sweeping the glass off to the right (default: it rises and its cards are dealt from below)
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
@@ -636,14 +638,21 @@
       [hero, ...RQA("#mq-tiles .tile")].forEach(x => { if (!x) return; const away = x.querySelector(x.classList.contains("flipped") ? ".face" : ".back"); if (away) away.style.visibility = "hidden"; });
       if (hero) outs.push(hero.animate([{ transform: flip(hero), opacity: 1 }, { transform: flip(hero) + "translateY(-36px) scale(0.9)", opacity: 0 }], { duration: 360, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
       [...RQA("#mq-tiles .tile")].forEach((x, k) => outs.push(x.animate([{ transform: flip(x), opacity: 1 },
-        { transform: flip(x) + "translateX(-34px) translateY(-6px) rotate(-2deg)", opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
+        { transform: flip(x) + (opts.slideIn ? "translateX(-110px) rotate(-2deg)" : "translateX(-34px) translateY(-6px) rotate(-2deg)"), opacity: 0 }], { duration: 320, delay: 60 + k * 55, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished));
       RQA("#mq-stage .qhead, #mq-stage .qdesc, #mq-stage h1, #mq-stage .ab, #mq-stage .qmarks").forEach(x =>
-        outs.push(x.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
+        outs.push(x.animate([{ transform: "none", opacity: 1 }, { transform: opts.slideIn ? "translateX(-80px)" : "translateY(-10px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
       if ($("shards").firstChild && !PAL.el) outs.push($("shards").animate([{ transform: "none", opacity: 1 }, { transform: "translateX(-34px)", opacity: 0 }], { duration: 360, delay: 120, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
       palCleanUp();                                                                                // the robot gets up and sweeps the glass away
       Promise.all(outs).then(() => arrive(n, practice)).catch(() => arrive(n, practice)); }
-    function arrive(n, practice = false) { leaving = false; if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; SC.scrollTo({ top: 0 }); const st = $("stage"); st.classList.add("enter"); load(n, practice);
+    function arrive(n, practice = false) { leaving = false; if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; SC.scrollTo({ top: 0 }); const st = $("stage");
+      if (opts.slideIn && !reduced) { load(n, practice); slideIn(); return; }
+      st.classList.add("enter"); load(n, practice);
       setTimeout(() => st.classList.remove("enter"), 900); }
+    // slideIn: the new question comes in from the right, part by part (header, question, then the cards one by one), as
+    // the robot sweeps the glass off to the right: two movements crossing. It replaces the rise and the deal from below.
+    function slideIn() { RQA("#mq-tiles .tile.dealt").forEach(t => t.classList.remove("dealt"));
+      const D = Math.round(Math.min(innerWidth * 0.5, 420)), parts = [...RQA("#mq-stage .qhead, #mq-stage .qdesc, #mq-stage h1, #mq-stage .ab, #mq-stage .qfig"), ...RQA("#mq-tiles .tile"), ...RQA("#mq-stage .qmarks")];
+      parts.forEach((x, k) => x.animate([{ transform: `translateX(${D}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 560, delay: k * 45, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" })); }
     NEXT.onclick = next;
     $("scrim").onclick = () => tapOut();
     $("heroLayer").addEventListener("click", e => { if (e.target === e.currentTarget) tapOut(); });   // phone: the layer takes taps (it scrolls); its empty area = the scrim
