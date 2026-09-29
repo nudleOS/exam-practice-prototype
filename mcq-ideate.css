@@ -27,14 +27,14 @@ body.mcqp-ideate .mcqp .shard-in > .tun { display:none; }
 body.mcqp-ideate .mcqp .dock { background:none; }
 
 
-/* ?cards=tunnel: the page is the platform's blue (Murci: "just blue like the platform's blue colour"). Measured from
-   Exam Practice.dc.html: the brand gradient #0068f8 -> #1e46ff -> #671dff, #1e46ff its core (no platform page uses a blue
-   as a whole background: it is the brand's colour on controls). Flat, no corner lights, no wash. Its lines are white and
-   faint (mcq-ideate.js, u_mono). Computed contrast on #1e46ff: the main text #eceded 5.3:1 passes, but the page's greys
-   do not (text2 #a4a9ae 2.6, text3 #8f9499 2.0, the chip's #81b1ff 2.9), so on this page they are a pale blue #dbe4ff
-   (4.9:1) and the chip white (6.2:1). The cards keep their own colours (their dark glass reads on the blue). */
-body.mcqp-ideate.page-blue { background:#1e46ff; }
+/* ?cards=tunnel: a dark blue page. Murci: "just blue like the platform's blue", then "a darker blue", then "more like the
+   B choice card but not the same so it [does not hide] that choice card". Measured: the platform blue is #1e46ff (the core
+   of its brand gradient #0068f8 -> #1e46ff -> #671dff, Exam Practice.dc.html); card B is sky #0ea5e9 (hue 199). The page
+   is B's family moved a little toward the platform blue: #143252 (hue 211, L 20%, S 60%). Computed on it: card B's sky
+   edge 4.7:1 (a UI outline needs 3), the dark cards (#151419) lift off it at 1.40 (darker candidates fell to 1.1-1.2 and
+   the cards melted in), the text 11.1, text2 5.5, the chip's blue 6.0; only text3 (#8f9499, 4.3) falls short, so here it
+   takes text2's grey. Flat: no corner lights, no wash. The lines are white and faint (mcq-ideate.js, u_mono). */
+body.mcqp-ideate.page-blue { background:#143252; }
 body.mcqp-ideate.page-blue::before { content:none; }
-body.mcqp-ideate.page-blue .mcqp { --bg:#1e46ff; --bg0:rgba(30,70,255,0); --text2:#dbe4ff; --text3:#dbe4ff; --tint:#ffffff; }
-body.mcqp-ideate.page-blue .mcqp .num { background:rgba(255,255,255,0.16); }
+body.mcqp-ideate.page-blue .mcqp { --bg:#143252; --bg0:rgba(20,50,82,0); --text3:#a4a9ae; }
 body.mcqp-ideate.page-blue .mcqp .backdrop { background:none; }

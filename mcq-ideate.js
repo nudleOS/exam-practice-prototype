@@ -54,11 +54,11 @@ void main() {
   float f = smoothstep(0.0, 1.0, fract(h));
   vec3 lineCol = h < 1.0 ? mix(c0, c1, f) : h < 2.0 ? mix(c1, c2, f) : h < 3.0 ? mix(c2, c3, f) : mix(c3, c0, f);
   lineCol = mix(lineCol, vec3(1.0), 0.25);   // a touch of white: lines read as light, not as paint
-  if (u_mono > 0.5) { lineCol = vec3(1.0); topoLines *= 0.6; }   // ?cards=tunnel, on the platform's blue: white and fainter (coloured lines vanish or clash on blue)
+  if (u_mono > 0.5) { lineCol = vec3(1.0); topoLines *= 0.6; }   // ?cards=tunnel, on its dark blue page: white and fainter (coloured lines vanish or clash on blue)
   float a = clamp(gridLines + topoLines, 0.0, 1.0);
   gl_FragColor = vec4(vec3(1.0) * gridLines + lineCol * topoLines, a); }`;   // premultiplied: coloured lines and a white grid over the page's own colours
 
-  const BLUE = new URLSearchParams(location.search).get("cards") === "tunnel";   // its page is the platform's blue (mcq-ideate.css .page-blue)
+  const BLUE = new URLSearchParams(location.search).get("cards") === "tunnel";   // its page is a dark blue (mcq-ideate.css .page-blue)
   if (BLUE) document.body.classList.add("page-blue");
   const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); document.body.prepend(bg);
   const gl = bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
