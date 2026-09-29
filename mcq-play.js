@@ -371,8 +371,10 @@
       const d = [p.y, w - p.x, h - p.y, p.x], edge = d.indexOf(Math.min(...d));                                   // nearest edge: top, right, bottom, left
       const along = [Math.max(0, p.x - R), (w - 2 * R) + Math.max(0, p.y - R), (w - 2 * R) + (h - 2 * R) + Math.max(0, w - R - p.x), 2 * (w - 2 * R) + (h - 2 * R) + Math.max(0, h - R - p.y)][edge];
       const f = along / P * 1000;
-      const svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", ok ? "vline" : "vline no"); svg.setAttribute("viewBox", `0 0 ${w} ${h}`); svg.setAttribute("preserveAspectRatio", "none");   // it stretches with the card as it grows
-      const rc = document.createElementNS(NS, "rect"); [["x", 1], ["y", 1], ["width", w - 2], ["height", h - 2], ["rx", R], ["pathLength", 1000], ["vector-effect", "non-scaling-stroke"]].forEach(([k, v]) => rc.setAttribute(k, v)); svg.appendChild(rc);
+      const svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", ok ? "vline" : "vline no");   // no viewBox: drawn in the card's own pixels at every size
+      // The rect is 100% of an SVG inset 1 px in the card (CSS), so as the card grows the line follows it with the card's own
+      // corners (a viewBox stretched with the card stretched the corners too: 17 px became a 23 x 36 px oval, a second curve).
+      const rc = document.createElementNS(NS, "rect"); [["x", 0], ["y", 0], ["width", "100%"], ["height", "100%"], ["rx", R], ["pathLength", 1000]].forEach(([k, v]) => rc.setAttribute(k, v)); svg.appendChild(rc);
       const fill = document.createElement("div"); fill.className = "vfill"; fill.style.setProperty("--vx", p.x + "px"); fill.style.setProperty("--vy", p.y + "px");
       if (ok) face.append(fill, svg); else face.append(svg);                                           // red: the rim only; the cracks glow red inside
       if (reduced) { rc.style.strokeDasharray = "1000 0"; fill.style.opacity = "1"; return; }

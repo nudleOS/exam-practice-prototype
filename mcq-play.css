@@ -112,7 +112,7 @@
   .mcqp .tile.no { --cast:rgba(242,119,122,0.55); } .mcqp .tile.yes { --cast:rgba(61,220,151,0.5); }
   .mcqp .tile.no .face, .mcqp .tile.yes .face { box-shadow:0 24px 40px -18px rgba(0,0,0,0.7), var(--glass-in); }   /* the blue pick ring hands over: the verdict is the edge now */
   .mcqp .tile.yes .face { --top:rgba(61,220,151,0.16); --low:rgba(30,70,255,0.1); }                             /* the tint turns toward green */
-  .mcqp .vline { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:3; }
+  .mcqp .vline { position:absolute; left:1px; top:1px; width:calc(100% - 2px); height:calc(100% - 2px); overflow:visible; pointer-events:none; z-index:3; }   /* 1 px in: its line sits on the rim, concentric with the card's 18 px corners (rx 17) */
   .mcqp .vline rect { fill:none; stroke:#7ff0bf; stroke-width:1.6; stroke-linecap:round; filter:drop-shadow(0 0 2.5px rgba(61,220,151,0.95)) drop-shadow(0 0 7px rgba(61,220,151,0.45)); }
   .mcqp .vline.no rect { stroke:#ff7a80; filter:drop-shadow(0 0 2.5px rgba(255,70,80,0.95)) drop-shadow(0 0 7px rgba(255,40,60,0.45)); }   /* the same hairline, red: it stays on the broken pieces' edges */
   .mcqp .vfill { position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:1; opacity:0;
