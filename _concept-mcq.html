@@ -326,6 +326,28 @@
   canvas#fx { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:38; }   /* inset alone does not stretch a canvas: without a CSS size it shows at its buffer size (innerWidth x DPR), so every burst drew DPR times too far out */
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
   @media (prefers-reduced-motion: reduce) { .tile, .tile * { transition:none !important; animation:none !important; } }
+  /* Phone: a question fits the screen (baseline 360x640: last card ended at 560 under the robot's head): thinner cards,
+     tighter gaps, smaller question text. Only a question with a lot of information needs a scroll. */
+  @media (max-width:600px) {
+    .top { padding-top:10px; padding-bottom:10px; row-gap:8px; } .pick { margin:0 0 8px; } .stage { padding-top:2px; }
+    h1 { font-size:16.5px; line-height:1.4; margin:6px 0 12px; gap:10px; } h1 .num { font-size:12px; margin-top:2px; }
+    .qtitle { font-size:13px; } .qdesc { font-size:13px; margin-top:6px; } .ab { font-size:14.5px; margin:-4px 0 12px; gap:4px; }
+    .tiles { gap:8px; } .tile, .slot { min-height:64px; } .face { padding:10px 12px 10px 10px; } .txt { font-size:14px; padding-top:6px; }
+    .qmarks { margin-top:8px; }
+    /* The dock holds one prompt line now (the Hint button and the robot's column left it): at its old ~166 px its solid
+       fade hid everything below ~468 px on a 568 px phone, cards included. Just the line, a short fade. */
+    .dock { padding:6px 14px 10px; background:linear-gradient(0deg, var(--bg) 40%, rgba(25,27,30,0)); } .dock-in { min-height:0; padding-left:0; }
+    .stage { padding-bottom:150px; }
+  }
+  /* While the learner chooses, a phone's robot stands at 70% (from its feet), so it does not cover the last card; it
+     grows back to act (runs to a card, is hit, sweeps, jumps in). "scale", not "transform": the hit's jolt animates
+     transform, and the two must compose. Its thought bubble follows the small head (the same points, mapped). */
+  .pal-body { transition:scale 420ms cubic-bezier(.2,.8,.2,1); transform-origin:50% 100%; }
+  @media (max-width:600px), (max-height:520px) {
+    .pal.small .pal-body { scale:0.7; }
+    .pal.small .pal-say .p1 { left:59.8%; top:45.4%; } .pal.small .pal-say .p2 { left:64.7%; top:40.5%; }
+    .pal.small .pal-say .say-txt { left:calc(73.8% + 4px); bottom:60.2%; }
+  }
 </style>
 </head>
 <body>
@@ -473,6 +495,7 @@ function render(deal) {
   st.appendChild(g); st.insertAdjacentHTML("beforeend", `<div class="qmarks">${it.marks} marks</div>`);   // the marks, under the last card at its end
   st.appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
   if (book[it.n] && book[it.n].gone) restore(book[it.n]);
+  palSize();
 }
 
 function press(i) {
@@ -498,7 +521,7 @@ document.addEventListener("keydown", e => { if (!S) return; if (S.done) { if (e.
 function submit() {
   const i = S.sel; if (i == null || S.done) return;
   const it = S.it, t = document.querySelector(`.tile[data-i="${i}"]`), ok = i === S.it.a; S.tries++; buzz(HAPTIC.lock);
-  const SQ = S, up = raise(t); setHint(null);                                      // it rises over the others first, then the verdict
+  const SQ = S, up = raise(t); setHint(null); $("pal").classList.remove("small");   // it grows back to act                                      // it rises over the others first, then the verdict
   setTimeout(() => { if (S !== SQ) return; t.classList.add(ok ? "yes" : "no"); at(t, ok ? sfx.yes : sfx.no); verdictLight(t, S.hit[i], ok); }, up);   // the verdict: green light, or red in the cracks
   if (ok) {
     S.done = true; const gain = XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = S.tries === 1 ? S.it.marks : 0;
@@ -538,9 +561,9 @@ function submit() {
 const whyOf = it => (WHY[it.n] || {}).why || it.clues[0] || "";
 // A finished question, revisited: its end state (as after the big card was put back), to look at; the marks stand.
 function restore(b) { const it = S.it, tile = i => document.querySelector(`.tile[data-i="${i}"]`), r = tile(it.a);
-  S.done = true; S.tries = b.tries || 0; S.tier = b.tier; (b.gone || []).forEach(i => { S.gone.add(i); leaveGap(tile(i)); });
+  S.done = true; S.tries = b.tries || 0; S.tier = b.tier; (b.gone || []).forEach(i => { S.gone.add(i); leaveGap(tile(i), false); });   // revisit: already closed up
   fillBack(r, it); r.querySelector(".ok").innerHTML = b.ok || ""; if (b.tier !== "none") r.classList.add(b.tier); r.classList.add("flipped");
-  killWrong(); paintTiles(); paintTop(); say(); showNext(); }
+  killWrong(); paintTiles(); paintTop(); say(); showNext(); palSize(); }
 function fillBack(t, it) { const w = WHY[it.n] || {};
   t.querySelector(".ans").textContent = L[it.a] + " · " + it.opts[it.a]; t.querySelector(".why").textContent = whyOf(it);
   t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
@@ -581,6 +604,9 @@ const palFree = () => !PAL.anim && !PAL.down && !PAL.sweeping && !PAL.hurt && !$
 // is what keeps the feet from sliding. `translate` (not transform) carries the position, so the jump arcs compose with it.
 const RUN_RATE = 1.0, SWEEP_RATE = 1.2;   // px/s = rate x box height: cut as the robot grew, so its pace on screen holds   // an unhurried jog (Murci: slower); the sweep a little quicker
 const palSpeed = rate => 3.513 * rate * ($("pal").offsetHeight / 3.84);
+// Small while the learner chooses (CSS gives it a size on a phone only): the question is open and the robot is home and free.
+function palSize() { const pal = $("pal"), on = !!S && !S.done && !S.busy && !PAL.anim && !PAL.hurt && !PAL.down && !PAL.sweeping && PAL.x === 0 && !pal.classList.contains("away");
+  pal.classList.toggle("small", on); }
 function palBase() { const r = $("pal").getBoundingClientRect(); return { left: r.left - PAL.x, top: r.top, w: r.width, h: r.height }; }
 function palStop() { const pal = $("pal"); if (PAL.anim) { PAL.x = parseFloat(getComputedStyle(pal).translate) || 0; PAL.anim.cancel(); PAL.anim = null; pal.style.translate = `${PAL.x}px 0`; } }
 function palRunTo(tx, rate = RUN_RATE) { const pal = $("pal"), m = PAL.el; clearTimeout(PAL.timer); palStop();
@@ -604,20 +630,20 @@ const HURT = [{ hold: 1.1, back: 760 }, { hold: 2.2, back: 1900 }];
 function palHit(n, last) { tink(); const m = PAL.el; if (!m) return;
   if (last) { PAL.down = true; PAL.hurt = false; palClip("defeat", { once: true, from: 0.4, fade: 0.12 }); jolt(); buzz(HAPTIC.defeat); return; }
   const H = HURT[Math.min(n, 2) - 1]; PAL.hurt = true; palClip("defeat", { once: true, from: 0.4, hold: H.hold, fade: 0.12 });
-  return new Promise(home => { PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(0).then(() => { if (!PAL.anim && !PAL.down) palIdle(); home(); }); }, H.back); }); }
+  return new Promise(home => { PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(0).then(() => { if (!PAL.anim && !PAL.down) palIdle(); palSize(); home(); }); }, H.back); }); }
 // Next: it gets up if it is down (the fall played backwards), runs to the left of the pile, then sprints right pushing every
 // piece off the floor, and comes back round from the left to its spot. The next question is already up meanwhile.
 function palCleanUp() { const m = PAL.el, pieces = [...$("shards").children];
-  if (!m || PAL.sweeping) return; clearTimeout(PAL.timer); PAL.hurt = false;
+  if (!m || PAL.sweeping) return; clearTimeout(PAL.timer); PAL.hurt = false; $("pal").classList.remove("small");
   if (m.parentElement !== $("palBody")) palHome(null);                                     // it was inside the answer card: home first
-  if (!pieces.length && !PAL.down) { palRunTo(0).then(() => { if (palFree()) palGreet(); }); return; }
+  if (!pieces.length && !PAL.down) { palRunTo(0).then(() => { if (palFree()) palGreet(); palSize(); }); return; }
   PAL.sweeping = true;
   const up = PAL.down ? (palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }), wait(1650)) : Promise.resolve();
   PAL.down = false;
   up.then(() => { const B = palBase(), xs = pieces.map(el => { const b = el.getBoundingClientRect(); return b.left + b.width / 2; });
     const leftOfPile = Math.min(...xs) - B.left - B.w * 0.9;
     return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile)) : Promise.resolve()).then(() => sweepRight(pieces)); })
-  .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => { if (palFree()) palGreet(); });
+  .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => { if (palFree()) palGreet(); palSize(); });
 }
 function sweepRight(pieces) { const pal = $("pal"), B = palBase(), exit = innerWidth - B.left + 40, v = palSpeed(SWEEP_RATE), start = PAL.x;
   const front0 = B.left + start + B.w * 0.62;                                                   // its leading foot
@@ -877,8 +903,16 @@ function shatter(tile, hit, rb) {                                               
     leaveGap(tile); return wait(950);                                                          // the question moves on; the pieces finish on their own
   });
 }
-function leaveGap(tile) { // the broken card keeps its slot, empty: the others stay where the learner last saw them
+// The broken card's slot. Two columns: it stays, empty, so the others stay where the learner last saw them. One column
+// (a phone): the cards below slide up into it (FLIP on "translate", which composes with their own transforms).
+function leaveGap(tile, slide = true) {
   tile.style.visibility = "hidden"; tile.style.pointerEvents = "none"; tile.setAttribute("aria-hidden", "true");
+  const g = tile.parentElement; if (!g || getComputedStyle(g).gridTemplateColumns.split(" ").length !== 1) return;
+  const rest = [...g.children].filter(x => x !== tile && x.style.display !== "none"), before = rest.map(x => x.getBoundingClientRect().top);
+  tile.style.display = "none";
+  if (!slide || reduced) return;
+  rest.forEach((x, k) => { const dy = before[k] - x.getBoundingClientRect().top;
+    if (Math.abs(dy) > 0.5) x.animate([{ translate: `0 ${dy.toFixed(1)}px` }, { translate: "0 0" }], { duration: 440, delay: k * 35, easing: "cubic-bezier(.2,.8,.2,1)" }); });
 }
 let PILE = {};                                                                               // floor height per 34 px strip of the screen's bottom edge
 const norm = a => (a + 2 * Math.PI) % (2 * Math.PI), wait = ms => new Promise(r => setTimeout(r, ms));
