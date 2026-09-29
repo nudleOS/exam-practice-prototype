@@ -17,7 +17,7 @@
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
-  const PAGE_HTML = '<div class="top">\n  <button class="mapbtn" id="mq-mapBtn" aria-haspopup="dialog" aria-label="Map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span class="lbl">Map</span></button>\n  <div class="streak" id="mq-streak"></div>\n  <button class="mute" id="mq-motion" hidden aria-pressed="false" aria-label="Tilt the glass with your phone" title="Tilt"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="18" rx="2" transform="rotate(-14 12 12)"/><path d="M3.5 9.5a9 9 0 0 0 0 5M20.5 9.5a9 9 0 0 1 0 5"/></svg></button>\n  <button class="mute" id="mq-mute" aria-pressed="false" aria-label="Sound on" title="Sound">🔊</button>\n  <div class="xp marks" id="mq-marksBox" aria-label="Marks"><span><span id="mq-mk">0</span><span class="of">/<span id="mq-mkOf"></span></span></span><span class="lbl">marks</span></div>\n  <div class="xp" id="mq-xpBox"><span aria-hidden="true">⚡</span><span id="mq-xp">0</span><span style="color:var(--tint)">XP</span></div>\n</div>\n<main class="stage" id="mq-stage"></main>';
+  const PAGE_HTML = '<div class="top">\n  <button class="mapbtn" id="mq-mapBtn" aria-haspopup="dialog" aria-label="Map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span class="lbl">Map</span></button>\n  <div class="streak" id="mq-streak"></div>\n  <button class="mute" id="mq-motion" hidden aria-pressed="false" aria-label="Tilt the glass with your phone" title="Tilt"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="18" rx="2" transform="rotate(-14 12 12)"/><path d="M3.5 9.5a9 9 0 0 0 0 5M20.5 9.5a9 9 0 0 1 0 5"/></svg></button>\n  <div class="xp marks" id="mq-marksBox" aria-label="Marks"><span><span id="mq-mk">0</span><span class="of">/<span id="mq-mkOf"></span></span></span><span class="lbl">marks</span></div>\n  <div class="xp" id="mq-xpBox"><span aria-hidden="true">⚡</span><span id="mq-xp">0</span><span style="color:var(--tint)">XP</span></div>\n</div>\n<main class="stage" id="mq-stage"></main>';
   const CSS_URL = (document.currentScript && document.currentScript.src || "").replace(/mcq-play\.js.*$/, "mcq-play.css");
   let mounted = null;
   function mount(opts) {
@@ -53,11 +53,11 @@
 
     // Sound, made in the browser (no files). Every sound is placed where it happens: panned left/right by the x of the
     // element that made it (at(el, ...)), up to ±0.8 so nothing sits entirely in one ear.
-    let AC = null, muted = false, PAN = 0;
+    let AC = null, PAN = 0;
     const panOf = el => { if (!el) return 0; const r = el.getBoundingClientRect(); return Math.max(-0.8, Math.min(0.8, ((r.left + r.width / 2) / innerWidth) * 2 - 1)); };
     const at = (el, f) => { PAN = panOf(el); try { f(); } finally { PAN = 0; } }, at_ = at;   // at_: the same, for code that has its own `at`
     const out = (A, node) => { if (PAN && A.createStereoPanner) { const p = A.createStereoPanner(); p.pan.value = PAN; node.connect(p).connect(A.destination); } else node.connect(A.destination); };
-    const ac = () => { if (muted) return null; try { return AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } };
+    const ac = () => { try { return AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } };
     function tone(freq, dur, type = "sine", vol = 0.08, glide = 0, at = 0) { const A = ac(); if (!A) return;
       const o = A.createOscillator(), g = A.createGain(), t = A.currentTime + at; o.type = type; o.frequency.setValueAtTime(freq, t);
       if (glide) o.frequency.exponentialRampToValueAtTime(freq * glide, t + dur); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -73,10 +73,9 @@
       shatter: () => { noise(0.45, 0.5, 1800); [3100, 4200, 5300, 3700, 4800].forEach((f, k) => tone(f, 0.16, "sine", 0.025, 0.9, 0.02 + k * 0.035)); },
       defeat: () => { tone(330, 0.5, "triangle", 0.05, 0.55); tone(196, 0.8, "sine", 0.05, 0.7, 0.28); },
       shine: () => { [1320, 1760, 2640].forEach((f, k) => tone(f, 0.32, "sine", 0.035, 1.02, k * 0.07)); } };
-    const buzz = ms => { if (!muted && navigator.vibrate) navigator.vibrate(ms); };   // Android only: iOS ignores vibrate from the web
+    const buzz = ms => { if (navigator.vibrate) navigator.vibrate(ms); };   // Android only: iOS ignores vibrate from the web
     // One vibration pattern per moment (ms on/off): a tick for a pick, a burst for a shatter, rising for gold, heavy for defeat.
     const HAPTIC = { pick: 6, lock: 14, crack: 10, shatter: [14, 24, 40], shine: 8, gold: [20, 50, 30, 50, 70], silver: [20, 60, 35], bronze: 30, defeat: [70, 90, 140] };
-    $("mute").onclick = () => { muted = !muted; $("mute").textContent = muted ? "🔇" : "🔊"; $("mute").setAttribute("aria-pressed", String(muted)); $("mute").setAttribute("aria-label", muted ? "Sound off" : "Sound on"); };
 
     // Tilt (phones): the glass tilts with the phone and its glint follows the light, like the mouse tilt on desktop.
     // Android: on by default (no permission needed). iOS: needs a tap to allow motion (DeviceOrientationEvent.requestPermission).
@@ -119,7 +118,8 @@
       st.innerHTML = `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>` +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
         `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
-        (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "");
+        (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "") +
+      (it.fig ? `<div class="qfig"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/></svg><span>The diagram is on ${it.fig} of the paper</span></div>` : "");   // a question never loses its figure (the paper images are not in yet)
       const g = document.createElement("div"); g.className = "tiles"; g.id = "mq-tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
       it.opts.forEach((o, i) => {
         const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;

@@ -405,6 +405,13 @@
   /* While MCQs play in a host page, its own companion steps aside: one robot, driven by the component */
   body.mcqp-on [data-companion] { display:none !important; }
   /* Host mode (the prototype): the question scrolls in its own fixed screen under the host's header */
-  .mcqp-screen { position:fixed; left:0; right:0; bottom:0; overflow-y:auto; overscroll-behavior:contain; z-index:3; }
+  .mcqp-screen { position:fixed; left:0; right:0; bottom:0; overflow-y:auto; overscroll-behavior:contain; z-index:3;
+    background:radial-gradient(560px 320px at 50% 30%, rgba(30,70,255,0.16), transparent 72%), var(--bg); }   /* its own page: the brand glow behind the glass */
+  html[data-theme="light"] .mcqp-screen { background:radial-gradient(560px 320px at 50% 30%, rgba(30,70,255,0.12), transparent 72%), var(--bg); }
   .mcqp-screen .stage { padding-top:8px; }
   .mcqp .top[hidden] { display:none !important; }
+
+  .mcqp .qfig { display:flex; align-items:center; gap:10px; margin:0 0 16px; padding:12px 14px; border-radius:14px; border:1px dashed var(--line2); color:var(--text2); font-size:13.5px; font-weight:600; }
+
+  /* the platform's type, set on the component itself so it never depends on its host (the prototype and the concept both use Sora) */
+  .mcqp { font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
