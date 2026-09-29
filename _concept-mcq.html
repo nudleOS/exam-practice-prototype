@@ -11,20 +11,20 @@
 <script type="module" src="model-floor.js"></script>
 <style>
   :root { color-scheme:dark; --bg0:rgba(25,27,30,0); --bg:#191b1e; --panel:#202327; --field:#23262a; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
-    --tint:#81b1ff; --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451;
+    --tint:color-mix(in oklch, #0068f8 55%, #ffffff); --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451;
     --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
   * { box-sizing:border-box; }
   html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
   /* The robot's height: 280 desktop, 218 phone, never more than half a short screen (a phone on its side) */
   :root { --ph:min(280px, 50vh); } @media (max-width:600px) { :root { --ph:min(218px, 40vh); } }
-  body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.16), transparent 70%), var(--bg); }
+  body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.16), transparent 70%), var(--bg); }
   .top, .stage, .dock { position:relative; z-index:1; }
   .top { z-index:40; }   /* above the scrim: XP and marks stay lit while the hero card is up, and a question chip takes the tap (not the scrim) */
   /* A low glow in the page's own blue (the top glow's colour) behind the cards: kept from the backdrop experiment */
-  .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(520px 300px at 50% 46%, rgba(56,57,255,0.13), transparent 72%); }
+  .backdrop { position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(560px 320px at 50% 44%, rgba(30,70,255,0.16), transparent 72%); }   /* B: cobalt light behind the glass (the glass takes its colour from here) */
   .top { display:flex; align-items:center; gap:12px; padding:14px 18px; }
   .seg { flex:1; display:flex; gap:6px; padding:11px 0; margin:-11px 0; cursor:pointer; }   /* a 28 px tap band round the 6 px bar */ .seg i { flex:1; height:6px; border-radius:6px; background:var(--line2); position:relative; overflow:hidden; }
-  .seg i.on { background:var(--line2); box-shadow:0 0 12px rgba(56,57,255,0.45); }
+  .seg i.on { background:var(--line2); box-shadow:0 0 12px rgba(30,70,255,0.45); }
   .seg i.on::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--grad); transform-origin:left; }
   .seg i.on.arrive::after { animation:fillseg 700ms cubic-bezier(.3,.7,.2,1) both; }                  /* the path runs on to the next question */
   @keyframes fillseg { from { transform:scaleX(0); } to { transform:scaleX(1); } }
@@ -35,7 +35,7 @@
   .xp, .mute { display:flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; border:1px solid var(--line2); background:transparent; font-weight:700; font-size:14px; color:var(--text); }
   .marks .of { color:var(--text3); font-weight:600; } .marks .lbl { color:var(--text3); font-size:12px; font-weight:700; }
   .bump { animation:bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes bump { 40% { transform:scale(1.14); } }
-  .mute[hidden] { display:none; } #motion { color:var(--text3); } #motion[aria-pressed="true"] { color:var(--tint); border-color:rgba(129,177,255,0.5); }
+  .mute[hidden] { display:none; } #motion { color:var(--text3); } #motion[aria-pressed="true"] { color:var(--tint); border-color:rgba(96,150,248,0.5); }
   .mute { width:40px; height:38px; justify-content:center; font:inherit; cursor:pointer; padding:0; }
   .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; } .streak:empty { display:none; }   /* no streak: no reserved space */
   /* Phone: the bar needs ~377 px in one row, so the progress runs full width on its own row and the rest sits under it
@@ -58,8 +58,9 @@
   .ab { display:grid; gap:6px; margin:-8px 0 18px 0; font-size:16px; font-weight:600; color:var(--text); }   /* Column II's A and B */
   .ab b { display:inline-block; width:26px; color:var(--tint); font-weight:800; }
   .qmarks { margin-top:12px; text-align:right; font-size:12.5px; font-weight:700; color:var(--text3); }
-  .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
+  .num { color:var(--tint); background:rgba(96,150,248,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
   .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
+  .tries i.no { background:var(--danger); } .tries i.yes { background:var(--ok); }
   h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
   h1 .num { font-size:13px; line-height:1.3; letter-spacing:0; }   /* the sub-question's number on its own line; the question under it, from the same left edge */
   /* Cards: a front (the option) and a back (the why) */
@@ -85,8 +86,8 @@
        tilt too); a soft light pooled at the top; the body, very clear; a fine grain. The 2px rim is ::before, the
        window reflection is .gleam::after, the soft glowing inner edge is the insets, the light under it is .tile::before. */
     --top:rgba(255,255,255,0.05); --low:rgba(255,255,255,0.02);
-    --glass-in:inset 0 0 14px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -8px 16px -10px rgba(160,190,255,0.25);
-    border:1px solid transparent;
+    --glass-in:inset 0 0 14px rgba(255,255,255,0.07), inset 0 -8px 16px -10px rgba(120,165,250,0.25);
+    border:0;   /* no border: the rim alone is the edge (a transparent border let the glass show a second line) */
     background:radial-gradient(220px 140px at var(--mx, 24%) var(--my, -10%), rgba(255,255,255,0.1), transparent 70%),
       linear-gradient(115deg, transparent 0 34%, rgba(255,255,255,0.09) 38%, rgba(255,255,255,0.02) 46%, transparent 47%),   /* a crisp diagonal glint, not a soft pool */
       linear-gradient(180deg, rgba(255,255,255,0.08), transparent 26%),
@@ -110,25 +111,26 @@
   .tile:nth-child(2) .face::before { animation-delay:-1.5s; } .tile:nth-child(3) .face::before { animation-delay:-3s; } .tile:nth-child(4) .face::before { animation-delay:-4.5s; }
   @keyframes edgeShine { to { --ga:360deg; } }
   @media (prefers-reduced-motion: reduce) { .face::before { animation:none !important; } }
+  @media (min-resolution: 2dppx) { .face::before, .back::before { padding:0.5px; } }   /* a sharp screen: one device pixel, a knife edge */
   .face:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
   .letter { flex:none; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
     background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); transition:background 240ms, color 240ms; }
   .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; }
-  /* Picked: the same glass tinted in the first palette's blue, with its #4b5cff ring */
+  /* Picked: the same glass tinted in the first palette's blue, with its #2a52ff ring */
   .tile.sel .face { box-shadow:0 28px 44px -18px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.55), 0 0 18px rgba(255,255,255,0.12), var(--glass-in); }   /* picked: clear glass, a bright rim (no blue fill: glass takes colour only from behind it) */
   .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* The verdict, as thin light inside the glass (not a border): red lines in the cracks; for the right answer a green
      hairline traces the rim from the fingertip while green light fills the glass from there. The floor light matches. */
   .tile.no { --cast:rgba(242,119,122,0.55); } .tile.yes { --cast:rgba(61,220,151,0.5); }
   .tile.no .face, .tile.yes .face { box-shadow:0 24px 40px -18px rgba(0,0,0,0.7), var(--glass-in); }   /* the blue pick ring hands over: the verdict is the edge now */
-  .tile.yes .face { --top:rgba(61,220,151,0.16); --low:rgba(56,57,255,0.1); }                             /* the tint turns toward green */
+  .tile.yes .face { --top:rgba(61,220,151,0.16); --low:rgba(30,70,255,0.1); }                             /* the tint turns toward green */
   .vline { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:3; }
   .vline rect { fill:none; stroke:#7ff0bf; stroke-width:1.6; stroke-linecap:round; filter:drop-shadow(0 0 2.5px rgba(61,220,151,0.95)) drop-shadow(0 0 7px rgba(61,220,151,0.45)); }
   .vline.no rect { stroke:#ff7a80; filter:drop-shadow(0 0 2.5px rgba(255,70,80,0.95)) drop-shadow(0 0 7px rgba(255,40,60,0.45)); }   /* the same hairline, red: it stays on the broken pieces' edges */
   .vfill { position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:1; opacity:0;
     background:radial-gradient(circle at var(--vx) var(--vy), rgba(61,220,151,0.45), rgba(61,220,151,0.14) 45%, transparent 78%); }
   /* The back, in the medal the try earned. Colours are the design's medals (Exam Practice: gold / silver / bronze). */
-  .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:1px solid transparent;
+  .back { transform:rotateY(180deg); padding:14px 16px; display:flex; flex-direction:column; gap:6px; justify-content:center; border:0;
     background:linear-gradient(180deg,#262a30,#1f2226); box-shadow:0 0 0 2px var(--line2); }
   .tile.gold   { --ring:#e3b341; --ink:#e3b341; --glow:rgba(227,179,65,0.55);  --sheen:rgba(255,236,170,0.6);  --medal:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%); }
   .tile.silver { --ring:#c3c8cf; --ink:#d5d9de; --glow:rgba(210,216,224,0.45); --sheen:rgba(255,255,255,0.6);  --medal:radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%); }
@@ -160,8 +162,8 @@
   .gleam::before { content:""; position:absolute; top:-40%; bottom:-40%; left:0; width:36%;
     background:linear-gradient(105deg, transparent, rgba(255,255,255,0.16) 50%, transparent); transform:translateX(-170%) skewX(-14deg);
     animation:gleam 6.5s cubic-bezier(.45,.05,.35,1) infinite; animation-delay:var(--gd, 0s); }
-  .gleam::after { content:""; position:absolute; left:1px; right:1px; top:1px; height:44%; border-radius:17px 17px 40% 40% / 17px 17px 12px 12px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.03) 70%, transparent); }   /* a sharp-edged reflection on the upper glass (was a blurred patch: the "smoke") */
+  .gleam::after { content:""; position:absolute; left:2px; right:2px; top:2px; height:44%; border-radius:16px 16px 40% 40% / 16px 16px 12px 12px;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,0.11) 14%, rgba(255,255,255,0.03) 70%, transparent); }   /* fades in below the rim: never a second line on the edge (it was a blurred patch: the "smoke") */
   .back .gleam::before { background:linear-gradient(105deg, transparent, var(--sheen, rgba(255,255,255,0.2)) 50%, transparent); opacity:0.6; }
   @keyframes gleam { 0%, 64% { transform:translateX(-170%) skewX(-14deg); } 84%, 100% { transform:translateX(430%) skewX(-14deg); } }
   @media (prefers-reduced-motion: reduce) { .gleam { display:none; } }
@@ -238,7 +240,7 @@
   .shard { position:fixed; margin:0; overflow:hidden; will-change:transform; }   /* sized to the piece's own bounds: a card's worth of pixels in total, not 33 */
   .shard-in { position:absolute; margin:0; border-radius:18px; border:1px solid rgba(160,175,255,0.85);
     background:linear-gradient(180deg, rgba(255,255,255,0.1), transparent 38%),
-      linear-gradient(180deg, rgba(75,92,255,0.38), rgba(56,57,255,0.18)) 0 0 / 180px 180px;
+      linear-gradient(180deg, rgba(42,82,255,0.38), rgba(30,70,255,0.18)) 0 0 / 180px 180px;
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 4px 6px 12px -8px rgba(255,255,255,0.3), inset -6px -8px 16px -10px rgba(255,255,255,0.14); }
   .shard .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* The dock */
@@ -296,19 +298,19 @@
   @property --na { syntax:'<angle>'; inherits:false; initial-value:0deg; }
   .next { position:relative; display:none; align-items:center; gap:12px; width:max-content; margin:26px auto 0; height:46px; padding:0 7px 0 22px;
     border:0; border-radius:999px; font:inherit; font-size:14px; font-weight:800; letter-spacing:0.02em; color:#fff; cursor:pointer; pointer-events:auto;
-    background:radial-gradient(120% 90% at 30% -20%, rgba(255,255,255,0.22), transparent 60%), linear-gradient(180deg, rgba(75,92,255,0.3), rgba(56,57,255,0.12));
+    background:radial-gradient(120% 90% at 30% -20%, rgba(255,255,255,0.22), transparent 60%), linear-gradient(180deg, rgba(42,82,255,0.3), rgba(30,70,255,0.12));
     -webkit-backdrop-filter:blur(16px) saturate(170%); backdrop-filter:blur(16px) saturate(170%);
-    box-shadow:0 14px 30px -12px rgba(56,57,255,0.75), inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -6px 14px -8px rgba(160,190,255,0.3);
+    box-shadow:0 14px 30px -12px rgba(30,70,255,0.75), inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -6px 14px -8px rgba(120,165,250,0.3);
     transition:transform 160ms ease, box-shadow 240ms ease; }
   .next::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px; pointer-events:none;
-    background:conic-gradient(from var(--na), #0068f8, #671dff, #00b5ff, #ffffff 70%, #0068f8);
+    background:conic-gradient(from var(--na), #0068f8, #671dff, #2a52ff, #ffffff 70%, #0068f8);
     -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:nspin 5s linear infinite; }
   @keyframes nspin { to { --na:360deg; } }
   .next .arr { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:var(--grad);
-    box-shadow:0 4px 12px rgba(56,57,255,0.6), inset 0 1px 0 rgba(255,255,255,0.45); animation:nnudge 2.6s ease-in-out 1.4s infinite; }
+    box-shadow:0 4px 12px rgba(30,70,255,0.6), inset 0 1px 0 rgba(255,255,255,0.45); animation:nnudge 2.6s ease-in-out 1.4s infinite; }
   .next .arr svg { width:16px; height:16px; }
   @keyframes nnudge { 0%, 72%, 100% { transform:none; } 82% { transform:translateX(4px); } 90% { transform:translateX(-1px); } }
-  .next:hover { box-shadow:0 16px 36px -12px rgba(56,57,255,0.95), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -6px 14px -8px rgba(160,190,255,0.35); }
+  .next:hover { box-shadow:0 16px 36px -12px rgba(30,70,255,0.95), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -6px 14px -8px rgba(120,165,250,0.35); }
   .next:active { transform:scale(0.97); }
   .next:focus-visible { outline:2px solid var(--tint); outline-offset:4px; }
   .next.show { display:flex; animation:nextIn 520ms cubic-bezier(.2,.8,.2,1) both; }
@@ -359,13 +361,13 @@
      backs with darker ink, a light scrim, a solid Next. */
   html[data-theme="light"] { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f4f5f7; --panel:#ffffff; --field:#fbfcfd; --line:#e3e5ea; --line2:#a9b0bb;
     --text:#14161a; --text2:#41464c; --text3:#5f656c; --tint:#1e46ff; --ok:#1d8757; --danger:#d23f45; --gold:#a8760c; }
-  html[data-theme="light"] body { background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.08), transparent 70%), var(--bg); }
-  html[data-theme="light"] .backdrop { background:radial-gradient(520px 300px at 50% 46%, rgba(56,57,255,0.06), transparent 72%); }
+  html[data-theme="light"] body { background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.08), transparent 70%), var(--bg); }
+  html[data-theme="light"] .backdrop { background:radial-gradient(520px 300px at 50% 46%, rgba(30,70,255,0.06), transparent 72%); }
   html[data-theme="light"] .seg i:not(.gold):not(.silver):not(.bronze):not(.none) { background:#858d99; }   /* unfinished only: the medal colours stay */ html[data-theme="light"] .seg i.silver { background:#9aa3ae; } html[data-theme="light"] .num { background:rgba(30,70,255,0.08); }
   html[data-theme="light"] .retry { background:#ffffff; }
   /* the glass: frosted white, a dark-edged hairline, a soft cool shadow */
   html[data-theme="light"] .face { --top:rgba(255,255,255,0.78); --low:rgba(255,255,255,0.52);
-    --glass-in:inset 0 1px 0 rgba(255,255,255,1), inset 0 -8px 16px -12px rgba(30,60,160,0.16);
+    --glass-in:inset 0 -8px 16px -12px rgba(30,60,160,0.16);
     box-shadow:0 18px 32px -20px rgba(20,30,70,0.28), var(--glass-in); }
   html[data-theme="light"] .face::before, html[data-theme="light"] .back::before { background:linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.24) 22%, rgba(20,30,60,0.18) 60%, rgba(20,30,60,0.3)); }
   html[data-theme="light"] .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before { background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(60,90,255,0.75) 330deg, transparent 350deg),
@@ -377,7 +379,7 @@
   html[data-theme="light"] .tile.no .face, html[data-theme="light"] .tile.yes .face { box-shadow:0 18px 32px -20px rgba(20,30,70,0.3), var(--glass-in); }
   html[data-theme="light"] .tile.yes .face { --top:rgba(61,220,151,0.2); --low:rgba(61,220,151,0.06); }
   html[data-theme="light"] .vline rect { stroke:#16a36a; filter:drop-shadow(0 0 2px rgba(22,163,106,0.6)); } html[data-theme="light"] .vline.no rect { stroke:#e0454b; filter:drop-shadow(0 0 2px rgba(224,69,75,0.6)); }
-  html[data-theme="light"] .gleam::after { background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.15) 70%, transparent); }
+  html[data-theme="light"] .gleam::after { background:linear-gradient(180deg, transparent, rgba(255,255,255,0.7) 14%, rgba(255,255,255,0.15) 70%, transparent); }
   html[data-theme="light"] .cracks .lo { stroke:rgba(20,25,50,0.55); }
   html[data-theme="light"] .tile.dead .face::after { background:rgba(244,245,247,0.5); }   /* dimmed, still readable (at 0.72 the words all but vanished) */
   html[data-theme="light"] .tile.dead .face { box-shadow:0 1px 1px rgba(20,30,60,0.08), 0 8px 16px -12px rgba(20,30,60,0.2); }
@@ -561,7 +563,9 @@ function paintTop() { $("seg").innerHTML = ORDER.map(n => { const b = book[n], c
     return `<i class="${c}" title="${n}${b ? " · " + b.tier : ""}" aria-label="Question ${n}${b ? ", " + (b.tier === "none" ? "not answered" : b.tier) : ""}"></i>`; }).join(""); $("xp").textContent = xp;
   $("streak").textContent = streak >= 2 ? `${streak} in a row` : "";
   const tr = document.querySelector(".tries"), left = Math.max(0, 3 - S.tries);
-  if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${i >= S.tries ? "live" : ""}"></i>`).join(""); tr.setAttribute("aria-label", `${left} ${left === 1 ? "try" : "tries"} left`); } }
+  // a dot per try: red for each wrong one, green for the right one, the tries still to come in the tint
+  const wrong = S.gone.size, right = S.done && S.tries > wrong;
+  if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${i < wrong ? "no" : right && i === wrong ? "yes" : i >= S.tries ? "live" : ""}"></i>`).join(""); tr.setAttribute("aria-label", `${left} ${left === 1 ? "try" : "tries"} left`); } }
 document.addEventListener("keydown", e => { if (!S) return; if (S.done) { if (e.key === "Escape") dismiss(); else if (e.key === "Enter" && document.activeElement !== $("retry")) next(); return; }
   const i = "abcd".indexOf(e.key.toLowerCase()); if (i >= 0 && i < S.it.opts.length && !e.metaKey && !e.ctrlKey) { press(i); return; }
   const a = document.activeElement;
