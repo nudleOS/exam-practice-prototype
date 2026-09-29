@@ -763,7 +763,7 @@
 
       <div data-question="true" style="min-width:0; display:flex; flex-direction:column; gap:14px">
         <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
-          <div style="border-radius:16px; border:1px solid var(--line); background:rgba(29,32,35,0.82)">
+          <div style="border-radius:16px; border:1px solid var(--line); background:var(--card2, rgba(29,32,35,0.82))">
             <button onClick="{{ toggleCtx }}" aria-expanded="{{ ctxOpen }}" style="width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:10px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
               <span style="flex:none; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
               <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ context }}</span>
@@ -776,7 +776,7 @@
         </sc-if>
 
         <sc-if value="{{ hasScene }}" hint-placeholder-val="{{ false }}">
-          <div data-scene="true" style="border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #1c2130, #161a23) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
+          <div data-scene="true" style="border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
             <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ sceneAlt }}</span>
             <div style="position:relative; width:min(100%, {{ sceneMaxW }}); margin:0 auto; aspect-ratio:360 / 200">
               <svg aria-hidden="true" viewBox="0 0 360 200" preserveAspectRatio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -866,7 +866,7 @@
         </sc-if>
 
         <sc-if value="{{ hasFigure }}" hint-placeholder-val="{{ false }}">
-          <div data-scene="true" data-figure="true" style="border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, #1c2130, #161a23) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
+          <div data-scene="true" data-figure="true" style="border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
             <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ figAlt }}</span>
             <div style="padding:10px 10px 0">
               <div data-figbox="true" style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
@@ -921,7 +921,7 @@
           <sc-if value="{{ isSteps }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:10px">
               <sc-for list="{{ stepCards }}" as="st" hint-placeholder-count="3">
-                <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ st.border }}; background:rgba(32,35,39,0.78); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04); animation:{{ st.anim }}; transition:border-color 200ms ease">
+                <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ st.border }}; background:var(--card2, rgba(32,35,39,0.78)); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04); animation:{{ st.anim }}; transition:border-color 200ms ease">
                   <span style="display:flex; gap:10px; align-items:baseline">
                     <span style="flex:1; font-size:13.5px; font-weight:600; line-height:1.45; text-wrap:pretty">{{ st.label }}</span>
                     <span style="flex:none; font-size:12px; font-weight:700; color:var(--text3)">{{ st.marks }}</span>
@@ -999,7 +999,7 @@
           </sc-if>
 
           <sc-if value="{{ isNum }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ numBorder }}; background:rgba(32,35,39,0.78)">
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ numBorder }}; background:var(--card2, rgba(32,35,39,0.78))">
               <span style="font-size:13.5px; font-weight:600">Your answer</span>
               <span style="display:flex; align-items:center; gap:8px">
                 <input id="f-num" data-field="true" value="{{ numVal }}" onChange="{{ onNum }}" onFocus="{{ onNumFocus }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" aria-label="Your answer" placeholder="Your value" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
@@ -1083,7 +1083,7 @@
           </sc-if>
 
           <sc-if value="{{ hasReveal }}" hint-placeholder-val="{{ false }}">
-            <div data-reveal="true" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid transparent; background:linear-gradient(180deg, #22262e, #1b1e24) padding-box, linear-gradient(135deg, rgba(129,177,255,0.5), rgba(103,29,255,0.25) 60%, rgba(255,255,255,0.05)) border-box; animation:rise 380ms ease both">
+            <div data-reveal="true" style="display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:16px; border:1px solid transparent; background:var(--reveal-bg, linear-gradient(180deg, #22262e, #1b1e24)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.5), rgba(103,29,255,0.25) 60%, rgba(255,255,255,0.05)) border-box; animation:rise 380ms ease both">
               <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">What the examiner looks for</span>
               <sc-for list="{{ revealLines }}" as="rl" hint-placeholder-count="3">
                 <div style="display:flex; flex-direction:column; gap:4px; padding:10px 0; border-top:1px solid var(--line)">
@@ -1209,7 +1209,7 @@
             </div>
           </sc-if>
           <sc-if value="{{ showCheck }}" hint-placeholder-val="{{ true }}">
-            <div style="padding:12px 0 max(16px, env(safe-area-inset-bottom)); background:linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.96) 34%)">
+            <div style="padding:12px 0 max(16px, env(safe-area-inset-bottom)); background:var(--dock-bg, linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.96) 34%))">
               <sc-if value="{{ showCheckReason }}" hint-placeholder-val="{{ false }}">
                 <span role="status" style="display:block; margin-bottom:6px; text-align:center; font-size:12.5px; font-weight:600; color:var(--text3)">{{ checkReason }}</span>
               </sc-if>
