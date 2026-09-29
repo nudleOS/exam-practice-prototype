@@ -28,6 +28,7 @@
   .seg i.on::after { content:""; position:absolute; inset:0; border-radius:inherit; background:var(--grad); transform-origin:left; }
   .seg i.on.arrive::after { animation:fillseg 700ms cubic-bezier(.3,.7,.2,1) both; }                  /* the path runs on to the next question */
   @keyframes fillseg { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  .seg i { background:#626a73; } .seg i.on { background:#626a73; }   /* unfilled segments at 3:1 on the page (were 1.6:1) */
   .seg i.gold { background:#e3b341; } .seg i.silver { background:#c3c8cf; } .seg i.bronze { background:#b0764a; } .seg i.none { background:#f2777a; }
   .seg i.cur.gold { box-shadow:0 0 12px rgba(227,179,65,0.6); } .seg i.cur.silver { box-shadow:0 0 12px rgba(195,200,207,0.5); } .seg i.cur.bronze { box-shadow:0 0 12px rgba(176,118,74,0.6); } .seg i.cur.none { box-shadow:0 0 12px rgba(242,119,122,0.6); }
   .stage.enter .qhead, .stage.enter .qdesc, .stage.enter h1, .stage.enter .ab { animation:rise 460ms cubic-bezier(.2,.8,.2,1) both; } .stage.enter h1, .stage.enter .ab { animation-delay:70ms; }
@@ -59,15 +60,15 @@
   .qmarks { margin-top:12px; text-align:right; font-size:12.5px; font-weight:700; color:var(--text3); }
   .num { color:var(--tint); background:rgba(129,177,255,0.12); padding:3px 9px; border-radius:8px; font-weight:700; }
   .tries { margin-left:auto; display:flex; gap:5px; } .tries i { width:9px; height:9px; border-radius:50%; background:var(--line2); } .tries i.live { background:var(--tint); }
-  h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; display:flex; align-items:flex-start; gap:12px; }
-  h1 .num { flex:none; font-size:13px; line-height:1.3; letter-spacing:0; margin-top:3px; }   /* the number, level with the first line; the text wraps beside it */
+  h1 { font-size:22px; line-height:1.4; font-weight:700; margin:12px 0 20px; letter-spacing:-0.01em; display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+  h1 .num { font-size:13px; line-height:1.3; letter-spacing:0; }   /* the sub-question's number on its own line; the question under it, from the same left edge */
   /* Cards: a front (the option) and a back (the why) */
   .tiles { display:grid; grid-template-columns:1fr 1fr; gap:14px; perspective:1100px; }
   @media (max-width:600px) { .tiles { grid-template-columns:1fr; } h1 { font-size:19px; } }
   .tile { position:relative; min-height:96px; transform-style:preserve-3d; transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 260ms, filter 420ms ease; }
   .tile::before { content:""; position:absolute; left:16%; right:16%; bottom:-11px; height:5px; border-radius:50%; pointer-events:none;   /* its reflection on the glossy floor: a crisp line, not a glow */
     background:radial-gradient(closest-side, var(--cast, rgba(170,190,255,0.55)), transparent); filter:blur(1.5px); opacity:0.8; transition:opacity 520ms ease var(--dd, 0s); }
-  .tile.sel { --cast:rgba(90,110,255,0.7); } .tile.gold { --cast:rgba(227,179,65,0.55); } .tile.silver { --cast:rgba(210,216,224,0.5); } .tile.bronze { --cast:rgba(217,155,108,0.5); }
+  .tile.sel { --cast:rgba(215,225,255,0.75); } .tile.gold { --cast:rgba(227,179,65,0.55); } .tile.silver { --cast:rgba(210,216,224,0.5); } .tile.bronze { --cast:rgba(217,155,108,0.5); }
   .tile.dead::before { opacity:0.12; }
   .tile.sel { transform:translateY(-6px) translateZ(26px) scale(1.02); }
   /* Selected: larger, on top of its neighbours, leaning a little toward the middle (as D in Murci's screenshot 2) */
@@ -75,7 +76,7 @@
      not the content: the letter and text stay their size at top-left, with more glass around them. Offsets per card (JS). */
   .tile.raised { z-index:6; transform:none; }
   .tile.raised .side { top:var(--rt, 0px); right:var(--rr, 0px); bottom:var(--rb, 0px); left:var(--rl, 0px); width:auto; height:auto; }   /* the edges decide its size, not 100% */
-  .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 1px #4b5cff, 0 0 14px rgba(75,92,255,0.45), var(--glass-in); }
+  .tile.raised .face { box-shadow:0 34px 56px -18px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.55), 0 0 18px rgba(255,255,255,0.12), var(--glass-in); }
   .tile.flipped { transform:rotateY(180deg); }
   .side { position:absolute; inset:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
   .surface { background:var(--panel); border:1px solid var(--line); }
@@ -114,8 +115,7 @@
     background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); transition:background 240ms, color 240ms; }
   .txt { font-size:15px; line-height:1.45; font-weight:600; padding-top:5px; }
   /* Picked: the same glass tinted in the first palette's blue, with its #4b5cff ring */
-  .tile.sel .face { --top:rgba(75,92,255,0.34); --low:rgba(56,57,255,0.14);
-    box-shadow:0 24px 40px -18px rgba(38,50,255,0.55), 0 0 0 1px #4b5cff, 0 0 14px rgba(75,92,255,0.45), var(--glass-in); }
+  .tile.sel .face { box-shadow:0 28px 44px -18px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.55), 0 0 18px rgba(255,255,255,0.12), var(--glass-in); }   /* picked: clear glass, a bright rim (no blue fill: glass takes colour only from behind it) */
   .tile.sel .letter { background:var(--grad); border-color:transparent; color:#fff; }
   /* The verdict, as thin light inside the glass (not a border): red lines in the cracks; for the right answer a green
      hairline traces the rim from the fingertip while green light fills the glass from there. The floor light matches. */
@@ -328,11 +328,18 @@
      tighter gaps, smaller question text. Only a question with a lot of information needs a scroll. */
   @media (max-width:600px) {
     .top { padding-top:10px; padding-bottom:10px; row-gap:8px; } .stage { padding-top:2px; }
-    h1 { font-size:16.5px; line-height:1.4; margin:6px 0 12px; gap:10px; } h1 .num { font-size:12px; margin-top:2px; }
+    h1 { font-size:16.5px; line-height:1.4; margin:6px 0 12px; gap:5px; } h1 .num { font-size:12px; }
     .qtitle { font-size:18.5px; } .qdesc { font-size:13px; margin-top:6px; } .ab { font-size:14.5px; margin:-4px 0 12px; gap:4px; }
     .tiles { gap:8px; } .tile, .slot { min-height:64px; } .face { padding:12px 14px 12px 12px; gap:12px; align-items:center; } .txt { font-size:14px; line-height:1.4; padding-top:0; }
     .letter { width:30px; height:30px; font-size:13px; border-radius:9px; }
     .qmarks { margin-top:8px; }
+    /* the small answer card is 64 px: its three lines (medal, answer, "Tap to see why") ran ~96 px and out of the card.
+       Two tight lines; the tap hint becomes a chevron at the right. */
+    .tile.flipped:not(.hero) .back { padding:8px 40px 8px 14px; gap:3px; }
+    .tile.flipped:not(.hero) .back .ok { font-size:12px; gap:6px; } .tile.flipped:not(.hero) .medal { width:16px; height:16px; }
+    .tile.flipped:not(.hero) .back .ans { font-size:14px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tile.flipped:not(.hero) .back .more { position:absolute; right:14px; top:50%; translate:0 -50%; font-size:0; }
+    .tile.flipped:not(.hero) .back .more::after { content:"›"; font-size:24px; font-weight:600; line-height:1; color:var(--text3); }
     /* The dock holds one prompt line now (the Hint button and the robot's column left it): at its old ~166 px its solid
        fade hid everything below ~468 px on a 568 px phone, cards included. Just the line, a short fade. */
     .dock { padding:6px 14px 10px; background:linear-gradient(0deg, var(--bg) 40%, var(--bg0)); } .dock-in { min-height:0; padding-left:0; }
@@ -350,28 +357,29 @@
   /* ===================== Light mode ===================== The platform's light palette; every surface redrawn for a
      light page: frosted white glass with a darker hairline (a white rim vanishes on white), lighter shadows, pale medal
      backs with darker ink, a light scrim, a solid Next. */
-  html[data-theme="light"] { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f4f5f7; --panel:#ffffff; --field:#fbfcfd; --line:#e3e5ea; --line2:#cdd1d9;
+  html[data-theme="light"] { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f4f5f7; --panel:#ffffff; --field:#fbfcfd; --line:#e3e5ea; --line2:#a9b0bb;
     --text:#14161a; --text2:#41464c; --text3:#5f656c; --tint:#1e46ff; --ok:#1d8757; --danger:#d23f45; --gold:#a8760c; }
   html[data-theme="light"] body { background:radial-gradient(900px 500px at 50% -10%, rgba(56,57,255,0.08), transparent 70%), var(--bg); }
   html[data-theme="light"] .backdrop { background:radial-gradient(520px 300px at 50% 46%, rgba(56,57,255,0.06), transparent 72%); }
-  html[data-theme="light"] .seg i.silver { background:#9aa3ae; } html[data-theme="light"] .num { background:rgba(30,70,255,0.08); }
+  html[data-theme="light"] .seg i:not(.gold):not(.silver):not(.bronze):not(.none) { background:#858d99; }   /* unfinished only: the medal colours stay */ html[data-theme="light"] .seg i.silver { background:#9aa3ae; } html[data-theme="light"] .num { background:rgba(30,70,255,0.08); }
   html[data-theme="light"] .retry { background:#ffffff; }
   /* the glass: frosted white, a dark-edged hairline, a soft cool shadow */
   html[data-theme="light"] .face { --top:rgba(255,255,255,0.78); --low:rgba(255,255,255,0.52);
     --glass-in:inset 0 1px 0 rgba(255,255,255,1), inset 0 -8px 16px -12px rgba(30,60,160,0.16);
     box-shadow:0 18px 32px -20px rgba(20,30,70,0.28), var(--glass-in); }
-  html[data-theme="light"] .face::before, html[data-theme="light"] .back::before { background:linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.16) 22%, rgba(20,30,60,0.1) 60%, rgba(20,30,60,0.2)); }
+  html[data-theme="light"] .face::before, html[data-theme="light"] .back::before { background:linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.24) 22%, rgba(20,30,60,0.18) 60%, rgba(20,30,60,0.3)); }
   html[data-theme="light"] .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before { background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(60,90,255,0.75) 330deg, transparent 350deg),
-    linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.16) 22%, rgba(20,30,60,0.1) 60%, rgba(20,30,60,0.2)); }
-  html[data-theme="light"] .letter { background:rgba(20,30,60,0.05); border-color:rgba(20,30,60,0.16); color:var(--text); box-shadow:inset 0 1px 0 #fff; }
-  html[data-theme="light"] .tile.sel .face { --top:rgba(75,92,255,0.14); --low:rgba(56,57,255,0.06); box-shadow:0 20px 34px -18px rgba(38,50,255,0.3), 0 0 0 1px #4b5cff, 0 0 12px rgba(75,92,255,0.25), var(--glass-in); }
-  html[data-theme="light"] .tile.raised .face { box-shadow:0 30px 48px -20px rgba(20,30,70,0.38), 0 0 0 1px #4b5cff, 0 0 12px rgba(75,92,255,0.25), var(--glass-in); }
+    linear-gradient(145deg, rgba(255,255,255,1), rgba(20,30,60,0.24) 22%, rgba(20,30,60,0.18) 60%, rgba(20,30,60,0.3)); }
+  html[data-theme="light"] .letter { background:rgba(20,30,60,0.05); border-color:rgba(20,30,60,0.34); color:var(--text); box-shadow:inset 0 1px 0 #fff; }
+  html[data-theme="light"] .tile.sel .face { box-shadow:0 24px 38px -18px rgba(20,30,70,0.38), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
+  html[data-theme="light"] .tile.raised .face { box-shadow:0 30px 48px -20px rgba(20,30,70,0.42), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
+  html[data-theme="light"] .tile.sel { --cast:rgba(60,80,140,0.35); }
   html[data-theme="light"] .tile.no .face, html[data-theme="light"] .tile.yes .face { box-shadow:0 18px 32px -20px rgba(20,30,70,0.3), var(--glass-in); }
   html[data-theme="light"] .tile.yes .face { --top:rgba(61,220,151,0.2); --low:rgba(61,220,151,0.06); }
   html[data-theme="light"] .vline rect { stroke:#16a36a; filter:drop-shadow(0 0 2px rgba(22,163,106,0.6)); } html[data-theme="light"] .vline.no rect { stroke:#e0454b; filter:drop-shadow(0 0 2px rgba(224,69,75,0.6)); }
   html[data-theme="light"] .gleam::after { background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.15) 70%, transparent); }
   html[data-theme="light"] .cracks .lo { stroke:rgba(20,25,50,0.55); }
-  html[data-theme="light"] .tile.dead .face::after { background:rgba(244,245,247,0.72); }
+  html[data-theme="light"] .tile.dead .face::after { background:rgba(244,245,247,0.5); }   /* dimmed, still readable (at 0.72 the words all but vanished) */
   html[data-theme="light"] .tile.dead .face { box-shadow:0 1px 1px rgba(20,30,60,0.08), 0 8px 16px -12px rgba(20,30,60,0.2); }
   html[data-theme="light"] .scrim { background:rgba(20,24,32,0.32); }
   /* the answer's back: pale, the ink darker; the medal colours stay */
@@ -386,7 +394,7 @@
   html[data-theme="light"] .pal-say { --cloudShadow:drop-shadow(0 8px 14px rgba(20,30,70,0.2)) drop-shadow(0 0 0.7px rgba(20,30,70,0.55)); }
   /* Next: solid blue on a light page (the dark theme's translucent pill would leave white text on pale blue) */
   html[data-theme="light"] .next { background:linear-gradient(180deg,#3d57ff,#2539f0); box-shadow:0 12px 26px -12px rgba(37,57,240,0.6), inset 0 1px 1px rgba(255,255,255,0.45); }
-  html[data-theme="light"] .toast.ok { background:#e6f6ee; } html[data-theme="light"] .toast.no { background:#fdecec; }
+  html[data-theme="light"] .toast.ok { background:#e6f6ee; color:#156543; } html[data-theme="light"] .toast.no { background:#fdecec; color:#ad2a31; }
 </style>
 </head>
 <body>
@@ -532,7 +540,7 @@ function render(deal) {
     t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) tapOut(); else if (t.classList.contains("flipped")) lift(t); });
     g.appendChild(t);
   });
-  st.appendChild(g); st.insertAdjacentHTML("beforeend", `<div class="qmarks">${it.marks} marks</div><div class="after" id="after"><button class="retry" id="retry" hidden>↻ Try again</button></div>`);   // the marks under the last card; then Try again and Next
+  st.appendChild(g); st.insertAdjacentHTML("beforeend", `<div class="qmarks">${it.marks} marks</div><div class="after" id="after"><button class="retry" id="retry" hidden><span aria-hidden="true">↻</span>&nbsp;Try again</button></div>`);   // the marks under the last card; then Try again and Next
   if ($("qback")) $("qback").onclick = () => { if (!S.busy) go(ORDER[k - 1]); };
   $("retry").onclick = () => { if (!S.busy) go(it.n, true); };
   $("after").appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
@@ -863,17 +871,27 @@ function shatter(tile, hit, rb) {                                               
   const lo = document.createElementNS(NS, "g"), rd = document.createElementNS(NS, "g"), hi = document.createElementNS(NS, "g");
   rd.setAttribute("class", "redglow"); hi.setAttribute("class", "glow"); svg.append(lo, rd, hi);
   const SPEED = 1.4;
-  const draw = (pts, width, startDist, alpha = 1) => { const len = pts.reduce((m, q, k) => k ? m + Math.hypot(q.x - pts[k - 1].x, q.y - pts[k - 1].y) : 0, 0); if (len < 1) return;
+  const draw = (pts, width, startDist, alpha = 1, lag = 0) => { const len = pts.reduce((m, q, k) => k ? m + Math.hypot(q.x - pts[k - 1].x, q.y - pts[k - 1].y) : 0, 0); if (len < 1) return;
     const d = "M" + pts.map(q => q.x.toFixed(1) + " " + q.y.toFixed(1)).join(" L");
     [[lo, "lo", width + 1.2, 0.7], [rd, "rd", width + 0.3, 0], [hi, "hi", Math.max(0.45, width * 0.42), 0]].forEach(([g, cls, sw, off]) => { const e = document.createElementNS(NS, "path"); e.setAttribute("class", cls); e.setAttribute("d", d);
       e.setAttribute("stroke-width", sw.toFixed(2)); if (off) e.setAttribute("transform", `translate(${off} ${off})`); if (alpha < 1) e.setAttribute("opacity", alpha.toFixed(2));
       e.style.strokeDasharray = len; e.style.strokeDashoffset = len; g.appendChild(e);
-      e.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: len / SPEED, delay: startDist / SPEED, easing: "cubic-bezier(.3,.6,.4,1)", fill: "forwards" }); }); };
-  rays.forEach(ry => { draw(slice(ry, 0, ry.ring[0]), 1.7, 0); draw(slice(ry, ry.ring[0], ry.ring[1]), 1.2, ry.ring[0]); draw(slice(ry, ry.ring[1], ry.len), 0.8, ry.ring[1]);
-    if (Math.random() < 0.4) { const t0 = ry.len * rnd(0.5, 0.75), o = at(ry, t0); let a = ry.base + rnd(0.3, 0.45) * (Math.random() < 0.5 ? -1 : 1), q = o; const pts = [o];   // a fork
-      for (let n = 0, L = rnd(20, 60); n * 10 < L; n++) { a += rnd(-0.2, 0.2); const nq = { x: q.x + Math.cos(a) * 10, y: q.y + Math.sin(a) * 10 }; if (!inside(nq)) break; pts.push(nq); q = nq; }
-      draw(pts, 0.7, t0); } });
-  RING.forEach((_, j) => rays.forEach((ry, k) => { const nx = rays[(k + 1) % N]; draw([ry.q[j], nx.q[j]], 0.9, Math.max(ry.ring[j], nx.ring[j]), rnd(0.55, 1)); }));
+      e.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: len / SPEED, delay: startDist / SPEED + lag, easing: "cubic-bezier(.3,.6,.4,1)", fill: "forwards" }); }); };
+  // It grows the way glass does: four main cracks shoot out first, the other seven follow (~0.2 s), the rings link them
+  // as the rays pass, then forks, a third partial ring and short hairlines fill the web in. Only the 11 rays and 2 rings
+  // cut pieces (33, as measured for frame rate); the rest is drawn on the glass.
+  const FIRST = new Set([0, 3, 6, 8]); rays.forEach((ry, k) => ry.d0 = FIRST.has(k) ? 0 : 170 + rnd(0, 90));
+  rays.forEach(ry => { draw(slice(ry, 0, ry.ring[0]), 1.7, 0, 1, ry.d0); draw(slice(ry, ry.ring[0], ry.ring[1]), 1.2, ry.ring[0], 1, ry.d0); draw(slice(ry, ry.ring[1], ry.len), 0.8, ry.ring[1], 1, ry.d0);
+    [[0.8, 0.5, 0.75], [0.4, 0.3, 0.55]].forEach(([pr, lo, hi]) => { if (Math.random() > pr) return;                        // forks: most rays one, some two
+      const t0 = ry.len * rnd(lo, hi), o = at(ry, t0); let a = ry.base + rnd(0.3, 0.5) * (Math.random() < 0.5 ? -1 : 1), q = o; const pts = [o];
+      for (let n = 0, L = rnd(18, 55); n * 9 < L; n++) { a += rnd(-0.22, 0.22); const nq = { x: q.x + Math.cos(a) * 9, y: q.y + Math.sin(a) * 9 }; if (!inside(nq)) break; pts.push(nq); q = nq; }
+      draw(pts, 0.65, t0, rnd(0.7, 1), ry.d0 + 60); }); });
+  RING.forEach((_, j) => rays.forEach((ry, k) => { const nx = rays[(k + 1) % N]; draw([ry.q[j], nx.q[j]], 0.9, Math.max(ry.ring[j], nx.ring[j]), rnd(0.55, 1), Math.max(ry.d0, nx.d0) + 40); }));
+  rays.forEach((ry, k) => { if (Math.random() < 0.4) return; const nx = rays[(k + 1) % N], ta = ry.len * 0.74, tb = nx.len * 0.74;   // a third, broken ring
+    draw([at(ry, ta), at(nx, tb)], 0.6, Math.max(ta, tb), rnd(0.45, 0.85), Math.max(ry.d0, nx.d0) + 120); });
+  rays.forEach((ry, k) => { const nx = rays[(k + 1) % N], m = { x: (ry.q[0].x + nx.q[0].x) / 2, y: (ry.q[0].y + nx.q[0].y) / 2 }, a = Math.atan2(m.y - p.y, m.x - p.x) + rnd(-0.3, 0.3), l = rnd(8, 22);   // hairlines off the inner ring
+    draw([m, { x: m.x + Math.cos(a) * l, y: m.y + Math.sin(a) * l }], 0.5, Math.max(ry.ring[0], nx.ring[0]), rnd(0.5, 0.9), Math.max(ry.d0, nx.d0) + 160); });
+  setTimeout(() => at_(tile, sfx.crack), 190);                                                                            // the second wave: another crack sound
   for (let n = 0; n < 8; n++) { const a = rnd(0, Math.PI * 2), l = rnd(4, 11); draw([p, { x: p.x + Math.cos(a) * l, y: p.y + Math.sin(a) * l }], 0.6, 0); }   // micro-cracks
   face.appendChild(svg); at_(tile, sfx.crack); buzz(HAPTIC.crack);
   const crush = document.createElement("div"); crush.className = "crush"; crush.style.left = p.x + "px"; crush.style.top = p.y + "px"; face.appendChild(crush);
@@ -881,7 +899,7 @@ function shatter(tile, hit, rb) {                                               
   const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
   fl.animate([{ opacity: 0, transform: "scale(0.3)" }, { opacity: 1, transform: "scale(1)", offset: 0.25 }, { opacity: 0, transform: "scale(1.4)" }], { duration: 300, easing: "ease-out", fill: "forwards" });
   tile.animate([{ translate: "0 0", rotate: "0deg" }, { translate: "-4px 0", rotate: "-0.5deg" }, { translate: "3px 0", rotate: "0.4deg" }, { translate: "0 0", rotate: "0deg" }], { duration: 200 });   // translate/rotate, not transform: it shudders ON the raised card instead of undoing its lift
-  const crackMs = Math.max(...rays.map(ry => ry.len)) / SPEED;
+  const crackMs = Math.max(...rays.map(ry => ry.d0 + ry.len / SPEED)) + 160;   // until the last wave has drawn
   // The pieces are built while the learner looks at the cracked glass (invisible), so the instant of breaking only
   // shows and moves them. Measured before: building 33 full-card clones at that instant dropped the fall to 19 fps.
   // Built 6 pieces a frame (measured: all 33 at once froze one frame for 326 ms, visible in the robot's hop).
