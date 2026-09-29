@@ -1,0 +1,36 @@
+/* mcq-play-kids: a colour variant of the MCQ cards for high-school learners (Murci, 2026-09-29: "our cards feel too
+   premium; think about the kids"). Only the COLOURS change: every option is its own bright colour, still glass.
+   Layered on mcq-play.css by pages that put class "mcqp-kids" on <body> (the kids standalone); nothing else uses it.
+   The pasted reference (a React card with colorClass) carried no colour values, so the palette is designed here:
+   A violet, B sky, C amber, D pink. No red and no green: those mean wrong and right when the verdict lights up.
+   Letter badges: white on violet / pink, dark on sky / amber (white on those fails contrast). */
+
+body.mcqp-kids .mcqp .tile { --c:124,58,237; --ink:#ffffff; }                          /* A violet  #7c3aed */
+body.mcqp-kids .mcqp .tile[data-i="1"] { --c:14,165,233; --ink:#04263a; }             /* B sky     #0ea5e9 */
+body.mcqp-kids .mcqp .tile[data-i="2"] { --c:245,158,11; --ink:#2a1800; }             /* C amber   #f59e0b */
+body.mcqp-kids .mcqp .tile[data-i="3"] { --c:219,39,119; --ink:#ffffff; }             /* D pink    #db2777 */
+
+/* the glass takes the option's colour; its light on the floor too */
+body.mcqp-kids .mcqp .tile:not(.yes):not(.dead):not(.flipped) .face { --top:rgba(var(--c),0.36); --low:rgba(var(--c),0.13);
+  box-shadow:0 18px 34px -18px rgba(var(--c),0.6), var(--glass-in); }
+body.mcqp-kids .mcqp .tile:not(.yes):not(.no) { --cast:rgba(var(--c),0.75); }
+/* the rim: the option's colour caught along the knife edge (and the travelling glint, white) */
+body.mcqp-kids .mcqp .face::before { background:linear-gradient(145deg, rgba(255,255,255,0.85), rgba(var(--c),0.7) 26%, rgba(var(--c),0.35) 62%, rgba(255,255,255,0.55)); }
+body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(255,255,255,0.95) 330deg, transparent 350deg),
+    linear-gradient(145deg, rgba(255,255,255,0.85), rgba(var(--c),0.7) 26%, rgba(var(--c),0.35) 62%, rgba(255,255,255,0.55)); }
+/* the letter: a solid badge in the option's colour */
+body.mcqp-kids .mcqp .tile .letter { background:rgb(var(--c)); border-color:transparent; color:var(--ink); box-shadow:0 4px 12px rgba(var(--c),0.55), inset 0 1px 0 rgba(255,255,255,0.45); }
+/* picked / growing: a ring and glow in its colour (the glass stays its colour, never the old blue) */
+body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no) .face, body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no) .face {   /* once the verdict lights, it owns the edge */
+  box-shadow:0 28px 44px -18px rgba(0,0,0,0.7), 0 0 0 2px rgb(var(--c)), 0 0 24px rgba(var(--c),0.55), var(--glass-in); }
+
+/* light mode: the same colours as brighter pastel glass */
+html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.dead):not(.flipped) .face { --top:rgba(var(--c),0.22); --low:rgba(var(--c),0.09);
+  box-shadow:0 16px 30px -16px rgba(var(--c),0.45), var(--glass-in); }
+html[data-theme="light"] body.mcqp-kids .mcqp .face::before { background:linear-gradient(145deg, rgba(255,255,255,0.7), rgba(var(--c),0.6) 26%, rgba(var(--c),0.4) 62%, rgba(var(--c),0.55)); }
+html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(var(--c),0.9) 330deg, transparent 350deg),
+    linear-gradient(145deg, rgba(255,255,255,0.7), rgba(var(--c),0.6) 26%, rgba(var(--c),0.4) 62%, rgba(var(--c),0.55)); }
+html[data-theme="light"] body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no) .face, html[data-theme="light"] body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no) .face {
+  box-shadow:0 22px 36px -18px rgba(20,30,70,0.35), 0 0 0 2px rgb(var(--c)), 0 0 18px rgba(var(--c),0.4), var(--glass-in); }
