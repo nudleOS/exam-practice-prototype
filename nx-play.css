@@ -46,7 +46,9 @@ body.nx-play { background:transparent !important; }
 .nx-leaf { fill:var(--nx-leaf); } .nx-leaf2 { fill:var(--nx-leaf2); } .nx-cloud { fill:var(--nx-cloud); }
 /* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). */
 body.nx-play { --nx-rh:min(30vh, 250px); }
-@media (max-width:600px) { body.nx-play { --nx-rh:min(22vh, 170px); } .nx-doodle { opacity:0.8; } }
+@media (max-width:600px) { body.nx-play { --nx-rh:min(22svh, 170px); } .nx-doodle { opacity:0.8; } }
+/* a short phone (360x640, 375x667): a lower rock, so the robot's corner takes less of the height */
+@media (max-width:600px) and (max-height:740px) { body.nx-play { --nx-rh:min(18svh, 170px); } }
 
 /* ---- the header: Nudle | Nexera, the map, the progress of this mission, marks, +XP, level, profile ---- */
 body.nx-play [data-playhead] { background:var(--nx-head) !important; border-bottom:1px solid var(--nx-line) !important; -webkit-backdrop-filter:blur(12px) !important; backdrop-filter:blur(12px) !important; }
@@ -155,7 +157,13 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
 @media (min-width:601px) and (max-width:900px) { body.nx-play .mcqp .tiles { grid-template-columns:1fr; } }
 /* phone: no panel box (the question sits on the page, as the phone mockup), one column of cards */
 @media (max-width:600px) {
-  body.nx-play .mcqp .stage { max-width:none; margin:0; padding:14px 18px 300px; border-radius:0; background:none; border:0; box-shadow:none; }
+  body.nx-play .mcqp .stage { max-width:none; margin:0; padding:14px 18px 32px; border-radius:0; background:none; border:0; box-shadow:none; }
+  /* The question ends where the robot's corner starts: the screen (the question's scroll box) stops at the robot's head, so
+     a card scrolls ABOVE the robot and never under it, whatever the question's length. Measured before: the robot covered
+     cards C and D by 186 px at 375x667 and 27 px at 360x800. The robot and the glass are on their own fixed layer (LAYERS),
+     not in the screen, so the shorter screen cuts neither off. The fade says "there is more below". */
+  body.nx-play .mcqp-screen { bottom:calc(var(--nx-rh) * 0.5 + var(--ph) * 0.692) !important;   /* the robot's head: its box bottom (.pal below) + 84% of its height */
+    -webkit-mask-image:linear-gradient(180deg, #000 calc(100% - 22px), transparent); mask-image:linear-gradient(180deg, #000 calc(100% - 22px), transparent); }
   body.nx-play .mcqp .chip, body.nx-play .mcqp .chip .num { font-size:14.5px; } body.nx-play .mcqp .chip .num { padding:10px 16px; } body.nx-play .mcqp .chip .topic { padding:10px 16px 10px 12px; }
   body.nx-play .mcqp .qmarks { height:42px; padding:0 14px; font-size:14.5px; }
   body.nx-play .mcqp .qlabel { margin:18px 0 4px; font-size:16px; }
@@ -164,7 +172,14 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
   body.nx-play .mcqp .face { gap:14px; padding:8px 14px 8px 10px !important; }
   body.nx-play .mcqp .letter { width:44px; height:44px; font-size:20px; border-radius:11px; }
   body.nx-play .mcqp .txt { font-size:15.5px; } body.nx-play .mcqp .ico { width:40px; height:40px; } body.nx-play .mcqp .radio { width:24px; height:24px; }
-  body.nx-play .mcqp { --ph:min(250px, 30vh); }
+  body.nx-play .mcqp { --ph:min(250px, 30svh); }
+}
+/* a short phone: a smaller robot and a tighter question, so all four cards fit above it more often */
+@media (max-width:600px) and (max-height:740px) {
+  body.nx-play .mcqp { --ph:min(250px, 26svh); }
+  body.nx-play .mcqp .stage { padding-top:10px; }
+  body.nx-play .mcqp .qlabel { margin-top:12px; } body.nx-play .mcqp h1 { font-size:24px; margin-bottom:14px; }
+  body.nx-play .mcqp .tiles { gap:10px; } body.nx-play .mcqp .tile { min-height:56px; }
 }
 
 /* ---- the robot: fixed on its rock, bottom-left (robotFixed); its feet on the rock's top ---- */
@@ -179,5 +194,7 @@ body.nx-play .mcqp .pal-say .say-txt { background:var(--nx-bubble) !important; b
   filter:none !important; color:var(--nx-text) !important; font-size:14.5px; font-weight:700; padding:11px 18px !important; left:6%; bottom:88%;
   width:max-content !important; max-width:min(280px, calc(var(--nx-botR) - 40px)) !important; text-align:left; text-wrap:balance; }   /* above its head, inside its own column (measured: to its right it sat over card A's badge): one line for a short line, a hint wraps */
 body.nx-play .mcqp .pal-say .say-txt::after { content:""; position:absolute; left:34px; bottom:-8px; width:14px; height:14px; background:var(--nx-bubble); border-right:1.5px solid var(--nx-bubble-line); border-bottom:1.5px solid var(--nx-bubble-line); transform:rotate(45deg); border-bottom-right-radius:3px; }
-@media (max-width:600px) { body.nx-play .mcqp .pal-say .say-txt, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(70% + 4px); bottom:62%; max-width:min(240px, 52vw) !important; }
+/* phone: beside its body and low, so a hint grows up INSIDE the robot's corner, under the question box (measured: anchored at
+   62% of its height, a 4-line hint rose to y 398 over card D at 360x640; the question box ends at the robot's head, 84%) */
+@media (max-width:600px) { body.nx-play .mcqp .pal-say .say-txt, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(70% + 4px); bottom:10%; max-width:min(250px, calc(100vw - 110px)) !important; }
   body.nx-play .mcqp .pal-say .say-txt::after { left:-7px; bottom:18px; border:0; border-left:1.5px solid var(--nx-bubble-line); border-bottom:1.5px solid var(--nx-bubble-line); border-bottom-right-radius:0; border-bottom-left-radius:3px; } }   /* phone: to its right, as the phone mockup; the tail points back at it */
