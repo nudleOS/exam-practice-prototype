@@ -18,7 +18,6 @@ html[data-nx="dark"] body.nx-play {
   --nx-chip:#0b2553; --nx-chip-ink:#e4ecff; --nx-chip-num:#0a4bb1; --nx-chip-num-ink:#ffffff;
   --nx-pill:rgba(12,32,70,0.72); --nx-pill-line:rgba(70,120,210,0.38); --nx-xp-ink:#8fc0ff; --nx-doodle:rgba(96,140,225,0.22);
   --nx-bubble:#0b2350; --nx-bubble-line:rgba(88,140,235,0.6);
-  --nx-rock:#1c2944; --nx-rock-hi:#2f3e60; --nx-rock-sh:#121b30; --nx-leaf:#2e7a3e; --nx-leaf2:#46964a; --nx-cloud:rgba(10,38,84,0.85);
   --nx-scrim:rgba(2,10,28,0.7); --nx-shadow:0 30px 60px -32px rgba(0,0,0,0.75);
 }
 html[data-nx="light"] body.nx-play {
@@ -29,7 +28,6 @@ html[data-nx="light"] body.nx-play {
   --nx-chip:#e3eefc; --nx-chip-ink:#2c4f8f; --nx-chip-num:#cfe2fd; --nx-chip-num-ink:#1b5fd9;
   --nx-pill:#ffffff; --nx-pill-line:#e1e9f5; --nx-xp-ink:#1667e8; --nx-doodle:rgba(80,120,190,0.2);
   --nx-bubble:#ffffff; --nx-bubble-line:#c9dcf5;
-  --nx-rock:#5b6782; --nx-rock-hi:#8591ab; --nx-rock-sh:#434c64; --nx-leaf:#3d8c48; --nx-leaf2:#62b15a; --nx-cloud:rgba(255,255,255,0.9);
   --nx-scrim:rgba(214,226,244,0.72); --nx-shadow:0 26px 50px -30px rgba(20,50,110,0.35);
   color-scheme:light;
 }
@@ -40,12 +38,19 @@ html[data-nx="light"] body.nx-play {
 body.nx-play { background:transparent !important; }
 .nx-bg { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; color:var(--nx-doodle); background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)); }
 .nx-doodle { position:absolute; fill:none; stroke:currentColor; stroke-width:1.15; stroke-linecap:round; stroke-linejoin:round; overflow:visible; }
-.nx-rocks { position:absolute; bottom:0; height:var(--nx-rh); width:auto; overflow:visible; }
-.nx-rocks-l { left:0; } .nx-rocks-r { right:0; height:calc(var(--nx-rh) * 0.86); }
-.nx-rock { fill:var(--nx-rock); } .nx-rock-hi { fill:var(--nx-rock-hi); } .nx-rock-sh { fill:var(--nx-rock-sh); }
-.nx-leaf { fill:var(--nx-leaf); } .nx-leaf2 { fill:var(--nx-leaf2); } .nx-cloud { fill:var(--nx-cloud); }
-/* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). */
-body.nx-play { --nx-rh:min(30vh, 250px); }
+/* Rendered art (Gemini, 2026-09-29), cut off its magenta by assets/scenery/cutout.py: rocks-left 633x375 (the flat-topped
+   rock the robot stands on), rocks-right 613x322. A CSS background, not an <img>: the browser downloads only the pair of
+   the theme in use (a hidden <img> still downloads). Light uses the render as is; dark uses the night grade (rocks darkened
+   to the mockup's measured dark rock, leaves kept green). 77 KB per theme. */
+.nx-rocks { position:absolute; bottom:0; height:var(--nx-rh); background:no-repeat center bottom / contain; }
+.nx-rocks-l { left:calc(var(--nx-rh) * var(--nx-rl)); aspect-ratio:633 / 375; background-image:url("assets/scenery/life-sciences/rocks-left.webp"); }
+.nx-rocks-r { right:calc(var(--nx-rh) * -0.12); height:calc(var(--nx-rh) * 0.86); aspect-ratio:613 / 322; background-image:url("assets/scenery/life-sciences/rocks-right.webp"); }
+html[data-nx="dark"] .nx-rocks-l { background-image:url("assets/scenery/life-sciences/rocks-left-dark.webp"); }
+html[data-nx="dark"] .nx-rocks-r { background-image:url("assets/scenery/life-sciences/rocks-right-dark.webp"); }
+/* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). Measured on
+   rocks-left: the flat top's middle is at x 0.864 and 0.560 up, as fractions of the art's height; the art starts 0.3 of its
+   height off the left edge (the ferns bleed off-screen, as the mockup's rocks do), so the feet are 0.564 across. */
+body.nx-play { --nx-rh:min(30vh, 250px); --nx-rl:-0.3; --nx-fx:calc(0.864 + var(--nx-rl)); --nx-fy:0.56; }
 @media (max-width:600px) { body.nx-play { --nx-rh:min(22svh, 170px); } .nx-doodle { opacity:0.8; } }
 /* a short phone (360x640, 375x667): a lower rock, so the robot's corner takes less of the height */
 @media (max-width:600px) and (max-height:740px) { body.nx-play { --nx-rh:min(18svh, 170px); } }
@@ -101,7 +106,7 @@ body.nx-play .mcqp .backdrop { background:none; }
 body.nx-play .mcqp .dock { background:none; }
 /* The panel keeps clear of the robot's corner (as the mockup: the panel starts right of the robot): centred when the screen
    is wide enough, otherwise it starts past the robot's box (its right edge = rock x + half the box) and narrows. */
-body.nx-play .mcqp { --nx-botR:calc(var(--nx-rh) * 0.584 + var(--ph) * 0.357 + 20px); }
+body.nx-play .mcqp { --nx-botR:calc(var(--nx-rh) * var(--nx-fx) + var(--ph) * 0.357 + 20px); }
 body.nx-play .mcqp .stage { max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)); margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)); margin-right:auto; }
 body.nx-play .mcqp .stage { box-sizing:border-box; margin-top:26px; margin-bottom:320px; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
 body.nx-play .mcqp .qhead { display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -165,7 +170,7 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
      a card scrolls ABOVE the robot and never under it, whatever the question's length. Measured before: the robot covered
      cards C and D by 186 px at 375x667 and 27 px at 360x800. The robot and the glass are on their own fixed layer (LAYERS),
      not in the screen, so the shorter screen cuts neither off. The fade says "there is more below". */
-  body.nx-play .mcqp-screen { bottom:calc(var(--nx-rh) * 0.5 + var(--ph) * 0.692) !important;   /* the robot's head: its box bottom (.pal below) + 84% of its height */
+  body.nx-play .mcqp-screen { bottom:calc(var(--nx-rh) * var(--nx-fy) + var(--ph) * 0.692) !important;   /* the robot's head: its box bottom (.pal below) + 84% of its height */
     -webkit-mask-image:linear-gradient(180deg, #000 calc(100% - 22px), transparent); mask-image:linear-gradient(180deg, #000 calc(100% - 22px), transparent); }
   /* the chip and the marks stay on one line each (measured: both wrapped to 2 lines at 360 px); a topic longer than the room
      ends in an ellipsis rather than pushing the marks off (the longest today, "Human Reproduction", fits at 360 px) */
@@ -191,8 +196,8 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
 }
 
 /* ---- the robot: fixed on its rock, bottom-left (robotFixed); its feet on the rock's top ---- */
-/* The left rock: viewBox 420 x 220, drawn at height --nx-rh; its top is at y 96 (56% up) and x 128 (30% across). */
-body.nx-play .mcqp .pal { left:calc(var(--nx-rh) * 0.584 - var(--ph) * 0.357); bottom:calc(var(--nx-rh) * 0.5 - var(--ph) * 0.148); }
+/* The robot stands on the left rock's flat top: its feet at (--nx-fx, --nx-fy) x the rock's height (measured, see .nx-rocks). */
+body.nx-play .mcqp .pal { left:calc(var(--nx-rh) * var(--nx-fx) - var(--ph) * 0.357); bottom:calc(var(--nx-rh) * var(--nx-fy) - var(--ph) * 0.148); }
 body.nx-play .mcqp .pal.small .pal-body { scale:1; }   /* it keeps its size: it is not in the question's way in its corner */
 body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p1 { left:64%; top:22%; } body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p2 { left:71%; top:15%; }
 body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:6%; bottom:88%; }   /* the same place as the plain rule (this one outranks it) */
