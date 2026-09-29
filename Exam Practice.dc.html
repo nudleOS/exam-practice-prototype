@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:#1e2128; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=7">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=9">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -889,8 +889,8 @@
 
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
-            <span style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span>
-            <span style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
+            <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
+            <span data-partmarks="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
               <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:12px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
             </sc-if>
@@ -1918,7 +1918,7 @@ function buildPapers() {
         SERVER.keys[key] = { rubric: q.bullets || [] };
         return { key: key, number: q.n, marks: q.marks, response_mode: "rubric", marking_mode: "criteria", stem: stem, clues_available: (q.clues || []).length };
       });
-      sec.missions.push({ id: id, title: FM_TITLES[id] || m.title, context: context, tags: FM_TAGS[id] || [], parts: parts });
+      sec.missions.push({ id: id, title: FM_TITLES[id] || m.title, kind: m.kind || "", context: context, tags: FM_TAGS[id] || [], parts: parts });
     });
     fm.sections.push(sec);
   });
@@ -1962,7 +1962,7 @@ function buildPapers() {
         SERVER.keys[key] = { rubric: q.bullets || [] };
         return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
       });
-      sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, context: "", tags: [], parts: parts });
+      sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, kind: m.kind || "", context: "", tags: [], parts: parts });
     });
     ls.sections.push(sec);
   });
@@ -3642,9 +3642,11 @@ class Component extends DCLogic {
     const mcq = this.mcqOn();   // the component draws this question, with its own robot
     // The boss's design (2026-09-29) is the practice play screen's look; the Hall keeps its own. Progress = this mission's
     // parts; the level is a PLACEHOLDER from XP (a new level every 300 XP on the mocked 740 + this session): the platform owns levels.
+    // the chip's topic on non-MCQ parts: the paper's own heading for the question (mission.kind), unless it names a format
+    const nxKind = ((this.mission() || {}).kind || "").trim(), nxTopic = /^(multiple choice|a, b, both or none|definitions)$/i.test(nxKind) ? "" : nxKind;
     const nx = !hall, mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1), nxLv = 1 + Math.floor(((HOME.me.xp_total || 0) + (s.xp || 0)) / 300);
     const base = { nxLook: nx, nxNoLook: !nx, nxProgK: nxK, nxProgN: mParts.length, nxProgAria: "Part " + nxK + " of " + mParts.length,
-      nxDots: mParts.map((pt, k) => ({ cls: k === s.pi ? "cur" : this.pg(pt.key).closed ? "done" : "" })), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
+      nxDots: mParts.map((pt, k) => ({ cls: k === s.pi ? "cur" : this.pg(pt.key).closed ? "done" : "" })), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, hasPartTopic: nx && !!nxTopic, partTopic: nxTopic, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
       hallMode: hall, showPlayXp: !hall && !nx, showCoach: !hall && !mcq, hallNavCol: hall && wide, hallStrip: hall && !wide,
       playCloseMap: !hall && !fx && !s.drill, playCloseX: hall || !!fx || !!s.drill,
       showPlayMarks: !hall && !nx, playMarks: Math.max(0, this.earnedNow() - (this._mcqPending || 0)), playMarksOf: (this.paper() || {}).total || 0,

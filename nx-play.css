@@ -262,8 +262,14 @@ body.nx-play main:not(#mq-stage):not([data-done]) { display:block !important; bo
 body.nx-play main:not(#mq-stage) [data-question] { box-sizing:border-box; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
 body.nx-play main:not(#mq-stage) [data-question] [data-stem] { font-size:clamp(20px, 2.1vw, 28px) !important; line-height:1.3 !important; font-weight:800 !important; letter-spacing:-0.01em; color:var(--nx-h1); }
 /* the part's header as the MCQ panel's: the number chip, the marks pill */
-body.nx-play main:not(#mq-stage) section[data-key] > div:first-child > span:first-child { padding:9px 16px !important; border-radius:999px !important; background:var(--nx-chip-num) !important; color:var(--nx-chip-num-ink) !important; font-size:14.5px !important; }
-body.nx-play main:not(#mq-stage) section[data-key] > div:first-child > span:nth-child(2) { padding:8px 14px; border-radius:14px; border:1px solid var(--nx-pill-line); background:var(--nx-pill); color:var(--nx-text) !important; font-size:14px !important; }
+body.nx-play main:not(#mq-stage) section[data-key] [data-partnum] { position:relative; z-index:1; padding:9px 16px !important; border-radius:999px !important; background:var(--nx-chip-num) !important; color:var(--nx-chip-num-ink) !important; font-size:14.5px !important; }
+/* the topic: the paper's own heading for the question, tucked behind the number as the MCQ chip (number pill on a chip) */
+/* number + topic are one unit (display:contents elsewhere, so the old look is unchanged): on a narrow screen the topic shortens
+   with an ellipsis instead of wrapping away from its number (measured at 360 px: "Investigation: hand-eye coordination" wrapped
+   to its own line and the tuck-under pulled it 18 px off-screen) */
+body.nx-play main:not(#mq-stage) section[data-key] [data-partchip] { display:inline-flex !important; align-items:center; flex:0 1 auto; min-width:0; max-width:100%; }
+body.nx-play main:not(#mq-stage) section[data-key] [data-parttopic] { margin-left:-34px; padding:9px 18px 9px 32px; border-radius:0 999px 999px 0; background:var(--nx-chip); color:var(--nx-chip-ink) !important; font-size:14.5px !important; font-weight:600 !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; max-width:100%; }
+body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks] { padding:8px 14px; border-radius:14px; border:1px solid var(--nx-pill-line); background:var(--nx-pill); color:var(--nx-text) !important; font-size:14px !important; }
 /* the inputs: the card, and the accent ring while typing (a checked field's own border colour returns when it is locked) */
 body.nx-play main:not(#mq-stage) [data-question] :is(input, textarea):not(:disabled):focus { border-color:var(--nx-accent) !important; box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-accent) 28%, transparent); }
 body.nx-play main:not(#mq-stage) [data-question] :is(input, textarea)::placeholder { color:var(--text3); opacity:1; }
