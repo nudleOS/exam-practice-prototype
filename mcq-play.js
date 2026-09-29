@@ -538,7 +538,7 @@
           // A window the size of the piece, clipped to its shape, holding a full-size copy of the card offset into place.
           const bx = Math.max(0, Math.floor(Math.min(...poly.map(q => q.x))) - 2), by = Math.max(0, Math.floor(Math.min(...poly.map(q => q.y))) - 2);
           const bw = Math.min(w, Math.ceil(Math.max(...poly.map(q => q.x))) + 2) - bx, bh = Math.min(h, Math.ceil(Math.max(...poly.map(q => q.y))) + 2) - by;
-          const el = document.createElement("div"); el.className = "shard";
+          const el = document.createElement("div"); el.className = "shard"; el.dataset.i = tile.dataset.i;   // data-i: a skin can colour a piece like its card
           Object.assign(el.style, { width: bw + "px", height: bh + "px", opacity: "0.01",   /* 1%, not 0: painted in advance (0 is skipped, then all 33 paint in one frame) */
             clipPath: "polygon(" + poly.map(q => (q.x - bx).toFixed(1) + "px " + (q.y - by).toFixed(1) + "px").join(",") + ")" });
           const inner = face.cloneNode(true); inner.removeAttribute("role"); inner.className = "shard-in"; inner.querySelectorAll(".cracks, .crush, .impact, .gleam, .buddy").forEach(g => g.remove());
