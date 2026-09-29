@@ -145,3 +145,21 @@ body.mcqp-kids .mcqp h1 .num { display:inline-block; margin-right:8px; vertical-
 body.mcqp-kids .mcqp .qtitle { font-size:20px; }
 body.mcqp-kids .mcqp h1 { font-size:18px; margin:10px 0 18px; }
 @media (max-width:600px) { body.mcqp-kids .mcqp .qtitle { font-size:17px; } body.mcqp-kids .mcqp h1 { font-size:15.5px; margin:6px 0 12px; } }
+
+/* The robot on phones, sized to the screen (Murci: "the robot looks very small"). Measured on 375 x 812: the robot was
+   95 px tall (11.7% of the screen) with 273 px empty between the question and its head: its box was capped at 218 px
+   (written for the 360 x 640 baseline) and shrunk to 0.7 while standing. The common phones are taller (360 x 800,
+   390 x 844, 393 x 852, 414 x 896: StatCounter 2026), so the box follows the height: 36% of the SMALL viewport (svh:
+   the height with the browser's bars showing; vh in mobile Safari is the height without them, too big while they
+   show), 218-340 px, on a tall phone (740 px and up). A short screen keeps the base size and the 0.7 shrink: there
+   36svh (230 px on 360 x 640) was bigger than the base 218 and the long question 1.1.5 needs the room.
+   Everything that hangs off --ph (its width, its feet at the bottom edge, the dock's room for it) follows. */
+@media (max-width:600px) and (min-height:740px) {
+  body.mcqp-kids .mcqp { --ph:clamp(218px, 36vh, 340px); --ph:clamp(218px, 36svh, 340px); }
+  body.mcqp-kids .mcqp .pal.small .pal-body { scale:1; }
+  /* not shrunk, so its thought bubble keeps the full-size points (mcq-play.css maps them to the small head) */
+  body.mcqp-kids .mcqp .pal.small:not(.sayleft) .pal-say .p1 { left:64%; top:22%; } body.mcqp-kids .mcqp .pal.small:not(.sayleft) .pal-say .p2 { left:71%; top:15%; }
+  body.mcqp-kids .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(84% + 4px); bottom:86%; }
+  body.mcqp-kids .mcqp .pal.small.sayleft .pal-say .p1 { right:64%; top:22%; } body.mcqp-kids .mcqp .pal.small.sayleft .pal-say .p2 { right:71%; top:15%; }
+  body.mcqp-kids .mcqp .pal.small.sayleft .pal-say .say-txt { right:calc(84% + 4px); bottom:86%; }
+}
