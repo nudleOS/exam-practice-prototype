@@ -81,19 +81,21 @@ html[data-theme="light"] body.mcqp-kids .mcqp { --bg:#f1f3f6; --bg0:rgba(241,243
 html[data-theme="light"] body.mcqp-kids .mcqp .backdrop { background:none; }
 
 /* The right card lights in the medal it earns, not green (Murci: green on the right card "is a default we need to
-   fix"): the hairline round the rim, the light filling the glass from the fingertip, the tint and the floor light
-   take the medal's colour from the moment it is right (data-tier, set by mcq-play at the verdict), so the medal
-   is the one colour of the whole moment: it lights, it shines, it turns to that medal's back. The light and the
-   hairline key off data-tier, not .yes: .yes is removed as the shine starts and they fade out for 300 ms after it
-   (keyed to .yes, that fade showed the default green). Colours are
+   fix"): the hairline round the rim and the floor light take the medal's colour from the moment it is right
+   (data-tier, set by mcq-play at the verdict), so the medal is the one colour of the whole moment: it traces the
+   rim, it shines, it turns to that medal's back. The hairline keys off data-tier, not .yes: .yes is removed as the
+   shine starts and it fades out for 300 ms after it (keyed to .yes, that fade showed the default green). Colours are
    mcq-play.css's medals (gold #e3b341, silver #c3c8cf, bronze #d99b6c); the hairline a lighter step of each. */
 body.mcqp-kids .mcqp .tile[data-tier="gold"]   { --mh:#f7d97c; --mrgb:227,179,65; }
 body.mcqp-kids .mcqp .tile[data-tier="silver"] { --mh:#f1f3f6; --mrgb:210,216,224; }
 body.mcqp-kids .mcqp .tile[data-tier="bronze"] { --mh:#f0bf98; --mrgb:217,155,108; }
 body.mcqp-kids .mcqp .tile.yes[data-tier] { --cast:rgba(var(--mrgb),0.5); }
-body.mcqp-kids .mcqp .tile.yes[data-tier] .face { --top:rgba(var(--mrgb),0.16); --low:rgba(var(--mrgb),0.05); }
+/* Clear glass until it flips (Murci: "that transparent color when the right card comes out ... before it flips"):
+   no colour floods the card (no fill from the fingertip, no tint), only the medal's hairline traces the rim; the medal
+   colour fills the card only as its back. --top/--low are the glass's own resting values (mcq-play.css .face). */
+body.mcqp-kids .mcqp .tile.yes[data-tier] .face { --top:rgba(255,255,255,0.05); --low:rgba(255,255,255,0.02); }
 body.mcqp-kids .mcqp .tile[data-tier] .vline rect { stroke:var(--mh); filter:drop-shadow(0 0 2.5px rgba(var(--mrgb),0.95)) drop-shadow(0 0 7px rgba(var(--mrgb),0.45)); }
-body.mcqp-kids .mcqp .tile[data-tier] .vfill { background:radial-gradient(circle at var(--vx) var(--vy), rgba(var(--mrgb),0.42), rgba(var(--mrgb),0.13) 45%, transparent 78%); }
+body.mcqp-kids .mcqp .tile[data-tier] .vfill { display:none; }
 
 /* Smaller question text (Murci: "reduce the font sizes of the Questions"): desktop title 24 -> 20, question 22 -> 18;
    phone 18.5 -> 17 and 16.5 -> 15.5. The order stays: title > question > the options' 15 px. */
