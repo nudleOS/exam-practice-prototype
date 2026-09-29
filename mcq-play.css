@@ -274,6 +274,11 @@
     box-shadow:inset 0 -7px 12px -4px rgba(120,136,165,0.45), inset 0 5px 8px -3px rgba(255,255,255,0.95);
     font-size:13.5px; line-height:1.42; font-weight:700; color:#15213f; text-align:center; transform-origin:0 100%; text-wrap:balance; }   /* JS fits its width to the longest line */
   .mcqp .pal-say.show { display:block; }
+  /* Mirrored (glassRain: the robot stands on the right half): the bubble opens to its left, the same points from the right */
+  .mcqp .pal.sayleft .pal-say .p1 { left:auto; right:64%; } .mcqp .pal.sayleft .pal-say .p2 { left:auto; right:71%; }
+  .mcqp .pal.sayleft .pal-say .say-txt { left:auto; right:calc(84% + 4px); transform-origin:100% 100%; }
+  .mcqp .pal.sayleft .pal-say.show .say-txt { animation-name:mq-thoughtL; }
+  @keyframes mq-thoughtL { from { opacity:0; transform:translate(8px, 8px) scale(0.55); } to { opacity:1; transform:none; } }
   .mcqp .pal-say.show .p1 { animation:mq-puff 200ms cubic-bezier(.2,.8,.3,1.3) both; }
   .mcqp .pal-say.show .p2 { animation:mq-puff 200ms cubic-bezier(.2,.8,.3,1.3) 110ms both; }
   .mcqp .pal-say.show .say-txt { animation:mq-thought 340ms cubic-bezier(.2,.9,.3,1.15) 210ms both; }
@@ -344,6 +349,8 @@
     .mcqp .pal.small .pal-body { scale:0.7; }
     .mcqp .pal.small .pal-say .p1 { left:59.8%; top:45.4%; } .mcqp .pal.small .pal-say .p2 { left:64.7%; top:40.5%; }
     .mcqp .pal.small .pal-say .say-txt { left:calc(73.8% + 4px); bottom:60.2%; }
+    .mcqp .pal.small.sayleft .pal-say .p1 { left:auto; right:59.8%; } .mcqp .pal.small.sayleft .pal-say .p2 { left:auto; right:64.7%; }
+    .mcqp .pal.small.sayleft .pal-say .say-txt { left:auto; right:calc(73.8% + 4px); }
   }
   /* ===================== Light mode ===================== The platform's light palette; every surface redrawn for a
      light page: frosted white glass with a darker hairline (a white rim vanishes on white), lighter shadows, pale medal

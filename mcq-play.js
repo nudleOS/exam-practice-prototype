@@ -17,6 +17,9 @@
                  the component never holds the answer key; it learns the answer only once the host reveals it (closed)
      onMarksLanded(marks)   the earned marks reached the host's counter (update its number now)
      targets     { xpBox, marksBox } host elements the "+XP" / "+marks" fly to; back / retry: false to switch off
+     glassRain   true = a wrong card's glass rains over the whole screen (about 30% of it aimed at the robot's head): the
+                 robot does not run to the card, it is hit wherever it stands, plays its hit, then runs to the other half
+                 of the screen, as if to get away (the learner-colours standalone; default off: the robot runs under the card)
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
@@ -176,7 +179,7 @@
         if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: "The answer · 0 XP · 0 marks" };
         const clues = S.it.clues || [], clue = J ? (J.clue || "") : clues[Math.min(S.tries - 1, clues.length - 1)] || "", last = J ? !!J.closed : S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
         let rb = null;
-        if (PAL.el && !PAL.sweeping && !reduced) { const tx = palUnder(t), n = S.tries; rb = { ...palHead(tx), minHold: Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last); if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card
+        if (PAL.el && !PAL.sweeping && !reduced) { const rain = !!opts.glassRain; if (rain) palStop(); const tx = rain ? PAL.x : palUnder(t), n = S.tries; rb = { ...palHead(tx), rain, minHold: rain ? 0 : Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last, rain ? palAway() : 0); if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; if (!rain) palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card (glassRain: it stays where it is; the glass finds it anyway)
         S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
         wait(up).then(() => shatter(t, S.hit[i], rb)).then(() => { if (!last) S.busy = false;
           if (last) { S.done = true; const r = RQ(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
@@ -284,10 +287,15 @@
     // Hit by the glass. Measured on defeat_03: 0.55 s the head snaps back, 0.8-1.3 s it jolts, 1.6-2.0 s it slumps, 2.5-3.1 s it
     // goes down, 4.0 s+ it lies on the floor. So a first miss flinches, a second staggers, the last knocks it down.
     const HURT = [{ hold: 1.1, back: 760 }, { hold: 2.2, back: 1900 }];
-    function palHit(n, last) { const m = PAL.el; if (!m) return;
+    // glassRain: after the hit it runs to the other half of the screen from where it was hit (home when it was on the
+    // right). It cannot get away: the next wrong card's glass rains there too.
+    function palAway() { const B = palBase(), me = B.left + PAL.x + B.w / 2; return me < innerWidth / 2 ? Math.max(0, innerWidth - B.left - B.w - 4) : 0; }
+    // The thought bubble opens toward the room: to its left when the robot stands on the right half (glassRain only).
+    function palSide() { if (!opts.glassRain) return; const B = palBase(); $("pal").classList.toggle("sayleft", B.left + PAL.x + B.w / 2 > innerWidth / 2); }
+    function palHit(n, last, to = 0) { const m = PAL.el; if (!m) return;
       if (last) { PAL.down = true; PAL.hurt = false; palClip("defeat", { once: true, from: 0.4, fade: 0.12 }); jolt(); buzz(HAPTIC.defeat); return; }
       const H = HURT[Math.min(n, 2) - 1]; PAL.hurt = true; palClip("defeat", { once: true, from: 0.4, hold: H.hold, fade: 0.12 });
-      return new Promise(home => { PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(0).then(() => { if (!PAL.anim && !PAL.down) palIdle(); palSize(); home(); }); }, H.back); }); }
+      return new Promise(home => { PAL.timer = setTimeout(() => { PAL.hurt = false; palRunTo(to).then(() => { if (!PAL.anim && !PAL.down) palIdle(); palSize(); palSide(); home(); }); }, H.back); }); }
     // Next: it gets up if it is down (the fall played backwards), runs to the left of the pile, then sprints right pushing every
     // piece off the floor, and comes back round from the left to its spot. The next question is already up meanwhile.
     function palCleanUp() { const m = PAL.el, pieces = [...$("shards").children];
@@ -558,7 +566,13 @@
           const speed = (0.05 + near * 0.3) * rnd(0.7, 1.2), delay = (ring * 45 + (1 - near) * 70 + rnd(0, 40));   // inner pieces leave first and fastest
           let x = dx / dd * 2, y = dy / dd * 2, vx = dx / dd * speed + rnd(-0.04, 0.04), vy = dy / dd * speed * 0.5 - rnd(0.05, 0.22);        // the gap opens (2 px), then it flies
           const spin = small ? 1.8 : 0.8; let rx = 0, rz = 0, wx = rnd(0.25, 0.9) * spin * (Math.random() < 0.5 ? -1 : 1), wz = rnd(-0.4, 0.4) * spin;
-          const bin = Math.round((r.left + c.x * k + dx / dd * 60) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + Math.min(3.2, size * 0.05 + rnd(0.6, 1.4)));
+          let aimX = null;
+          if (rb && rb.rain) {   // glassRain: tossed up, then over the whole screen; about 30% aimed at the robot's head (it is hit every time)
+            const sx = r.left + c.x * k, fl = innerHeight - 6 - (r.top + c.y * k);
+            aimX = Math.random() < 0.3 ? rb.cx + rnd(-0.6, 0.6) * rb.halfW : rnd(10, innerWidth - 10);
+            vy = -rnd(0.12, 0.34); vx = (aimX - sx) / ((-vy + Math.sqrt(vy * vy + 2 * G * fl)) / G);   // x covered by the time it falls to the floor
+          }
+          const bin = Math.round((aimX != null ? aimX : r.left + c.x * k + dx / dd * 60) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + Math.min(3.2, size * 0.05 + rnd(0.6, 1.4)));
           const floor = innerHeight - 6 - level - (r.top + c.y * k), e = small ? 0.34 : 0.16;
           // 2D on purpose: a true rotateX on a clip-path piece is re-rasterised every frame (measured: 17-26 fps vs 57 without the
           // clip). Squashing along its own axis by cos(rx) reads as the same tumble, and lying flat is cos(80°): a flat sliver.
@@ -567,12 +581,14 @@
           // It starts at the raised card's size (k) and comes back to its true size as it falls away to the floor (~0.5 s).
           const T = () => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${(1 + (k - 1) * Math.max(0, 1 - t / 520)).toFixed(3)}) scaleY(${Math.cos(rx * Math.PI / 180).toFixed(3)}) rotate(${rz.toFixed(1)}deg)`;
           const frames = [{ offset: 0, transform: `scale(${k.toFixed(3)})` }]; let t = 0, landed = false, flat = null, rest = 0;
+          const sx0 = r.left + c.x * k, sy0 = r.top + c.y * k;   // its start on screen: taken out here, because the step loop's own `k` hid the card's scale (half the steps tested the head at the wrong x)
           while (t < 3000) {                                                                        // 16 ms steps; a keyframe every 32 ms
             for (let k = 0; k < 2; k++) { const y0 = y; t += 16; x += vx * 16; y += vy * 16; vy += G * 16; rx += wx * 16; rz += wz * 16;
-              if (rb && vy > 0) { const u = (r.left + c.x * k + x - rb.cx) / rb.halfW;                       // its head and shoulders: a curve the glass meets
-                if (Math.abs(u) < 1) { const ys = rb.headY + rb.drop * u * u - (r.top + c.y * k);
+              if (rb && rb.rain && ((sx0 + x < 6 && vx < 0) || (sx0 + x > innerWidth - 6 && vx > 0))) vx = -vx * 0.3;   // glassRain: the screen's sides are walls (measured: pieces slid out to -204 / 866 px)
+              if (rb && vy > 0) { const u = (sx0 + x - rb.cx) / rb.halfW;                       // its head and shoulders: a curve the glass meets
+                if (Math.abs(u) < 1) { const ys = rb.headY + rb.drop * u * u - sy0;
                   if (y >= ys && y0 < ys) { y = ys; vy = -vy * 0.28; vx += (u >= 0 ? 1 : -1) * rnd(0.1, 0.22); wx *= 1.3; hits.push(t + delay); } } }
-              if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: r.left + c.x * k + x }); flat = 80 + 180 * Math.round((rx - 80) / 180); }   // the nearest lying-flat angle (80°: flat, but with body; 86° read as a line)
+              if (y >= floor) { y = floor; if (!landed) { landed = true; landings.push({ t: t + delay, x: sx0 + x }); flat = 80 + 180 * Math.round((rx - 80) / 180); }   // the nearest lying-flat angle (80°: flat, but with body; 86° read as a line)
                 if (vy > 0.06) { vy = -vy * e; vx *= 0.55; wx *= 0.4; wz *= 0.5; } else { vy = 0; vx *= 0.8; wx *= 0.6; wz *= 0.6; }
                 rx += ((flat ?? rx) - rx) * 0.3; }
               if (landed && Math.abs(vy) < 0.001 && Math.abs(vx) < 0.004) rest++; }
