@@ -26,3 +26,15 @@ body.mcqp-ideate .mcqp .shard-in > .tun { display:none; }
    phone, a long question scrolled under the robot shows behind it instead of fading out. */
 body.mcqp-ideate .mcqp .dock { background:none; }
 
+
+/* ?cards=tunnel: the page is the platform's blue (Murci: "just blue like the platform's blue colour"). Measured from
+   Exam Practice.dc.html: the brand gradient #0068f8 -> #1e46ff -> #671dff, #1e46ff its core (no platform page uses a blue
+   as a whole background: it is the brand's colour on controls). Flat, no corner lights, no wash. Its lines are white and
+   faint (mcq-ideate.js, u_mono). Computed contrast on #1e46ff: the main text #eceded 5.3:1 passes, but the page's greys
+   do not (text2 #a4a9ae 2.6, text3 #8f9499 2.0, the chip's #81b1ff 2.9), so on this page they are a pale blue #dbe4ff
+   (4.9:1) and the chip white (6.2:1). The cards keep their own colours (their dark glass reads on the blue). */
+body.mcqp-ideate.page-blue { background:#1e46ff; }
+body.mcqp-ideate.page-blue::before { content:none; }
+body.mcqp-ideate.page-blue .mcqp { --bg:#1e46ff; --bg0:rgba(30,70,255,0); --text2:#dbe4ff; --text3:#dbe4ff; --tint:#ffffff; }
+body.mcqp-ideate.page-blue .mcqp .num { background:rgba(255,255,255,0.16); }
+body.mcqp-ideate.page-blue .mcqp .backdrop { background:none; }

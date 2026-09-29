@@ -29,7 +29,7 @@
   // ---- 1 · the background: TopoField's fragment shader, with its colour output made transparent and faint ----
   const VS = "attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }";
   const TOPO_FS = `precision highp float;
-uniform vec2 u_resolution; uniform float u_time; uniform float u_dpr;
+uniform vec2 u_resolution; uniform float u_time; uniform float u_dpr; uniform float u_mono;
 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 float snoise(vec2 v){
   const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
@@ -54,9 +54,12 @@ void main() {
   float f = smoothstep(0.0, 1.0, fract(h));
   vec3 lineCol = h < 1.0 ? mix(c0, c1, f) : h < 2.0 ? mix(c1, c2, f) : h < 3.0 ? mix(c2, c3, f) : mix(c3, c0, f);
   lineCol = mix(lineCol, vec3(1.0), 0.25);   // a touch of white: lines read as light, not as paint
+  if (u_mono > 0.5) { lineCol = vec3(1.0); topoLines *= 0.6; }   // ?cards=tunnel, on the platform's blue: white and fainter (coloured lines vanish or clash on blue)
   float a = clamp(gridLines + topoLines, 0.0, 1.0);
   gl_FragColor = vec4(vec3(1.0) * gridLines + lineCol * topoLines, a); }`;   // premultiplied: coloured lines and a white grid over the page's own colours
 
+  const BLUE = new URLSearchParams(location.search).get("cards") === "tunnel";   // its page is the platform's blue (mcq-ideate.css .page-blue)
+  if (BLUE) document.body.classList.add("page-blue");
   const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); document.body.prepend(bg);
   const gl = bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
   let topo = null;
@@ -68,6 +71,7 @@ void main() {
     gl.useProgram(p); gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const at = gl.getAttribLocation(p, "a"); gl.enableVertexAttribArray(at); gl.vertexAttribPointer(at, 2, gl.FLOAT, false, 0, 0);
     topo = { res: gl.getUniformLocation(p, "u_resolution"), time: gl.getUniformLocation(p, "u_time"), dpr: gl.getUniformLocation(p, "u_dpr") };
+    gl.uniform1f(gl.getUniformLocation(p, "u_mono"), BLUE ? 1 : 0);
   } catch (e) { console.error(e); }
   function sizeTopo() { if (!topo) return; const d = Math.min(devicePixelRatio || 1, 1.5); bg.width = Math.round(innerWidth * d); bg.height = Math.round(innerHeight * d);
     gl.viewport(0, 0, bg.width, bg.height); gl.uniform2f(topo.res, bg.width, bg.height); gl.uniform1f(topo.dpr, d); }
