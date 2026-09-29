@@ -78,6 +78,23 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
 .nx-av svg { width:100%; height:100%; display:block; }
 /* phone: the progress takes its own row under the header's first row (as the mockup); marks move to the panel */
 @media (max-width:760px) { .nx-marks, .nx-sep2 { display:none !important; } }
+/* tablet and small laptop. Measured: the one-row header needs ~1028 px (items 892 + gaps 84 + padding 44 + 8). Below that
+   nothing overlapped side by side, but the progress pill was squeezed under its 290 px (42 px at 768) and its dots and count
+   spilled out under the pills beside it. 1001-1100: tighter spacing, one row still fits (with a 3-digit XP, "+999 XP" is 18 px wider:
+   measured it fits with 0 px spare at 981, so the cut is at 1000 for ~20 px margin). 601-1000: two rows, as the phone
+   mockup (the progress gets the whole second row), at desktop sizes. */
+@media (min-width:601px) and (max-width:1100px) {
+  body.nx-play [data-playhead] > div:first-child { gap:8px !important; }
+  .nx-pill { padding:0 12px; } .nx-prog { padding:0 14px; gap:12px; } .nx-dots { gap:8px; }
+}
+@media (min-width:601px) and (max-width:1000px) {
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto auto auto;
+    grid-template-areas:"brand brand marks xp lv sep2 av" "map prog prog prog prog prog prog"; align-items:center; column-gap:10px !important; row-gap:10px !important; padding:10px 22px 12px !important; }
+  .nx-brand { grid-area:brand; } .nx-marks { grid-area:marks; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-sep2 { grid-area:sep2; } .nx-av { grid-area:av; }
+  body.nx-play [data-playclose] { grid-area:map; }
+  .nx-prog { grid-area:prog; margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
+  .nx-count { margin-left:auto; }
+}
 /* phone: two rows, as the phone mockup (brand, +XP, level, profile / the progress). Measured: in one wrapping row it took 3
    rows (149 px) at 390 px. The mockup has no map button; the map is how a learner moves on, so it starts the second row. */
 @media (max-width:600px) {
