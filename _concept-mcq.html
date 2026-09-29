@@ -34,7 +34,10 @@
   .bump { animation:bump 420ms cubic-bezier(.2,.9,.3,1.4); } @keyframes bump { 40% { transform:scale(1.14); } }
   .mute[hidden] { display:none; } #motion { color:var(--text3); } #motion[aria-pressed="true"] { color:var(--tint); border-color:rgba(129,177,255,0.5); }
   .mute { width:40px; height:38px; justify-content:center; font:inherit; cursor:pointer; padding:0; }
-  .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; }
+  .streak { font-size:12px; font-weight:700; color:var(--gold); min-width:74px; text-align:right; } .streak:empty { display:none; }   /* no streak: no reserved space */
+  /* Phone: the bar needs ~377 px in one row, so the progress runs full width on its own row and the rest sits under it
+     (in one row it pushed the page to 407 px on a 375 px phone, and every full-screen layer, the hero included, with it). */
+  @media (max-width:600px) { .top { flex-wrap:wrap; justify-content:flex-end; row-gap:10px; gap:8px; padding:12px 14px; } .top .seg { flex:1 0 100%; } .top:has(.streak:not(:empty)) .seg { flex-basis:calc(100% - 84px); } .top .streak { font-size:11px; line-height:6px; }   /* as tall as the bar: a streak appearing moves nothing (it moved the chips 9 px) */   /* a streak shares the progress row (it follows .seg), never the crowded second row */ .top > :not(.seg) { flex-shrink:0; } .xp, .mute { padding:7px 10px; } .mute { width:38px; height:36px; padding:0; } }
   .pick { display:flex; gap:6px; justify-content:center; margin:2px 0 10px; flex-wrap:wrap; padding:0 12px; }
   .pick button { font:inherit; font-size:12px; font-weight:700; color:var(--text2); background:var(--panel); border:1px solid var(--line2); border-radius:10px; padding:7px 11px; cursor:pointer; }
   .pick button[aria-pressed="true"] { color:#fff; border-color:#4a5cff; }
@@ -164,6 +167,11 @@
   .buddy model-floor, .buddy img { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
   .buddy img { object-fit:contain; object-position:center bottom; }
   @media (max-width:600px) { .tile.hero .back { flex-direction:column; padding:14px 18px 20px; } .tile.hero .buddy { width:auto; height:180px; margin:0 -6px -4px; } }
+  /* Phone: the hero starts under the chips (they sit above the scrim), keeps 22 px sides so the spin's swell stays on
+     screen (measured -3..378 at 16 px), a smaller robot; if it is still taller than the screen, its layer scrolls
+     (safe: never centred off the top) and a tap on the empty layer still puts the card back. */
+  @media (max-width:600px) { .hero-layer { padding:var(--ht, 118px) 22px 24px; grid-auto-rows:max-content; align-content:safe center; overflow-y:auto; overscroll-behavior:contain; }   /* max-content rows: auto rows shrank to the space left (430 for a 510 card), so it spilled over the chips and never scrolled */
+    .hero-layer:has(.tile.hero) { pointer-events:auto; } .tile.hero .buddy { height:140px; } }
   .back .not, .back .more { display:none; }
   .tile.hero .back .not { display:block; }
   .tile:not(.hero) .back .why { display:none; }                        /* small: medal line + answer; the why is one tap away */
@@ -174,6 +182,23 @@
   .tile.hero .back .why { font-size:16px; line-height:1.55; font-weight:500; }
   .back .not { font-size:13.5px; line-height:1.5; color:var(--text2); padding-top:10px; border-top:1px solid rgba(255,255,255,0.1); }
   .back .not b { color:var(--text); font-weight:700; }
+  /* Phone: the answer card was too long (the robot's own 140-180 px row over the text). The robot sits beside the
+     medal line and the answer; the why and "why not the others" run full width under them. .copy steps aside
+     (display:contents) so its lines join the back's grid. */
+  @media (max-width:600px) {
+    .tile.hero .back { display:grid; grid-template-columns:96px minmax(0, 1fr); grid-template-areas:"bud ok" "bud ans" "why why" "not not";
+      column-gap:12px; row-gap:8px; align-items:center; padding:14px 16px 16px; min-height:0; }
+    .tile.hero .copy { display:contents; }
+    .tile.hero .back .copy > * { position:relative; z-index:2; }
+    .tile.hero .buddy { grid-area:bud; width:96px; height:118px; margin:0; }
+    .tile.hero .back .ok { grid-area:ok; align-self:end; font-size:13px; } .tile.hero .medal { width:20px; height:20px; }
+    .tile.hero .back .ans { grid-area:ans; align-self:start; font-size:17px; }
+    .tile.hero .back .why { grid-area:why; font-size:15px; line-height:1.5; margin-top:4px; }
+    .tile.hero .back .not { grid-area:not; font-size:13px; }
+  }
+  /* A narrow phone: the bar's second row must hold the widest values ("150/150 marks", "1000 XP") without wrapping,
+     or the chips drop under the open card when the XP grows (seen at 320 px: "0 XP" -> "60 XP" wrapped it). */
+  @media (max-width:360px) { .top { gap:6px; padding:12px 10px; } .xp { padding:6px 8px; font-size:13px; gap:4px; } .mute { width:34px; height:34px; } .marks .lbl { font-size:11px; } }
   .slot { min-height:96px; }
   @media (max-width:600px) { .tile, .slot { min-height:74px; } .face { padding:12px 14px 12px 12px; } }   /* one column: thinner cards (after .tile/.face/.slot, so it wins) */
   .tile.nobuddy .buddy { display:none !important; }                      /* the robot is down on the floor: the answer rises alone */
@@ -213,6 +238,7 @@
   .sw .track::after { content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cfd3d7; transition:left 220ms cubic-bezier(.2,.8,.2,1); }
   .sw[aria-checked="true"] { border-color:#4b5cff; } .sw[aria-checked="true"] .track { background:var(--grad); } .sw[aria-checked="true"] .track::after { left:27px; background:#fff; }
   /* The dock */
+  .scrim.on ~ .dock { opacity:0; }   /* a big card is up: the dock is empty and its solid fade would cover the card's end and Next */
   .dock { position:fixed; z-index:40; left:0; right:0; bottom:0; padding:14px 18px 44px; background:linear-gradient(0deg, var(--bg) 60%, rgba(25,27,30,0)); pointer-events:none; }
   .dock-in { max-width:760px; margin:0 auto; display:grid; gap:10px; pointer-events:none; padding-left:194px; min-height:128px; align-content:end; }
   @media (max-width:600px) { .dock-in { padding-left:146px; min-height:108px; } }
@@ -289,7 +315,7 @@
   .toast.ok { background:rgba(61,220,151,0.15); color:var(--ok); border:1px solid rgba(61,220,151,0.4); }
   .toast.no { background:rgba(242,119,122,0.14); color:var(--danger); border:1px solid rgba(242,119,122,0.4); }
   .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:46; }
-  canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:38; }
+  canvas#fx { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:38; }   /* inset alone does not stretch a canvas: without a CSS size it shows at its buffer size (innerWidth x DPR), so every burst drew DPR times too far out */
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
   @media (prefers-reduced-motion: reduce) { .tile, .tile * { transition:none !important; animation:none !important; } }
 </style>
@@ -705,7 +731,12 @@ function glide(t, r0, ms, rot) { const r1 = t.getBoundingClientRect();
   return t.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${r0.width / r1.width}, ${r0.height / r1.height})${rot}` }, { transform: rot || "none" }],
     { duration: ms, easing: "cubic-bezier(.22,.8,.25,1)" }).finished; }
 // Lift a card out of its slot (the slot keeps the grid still) to the centre, over the scrim.
+// The hero layer is fixed and the chips scroll with the page: keep the card's top under wherever the chips are now
+// (a smooth scroll still running when a card opens moved them 67 px after it was measured once).
+function heroTop() { $("heroLayer").style.setProperty("--ht", Math.max(16, Math.round(document.querySelector(".pick").getBoundingClientRect().bottom + 12)) + "px"); }
+addEventListener("scroll", () => { if ($("heroLayer").querySelector(".tile.hero")) heroTop(); }, { passive: true });
 function grow(t) {
+  heroTop();                                                        // phone: the card starts under the chips (they wrap to two rows on a narrow phone)
   const r0 = (t.classList.contains("raised") ? t.querySelector(".face") : t).getBoundingClientRect(); t.classList.remove("raised"); /* the grow starts from the grown pane */ if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
   S.slot.style.height = r0.height + "px"; S.heroT = t;
   t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
@@ -733,7 +764,7 @@ function present(t, tier) {
   }).then(() => {
     t.classList.remove("sel", "shine"); t.classList.add("flipped");                          // the class holds the end state (180 = 540 mod 360)
     // One eased turn: the rotation is linear in the eased progress (no kinks); the lift is a sine arc, sampled at 9 points.
-    const turn = tier ? SPIN : 180, rise = tier ? 90 : 40, swell = tier ? 0.05 : 0.02;
+    const turn = tier ? SPIN : 180, rise = (tier ? 90 : 40) * (innerWidth <= 600 ? 0.4 : 1), swell = tier ? 0.05 : 0.02;   // a phone has no room above the card: a smaller lift
     const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);
       return { offset: q, transform: `translateZ(${(a * rise).toFixed(1)}px) scale(${(1 + a * swell).toFixed(4)}) rotateY(${(turn * q).toFixed(1)}deg)` }; });
     return t.animate(kf, { duration: tier ? FLIP_MS : 1100, easing: "cubic-bezier(.45,0,.25,1)" }).finished;
@@ -903,6 +934,7 @@ function arrive(n) { leaving = false; if (!PAL.sweeping) { $("shards").replaceCh
   const on = $("seg").querySelector(".on"); if (on && !reduced) on.classList.add("arrive"); setTimeout(() => st.classList.remove("enter"), 900); }
 NEXT.onclick = next;
 $("scrim").onclick = () => dismiss();
+$("heroLayer").addEventListener("click", e => { if (e.target === e.currentTarget) dismiss(); });   // phone: the layer takes taps (it scrolls); its empty area = the scrim
 // The hint: after a miss the robot thinks the clue on its own, in a bubble out of its head, once it is back on its feet in its
 // spot (it was just hit by the glass). It stays while the learner chooses, and goes when they answer.
 function setHint(text) { $("clue").classList.remove("show"); if (text) $("clueTxt").textContent = text; }
@@ -914,7 +946,8 @@ function fitCloud(el) { el.style.animation = "none"; el.style.width = "";
   void el.offsetWidth; el.style.animation = ""; }
 function sayHint(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt"));
   live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
-function toast(t, k) { const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
+function toast(t, k) { if (k === "ok" && innerWidth <= 600 && $("heroLayer").querySelector(".tile.hero")) return;   // phone: no room above the big card, and it already says this
+  const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
 
 const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
 function size() { fx.width = innerWidth * devicePixelRatio; fx.height = innerHeight * devicePixelRatio; cx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); } size(); addEventListener("resize", size);
