@@ -26,10 +26,13 @@
      pointAtHint true = while it thinks a hint, the robot's raised hand points at the bubble: its standing pose raises the
                  hand on the screen's left, so with the bubble on its right it is mirrored (a quick turn), and back as it moves
      look        "panel" = the question on a panel (the boss's design, 2026-09-29): a chip with the number and topic, the marks
-                 as a pill at its right, a "Question N" label, the question, cards with an icon and a radio; no try dots
+                 as a pill at its right, a "Question N" label, the question, cards with an icon (the radio is the look's to show or hide); no try dots
      topicOf(item) -> the topic for the chip ("" = none) · iconFor(i, item) -> the card's icon (SVG markup), panel look only
      robotFixed  true = the robot keeps its corner (the boss's design): the glass rains and hits it where it stands, it never
                  runs; on Next the broken pieces drop away instead of being swept · idleSay: its line at rest ("You got this!")
+     fit         true = every option card fits the screen without scrolling: after each render and resize it steps the page to
+                 fit-1 .. fit-5 while the last card ends below the visible area (the look's CSS defines the levels; each card is sized to its text)
+     heroIn      "stage" = the answer card grows to fill the question's panel (the stage), not the middle of the screen
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
@@ -52,7 +55,29 @@
     // Screen mode: the screen starts where the host's header ends, re-placed whenever that header changes size (topEl) or the
     // window does. Measured once at mount it went stale: the host header's SVGs were 300 x 150 until its stylesheet landed,
     // the header read 1402 px tall at mount, and the whole question sat below the page.
-    const placeScreen = () => { if (opts.screen && opts.topOffset) PAGE.style.top = opts.topOffset() + "px"; };
+    const placeScreen = () => { if (opts.screen && opts.topOffset) PAGE.style.top = opts.topOffset() + "px"; if (opts.fit) fitCards(); };   // the screen's height changes with it
+    // fit (opt-in): every option card on screen without scrolling. After each render and resize, if the last card ends below the
+    // visible area, step the layout tighter (fit-1 .. fit-5 on the page; the look's CSS says what each level does) until it fits.
+    // A question too long even at fit-5 scrolls, as before. Measured, not guessed: question lengths differ.
+    const FIT_MAX = 5;
+    function fitCards() { const tiles = [...PAGE.querySelectorAll("#mq-tiles .tile")]; if (!tiles.length) return;
+      // the level goes on the page AND the layers: the last one also makes the robot smaller (on the same rock), lowering the floor
+      const set = k => { for (let j = 1; j <= FIT_MAX; j++) { PAGE.classList.toggle("fit-" + j, j === k); LAYERS.classList.toggle("fit-" + j, j === k); } };
+      // a card's face is absolute (it flips), so the card does not grow with its text: size each card to its own text, per level.
+      // The text block's height, not the face's scrollHeight: the face centres its content, so it overflows at both ends and
+      // scrollHeight counts only the bottom half (measured: 1.1.9's cards stayed clipped with it).
+      const size = () => { tiles.forEach(x => x.style.removeProperty("min-height")); tiles.forEach(x => { const f = x.querySelector(".face"); if (!f) return;
+        const cs = getComputedStyle(f), kids = [...f.children].filter(c => getComputedStyle(c).display !== "none" && getComputedStyle(c).position !== "absolute");
+        const need = Math.ceil(Math.max(0, ...kids.map(c => c.scrollHeight)) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
+        if (need > x.offsetHeight) x.style.minHeight = need + "px"; }); };
+      // layout position, not getBoundingClientRect: the cards deal in with a transform, which a mid-animation measure would count
+      const top = el => { let y = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) y += e.offsetTop; return y; };
+      const overBy = () => tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0) - ((opts.screen ? PAGE.clientHeight : innerHeight) - 24);   // clear of the bottom fade (22 px in nx-play)
+      // the least level that fits; if none does, the one that comes closest (the rest scrolls)
+      let best = 0, bestBy = Infinity; for (let k = 0; k <= FIT_MAX; k++) { set(k); size(); const by = overBy(); if (by <= 0) return; if (by < bestBy) { bestBy = by; best = k; } }
+      set(best); size(); }
+    if (opts.fit) listen(window, "resize", () => fitCards());
+    if (opts.fit && document.fonts) document.fonts.ready.then(() => fitCards());   // the web font changes the text's height
     if (opts.screen && opts.topOffset) { listen(window, "resize", placeScreen);
       if (opts.topEl && window.ResizeObserver) { const ro = new ResizeObserver(placeScreen); ro.observe(opts.topEl); OFF.push(() => ro.disconnect()); } }
     // ---- the engine (from the concept page) ----
@@ -106,7 +131,7 @@
     function load(n, practice = false) {
       const it = ITEMS[n];
       S = { it, sel: null, gone: new Set(), tries: 0, done: false, hit: {}, practice: practice && !!book[n] };   // practice: a retry of a finished question
-      setHint(null); NEXT.classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
+      setHint(null); NEXT.classList.remove("show"); palHome(null); $("heroLayer").innerHTML = ""; heroBox(); $("scrim").classList.remove("on");   // the robot comes home before the card is cleared
       render(!book[n] || S.practice);                                     // a finished question comes back as it ended; a retry deals fresh
     }
 
@@ -153,6 +178,7 @@
       $("after").appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
       if (book[it.n] && book[it.n].gone && !S.practice) restore(book[it.n]);
       palSize(); if (opts.idleSay && !S.done && !book[it.n]) sayIdle(opts.idleSay);   // at rest it encourages; a hint replaces it after a miss
+      if (opts.fit) fitCards();
     }
 
     function press(i) {
@@ -429,19 +455,26 @@
     // The hero layer is fixed and the chips scroll with the page: keep the card's top under wherever the chips are now
     // (a smooth scroll still running when a card opens moved them 67 px after it was measured once).
     function heroTop() { const t = opts.topOffset ? opts.topOffset() : RQ(".top").getBoundingClientRect().bottom; $("heroLayer").style.setProperty("--ht", Math.max(16, Math.round(t + 12)) + "px"); }
-    listen(SC, "scroll", () => { if ($("heroLayer").querySelector(".tile.hero")) heroTop(); }, { passive: true });
+    // heroIn "stage": the layer takes the panel's box (clipped to what is on screen), so the card fills the panel, not the screen
+    function heroBox() { if (opts.heroIn !== "stage") return; const L = $("heroLayer"), on = !!L.querySelector(".tile.hero");
+      L.classList.toggle("inpanel", on); if (!on) { ["top", "left", "width", "height"].forEach(k => L.style.removeProperty(k)); return; }
+      const st = $("stage").getBoundingClientRect(), sc = opts.screen ? PAGE.getBoundingClientRect() : { top: 0, bottom: innerHeight };
+      const top = Math.max(st.top, sc.top), bottom = Math.min(st.bottom, sc.bottom);
+      Object.assign(L.style, { top: top + "px", left: st.left + "px", width: st.width + "px", height: Math.max(0, bottom - top) + "px" }); }
+    listen(SC, "scroll", () => { if ($("heroLayer").querySelector(".tile.hero")) { heroTop(); heroBox(); } }, { passive: true });
+    listen(window, "resize", () => heroBox());
     function grow(t) {
       heroTop();                                                        // phone: the card starts under the chips (they wrap to two rows on a narrow phone)
       const r0 = (t.classList.contains("raised") ? t.querySelector(".face") : t).getBoundingClientRect(); t.classList.remove("raised"); /* the grow starts from the grown pane */ if (!S.slot) { S.slot = document.createElement("div"); S.slot.className = "slot"; }
       S.slot.style.height = r0.height + "px"; S.heroT = t;
       t.classList.remove("dealt"); t.style.animation = "none";                                 // a tap during the deal-in must not carry the deal animation into the hero
-      t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on");
+      t.replaceWith(S.slot); $("heroLayer").appendChild(t); t.classList.add("hero"); $("scrim").classList.add("on"); heroBox();
       ["--tx", "--ty"].forEach(k => t.querySelector(".face").style.removeProperty(k));
       return reduced ? Promise.resolve() : glide(t, r0, GROW_MS, t.classList.contains("flipped") ? " rotateY(180deg)" : "");
     }
     // Back to its slot, still flipped (tap outside, tap the card, or Esc). Tapping the small card lifts it again.
     function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
-      const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on");
+      const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on"); heroBox();
       if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
       placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); nextInView(); }); }   // Next goes back under the grid with it
     function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { placeNext(); return palJump(t); }).then(() => { buddyIn(t, false); S.busy = false; }); }
