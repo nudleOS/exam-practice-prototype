@@ -77,15 +77,18 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
    rows (149 px) at 390 px. The mockup has no map button; the map is how a learner moves on, so it starts the second row. */
 @media (max-width:600px) {
   body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto; grid-template-areas:"brand brand xp lv av" "map prog prog prog prog";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
-    align-items:center; column-gap:8px !important; row-gap:10px !important; padding:10px 16px 12px !important; }
+    align-items:center; column-gap:6px !important; row-gap:10px !important; padding:10px 16px 12px !important; }
   .nx-brand { grid-area:brand; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-av { grid-area:av; } .nx-prog { grid-area:prog; }
-  body.nx-play [data-playclose] { grid-area:map; width:38px !important; height:38px !important; }
+  body.nx-play [data-playclose] { grid-area:map; width:44px !important; height:44px !important; }   /* 44 px: the smallest tap target (Apple HIG 44 pt; measured 38 before) */
   .nx-nudle { font-size:19px; } .nx-nexera { height:18px; } .nx-sep { height:18px; }
   .nx-prog { margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
   .nx-dots { gap:9px; } .nx-dots i { width:11px; height:11px; } .nx-dots i.cur { width:38px; }
   .nx-count { margin-left:auto; }
-  .nx-pill { height:38px; padding:0 11px; font-size:13.5px; gap:6px; } .nx-av { width:38px; height:38px; } .nx-star { width:22px; height:22px; }
+  .nx-pill { height:38px; padding:0 8px; font-size:13.5px; gap:5px; }   /* tight: at 375 px the +XP pill ran 11 px over the wordmark */ .nx-av { width:38px; height:38px; } .nx-star { width:22px; height:22px; }
 }
+/* phone: the level is the star and its number (the word "Lv" goes; the pill's aria-label still says "Level 3"). Measured at
+   390 px with a 3-digit XP ("+999 XP" is 18 px wider than "+0 XP"): with "Lv" the pills left 5 px before the wordmark. */
+@media (max-width:600px) { .nx-lvw { display:none; } }
 @media (max-width:370px) { .nx-lv { display:none !important; } }
 
 /* ---- the MCQ on the panel (mcq-play look:"panel") ---- */
