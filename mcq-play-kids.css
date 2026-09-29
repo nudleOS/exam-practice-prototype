@@ -26,7 +26,7 @@ body.mcqp-kids .mcqp .tile:not(.yes):not(.no):not(.shine):not(.flipped):not(.her
 /* K · the edge: lit in the colour at the top-right, a faint grey hairline everywhere else */
 body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
 body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, var(--kgl) 330deg, transparent 350deg),
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(255,255,255,0.8) 330deg, transparent 350deg),
     linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
 /* K · the letter: a solid badge in the option's colour */
 body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .letter { background:rgb(var(--c)); border-color:transparent; color:var(--ink); box-shadow:0 4px 12px rgba(var(--c),0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
@@ -36,15 +36,10 @@ body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no):not(.shine):not(.flipped):not(
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.55) 0%, rgba(var(--c),0.2) 34%, rgba(var(--c),0) 62%),
     linear-gradient(180deg, rgba(255,255,255,0.04), transparent 30%), rgba(21,20,25,0.94); }
 
-/* The shine passes ONCE (Murci: "just pass once"): when the cards have landed, a sweep crosses each card and a bright
-   arc runs one lap of its rim, card after card, then the glass is still. The base loops both (6.5 s / 6 s, infinite).
-   The arc's colour is its own animated property (--kgl), so it fades out at the end of the lap instead of stopping
-   as a lit mark on the rim. One rule for every state: the same animation in every state is never restarted, so a
-   card changing state (picked, dead) does not flash again. */
-@property --kgl { syntax:'<color>'; inherits:false; initial-value:rgba(255,255,255,0); }
-body.mcqp-kids .mcqp .tile .face::before, body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  animation:mq-klap 2.4s cubic-bezier(.45,.05,.35,1) both; animation-delay:calc(0.8s + var(--d, 0ms) * 2); }
-@keyframes mq-klap { 0% { --ga:0deg; --kgl:rgba(255,255,255,0); } 12%, 82% { --kgl:rgba(255,255,255,0.8); } 100% { --ga:360deg; --kgl:rgba(255,255,255,0); } }
+/* The sweep across the card passes ONCE (Murci: "only have the whole card flash move shine run once"): when the cards
+   have landed, a sweep crosses each, card after card, then stops. The light running round the rim keeps the base's
+   loop (a 6 s lap, each card at a different point of it: mcq-play.css mq-edgeShine) — Murci: it "should behave as it
+   was". The base loops the sweep too (6.5 s, infinite); this replaces it with one pass. */
 body.mcqp-kids .mcqp .face .gleam::before { opacity:0.3; animation:mq-kgleam 1.5s cubic-bezier(.45,.05,.35,1) both; animation-delay:calc(0.8s + var(--d, 0ms) * 2); }
 @keyframes mq-kgleam { from { transform:translateX(-170%) skewX(-14deg); } to { transform:translateX(430%) skewX(-14deg); } }
 body.mcqp-kids .mcqp .face .gleam::after { opacity:0.35; }                               /* a hint of glass, not a sheen */
@@ -58,9 +53,30 @@ body.mcqp-kids .mcqp .shard-in { border-color:rgba(var(--c),0.85);
 body.mcqp-kids .mcqp .shard .edge polygon { stroke:color-mix(in srgb, rgb(var(--c)) 60%, #ffffff); }
 body.mcqp-kids .mcqp .shard .letter { background:rgb(var(--c)); color:var(--ink); }
 
-/* The page conforms to the cards: neutral charcoal as in the reference (#232228 behind #151419 cards), no cobalt glow
-   (the base page and the light behind the cards are both brand blue) — a faint white light instead. */
-body.mcqp-kids { background:radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,0.035), transparent 70%), #232228; }
+/* The page (Murci: "a very nice background to suit the new design"). The reference's charcoal (#232228: the cards,
+   #151419, stay darker than it, so they stand out), deepening a little toward the bottom, and three layers over it:
+   1 · Light from the corners in the four options' own colours (violet top-left, sky top-right, amber bottom-left, pink
+       bottom-right): the page echoes the cards' corner glow, so the whole screen is one set. Low (0.12-0.2) and far
+       from the centre: under the question and the cards it stays charcoal, and never reads as red or green.
+   2 · A fine dot grid (a notebook's page, for learners), faint (0.05), fading out toward the middle and the bottom.
+   3 · The lights drift, very slowly (48 s there and back, a few per cent): the page is alive without anything to
+       watch. Transform only (cheap on a phone: no repaint, no blur filter; the gradients are soft by themselves),
+       and still under prefers-reduced-motion.
+   Both layers are fixed pseudo-elements behind everything (z-index -1), so no host markup is needed. */
+body.mcqp-kids { isolation:isolate; background:linear-gradient(180deg, #25242b 0%, #232228 45%, #1d1c22 100%) fixed, #232228; }   /* isolate: the body is its own stacking context, so the -1 layers paint over its background, not under it */
+body.mcqp-kids::before { content:""; position:fixed; inset:-12%; z-index:-1; pointer-events:none;
+  /* positions are in the layer, which is 124% of the screen (inset -12%, room to drift): at 18% of it = 10% of the
+     screen (x = -12 + 1.24p). The first cut used the screen's own numbers and put the bottom two at 104.6%: off screen. */
+  background:radial-gradient(34% 30% at 18% 14%, rgba(124,58,237,0.2), transparent 70%),
+    radial-gradient(32% 28% at 82% 12%, rgba(14,165,233,0.16), transparent 70%),
+    radial-gradient(34% 30% at 16% 84%, rgba(245,158,11,0.12), transparent 70%),
+    radial-gradient(34% 30% at 84% 86%, rgba(219,39,119,0.16), transparent 70%);
+  animation:mq-kdrift 48s ease-in-out infinite alternate; }
+@keyframes mq-kdrift { from { transform:translate(-2%, -1.5%) scale(1); } to { transform:translate(2%, 1.5%) scale(1.04); } }
+body.mcqp-kids::after { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1.4px) 0 0 / 24px 24px;
+  -webkit-mask:radial-gradient(120% 90% at 50% 0%, #000 0%, rgba(0,0,0,0.5) 45%, transparent 85%); mask:radial-gradient(120% 90% at 50% 0%, #000 0%, rgba(0,0,0,0.5) 45%, transparent 85%); }
+@media (prefers-reduced-motion: reduce) { body.mcqp-kids::before { animation:none; } }
 body.mcqp-kids .mcqp { --bg:#232228; --bg0:rgba(35,34,40,0); }
 body.mcqp-kids .mcqp .backdrop { background:radial-gradient(560px 320px at 50% 44%, rgba(255,255,255,0.03), transparent 72%); }
 
@@ -70,13 +86,15 @@ html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.f
   box-shadow:0 14px 28px -16px rgba(20,30,70,0.3); }
 html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
 html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, var(--kgl) 330deg, transparent 350deg),
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(var(--c),0.85) 330deg, transparent 350deg),
     linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
 html[data-theme="light"] body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face, html[data-theme="light"] body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face {
   box-shadow:0 22px 36px -18px rgba(20,30,70,0.35), 0 0 0 2px rgb(var(--c)), 0 0 16px rgba(var(--c),0.35);
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.4) 0%, rgba(var(--c),0.14) 34%, rgba(var(--c),0) 62%), rgba(246,247,250,0.94); }
 html[data-theme="light"] body.mcqp-kids .mcqp .shard-in { background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.4) 0%, rgba(var(--c),0.16) 40%, rgba(var(--c),0.08) 70%), rgba(246,247,250,0.92); }
-html[data-theme="light"] body.mcqp-kids { background:radial-gradient(900px 500px at 50% -10%, rgba(20,30,60,0.04), transparent 70%), #f1f3f6; }
+html[data-theme="light"] body.mcqp-kids { background:#f1f3f6; }
+html[data-theme="light"] body.mcqp-kids::before { opacity:0.6; }
+html[data-theme="light"] body.mcqp-kids::after { background:radial-gradient(circle, rgba(20,30,60,0.07) 1px, transparent 1.4px) 0 0 / 24px 24px; }
 html[data-theme="light"] body.mcqp-kids .mcqp { --bg:#f1f3f6; --bg0:rgba(241,243,246,0); }
 html[data-theme="light"] body.mcqp-kids .mcqp .backdrop { background:none; }
 
