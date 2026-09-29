@@ -185,10 +185,10 @@
         fillBack(t, it); const rec = { gone: [...S.gone], tries: S.tries, ok: t.querySelector(".ok").innerHTML };
         live(pr ? `Correct, ${L[i]}. ${name}, practice: no XP or marks. ${whyOf(it)}` : `Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
         const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
+        if (mk && !reduced) setTimeout(() => { if (S === S0) flyMarks(mk); }, up);   // the marks go to the counter as the card turns green
         wait(up + (reduced ? 0 : VERDICT_MS)).then(() => { if (S !== S0) throw 0; return present(t, tier); }).then(() => {
           sfx.right(); buzz(HAPTIC[tier]); burst(t, tier); if (!pr) { fly(t, "+" + gain, "xpBox");
           setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700); }   // counts up as the +XP lands
-          if (mk) setTimeout(() => fly(t, "+" + mk, "marksBox"), 160);
           setTimeout(() => score(it, mk, tier, rec), mk && !reduced ? 860 : 0); toast(pr ? name + " · practice" : name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(e => { if (e !== 0) console.error(e); });   // a stale card (question switched, thrown as 0) just stops; anything else is a real error and is reported
       } else {
         if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: "The answer · 0 XP · 0 marks" };
@@ -450,8 +450,27 @@
     function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
     // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
     function score(it, mk, tier, rec = {}) { if (it.n in book) return; book[it.n] = { got: mk, of: it.marks, tier, ...rec }; paintTop(); if (opts.onScore) opts.onScore({ n: it.n, item: it, marks: mk, tier, ...rec });   // `it` captured at answer time: a question switch mid-animation can't misfile it
-      $("mk").textContent = Object.values(book).reduce((a, b) => a + b.got, 0);
-      bump("marksBox"); $("marksBox").setAttribute("aria-label", `${$("mk").textContent} of ${$("mkOf").textContent} marks`); }
+      if (!S.marksFlown) { $("mk").textContent = Object.values(book).reduce((a, b) => a + b.got, 0); bump("marksBox"); }   // flown marks already updated it as they landed
+      $("marksBox").setAttribute("aria-label", `${Object.values(book).reduce((a, b) => a + b.got, 0)} of ${$("mkOf").textContent} marks`); }
+    // Marks earned (a first-try right answer): the "2 marks" under the cards beeps (two gold pulses) and turns gold; a copy
+    // of it lifts off where it is and travels in an arc to the marks counter, which counts up and rings as it lands.
+    // A host's own counter (opts.targets.marksBox) gets the ring; the host updates its number itself.
+    function flyMarks(mk) {
+      const src = RQ(".qmarks"), host = (opts.targets || {}).marksBox, to = host || $("marksBox");
+      if (!src || !to) return Promise.resolve();
+      src.classList.add("earned");
+      return wait(420).then(() => {   // lifts off before the answer card grows over the label
+        const a = src.getBoundingClientRect(), b = to.getBoundingClientRect(), c = document.createElement("div");
+        c.className = "mfly"; c.textContent = "+" + mk + (mk === 1 ? " mark" : " marks"); LAYERS.appendChild(c);
+        const cw = c.offsetWidth, ch = c.offsetHeight, x0 = a.right - cw, y0 = a.top + a.height / 2 - ch / 2;
+        c.style.left = x0 + "px"; c.style.top = y0 + "px";
+        const dx = b.left + b.width / 2 - (x0 + cw / 2), dy = b.top + b.height / 2 - (y0 + ch / 2);
+        return c.animate([{ transform: "translate(0px, 0px) scale(1)" }, { transform: `translate(${(dx * 0.45).toFixed(0)}px, ${(dy * 0.45 - 70).toFixed(0)}px) scale(1.18)`, offset: 0.45 },
+          { transform: `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) scale(0.5)`, opacity: 0.85 }], { duration: 860, easing: "cubic-bezier(.35,.1,.3,1)", fill: "forwards" }).finished
+          .then(() => { c.remove();
+            to.animate([{ boxShadow: "0 0 0 0 rgba(245,196,81,0.8)", scale: "1" }, { boxShadow: "0 0 0 10px rgba(245,196,81,0)", scale: "1.12", offset: 0.35 }, { boxShadow: "0 0 0 16px rgba(245,196,81,0)", scale: "1" }], { duration: 620, easing: "ease-out" });
+            if (!host) { S.marksFlown = true; countUp($("mk"), Object.values(book).reduce((x, y) => x + y.got, 0) + mk); } }); }); }
+    function countUp(el, to) { let v = parseInt(el.textContent, 10) || 0; if (to <= v) { el.textContent = to; return; } const step = () => { v++; el.textContent = v; if (v < to) setTimeout(step, 110); }; step(); }
 
     // The card breaks like glass: a spider-web of cracks from where it was tapped, then shards along those cracks fly, spin and fall;
     // the card is taken out and the others close the gap. Shards carry their own piece of the text (a clipped copy).
