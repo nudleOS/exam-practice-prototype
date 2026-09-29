@@ -8,7 +8,8 @@
      why         { n: { why, not } } explanations for the answer card   optional
      start       the first question (default order[0]); practice: true = no XP, no marks
      host        where the page part goes (default document.body); hud: false hides its top bar (the host has one)
-     screen      true = the question scrolls in its own fixed screen under the host's header (topOffset() px)
+     screen      true = the question scrolls in its own fixed screen under the host's header (topOffset() px; topEl: the header
+                 element, watched so the screen follows it when it changes size)
      xpFor({ item, tries })       the host's XP for a right answer (default 100 / 60 / 20)
      onAttempt({ n, pick, correct, tries, practice, final })   every try
      onScore({ n, marks, tier, gone, tries })                  once per question, the first time it is finished
@@ -24,6 +25,11 @@
                  robot sweeping the glass off to the right (default: it rises and its cards are dealt from below)
      pointAtHint true = while it thinks a hint, the robot's raised hand points at the bubble: its standing pose raises the
                  hand on the screen's left, so with the bubble on its right it is mirrored (a quick turn), and back as it moves
+     look        "panel" = the question on a panel (the boss's design, 2026-09-30): a chip with the number and topic, the marks
+                 as a pill at its right, a "Question N" label, the question, cards with an icon and a radio; no try dots
+     topicOf(item) -> the topic for the chip ("" = none) · iconFor(i, item) -> the card's icon (SVG markup), panel look only
+     robotFixed  true = the robot keeps its corner (the boss's design): the glass rains and hits it where it stands, it never
+                 runs; on Next the broken pieces drop away instead of being swept · idleSay: its line at rest ("You got this!")
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
@@ -43,6 +49,12 @@
     const RQ = sel => LAYERS.querySelector(sel) || PAGE.querySelector(sel);
     const RQA = sel => [...LAYERS.querySelectorAll(sel), ...PAGE.querySelectorAll(sel)];
     const OFF = []; const listen = (t, type, fn, o) => { t.addEventListener(type, fn, o); OFF.push(() => t.removeEventListener(type, fn, o)); };
+    // Screen mode: the screen starts where the host's header ends, re-placed whenever that header changes size (topEl) or the
+    // window does. Measured once at mount it went stale: the host header's SVGs were 300 x 150 until its stylesheet landed,
+    // the header read 1402 px tall at mount, and the whole question sat below the page.
+    const placeScreen = () => { if (opts.screen && opts.topOffset) PAGE.style.top = opts.topOffset() + "px"; };
+    if (opts.screen && opts.topOffset) { listen(window, "resize", placeScreen);
+      if (opts.topEl && window.ResizeObserver) { const ro = new ResizeObserver(placeScreen); ro.observe(opts.topEl); OFF.push(() => ro.disconnect()); } }
     // ---- the engine (from the concept page) ----
     const P = opts.paper, ITEMS = {};
     const GROUP = {};                                                   // each question's group on the paper ("Question 1.1", its extract)
@@ -103,16 +115,20 @@
       // An "A: … · B: …" pair (Column II on the paper) sits under the stem as its two lines; the stem is otherwise as printed.
       const ab = it.q.match(/^(.*?)\s*A:\s*(.+?)\s*·\s*B:\s*(.+)$/), stem = ab ? ab[1] : it.q;
       const k = ORDER.indexOf(it.n);
-      st.innerHTML = `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>` +
+      const panel = opts.look === "panel", topic = panel && opts.topicOf ? (opts.topicOf(it) || "") : "";
+      st.innerHTML = (panel
+        ? `<div class="qhead"><span class="chip"><span class="num">${it.n}</span>${topic ? `<span class="topic">${topic}</span>` : ""}</span><span class="qmarks"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>${it.marks} marks</span></div>` +
+          `<p class="qlabel">Question ${String(it.n).split(".")[0]}</p>`   // the paper's own question (Question 1), the number chip carries 1.1.1
+        : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
-        `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
+        (panel ? `<h1><span>${stem}</span></h1>` : `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>`) +
         (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "") +
       (it.fig ? `<div class="qfig"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/></svg><span>The diagram is on ${it.fig} of the paper</span></div>` : "");   // a question never loses its figure (the paper images are not in yet)
       const g = document.createElement("div"); g.className = "tiles"; g.id = "mq-tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
       it.opts.forEach((o, i) => {
         const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
         t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--gd", (1.2 + i * 0.85).toFixed(2) + "s"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
-        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${o}</span></button>
+        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${o}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
           <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="buddy" aria-hidden="true"></div><div class="copy"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div></div>`;
         const face = t.querySelector(".face");
         face.addEventListener("pointermove", e => { const r = face.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
@@ -130,13 +146,13 @@
         t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) tapOut(); else if (t.classList.contains("flipped")) lift(t); });
         g.appendChild(t);
       });
-      st.appendChild(g); st.insertAdjacentHTML("beforeend", `<div class="qmarks">${it.marks} marks</div><div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden><span aria-hidden="true">↻</span>&nbsp;Try again</button></div>`);   // the marks under the last card; then Try again and Next
+      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden><span aria-hidden="true">↻</span>&nbsp;Try again</button></div>`);   // the marks under the last card; then Try again and Next
       if ($("qback") && opts.back === false) $("qback").remove();
       if ($("qback")) $("qback").onclick = () => { if (!S.busy) go(ORDER[k - 1]); };
       $("retry").onclick = () => { if (!S.busy) go(it.n, true); };
       $("after").appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
       if (book[it.n] && book[it.n].gone && !S.practice) restore(book[it.n]);
-      palSize();
+      palSize(); if (opts.idleSay && !S.done && !book[it.n]) sayIdle(opts.idleSay);   // at rest it encourages; a hint replaces it after a miss
     }
 
     function press(i) {
@@ -183,7 +199,7 @@
         if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: "The answer · 0 XP · 0 marks" };
         const clues = S.it.clues || [], clue = J ? (J.clue || "") : clues[Math.min(S.tries - 1, clues.length - 1)] || "", last = J ? !!J.closed : S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
         let rb = null;
-        if (PAL.el && !PAL.sweeping && !reduced) { const rain = !!opts.glassRain; if (rain) palStop(); const tx = rain ? PAL.x : palUnder(t), n = S.tries; rb = { ...palHead(tx), rain, minHold: rain ? 0 : Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last, rain ? palAway() : 0); if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; if (!rain) palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card (glassRain: it stays where it is; the glass finds it anyway)
+        if (PAL.el && !PAL.sweeping && !reduced) { const rain = !!opts.glassRain || !!opts.robotFixed; if (rain) palStop(); const tx = rain ? PAL.x : palUnder(t), n = S.tries; rb = { ...palHead(tx), rain, minHold: rain ? 0 : Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last, opts.robotFixed ? PAL.x : rain ? palAway() : 0);   /* robotFixed: back to where it stands, i.e. it stays */ if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; if (!rain) palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card (glassRain: it stays where it is; the glass finds it anyway)
         S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
         wait(up).then(() => shatter(t, S.hit[i], rb)).then(() => { if (!last) S.busy = false;
           if (last) { S.done = true; const r = RQ(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
@@ -306,6 +322,9 @@
       if (!m || PAL.sweeping) return; clearTimeout(PAL.timer); PAL.hurt = false; $("pal").classList.remove("small");
       if (m.parentElement !== $("palBody")) palHome(null);                                     // it was inside the answer card: home first
       if (!pieces.length && !PAL.down) { palRunTo(0).then(() => { if (palFree()) palGreet(); palSize(); }); return; }
+      if (opts.robotFixed) { dropAway(pieces);   // it keeps its corner: the glass drops away; if it is down it gets up where it is
+        if (PAL.down) { PAL.down = false; palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }); wait(1650).then(() => { if (palFree()) palIdle(); palSize(); }); }
+        return; }
       PAL.sweeping = true;
       const up = PAL.down ? (palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }), wait(1650)) : Promise.resolve();
       PAL.down = false;
@@ -314,6 +333,9 @@
         return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile)) : Promise.resolve()).then(() => sweepRight(pieces)); })
       .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => { if (palFree()) palGreet(); palSize(); });
     }
+    // robotFixed: the broken pieces sink off the floor and fade (a short, staggered drop), instead of being swept.
+    function dropAway(pieces) { pieces.forEach((el, k) => { const a = el.getAnimations(); a.forEach(x => x.commitStyles && x.commitStyles()); a.forEach(x => x.cancel());
+      el.animate([{ opacity: 1 }, { opacity: 0, translate: "0 26px" }], { duration: 420, delay: (k % 8) * 30, easing: "ease-in", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove()); }); }
     function sweepRight(pieces) { const pal = $("pal"), B = palBase(), exit = innerWidth - B.left + 40, v = palSpeed(SWEEP_RATE), start = PAL.x;
       const front0 = B.left + start + B.w * 0.62;                                                   // its leading foot
       pieces.forEach(el => { const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, when = Math.max(0, (cx - front0) / v * 1000);
@@ -680,7 +702,8 @@
       "Growth hormone is not picky about tissue.": "Growth hormone isn't picky. Would it stop at just one of these?",
       "Bones AND muscles grow.": "Think about growing up: longer bones, and bigger muscles too.",
     };
-    function sayHint(text) { if (!text) return; text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt")); palPoint(!$("pal").classList.contains("sayleft"));
+    function sayIdle(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show", "idle"); fitCloud($("clueTxt")); }   // not read out: it is company, not information
+    function sayHint(text) { if (!text) return; text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show", "idle"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt")); palPoint(!$("pal").classList.contains("sayleft"));
       live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
     function toast(t, k) { if (k === "ok" && (innerWidth <= 600 || innerHeight <= 520) && $("heroLayer").querySelector(".tile.hero")) return;   // phone (upright or on its side): no room above the big card, and it already says this
       const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
