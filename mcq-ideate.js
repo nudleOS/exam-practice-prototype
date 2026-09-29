@@ -12,6 +12,11 @@
        card's own rounded rectangle: the largest is the card's edge, smaller ones fall back to a vanishing point that
        drifts along a winding path (the prompt's TunnelPath idea), dotted like the prompt's points, with dotted lines
        from the card's corners to it, so the card reads as a hollow 3D box. Drawn in the card's OWN colour (--c).
+   ?cards=tunnel (Murci: "more like the one from the prompt ... in terms of shape ... but it had a lot of particles"):
+   the prompt's own shape instead: CIRCULAR rings of points coming toward you along its winding path (TunnelPath),
+   brighter as they near, every other pair dimmer (its POINT_COLOR_A / B). 14 rings x 24 points (the prompt: 96 x 128),
+   scaled to the card's WIDTH so the near rings run past its edges (scaled to its height, as the first cut was, the
+   biggest ring could not reach the sides: a disc in the middle), in the card's colour, at about a third of its speed.
    Cost: the background is one WebGL canvas (the prompt's shader, per pixel); the cards are plain 2D canvases, a dozen
    dotted outlines each (not the prompt's 96 layers per pixel). 30 frames a second, paused while the tab is hidden;
    reduced motion: one still frame.
@@ -24,7 +29,7 @@
   // ---- 1 · the background: TopoField's fragment shader, with its colour output made transparent and faint ----
   const VS = "attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }";
   const TOPO_FS = `precision highp float;
-uniform vec2 u_resolution; uniform float u_time; uniform float u_dpr;
+uniform vec2 u_resolution; uniform float u_time; uniform float u_dpr; uniform float u_relief;
 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 float snoise(vec2 v){
   const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
@@ -49,9 +54,20 @@ void main() {
   float f = smoothstep(0.0, 1.0, fract(h));
   vec3 lineCol = h < 1.0 ? mix(c0, c1, f) : h < 2.0 ? mix(c1, c2, f) : h < 3.0 ? mix(c2, c3, f) : mix(c3, c0, f);
   lineCol = mix(lineCol, vec3(1.0), 0.25);   // a touch of white: lines read as light, not as paint
+  if (u_relief > 0.5) {   // ?cards=tunnel: a 3D terrain in dark grey, the contour lines on its step edges
+    float e = 0.015, nx = snoise(noisePos + vec2(e, 0.0)) * 0.5 + 0.5, ny = snoise(noisePos + vec2(0.0, e)) * 0.5 + 0.5;
+    float lvl = floor(n * 10.0) / 10.0, inStep = fract(n * 10.0);             // the terrace it stands on, and where on it
+    vec3 nrm = normalize(vec3((n - nx) * 30.0, (n - ny) * 30.0, 1.0));       // the slope, for the light
+    float diff = max(dot(nrm, normalize(vec3(-0.45, 0.55, 0.7))), 0.0);       // light from the top-left
+    vec3 col = (vec3(0.118, 0.118, 0.137) + lvl * 0.05) * (0.8 + 0.3 * diff); // #1e1e23 low, lighter as the steps rise
+    col *= mix(1.07, 0.93, inStep);                                           // each step lit at its lip, shadowed toward the next
+    vec2 cc = gl_FragCoord.xy / u_resolution.xy - 0.5; col *= 1.0 - 0.35 * dot(cc, cc);   // a soft falloff to the corners: depth
+    col = mix(col, lineCol, topoLines * 0.8) + vec3(gridLines * 0.6);
+    gl_FragColor = vec4(col, 1.0); return; }
   float a = clamp(gridLines + topoLines, 0.0, 1.0);
   gl_FragColor = vec4(vec3(1.0) * gridLines + lineCol * topoLines, a); }`;   // premultiplied: coloured lines and a white grid over the page's own colours
 
+  const RELIEF = new URLSearchParams(location.search).get("cards") === "tunnel";   // its page: the 3D terrain (Murci: "dark grey ... like a 3D background")
   const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); document.body.prepend(bg);
   const gl = bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
   let topo = null;
@@ -63,8 +79,9 @@ void main() {
     gl.useProgram(p); gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const at = gl.getAttribLocation(p, "a"); gl.enableVertexAttribArray(at); gl.vertexAttribPointer(at, 2, gl.FLOAT, false, 0, 0);
     topo = { res: gl.getUniformLocation(p, "u_resolution"), time: gl.getUniformLocation(p, "u_time"), dpr: gl.getUniformLocation(p, "u_dpr") };
+    gl.uniform1f(gl.getUniformLocation(p, "u_relief"), RELIEF ? 1 : 0);
   } catch (e) { console.error(e); }
-  function sizeTopo() { if (!topo) return; const d = Math.min(devicePixelRatio || 1, 1.5); bg.width = Math.round(innerWidth * d); bg.height = Math.round(innerHeight * d);
+  function sizeTopo() { if (!topo) return; const d = Math.min(devicePixelRatio || 1, RELIEF ? 1.25 : 1.5);   // the terrain samples the noise 3x a pixel: fewer pixels bg.width = Math.round(innerWidth * d); bg.height = Math.round(innerHeight * d);
     gl.viewport(0, 0, bg.width, bg.height); gl.uniform2f(topo.res, bg.width, bg.height); gl.uniform1f(topo.dpr, d); }
   sizeTopo(); addEventListener("resize", sizeTopo);
 
@@ -74,6 +91,9 @@ void main() {
     if (f.querySelector(":scope > .tun")) return; const c = document.createElement("canvas"); c.className = "tun"; c.setAttribute("aria-hidden", "true"); f.prepend(c); }); }
   new MutationObserver(addCanvases).observe(document.body, { childList: true, subtree: true }); addCanvases();
 
+  // ALPHA: a dot is at most 0.45 of its card's colour, so the words over it stay readable. Computed: white text over a
+  // full dot on the dark card (#151419) is 5.9:1 on amber, the worst (sky 6.9, pink 9.3, violet 10.1); at 0.6-0.62 amber
+  // fell to 4.1 / 3.9:1, under WCAG's 4.5.
   const D = Math.min(devicePixelRatio || 1, 2), RINGS = 5, DOTS = 30, CYCLE = 26, R = 18;   // CYCLE: seconds for a ring from the back to the edge   // R: the card's corner radius (mcq-play.css .side)
   function box(x, w, h, cx, cy, s, rad) {                                  // a rounded rectangle, the card shrunk by s toward (cx, cy)
     const bw = w * s, bh = h * s, x0 = cx + (w / 2 - cx) * s - bw / 2, y0 = cy + (h / 2 - cy) * s - bh / 2;
@@ -96,9 +116,33 @@ void main() {
     // card's edge and fades there); perspective: s = p^2, so they speed up as they come near, and their dots spread out.
     for (let k = 0; k < RINGS; k++) {
       const p = ((t / CYCLE + k / RINGS) % 1), s = 0.05 + p * p * 0.95;
-      const a = ease(p / 0.25) * ease((1 - p) / 0.2) * (0.22 + 0.4 * p);   // fades in deep and out at the edge, smoothly
+      const a = ease(p / 0.25) * ease((1 - p) / 0.2) * (0.17 + 0.28 * p);   // fades in deep and out at the edge, smoothly; max 0.45 (ALPHA)
       if (a <= 0.01) continue;
       x.strokeStyle = `rgba(${c._rgb},${a.toFixed(3)})`; const per = box(x, w, h, cx, cy, s, R); x.setLineDash([0.01, per / DOTS]); x.stroke(); }
+  }
+
+  // ?cards=tunnel: the prompt's circular tunnel, few points, in the card's colour.
+  const TUNNEL = new URLSearchParams(location.search).get("cards") === "tunnel", LAYERS = 14, POINTS = 24, TAU = Math.PI * 2;
+  if (TUNNEL) document.body.classList.add("cards-tunnel");   // its page: flat charcoal black (mcq-ideate.css)
+  const path = z => [0.2 * Math.sin(TAU * z * 0.5) + 0.4 * Math.sin(TAU * z * 0.2 + 0.3), 0.3 * Math.cos(TAU * z * 0.3) + 0.2 * Math.cos(TAU * z * 0.1)];   // the prompt's TunnelPath
+  function drawTunnel(c, t) {
+    const w = c.offsetWidth, h = c.offsetHeight; if (!w || !h) return;
+    const pw = Math.round(w * D), ph = Math.round(h * D); if (c.width !== pw || c.height !== ph) { c.width = pw; c.height = ph; }
+    const tile = c.closest(".tile"), i = +(tile && tile.dataset.i) || 0;
+    if (!c._rgb) c._rgb = (getComputedStyle(tile || c).getPropertyValue("--c").trim() || "255,255,255");
+    const x = c.getContext("2d"); x.setTransform(D, 0, 0, D, 0, 0); x.clearRect(0, 0, w, h);
+    const U = w * 0.5, cam = t * 0.12 + i * 2.3, co = path(cam), spin = t * 0.05;   // U: one tunnel unit = half the card's width
+    for (let k = 0; k < LAYERS; k++) {
+      const pz = 1 - ((k / LAYERS + cam * 0.35) % 1);                       // depth 1 (far) -> 0 (here); each ring comes toward you
+      const r = 0.15 / Math.pow(pz * 0.8 + 0.4, 2) * U;                      // the prompt's ring radius, in card pixels
+      const o = path(cam + pz), ox = (o[0] - co[0]) * U * 0.35, oy = (o[1] - co[1]) * U * 0.35;   // the winding, gentler in a small card
+      const a = (1 - pz) * Math.min(1, pz / 0.1) * Math.min(1, (1 - pz) / 0.15) * (Math.floor(k / 2) % 2 ? 0.7 : 1) * 0.45;   // near = brighter; fades at both ends; A/B pairs. Max 0.45: see ALPHA below
+      if (a <= 0.01) continue;
+      const dot = 0.6 + 1.1 * (1 - pz), cx = w / 2 - ox, cy = h / 2 - oy;
+      x.fillStyle = `rgba(${c._rgb},${a.toFixed(3)})`; x.beginPath();
+      for (let j = 0; j < POINTS; j++) { const q = spin + j / POINTS * TAU, px = cx + Math.cos(q) * r, py = cy + Math.sin(q) * r;
+        if (px < -dot || px > w + dot || py < -dot || py > h + dot) continue; x.moveTo(px + dot, py); x.arc(px, py, dot, 0, TAU); }
+      x.fill(); }
   }
 
   const t0 = performance.now(); let last = 0;
@@ -107,9 +151,9 @@ void main() {
     if (document.hidden || now - last < 33) return; last = now;                                   // 30 fps: backgrounds, not a game
     const t = (now - t0) / 1000;
     if (topo) { gl.uniform1f(topo.time, t); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
-    document.querySelectorAll(".mcqp .face > .tun").forEach(c => { if (getComputedStyle(c).opacity !== "0") drawCard(c, t); });   // a faded card (right, or dark) is not drawn
+    document.querySelectorAll(".mcqp .face > .tun").forEach(c => { if (getComputedStyle(c).opacity !== "0") (TUNNEL ? drawTunnel : drawCard)(c, t); });   // a faded card (right, or dark) is not drawn
   }
   requestAnimationFrame(frame);
   if (reduced) setTimeout(() => frame(performance.now() + 1000), 600);   // reduced motion: one still frame once the cards are in
-  window.MQ_IDEATE = { topo: !!topo };
+  window.MQ_IDEATE = { topo: !!topo, cards: TUNNEL ? "tunnel" : "box" };
 })();

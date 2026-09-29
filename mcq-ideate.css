@@ -25,3 +25,12 @@ body.mcqp-ideate .mcqp .shard-in > .tun { display:none; }
    to hide a question scrolling under the robot. Here it is clear, so the lines run to the edge; the cost: on a short
    phone, a long question scrolled under the robot shows behind it instead of fading out. */
 body.mcqp-ideate .mcqp .dock { background:none; }
+
+/* ?cards=tunnel: no colour gradients (Murci: "not ... gradient colours but more like charcoal"), then "a bit dark grey
+   rather than pure black and ... like a 3D background": the TopoField becomes a terrain (mcq-ideate.js, u_relief): its
+   noise is the height, each band between two contour lines a raised step, lit from the top-left, in greys from #1e1e23
+   up; the coloured lines sit on the step edges. No corner lights, no wash. The page colour below is its fallback
+   (no WebGL), a dark grey lighter than the cards (#151419), so the cards sit above it. */
+body.mcqp-ideate.cards-tunnel { background:#212126; }
+body.mcqp-ideate.cards-tunnel::before { content:none; }
+body.mcqp-ideate.cards-tunnel .mcqp { --bg:#212126; --bg0:rgba(33,33,38,0); }
