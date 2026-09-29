@@ -6,51 +6,76 @@
    #232228), the option's colour only as a glow from the TOP-RIGHT corner (~35-45% of the colour there: teal corner
    #12564e from #01c3a8, amber #7a5c2e from #ffb741) fading to the plain base by about the middle, and the edge lit in
    the colour only near that corner. Hues: A violet, B sky, C amber, D pink — no red and no green (they mean wrong and
-   right when the verdict lights up). Letter badges: white on violet / pink, dark on sky / amber (contrast). */
+   right when the verdict lights up). Letter badges: white on violet / pink, dark on sky / amber (contrast).
 
-body.mcqp-kids .mcqp .tile { --c:124,58,237; --ink:#ffffff; }                          /* A violet  #7c3aed */
-body.mcqp-kids .mcqp .tile[data-i="1"] { --c:14,165,233; --ink:#04263a; }             /* B sky     #0ea5e9 */
-body.mcqp-kids .mcqp .tile[data-i="2"] { --c:245,158,11; --ink:#2a1800; }             /* C amber   #f59e0b */
-body.mcqp-kids .mcqp .tile[data-i="3"] { --c:219,39,119; --ink:#ffffff; }             /* D pink    #db2777 */
+   The right card is the prototype's (Murci: its flip and colour enforce the XP medals gold / silver / bronze): from the
+   moment it is right (.yes, then .hero, .shine, .flipped) none of these colours apply, so the green light, the medal
+   ring, the turn and the medal back are mcq-play.css's own. K below = a card that is NOT the right card being shown. */
 
-/* the card: near-black glass, the colour glowing in from the top-right corner only */
-body.mcqp-kids .mcqp .face {
+body.mcqp-kids .mcqp .tile, body.mcqp-kids .mcqp .shard { --c:124,58,237; --ink:#ffffff; }                                     /* A violet  #7c3aed */
+body.mcqp-kids .mcqp .tile[data-i="1"], body.mcqp-kids .mcqp .shard[data-i="1"] { --c:14,165,233; --ink:#04263a; }            /* B sky     #0ea5e9 */
+body.mcqp-kids .mcqp .tile[data-i="2"], body.mcqp-kids .mcqp .shard[data-i="2"] { --c:245,158,11; --ink:#2a1800; }            /* C amber   #f59e0b */
+body.mcqp-kids .mcqp .tile[data-i="3"], body.mcqp-kids .mcqp .shard[data-i="3"] { --c:219,39,119; --ink:#ffffff; }            /* D pink    #db2777 */
+
+/* K · the card: near-black glass, the colour glowing in from the top-right corner only */
+body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face {
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.5) 0%, rgba(var(--c),0.18) 30%, rgba(var(--c),0) 56%),
     linear-gradient(180deg, rgba(255,255,255,0.03), transparent 30%), rgba(21,20,25,0.94);
   box-shadow:0 18px 34px -18px rgba(0,0,0,0.85), inset 0 0 0 0 transparent; }
-body.mcqp-kids .mcqp .tile:not(.yes):not(.no) { --cast:rgba(var(--c),0.5); }
-/* the edge: lit in the colour at the top-right, a faint grey hairline everywhere else (and the travelling glint) */
-body.mcqp-kids .mcqp .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
+body.mcqp-kids .mcqp .tile:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) { --cast:rgba(var(--c),0.5); }
+/* K · the edge: lit in the colour at the top-right, a faint grey hairline everywhere else */
+body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
 body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(255,255,255,0.8) 330deg, transparent 350deg),
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, var(--kgl) 330deg, transparent 350deg),
     linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
-body.mcqp-kids .mcqp .face .gleam::after { opacity:0.35; }                               /* a hint of glass, not a sheen */
-/* the letter: a solid badge in the option's colour */
-body.mcqp-kids .mcqp .tile .letter { background:rgb(var(--c)); border-color:transparent; color:var(--ink); box-shadow:0 4px 12px rgba(var(--c),0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
-/* picked / growing: a ring and glow in its colour; once the verdict lights, it owns the edge */
-body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no) .face, body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no) .face {
-  box-shadow:0 28px 44px -18px rgba(0,0,0,0.85), 0 0 0 2px rgb(var(--c)), 0 0 22px rgba(var(--c),0.45); }
-body.mcqp-kids .mcqp .tile.sel .face, body.mcqp-kids .mcqp .tile.raised .face {
+/* K · the letter: a solid badge in the option's colour */
+body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .letter { background:rgb(var(--c)); border-color:transparent; color:var(--ink); box-shadow:0 4px 12px rgba(var(--c),0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
+/* K · picked / growing (before the verdict): a ring and glow in its colour, the glow reaching a little further */
+body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face, body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face {
+  box-shadow:0 28px 44px -18px rgba(0,0,0,0.85), 0 0 0 2px rgb(var(--c)), 0 0 22px rgba(var(--c),0.45);
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.55) 0%, rgba(var(--c),0.2) 34%, rgba(var(--c),0) 62%),
-    linear-gradient(180deg, rgba(255,255,255,0.04), transparent 30%), rgba(21,20,25,0.94); }   /* picked: the glow reaches a little further */
+    linear-gradient(180deg, rgba(255,255,255,0.04), transparent 30%), rgba(21,20,25,0.94); }
 
-/* light mode: the same idea on a pale card — the colour glowing from the top-right */
-html[data-theme="light"] body.mcqp-kids .mcqp .face {
+/* The shine passes ONCE (Murci: "just pass once"): when the cards have landed, a sweep crosses each card and a bright
+   arc runs one lap of its rim, card after card, then the glass is still. The base loops both (6.5 s / 6 s, infinite).
+   The arc's colour is its own animated property (--kgl), so it fades out at the end of the lap instead of stopping
+   as a lit mark on the rim. One rule for every state: the same animation in every state is never restarted, so a
+   card changing state (picked, dead) does not flash again. */
+@property --kgl { syntax:'<color>'; inherits:false; initial-value:rgba(255,255,255,0); }
+body.mcqp-kids .mcqp .tile .face::before, body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+  animation:mq-klap 2.4s cubic-bezier(.45,.05,.35,1) both; animation-delay:calc(0.8s + var(--d, 0ms) * 2); }
+@keyframes mq-klap { 0% { --ga:0deg; --kgl:rgba(255,255,255,0); } 12%, 82% { --kgl:rgba(255,255,255,0.8); } 100% { --ga:360deg; --kgl:rgba(255,255,255,0); } }
+body.mcqp-kids .mcqp .face .gleam::before { opacity:0.3; animation:mq-kgleam 1.5s cubic-bezier(.45,.05,.35,1) both; animation-delay:calc(0.8s + var(--d, 0ms) * 2); }
+@keyframes mq-kgleam { from { transform:translateX(-170%) skewX(-14deg); } to { transform:translateX(430%) skewX(-14deg); } }
+body.mcqp-kids .mcqp .face .gleam::after { opacity:0.35; }                               /* a hint of glass, not a sheen */
+
+/* The broken glass keeps its card's colour: the same dark glass with the colour through it (stronger than the card's
+   corner, so every piece reads as that card, not only the corner ones), a rim and cut edges lit in the colour. */
+body.mcqp-kids .mcqp .shard-in { border-color:rgba(var(--c),0.85);
+  background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.55) 0%, rgba(var(--c),0.22) 32%, rgba(var(--c),0.1) 60%),
+    linear-gradient(180deg, rgba(var(--c),0.26), rgba(var(--c),0.12)), rgba(21,20,25,0.9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), inset 4px 6px 12px -8px rgba(var(--c),0.5), inset -6px -8px 16px -10px rgba(var(--c),0.35); }
+body.mcqp-kids .mcqp .shard .edge polygon { stroke:color-mix(in srgb, rgb(var(--c)) 60%, #ffffff); }
+body.mcqp-kids .mcqp .shard .letter { background:rgb(var(--c)); color:var(--ink); }
+
+/* The page conforms to the cards: neutral charcoal as in the reference (#232228 behind #151419 cards), no cobalt glow
+   (the base page and the light behind the cards are both brand blue) — a faint white light instead. */
+body.mcqp-kids { background:radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,0.035), transparent 70%), #232228; }
+body.mcqp-kids .mcqp { --bg:#232228; --bg0:rgba(35,34,40,0); }
+body.mcqp-kids .mcqp .backdrop { background:radial-gradient(560px 320px at 50% 44%, rgba(255,255,255,0.03), transparent 72%); }
+
+/* light mode (not shown for now: Murci reviews dark only): the same idea on a pale card */
+html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face {
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.3) 0%, rgba(var(--c),0.1) 30%, rgba(var(--c),0) 56%), rgba(246,247,250,0.94);
   box-shadow:0 14px 28px -16px rgba(20,30,70,0.3); }
-html[data-theme="light"] body.mcqp-kids .mcqp .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
+html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
 html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(var(--c),0.85) 330deg, transparent 350deg),
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, var(--kgl) 330deg, transparent 350deg),
     linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
-html[data-theme="light"] body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no) .face, html[data-theme="light"] body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no) .face {
-  box-shadow:0 22px 36px -18px rgba(20,30,70,0.35), 0 0 0 2px rgb(var(--c)), 0 0 16px rgba(var(--c),0.35); }
-html[data-theme="light"] body.mcqp-kids .mcqp .tile.sel .face, html[data-theme="light"] body.mcqp-kids .mcqp .tile.raised .face {
+html[data-theme="light"] body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face, html[data-theme="light"] body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face {
+  box-shadow:0 22px 36px -18px rgba(20,30,70,0.35), 0 0 0 2px rgb(var(--c)), 0 0 16px rgba(var(--c),0.35);
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.4) 0%, rgba(var(--c),0.14) 34%, rgba(var(--c),0) 62%), rgba(246,247,250,0.94); }
-
-/* the page behind them a step lighter, as in the reference (#232228 behind #151419 cards): the dark cards stand out;
-   the moving sheen toned down (on a dark card it read as a streak) */
-body.mcqp-kids { background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.1), transparent 70%), #232228; }
-body.mcqp-kids .mcqp { --bg:#232228; --bg0:rgba(35,34,40,0); }
-body.mcqp-kids .mcqp .face .gleam::before { opacity:0.3; }
-html[data-theme="light"] body.mcqp-kids { background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.1), transparent 70%), #f1f3f6; }
+html[data-theme="light"] body.mcqp-kids .mcqp .shard-in { background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.4) 0%, rgba(var(--c),0.16) 40%, rgba(var(--c),0.08) 70%), rgba(246,247,250,0.92); }
+html[data-theme="light"] body.mcqp-kids { background:radial-gradient(900px 500px at 50% -10%, rgba(20,30,60,0.04), transparent 70%), #f1f3f6; }
 html[data-theme="light"] body.mcqp-kids .mcqp { --bg:#f1f3f6; --bg0:rgba(241,243,246,0); }
+html[data-theme="light"] body.mcqp-kids .mcqp .backdrop { background:none; }
