@@ -17,6 +17,9 @@
    brighter as they near, every other pair dimmer (its POINT_COLOR_A / B). 14 rings x 24 points (the prompt: 96 x 128),
    scaled to the card's WIDTH so the near rings run past its edges (scaled to its height, as the first cut was, the
    biggest ring could not reach the sides: a disc in the middle), in the card's colour, at about a third of its speed.
+   ?page=tunnel (Murci: "another design that now uses the choice card animation background as its background and the
+   choice cards to have no background animation", then "the exact [colour] as the one in the prompt ... as many
+   particles as it has"): the prompt's own shader, unchanged, full screen on black; plain cards; no TopoField lines.
    Cost: the background is one WebGL canvas (the prompt's shader, per pixel); the cards are plain 2D canvases, a dozen
    dotted outlines each (not the prompt's 96 layers per pixel). 30 frames a second, paused while the tab is hidden;
    reduced motion: one still frame.
@@ -58,10 +61,13 @@ void main() {
   float a = clamp(gridLines + topoLines, 0.0, 1.0);
   gl_FragColor = vec4(vec3(1.0) * gridLines + lineCol * topoLines, a); }`;   // premultiplied: coloured lines and a white grid over the page's own colours
 
-  const BLUE = new URLSearchParams(location.search).get("cards") === "tunnel";   // its page is a dark blue (mcq-ideate.css .page-blue)
-  if (BLUE) document.body.classList.add("page-blue");
-  const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); document.body.prepend(bg);
-  const gl = bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
+  // ?cards=tunnel: the tunnel in the cards, on a dark blue page. ?page=tunnel: the tunnel is the PAGE's background (full
+  // screen, behind everything), the cards have none, and there are no TopoField lines (one background, not two).
+  const Q = new URLSearchParams(location.search), PAGE_TUNNEL = Q.get("page") === "tunnel", BLUE = Q.get("cards") === "tunnel";
+  if (BLUE) document.body.classList.add("page-blue");   // its page is a dark blue (mcq-ideate.css .page-blue)
+  if (PAGE_TUNNEL) document.body.classList.add("page-prompt");   // its page is the prompt's: black (mcq-ideate.css .page-prompt)
+  const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); if (!PAGE_TUNNEL) document.body.prepend(bg);
+  const gl = PAGE_TUNNEL ? null : bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
   let topo = null;
   if (gl) try {
     const mk = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
@@ -81,7 +87,7 @@ void main() {
   // Every choice card gets a canvas as its first child (the component rebuilds the cards for each question).
   function addCanvases() { document.querySelectorAll(".mcqp #mq-tiles .tile .face, .mcqp #mq-heroLayer .tile .face").forEach(f => {
     if (f.querySelector(":scope > .tun")) return; const c = document.createElement("canvas"); c.className = "tun"; c.setAttribute("aria-hidden", "true"); f.prepend(c); }); }
-  new MutationObserver(addCanvases).observe(document.body, { childList: true, subtree: true }); addCanvases();
+  if (!PAGE_TUNNEL) { new MutationObserver(addCanvases).observe(document.body, { childList: true, subtree: true }); addCanvases(); }   // ?page=tunnel: the cards have none
 
   // ALPHA: a dot is at most 0.45 of its card's colour, so the words over it stay readable. Computed: white text over a
   // full dot on the dark card (#151419) is 5.9:1 on amber, the worst (sky 6.9, pink 9.3, violet 10.1); at 0.6-0.62 amber
@@ -116,24 +122,106 @@ void main() {
   // ?cards=tunnel: the prompt's circular tunnel, few points, in the card's colour.
   const TUNNEL = new URLSearchParams(location.search).get("cards") === "tunnel", LAYERS = 14, POINTS = 24, TAU = Math.PI * 2;
   const path = z => [0.2 * Math.sin(TAU * z * 0.5) + 0.4 * Math.sin(TAU * z * 0.2 + 0.3), 0.3 * Math.cos(TAU * z * 0.3) + 0.2 * Math.cos(TAU * z * 0.1)];   // the prompt's TunnelPath
-  function drawTunnel(c, t) {
+  // The rings: LAYERS rings of `points` dots coming toward you (depth pz 1 -> 0), the prompt's radius curve and winding,
+  // brighter as they near, every other pair dimmer (its POINT_COLOR_A / B). U: one tunnel unit in pixels.
+  function rings(x, w, h, U, t, seed, colourOf, maxA, points, layers, dot0, dotK, wind) {
+    const cam = t * 0.12 + seed, co = path(cam), spin = t * 0.05;
+    for (let k = 0; k < layers; k++) {
+      const pz = 1 - ((k / layers + cam * 0.35) % 1);
+      const r = 0.15 / Math.pow(pz * 0.8 + 0.4, 2) * U;
+      const o = path(cam + pz), ox = (o[0] - co[0]) * U * wind, oy = (o[1] - co[1]) * U * wind;
+      const a = (1 - pz) * Math.min(1, pz / 0.1) * Math.min(1, (1 - pz) / 0.15) * (Math.floor(k / 2) % 2 ? 0.7 : 1) * maxA;   // fades at both ends
+      if (a <= 0.01) continue;
+      const dot = dot0 + dotK * (1 - pz), cx = w / 2 - ox, cy = h / 2 - oy;
+      x.fillStyle = `rgba(${colourOf(k)},${a.toFixed(3)})`; x.beginPath();
+      for (let j = 0; j < points; j++) { const q = spin + j / points * TAU, px = cx + Math.cos(q) * r, py = cy + Math.sin(q) * r;
+        if (px < -dot || px > w + dot || py < -dot || py > h + dot) continue; x.moveTo(px + dot, py); x.arc(px, py, dot, 0, TAU); }
+      x.fill(); }
+  }
+  function drawTunnel(c, t) {   // in a card: its colour, half its width a unit, max 0.45 (ALPHA)
     const w = c.offsetWidth, h = c.offsetHeight; if (!w || !h) return;
     const pw = Math.round(w * D), ph = Math.round(h * D); if (c.width !== pw || c.height !== ph) { c.width = pw; c.height = ph; }
     const tile = c.closest(".tile"), i = +(tile && tile.dataset.i) || 0;
     if (!c._rgb) c._rgb = (getComputedStyle(tile || c).getPropertyValue("--c").trim() || "255,255,255");
     const x = c.getContext("2d"); x.setTransform(D, 0, 0, D, 0, 0); x.clearRect(0, 0, w, h);
-    const U = w * 0.5, cam = t * 0.12 + i * 2.3, co = path(cam), spin = t * 0.05;   // U: one tunnel unit = half the card's width
-    for (let k = 0; k < LAYERS; k++) {
-      const pz = 1 - ((k / LAYERS + cam * 0.35) % 1);                       // depth 1 (far) -> 0 (here); each ring comes toward you
-      const r = 0.15 / Math.pow(pz * 0.8 + 0.4, 2) * U;                      // the prompt's ring radius, in card pixels
-      const o = path(cam + pz), ox = (o[0] - co[0]) * U * 0.35, oy = (o[1] - co[1]) * U * 0.35;   // the winding, gentler in a small card
-      const a = (1 - pz) * Math.min(1, pz / 0.1) * Math.min(1, (1 - pz) / 0.15) * (Math.floor(k / 2) % 2 ? 0.7 : 1) * 0.45;   // near = brighter; fades at both ends; A/B pairs. Max 0.45: see ALPHA below
-      if (a <= 0.01) continue;
-      const dot = 0.6 + 1.1 * (1 - pz), cx = w / 2 - ox, cy = h / 2 - oy;
-      x.fillStyle = `rgba(${c._rgb},${a.toFixed(3)})`; x.beginPath();
-      for (let j = 0; j < POINTS; j++) { const q = spin + j / POINTS * TAU, px = cx + Math.cos(q) * r, py = cy + Math.sin(q) * r;
-        if (px < -dot || px > w + dot || py < -dot || py > h + dot) continue; x.moveTo(px + dot, py); x.arc(px, py, dot, 0, TAU); }
-      x.fill(); }
+    rings(x, w, h, w * 0.5, t, i * 2.3, () => c._rgb, 0.45, POINTS, LAYERS, 0.6, 1.1, 0.35);
+  }
+  // ?page=tunnel: the tunnel-hero prompt EXACTLY (Murci: "the exact [colour] as the one in the prompt and ... the same
+  // animation with as many particles as it has"): its fragment shader as given (96 rings x 128 points, white / 0.7 grey
+  // points, SPEED 0.7), iTime advanced at 0.5 x real time (its demo's speedMultiplier), pixel ratio capped at 2 (its
+  // renderer), on black. Only ported from three.js to raw WebGL 1 (three's ShaderMaterial adds the precision line).
+  const PROMPT_FS = `precision highp float;
+uniform float iTime;
+uniform vec3 iResolution;
+#define TAU 6.2831853071795865
+#define TUNNEL_LAYERS 96
+#define RING_POINTS 128
+#define POINT_SIZE 1.8
+#define POINT_COLOR_A vec3(1.0)
+#define POINT_COLOR_B vec3(0.7)
+#define SPEED 0.7
+float sq(float x){ return x*x; }
+vec2 AngRep(vec2 uv, float angle){
+  vec2 polar = vec2(atan(uv.y, uv.x), length(uv));
+  polar.x = mod(polar.x + angle/2.0, angle) - angle/2.0;
+  return polar.y * vec2(cos(polar.x), sin(polar.x));
+}
+float sdCircle(vec2 uv, float r){ return length(uv) - r; }
+vec3 MixShape(float sd, vec3 fill, vec3 target){
+  float blend = smoothstep(0.0, 1.0/iResolution.y, sd);
+  return mix(fill, target, blend);
+}
+vec2 TunnelPath(float x){
+  vec2 offs = vec2(
+    0.2 * sin(TAU * x * 0.5) + 0.4 * sin(TAU * x * 0.2 + 0.3),
+    0.3 * cos(TAU * x * 0.3) + 0.2 * cos(TAU * x * 0.1)
+  );
+  offs *= smoothstep(1.0, 4.0, x);
+  return offs;
+}
+void main(){
+  vec2 res = iResolution.xy / iResolution.y;
+  vec2 uv = gl_FragCoord.xy / iResolution.y - res/2.0;
+  vec3 color = vec3(0.0);
+  float repAngle = TAU / float(RING_POINTS);
+  float pointSize = POINT_SIZE / (2.0 * iResolution.y);
+  float camZ = iTime * SPEED;
+  vec2 camOffs = TunnelPath(camZ);
+  for(int i = 1; i <= TUNNEL_LAYERS; i++){
+    float pz = 1.0 - (float(i) / float(TUNNEL_LAYERS));
+    pz -= mod(camZ, 4.0 / float(TUNNEL_LAYERS));
+    vec2 offs = TunnelPath(camZ + pz) - camOffs;
+    float ringRad = 0.15 * (1.0 / sq(pz * 0.8 + 0.4));
+    if(abs(length(uv + offs) - ringRad) < pointSize * 1.5){
+      vec2 aruv = AngRep(uv + offs, repAngle);
+      float pdist = sdCircle(aruv - vec2(ringRad, 0), pointSize);
+      vec3 ptColor = (mod(float(i/2), 2.0) == 0.0) ? POINT_COLOR_A : POINT_COLOR_B;
+      float shade = (1.0 - pz);
+      color = MixShape(pdist, ptColor * shade, color);
+    }
+  }
+  gl_FragColor = vec4(color, 1.0);
+}`;
+  let pageT = null;
+  if (PAGE_TUNNEL) {
+    const pc = document.createElement("canvas"); pc.className = "pagetun"; pc.setAttribute("aria-hidden", "true"); document.body.prepend(pc);
+    const pg = pc.getContext("webgl", { antialias: true });                 // the prompt's renderer: antialias true
+    if (pg) try {
+      const mk = (type, src) => { const sh = pg.createShader(type); pg.shaderSource(sh, src); pg.compileShader(sh);
+        if (!pg.getShaderParameter(sh, pg.COMPILE_STATUS)) throw new Error("mcq-ideate tunnel shader: " + pg.getShaderInfoLog(sh)); return sh; };
+      const pp = pg.createProgram(); pg.attachShader(pp, mk(pg.VERTEX_SHADER, VS)); pg.attachShader(pp, mk(pg.FRAGMENT_SHADER, PROMPT_FS)); pg.linkProgram(pp);
+      if (!pg.getProgramParameter(pp, pg.LINK_STATUS)) throw new Error("mcq-ideate tunnel link: " + pg.getProgramInfoLog(pp));
+      pg.useProgram(pp); pg.bindBuffer(pg.ARRAY_BUFFER, pg.createBuffer()); pg.bufferData(pg.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), pg.STATIC_DRAW);
+      const at = pg.getAttribLocation(pp, "a"); pg.enableVertexAttribArray(at); pg.vertexAttribPointer(at, 2, pg.FLOAT, false, 0, 0);
+      pageT = { c: pc, gl: pg, time: pg.getUniformLocation(pp, "iTime"), res: pg.getUniformLocation(pp, "iResolution"), iTime: 0, lastS: 0 };
+      const size = () => { const d = Math.min(devicePixelRatio || 1, 2); pc.width = Math.round(innerWidth * d); pc.height = Math.round(innerHeight * d);
+        pg.viewport(0, 0, pc.width, pc.height); pg.uniform3f(pageT.res, pc.width, pc.height, 1); };
+      size(); addEventListener("resize", size);
+    } catch (e) { console.error(e); }
+  }
+  function drawPage(sec) {   // the prompt's clock: iTime += delta * 0.5, every frame it draws
+    const d = sec - (pageT.lastS || sec); pageT.lastS = sec; pageT.iTime += d * 0.5;
+    pageT.gl.uniform1f(pageT.time, pageT.iTime); pageT.gl.drawArrays(pageT.gl.TRIANGLE_STRIP, 0, 4);
   }
 
   const t0 = performance.now(); let last = 0;
@@ -142,9 +230,10 @@ void main() {
     if (document.hidden || now - last < 33) return; last = now;                                   // 30 fps: backgrounds, not a game
     const t = (now - t0) / 1000;
     if (topo) { gl.uniform1f(topo.time, t); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
+    if (pageT) drawPage(t);
     document.querySelectorAll(".mcqp .face > .tun").forEach(c => { if (getComputedStyle(c).opacity !== "0") (TUNNEL ? drawTunnel : drawCard)(c, t); });   // a faded card (right, or dark) is not drawn
   }
   requestAnimationFrame(frame);
   if (reduced) setTimeout(() => frame(performance.now() + 1000), 600);   // reduced motion: one still frame once the cards are in
-  window.MQ_IDEATE = { topo: !!topo, cards: TUNNEL ? "tunnel" : "box" };
+  window.MQ_IDEATE = { topo: !!topo, cards: PAGE_TUNNEL ? "none" : TUNNEL ? "tunnel" : "box", page: PAGE_TUNNEL ? "tunnel" : "topo" };
 })();

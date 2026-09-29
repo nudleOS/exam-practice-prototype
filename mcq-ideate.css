@@ -28,13 +28,24 @@ body.mcqp-ideate .mcqp .dock { background:none; }
 
 
 /* ?cards=tunnel: a dark blue page. Murci: "just blue like the platform's blue", then "a darker blue", then "more like the
-   B choice card but not the same so it [does not hide] that choice card". Measured: the platform blue is #1e46ff (the core
+   B choice card but not the same so it [does not hide] that choice card", then "a bit more dark". Measured: the platform blue is #1e46ff (the core
    of its brand gradient #0068f8 -> #1e46ff -> #671dff, Exam Practice.dc.html); card B is sky #0ea5e9 (hue 199). The page
-   is B's family moved a little toward the platform blue: #143252 (hue 211, L 20%, S 60%). Computed on it: card B's sky
-   edge 4.7:1 (a UI outline needs 3), the dark cards (#151419) lift off it at 1.40 (darker candidates fell to 1.1-1.2 and
-   the cards melted in), the text 11.1, text2 5.5, the chip's blue 6.0; only text3 (#8f9499, 4.3) falls short, so here it
-   takes text2's grey. Flat: no corner lights, no wash. The lines are white and faint (mcq-ideate.js, u_mono). */
-body.mcqp-ideate.page-blue { background:#143252; }
+   is B's family moved a little toward the platform blue: #112a45 (hue 211, L 17%, S 60%; #143252 at L 20% first). Computed
+   on it: card B's sky edge 5.3:1 (a UI outline needs 3), the dark cards (#151419) lift off it at 1.26 (at L 13% they
+   melt in: 1.1), the text 12.4, text2 6.2, text3 4.8, the chip's blue 6.7: all pass with the normal colours. Flat: no corner lights, no wash. The lines are white and faint (mcq-ideate.js, u_mono). */
+/* ... and "a gradient that turns to more darker", then "more darker by the gradient": from #112a45 at the top, darkening
+   from just under the header, to almost black (#03080f) at the bottom. The cost, accepted: the dark card bodies lift off
+   the page less in its lower half (about 1.1 there, 1.26 on #112a45); their coloured corners, lit rims and shadows still
+   outline them. Text and card B's edge pass at every stop (text 12.4 -> 17+, B's edge 5.3 -> 7+). */
+body.mcqp-ideate.page-blue { background:linear-gradient(180deg, #112a45 0%, #0e2239 25%, #081627 60%, #03080f 100%) fixed, #112a45; }
 body.mcqp-ideate.page-blue::before { content:none; }
-body.mcqp-ideate.page-blue .mcqp { --bg:#143252; --bg0:rgba(20,50,82,0); --text3:#a4a9ae; }
+body.mcqp-ideate.page-blue .mcqp { --bg:#112a45; --bg0:rgba(17,42,69,0); }
 body.mcqp-ideate.page-blue .mcqp .backdrop { background:none; }
+
+/* ?page=tunnel: the tunnel-hero prompt's own tunnel behind the whole page (mcq-ideate.js), on its black (bg-black); the
+   cards have none. Its canvas sits where the TopoField would (fixed, behind everything). */
+body.mcqp-ideate.page-prompt { background:#000; }
+body.mcqp-ideate.page-prompt::before { content:none; }
+body.mcqp-ideate.page-prompt .mcqp { --bg:#000; --bg0:rgba(0,0,0,0); }
+body.mcqp-ideate.page-prompt .mcqp .backdrop { background:none; }
+.pagetun { position:fixed; inset:0; z-index:-1; width:100%; height:100%; pointer-events:none; }
