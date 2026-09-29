@@ -160,6 +160,14 @@ body.nx-play .mcqp .tile.dead .face::after { background:color-mix(in srgb, var(-
 body.nx-play .mcqp .shard-in { background:var(--nx-card) !important; border-color:var(--nx-card-line) !important; box-shadow:0 8px 18px -12px rgba(10,40,100,0.5) !important; }
 body.nx-play .mcqp .shard .letter { background:var(--nx-badge); color:var(--nx-badge-ink); }
 body.nx-play .mcqp .scrim { background:var(--nx-scrim); }
+/* dark: the medal backs on the navy card, not the base's brown and charcoal fills (#3a3016 gold, #34383e silver, #3a2618 bronze,
+   #262a30 plain). The mockups show no answer card, so this follows their card language: the flat navy card, lifted a step
+   at the top. The medal is its ring and glow (the base's --ring / --glow shadow stays), its coin and its ink. Not a medal
+   colour mixed in: gold into navy is complementary and measured grey-olive (rgb 51,55,56), no longer read as gold. */
+html[data-nx="dark"] body.nx-play .mcqp .back,
+html[data-nx="dark"] body.nx-play .mcqp .tile.gold .back, html[data-nx="dark"] body.nx-play .mcqp .tile.silver .back, html[data-nx="dark"] body.nx-play .mcqp .tile.bronze .back {
+  background:linear-gradient(180deg, #13294f, var(--nx-card) 75%); }
+html[data-nx="dark"] body.nx-play .mcqp .back .not { border-top-color:var(--nx-card-line); }
 /* light: the medal backs in light (the base draws them dark), with inks dark enough to read on them */
 html[data-nx="light"] body.nx-play .mcqp .tile.gold .back { background:linear-gradient(180deg, #fff8e3, #fdeec6); --ink:#8a6414; }
 html[data-nx="light"] body.nx-play .mcqp .tile.silver .back { background:linear-gradient(180deg, #f6f8fb, #e6ebf1); --ink:#4f5966; }
