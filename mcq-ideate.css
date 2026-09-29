@@ -19,3 +19,9 @@ body.mcqp-ideate .mcqp .face > .letter, body.mcqp-ideate .mcqp .face > .txt { po
    piece's words out of place). */
 body.mcqp-ideate .mcqp .tile[data-tier] .face > .tun, body.mcqp-ideate .mcqp .tile.dead .face > .tun { opacity:0; }
 body.mcqp-ideate .mcqp .shard-in > .tun { display:none; }
+
+/* The lines reach the bottom (Murci: "it fades away at the bottom"). Measured cause: the dock (mcq-play.css) paints a
+   solid band of the page colour over the screen's bottom (var(--bg) for 60% of its height; the dock measured 186 px on a 648 px desktop view), there
+   to hide a question scrolling under the robot. Here it is clear, so the lines run to the edge; the cost: on a short
+   phone, a long question scrolled under the robot shows behind it instead of fading out. */
+body.mcqp-ideate .mcqp .dock { background:none; }

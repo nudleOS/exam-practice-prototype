@@ -4,6 +4,8 @@
        noise, drifting. Drawn TRANSPARENT over the kids page's own colours (Murci: "the same colour as the first kids
        design"): its charcoal and its corner lights stay; the lines are light and faint (the prompt's black page and
        black vignettes are not used).
+   Murci, same day: "make the background animation change colours": the lines drift through the four choice cards'
+   colours (over time, a lap in 40 s, and across the screen), no red and no green (they mean wrong and right).
    2 · the tunnel-hero prompt's idea in each choice card, refit (Murci: it must "fit the cards whole and not center", and
        must not change the cards' look or colour): the prompt draws CIRCULAR rings, which on a wide card can only be a
        disc in the middle, and its white points with a "screen" blend turned every card grey. Here each ring is the
@@ -39,9 +41,16 @@ void main() {
   float gridSize = 48.0 * u_dpr; vec2 gridFract = fract(gl_FragCoord.xy / gridSize); float lineThickness = 1.0 / gridSize;
   float gridLines = clamp(step(1.0 - lineThickness, gridFract.x) + step(1.0 - lineThickness, gridFract.y), 0.0, 1.0) * 0.05;
   vec2 noisePos = st * 1.4 + vec2(u_time * 0.015, u_time * 0.025); float n = snoise(noisePos) * 0.5 + 0.5;
-  float triangleWave = abs(fract(n * 10.0) - 0.5) * 2.0; float topoLines = smoothstep(0.02, 0.00, triangleWave) * 0.16;
+  float triangleWave = abs(fract(n * 10.0) - 0.5) * 2.0; float topoLines = smoothstep(0.02, 0.00, triangleWave) * 0.30;
+  // The lines' colour: the four choice cards' colours in turn (violet, sky, amber, pink), drifting over time (a lap in
+  // 40 s) and across the screen (a soft diagonal band), smoothly blended; the grid stays a neutral white.
+  float h = fract(u_time * 0.025 + st.x * 0.22 + st.y * 0.12) * 4.0;
+  vec3 c0 = vec3(0.486, 0.227, 0.929), c1 = vec3(0.055, 0.647, 0.914), c2 = vec3(0.961, 0.620, 0.043), c3 = vec3(0.859, 0.153, 0.467);
+  float f = smoothstep(0.0, 1.0, fract(h));
+  vec3 lineCol = h < 1.0 ? mix(c0, c1, f) : h < 2.0 ? mix(c1, c2, f) : h < 3.0 ? mix(c2, c3, f) : mix(c3, c0, f);
+  lineCol = mix(lineCol, vec3(1.0), 0.25);   // a touch of white: lines read as light, not as paint
   float a = clamp(gridLines + topoLines, 0.0, 1.0);
-  gl_FragColor = vec4(vec3(a), a); }`;   // premultiplied white at alpha a: light lines over the page's own colours
+  gl_FragColor = vec4(vec3(1.0) * gridLines + lineCol * topoLines, a); }`;   // premultiplied: coloured lines and a white grid over the page's own colours
 
   const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); document.body.prepend(bg);
   const gl = bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
