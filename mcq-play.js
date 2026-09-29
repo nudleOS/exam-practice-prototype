@@ -25,7 +25,7 @@
                  robot sweeping the glass off to the right (default: it rises and its cards are dealt from below)
      pointAtHint true = while it thinks a hint, the robot's raised hand points at the bubble: its standing pose raises the
                  hand on the screen's left, so with the bubble on its right it is mirrored (a quick turn), and back as it moves
-     look        "panel" = the question on a panel (the boss's design, 2026-09-30): a chip with the number and topic, the marks
+     look        "panel" = the question on a panel (the boss's design, 2026-09-29): a chip with the number and topic, the marks
                  as a pill at its right, a "Question N" label, the question, cards with an icon and a radio; no try dots
      topicOf(item) -> the topic for the chip ("" = none) · iconFor(i, item) -> the card's icon (SVG markup), panel look only
      robotFixed  true = the robot keeps its corner (the boss's design): the glass rains and hits it where it stands, it never
