@@ -98,22 +98,47 @@ html[data-theme="light"] body.mcqp-kids::after { background:radial-gradient(circ
 html[data-theme="light"] body.mcqp-kids .mcqp { --bg:#f1f3f6; --bg0:rgba(241,243,246,0); }
 html[data-theme="light"] body.mcqp-kids .mcqp .backdrop { background:none; }
 
-/* The right card lights in the medal it earns, not green (Murci: green on the right card "is a default we need to
-   fix"): the hairline round the rim and the floor light take the medal's colour from the moment it is right
-   (data-tier, set by mcq-play at the verdict), so the medal is the one colour of the whole moment: it traces the
-   rim, it shines, it turns to that medal's back. The hairline keys off data-tier, not .yes: .yes is removed as the
-   shine starts and it fades out for 300 ms after it (keyed to .yes, that fade showed the default green). Colours are
-   mcq-play.css's medals (gold #e3b341, silver #c3c8cf, bronze #d99b6c); the hairline a lighter step of each. */
-body.mcqp-kids .mcqp .tile[data-tier="gold"]   { --mh:#f7d97c; --mrgb:227,179,65; }
-body.mcqp-kids .mcqp .tile[data-tier="silver"] { --mh:#f1f3f6; --mrgb:210,216,224; }
-body.mcqp-kids .mcqp .tile[data-tier="bronze"] { --mh:#f0bf98; --mrgb:217,155,108; }
-body.mcqp-kids .mcqp .tile.yes[data-tier] { --cast:rgba(var(--mrgb),0.5); }
-/* Clear glass until it flips (Murci: "that transparent color when the right card comes out ... before it flips"):
-   no colour floods the card (no fill from the fingertip, no tint), only the medal's hairline traces the rim; the medal
-   colour fills the card only as its back. --top/--low are the glass's own resting values (mcq-play.css .face). */
+/* The right card: green means right, the medal means how well (Murci, 2026-09-29). From the moment it is right it is
+   clear glass (no fill, no tint) with a SHARP green hairline tracing the rim (1.4 px, a 1 px glow, no halo) and its
+   letter badge turns into a green tick badge; the medal colour arrives only at the shine, then its back. Keyed to
+   data-tier (set by mcq-play at the verdict and kept), not .yes: .yes is removed as the shine starts and the line
+   fades for 300 ms after it (keyed to .yes, that fade showed the base's soft green). */
 body.mcqp-kids .mcqp .tile.yes[data-tier] .face { --top:rgba(255,255,255,0.05); --low:rgba(255,255,255,0.02); }
-body.mcqp-kids .mcqp .tile[data-tier] .vline rect { stroke:var(--mh); filter:drop-shadow(0 0 2.5px rgba(var(--mrgb),0.95)) drop-shadow(0 0 7px rgba(var(--mrgb),0.45)); }
 body.mcqp-kids .mcqp .tile[data-tier] .vfill { display:none; }
+body.mcqp-kids .mcqp .tile[data-tier] .vline rect { stroke:#5ff0b0; stroke-width:1.4; filter:drop-shadow(0 0 1px rgba(61,220,151,0.9)); }
+/* The tick badge: at the verdict the badge turns green with a small pop and the letter goes; the tick draws itself
+   in (a pen stroke with round ends) as the card LIFTS OUT (.hero), before the shine and the flip. Keyed to .hero on
+   purpose: the card is moved into the hero layer (~0.88 s), and moving an element restarts its CSS animations, so a
+   tick started at the verdict drew twice (measured: half drawn, offset 0.49, at 1.1 s). The pop is not keyed to .hero
+   for the same reason (it would pop again as it moved). Once flipped and put back, the tick stays drawn. Dark ink #052e1c on the prototype's green #3ddc97 (contrast 8.4:1, computed). */
+body.mcqp-kids .mcqp .tile[data-tier] .letter { position:relative; background:#3ddc97; border-color:transparent; color:transparent;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.25) inset, 0 4px 14px rgba(61,220,151,0.45); }
+body.mcqp-kids .mcqp .tile[data-tier]:not(.hero) .letter { animation:mq-kpop 420ms cubic-bezier(.2,.9,.3,1.4) both; }
+body.mcqp-kids .mcqp .tile[data-tier] .vtick { display:block; position:absolute; inset:14%; width:72%; height:72%; overflow:visible; }
+body.mcqp-kids .mcqp .tile[data-tier] .vtick path { fill:none; stroke:#052e1c; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:1; stroke-dashoffset:1; }
+body.mcqp-kids .mcqp .tile.hero[data-tier] .vtick path { animation:mq-ktick 380ms cubic-bezier(.4,0,.2,1) 250ms forwards; }
+body.mcqp-kids .mcqp .tile.flipped[data-tier]:not(.hero) .vtick path { stroke-dashoffset:0; }
+@keyframes mq-kpop { 0% { scale:1; } 45% { scale:1.18; } 100% { scale:1; } }
+@keyframes mq-ktick { to { stroke-dashoffset:0; } }
+@media (prefers-reduced-motion: reduce) { body.mcqp-kids .mcqp .tile[data-tier] .letter { animation:none; } body.mcqp-kids .mcqp .tile[data-tier] .vtick path { animation:none !important; stroke-dashoffset:0; } }
+
+/* Fine red cracks (Murci: "not thick ... fine thin red"). Measured in mcq-play.js: red 2.0 / 1.5 / 1.1 px plus two
+   glows (2.5 px and 7 px blur) over a dark split up to 2.9 px. Here: a fine red line (0.75 px), a 1 px glow only, a
+   thinner split and highlight; the crushed spot smaller; the red rim line (it stays on the pieces' edges) the same.
+   CSS stroke-width wins over the paths' stroke-width attributes. Dropping the 7 px blur is also cheaper on a phone. */
+body.mcqp-kids .mcqp .cracks .rd { stroke-width:0.75px; }
+body.mcqp-kids .mcqp .cracks .lo { stroke-width:1.3px; stroke:rgba(6,8,28,0.45); }
+body.mcqp-kids .mcqp .cracks .hi { stroke-width:0.45px; }
+body.mcqp-kids .mcqp .cracks g.redglow { filter:drop-shadow(0 0 1px rgba(255,70,80,0.9)); }
+body.mcqp-kids .mcqp .cracks g.glow { filter:none; }
+body.mcqp-kids .mcqp .crush { width:10px; height:10px; margin:-5px 0 0 -5px; }
+body.mcqp-kids .mcqp .vline.no rect { stroke-width:1.1; filter:drop-shadow(0 0 1px rgba(255,70,80,0.9)); }
+
+/* The question after its number (Murci): the chip in the line, in front of the question; a long question wraps
+   under the number, as a paragraph (the base puts the number on its own line above). */
+body.mcqp-kids .mcqp h1 { display:block; }
+body.mcqp-kids .mcqp h1 .num { display:inline-block; margin-right:8px; vertical-align:2px; }
 
 /* Smaller question text (Murci: "reduce the font sizes of the Questions"): desktop title 24 -> 20, question 22 -> 18;
    phone 18.5 -> 17 and 16.5 -> 15.5. The order stays: title > question > the options' 15 px. */
