@@ -10,7 +10,7 @@
    His notes: subtle doodles in the background; the robot fixed in one corner, on a rock with plants; an icon on each card.
    Only the LOOK changes: marking, tries, XP, marks, the glass break, the flip and the map work as before. */
 
-html[data-nx="dark"] body.nx-play {
+html[data-nx="dark"] body.nx-play, html[data-nx="dark"] body.nx-app {
   --nx-top:#020a1c; --nx-bot:#021027; --nx-head:rgba(3,16,40,0.94);   /* darker than the mockup's #031432 -> #031a3a (Murci, 2026-09-29: "more darker"), same hue */ --nx-line:rgba(70,120,210,0.22); --nx-line2:rgba(120,160,230,0.35);
   --nx-panel:#051c3b; --nx-panel-line:rgba(56,110,210,0.42); --nx-card:#0c1c36; --nx-card-line:#1a3052; --nx-card-hover:#27497d;
   --nx-sel:#072959; --nx-sel-line:#1f7cf5; --nx-badge:#224680; --nx-badge-ink:#e4ecff; --nx-accent:#0188fd;
@@ -250,7 +250,7 @@ body.nx-play .mcqp .pal-say .say-txt::after { content:""; position:absolute; lef
    colours from tokens (--field, --line, --text...), so the play screen redefines the tokens instead of fighting inline
    styles; the few colours it had written in (the number and steps cards, shared information, the scene, the examiner's
    reveal, the dock) are now tokens with their old value as the fallback, so every other screen is unchanged. */
-html[data-nx="dark"] body.nx-play {
+html[data-nx="dark"] body.nx-play, html[data-nx="dark"] body.nx-app {
   --field:var(--nx-card); --line:#1a3052; --line2:rgba(70,120,210,0.38); --hover:#10254a; --panel2:var(--nx-card);
   --text:var(--nx-text); --text2:var(--nx-text2); --text3:#9aaed2; --text4:#9aaed2; --tint:#81b1ff;
   --card2:var(--nx-card); --scene-bg:linear-gradient(180deg, #0f2447, var(--nx-card)); --reveal-bg:linear-gradient(180deg, #0f2447, var(--nx-card));
@@ -372,3 +372,20 @@ body.nx-play .mcqp:is(.fit-4, .fit-5) h1 { margin-top:6px; }
 /* the answer card in the panel: its robot and words centred in the card (measured on a phone: at the card's top, 200 px empty
    below). The robot keeps the component's row layout: the component places the robot itself as it moves into the card. */
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back { align-items:center; justify-content:center; align-content:center; }   /* align-content: on a phone the back is a grid (mcq-play.css), its rows centred in the tall card */
+
+/* ---- the rest of the app in the same navy (Murci, 2026-09-29: "the rest of the app pages the same as the dark background ... different
+   shades as you see fit"). body.nx-app is on every screen but the Hall, which stays as it is until he asks. The page's written-in charcoal
+   is tokenised with its old colour as the fallback: rgba(var(--nx-c, 29,32,35), 0.82) keeps each use's own opacity, so one token re-tints
+   every card. Where nx-app is off (the Hall) the tokens are unset and every colour is exactly as before (checked: the template with the
+   tokens resolved to their fallbacks equals the previous commit). ---- */
+html[data-nx="dark"].nx-app, html[data-nx="dark"] body.nx-app {
+  --bg:#021027; --panel:var(--nx-card); --panel2:var(--nx-card);
+  --nx-c:12,28,54;              /* cards, sheets, bars: the navy card #0c1c36, at each use's own opacity */
+  --nx-s:2,10,28;               /* the dark overlays behind a sheet or a dialog: the page's deepest navy */
+  --nx-g1:#11264a; --nx-g2:#0a1a34; --nx-ring:#0c1c36; --nx-c-hex:#0c1c36;
+}
+/* the page: the play screen's gradient, fixed, so every screen reads as the same place */
+html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)) fixed !important; min-height:100vh; }
+html[data-nx="dark"].nx-app { background:var(--nx-top); }
+/* the map (vortex-map.js) on the navy look: its plates, caption card and road in navy, not the module's charcoal (--surface #1f2226) */
+html[data-nx="dark"] body.nx-app .vm { --surface:#0c1c36; --surface2:#13294f; --road-top:#1a2e54; --road-edge:#06102a; --hair:rgba(120,160,230,0.16); }

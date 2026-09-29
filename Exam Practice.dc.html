@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=20">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=22">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -1669,6 +1669,8 @@ const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY
 // Brief 22: the vortex map's ground (one step lighter than the page's --bg #191b1e). The map, the colour its dots fade
 // into, the header and the preview strip on the map all take it from here.
 const MAP_GROUND = { hex: "#23262b", rgb: "35,38,43" };
+// the map's ground on the navy look: the page's navy (its dots dissolve into it, so backdrop and fade must be the same colour)
+const NX_GROUND = { hex: "#03122c", rgb: "3,18,44" };
 const PASS_MARKS = {
   fm: { pct: 40, source: "DHET, Report 191 ICASS Guidelines (Jan 2026) p.20: pass 40% or higher; Report 191 Part 2 lists no override for Fluid Mechanics N6 (08190216)" },
   aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
@@ -2051,8 +2053,13 @@ class Component extends DCLogic {
   }
   // This runtime calls componentDidUpdate(prevProps) with no previous state, so the last
   // open sheet is remembered here instead of read from a prevState argument.
+  // the navy look on every screen but the Hall (the Hall stays as it is until Murci asks)
+  nxApp() { const st = this.state; return !(st.screen === "hallgate" || st.screen === "hallout" || (st.screen === "play" && st.sitting === "hall" && st.hall && st.hall.phase === "sitting")); }
   componentDidUpdate() {
     const st = this.state; document.body.classList.toggle("nx-play", st.screen === "play" && !(st.sitting === "hall" && st.hall && st.hall.phase === "sitting"));
+    // nx-app: the navy look on every screen but the Hall (Murci, 2026-09-29: "the rest of the app the same as the dark background";
+    // the Hall stays as it is until he asks). On <html> too: the page's own background reads its tokens from the root.
+    const nxApp = this.nxApp(); document.body.classList.toggle("nx-app", nxApp); document.documentElement.classList.toggle("nx-app", nxApp);
     this.syncMcq();
     const sheet = this.state.sheet;
     // componentDidUpdate runs after the DOM is committed, so focus can move now; waiting for a
@@ -3902,6 +3909,8 @@ class Component extends DCLogic {
       "1 waiting for a marker": { fill: "radial-gradient(circle at 35% 28%, #f8cc63, #d69711 46%, #7a5405 100%)", rim: "#ffd479", lip: "#5a3d03", num: "#211600" },
       "Not started": { fill: "radial-gradient(circle at 35% 28%, #4d5563, #272b33 56%, #15171b 100%)", rim: "#3b414a", lip: "#0e1013", num: "#ffffff" },
       next: { fill: "radial-gradient(circle at 34% 24%, rgba(255,255,255,0.38), rgba(255,255,255,0) 46%), linear-gradient(135deg, #0068f8 0%, #1e46ff 50%, #671dff 100%)", rim: "#a9c8ff", lip: "#261578", num: "#ffffff" } };
+    // the navy look: "Not started" as a navy-slate orb (was charcoal), still duller than "In progress" and "next"
+    if (this.nxApp()) ORB["Not started"] = { fill: "radial-gradient(circle at 35% 28%, #46618f, #1d3052 56%, #0b1529 100%)", rim: "#2f4a78", lip: "#07101f", num: "#ffffff" };
     const roadNodes = items.filter(it => it.kind === "m").map(it => {
       const m = it.m, i = it.i, st = missionState(m), mm = worth(m), g = got(m);
       const closed = m.parts.every(q => this.pg(q.key).closed);
@@ -4029,7 +4038,7 @@ class Component extends DCLogic {
     // The vortex map's inputs: the same geometry and paint as the classic road, as data (see vortex-map.js).
     const finIt = items[items.length - 1], done = earned >= total && total;
     const vmVals = {
-      vmBg: "radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), " + MAP_GROUND.hex, vmFade: MAP_GROUND.hex,
+      vmBg: "radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), " + (this.nxApp() ? NX_GROUND : MAP_GROUND).hex, vmFade: (this.nxApp() ? NX_GROUND : MAP_GROUND).hex,
       vmOn: VM, vmOff: !VM, trackLux: VM ? "vm-lux" : "", mapPadB: VM ? "0px" : "120px",
       mainZ: VM && s.mapView !== "topics" ? "5" : "1", mainPE: VM && s.mapView !== "topics" ? "none" : "auto",
       vmActive: s.mapView !== "topics" ? "true" : "false", vmNext: String(suggestedIdx),
@@ -4396,7 +4405,7 @@ class Component extends DCLogic {
       hallLive: s.hallLive,
       onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
       // Brief 21: the map's controls live in the top bar; the map itself is never covered.
-      headBg: s.screen === "map" && !!paper && !s.classicMap ? "rgba(" + MAP_GROUND.rgb + ",0.97)" : "rgba(25,27,30,0.97)",
+      headBg: s.screen === "map" && !!paper && !s.classicMap ? "rgba(" + (this.nxApp() ? NX_GROUND : MAP_GROUND).rgb + ",0.97)" : "rgba(var(--nx-c, 25,27,30),0.97)",
       mapHead: s.screen === "map" && !!paper, notMapHead: !(s.screen === "map" && !!paper),
       mapHeadSub: ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + " · " + earned + " of " + total + " marks",
       mapViewOpen: s.pop === "mapview", mapViewAria: "View: " + ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + ". Change view",
@@ -4419,7 +4428,7 @@ class Component extends DCLogic {
         else if (e.key === "Home" && items.length) { e.preventDefault(); items[0].focus(); } else if (e.key === "End" && items.length) { e.preventDefault(); items[items.length - 1].focus(); }
         else if (e.key === "Tab") this.setState({ pop: null }); },
       subPad: s.pvOpen ? "10px 0 14px" : "0", subBg: !s.pvOpen ? "none" : s.classicMap ? "linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%)"
-        : "linear-gradient(180deg, " + MAP_GROUND.hex + " 0%, " + MAP_GROUND.hex + " 78%, rgba(" + MAP_GROUND.rgb + ",0) 100%)",
+        : (G => "linear-gradient(180deg, " + G.hex + " 0%, " + G.hex + " 78%, rgba(" + G.rgb + ",0) 100%)")(this.nxApp() ? NX_GROUND : MAP_GROUND),
       mapViews: [["paper", "Paper"], ["topics", "Topics"]].map(x => { const on = (s.mapView || "paper") === x[0];
         return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6",
           shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", weight: on ? "600" : "500",
