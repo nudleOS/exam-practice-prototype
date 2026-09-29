@@ -377,6 +377,7 @@
       const rc = document.createElementNS(NS, "rect"); [["x", 0], ["y", 0], ["width", "100%"], ["height", "100%"], ["rx", R], ["pathLength", 1000]].forEach(([k, v]) => rc.setAttribute(k, v)); svg.appendChild(rc);
       const fill = document.createElement("div"); fill.className = "vfill"; fill.style.setProperty("--vx", p.x + "px"); fill.style.setProperty("--vy", p.y + "px");
       if (ok) face.append(fill, svg); else face.append(svg);                                           // red: the rim only; the cracks glow red inside
+      if (ok) { const lt = face.querySelector(".letter"); if (lt && !lt.querySelector(".vtick")) lt.insertAdjacentHTML("beforeend", '<svg class="vtick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.6 12.6 L10 17 L18.6 7.6" pathLength="1"/></svg>'); }   // a tick in the letter badge: hidden here (mcq-play.css), a skin can show it
       if (reduced) { rc.style.strokeDasharray = "1000 0"; fill.style.opacity = "1"; return; }
       const kf = Array.from({ length: 11 }, (_, k) => { const u = k / 10, e = 1 - Math.pow(1 - u, 3), sHalf = 500 * e;   // both ends run outward, easing to meet
         return { offset: u, strokeDasharray: `${(2 * sHalf).toFixed(1)} ${(1000 - 2 * sHalf).toFixed(1)}`, strokeDashoffset: `${(-(f - sHalf)).toFixed(1)}` }; });
