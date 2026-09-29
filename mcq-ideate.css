@@ -1,0 +1,21 @@
+/* mcq-ideate: the "ideated" learner-colours standalone (_concept-mcq-ideate.html), layered on mcq-play-kids.css.
+   Only two things differ from the learner-colours page: the TopoField lines over the page and a hollow 3D box inside
+   each choice card. Both are drawn by mcq-ideate.js; this file places them. */
+
+/* 1 · The background: the kids page's own (its charcoal and its corner lights in the options' colours, Murci: "the same
+   colour as the first kids design"), with the TopoField lines over it: a transparent canvas of faint light lines. Its
+   48 px grid takes the place of the kids page's dot grid (two grids would fight). */
+body.mcqp-ideate::after { content:none; }
+.topo { position:fixed; inset:0; z-index:-1; width:100%; height:100%; pointer-events:none; }
+
+/* 2 · The hollow box in each choice card: under the letter and the words (and under the rim, the gleam, the cracks and
+   the verdict lines, which sit higher), over the card's glass. Its dots are the card's own colour (--c) at low alpha
+   and nothing is blended, so the card's look and colours are the learner-colours card's. */
+body.mcqp-ideate .mcqp .face > .tun { position:absolute; inset:0; width:100%; height:100%; border-radius:inherit; pointer-events:none; z-index:0; transition:opacity 320ms ease; }
+body.mcqp-ideate .mcqp .face > .letter, body.mcqp-ideate .mcqp .face > .txt { position:relative; z-index:1; }
+/* The right card keeps the prototype's clear glass, green line and tick until it flips, so its box fades out when it is
+   right; a card gone dark (a wrong answer left standing) goes quiet too (a faded canvas is not drawn: mcq-ideate.js).
+   A broken piece has none (its copy of the card cannot copy a canvas's picture, and an unstyled canvas would push the
+   piece's words out of place). */
+body.mcqp-ideate .mcqp .tile[data-tier] .face > .tun, body.mcqp-ideate .mcqp .tile.dead .face > .tun { opacity:0; }
+body.mcqp-ideate .mcqp .shard-in > .tun { display:none; }

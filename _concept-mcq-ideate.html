@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCQ concept · learner colours, ideated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="paper-ls-p1-2026.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<script type="module" src="model-floor.js"></script>
+<style>
+  /* the page itself (the component brings the rest: mcq-play.css); its tokens for the body */
+  :root { color-scheme:dark; --bg0:rgba(25,27,30,0); --bg:#191b1e; --panel:#202327; --field:#23262a; --line:#2a2e33; --line2:#363b41; --text:#eceded; --text2:#a4a9ae; --text3:#8f9499;
+    --tint:color-mix(in oklch, #0068f8 55%, #ffffff); --ok:#3ddc97; --danger:#f2777a; --gold:#f5c451;
+    --grad:linear-gradient(135deg,#0068f8 0%,#1e46ff 50%,#671dff 100%); }
+  html[data-theme="light"] { color-scheme:light; --bg0:rgba(244,245,247,0); --bg:#f1f3f6; --panel:#f8f9fb; --field:#f6f7fa; --line:#e3e5ea; --line2:#a9b0bb;
+    --text:#14161a; --text2:#41464c; --text3:#5f656c; --tint:#1e46ff; --ok:#1d8757; --danger:#d23f45; --gold:#a8760c; }
+  html, body { margin:0; background:var(--bg); color:var(--text); font-family:"Sora", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  body { min-height:100vh; overflow-x:hidden; background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.16), transparent 70%), var(--bg); }
+  html[data-theme="light"] body { background:radial-gradient(900px 500px at 50% -10%, rgba(30,70,255,0.1), transparent 70%), var(--bg); }
+</style>
+</head>
+<body class="mcqp-kids mcqp-ideate">
+<script>
+  // Theme: follow the device (prefers-color-scheme), as the platform pages do; ?theme=light|dark forces one for review.
+  (function () { const q = new URLSearchParams(location.search).get("theme"), mq = matchMedia("(prefers-color-scheme: light)");
+    const set = () => document.documentElement.dataset.theme = q === "light" || q === "dark" ? q : mq.matches ? "light" : "dark";
+    set(); mq.addEventListener("change", set); })();
+</script>
+<link rel="stylesheet" href="mcq-play-kids.css">   <!-- the learner-colours design (as _concept-mcq-kids.html) -->
+<link rel="stylesheet" href="mcq-ideate.css">      <!-- the ideated layer: the TopoField background and a 3D tunnel in each choice card (the only difference from _concept-mcq-kids.html) -->
+<script src="mcq-play.js"></script>
+<script>
+  // The concept page is the component's test bench: this paper, three MCQs from it, and their explanations.
+  // CONCEPT-ONLY explanations: the paper's memo for an MCQ is just the letter, so these are written here from CAPS Gr 12
+  // Life Sciences content, NOT added to the paper file ("nothing invented"). A Life Sciences teacher must check them before use.
+  const WHY = {
+  "1.1.1": { why: "Gibberellins trigger germination: they switch on the enzymes that break down the seed's stored starch, which feeds the embryo as it starts to grow.",
+             not: "<b>Tropisms</b> are caused by auxins. <b>Seed dormancy</b> is kept by abscisic acid. <b>Lateral branches</b> are held back by auxin from the tip (apical dominance)." },
+  "1.1.5": { why: "The pupil is larger in Y, so it dilated. A pupil dilates in dim light to let more light in: the radial muscles contract and the circular muscles relax.",
+             not: "In <b>bright light</b> the pupil gets smaller: the circular muscles contract and the radial muscles relax, the opposite of what Y shows." },
+  "1.3.1": { why: "Growth hormone acts on the whole body: it makes the skeleton grow (the long bones lengthen) and it builds muscle.",
+             not: "<b>A only</b> and <b>B only</b> each leave one out; <b>None</b> leaves out both." } };
+  window.MQ = McqPlay.mount({ paper: window.PAPER_LS_P1_2026, order: ["1.1.1", "1.1.5", "1.3.1"], why: WHY, glassRain: true, slideIn: true, pointAtHint: true });   // glassRain: the robot stays, is hit wherever it stands, and runs to the other side; slideIn: the next question slides in against its sweep
+</script>
+<script src="mcq-ideate.js"></script>   <!-- draws the background and the card tunnels (WebGL) -->
+</body>
+</html>
