@@ -150,9 +150,13 @@ void main() {
   // animation with as many particles as it has"): its fragment shader as given (96 rings x 128 points, white / 0.7 grey
   // points, SPEED 0.7), iTime advanced at 0.5 x real time (its demo's speedMultiplier), pixel ratio capped at 2 (its
   // renderer), on black. Only ported from three.js to raw WebGL 1 (three's ShaderMaterial adds the precision line).
+  // Then (Murci: "slow the speed ... lighter black not that pure black"): its clock at 0.12 x (asked twice), and a softer black #17171b.
+  // The one change in its shader: points faded toward black (ptColor * shade), which on a lighter base would show the far
+  // ones as DARK dots, so they now fade from the base toward white (mix(u_bg, ptColor, shade)); shape and count as given.
   const PROMPT_FS = `precision highp float;
 uniform float iTime;
 uniform vec3 iResolution;
+uniform vec3 u_bg;
 #define TAU 6.2831853071795865
 #define TUNNEL_LAYERS 96
 #define RING_POINTS 128
@@ -182,7 +186,7 @@ vec2 TunnelPath(float x){
 void main(){
   vec2 res = iResolution.xy / iResolution.y;
   vec2 uv = gl_FragCoord.xy / iResolution.y - res/2.0;
-  vec3 color = vec3(0.0);
+  vec3 color = u_bg;
   float repAngle = TAU / float(RING_POINTS);
   float pointSize = POINT_SIZE / (2.0 * iResolution.y);
   float camZ = iTime * SPEED;
@@ -197,7 +201,7 @@ void main(){
       float pdist = sdCircle(aruv - vec2(ringRad, 0), pointSize);
       vec3 ptColor = (mod(float(i/2), 2.0) == 0.0) ? POINT_COLOR_A : POINT_COLOR_B;
       float shade = (1.0 - pz);
-      color = MixShape(pdist, ptColor * shade, color);
+      color = MixShape(pdist, mix(u_bg, ptColor, shade), color);
     }
   }
   gl_FragColor = vec4(color, 1.0);
@@ -214,13 +218,14 @@ void main(){
       pg.useProgram(pp); pg.bindBuffer(pg.ARRAY_BUFFER, pg.createBuffer()); pg.bufferData(pg.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), pg.STATIC_DRAW);
       const at = pg.getAttribLocation(pp, "a"); pg.enableVertexAttribArray(at); pg.vertexAttribPointer(at, 2, pg.FLOAT, false, 0, 0);
       pageT = { c: pc, gl: pg, time: pg.getUniformLocation(pp, "iTime"), res: pg.getUniformLocation(pp, "iResolution"), iTime: 0, lastS: 0 };
+      pg.uniform3f(pg.getUniformLocation(pp, "u_bg"), 0x17 / 255, 0x17 / 255, 0x1b / 255);   // #17171b: a softer black than the prompt's
       const size = () => { const d = Math.min(devicePixelRatio || 1, 2); pc.width = Math.round(innerWidth * d); pc.height = Math.round(innerHeight * d);
         pg.viewport(0, 0, pc.width, pc.height); pg.uniform3f(pageT.res, pc.width, pc.height, 1); };
       size(); addEventListener("resize", size);
     } catch (e) { console.error(e); }
   }
-  function drawPage(sec) {   // the prompt's clock: iTime += delta * 0.5, every frame it draws
-    const d = sec - (pageT.lastS || sec); pageT.lastS = sec; pageT.iTime += d * 0.5;
+  function drawPage(sec) {   // the prompt's clock (iTime += delta * 0.5), slowed to 0.12 (Murci, twice: "slow the speed", "slower"): 24% of its pace
+    const d = sec - (pageT.lastS || sec); pageT.lastS = sec; pageT.iTime += d * 0.12;
     pageT.gl.uniform1f(pageT.time, pageT.iTime); pageT.gl.drawArrays(pageT.gl.TRIANGLE_STRIP, 0, 4);
   }
 
