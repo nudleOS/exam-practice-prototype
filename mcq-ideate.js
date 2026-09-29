@@ -29,7 +29,7 @@
   // ---- 1 · the background: TopoField's fragment shader, with its colour output made transparent and faint ----
   const VS = "attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }";
   const TOPO_FS = `precision highp float;
-uniform vec2 u_resolution; uniform float u_time; uniform float u_dpr; uniform float u_relief;
+uniform vec2 u_resolution; uniform float u_time; uniform float u_dpr;
 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 float snoise(vec2 v){
   const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
@@ -54,20 +54,9 @@ void main() {
   float f = smoothstep(0.0, 1.0, fract(h));
   vec3 lineCol = h < 1.0 ? mix(c0, c1, f) : h < 2.0 ? mix(c1, c2, f) : h < 3.0 ? mix(c2, c3, f) : mix(c3, c0, f);
   lineCol = mix(lineCol, vec3(1.0), 0.25);   // a touch of white: lines read as light, not as paint
-  if (u_relief > 0.5) {   // ?cards=tunnel: a 3D terrain in dark grey, the contour lines on its step edges
-    float e = 0.015, nx = snoise(noisePos + vec2(e, 0.0)) * 0.5 + 0.5, ny = snoise(noisePos + vec2(0.0, e)) * 0.5 + 0.5;
-    float lvl = floor(n * 10.0) / 10.0, inStep = fract(n * 10.0);             // the terrace it stands on, and where on it
-    vec3 nrm = normalize(vec3((n - nx) * 30.0, (n - ny) * 30.0, 1.0));       // the slope, for the light
-    float diff = max(dot(nrm, normalize(vec3(-0.45, 0.55, 0.7))), 0.0);       // light from the top-left
-    vec3 col = (vec3(0.118, 0.118, 0.137) + lvl * 0.05) * (0.8 + 0.3 * diff); // #1e1e23 low, lighter as the steps rise
-    col *= mix(1.07, 0.93, inStep);                                           // each step lit at its lip, shadowed toward the next
-    vec2 cc = gl_FragCoord.xy / u_resolution.xy - 0.5; col *= 1.0 - 0.35 * dot(cc, cc);   // a soft falloff to the corners: depth
-    col = mix(col, lineCol, topoLines * 0.8) + vec3(gridLines * 0.6);
-    gl_FragColor = vec4(col, 1.0); return; }
   float a = clamp(gridLines + topoLines, 0.0, 1.0);
   gl_FragColor = vec4(vec3(1.0) * gridLines + lineCol * topoLines, a); }`;   // premultiplied: coloured lines and a white grid over the page's own colours
 
-  const RELIEF = new URLSearchParams(location.search).get("cards") === "tunnel";   // its page: the 3D terrain (Murci: "dark grey ... like a 3D background")
   const bg = document.createElement("canvas"); bg.className = "topo"; bg.setAttribute("aria-hidden", "true"); document.body.prepend(bg);
   const gl = bg.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
   let topo = null;
@@ -79,9 +68,8 @@ void main() {
     gl.useProgram(p); gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const at = gl.getAttribLocation(p, "a"); gl.enableVertexAttribArray(at); gl.vertexAttribPointer(at, 2, gl.FLOAT, false, 0, 0);
     topo = { res: gl.getUniformLocation(p, "u_resolution"), time: gl.getUniformLocation(p, "u_time"), dpr: gl.getUniformLocation(p, "u_dpr") };
-    gl.uniform1f(gl.getUniformLocation(p, "u_relief"), RELIEF ? 1 : 0);
   } catch (e) { console.error(e); }
-  function sizeTopo() { if (!topo) return; const d = Math.min(devicePixelRatio || 1, RELIEF ? 1.25 : 1.5);   // the terrain samples the noise 3x a pixel: fewer pixels bg.width = Math.round(innerWidth * d); bg.height = Math.round(innerHeight * d);
+  function sizeTopo() { if (!topo) return; const d = Math.min(devicePixelRatio || 1, 1.5); bg.width = Math.round(innerWidth * d); bg.height = Math.round(innerHeight * d);
     gl.viewport(0, 0, bg.width, bg.height); gl.uniform2f(topo.res, bg.width, bg.height); gl.uniform1f(topo.dpr, d); }
   sizeTopo(); addEventListener("resize", sizeTopo);
 
@@ -123,7 +111,6 @@ void main() {
 
   // ?cards=tunnel: the prompt's circular tunnel, few points, in the card's colour.
   const TUNNEL = new URLSearchParams(location.search).get("cards") === "tunnel", LAYERS = 14, POINTS = 24, TAU = Math.PI * 2;
-  if (TUNNEL) document.body.classList.add("cards-tunnel");   // its page: flat charcoal black (mcq-ideate.css)
   const path = z => [0.2 * Math.sin(TAU * z * 0.5) + 0.4 * Math.sin(TAU * z * 0.2 + 0.3), 0.3 * Math.cos(TAU * z * 0.3) + 0.2 * Math.cos(TAU * z * 0.1)];   // the prompt's TunnelPath
   function drawTunnel(c, t) {
     const w = c.offsetWidth, h = c.offsetHeight; if (!w || !h) return;
