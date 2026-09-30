@@ -467,17 +467,22 @@ body.nx-play .mcqp.fit-5 .tiles { grid-template-columns:1fr 1fr !important; }
    the robot at its size; the cards never go into two columns on a phone (Murci: "vertical for mobile and not grid"). */
 body.nx-play .mcqp .stage { max-height:calc(100% - 26px - 24px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
 body.nx-play .mcqp .stage::-webkit-scrollbar { display:none; }   /* no scrollbar line on the panel, at any size (Murci, 2026-09-30); the fade says there is more */
-body.nx-play .mcqp .stage.scrolls::after { content:""; position:sticky; bottom:0; display:block; height:30px; margin-top:-30px; pointer-events:none;
-  background:linear-gradient(180deg, transparent, var(--nx-panel)); transition:opacity 200ms; }
-body.nx-play .mcqp .stage.scrolls.atend::after { opacity:0; }
+/* (no fade over the cards: the navy gradient lay on the last card as it scrolled - Murci: "a blue shadow on top of the last card";
+   a card cut by the panel's edge says there is more) */
+/* Next is always in sight (Murci: "the next button should always be visible even on desktop"): in a panel that scrolls, its row
+   sticks to the panel's bottom edge on the panel's own colour, so it can never scroll away */
+body.nx-play .mcqp .stage.scrolls > .after { position:sticky; bottom:0; z-index:2; background:var(--nx-panel); padding-top:10px; }
 @media (max-width:600px) {
   /* phone: the Back / Next row UNDER the
      panel on the right, opposite the robot (Murci: "i have to scroll down in order to show the next button"). The panel is
      static, so the row's containing block is the question area, not the panel's scroll box: it sits outside the scroll. Its
      46 px (+12 gap) are kept free under the panel, so the panel does not jump when Next appears; mcq-play's fit reads this cap. */
-  body.nx-play .mcqp .stage { max-height:calc(100% - 6px - 12px - 46px); position:static; }
+  body.nx-play .mcqp .stage { max-height:calc(100% - 14px - 24px); position:static; margin-top:14px; }
   body.nx-play .mcqp .tiles { grid-template-columns:minmax(0, 1fr) !important; }
-  body.nx-play .mcqp .stage > .after { position:absolute; left:auto; right:12px; bottom:0; margin:0; min-height:46px; justify-content:flex-end; gap:8px; }
+  /* Next at the SCREEN's bottom-right, beside the robot's rock (Murci, 2026-09-30: "move the next button a lot down the page"): fixed,
+     so it is always in reach and never in the panel's scroll; clear of the home indicator (safe area) */
+  body.nx-play .mcqp .stage > .after, body.nx-play .mcqp .stage.scrolls > .after { position:fixed; left:auto; right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); top:auto;
+    margin:0; padding:0; background:none; min-height:46px; justify-content:flex-end; gap:8px; z-index:30; }
   body.nx-play .mcqp-screen { -webkit-mask-image:none !important; mask-image:none !important; }   /* the panel fades itself now */
 }
 body.nx-play .mcqp.fit-5 .face { padding:6px 8px 6px 6px !important; gap:8px; }

@@ -105,7 +105,8 @@
       const more = st.scrollHeight > st.clientHeight + 1; st.classList.toggle("scrolls", more); st.classList.remove("atend");
       // a Back / Next row the host lifts out of the panel (position absolute: a phone) follows the panel's real bottom edge, --after-gap
       // under it (measured: pinned to the area's bottom, it sat 136 px under a short question's panel at 412x915)
-      const af = $("after"); if (af) { if (/^(absolute|fixed)$/.test(getComputedStyle(af).position)) {
+      // (a FIXED row stays where the host puts it: a phone's Next at the screen's bottom-right)
+      const af = $("after"); if (af) { if (getComputedStyle(af).position === "absolute") {
         const gap = parseFloat(getComputedStyle(af).getPropertyValue("--after-gap")) || 12; af.style.top = (st.offsetTop + st.offsetHeight + gap) + "px"; af.style.bottom = "auto"; }
         else { af.style.removeProperty("top"); af.style.removeProperty("bottom"); } }
       if (!st._scrollHooked) { st._scrollHooked = true;
