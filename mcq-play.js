@@ -81,11 +81,24 @@
       const top = el => { let y = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) y += e.offsetTop; return y; };
       // the whole panel, not just the cards: its padding and the Back / Next row must be on screen too (measured: the cards fitted and
       // the screen still scrolled 4 px); clear of the bottom fade (22 px in nx-play)
-      const stage = $("stage"), bottomOf = () => Math.max(tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0), stage ? top(stage) + stage.offsetHeight : 0);
+      // the panel's CONTENT bottom (its last row + its bottom padding), in layout terms: the host may cap the panel's height (it then
+      // scrolls inside), and the capped box hid its own overflow (measured: fit-0 "fitted" at 412x915 while the panel ran 6 px
+      // over). Not scrollHeight: it counts the cards' deal-in transforms.
+      const stage = $("stage"), padB = () => parseFloat(getComputedStyle(stage).paddingBottom) || 0,
+        contentBottom = () => { const last = stage.lastElementChild; return last ? top(last) + last.offsetHeight + padB() : top(stage) + stage.offsetHeight; },
+        bottomOf = () => Math.max(tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0), stage ? Math.max(top(stage) + stage.offsetHeight, contentBottom()) : 0);
       const overBy = () => bottomOf() - ((opts.screen ? PAGE.clientHeight : innerHeight) - 24);
-      // the least level that fits; if none does, the one that comes closest (the rest scrolls)
-      let best = 0, bestBy = Infinity; for (let k = 0; k <= FIT_MAX; k++) { set(k); size(); const by = overBy(); if (by <= 0) return; if (by < bestBy) { bestBy = by; best = k; } }
-      set(best); size(); }
+      // the least level that fits; if none does, the one that comes closest (the rest scrolls). opts.fitMax() caps the level
+      // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
+      const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
+      let best = -1, bestBy = Infinity; for (let k = 0; k <= top_; k++) { set(k); size(); const by = overBy(); if (by <= 0) { best = k; break; } if (by < bestBy) { bestBy = by; best = k; } }
+      set(best); size(); panelScroll(); }
+    // The panel (the host caps its height) scrolls inside when its question is longer than the room: "scrolls" shows the fade
+    // at its bottom edge, "atend" drops it once the end is in view (so the fade never covers the last card).
+    function panelScroll() { const st = $("stage"); if (!st) return; st.scrollTop = 0;
+      const more = st.scrollHeight > st.clientHeight + 1; st.classList.toggle("scrolls", more); st.classList.remove("atend");
+      if (!st._scrollHooked) { st._scrollHooked = true;
+        listen(st, "scroll", () => st.classList.toggle("atend", st.scrollTop + st.clientHeight >= st.scrollHeight - 2), { passive: true }); } }
     if (opts.fit) listen(window, "resize", () => fitCards());
     if (opts.fit && document.fonts) document.fonts.ready.then(() => fitCards());   // the web font changes the text's height
     if (opts.screen && opts.topOffset) { listen(window, "resize", placeScreen);

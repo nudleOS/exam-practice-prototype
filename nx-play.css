@@ -457,6 +457,19 @@ html[data-nx="dark"].nx-app, html[data-nx="dark"] body.nx-app {
 }
 /* the page: the play screen's gradient, fixed, so every screen reads as the same place */
 html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)) fixed !important; min-height:100vh; }
+/* The panel keeps its size: a question longer than the room scrolls INSIDE it (Murci, 2026-09-30: longer questions "should not
+   expand the panel but instead flow out in a scrollable manner"). The panel's height is capped to the question area (its top
+   margin and a 24 px gap to the robot's corner taken off); mcq-play marks it "scrolls" (a fade at its bottom edge says there
+   is more) and "atend" (the fade goes once the last card is in view). A phone stops at fit-3 (fitMax): one readable column,
+   the robot at its size; the cards never go into two columns on a phone (Murci: "vertical for mobile and not grid"). */
+body.nx-play .mcqp .stage { max-height:calc(100% - 26px - 24px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:rgba(129,177,255,0.35) transparent; }
+body.nx-play .mcqp .stage.scrolls::after { content:""; position:sticky; bottom:0; display:block; height:30px; margin-top:-30px; pointer-events:none;
+  background:linear-gradient(180deg, transparent, var(--nx-panel)); transition:opacity 200ms; }
+body.nx-play .mcqp .stage.scrolls.atend::after { opacity:0; }
+@media (max-width:600px) {
+  body.nx-play .mcqp .stage { max-height:calc(100% - 6px - 24px); }
+  body.nx-play .mcqp .tiles { grid-template-columns:minmax(0, 1fr) !important; }
+}
 html[data-nx="dark"].nx-app { background:var(--nx-top); }
 /* the map (vortex-map.js) on the navy look: its plates, caption card and road in navy, not the module's charcoal (--surface #1f2226) */
 html[data-nx="dark"] body.nx-app .vm { --surface:#0c1c36; --surface2:#13294f; --road-top:#1a2e54; --road-edge:#06102a; --hair:rgba(120,160,230,0.16); }
