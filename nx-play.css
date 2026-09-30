@@ -705,53 +705,93 @@ body.nx-play main:not(#mq-stage) [data-feed~="warn"] { border-color:rgba(224,161
 body.nx-play main:not(#mq-stage) [data-feed~="warn"] .fd-icon { background:#e0a10f; }
 body.nx-play main:not(#mq-stage) [data-feed~="hint"] { border-color:rgba(224,161,15,0.4); background:rgba(224,161,15,0.07); }
 body.nx-play main:not(#mq-stage) [data-feed~="hint"] .fd-icon { background:#e0a10f; }
-/* a full mark: the medal result, as the MCQ card (the tier by try), centred */
-body.nx-play main:not(#mq-stage) [data-feed~="ok"] { align-items:center; text-align:center; gap:6px; padding:20px 18px 18px; }
+/* a full mark: the result on one compact card (measured: the centred medal card was 223 px tall for a 1-mark term and pushed the
+   page into a scroll). The medal on the left, the tier and the try beside it, what it paid on the right (under, on a phone). */
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] { display:grid; grid-template-columns:auto minmax(0, 1fr) auto; column-gap:14px; row-gap:2px; align-items:center; text-align:left; padding:12px 16px; }
 body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-icon { display:none; }
-body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-title { font-size:22px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-medal { grid-row:1 / span 2; grid-column:1; width:40px; height:40px; margin:0; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-head { grid-column:2; grid-row:1; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-title { font-size:17px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-sub { grid-column:2; grid-row:2; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-chips { grid-column:3; grid-row:1 / span 2; justify-content:flex-end; margin:0; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] :is(.fd-body, .fd-points, .fd-right, .fd-shape) { grid-column:1 / -1; margin-top:8px; }
+/* a term: the medal is on the field itself, so not twice */
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] { grid-template-columns:minmax(0, 1fr) auto; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-medal { display:none; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] :is(.fd-head, .fd-sub) { grid-column:1; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips { grid-column:2; }
 body.nx-play main:not(#mq-stage) [data-feed~="gold"] { --fd-medal:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%); --fd-glow:#e3b341; border-color:rgba(227,179,65,0.55); background:linear-gradient(180deg, rgba(227,179,65,0.12), rgba(227,179,65,0.03)); }
 body.nx-play main:not(#mq-stage) [data-feed~="silver"] { --fd-medal:radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%); --fd-glow:#cfd4db; border-color:rgba(207,212,219,0.5); background:linear-gradient(180deg, rgba(207,212,219,0.1), rgba(207,212,219,0.02)); }
 body.nx-play main:not(#mq-stage) [data-feed~="bronze"] { --fd-medal:radial-gradient(circle at 35% 28%, #f3bf98, #bb7a4c 46%, #683b1d 100%); --fd-glow:#bb7a4c; border-color:rgba(187,122,76,0.5); background:linear-gradient(180deg, rgba(187,122,76,0.12), rgba(187,122,76,0.03)); }
-body.nx-play main:not(#mq-stage) [data-feed] .fd-medal { position:relative; width:52px; height:52px; border-radius:50%; margin-bottom:6px; background:var(--fd-medal);
-  box-shadow:0 0 0 3px rgba(255,255,255,0.2), 0 8px 24px rgba(0,0,0,0.4), 0 0 30px var(--fd-glow); animation:pop 420ms cubic-bezier(0.34,1.56,0.64,1) both; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-medal { position:relative; border-radius:50%; background:var(--fd-medal);
+  box-shadow:0 0 0 2px rgba(255,255,255,0.2), 0 6px 18px rgba(0,0,0,0.35), 0 0 22px var(--fd-glow); animation:pop 420ms cubic-bezier(0.34,1.56,0.64,1) both; }
 body.nx-play main:not(#mq-stage) [data-feed] .fd-medal::after { content:""; position:absolute; inset:24%; background:rgba(20,16,6,0.62);
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat; }
 body.nx-play main:not(#mq-stage) [data-feed] .fd-sub { font-size:11.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--nx-text2); }
-body.nx-play main:not(#mq-stage) [data-feed] .fd-chips { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:6px; }
-body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { display:inline-flex; align-items:center; height:30px; padding:0 12px; border-radius:999px; font-size:13px; font-weight:700;
+body.nx-play main:not(#mq-stage) [data-feed] .fd-chips { display:flex; flex-wrap:wrap; gap:8px; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { display:inline-flex; align-items:center; height:30px; padding:0 12px; border-radius:999px; font-size:13px; font-weight:700; white-space:nowrap;
   background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.16); color:var(--nx-text); }
-/* the typed term as letter tiles: the real field lies over them, invisible (it takes the keyboard, paste and the screen reader);
-   the tiles show what is typed, the answer's shape after a miss, gold on a right answer, cracked on a wrong one */
-body.nx-play main:not(#mq-stage) [data-termrow] { position:relative; }
-body.nx-play main:not(#mq-stage) [data-termrow]:has([data-tiles]) > input { position:absolute !important; inset:0; width:100%; height:100% !important; opacity:0; cursor:text; }
-body.nx-play main:not(#mq-stage) [data-termrow]:has([data-tiles]) > :not([data-tiles]):not(input) { display:none !important; }   /* the old stamp (x0 / check 1): the tiles say it */
-body.nx-play main:not(#mq-stage) [data-tiles] { display:flex; flex-wrap:wrap; align-items:center; gap:6px; width:100%; min-height:56px; box-sizing:border-box; padding:6px 10px;
-  border-radius:14px; border:1px solid var(--nx-pill-line); background:rgba(255,255,255,0.03); }
-body.nx-play main:not(#mq-stage) [data-termrow]:focus-within [data-tiles] { border-color:var(--nx-accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-accent) 28%, transparent); }
-body.nx-play main:not(#mq-stage) [data-tiles] i { font-style:normal; }
-body.nx-play main:not(#mq-stage) [data-tiles] .t { flex:none; width:34px; height:44px; box-sizing:border-box; border-radius:9px; display:grid; place-items:center; font-size:19px; font-weight:700;
-  text-transform:uppercase; color:var(--nx-text); background:var(--nx-pill); border:1.5px solid var(--nx-pill-line); }
-body.nx-play main:not(#mq-stage) [data-tiles] .t.on { animation:nxTileIn 160ms cubic-bezier(0.34,1.56,0.64,1) both; }
-body.nx-play main:not(#mq-stage) [data-tiles] .t.gh { border-style:dashed; background:transparent; color:var(--nx-text2); }
-body.nx-play main:not(#mq-stage) [data-tiles] .gap { flex:none; width:14px; }
-body.nx-play main:not(#mq-stage) [data-tiles] .caret { flex:none; width:2px; height:30px; border-radius:1px; background:var(--nx-accent); opacity:0; }
-body.nx-play main:not(#mq-stage) [data-termrow]:focus-within [data-tiles] .caret { animation:nxCaret 1s steps(1) infinite; }
-body.nx-play main:not(#mq-stage) [data-tiles="ok"] .t { color:#241903; border-color:#ffe7a0; background:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 60%, #a7791d 100%);
-  animation:nxTileFlip 520ms calc(var(--k) * 70ms) cubic-bezier(0.22,0.61,0.36,1) both; }
-body.nx-play main:not(#mq-stage) [data-tiles="no"] .t { color:#ffd6d7; border-color:rgba(242,119,122,0.7); background:rgba(242,119,122,0.14);
-  animation:nxTileCrack 620ms calc(var(--k) * 30ms) ease both; }
-@keyframes nxTileIn { from { transform:scale(0.6); opacity:0; } to { transform:none; opacity:1; } }
-@keyframes nxCaret { 0% { opacity:1; } 50% { opacity:0; } }
-@keyframes nxTileFlip { 0% { transform:perspective(300px) rotateX(0); } 50% { transform:perspective(300px) rotateX(90deg); } 100% { transform:perspective(300px) rotateX(0); } }
-@keyframes nxTileCrack { 0% { transform:none; } 25% { transform:translateX(-3px) rotate(-3deg); } 50% { transform:translateX(3px) rotate(3deg); } 100% { transform:translateY(5px) rotate(calc((var(--k) - 4) * 1.5deg)); opacity:0.55; } }
 @media (max-width:600px) {
-  body.nx-play main:not(#mq-stage) [data-tiles] .t { width:28px; height:38px; font-size:16px; border-radius:8px; }
-  body.nx-play main:not(#mq-stage) [data-tiles] { gap:4px; padding:6px 8px; }
+  body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-chips, body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips { grid-column:1 / -1; grid-row:auto; justify-content:flex-start; margin-top:8px; }
+}
+/* a typed term, retrying: the words already right, and the term's shape (a word never breaks across lines) */
+body.nx-play main:not(#mq-stage) [data-feed~="term"][data-feed~="hint"] .fd-icon { background:#f2777a; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-right { font-size:14px; line-height:1.5; color:#8fe3b9; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-shape { display:flex; flex-wrap:wrap; gap:4px 20px; margin-top:2px; font-family:"Space Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size:15px; line-height:1.5; letter-spacing:0.04em; color:var(--nx-text); }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-w { white-space:nowrap; }
+
+/* ==== a typed term: ONE field (practice; Murci, 2026-09-30: "not block letters") ====
+   Three tries, each worth a medal: the pips beside "The term" (gold, silver, bronze; the try now ringed, a lost one cracked).
+   Wrong: the field breaks and its pieces fall to the ground (the host's termBreak draws them); an empty socket holds its place until
+   a new field drops in. Right: the field seals in the medal's colour, the medal on it, a shine across it. */
+body.nx-play main:not(#mq-stage) [data-tries] { flex:none; display:inline-flex; align-items:center; gap:7px; }
+body.nx-play main:not(#mq-stage) [data-tries] .tp { position:relative; width:13px; height:13px; border-radius:50%; background:var(--tp); opacity:0.5;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.3); transition:opacity 240ms ease, box-shadow 240ms ease, background 240ms ease; }
+body.nx-play main:not(#mq-stage) [data-tries] .tp.gold { --tp:radial-gradient(circle at 35% 30%, #fbe39a, #dca834 55%, #8a6414); }
+body.nx-play main:not(#mq-stage) [data-tries] .tp.silver { --tp:radial-gradient(circle at 35% 30%, #ffffff, #cfd4db 55%, #7b818a); }
+body.nx-play main:not(#mq-stage) [data-tries] .tp.bronze { --tp:radial-gradient(circle at 35% 30%, #f3bf98, #bb7a4c 55%, #683b1d); }
+body.nx-play main:not(#mq-stage) [data-tries] .tp.now { opacity:1; box-shadow:0 0 0 2px var(--nx-panel-solid, #0d1a33), 0 0 0 3.5px var(--nx-accent); }
+body.nx-play main:not(#mq-stage) [data-tries] .tp.won { opacity:1; box-shadow:0 0 0 2px var(--nx-panel-solid, #0d1a33), 0 0 0 3.5px rgba(255,255,255,0.7), 0 0 14px rgba(255,220,130,0.6); animation:pop 420ms cubic-bezier(0.34,1.56,0.64,1) both; }
+body.nx-play main:not(#mq-stage) [data-tries] .tp.lost { opacity:0.85; --tp:linear-gradient(128deg, transparent 43%, #0b1220 43% 55%, transparent 55%), linear-gradient(28deg, transparent 58%, #0b1220 58% 66%, transparent 66%), #4a5468; box-shadow:none; }
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] { position:relative; }
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > input { height:56px !important; padding:0 16px !important; border-radius:14px !important; font-size:18px !important; font-weight:500 !important; letter-spacing:0.01em; }
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > :not(input):not([data-termmedal]):not([data-termsocket]) { display:none !important; }   /* the old stamp (x0 / check 1): the field says it */
+/* broken: the field is hidden (its pieces are falling); the socket it leaves holds the row's height */
+body.nx-play main:not(#mq-stage) [data-termstate~="broken"] > input, body.nx-play main:not(#mq-stage) [data-termstate~="out"] > input { visibility:hidden; }
+body.nx-play main:not(#mq-stage) [data-termsocket] { position:absolute; inset:0; box-sizing:border-box; border-radius:14px; border:1.5px dashed rgba(160,185,230,0.28); display:grid; place-items:center;
+  font-size:13.5px; font-weight:600; color:var(--text3); pointer-events:none; animation:nxSocket 260ms ease both; }
+@keyframes nxSocket { from { opacity:0; } to { opacity:1; } }
+/* right: sealed in the medal's colour */
+body.nx-play main:not(#mq-stage) [data-termstate~="gold"] { --seal-line:#e3b341; --seal-bg:linear-gradient(180deg, rgba(227,179,65,0.26), rgba(227,179,65,0.09)); --seal-ink:#fff4d2; --seal-medal:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%); --seal-glow:rgba(227,179,65,0.55); }
+body.nx-play main:not(#mq-stage) [data-termstate~="silver"] { --seal-line:#cfd4db; --seal-bg:linear-gradient(180deg, rgba(207,212,219,0.22), rgba(207,212,219,0.07)); --seal-ink:#ffffff; --seal-medal:radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%); --seal-glow:rgba(207,212,219,0.45); }
+body.nx-play main:not(#mq-stage) [data-termstate~="bronze"] { --seal-line:#c98a5c; --seal-bg:linear-gradient(180deg, rgba(187,122,76,0.28), rgba(187,122,76,0.09)); --seal-ink:#ffe6d3; --seal-medal:radial-gradient(circle at 35% 28%, #f3bf98, #bb7a4c 46%, #683b1d 100%); --seal-glow:rgba(187,122,76,0.5); }
+body.nx-play main:not(#mq-stage) [data-termstate~="ok"] > input { opacity:1 !important; border:1.5px solid var(--seal-line) !important; background:var(--seal-bg), var(--field) !important; color:var(--seal-ink) !important;
+  -webkit-text-fill-color:var(--seal-ink); padding-right:60px !important; box-shadow:0 0 0 4px color-mix(in srgb, var(--seal-line) 18%, transparent), 0 10px 28px -12px var(--seal-glow) !important;
+  animation:nxSeal 520ms cubic-bezier(0.34,1.56,0.64,1) both; }
+body.nx-play main:not(#mq-stage) [data-termstate~="ok"]::after { content:""; position:absolute; inset:0; border-radius:14px; pointer-events:none;
+  background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.4) 50%, transparent 62%) no-repeat; background-size:260% 100%; animation:nxShine 1000ms ease-out 180ms both; }
+body.nx-play main:not(#mq-stage) [data-termmedal] { position:absolute; right:11px; top:50%; width:36px; height:36px; margin-top:-18px; border-radius:50%; background:var(--seal-medal);
+  box-shadow:0 0 0 2px rgba(255,255,255,0.25), 0 4px 12px rgba(0,0,0,0.35), 0 0 16px var(--seal-glow); animation:nxMedal 560ms cubic-bezier(0.34,1.56,0.64,1) 120ms both; pointer-events:none; }
+body.nx-play main:not(#mq-stage) [data-termmedal]::after { content:""; position:absolute; inset:24%; background:rgba(20,16,6,0.62);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat; }
+@keyframes nxSeal { 0% { transform:none; } 40% { transform:scale(1.025); } 100% { transform:none; } }
+@keyframes nxShine { from { background-position:120% 0; opacity:1; } to { background-position:-20% 0; opacity:0.2; } }
+@keyframes nxMedal { from { transform:scale(0) rotate(-120deg); opacity:0; } to { transform:none; opacity:1; } }
+/* the pieces of a broken field (the host's termBreak): the field's picture, red-edged, cut along the cracks */
+[data-termshards] { position:fixed; inset:0; z-index:23; pointer-events:none; overflow:hidden; }
+[data-termshards] .ts-piece { position:absolute; filter:drop-shadow(0 0 0.7px rgba(255,200,200,0.95)) drop-shadow(0 6px 8px rgba(0,0,0,0.35)); will-change:transform; }
+[data-termshards] .ts-glass { position:absolute; inset:0; box-sizing:border-box; display:flex; align-items:center; overflow:hidden; white-space:nowrap; border:1.5px solid rgba(242,119,122,0.9);
+  background:linear-gradient(180deg, rgba(242,119,122,0.2), rgba(242,119,122,0.08)), var(--field, #0f1d3a); color:#ffd9da; }
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > input { height:52px !important; font-size:17px !important; }
+  body.nx-play main:not(#mq-stage) [data-termmedal] { width:32px; height:32px; margin-top:-16px; right:10px; }
 }
 @media (prefers-reduced-motion:reduce) {
-  body.nx-play main:not(#mq-stage) [data-tiles] .t, body.nx-play main:not(#mq-stage) [data-feed], body.nx-play main:not(#mq-stage) [data-feed] .fd-medal { animation:none !important; }
+  body.nx-play main:not(#mq-stage) :is([data-feed], [data-feed] .fd-medal, [data-termmedal], [data-termsocket], [data-termstate] > input, [data-tries] .tp), body.nx-play main:not(#mq-stage) [data-termstate~="ok"]::after { animation:none !important; }
 }
+
 /* the toast over the top bar, not over the panel's top border (measured at 1348x648: top 74 px, the panel's edge at 93) */
 body.nx-play .mcqp .toast { top:12px; }
 /* the small answer card (a finished question, back in its slot) as two tight lines on every size, the tap hint a chevron: its three
