@@ -252,6 +252,13 @@ vortex-map .vm-chip { font-size:12px; font-weight:700; padding:2px 7px; border-r
 vortex-map .vm-tag { background:rgba(129,177,255,0.14); color:var(--tint, #81b1ff); letter-spacing:0.05em; }
 vortex-map .vm-cap { position:absolute; left:0; top:0; width:220px; text-align:center; will-change:transform, opacity; padding:9px 12px; border-radius:16px; background:var(--surface); border:1px solid var(--hair);
   font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; box-shadow:var(--card-shadow); pointer-events:none; white-space:nowrap; }
+/* a level gate (Murci, 2026-09-30): "Lv 1" over its question, the section it opens (LS), and how much of it is banked */
+vortex-map .vm-cap { display:flex; flex-direction:column; align-items:center; gap:5px; box-sizing:border-box; }
+vortex-map .vm-cap .cap-lv { display:inline-flex; align-items:center; gap:5px; padding:2px 9px 2px 3px; border-radius:11px; background:rgba(129,177,255,0.14); color:#cfe0ff; font-size:11px; letter-spacing:0.08em; }
+vortex-map .vm-cap .cap-lv svg { width:15px; height:15px; padding:2px; box-sizing:border-box; border-radius:50%; background:linear-gradient(135deg, #0068f8, #671dff); }
+vortex-map .vm-cap .cap-sec { font-size:10.5px; font-weight:700; letter-spacing:0.1em; color:var(--muted); }
+vortex-map .vm-cap .cap-bar { width:110px; height:4px; border-radius:2px; background:rgba(0,0,0,0.4); overflow:hidden; }
+vortex-map .vm-cap .cap-bar i { display:block; height:100%; border-radius:2px; background:linear-gradient(90deg, #0068f8, #671dff); }
 /* The finish: a marathon arch (checkered banner, posts, tape), the cup on its podium, and the paper's pill. */
 vortex-map .vm-fin { position:absolute; left:0; top:0; width:320px; height:250px; will-change:transform; pointer-events:none; transform-origin:50% 236px; }
 vortex-map .fin-xp { position:absolute; left:50%; top:0; transform:translateX(-50%); transform-origin:50% 100%; z-index:2; display:flex; align-items:center; gap:10px; padding:7px 14px 7px 8px; border-radius:16px; background:var(--surface); border:1px solid var(--hair); box-shadow:var(--card-shadow); white-space:nowrap; }
@@ -406,7 +413,17 @@ class VortexMap extends HTMLElement {
     fe.innerHTML = '<div class="fin-xp"><span class="bolt"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><span><b class="fin-t"></b><small class="fin-s"></small></span></div>'
       + '<i class="fin-glow halo"></i><i class="fin-glow pool"></i><div class="fin-banner"><i class="chk"></i><span>FINISH</span><i class="chk"></i></div><i class="fin-post l"></i><i class="fin-post r"></i><div class="fin-cup">' + CUP + '</div>' + TAPE + '<i class="fin-line"></i>';
     add(fe, fin.y, 320, 236)._fin = true; fe._txt = [];
-    (geom.caps || []).forEach(c => { const e = document.createElement("div"); e.className = "vm-cap"; e.setAttribute("aria-hidden", "true"); e.textContent = c.label; add(e, c.y, 220, 18)._cap = true; });
+    // A plaque is a level gate when the page sends its level (lv), else the plain label it always was. Paper text goes in
+    // by textContent, never as HTML. Its anchor is its middle (a plain plaque is 36 px tall).
+    const STAR = '<svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg>';
+    (geom.caps || []).forEach(c => { const e = document.createElement("div"); e.className = "vm-cap"; e.setAttribute("aria-hidden", "true");
+      if (c.lv == null) { e.textContent = c.label; add(e, c.y, 220, 18)._cap = true; return; }
+      const row = (cls, txt) => { const x = document.createElement("span"); x.className = cls; if (txt != null) x.textContent = txt; e.appendChild(x); return x; };
+      if (c.sub) row("cap-sec", c.sub);
+      const lv = row("cap-lv"); lv.innerHTML = STAR; lv.appendChild(document.createTextNode("Lv " + c.lv));
+      row("cap-q", c.label);
+      const bar = row("cap-bar"), fill = document.createElement("i"); fill.style.width = Math.max(0, Math.min(100, +c.pct || 0)) + "%"; bar.appendChild(fill);
+      add(e, c.y, 220, c.sub ? 43 : 34)._cap = true; });   // measured: 86 px with a section line, 68 without
     geom.nodes.forEach(n => { const e = document.createElement("div"); e.className = "vm-node";
       e.innerHTML = '<button class="vm-orb" data-node="' + n.i + '" data-orb="true" aria-haspopup="dialog"><span class="vm-num"></span></button><div class="vm-lbl"></div><div class="vm-chips"></div>';
       e.firstChild.onclick = () => dispatchEvent(new CustomEvent("vortex-open", { detail: { index: n.i } }));
@@ -666,9 +683,10 @@ class VortexMap extends HTMLElement {
       placed.push({ l: q.x + pick.dx - hw, r: q.x + pick.dx + hw, t: top + pick.dy, b: top + pick.dy + lh });
       if (pick.dx) { const sc = Math.max(q.s, 0.01), inv = 1 / Math.max(q.persp, 0.3);                // the node is scaled by q.s: shift in its units
         const tf = "translate(" + (pick.dx / sc).toFixed(1) + "px," + (pick.dy / sc).toFixed(1) + "px) scale(" + inv.toFixed(3) + ")"; e._txt.forEach(t => t._t = tf); } });
-    // A plaque that would cover a placed label gives way: mission names matter more than section names.
+    // A plaque that would cover a placed label gives way: mission names matter more than section names. Its box is its own
+    // (a level gate is 68-86 px tall, a plain plaque 36).
     S.els.forEach(e => { if (!e._cap || !e._q || e.style.visibility === "hidden" || +e.style.opacity <= 0.01) return;
-      const b = { l: e._q.x - 110, r: e._q.x + 110, t: e._q.y - 18, b: e._q.y + 18 }; if (placed.some(p => hit(p, b))) e.style.opacity = "0"; });
+      const h = e._h || (e._h = e.offsetHeight || 36), b = { l: e._q.x - 110, r: e._q.x + 110, t: e._q.y - e._ay, b: e._q.y - e._ay + h }; if (placed.some(p => hit(p, b))) e.style.opacity = "0"; });
   }
 
   // ── The vortex: an ocean whirlpool seen from 35° above, in nexera-hero's field colours ──

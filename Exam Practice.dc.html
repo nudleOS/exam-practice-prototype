@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
-  <script type="module" src="vortex-map.js?v=15"></script>
+  <script type="module" src="vortex-map.js?v=16"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
@@ -3883,11 +3883,22 @@ class Component extends DCLogic {
     // The vortex map has no launch pad: the first mission sits right on the vortex, over the start card.
     const items = [VM ? { kind: "start", h: 0 } : { kind: "start", h: 244, anchor: 120 }];
     let k = 0;
-    (paper ? paper.sections : []).forEach(sec => {
+    // The road's plaques are LEVELS, one per question of the paper (Murci, 2026-09-30: "Question 1 and its sub questions is
+    // the first level"), not the paper's sections: LS's Section B holds Questions 2 and 3. A level that opens a new section
+    // names it (LS: "Section A"); FM's sections ARE its questions, so they say nothing twice. No level is locked (Murci).
+    const levels = [];
+    (paper ? paper.sections : []).forEach(sec => sec.missions.forEach(m => {
+      const lv = this.levelOf(m), last = levels[levels.length - 1];
+      if (!last || last.lv !== lv) levels.push({ lv: lv, sec: sec, section: !last || last.sec !== sec ? sec.title : "", missions: [] });
+      levels[levels.length - 1].missions.push(m); }));
+    levels.forEach(L => {
+      const one = L.sec.missions.every(m => this.levelOf(m) === L.lv);   // the section is this one question: its printed total is the question's
+      L.title = "Question " + L.lv; L.total = one && L.sec.total ? L.sec.total : L.missions.reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0);
+      if (/^question\b/i.test(L.section)) L.section = "";
       // Every plaque after the first leaves headroom below it, so the companion can stand at the
       // previous question's last mission without touching the plaque.
-      items.push({ kind: "cap", h: CAPH + (items.length > 1 ? CLEAR : 0), anchor: CAPH, sec: sec });
-      sec.missions.forEach(m => { items.push({ kind: "m", h: STEP, m: m, k: k++, i: missions.findIndex(x => x.id === m.id && x.title === m.title) }); });
+      items.push({ kind: "cap", h: CAPH + (items.length > 1 ? CLEAR : 0), anchor: CAPH, sec: L });
+      L.missions.forEach(m => { items.push({ kind: "m", h: STEP, m: m, k: k++, i: missions.findIndex(x => x.id === m.id && x.title === m.title) }); });
     });
     items.push({ kind: "finish", h: 90 + CLEAR, anchor: 90 });
     const roadH = items.reduce((a, it) => a + it.h, 0) + 40;
@@ -3949,7 +3960,7 @@ class Component extends DCLogic {
       roadZones.push({ top: f(top) + "px", h: f(bottom - top) + "px", tint: roadZones.length % 2 ? "rgba(103,29,255,0.08)" : "rgba(0,104,248,0.08)" }); });
     const roadCaps = items.filter(it => it.kind === "cap").map((it, capJ) => {
       const sec = it.sec, t = sec.total || sec.missions.reduce((a, m) => a + worth(m), 0), e = sec.missions.reduce((a, m) => a + got(m), 0);
-      return { idx: String(capJ), top: f(it.y - 38) + "px", label: sec.title + (sec.total ? " · " + sec.total + " marks" : ""), earned: e, total: t || "—",
+      return { idx: String(capJ), top: f(it.y - 38) + "px", label: "Lv " + sec.lv + " · " + sec.title + (sec.total ? " · " + sec.total + " marks" : ""), earned: e, total: t || "—",
         pct: (t ? Math.round(100 * e / t) : 0) + "%" };
     });
     // The companion stands beside the next mission (on the finish when all is done). Its side and
@@ -4019,10 +4030,11 @@ class Component extends DCLogic {
       trackerOn: !FC && !s.finishRun && s.mapView !== "topics" && s.card == null && !s.kit,
       trackerTitle: suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id,
       trackerSub: suggestedIdx < 0 ? "All " + missions.length + " missions done · " + earned + " of " + total + " marks"
-        : missions[suggestedIdx].title + " · " + missions.filter(m => m.parts.every(q => this.pg(q.key).closed)).length + " of " + missions.length + " done",
+        // the level leads (Murci, 2026-09-30): Level 1's gate sits on the vortex lip, where plaques fade, so the tracker always names it
+        : "Lv " + this.levelOf(missions[suggestedIdx]) + " · " + missions[suggestedIdx].title + " · " + missions.filter(m => m.parts.every(q => this.pg(q.key).closed)).length + " of " + missions.length + " done",
       trackerMarks: String(earned), trackerDeg: Math.round(360 * earned / Math.max(1, total)) + "deg",
       trackerUp: s.trackDir === "up", trackerDown: s.trackDir === "down", trackerHere: !s.trackDir || s.trackDir === "here",
-      trackerAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ": " + missions[suggestedIdx].title)
+      trackerAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ", level " + this.levelOf(missions[suggestedIdx]) + ": " + missions[suggestedIdx].title)
         + ". " + earned + " of " + total + " marks" + (s.trackDir === "up" ? ". It's above you on the map" : s.trackDir === "down" ? ". It's below you on the map" : ""), finishRunOn: !!s.finishRun, finishCardOn: !!FC, skipFinish: () => this.skipFinish(), closeFinish: () => this.closeFinish(),
       finishAnim: s.reduced ? "none" : "rise 360ms cubic-bezier(0.22,0.61,0.36,1) both",
       // Wide screens keep the whole reveal in view: the card sits right, the road moves left (see roadLeft).
@@ -4053,7 +4065,9 @@ class Component extends DCLogic {
       vmActive: s.mapView !== "topics" ? "true" : "false", vmNext: String(suggestedIdx),
       vmLit: String(Math.round(1000 * lit / Math.max(1, total || 100)) / 1000),
       vmGeom: JSON.stringify({ nodes: items.filter(it => it.kind === "m").map(it => ({ i: it.i, x: f(it.x), y: f(it.y) })), fin: { x: f(finIt.x), y: f(finIt.y) },
-        caps: items.filter(it => it.kind === "cap").map(it => ({ y: f(it.y), label: it.sec.title + (it.sec.total ? " · " + it.sec.total + " marks" : "") })) }),
+        caps: items.filter(it => it.kind === "cap").map(it => { const L = it.sec, e = L.missions.reduce((a, m) => a + got(m), 0);
+          return { y: f(it.y), lv: L.lv, label: L.title + (L.total ? " · " + L.total + " marks" : ""), sub: L.section,
+            pct: L.total ? Math.min(100, Math.round(100 * e / L.total)) : 0 }; }) }),
       vmPaint: JSON.stringify(roadNodes.map(n => ({ i: +n.idx, id: n.number, title: n.title, chip: n.state, chipBg: n.stateBg, chipColor: n.stateColor, tags: n.tags,
         titleColor: n.titleColor, fill: n.fill, ring: n.ring, lip: n.lip, num: n.numColor, big: n.vmBig, halo: n.halo, badge: n.hasBadge, anim: n.anim, aria: n.aria }))),
       // The finish shows the learner's mark against the paper's total as well as the XP (Murci: they should know the marks
@@ -4078,7 +4092,7 @@ class Component extends DCLogic {
       startPaperName: paper ? paper.title + " · " + paper.sitting : "", startProv: paper ? paper.prov || PROVENANCE : "",
       startLabel: suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id,
       startHasPopup: suggestedIdx < 0 ? "false" : "dialog",
-      startAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ": " + missions[suggestedIdx].title)
+      startAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ", level " + this.levelOf(missions[suggestedIdx]) + ": " + missions[suggestedIdx].title)
         + ". " + (paper ? paper.title + ", " + paper.sitting : ""),
       startGo: () => { if (suggestedIdx < 0) { this.setState({ screen: "summary" }); return; }
         this.scrollToNode(suggestedIdx, true); this.openCard(suggestedIdx); },
