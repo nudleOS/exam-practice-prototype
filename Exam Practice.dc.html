@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
-  <script src="mcq-play.js?v=24"></script>
+  <script src="mcq-play.js?v=26"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -2397,6 +2397,11 @@ class Component extends DCLogic {
   // The level is the paper's question (Murci, 2026-09-30): Question 1 and all its sub-questions are level 1, Question 2 is
   // level 2, and so on. It reads the mission's own number ("2.3" -> 2), the one rule that holds on every paper: FM's sections
   // are its questions, but LS's are "Section A/B" (Section B holds Questions 2 and 3). Was a placeholder from XP (xp / 300).
+  // a part the learner has not closed yet (skipped, or not reached); -1 when every part is closed
+  firstOpenPart(m) { return m ? m.parts.findIndex(q => { const p = this.pg(q.key); return !p.closed && !p.waiting; }) : -1; }
+  // Skip shows unless it would lead nowhere: on the last part with no other part open
+  canSkip() { const m = this.mission(); if (!m || this.state.fix || this.state.drill) return false; if (this.state.pi < m.parts.length - 1) return true;
+    const k = this.firstOpenPart(m); return k >= 0 && k !== this.state.pi; }
   levelOf(m) { const n = parseInt(String((m && m.id) || "").replace(/^Question\s*/i, ""), 10); return n > 0 ? n : 1; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
   // A drill plays as one synthetic mission of the parts it chose.
@@ -2597,7 +2602,7 @@ class Component extends DCLogic {
       onMarksLanded: () => { this._mcqPending = 0; this.forceUpdate(); },
       onNext: () => this.advance(),
       onMap: () => this.setState({ screen: "map" }),
-      look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 3 : 5, heroIn: "stage", celebrate: "corner", after: "panel",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
+      look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 3 : 5, skip: () => this.canSkip(), heroIn: "stage", celebrate: "corner", after: "panel",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
       topicOf: it => NX_TOPICS[it.n] || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });
   }
 
@@ -2615,7 +2620,10 @@ class Component extends DCLogic {
     if (dr) { if (this.state.pi < dr.mission.parts.length - 1) this.resetInputs({ pi: this.state.pi + 1 }); else this.setState({ screen: "drillout" }, () => window.scrollTo(0, 0)); return; }
     if (this.state.revisit) { this.setState({ screen: "done", revisit: false }, () => window.scrollTo(0, 0)); return; }
     const m = this.mission(); if (!m) return;
+    // Next / Skip goes forward one part, as before (Back / Next still steps through answered parts); after the LAST part it comes back
+    // to the first part still open, i.e. one the learner skipped (Murci, 2026-09-30); the done screen comes once none is open.
     if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
+    const back = this.firstOpenPart(m); if (back >= 0 && back !== this.state.pi) { this.resetInputs({ pi: back }); return; }
     this.setState({ screen: "done" });
   }
 

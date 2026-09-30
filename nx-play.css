@@ -465,24 +465,30 @@ body.nx-play .mcqp.fit-5 .tiles { grid-template-columns:1fr 1fr !important; }
    margin and a 24 px gap to the robot's corner taken off); mcq-play marks it "scrolls" (a fade at its bottom edge says there
    is more) and "atend" (the fade goes once the last card is in view). A phone stops at fit-3 (fitMax): one readable column,
    the robot at its size; the cards never go into two columns on a phone (Murci: "vertical for mobile and not grid"). */
-body.nx-play .mcqp .stage { max-height:calc(100% - 26px - 24px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+/* --cap-off: the panel's top margin (26) + 24 + the Next row's room (46 + 12; measured 5 px at 808x648 without it). mcq-play's fit
+   reads this same number (a computed max-height is only its calc() text) */
+body.nx-play .mcqp .stage { --cap-off:108px; max-height:calc(100% - var(--cap-off)); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
 body.nx-play .mcqp .stage::-webkit-scrollbar { display:none; }   /* no scrollbar line on the panel, at any size (Murci, 2026-09-30); the fade says there is more */
 /* (no fade over the cards: the navy gradient lay on the last card as it scrolled - Murci: "a blue shadow on top of the last card";
    a card cut by the panel's edge says there is more) */
-/* Next is always in sight (Murci: "the next button should always be visible even on desktop"): in a panel that scrolls, its row
-   sticks to the panel's bottom edge on the panel's own colour, so it can never scroll away */
-body.nx-play .mcqp .stage.scrolls > .after { position:sticky; bottom:0; z-index:2; background:var(--nx-panel); padding-top:10px; }
+/* Back / Next (or Skip) OUTSIDE the panel on every size, at the screen's bottom-right, opposite the robot (Murci, 2026-09-30: "the
+   next button needs to be outside of the panel for desktop too"): fixed, so it is always in sight and never in the panel's
+   scroll; clear of the home-indicator safe area. mcq-play leaves a fixed row where the host puts it. */
+body.nx-play .mcqp .stage > .after { position:fixed; left:auto; top:auto; right:28px; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); margin:0; padding:0;
+  min-height:46px; justify-content:flex-end; gap:10px; z-index:30; }
+/* Skip (before an answer) is the quieter button: outlined; an answer turns it into the solid Next */
+body.nx-play .mcqp .next.skip { background:var(--nx-pill) !important; color:var(--nx-text) !important; box-shadow:none !important; }
+body.nx-play .mcqp .next.skip .arr { background:rgba(129,177,255,0.18); }
 @media (max-width:600px) {
   /* phone: the Back / Next row UNDER the
      panel on the right, opposite the robot (Murci: "i have to scroll down in order to show the next button"). The panel is
      static, so the row's containing block is the question area, not the panel's scroll box: it sits outside the scroll. Its
      46 px (+12 gap) are kept free under the panel, so the panel does not jump when Next appears; mcq-play's fit reads this cap. */
-  body.nx-play .mcqp .stage { max-height:calc(100% - 14px - 24px); position:static; margin-top:14px; }
+  body.nx-play .mcqp .stage { --cap-off:38px; position:static; margin-top:14px; }   /* 14 margin + 24; Next is fixed at the screen's corner, not under the panel */
   body.nx-play .mcqp .tiles { grid-template-columns:minmax(0, 1fr) !important; }
   /* Next at the SCREEN's bottom-right, beside the robot's rock (Murci, 2026-09-30: "move the next button a lot down the page"): fixed,
      so it is always in reach and never in the panel's scroll; clear of the home indicator (safe area) */
-  body.nx-play .mcqp .stage > .after, body.nx-play .mcqp .stage.scrolls > .after { position:fixed; left:auto; right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); top:auto;
-    margin:0; padding:0; background:none; min-height:46px; justify-content:flex-end; gap:8px; z-index:30; }
+  body.nx-play .mcqp .stage > .after { right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); gap:8px; }
   body.nx-play .mcqp-screen { -webkit-mask-image:none !important; mask-image:none !important; }   /* the panel fades itself now */
 }
 body.nx-play .mcqp.fit-5 .face { padding:6px 8px 6px 6px !important; gap:8px; }

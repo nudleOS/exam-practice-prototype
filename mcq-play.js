@@ -92,8 +92,11 @@
         bottomOf = () => Math.max(tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0), stage ? Math.max(top(stage) + stage.offsetHeight, contentBottom()) : 0);
       // the room: the screen less the fade, or the panel's own height cap when the host sets one (it may keep room under the
       // panel, e.g. for a phone's Next row), whichever is lower
-      const capB = () => { const mh = stage ? parseFloat(getComputedStyle(stage).maxHeight) : NaN; return isFinite(mh) ? top(stage) + mh : Infinity; };
-      const overBy = () => bottomOf() - Math.min((opts.screen ? PAGE.clientHeight : innerHeight) - 24, capB());
+      // The cap is read from the host's --cap-off (the space it keeps off the panel's height: its max-height is 100% - --cap-off),
+      // not from max-height itself: a computed max-height comes back as the calc() text (NaN), and the cap was silently ignored.
+      const H = () => (opts.screen ? PAGE.clientHeight : innerHeight);
+      const capB = () => { const off = stage ? parseFloat(getComputedStyle(stage).getPropertyValue("--cap-off")) : NaN; return isFinite(off) ? top(stage) + H() - off : Infinity; };
+      const overBy = () => bottomOf() - Math.min(H() - 24, capB());
       // the least level that fits; if none does, the one that comes closest (the rest scrolls). opts.fitMax() caps the level
       // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
       const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
@@ -212,6 +215,9 @@
       if ($("qback")) $("qback").onclick = () => { if (!S.busy) go(ORDER[k - 1]); };
       $("retry").onclick = () => { if (!S.busy) go(it.n, true); };
       $("after").appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
+      // opts.skip (Murci, 2026-09-30: "showing Next before the learner answers, so they can skip"): the button is there from the start
+      // as "Skip"; an answer turns it into "Next" (placeNext). The host decides what a skip does (Exam Practice: it comes back round).
+      if (opts.skip && (typeof opts.skip !== "function" || opts.skip())) { NEXT.querySelector("span").textContent = "Skip"; NEXT.classList.add("show", "skip"); NEXT.setAttribute("aria-label", "Skip this question for now"); }
       if (book[it.n] && book[it.n].gone && !S.practice) restore(book[it.n]);
       palSize(); if (opts.idleSay && !S.done && !book[it.n]) sayIdle(opts.idleSay);   // at rest it encourages; a hint replaces it after a miss
       if (opts.fit) fitCards();
@@ -295,6 +301,7 @@
     const sameGroup = () => (GROUP[nextN()] || {}).id === (GROUP[S.it.n] || {}).id;
     function placeNext() { const hero = $("heroLayer").querySelector(".tile.hero"), onPanel = opts.after === "panel", cont = hero && (onPanel || sameGroup());
       NEXT.querySelector("span").textContent = onPanel ? "Next" : sameGroup() ? "Continue" : (GROUP[nextN()] || {}).title || "Next question";   // on the panel: Back / Next
+      NEXT.classList.remove("skip"); NEXT.removeAttribute("aria-label");   // answered: no longer a skip
       let c = $("cont"); if (cont && !c) { c = document.createElement("button"); c.className = "cont"; c.id = "mq-cont"; c.onclick = e => { e.stopPropagation(); onPanel ? dismiss() : next(); }; }
       if (c) c.textContent = onPanel ? "Tap anywhere to close" : "Tap anywhere to continue";
       if (cont) { $("heroLayer").appendChild(c); if (onPanel) ($("after") || $("stage")).appendChild(NEXT); else NEXT.remove(); } else { if (c) c.remove(); (hero ? $("heroLayer") : $("after") || $("stage")).appendChild(NEXT); }
