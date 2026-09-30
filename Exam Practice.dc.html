@@ -1201,6 +1201,7 @@
                 </div>
               </sc-if>
               <span style="display:flex; gap:8px; margin-top:4px">
+                <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span aria-hidden="true">‹</span><span data-backword="true">&nbsp;Back</span></button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
                   <button onClick="{{ barSecondary }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
@@ -1243,6 +1244,7 @@
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ flagFill }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22V4"></path><path d="M5 4h12l-2.5 4.5L17 13H5"></path></svg>{{ flagLabel }}
                 </button>
               </sc-if>
+              <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span aria-hidden="true">‹</span><span data-backword="true">&nbsp;Back</span></button></sc-if>
               <sc-if value="{{ nxCanSkip }}" hint-placeholder-val="{{ false }}"><button data-skip="true" onClick="{{ skipPart }}" aria-label="Skip this question for now">Skip</button></sc-if>
               <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-width:0; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
               </div>
@@ -2453,11 +2455,15 @@ class Component extends DCLogic {
   // The level is the paper's question (Murci, 2026-09-30): Question 1 and all its sub-questions are level 1, Question 2 is
   // level 2, and so on. It reads the mission's own number ("2.3" -> 2), the one rule that holds on every paper: FM's sections
   // are its questions, but LS's are "Section A/B" (Section B holds Questions 2 and 3). Was a placeholder from XP (xp / 300).
-  // a part the learner has not closed yet (skipped, or not reached); -1 when every part is closed
-  firstOpenPart(m) { return m ? m.parts.findIndex(q => { const p = this.pg(q.key); return !p.closed && !p.waiting; }) : -1; }
-  // Skip shows unless it would lead nowhere: on the last part with no other part open
-  canSkip() { const m = this.mission(); if (!m || this.state.fix || this.state.drill) return false; if (this.state.pi < m.parts.length - 1) return true;
-    const k = this.firstOpenPart(m); return k >= 0 && k !== this.state.pi; }
+  // Skip shows unless it would lead nowhere: when no other part is still open
+  // (measured 2026-09-30: it showed on the only part still open whenever that part was not the last index, and led back to itself)
+  canSkip() { const m = this.mission(); if (!m || this.state.fix || this.state.drill) return false; return this.nextOpenPart(m) >= 0; }
+  // the next part still open after this one, round from the start; -1 when this is the only one (or none is)
+  nextOpenPart(m) { if (!m) return -1; const n = m.parts.length, pi = this.state.pi;
+    for (let d = 1; d < n; d++) { const i = (pi + d) % n, p = this.pg(m.parts[i].key); if (!p.closed && !p.waiting) return i; } return -1; }
+  // Back: the part before this one, in the mission (practice; a drill or a fix has its own order); it opens as it stands, closed or not
+  canBack() { const s = this.state; return s.screen === "play" && s.sitting !== "hall" && !s.fix && !s.drill && !s.revisit && s.pi > 0; }
+  prevPart() { if (this.canBack()) this.resetInputs({ pi: this.state.pi - 1 }); }
   // The panel's feedback, under the answer (practice, non-MCQ parts): a check's result, or the hint while the learner retries.
   // Under the answer, so the field never moves; a full mark is a medal result (the tier by try, as the MCQ card).
   nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed) {
@@ -2729,9 +2735,13 @@ class Component extends DCLogic {
     const m = this.mission(), part = this.part(); if (!m || !part || part.response_mode !== "mcq") return false;
     // A part that is already closed opens in the page's closed view (with Replay) — but the part the component is
     // playing closes DURING its animation, and must not unmount it then.
-    if (this.pg(part.key).closed && !(this._mcq && this._mcqAt && this._mcqAt.endsWith(":" + part.key))) return false;
+    // (2026-09-30: a closed part the component finished opens in the component again, as it ended: seeded from mcqBook. Measured: the
+    // page's closed view was the old look, a bold stem, no chip, the answer not marked, Replay / Next over the panel's corner.)
+    if (this.pg(part.key).closed && !(this._mcq && this._mcqAt && this._mcqAt.endsWith(":" + part.key)) && !(this.mcqBook()[part.number] && !s.fix && !s.drill)) return false;
     return !SCENES[((this.paper() || {}).id || "") + ":" + (part._mid || m.id)];
   }
+  // The component's end state of each MCQ it finished (its cards gone, the medal line, the answer), per paper: a revisit shows it again
+  mcqBook() { const id = (this.paper() || {}).id || ""; this._mcqBook = this._mcqBook || {}; return this._mcqBook[id] || (this._mcqBook[id] = {}); }
   // One try, marked by the page (check() with the pick passed in, quietly): the component gets the verdict only.
   mcqTry(pick) {
     const s = this.state, part = this.part(), pr = this.pg(part.key), reply = this.check({ answer: pick, quiet: true });
@@ -2756,6 +2766,9 @@ class Component extends DCLogic {
       judge: (item, pick) => this.mcqTry(pick),
       onMarksLanded: () => { this._mcqPending = 0; this.forceUpdate(); },
       onNext: () => this.advance(),
+      seed: s.fix || s.drill ? {} : this.mcqBook(),
+      onScore: r => { if (!s.fix && !s.drill) this.mcqBook()[r.n] = { got: r.marks, of: r.item.marks, tier: r.tier, gone: r.gone || [], tries: r.tries, ok: r.ok, a: r.item.a }; },
+      canBack: () => this.canBack(), onBack: () => this.prevPart(),
       onMap: () => this.setState({ screen: "map" }),
       look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 3 : 5, skip: () => this.canSkip(), heroIn: "stage", celebrate: "corner", after: "panel",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
       topicOf: it => NX_TOPICS[it.n] || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });
@@ -2775,10 +2788,10 @@ class Component extends DCLogic {
     if (dr) { if (this.state.pi < dr.mission.parts.length - 1) this.resetInputs({ pi: this.state.pi + 1 }); else this.setState({ screen: "drillout" }, () => window.scrollTo(0, 0)); return; }
     if (this.state.revisit) { this.setState({ screen: "done", revisit: false }, () => window.scrollTo(0, 0)); return; }
     const m = this.mission(); if (!m) return;
-    // Next / Skip goes forward one part, as before (Back / Next still steps through answered parts); after the LAST part it comes back
-    // to the first part still open, i.e. one the learner skipped (Murci, 2026-09-30); the done screen comes once none is open.
-    if (this.state.pi < m.parts.length - 1) { this.resetInputs({ pi: this.state.pi + 1 }); return; }
-    const back = this.firstOpenPart(m); if (back >= 0 && back !== this.state.pi) { this.resetInputs({ pi: back }); return; }
+    // Next / Skip goes to the next part still OPEN, round from the start, so a skipped part comes back after the last (Murci,
+    // 2026-09-30); the done screen comes once none is open (measured: answering the skipped part, Next went on to the closed 1.1.4).
+    // Answered parts are revisited with Back or the map.
+    const k = this.nextOpenPart(m); if (k >= 0) { this.resetInputs({ pi: k }); return; }
     this.setState({ screen: "done" });
   }
 
@@ -3795,6 +3808,7 @@ class Component extends DCLogic {
       hasHint: false, hintTitle: "Hint", hintText: reply ? reply.clue || "" : "",   // (the hint shows under the answer now: nxFeedVals; the box above the field made it jump 55 px)
       nxQNum: String(part.number).split(".")[0],
       nxCanSkip: !hall && !closed && !s.marking && !(reply && s.barOpen) && this.canSkip(), skipPart: () => this.advance(),
+      nxCanBack: !hall && !s.marking && this.canBack(), backPart: () => this.prevPart(),
       ...this.nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed),
       ...this.termVals(s, part, reply, res, locked, mode),
       isSteps: mode === "steps", locked: locked,

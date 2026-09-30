@@ -129,7 +129,8 @@
     const WHY = opts.why || {};                                          // the host's explanations (per question number)
     const ORDER = opts.order.slice();                                  // the questions, in paper order
     const TIER_BY_TRY = ["gold", "silver", "bronze"];                          // the XP tiers: 100 / 60 / 20
-    const book = {};                                                           // marks per question, first sitting only
+    const book = Object.assign({}, opts.seed || {});                           // marks per question, first sitting only (opts.seed: the host's record of questions finished under an earlier mount, so a revisit shows its end state)
+    Object.keys(book).forEach(n => { if (ITEMS[n] && book[n].a != null) ITEMS[n].a = book[n].a; });   // a seeded question knows its answer (the host marks: it is known only once found)
     const NEXT = document.getElementById("mq-next");                      // one Next button, moved to wherever the cards are
     const $ = id => document.getElementById("mq-" + id), live = t => { $("live").textContent = t; };
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -210,7 +211,10 @@
         g.appendChild(t);
       });
       st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden><span aria-hidden="true">↻</span>&nbsp;Try again</button></div>`);   // the marks under the last card; then Try again and Next
-      if (opts.after === "panel" && k > 0 && opts.back !== false) { $("after").insertAdjacentHTML("afterbegin", `<button class="prevq" id="mq-prevq" aria-label="Previous question: ${ORDER[k - 1]}"><span aria-hidden="true">‹</span>&nbsp;Back</button>`); $("prevq").onclick = () => { if (!S.busy) go(ORDER[k - 1]); }; }
+      // opts.onBack / opts.canBack: the host owns the order (it mounts one mission's MCQs, but a Back can lead to a part of another
+      // type): the host says whether there is a way back and takes it (measured 2026-09-30: back:false left no Back at all)
+      const hostBack = typeof opts.onBack === "function", canBack = hostBack ? !!(opts.canBack ? opts.canBack() : true) : k > 0 && opts.back !== false;
+      if (opts.after === "panel" && canBack) { $("after").insertAdjacentHTML("afterbegin", `<button class="prevq" id="mq-prevq" aria-label="${hostBack ? "Previous question" : "Previous question: " + ORDER[k - 1]}"><span aria-hidden="true">‹</span>&nbsp;Back</button>`); $("prevq").onclick = () => { if (!S.busy) hostBack ? opts.onBack() : go(ORDER[k - 1]); }; }
       if ($("qback") && opts.back === false) $("qback").remove();
       if ($("qback")) $("qback").onclick = () => { if (!S.busy) go(ORDER[k - 1]); };
       $("retry").onclick = () => { if (!S.busy) go(it.n, true); };

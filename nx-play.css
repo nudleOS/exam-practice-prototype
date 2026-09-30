@@ -795,6 +795,14 @@ body.nx-play main:not(#mq-stage) [data-termmedal]::after { content:""; position:
 /* ==== the panel keeps to its room and scrolls inside (non-MCQ parts; the host's nxPanelCap sets its max-height) ==== */
 body.nx-play main:not(#mq-stage) [data-question] { overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
 body.nx-play main:not(#mq-stage) [data-question]::-webkit-scrollbar { display:none; }
+/* Back, left of Skip / Check (practice): outlined like Skip; on a phone the arrow alone (its name stays for the screen reader) */
+body.nx-play [data-footer] [data-back] { display:inline-flex; align-items:center; justify-content:center; }
+body.nx-play [data-footer] :is([data-back]) { flex:none !important; min-height:46px !important; height:46px; padding:0 20px !important; border-radius:999px !important; font-size:15px !important; font-weight:800 !important; white-space:nowrap; cursor:pointer;
+  border:1px solid var(--nx-pill-line) !important; background:var(--nx-pill) !important; color:var(--nx-text) !important; box-shadow:none !important; }
+@media (max-width:600px) {
+  body.nx-play [data-footer] [data-back] { width:46px; padding:0 !important; font-size:20px !important; }
+  body.nx-play [data-footer] [data-back] [data-backword] { display:none; }
+}
 /* where the robot stands UNDER the panel (a phone; an upright tablet), its words go beside its head, not above it: the panel stops
    just above its head (nxPanelCap), and a bubble over the head was hidden by a grown panel (measured at 375x812 and 360x640) */
 @media (max-width:600px), (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
