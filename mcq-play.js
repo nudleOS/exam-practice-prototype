@@ -190,6 +190,7 @@
 
     function press(i) {
       if (S.done || S.busy || S.gone.has(i)) return;                   // busy: one answer's consequence plays out before the next is taken
+      if (PAL.cleaning) { S.sel = i; paintTiles(); PAL.queued = i; return; }   // the robot is still sweeping the last glass: the card shows picked, and is answered when it is back on its rock
       S.sel = i; palLook(RQ(`.tile[data-i="${i}"]`));                                                  // one tap answers (Murci): no second tap, no Lock in
       paintTiles();                                               // the card takes the picked colour, then answers
       submit();
@@ -298,7 +299,7 @@
     function buddyStill(box) { box.replaceChildren(Object.assign(document.createElement("img"), { src: BUDDY.still, alt: "" })); }
     // ONE robot element (PAL.el) for the whole page: it lives in its corner and moves into the big card and back.
     // model-floor keeps its renderer through a move and re-frames on a `fit` change, so it never reloads or doubles.
-    const PAL = { el: null, x: 0, anim: null, timer: 0, down: false, hurt: false, sweeping: false };
+    const PAL = { el: null, x: 0, anim: null, timer: 0, down: false, hurt: false, sweeping: false, cleaning: false, queued: null, cleanT: 0 };
     function palMake() { const body = $("palBody"); if (!BUDDY_3D) { buddyStill(body); return; }
       const mf = document.createElement("model-floor");
       [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "none"], ["fit", "0.8"], ["inplace", ""]].forEach(([k, v]) => mf.setAttribute(k, v));   // inplace: it stays centred in its box and turns about itself
@@ -317,6 +318,8 @@
     // Movement. The run clip is authored in place; measured, its planted foot moves 3.51 units/s, and the box shows 2·H·fit
     // units (H 2.4, fit 0.8) over its height, so px/s = 3.51 · rate · boxHeight / 3.84. Moving the box at exactly that pace
     // is what keeps the feet from sliding. `translate` (not transform) carries the position, so the jump arcs compose with it.
+    // robotFixed cleanup (Murci, 2026-09-30: the sweep ran ~6 s into the next question): a brisk sweep and return, and a tap during it waits
+    const CLEAN_SWEEP = 3.0, CLEAN_RUN = 2.4;
     const RUN_RATE = 1.0, SWEEP_RATE = 1.2;   // px/s = rate x box height: cut as the robot grew, so its pace on screen holds   // an unhurried jog (Murci: slower); the sweep a little quicker
     const palSpeed = rate => 3.513 * rate * ($("pal").offsetHeight / 3.84);
     // Small while the learner chooses (CSS gives it a size on a phone only): the question is open and the robot is home and free.
@@ -360,28 +363,31 @@
       // before, runs home and steps back UP (Murci, 2026-09-30: "swept by our robot like it was before, then back on the rock")
       const fixed = !!opts.robotFixed, pal = $("pal");
       if (fixed && !pieces.length) { if (PAL.down) { PAL.down = false; palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }); wait(1650).then(() => { if (palFree()) palIdle(); palSize(); }); } return; }
-      PAL.sweeping = true;
+      PAL.sweeping = true; PAL.cleaning = true; clearTimeout(PAL.cleanT);
+      PAL.cleanT = setTimeout(() => { if (!PAL.cleaning) return; PAL.cleaning = false; const q = PAL.queued; PAL.queued = null; if (q != null && S && !S.done && S.sel === q) press(q); }, 6000);   // a safety net: a stuck cleanup never blocks the cards
+      const sweepAt = fixed ? CLEAN_SWEEP : SWEEP_RATE, runAt = fixed ? CLEAN_RUN : RUN_RATE;
       const getUp = () => PAL.down ? (palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }), wait(1650)) : Promise.resolve();
       const up = getUp().then(() => fixed ? (pal.classList.add("floor"), wait(reduced ? 0 : FLOOR_MS)) : null);   // up first (if it was down), then off the rock
       PAL.down = false;
       up.then(() => { const B = palBase(), xs = pieces.map(el => { const b = el.getBoundingClientRect(); return b.left + b.width / 2; });
         const leftOfPile = Math.min(...xs) - B.left - B.w * 0.9;
-        return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile)) : Promise.resolve()).then(() => sweepRight(pieces)); })
-      .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => fixed ? (pal.classList.remove("floor"), wait(reduced ? 0 : FLOOR_MS)) : null)   // home: back up on its rock
-      .then(() => { if (palFree()) palGreet(); palSize(); });
+        return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile), runAt) : Promise.resolve()).then(() => sweepRight(pieces, sweepAt)); })
+      .then(() => { PAL.sweeping = false; return palRunTo(0, runAt); }).then(() => fixed ? (pal.classList.remove("floor"), wait(reduced ? 0 : FLOOR_MS)) : null)   // home: back up on its rock
+      .then(() => { PAL.cleaning = false; clearTimeout(PAL.cleanT); if (palFree()) palGreet(); palSize();
+        const q = PAL.queued; PAL.queued = null; if (q != null && S && !S.done && S.sel === q) press(q); });   // a card tapped while it cleaned: answered now
     }
     const FLOOR_MS = 460;   // robotFixed: the step down from its rock to the floor, and back up (nx-play.css eases .pal.floor over this)
     // the broken pieces sink off the floor and fade (a short, staggered drop): kept for a host that wants the glass gone without a sweep
     function dropAway(pieces) { pieces.forEach((el, k) => { const a = el.getAnimations(); a.forEach(x => x.commitStyles && x.commitStyles()); a.forEach(x => x.cancel());
       el.animate([{ opacity: 1 }, { opacity: 0, translate: "0 26px" }], { duration: 420, delay: (k % 8) * 30, easing: "ease-in", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove()); }); }
-    function sweepRight(pieces) { const pal = $("pal"), B = palBase(), exit = innerWidth - B.left + 40, v = palSpeed(SWEEP_RATE), start = PAL.x;
+    function sweepRight(pieces, rate = SWEEP_RATE) { const pal = $("pal"), B = palBase(), exit = innerWidth - B.left + 40, v = palSpeed(rate), start = PAL.x;
       const front0 = B.left + start + B.w * 0.62;                                                   // its leading foot
       pieces.forEach(el => { const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, when = Math.max(0, (cx - front0) / v * 1000);
         if (cx > innerWidth + 4 || cx < -4) { el.remove(); return; }                                // thrown off-screen in the break: nothing to sweep, don't keep it
         setTimeout(() => { const dist = innerWidth + 60 - cx;                                          // pushed ahead of it, a little hop, off the edge
           el.animate([{ translate: "0 0" }, { translate: `${(dist * 0.15).toFixed(0)}px -7px`, offset: 0.14 }, { translate: `${dist.toFixed(0)}px 0` }],
             { duration: dist / (v * 1.12) * 1000, easing: "cubic-bezier(.2,.6,.4,1)", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove()); }, when); });
-      return palRunTo(exit, SWEEP_RATE).then(() => {                                                // off the right edge; back round from the left
+      return palRunTo(exit, rate).then(() => {                                                      // off the right edge; back round from the left
         pal.classList.add("away"); PAL.x = -B.left - B.w - 30; pal.style.translate = `${PAL.x}px 0`; void pal.offsetWidth; pal.classList.remove("away"); });
     }
     // It turns to look at a card: yaw (radians) from where the card is relative to the robot.
