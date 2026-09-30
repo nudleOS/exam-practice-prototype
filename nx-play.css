@@ -41,10 +41,11 @@ body.nx-play { background:transparent !important; }
    (assets/scenery/life-sciences/doodles-a/b/c.svg; c is a finer 290 px layer, 16-24 px icons),
    25 icons each (5x5; 16 before, Murci 2026-09-30: "add more"), 20-30 px, each line drawn at 1.4 px whatever the icon's size), used as a MASK so the theme's --nx-doodle colours
    them. Two tile sizes (360 and 470 px), offset, so the repeat does not read as a grid. Before: 18 icons up to 120 px, their 1.15
-   line scaled with them to ~5.75 px, soft and thick. */
+   line scaled with them to ~5.75 px, soft and thick. 2026-09-30 ("increase the number of doodles"): a fourth tile, d (420 px, 36 icons,
+   15-22 px), made by assets/scenery/doodles.py from the same 25 drawings; ~55% more doodles, offset so no tile lines up. */
 .nx-doodles { position:absolute; inset:0; background:var(--nx-doodle);
-  -webkit-mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat, url("assets/scenery/life-sciences/doodles-c.svg") 70px 210px / 290px 290px repeat;
-  mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat, url("assets/scenery/life-sciences/doodles-c.svg") 70px 210px / 290px 290px repeat; }
+  -webkit-mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat, url("assets/scenery/life-sciences/doodles-c.svg") 70px 210px / 290px 290px repeat, url("assets/scenery/life-sciences/doodles-d.svg") 230px 330px / 420px 420px repeat;
+  mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat, url("assets/scenery/life-sciences/doodles-c.svg") 70px 210px / 290px 290px repeat, url("assets/scenery/life-sciences/doodles-d.svg") 230px 330px / 420px 420px repeat; }
 /* Rendered art (Gemini, 2026-09-29), cut off its magenta by assets/scenery/cutout.py: rocks-left 633x375 (the flat-topped
    rock the robot stands on), rocks-right 613x322. A CSS background, not an <img>: the browser downloads only the pair of
    the theme in use (a hidden <img> still downloads). Light uses the render as is; dark uses the night grade (rocks darkened
