@@ -875,7 +875,10 @@
       if (rs.length) { const cs = getComputedStyle(el), pad = cs.boxSizing === "border-box" ? parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) : 0;
         const k = el.offsetWidth ? el.getBoundingClientRect().width / el.offsetWidth || 1 : 1;
         el.style.width = Math.ceil((Math.max(...rs.map(r => r.right)) - Math.min(...rs.map(r => r.left))) / k + pad + 1) + "px"; }
-      void el.offsetWidth; el.style.animation = ""; }
+      void el.offsetWidth; el.style.animation = "";
+      // measured in the fallback font while the web font loads, the width is wrong once it lands (seen 2026-10-01: 82 px, three
+      // lines, on a first load): measure again when the fonts are in, if it still says the same words
+      if (document.fonts && document.fonts.status !== "loaded") { const said = el.textContent; document.fonts.ready.then(() => { if (el.isConnected && el.textContent === said) fitCloud(el); }); } }
     // The robot talks: its words for each clue, first person, to the learner (not a line lifted from a mark scheme). The
     // paper data keeps the plain clues (other pages use them); a clue without its words here is said as written.
     const SAY = {
