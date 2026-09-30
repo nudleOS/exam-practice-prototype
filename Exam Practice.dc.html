@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=33">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=36">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -1232,7 +1232,7 @@
     <main data-done="true" style="box-sizing:border-box; max-width:{{ doneMaxW }}; margin:0 auto; padding:{{ donePad }}; display:grid; grid-template-columns:{{ doneCols }}; gap:{{ doneGap }}; align-items:center; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div aria-hidden="true" data-donecomp="true" style="position:relative; width:{{ doneCompW }}; height:{{ doneCompH }}; justify-self:center">
         <sc-if value="{{ doneModelOn }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/companion-robot.glb" clip="{{ doneClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
+          <model-floor src="assets/companion-robot.glb" clip="{{ doneClip }}" loop="once" autorotate="off" face="user" floor="none" fit="0.85" style="position:absolute; inset:0 0 6px 0"></model-floor>
         </sc-if>
         <sc-if value="{{ donePoster }}" hint-placeholder-val="{{ true }}">
           <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0 0 6px 0; width:100%; height:calc(100% - 6px)">
@@ -1241,13 +1241,13 @@
           </svg>
         </sc-if>
       </div>
-      <div style="min-width:0; display:flex; flex-direction:column; gap:14px">
-        <div style="display:flex; flex-direction:column; align-items:{{ doneAlign }}; gap:6px; text-align:{{ doneTextAlign }}">
+      <div data-donecol="true" style="min-width:0; display:flex; flex-direction:column; gap:14px">
+        <div data-donehead="true" style="display:flex; flex-direction:column; align-items:{{ doneAlign }}; gap:6px; text-align:{{ doneTextAlign }}">
           <span style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:{{ doneRing }}"><span aria-hidden="true" style="width:14px; height:14px; box-sizing:border-box; border-radius:50%; border:3px solid {{ doneRing }}; box-shadow:0 0 12px {{ doneRing }}"></span>{{ doneGrade }}</span>
           <span style="font-size:12.5px; font-weight:700; color:var(--text3)">{{ doneKicker }}</span>
           <h1 data-donetitle="true" tabIndex="-1" style="margin:0; font-size:{{ doneH1 }}; font-weight:800; line-height:1.2; letter-spacing:-0.01em; text-wrap:balance; outline:none">{{ doneTitle }}</h1>
         </div>
-        <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px">
+        <div data-donestats="true" style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px">
           <span data-donestat="xp" style="display:flex; flex-direction:column; gap:4px; padding:14px; border-radius:16px; border:1px solid transparent; background:linear-gradient(180deg, var(--nx-g1, #1d2231), var(--nx-g2, #171b24)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.55), rgba(103,29,255,0.3) 60%, rgba(255,255,255,0.05)) border-box">
             <span aria-hidden="true" style="display:flex; align-items:center; gap:6px; font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1"><svg width="18" height="18" viewBox="0 0 24 24" fill="#81b1ff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ doneXpShown }}</span>
             <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ doneXpText }}</span>
@@ -1260,12 +1260,12 @@
           </span>
         </div>
         <sc-if value="{{ doneHasStreak }}" hint-placeholder-val="{{ false }}">
-          <span style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:#f3c14f"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f3c14f" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ doneStreak }}</span>
+          <span data-donestreak="true" style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:#f3c14f"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f3c14f" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ doneStreak }}</span>
         </sc-if>
         <sc-if value="{{ doneHasWaiting }}" hint-placeholder-val="{{ false }}">
-          <span style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.5; color:var(--warn)">{{ doneWaiting }}</span>
+          <span data-donewait="true" style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.5; color:var(--warn)">{{ doneWaiting }}</span>
         </sc-if>
-        <div style="display:flex; flex-direction:column; gap:7px">
+        <div data-donepaper="true" style="display:flex; flex-direction:column; gap:7px">
           <span style="display:flex; align-items:baseline; gap:8px; font-size:12.5px"><span style="flex:1; font-weight:800">The paper</span><span style="font-weight:700; color:var(--text2)">{{ donePaperText }}</span></span>
           <span role="img" aria-label="{{ donePaperAria }}" style="position:relative; height:10px; border-radius:5px; background:rgba(255,255,255,0.07); overflow:hidden">
             <span style="position:absolute; left:0; top:0; bottom:0; width:{{ doneBeforePct }}; background:rgba(129,177,255,0.38)"></span>
@@ -1273,7 +1273,7 @@
           </span>
         </div>
         <sc-if value="{{ doneHasRevisit }}" hint-placeholder-val="{{ false }}">
-          <section aria-labelledby="done-revisit" style="display:flex; flex-direction:column; gap:8px">
+          <section data-donerevisit="true" aria-labelledby="done-revisit" style="display:flex; flex-direction:column; gap:8px">
             <span style="display:flex; align-items:baseline; gap:8px"><h2 id="done-revisit" style="flex:1; margin:0; font-size:14px; font-weight:800">To revisit</h2><span style="font-size:12px; color:var(--text3)">Replays are practice · no XP</span></span>
             <sc-for list="{{ doneRevisit }}" as="dr" hint-placeholder-count="2">
               <button data-revisit="{{ dr.number }}" onClick="{{ dr.open }}" aria-label="{{ dr.aria }}" style="min-height:48px; padding:9px 12px; border-radius:14px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.07); color:var(--text); display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left">
@@ -1284,7 +1284,7 @@
             </sc-for>
           </section>
         </sc-if>
-        <div style="display:flex; flex-direction:column; gap:3px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(var(--nx-c, 29,32,35), 0.82)">
+        <div data-donenext="true" style="display:flex; flex-direction:column; gap:3px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:rgba(var(--nx-c, 29,32,35), 0.82)">
           <span style="font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--tint)">Up next</span>
           <span style="font-size:14.5px; font-weight:800; line-height:1.35">{{ doneNextTitle }}</span>
           <span style="font-size:12px; color:var(--text3)">{{ doneNextSub }}</span>
@@ -1995,7 +1995,8 @@ class Component extends DCLogic {
       const b = busRead(), L = this.liveFromBus(b); this.setState({ bus: b }); if (L && !testQ) this.goLive(L);
       if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ paperId: paperQ, screen: "hallgate", gateKind: "hall" }, () => window.scrollTo(0, 0));
       else if (playQ != null) this.setState({ paperId: paperQ }, () => { this.openMission(Math.max(0, parseInt(playQ, 10) || 0));   // ?play=N (design preview): straight into mission N, &part=K its part K (to review every response mode)
-        const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0); });
+        const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0);
+        if (qs.get("done")) setTimeout(() => this.setState({ screen: "done" }), 0); });   // &done=1: the mission's done screen (design preview)
       else this.forceUpdate(); };
     if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });

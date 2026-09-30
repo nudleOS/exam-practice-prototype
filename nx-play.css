@@ -461,3 +461,32 @@ html:has(body.nx-play.mcqp-on), body.nx-play.mcqp-on { overflow:hidden !importan
   body.nx-play .mcqp .txt { font-size:14.5px; line-height:1.3; }
   body.nx-play .mcqp h1 { font-size:clamp(17px, 1.5vw, 20px); line-height:1.3; margin-bottom:14px; }
 }
+
+/* ---- the mission-complete screen (Murci, 2026-09-30: "I now need to scroll ... so much empty space"; the robot "as large as we can
+   but proportional"; one loop of the dance). Measured before: one 780 px column, the content stacked; it scrolled 20 px at 1280x560 and
+   93 px at 360x640, with half the width empty on a laptop. Now the screen is exactly the space under the header (67 px, measured). */
+/* desktop / tablet across (768+): the robot a third of the width, as tall as the space lets it be; the content in two columns
+   (the result on top; the stats beside what's next; the streak beside the paper's progress; Continue under all of it) */
+@media (min-width:768px) {
+  body.nx-app main[data-done] { max-width:1120px !important; height:calc(100svh - 67px); padding:16px 32px 20px !important; box-sizing:border-box;
+    grid-template-columns:minmax(220px, 32%) minmax(0, 1fr) !important; gap:36px !important; align-items:center !important; }
+  body.nx-app main[data-done] > [data-donecomp] { width:100% !important; height:min(calc(100svh - 67px - 36px), 600px) !important; }
+}
+/* two content columns only where each has room: from 1100 px (measured at 808 px: "+2400" and "18/18" overflowed their half-width stat
+   cards); 768-1099 keeps one content column beside the big robot (it fitted there: 1024x640 and 808x648 had no scroll) */
+@media (min-width:1100px) {
+  body.nx-app [data-donecol] { display:grid !important; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px 20px !important; align-items:start;
+    grid-template-areas:"head head" "stats next" "streak paper" "wait wait" "revisit revisit" "go go"; }
+  body.nx-app [data-donehead] { grid-area:head; } body.nx-app [data-donestats] { grid-area:stats; } body.nx-app [data-donenext] { grid-area:next; align-self:stretch; justify-content:center; }
+  body.nx-app [data-donestreak] { grid-area:streak; align-self:center; } body.nx-app [data-donepaper] { grid-area:paper; }
+  body.nx-app [data-donewait] { grid-area:wait; } body.nx-app [data-donerevisit] { grid-area:revisit; } body.nx-app [data-donecontinue] { grid-area:go; }
+}
+/* phone / narrow: the content keeps its natural height and the robot takes all the height that is left (never less than 110 px) */
+@media (max-width:767px) {
+  body.nx-app main[data-done] { display:flex !important; flex-direction:column; height:calc(100svh - 67px); padding:10px 16px 14px !important; gap:8px !important; box-sizing:border-box; }
+  body.nx-app main[data-done] > [data-donecomp] { flex:1 1 0; min-height:110px; width:100% !important; height:auto !important; }
+  body.nx-app [data-donecol] { flex:none; gap:10px !important; }
+}
+/* the result's title ("Clean run · gold", "Mission 1.1 complete", "Question 1.1") centred on every screen, as on a phone (Murci, 2026-09-30);
+   the page aligns it left on desktop (doneAlign / doneTextAlign) */
+body.nx-app [data-donehead] { align-items:center !important; text-align:center !important; }
