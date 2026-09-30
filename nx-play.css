@@ -145,6 +145,15 @@ body.nx-play .mcqp .dock { background:none; }
    is wide enough, otherwise it starts past the robot's box (its right edge = rock x + half the box) and narrows. */
 body.nx-play, body.nx-play .mcqp { --nx-botR:calc(var(--nx-rh) * var(--nx-fx) + var(--ph) * 0.357 + 20px); }
 body.nx-play .mcqp .stage { max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)); margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)); margin-right:auto; }
+/* a big desktop window (Murci, 2026-09-30: "increase the size of the avatar ... when the desktop window is expanded fully"):
+   measured at 1920x969 the robot was capped at 360 px (37% of the height) with ~240 px of empty floor before the panel. The robot
+   AND its rock grow together, so its feet stay on the rock (the floor art scales with them). The clearance still holds: --nx-botR
+   (the robot's corner) is 348 px at 1440x900 and 368 px at 1920x969, left of the panel. A laptop window (1366x657) is height-bound
+   and keeps the base size; the fit-4/5 step-back below still wins (it is more specific). */
+@media (min-width:1280px) and (min-height:800px) {
+  body.nx-play { --nx-rh:min(33vh, 330px); }
+  body.nx-play, body.nx-play .mcqp { --ph:min(480px, 50vh); }
+}
 body.nx-play .mcqp .stage { box-sizing:border-box; margin-top:26px; margin-bottom:0; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
 body.nx-play .mcqp .qhead { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 body.nx-play .mcqp .chip { display:inline-flex; align-items:stretch; border-radius:999px; background:var(--nx-chip); overflow:hidden; font-size:15.5px; line-height:1; }
