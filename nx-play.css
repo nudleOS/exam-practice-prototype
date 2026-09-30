@@ -252,18 +252,23 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
 /* The robot stands on the left rock's flat top: its feet at (--nx-fx, --nx-fy) x the rock's height (measured, see .nx-rocks). */
 body.nx-play .mcqp .pal { left:calc(var(--nx-rh) * var(--nx-fx) - var(--ph) * 0.357); bottom:calc(var(--nx-rh) * var(--nx-fy) - var(--ph) * 0.148); }
 body.nx-play .mcqp .pal.small .pal-body { scale:1; }   /* it keeps its size: it is not in the question's way in its corner */
-body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p1 { left:64%; top:22%; } body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p2 { left:71%; top:15%; }
-body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:6%; bottom:88%; }   /* the same place as the plain rule (this one outranks it) */
-/* its bubble: a speech bubble (the mockup's), not a thought cloud: "You got this!" at rest, the hint after a miss */
-body.nx-play .mcqp .pal-say .puff { display:none; }
-body.nx-play .mcqp .pal-say .say-txt { background:var(--nx-bubble) !important; border:1.5px solid var(--nx-bubble-line); border-radius:20px !important; box-shadow:0 12px 26px -14px rgba(8,30,80,0.5) !important;
-  filter:none !important; color:var(--nx-text) !important; font-size:14.5px; font-weight:700; padding:11px 18px !important; left:6%; bottom:88%;
-  width:max-content !important; max-width:min(280px, calc(var(--nx-botR) - 40px)) !important; text-align:left; text-wrap:balance; }   /* above its head, inside its own column (measured: to its right it sat over card A's badge): one line for a short line, a hint wraps */
-body.nx-play .mcqp .pal-say .say-txt::after { content:""; position:absolute; left:34px; bottom:-8px; width:14px; height:14px; background:var(--nx-bubble); border-right:1.5px solid var(--nx-bubble-line); border-bottom:1.5px solid var(--nx-bubble-line); transform:rotate(45deg); border-bottom-right-radius:3px; }
-/* phone: beside its body and low, so a hint grows up INSIDE the robot's corner, under the question box (measured: anchored at
-   62% of its height, a 4-line hint rose to y 398 over card D at 360x640; the question box ends at the robot's head, 84%) */
-@media (max-width:600px) { body.nx-play .mcqp .pal-say .say-txt, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(70% + 4px); bottom:10%; max-width:min(250px, calc(100vw - 110px)) !important; }
-  body.nx-play .mcqp .pal-say .say-txt::after { left:-7px; bottom:18px; border:0; border-left:1.5px solid var(--nx-bubble-line); border-bottom:1.5px solid var(--nx-bubble-line); border-bottom-right-radius:0; border-bottom-left-radius:3px; } }   /* phone: to its right, as the phone mockup; the tail points back at it */
+/* its bubble: the component's own 3D thought cloud again (Murci, 2026-09-30: "I liked the old speech bubble ... light blue"), its lobes lit
+   in light blue instead of white-grey. It keeps the place measured on 09-29 (above its head, inside its own column: beside the head it
+   sat over card A's badge), so the two puffs rise from the head up to it. */
+body.nx-play .mcqp .pal-say { --c0:#e6f2ff; --c1:#c8e1ff; --c2:#a3cafa; --c3:#7cb0ee; --u1:#bcd9ff; --u2:#94c0f5; --u3:#6fa4e6;   /* measured on navy: the first tint read near-white */
+  --cloudShadow:drop-shadow(0 10px 18px rgba(2,10,40,0.5)) drop-shadow(0 0 1px rgba(255,255,255,0.7)); }
+/* from 8 px off the screen's left edge (its box's left is the robot's: --nx-rh * --nx-fx - --ph * 0.357) to the robot's column edge, so a
+   short line stays on one line (measured at 800x560: "You got this!" wrapped to a three-line circle in the robot's narrow box) */
+body.nx-play .mcqp .pal-say .say-txt, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(8px - (var(--nx-rh) * var(--nx-fx) - var(--ph) * 0.357)); bottom:97%;
+  max-width:min(300px, calc(var(--nx-botR) - 16px)) !important; padding:12px 20px 13px !important;   /* to 8 px short of the panel (its left edge is --nx-botR when narrow) */ color:#0d2666 !important; font-size:14px; }
+body.nx-play .mcqp .pal-say .p1, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p1 { left:50%; top:10%; }
+body.nx-play .mcqp .pal-say .p2, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p2 { left:42%; top:3%; }
+/* phone: beside its body and low, so a hint grows up INSIDE the robot's corner, under the question box (measured 09-29: anchored at
+   62% of its height, a 4-line hint rose over card D at 360x640); the puffs lead right from its head to it */
+@media (max-width:600px) {
+  body.nx-play .mcqp .pal-say .say-txt, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .say-txt { left:calc(72% + 4px); bottom:10%; max-width:min(250px, calc(100vw - 112px)) !important; }
+  body.nx-play .mcqp .pal-say .p1, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p1 { left:62%; top:30%; }
+  body.nx-play .mcqp .pal-say .p2, body.nx-play .mcqp .pal.small:not(.sayleft) .pal-say .p2 { left:68%; top:40%; } }
 
 /* ---- every other response mode (term, written, list, number, letter + name, pick, order, draw): the same panel ----
    Murci, 2026-09-29: the boss's look for EVERY part, not only MCQ (MCQ is 15 of 117 items across our two papers; Fluid
