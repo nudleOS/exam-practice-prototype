@@ -1206,7 +1206,22 @@ body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks][data-earned=
 @keyframes nx-mk-beep { 0%, 44%, 100% { scale:1; text-shadow:0 0 10px rgba(245,196,81,0.45); } 18%, 66% { scale:1.22; text-shadow:0 0 14px rgba(245,196,81,0.95), 0 0 2px #fff3c9; } }
 @media (prefers-reduced-motion: reduce) { body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks][data-earned="true"], body.nx-play .mcqp .qhead .qmarks.earned { animation:none; } }
 
+/* a typed term, right: the sealed field IS the answer's card; what it paid is a line under it, not a second card (Murci: "the
+   correct answer on the give terms question types should not show two cards") */
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] { display:flex !important; flex-direction:row !important; flex-wrap:wrap; align-items:center !important; gap:6px 10px; padding:0 2px !important;
+  border:0 !important; background:none !important; box-shadow:none !important; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-title { font-size:14.5px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-sub { font-size:11px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips { margin:0 0 0 auto !important; gap:6px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chip { height:26px; padding:0 10px; font-size:12px; }
+
 /* the sweep comes before the next question (nxLeave): the one answered fades while the robot runs, so it reads "moving on", and its
    buttons go (a second tap would only wait behind the first) */
 body.nx-sweep main:not(#mq-stage) [data-question], body.nx-sweep [data-footer] { opacity:0; pointer-events:none; transition:opacity 220ms ease; }
 .mcqp.sweeping .stage, .mcqp.sweeping ~ .mcqp .after, .mcqp.sweeping .after { opacity:0; pointer-events:none; transition:opacity 220ms ease; }
+/* a typed term, out of tries: the socket with the answer IS the card; "Out of tries · 0 of 1" is its caption, as the right answer's
+   line (Murci, 2026-10-01: "on the 1.2 questions i do not want two separate cards showing"; measured: the socket + a red card) */
+body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) { flex-direction:row !important; align-items:center !important; gap:8px; padding:0 2px !important;
+  border:0 !important; background:none !important; box-shadow:none !important; }
+body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-icon { width:20px; height:20px; font-size:11px; }
+body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-title { font-size:14px; font-weight:600; color:var(--nx-text2); }
