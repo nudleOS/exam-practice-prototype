@@ -2455,8 +2455,12 @@ class Component extends DCLogic {
       got = Math.round(got * 100) / 100; return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items }; }
     if (key.order) { const ok = key.order.every((w, pos) => answer[pos] === w);
       return whole(ok, key.order.map((w, pos) => ({ key: "pos" + pos, awarded: 0, available: 0, verdict: answer[pos] === w ? "correct" : "incorrect" }))); }
-    if (key.term) { const n = norm(answer); const ok = key.term.some(t => { const tn = norm(t); return n === tn || (tn.length >= 7 && lev(n, tn) <= 1); });
-      return whole(ok, [{ key: "t", awarded: ok ? part.marks : 0, available: part.marks, verdict: n ? (ok ? "correct" : "incorrect") : "missing" }]); }
+    // TERM_SLIPS - how close a misspelling may be and still count (Murci, 2026-09-30: "yes", close misspellings count; a Life Sciences
+    // teacher should confirm the rule): one wrong / missing / extra letter from 5 letters, two from 10; shorter terms must be exact.
+    if (key.term) { const n = norm(answer), slips = tn => tn.length >= 10 ? 2 : tn.length >= 5 ? 1 : 0;
+      const hit = key.term.find(t => { const tn = norm(t); return n === tn || (slips(tn) > 0 && lev(n, tn) <= slips(tn)); }), ok = hit != null;
+      const spelling = ok && norm(hit) !== n ? String(hit) : null;   // accepted with a slip: the feedback names the spelling
+      return whole(ok, [{ key: "t", awarded: ok ? part.marks : 0, available: part.marks, verdict: n ? (ok ? "correct" : "incorrect") : "missing", spelling: spelling }]); }
     if (key.letter) { const half = part.marks / 2;
       const lOk = String((answer || {}).letter || "").trim().toUpperCase() === String(key.letter).toUpperCase();
       const nOk = key.names.some(nm => norm((answer || {}).name) === norm(nm));
