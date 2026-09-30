@@ -130,6 +130,7 @@
   .mcqp .back::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
     background:linear-gradient(180deg, rgba(255,255,255,0.08), transparent 40%); }
   .mcqp .back .ok { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--ink, var(--text2)); }
+  .mcqp .ok .ok-sub { display:none; }   /* how the medal was earned ("First try"): shown only by a skin that lays the line out */
   .mcqp .medal { flex:none; width:20px; height:20px; border-radius:50%; background:var(--medal); box-shadow:0 0 0 1.5px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.4); }
   /* The shine before the turn: a glow in the medal colour and a sweep of light across the card */
   .mcqp .tile.shine .face { box-shadow:0 0 0 2px var(--ring), 0 0 46px var(--glow), 0 24px 40px -20px rgba(0,0,0,0.75), var(--glass-in); }

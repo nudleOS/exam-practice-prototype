@@ -255,7 +255,7 @@
         S.done = true; const pr = S.practice || !!(J && J.replay), gain = pr ? 0 : J ? (J.xp || 0) : opts.xpFor ? opts.xpFor({ item: S.it, tries: S.tries }) : XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = pr ? 0 : J ? (J.marks || 0) : S.tries === 1 ? S.it.marks : 0;
         if (!pr) streak = S.tries === 1 ? streak + 1 : 0; setHint(null);   // practice: the medal shows how it went, nothing is added
         const name = tier[0].toUpperCase() + tier.slice(1), mkText = mk ? "+" + mk + (mk === 1 ? " mark" : " marks") : "0 marks";
-        t.querySelector(".ok").innerHTML = `<span class="medal" aria-hidden="true"></span><span>${pr ? name + " · practice, no XP" : `${name} · +${gain} XP · ${mkText}`}</span>`;
+        t.querySelector(".ok").innerHTML = okHTML(name, pr ? ["practice, no XP"] : ["+" + gain + " XP", mkText], true, ["First try", "Second try", "Third try"][S.tries - 1]);
         fillBack(t, it); const rec = { gone: [...S.gone], tries: S.tries, ok: t.querySelector(".ok").innerHTML };
         live(pr ? `Correct, ${L[i]}. ${name}, practice: no XP or marks. ${whyOf(it)}` : `Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
         const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
@@ -265,14 +265,14 @@
           setTimeout(() => { xp += gain; $("xp").textContent = xp; bump("xpBox"); }, reduced ? 0 : 700); }   // counts up as the +XP lands
           setTimeout(() => score(it, mk, tier, rec), mk && !reduced ? 860 : 0); toast(pr ? name + " · practice" : name + " · +" + gain + " XP" + (mk ? " · +" + mk + " marks" : ""), "ok"); showNext(); }).catch(e => { if (e !== 0) console.error(e); });   // a stale card (question switched, thrown as 0) just stops; anything else is a real error and is reported
       } else {
-        if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: "The answer · 0 XP · 0 marks" };
+        if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: okHTML("The answer", ["0 XP", "0 marks"], false, "") };
         const clues = S.it.clues || [], clue = J ? (J.clue || "") : clues[Math.min(S.tries - 1, clues.length - 1)] || "", last = J ? !!J.closed : S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
         let rb = null;
         if (PAL.el && !PAL.sweeping && !reduced) { const rain = !!opts.glassRain || !!opts.robotFixed; if (rain) palStop(); const tx = rain ? PAL.x : palUnder(t), n = S.tries; rb = { ...palHead(tx), rain, minHold: rain ? 0 : Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last, opts.robotFixed ? PAL.x : rain ? palAway() : 0);   /* robotFixed: back to where it stands, i.e. it stays */ if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; if (!rain) palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card (glassRain: it stays where it is; the glass finds it anyway)
         S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
         wait(up).then(() => shatter(t, S.hit[i], rb)).then(() => { if (!last) S.busy = false;
           if (last) { S.done = true; const r = RQ(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
-            r.querySelector(".ok").textContent = S.practice ? "The answer · practice" : "The answer · 0 XP · 0 marks"; score(it, 0, "none", rec); fillBack(r, it); setHint(null);
+            r.querySelector(".ok").innerHTML = S.practice ? okHTML("The answer", ["practice"], false, "") : okHTML("The answer", ["0 XP", "0 marks"], false, ""); score(it, 0, "none", rec); fillBack(r, it); setHint(null);
             live(`The answer is ${L[it.a]}. ${whyOf(it)}`); wait(PAL.down ? 1700 : 0).then(() => present(r, null)).then(showNext); }   // the answer rises as it hits the ground
           const first = [...RQA(".tile")].find(x => !S.gone.has(+x.dataset.i));
           if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
@@ -292,8 +292,16 @@
       S.done = true; S.tries = b.tries || 0; S.tier = b.tier; (b.gone || []).forEach(i => { S.gone.add(i); leaveGap(tile(i), false); });   // revisit: already closed up
       fillBack(r, it); r.querySelector(".ok").innerHTML = b.ok || ""; if (b.tier !== "none") r.classList.add(b.tier); r.classList.add("flipped");
       killWrong(); paintTiles(); paintTop(); say(); showNext(); palSize(); }
+    // The medal line in parts (the tier's name, what it paid, how it was earned), so a skin can lay it out; read as one line it is
+    // what it always was ("Gold · +100 XP · +2 marks": the separators are text). Only fixed strings and numbers go in.
+    function okHTML(name, bits, medal, sub) {
+      return (medal ? '<span class="medal" aria-hidden="true"></span>' : "") + '<span class="ok-name">' + name + "</span>" +
+        bits.map(b => '<span class="ok-sep"> · </span><span class="ok-bit">' + b + "</span>").join("") + (sub ? '<span class="ok-sub">' + sub + "</span>" : ""); }
+    // the answer as its letter + its text (the paper's text by textContent, never HTML); reads "D · seed germination." as before
     function fillBack(t, it) { const w = WHY[it.n] || {};
-      t.querySelector(".ans").textContent = L[it.a] + " · " + it.opts[it.a]; t.querySelector(".why").textContent = whyOf(it);
+      const ans = t.querySelector(".ans"); ans.textContent = ""; const l = document.createElement("span"), x = document.createElement("span");
+      l.className = "ans-l"; l.textContent = L[it.a]; x.className = "ans-t"; x.textContent = it.opts[it.a];
+      const sep = document.createElement("span"); sep.className = "ans-sep"; sep.textContent = " · "; ans.append(l, sep, x); t.querySelector(".why").textContent = whyOf(it);
       t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
     // Where the learner goes next, and how: inside the same question group (1.1.1 -> 1.1.5) a tap anywhere continues; the
     // Next button only between groups, named for the group it opens ("Question 1.3").

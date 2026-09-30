@@ -548,6 +548,40 @@ body.nx-play:has(.mcqp .hero-layer.inpanel .tile.hero) .mcqp .after { visibility
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .back { text-align:center; }
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .copy { align-items:center; flex:0 1 auto; }
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .back .ok { justify-content:center; }
+/* The answer card, opened in the panel (Murci, 2026-09-30: "too plain and the spacing of text inside it is bad"; measured: two
+   small lines in a panel-sized card, 124 px empty above and below). Laid out as a result card: the medal large, its name and
+   how it was earned, what it paid as chips; then the correct answer as its letter badge + text under a small label, then the
+   why. One column, centred, an 8 px rhythm; the medal backs keep their own colours (--medal). */
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back { display:flex !important; flex-direction:column; align-items:center; justify-content:center; padding:28px 32px !important; text-align:center; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .copy { display:flex !important; flex-direction:column; align-items:center; width:100%; max-width:540px; gap:0; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ok { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; column-gap:8px; row-gap:0; margin:0; font-size:13px; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ok .ok-sep { display:none; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .medal { order:0; flex:0 0 64px; width:64px !important; height:64px !important; margin:0 calc(50% - 32px) 14px;
+  box-shadow:0 0 0 3px rgba(255,255,255,0.22), 0 0 0 7px rgba(255,255,255,0.06), 0 10px 30px rgba(0,0,0,0.45), 0 0 34px var(--medal); }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .medal { position:relative; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .medal::after { content:""; position:absolute; inset:24%; background:rgba(20,16,6,0.62);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .ok-name { order:1; flex:0 0 100%; font-size:24px; font-weight:700; line-height:1.15; color:var(--nx-text); }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .ok-sub { order:2; flex:0 0 100%; display:block; margin:4px 0 14px; font-size:11.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--nx-text2); }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero:not(:has(.ok-sub)) .ok-name { margin-bottom:14px; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .ok-bit { order:3; display:inline-flex; align-items:center; height:30px; padding:0 12px; border-radius:999px; font-size:13px; font-weight:700;
+  background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.16); color:var(--nx-text); }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans { display:grid; grid-template-columns:36px minmax(0, auto);   /* 36 = the badge: an auto column took a share of the label's width (55 px, a 32 px gap) */ column-gap:12px; row-gap:8px; align-items:center; justify-content:center;
+  margin:22px 0 0; padding:12px 18px 12px 12px; border-radius:16px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.16); text-align:left; align-self:center !important; }   /* the phone grid set align-self:start (it sat left of centre) */
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans::before { content:"Correct answer"; grid-column:1 / -1; justify-self:start; padding-left:2px; font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--nx-text2); }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans-sep { display:none; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans-l { display:grid; place-items:center; width:36px; height:36px; border-radius:10px; background:var(--medal, var(--nx-accent)); color:#10151f; font-size:16px; font-weight:800; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans-t { font-size:17px; line-height:1.35; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .why:not(:empty) { margin-top:16px; max-width:540px; font-size:14.5px; line-height:1.55; color:var(--nx-text2); }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .not:not(:empty) { margin-top:10px; font-size:13px; line-height:1.5; color:var(--nx-text2); }
+@media (max-width:600px) {
+  body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back { padding:22px 18px !important; }
+  body.nx-play .mcqp .hero-layer.inpanel .tile.hero .medal { flex-basis:52px; width:52px !important; height:52px !important; margin:0 calc(50% - 26px) 12px; }
+  body.nx-play .mcqp .hero-layer.inpanel .tile.hero .ok-name { font-size:20px; }
+  body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans { margin-top:18px; grid-template-columns:32px minmax(0, auto); }
+  body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans-l { width:32px; height:32px; font-size:14.5px; } body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back .ans-t { font-size:15.5px; }
+}
 /* no page scroll behind the question (Murci, 2026-09-30: "make sure I can't scroll down"): the page's own question column is hidden
    under the component's screen but still took room (measured: the page scrolled 76 px at 808x648) */
 html:has(body.nx-play.mcqp-on), body.nx-play.mcqp-on { overflow:hidden !important; }
