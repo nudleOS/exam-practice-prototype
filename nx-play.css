@@ -754,6 +754,14 @@ body.nx-play main:not(#mq-stage) [data-tiles="no"] .t { color:#ffd6d7; border-co
 }
 /* the toast over the top bar, not over the panel's top border (measured at 1348x648: top 74 px, the panel's edge at 93) */
 body.nx-play .mcqp .toast { top:12px; }
+/* the small answer card (a finished question, back in its slot) as two tight lines on every size, the tap hint a chevron: its three
+   lines stood 95 px tall beside 50 px cards (measured at 1348x648), the row lopsided. mcq-play.css has this for a phone only. */
+body.nx-play .mcqp .tile.flipped:not(.hero) .back { padding:8px 40px 8px 14px !important; gap:3px !important; justify-content:center; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .back .ok { font-size:12px; gap:6px; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .medal { width:16px; height:16px; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .back .ans { font-size:14px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .back .more { position:absolute; right:14px; top:50%; translate:0 -50%; font-size:0; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .back .more::after { content:"›"; font-size:24px; font-weight:600; line-height:1; color:var(--nx-text2); }
 /* the toast sits over the header's progress pill for its 1.5 s: opaque, so the pill's "2/9" does not show through its words */
 body.nx-play .mcqp .toast.no { background:#3b1a26; }
 body.nx-play .mcqp .toast.ok { background:#123a2c; }
