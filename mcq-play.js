@@ -204,7 +204,7 @@
       const esc = t => t.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
       st.innerHTML = (panel
         // one line (Murci, 2026-09-30): the paper's question ("Question 1") beside its part's chip (1.1.1), the marks on the right
-        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span></div>` + (lead ? `<p class="qlead"><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` : "")
+        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="tries" role="img"></span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span></div>` + (lead ? `<p class="qlead"><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` : "")
         : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
         `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
@@ -262,10 +262,12 @@
     function say() { $("say").textContent = S.done ? "" : S.sel == null ? "" : `Tap ${L[S.sel]} to answer`; }
     function paintTop() { $("xp").textContent = xp;
       $("streak").textContent = streak >= 2 ? `${streak} in a row` : ""; $("streak").dataset.n = streak;
-      const tr = RQ(".tries"), left = Math.max(0, 3 - S.tries);
-      // a dot per try: red for each wrong one, green for the right one, the tries still to come in the tint
-      const wrong = S.gone.size, right = S.done && S.tries > wrong;
-      if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${i < wrong ? "no" : right && i === wrong ? "yes" : i >= S.tries ? "live" : ""}"></i>`).join(""); tr.setAttribute("aria-label", `${left} ${left === 1 ? "try" : "tries"} left`); } }
+      const tr = RQ(".tries");
+      // a dot per try: red for each wrong one, green for the right one, the tries still to come in the tint; each also carries the
+      // medal it plays for (gold, silver, bronze) and "now" on the one this try is for, so a skin can draw them as medals
+      const wrong = S.gone.size, right = S.done && S.tries > wrong, TIER = ["gold", "silver", "bronze"];
+      if (tr) { tr.innerHTML = [0, 1, 2].map(i => `<i class="${TIER[i]} ${i < wrong ? "no" : right && i === wrong ? "yes" : i >= S.tries ? "live" : ""}${!S.done && i === wrong ? " now" : ""}"></i>`).join("");
+        tr.setAttribute("aria-label", right ? `${TIER[wrong][0].toUpperCase() + TIER[wrong].slice(1)}, on try ${wrong + 1} of 3` : S.done ? "No tries left" : `Try ${wrong + 1} of 3: ${TIER[Math.min(wrong, 2)]} if right`); } }
     listen(document, "keydown", e => { if (!S) return; if (S.done) { if (e.key === "Escape") dismiss(); else if (e.key === "Enter" && document.activeElement !== $("retry")) next(); return; }
       const i = "abcd".indexOf(e.key.toLowerCase()); if (i >= 0 && i < S.it.opts.length && !e.metaKey && !e.ctrlKey) { press(i); return; }
       const a = document.activeElement;
