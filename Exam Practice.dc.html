@@ -668,6 +668,9 @@
           <sc-if value="{{ playCloseMap }}" hint-placeholder-val="{{ true }}"><svg class="pc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><svg class="pc-map" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span class="pc-lbl" aria-hidden="true">Map</span></sc-if>
           <sc-if value="{{ playCloseX }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
         </button>
+        <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}">
+          <button data-headback="true" onClick="{{ backPart }}" aria-label="Previous question" title="Previous question"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+        </sc-if>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
           <span class="nx-prog" role="progressbar" aria-label="{{ nxProgAria }}" aria-valuemin="1" aria-valuemax="{{ nxProgN }}" aria-valuenow="{{ nxProgK }}"><span class="nx-dots"><sc-for list="{{ nxDots }}" as="nd" hint-placeholder-count="9"><i class="{{ nd.cls }}"></i></sc-for></span><span class="nx-count">{{ nxProgK }} / {{ nxProgN }}</span></span>
         </sc-if>
@@ -1199,7 +1202,6 @@
                 </div>
               </sc-if>
               <span style="display:flex; gap:8px; margin-top:4px">
-                <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span aria-hidden="true">‹</span><span data-backword="true">&nbsp;Back</span></button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
                   <button onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
@@ -1242,7 +1244,6 @@
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ flagFill }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22V4"></path><path d="M5 4h12l-2.5 4.5L17 13H5"></path></svg>{{ flagLabel }}
                 </button>
               </sc-if>
-              <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span aria-hidden="true">‹</span><span data-backword="true">&nbsp;Back</span></button></sc-if>
               <sc-if value="{{ nxCanSkip }}" hint-placeholder-val="{{ false }}"><button data-skip="true" onClick="{{ skipPart }}" aria-label="Skip this question for now">Skip</button></sc-if>
               <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-width:0; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
               </div>
@@ -2785,7 +2786,6 @@ class Component extends DCLogic {
       onNext: () => this.advance(),
       seed: s.fix || s.drill ? {} : this.mcqBook(),
       onScore: r => { if (!s.fix && !s.drill) this.mcqBook()[r.n] = { got: r.marks, of: r.item.marks, tier: r.tier, gone: r.gone || [], tries: r.tries, ok: r.ok, a: r.item.a }; },
-      canBack: () => this.canBack(), onBack: () => this.prevPart(),
       onMap: () => this.setState({ screen: "map" }),
       look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 3 : 5, skip: () => this.canSkip(), heroIn: "stage", celebrate: "corner", after: "panel",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
       topicOf: it => NX_TOPICS[it.n] || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });

@@ -133,8 +133,8 @@ body.nx-play [data-playclose] .pc-map { opacity:0.8; }
   .nx-pill { padding:0 12px; } .nx-prog { padding:0 14px; gap:12px; } .nx-dots { gap:8px; }
 }
 @media (min-width:601px) and (max-width:1000px) {
-  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto auto auto auto;
-    grid-template-areas:"brand brand streak marks xp lv sep2 av" "map prog prog prog prog prog prog prog"; align-items:center; column-gap:10px !important; row-gap:10px !important; padding:10px 22px 12px !important; }
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto auto 1fr auto auto auto auto auto auto;
+    grid-template-areas:"brand brand brand streak marks xp lv sep2 av" "map back prog prog prog prog prog prog prog"; align-items:center; column-gap:10px !important; row-gap:10px !important; padding:10px 22px 12px !important; }
   .nx-brand { grid-area:brand; } .nx-marks { grid-area:marks; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-sep2 { grid-area:sep2; } .nx-av { grid-area:av; }
   body.nx-play [data-streak] { grid-area:streak; }   /* its own slot: with none it took a third header row (measured 768 px) */
   body.nx-play [data-playclose] { grid-area:map; }
@@ -144,7 +144,7 @@ body.nx-play [data-playclose] .pc-map { opacity:0.8; }
 /* phone: two rows, as the phone mockup (brand, +XP, level, profile / the progress). Measured: in one wrapping row it took 3
    rows (149 px) at 390 px. The mockup has no map button; the map is how a learner moves on, so it starts the second row. */
 @media (max-width:600px) {
-  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto; grid-template-areas:"brand brand xp lv av" "map marks marks streak streak";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto auto 1fr auto auto auto; grid-template-areas:"brand brand brand xp lv av" "map back marks marks streak streak";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
     align-items:center; column-gap:6px !important; row-gap:12px !important; padding:12px 16px 12px !important; }   /* 12 / 12 / 12: "cluttered on top of each other" at 8 / 8 / 10 (Murci, 2026-09-30) */
   .nx-brand { grid-area:brand; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-av { grid-area:av; } .nx-prog { grid-area:prog; }
   /* the streak meter ends the progress row (Murci, 2026-09-30: no clutter on the phone's navbar). Row 1 is the mockup's: brand,
@@ -790,16 +790,8 @@ body.nx-play main:not(#mq-stage) [data-termmedal]::after { content:""; position:
 /* ==== the panel keeps to its room and scrolls inside (non-MCQ parts; the host's nxPanelCap sets its max-height) ==== */
 body.nx-play main:not(#mq-stage) [data-question] { overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
 body.nx-play main:not(#mq-stage) [data-question]::-webkit-scrollbar { display:none; }
-/* Back, left of Skip / Check (practice): outlined like Skip; on a phone the arrow alone (its name stays for the screen reader) */
-body.nx-play [data-footer] [data-back] { display:inline-flex; align-items:center; justify-content:center; }
-body.nx-play [data-footer] :is([data-back]) { flex:none !important; min-height:46px !important; height:46px; padding:0 20px !important; border-radius:999px !important; font-size:15px !important; font-weight:800 !important; white-space:nowrap; cursor:pointer;
-  border:1px solid var(--nx-pill-line) !important; background:var(--nx-pill) !important; color:var(--nx-text) !important; box-shadow:none !important; }
 /* "Enter your answer" over Check: the host writes display:block inline, so the rule needs !important (measured: it still showed) */
 body.nx-play [data-footer] [role="status"]:not([data-bar]) { display:none !important; }
-@media (max-width:600px) {
-  body.nx-play [data-footer] [data-back] { width:46px; padding:0 !important; font-size:20px !important; }
-  body.nx-play [data-footer] [data-back] [data-backword] { display:none; }
-}
 /* where the robot stands UNDER the panel (a phone; an upright tablet), its words go beside its head, not above it: the panel stops
    just above its head (nxPanelCap), and a bubble over the head was hidden by a grown panel (measured at 375x812 and 360x640) */
 @media (max-width:600px), (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
@@ -860,3 +852,16 @@ html[data-nx="light"] [data-termshards] .ts-glass { color:#8a1c22; }
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { background:rgba(16,40,90,0.06); border-color:rgba(16,40,90,0.16); color:var(--nx-text); }
 /* the robot's words are reading text now (its hints live there, Murci 2026-09-30), so not bold, on both robots: it read 700 */
 body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p, body.nx-play .mcqp .pal-say .say-txt { font-weight:500 !important; }
+/* ==== Back, Skip, Check (Murci, 2026-09-30: "build all 3") ====
+   1 · Back is a small arrow in the header, just before the part dots it steps back along (it sat in the action row beside Skip
+       and Check, which act on THIS question). One Back for every part type, MCQ included. */
+body.nx-play [data-headback] { flex:none; width:44px; height:44px; display:grid; place-items:center; padding:0; cursor:pointer; border-radius:12px;
+  background:var(--nx-pill); border:1px solid var(--nx-pill-line); color:var(--nx-text); }
+body.nx-play [data-headback]:hover { border-color:var(--nx-accent); }
+body.nx-play [data-headback]:focus-visible { outline:2px solid var(--nx-accent); outline-offset:2px; }
+@media (min-width:601px) and (max-width:1000px) { body.nx-play [data-headback] { grid-area:back; } }
+@media (max-width:600px) {
+  /* the pills' 32 px look, a 44 px tap target through an invisible hit area (as the map button) */
+  body.nx-play [data-headback] { grid-area:back; width:32px; height:32px; border-radius:11px; position:relative; }
+  body.nx-play [data-headback]::after { content:""; position:absolute; inset:-6px -4px; }
+}
