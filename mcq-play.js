@@ -152,8 +152,8 @@
       const k = ORDER.indexOf(it.n);
       const panel = opts.look === "panel", topic = panel && opts.topicOf ? (opts.topicOf(it) || "") : "";
       st.innerHTML = (panel
-        ? `<p class="qlabel">Question ${String(it.n).split(".")[0]}</p>` +   // the paper's question (Question 1) first, then its part: the chip carries 1.1.1 (Murci: the child under its parent)
-          `<div class="qhead"><span class="chip"><span class="num">${it.n}</span>${topic ? `<span class="topic">${topic}</span>` : ""}</span><span class="qmarks"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>${it.marks} marks</span></div>`
+        // one line (Murci, 2026-09-30): the paper's question ("Question 1") beside its part's chip (1.1.1), the marks on the right
+        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span><span class="chip"><span class="num">${it.n}</span>${topic ? `<span class="topic">${topic}</span>` : ""}</span></span><span class="qmarks" aria-label="${it.marks} marks"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>${it.marks}<span class="mw"> marks</span></span></div>`
         : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
         (panel ? `<h1><span>${stem}</span></h1>` : `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>`) +
