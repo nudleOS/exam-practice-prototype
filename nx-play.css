@@ -766,3 +766,8 @@ body.nx-play .mcqp .tile.flipped:not(.hero) .back .more::after { content:"›"; 
 body.nx-play .mcqp .toast.no { background:#3b1a26; }
 body.nx-play .mcqp .toast.ok { background:#123a2c; }
 html[data-nx="light"] body.nx-play .mcqp .toast.no { background:#fdecec; } html[data-nx="light"] body.nx-play .mcqp .toast.ok { background:#e6f6ee; }
+/* the sweep (robotFixed: off its rock, the "floor" class): it walks BEHIND the Back / Next row, and its bubble waits on the rock
+   (measured: the robot crossed over Skip, "You got this!" riding along mid-screen). The question's layer rises over the robot for
+   just that walk (the answer card is not up then, so nothing of the page's own order changes). */
+body.nx-play .mcqp .pal.floor .pal-say { display:none !important; }
+body.nx-play:has(.mcqp .pal.floor) .mcqp-page { z-index:43; }
