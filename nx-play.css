@@ -1112,6 +1112,18 @@ body.nx-play main:not(#mq-stage) [data-anstag] { margin-left:auto; flex:none; fo
 [data-termshards] .ts-cracks { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
 [data-termshards] .ts-cracks path { fill:none; stroke:rgba(255,225,225,0.95); stroke-width:1.6; stroke-linecap:round; }
 
+/* the answer cards and the term's field: a thicker ring (2 px) for the light that runs around it */
+@property --nx-ga { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+@keyframes nxEdgeShine { to { --nx-ga:360deg; } }
+body.nx-play .mcqp .face::before { padding:2px !important; }
+body.nx-play main:not(#mq-stage) [data-termstate="typing"] > input { border-color:transparent !important; }
+body.nx-play main:not(#mq-stage) [data-termstate="typing"]::before { content:""; position:absolute; inset:0; border-radius:14px; padding:2px; pointer-events:none; z-index:1;
+  background:conic-gradient(from var(--nx-ga), transparent 0deg 300deg, rgba(170,205,255,0.95) 330deg, transparent 350deg), linear-gradient(var(--nx-card-line, rgba(129,177,255,0.28)), var(--nx-card-line, rgba(129,177,255,0.28)));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); animation:nxEdgeShine 6s linear infinite; }
+body.nx-play main:not(#mq-stage) [data-termstate="typing"]:focus-within::before { background:conic-gradient(from var(--nx-ga), transparent 0deg 300deg, rgba(210,230,255,1) 330deg, transparent 350deg), linear-gradient(var(--nx-accent), var(--nx-accent)); }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termstate="typing"]::before { background:conic-gradient(from var(--nx-ga), transparent 0deg 300deg, rgba(2,133,251,0.9) 330deg, transparent 350deg), linear-gradient(var(--nx-card-line, #c9d8ee), var(--nx-card-line, #c9d8ee)); }
+@media (prefers-reduced-motion:reduce) { body.nx-play main:not(#mq-stage) [data-termstate="typing"]::before { animation:none; } }
+
 /* the robot a size up (about 15%), on every screen */
 body.nx-play, body.nx-play .mcqp { --ph:min(414px, 50vh); }
 @media (min-width:1280px) and (min-height:800px) { body.nx-play, body.nx-play .mcqp { --ph:min(552px, 56vh); } }
