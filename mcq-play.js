@@ -845,7 +845,8 @@
     function sayIdle(text) { const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show"); void c.offsetWidth; c.classList.add("show", "idle"); fitCloud($("clueTxt")); }   // not read out: it is company, not information
     function sayHint(text) { if (!text) return; text = SAY[text] || text; const c = $("clue"); $("clueTxt").textContent = text; c.classList.remove("show", "idle"); void c.offsetWidth; c.classList.add("show"); fitCloud($("clueTxt")); palPoint(!$("pal").classList.contains("sayleft"));
       live("Hint: " + text); }                                                                       // it stands and thinks it (no wave)
-    function toast(t, k) { if (k === "ok" && (innerWidth <= 600 || innerHeight <= 520) && $("heroLayer").querySelector(".tile.hero")) return;   // phone (upright or on its side): no room above the big card, and it already says this
+    // (heroIn "stage": the card in the panel says it too, and the toast sat on the panel's top border: never over the open card)
+    function toast(t, k) { if (k === "ok" && (opts.heroIn === "stage" || innerWidth <= 600 || innerHeight <= 520) && $("heroLayer").querySelector(".tile.hero")) return;   // phone (upright or on its side): no room above the big card, and it already says this
       const e = $("toast"); e.textContent = t; e.className = "toast show " + k; clearTimeout(e._t); e._t = setTimeout(() => e.className = "toast " + k, 1500); }
 
     const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
