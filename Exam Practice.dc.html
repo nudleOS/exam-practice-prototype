@@ -1247,6 +1247,9 @@
           <span style="font-size:12.5px; font-weight:700; color:var(--text3)">{{ doneKicker }}</span>
           <h1 data-donetitle="true" tabIndex="-1" style="margin:0; font-size:{{ doneH1 }}; font-weight:800; line-height:1.2; letter-spacing:-0.01em; text-wrap:balance; outline:none">{{ doneTitle }}</h1>
         </div>
+        <sc-if value="{{ doneHasStreak }}" hint-placeholder-val="{{ false }}">
+          <span data-donestreak="true" style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:#f3c14f"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f3c14f" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ doneStreak }}</span>
+        </sc-if>
         <div data-donestats="true" style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px">
           <span data-donestat="xp" style="display:flex; flex-direction:column; gap:4px; padding:14px; border-radius:16px; border:1px solid transparent; background:linear-gradient(180deg, var(--nx-g1, #1d2231), var(--nx-g2, #171b24)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.55), rgba(103,29,255,0.3) 60%, rgba(255,255,255,0.05)) border-box">
             <span aria-hidden="true" style="display:flex; align-items:center; gap:6px; font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1"><svg width="18" height="18" viewBox="0 0 24 24" fill="#81b1ff"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ doneXpShown }}</span>
@@ -1259,9 +1262,6 @@
             <span style="font-size:12px; font-weight:600; line-height:1.45; color:var(--text2)">marks in this mission</span>
           </span>
         </div>
-        <sc-if value="{{ doneHasStreak }}" hint-placeholder-val="{{ false }}">
-          <span data-donestreak="true" style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:#f3c14f"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f3c14f" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ doneStreak }}</span>
-        </sc-if>
         <sc-if value="{{ doneHasWaiting }}" hint-placeholder-val="{{ false }}">
           <span data-donewait="true" style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.5; color:var(--warn)">{{ doneWaiting }}</span>
         </sc-if>
