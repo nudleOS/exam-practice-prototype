@@ -663,13 +663,13 @@
 
     <div data-playhead="true" style="position:sticky; top:0; z-index:22; background:rgba(var(--nx-c, 25,27,30), 0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:8px; padding:6px 12px">
-        <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span class="nx-brand"><span class="nx-nudle">Nudle</span><span class="nx-sep" aria-hidden="true"></span><img class="nx-nexera" src="assets/nexera-wordmark.webp" alt="Nexera"></span></sc-if>
+        <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span class="nx-brand"><span class="nx-mono" role="img" aria-label="Nudle">N</span><span class="nx-nudle">Nudle</span><span class="nx-sep" aria-hidden="true"></span><img class="nx-nexera" src="assets/nexera-wordmark.webp" alt="Nexera"></span></sc-if>
         <button data-playclose="true" onClick="{{ playClose }}" aria-label="{{ playCloseAria }}" aria-haspopup="{{ playCloseHasPopup }}" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer">
           <sc-if value="{{ playCloseMap }}" hint-placeholder-val="{{ true }}"><svg class="pc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><svg class="pc-map" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span class="pc-lbl" aria-hidden="true">Map</span></sc-if>
           <sc-if value="{{ playCloseX }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
         </button>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
-          <button class="nx-prog nx-where" data-where="true" onClick="{{ openQmap }}" disabled="{{ nxWhereOff }}" aria-haspopup="dialog" aria-expanded="{{ qmapExpanded }}" aria-label="{{ nxWhereAria }}"><span class="nx-plabel">{{ nxProgLabel }}</span><svg class="nx-where-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <button class="nx-prog nx-where" data-where="true" onClick="{{ openQmap }}" disabled="{{ nxWhereOff }}" aria-haspopup="dialog" aria-expanded="{{ qmapExpanded }}" aria-label="{{ nxWhereAria }}"><span class="nx-plabel">{{ nxProgLabel }}</span><span class="nx-plabel-s" aria-hidden="true">{{ nxProgShort }}</span><svg class="nx-where-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
         </sc-if>
         <sc-if value="{{ nxNoLook }}" hint-placeholder-val="{{ true }}"><span style="flex:1; min-width:0"></span></sc-if>   <!-- the part dots came back with the boss's design (nxLook), as the parts of this mission -->
         <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
@@ -703,8 +703,9 @@
             <span data-markspill="true" class="nx-pill nx-marks" aria-label="{{ playMarksAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>{{ playMarks }}/{{ playMarksOf }}</span></span>
           <span data-xppill="true" class="nx-pill nx-xp" aria-label="{{ xp }} XP"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>+{{ xpShort }}<span class="nx-xpw"> XP</span></span></span>
           <span class="nx-pill nx-lv" role="img" aria-label="{{ nxLevelAria }}"><span class="nx-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><span class="nx-lvw">Lv </span>{{ nxLevel }}</span>
+            <button class="nx-stats-hit" onClick="{{ openStats }}" aria-haspopup="dialog" aria-expanded="{{ statsExpanded }}" aria-label="{{ statsHitAria }}"></button>
           </span>
-          <span class="nx-sep2" aria-hidden="true"></span><span class="nx-av" role="img" aria-label="Your profile"><svg viewBox="0 0 40 40" width="42" height="42" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#dbe7f7"/><circle cx="20" cy="16" r="7" fill="#8aa3c7"/><path d="M6 36c3-8 9-11 14-11s11 3 14 11" fill="#8aa3c7"/></svg></span>
+          <span class="nx-sep2" aria-hidden="true"></span><span class="nx-av" role="img" aria-label="Your profile"><svg viewBox="0 0 40 40" width="42" height="42" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#dbe7f7"/><circle cx="20" cy="16" r="7" fill="#8aa3c7"/><path d="M6 36c3-8 9-11 14-11s11 3 14 11" fill="#8aa3c7"/></svg></span><span class="nx-avlv" aria-hidden="true">{{ nxLevel }}</span>
         </sc-if>
         <sc-if value="{{ showPlayMarks }}" hint-placeholder-val="{{ true }}">
         <span data-markspill="true" aria-label="{{ playMarksAria }}" style="height:44px; box-sizing:border-box; flex:none; display:flex; align-items:center; gap:5px; padding:0 12px; border-radius:14px; border:1px solid var(--line2); font-size:14px; font-weight:800; color:var(--text)"><span>{{ playMarks }}</span><span style="color:var(--text4); font-weight:700">/{{ playMarksOf }}</span><span style="color:var(--text4); font-size:12px; font-weight:700">marks</span></span>
@@ -1188,6 +1189,18 @@
             </sc-for>
           </div>
           <button class="qm-map" onClick="{{ openPaperMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Open the paper map</button>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ statsOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-statsheet="true" onClick="{{ statsScrim }}">
+        <div data-statsheet-panel="true" role="dialog" aria-modal="true" aria-label="Your progress" tabIndex="-1" onKeyDown="{{ statsKeys }}">
+          <div class="ss-head"><span class="ss-title">Your progress</span><button class="ss-x" onClick="{{ closeStats }}" aria-label="Close">×</button></div>
+          <div class="ss-row"><span>Marks</span><span class="ss-v">{{ playMarks }}/{{ playMarksOf }}</span></div>
+          <div class="ss-row"><span>XP</span><span class="ss-v">{{ xp }}</span></div>
+          <div class="ss-row"><span>Level</span><span class="ss-v">{{ nxLevel }}</span></div>
+          <div class="ss-row"><span>Streak</span><span class="ss-v ss-streak"><sc-for list="{{ streakPips }}" as="sp" hint-placeholder-count="3"><i style="background:{{ sp.bg }}; box-shadow:{{ sp.glow }}"></i></sc-for><span style="color:{{ streakMultColor }}">×3</span></span></div>
+          <p class="ss-note">{{ streakLabel }}</p>
         </div>
       </div>
     </sc-if>
@@ -2258,6 +2271,14 @@ class Component extends DCLogic {
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       if (f && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
         if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); }); } }
+  nxStatsVals(s, hall) {
+    const close = () => this.setState({ statsOpen: false }, () => { const b = document.querySelector("[data-playhead] .nx-stats-hit"); if (b) b.focus(); });
+    const lv = this.levelOf(this.mission());   // the header's level (the Question's, as nxLevel)
+    return { statsOpen: !hall && !!s.statsOpen, statsExpanded: s.statsOpen ? "true" : "false",
+      openStats: () => this.setState({ statsOpen: true }, () => { const p = document.querySelector("[data-statsheet-panel]"); if (p) p.focus(); }),
+      closeStats: close, statsScrim: e => { if (e.target === e.currentTarget) close(); }, statsKeys: e => { if (e.key === "Escape") { e.preventDefault(); close(); } },
+      statsHitAria: "Your progress: " + Math.max(0, this.earnedNow() - (this._mcqPending || 0)) + " marks, " + (s.xp || 0) + " XP, level " + lv + ". Open for your streak" };
+  }
   // The header's location is the map (Murci, 2026-09-30: the Map button "doesn't look nice ... handle that in a different way"; the
   // part dots went too): "Question 1.2 · 2 of 8" opens a panel of this Question's groups and every sub-question with how it went,
   // a tap goes there, and "Open the paper map" leads to the whole map. Off in a fix or a drill round (their own order).
@@ -3998,6 +4019,9 @@ class Component extends DCLogic {
       streakMultColor: sPaid ? "#f3c14f" : "rgba(243,193,79,0.55)", streakKey: "st" + s.streak,
       streakLabel: sPaid ? "Triple XP: " + s.streak + " first tries in a row" : (s.streak % 3) + " of 3 first tries in a row. The third earns triple XP",
       streakAnim: s.reduced ? "none" : "pop 360ms cubic-bezier(0.34,1.56,0.64,1) both",
+      // a phone's header is one row (Murci, 2026-10-01, option A): marks + XP in one pill that opens "Your progress" (the streak
+      // meter and the level live there; the level is also a badge on the avatar)
+      ...this.nxStatsVals(s, hall),
      
       // layout + companion
       playDisplay: wide ? "grid" : "block", footSpacer: wide ? "block" : "none", footPadX: "16px",
@@ -4091,6 +4115,7 @@ class Component extends DCLogic {
     const nx = !hall, mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1), nxLv = this.levelOf(this.mission());
     const base = { nxLook: nx, nxNoLook: !nx, nxProgK: nxK, nxProgN: mParts.length, nxProgAria: "Part " + nxK + " of " + mParts.length,
       nxProgLabel: ((this.mission() || {}).title || "") + " · " + nxK + " of " + mParts.length,   // the header's centre: "Question 1.2 · 2 of 8"
+      nxProgShort: String((this.mission() || {}).title || "").replace(/^Question\s*/i, "Q ") + " · " + nxK + "/" + mParts.length,   // a phone's one-row header: "Q 1.2 · 2/8"
       // the paper's order in the panel (Murci, 2026-09-30): the group's own lead-in line under "Question 1", then the numbered sub-question
       nxHasLead: nx && !!(this.mission() || {}).lead, nxLead: (this.mission() || {}).lead || "", nxLeadNum: (this.mission() || {}).id || "",
       ...this.nxMapVals(s, nx), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, hasPartTopic: nx && !!nxTopic, partTopic: nxTopic, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
