@@ -753,7 +753,7 @@ body.nx-play main:not(#mq-stage) [data-tries] .tp.won { opacity:1; box-shadow:0 
 body.nx-play main:not(#mq-stage) [data-tries] .tp.lost { opacity:0.85; --tp:linear-gradient(128deg, transparent 43%, #0b1220 43% 55%, transparent 55%), linear-gradient(28deg, transparent 58%, #0b1220 58% 66%, transparent 66%), #4a5468; box-shadow:none; }
 body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] { position:relative; }
 body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > input { height:56px !important; padding:0 16px !important; border-radius:14px !important; font-size:18px !important; font-weight:500 !important; letter-spacing:0.01em; }
-body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > :not(input):not([data-termmedal]):not([data-termsocket]) { display:none !important; }   /* the old stamp (x0 / check 1): the field says it */
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > :not(input):not([data-termmedal]):not([data-termsocket]):not([data-submit]) { display:none !important; }   /* the old stamp (x0 / check 1): the field says it */
 /* broken: the field is hidden (its pieces are falling); the socket it leaves holds the row's height */
 body.nx-play main:not(#mq-stage) [data-termstate~="broken"] > input, body.nx-play main:not(#mq-stage) [data-termstate~="out"] > input { visibility:hidden; }
 body.nx-play main:not(#mq-stage) [data-termsocket] { position:absolute; inset:0; box-sizing:border-box; border-radius:14px; border:1.5px dashed rgba(160,185,230,0.28); display:grid; place-items:center;
@@ -1081,6 +1081,22 @@ body.nx-play [data-replay], body.nx-play .mcqp .qpractice { display:inline-flex;
 html[data-nx="light"] body.nx-play [data-replay], html[data-nx="light"] body.nx-play .mcqp .qpractice { color:#8a5a00; background:#fff4d8; }
 @media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-lead], body.nx-play .mcqp .qlead { font-size:14px; } }
 
+/* answering from the field: a round arrow inside a typed term's field (Enter too), a quiet line under it; the other types keep one
+   round arrow in the row (Check took a whole labelled pill: "it takes unnecessary space") */
+body.nx-play main:not(#mq-stage) [data-termstate="typing"] > input { padding-right:60px !important; }
+body.nx-play [data-submit] { position:absolute; right:7px; top:50%; margin-top:-21px; width:42px; height:42px; border-radius:50%; border:0; display:grid; place-items:center; cursor:pointer; z-index:2;
+  background:linear-gradient(135deg, #1f7bff, #5b3bff); color:#fff; box-shadow:0 8px 18px -8px rgba(40,90,255,0.8); transition:transform 120ms ease, opacity 160ms ease, background 160ms ease; }
+body.nx-play [data-submit]:active { transform:scale(0.93); }
+body.nx-play [data-submit]:disabled { background:var(--nx-tone); color:var(--nx-text2); box-shadow:none; cursor:default; opacity:0.8; }
+body.nx-play [data-enterhint] { font-size:12.5px; color:var(--nx-text2); margin-top:-2px; }
+body.nx-play:has([data-question] [data-submit]) [data-footer] [data-check] { display:none !important; }
+body.nx-play { --ic-arrow:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E");
+  --ic-retry:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7'/%3E%3Cpath d='M3 4v5h5'/%3E%3C/svg%3E"); }
+body.nx-play [data-footer] [data-check] { width:48px; padding:0 !important; font-size:0 !important; gap:0 !important; }
+body.nx-play [data-footer] [data-check]::after { --ic:var(--ic-arrow) !important; width:19px !important; height:19px !important; }
+/* out of tries: the socket shows the term, in grey, marked "The answer" */
+body.nx-play main:not(#mq-stage) [data-termsocket="answer"] { display:flex; align-items:center; justify-content:flex-start; gap:10px; padding:0 14px 0 16px; font-size:18px; font-weight:500; color:var(--nx-text2); text-align:left; }
+body.nx-play main:not(#mq-stage) [data-anstag] { margin-left:auto; flex:none; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--nx-text2); padding:4px 9px; border-radius:999px; border:1px solid var(--nx-pill-line); }
 /* the robot a size up (about 15%), on every screen */
 body.nx-play, body.nx-play .mcqp { --ph:min(414px, 50vh); }
 @media (min-width:1280px) and (min-height:800px) { body.nx-play, body.nx-play .mcqp { --ph:min(552px, 56vh); } }
