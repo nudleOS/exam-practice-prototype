@@ -396,7 +396,9 @@
     // units (H 2.4, fit 0.8) over its height, so px/s = 3.51 · rate · boxHeight / 3.84. Moving the box at exactly that pace
     // is what keeps the feet from sliding. `translate` (not transform) carries the position, so the jump arcs compose with it.
     // robotFixed cleanup (Murci, 2026-09-30: the sweep ran ~6 s into the next question): a brisk sweep and return, and a tap during it waits
-    const CLEAN_SWEEP = 3.0, CLEAN_RUN = 2.4;
+    // (2026-10-01: a host that waits for the sweep before its next question, Exam Practice's cleanUp, wants it easy, not a dash:
+    // Murci, "it should not run too fast")
+    const CLEAN_SWEEP = 1.6, CLEAN_RUN = 1.4;
     const RUN_RATE = 1.0, SWEEP_RATE = 1.2;   // px/s = rate x box height: cut as the robot grew, so its pace on screen holds   // an unhurried jog (Murci: slower); the sweep a little quicker
     const palSpeed = rate => 3.513 * rate * ($("pal").offsetHeight / 3.84);
     // Small while the learner chooses (CSS gives it a size on a phone only): the question is open and the robot is home and free.
@@ -450,9 +452,11 @@
         const leftOfPile = Math.min(...xs) - B.left - B.w * 0.9;
         return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile), runAt) : Promise.resolve()).then(() => sweepRight(pieces, sweepAt)); })
       .then(() => { PAL.sweeping = false; return palRunTo(0, runAt); }).then(() => fixed ? (pal.classList.remove("floor"), wait(reduced ? 0 : FLOOR_MS)) : null)   // home: back up on its rock
-      .then(() => { PAL.cleaning = false; clearTimeout(PAL.cleanT); if (palFree()) palGreet(); palSize();
+      .then(() => { PAL.cleaning = false; clearTimeout(PAL.cleanT); if (palFree()) palGreet(); palSize(); cleaned();
         const q = PAL.queued; PAL.queued = null; if (q != null && S && !S.done && S.sel === q) press(q); });   // a card tapped while it cleaned: answered now
     }
+    // the host's cleanUp() waits on this: the robot is back home (on its rock) with the floor clear
+    function cleaned() { const f = PAL.onClean; PAL.onClean = null; clearTimeout(PAL.onCleanT); if (f) f(); }
     const FLOOR_MS = 460;   // robotFixed: the step down from its rock to the floor, and back up (nx-play.css eases .pal.floor over this)
     // the broken pieces sink off the floor and fade (a short, staggered drop): kept for a host that wants the glass gone without a sweep
     function dropAway(pieces) { pieces.forEach((el, k) => { const a = el.getAnimations(); a.forEach(x => x.commitStyles && x.commitStyles()); a.forEach(x => x.cancel());
@@ -827,7 +831,7 @@
     // the progress bar runs on to the next segment, and the next question rises in and deals its cards.
     let leaving = false;
     function next() { if (opts.onNext) return opts.onNext({ from: S.it.n, to: nextN(), sameGroup: sameGroup() }); go(ORDER[(ORDER.indexOf(S.it.n) + 1) % ORDER.length]); }
-    function go(n, practice = false) { if (leaving) return; if (reduced) return arrive(n, practice); leaving = true;
+    function go(n, practice = false) { if (leaving) return; if (reduced || PAGE.classList.contains("sweeping")) return arrive(n, practice); leaving = true;   // faded for the sweep: nothing to clear
       NEXT.classList.remove("show"); if ($("cont")) $("cont").remove(); setHint(null); $("scrim").classList.remove("on");
       const outs = [], hero = $("heroLayer").firstElementChild, flip = x => x.classList.contains("flipped") ? "rotateY(180deg) " : "";
       // Fading a card flattens its 3D (opacity groups it), so backface hiding stops working and the far side would show
@@ -841,7 +845,7 @@
       if ($("shards").firstChild && !PAL.el) outs.push($("shards").animate([{ transform: "none", opacity: 1 }, { transform: "translateX(-34px)", opacity: 0 }], { duration: 360, delay: 120, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).finished);
       palCleanUp();                                                                                // the robot gets up and sweeps the glass away
       Promise.all(outs).then(() => arrive(n, practice)).catch(() => arrive(n, practice)); }
-    function arrive(n, practice = false) { leaving = false; if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; SC.scrollTo({ top: 0 }); const st = $("stage");
+    function arrive(n, practice = false) { leaving = false; PAGE.classList.remove("sweeping"); if (!PAL.sweeping) { $("shards").replaceChildren(); $("shards").getAnimations().forEach(a => a.cancel()); } PILE = {}; SC.scrollTo({ top: 0 }); const st = $("stage");
       if (opts.slideIn && !reduced) { load(n, practice); slideIn(); return; }
       st.classList.add("enter"); load(n, practice);
       setTimeout(() => st.classList.remove("enter"), 900); }
@@ -908,6 +912,12 @@
 
     // ---- the host's handle ----
     const api = { go: (n, practice) => go(n, practice), get state() { return S; },
+      // the glass on the floor, and the sweep as a promise, for a host that moves on only once the robot is home (Exam Practice:
+      // Next, then the sweep, then the next question). The question fades meanwhile (.sweeping). A safety net resolves it anyway.
+      glass: () => $("shards").children.length,
+      cleanUp: () => new Promise(res => { if (!PAL.el || reduced || !$("shards").children.length) { $("shards").replaceChildren(); res(); return; }
+        PAGE.classList.add("sweeping"); PAL.onClean = res;   // (the question stays faded until the next one arrives: arrive() lifts it) clearTimeout(PAL.onCleanT); PAL.onCleanT = setTimeout(cleaned, 9000);
+        if (PAL.sweeping) return; palCleanUp(); }),
       // for tests and debugging: the engine's own functions and state
       t: { S: () => S, press, go, dismiss, next, submit, $, RQ, RQA, PAL, NEXT, book: () => book, xp: () => xp, sayHint, openMap, closeMap, nextN, sameGroup, leaving: () => leaving, restore },
       destroy() { OFF.forEach(f => f()); try { if (PAL.el) PAL.el.remove(); } catch (x) {} LAYERS.remove(); PAGE.remove(); document.body.classList.remove("mcqp-on"); if (mounted === api) mounted = null; } };

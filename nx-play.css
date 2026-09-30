@@ -1166,3 +1166,11 @@ body.nx-play .mcqp .qmarks .mw { margin-left:0.3em; }
   body.nx-play main:not(#mq-stage) [data-lead], body.nx-play .mcqp .qlead { font-size:13px; line-height:1.4; }
   body.nx-play .mcqp .qlead { margin:6px 0 0; }
 }
+
+/* the robot sweeps the glass (Exam Practice nxLeave): its words wait while it runs, and come back when it is on its rock */
+body.nx-sweep main > aside[aria-label="Your companion"] > p { visibility:hidden; }   /* (not opacity: its pop animation holds that) */
+
+/* the sweep comes before the next question (nxLeave): the one answered fades while the robot runs, so it reads "moving on", and its
+   buttons go (a second tap would only wait behind the first) */
+body.nx-sweep main:not(#mq-stage) [data-question], body.nx-sweep [data-footer] { opacity:0; pointer-events:none; transition:opacity 220ms ease; }
+.mcqp.sweeping .stage, .mcqp.sweeping ~ .mcqp .after, .mcqp.sweeping .after { opacity:0; pointer-events:none; transition:opacity 220ms ease; }

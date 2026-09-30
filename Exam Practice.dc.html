@@ -727,7 +727,7 @@
       <aside aria-label="Your companion" style="position:{{ coachPos }}; top:{{ coachTop }}; align-self:start; z-index:2; display:flex; flex-direction:{{ coachDir }}; align-items:{{ coachAlign }}; gap:{{ coachGap }}; margin-bottom:{{ coachMb }}">
         <div aria-hidden="true" style="position:relative; width:{{ coachW }}; height:{{ coachH }}; flex:none">
           <sc-if value="{{ coachModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/companion-robot.glb" clip="{{ playClip }}" from="{{ playFrom }}" hold="{{ playHold }}" loop="once" inplace="" autorotate="off" face="user" floor="none" fit="{{ coachFit }}" style="position:absolute; inset:0 0 4px 0"></model-floor>
+            <model-floor src="assets/companion-robot.glb" clip="{{ playClip }}" from="{{ playFrom }}" hold="{{ playHold }}" loop="{{ playLoop }}" inplace="" autorotate="off" face="user" floor="none" fit="{{ coachFit }}" style="position:absolute; inset:0 0 4px 0"></model-floor>
           </sc-if>
           <sc-if value="{{ coachPoster }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -2142,6 +2142,7 @@ class Component extends DCLogic {
     // the Hall stays as it is until he asks). On <html> too: the page's own background reads its tokens from the root.
     const nxApp = this.nxApp(); document.body.classList.toggle("nx-app", nxApp); document.documentElement.classList.toggle("nx-app", nxApp);
     this.syncMcq();
+    if (st.screen !== "play" && this._shards && this._shards.length) { this.shardsAway(this._shards); this._shards = []; }   // off the play screen, the glass does not stay behind
     const sheet = this.state.sheet;
     // componentDidUpdate runs after the DOM is committed, so focus can move now; waiting for a
     // frame would fail wherever frames are throttled.
@@ -2535,7 +2536,7 @@ class Component extends DCLogic {
     // the hips 0.85 units toward the camera; loop="once": without it model-floor ignored hold, so it looped the walk), and stops
     // on the hand-out frame)
     const stand = !part && clip === "greet" && this.state.sitting !== "hall"; if (stand) part = NX_GREET;
-    clearTimeout(this._rc); clearTimeout(this._rc2); const f = part ? { playFrom: String(part.from), playHold: String(part.hold) } : { playFrom: "", playHold: "" };
+    clearTimeout(this._rc); clearTimeout(this._rc2); const f = Object.assign({ playLoop: "once" }, part ? { playFrom: String(part.from), playHold: String(part.hold) } : { playFrom: "", playHold: "" });
     if (this.state.reduced) { this.setState(Object.assign({ playClip: clip }, f)); return; }
     this.setState(Object.assign({ playClip: "" }, f)); this._rc = setTimeout(() => this.setState({ playClip: clip }), 60);
     // a flinch stands back up (the greeting) once it has played
@@ -2575,7 +2576,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
@@ -2696,12 +2697,60 @@ class Component extends DCLogic {
         { offset: 0.93, transform: "translate(" + (xl + vx * 0.06).toFixed(1) + "px," + yl.toFixed(1) + "px) rotate(" + rest.toFixed(1) + "deg)" },
         { offset: 1, transform: "translate(" + (xl + vx * 0.06).toFixed(1) + "px," + yl.toFixed(1) + "px) rotate(" + rest.toFixed(1) + "deg)" });
       const dur = Math.round(tl * 1000 / 0.64 + 160);
-      all.push(outer.animate(kf, { duration: dur, delay: CRACK_AT, easing: "linear", fill: "both" }).finished
-        .then(() => outer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: 700 + i * 40, fill: "forwards" }).finished)); }
+      // where the glass itself lies (the box is the whole field, the piece clipped inside it) and its reach, for the sweep to push it off
+      outer.dataset.x = (r.left + mx + xl + vx * 0.06).toFixed(0); outer.dataset.reach = Math.max(...pts.map(p => Math.hypot(p[0] - mx, p[1] - my))).toFixed(0);
+      all.push(outer.animate(kf, { duration: dur, delay: CRACK_AT, easing: "linear", fill: "both" }).finished); }
     setTimeout(() => { whole.remove(); pieces.forEach(o => { o.style.visibility = ""; }); }, CRACK_AT);
-    Promise.all(all).then(() => layer.remove(), () => layer.remove());
+    // the pieces STAY on the ground (Murci, 2026-10-01: "they have to get wiped by our robot"): the robot sweeps them off when the
+    // learner moves on (nxLeave), as the MCQ robot does its glass
+    (this._shards = this._shards || []).push(layer);
     return new Promise(res => setTimeout(res, CRACK_AT + 560));   // the new field comes while the pieces are still falling (~1.26 s)
   }
+  // Moving on with glass on the floor, the robot wipes it FIRST (Murci, 2026-10-01: "after clicking next then that's when the robot
+  // sweeps before the next question appears after its done and standing back on top of the rock"): the question fades, the robot
+  // goes down off its rock, sprints right pushing every piece off the edge, comes round from the left and back up; then `then`
+  // (the move: the next question) runs. Returns true when it has taken the move (it runs later); false = go now. A move asked for
+  // mid-sweep replaces the waiting one (the last tap wins). The MCQ's robot sweeps its own glass (mcq-play cleanUp) the same way.
+  // No robot to sweep with (reduced motion, the saver, the model not loaded): the pieces sink away and the move goes now.
+  nxLeave(then) {
+    if (this._sweeping) { this._after = then; return true; }
+    const q = this._mcq;
+    if (q && q.glass && q.glass()) { this._sweeping = true; this._after = then;
+      q.cleanUp().then(() => { this._sweeping = false; const f = this._after; this._after = null; if (f) f(); }); return true; }
+    const layers = (this._shards || []).filter(l => l.isConnected); this._shards = [];
+    if (!layers.length) return false;
+    const box = document.querySelector('aside[aria-label="Your companion"] > div'), mf = box && box.querySelector("model-floor");
+    if (!mf || !mf.dataset.avatar || this.state.reduced || this.state.screen !== "play") { this.shardsAway(layers); return false; }
+    this._sweeping = true; this._after = then; document.body.classList.add("nx-sweep");
+    const B = box.getBoundingClientRect(), fit = parseFloat(mf.getAttribute("fit")) || 0.8;
+    // its pace is the run clip's planted foot (mcq-play's palSpeed: 3.51 units/s, the box shows 2 x 2.4 x fit units over its height),
+    // so the feet do not slide; its feet are 81% down the box (the figure fills 62.5% of it, centred), the pieces lie 22 px above the bottom
+    // an easy run, not a dash (Murci: "it should not run too fast"): the question waits for it now, so there is no race to win
+    const v = rate => 3.513 * rate * B.height / (4.8 * fit), SWEEP = 1.6, RUN = 1.4, STEP = 380;
+    const dy = Math.max(0, Math.round(innerHeight - 22 - (B.top + B.height * 0.8125))), exit = Math.round(innerWidth - B.left + 40), back = Math.round(-B.left - B.width - 30);
+    const at = (x, y) => x + "px " + y + "px", move = (kf, ms, easing) => box.animate(kf.map(t => ({ translate: t })), { duration: ms, easing, fill: "forwards" }).finished;
+    mf.setAttribute("yaw", "1.35"); mf.setAttribute("speed", String(SWEEP));   // three-quarters to the right: its face stays in view
+    clearTimeout(this._rc); clearTimeout(this._rc2);
+    this.setState({ playClip: "", playLoop: "", playFrom: "", playHold: "" }); this._rc = setTimeout(() => this.setState({ playClip: "run" }), 60);
+    const sweepMs = exit / v(SWEEP) * 1000, front0 = B.left + B.width * 0.62;   // its leading foot
+    layers.forEach(l => l.querySelectorAll(".ts-piece").forEach(el => { const cx = +el.dataset.x, reach = +el.dataset.reach || 60;
+      if (cx < -reach || cx > innerWidth + reach) return;                         // thrown off-screen in the break: nothing to push
+      setTimeout(() => { const dist = innerWidth + reach + 24 - cx;               // pushed ahead of it, a little hop, clear of the edge
+        el.animate([{ translate: "0 0" }, { translate: (dist * 0.15).toFixed(0) + "px -7px", offset: 0.14 }, { translate: dist.toFixed(0) + "px 0" }],
+          { duration: dist / (v(SWEEP) * 1.12) * 1000, easing: "cubic-bezier(.2,.6,.4,1)", fill: "forwards" }); }, STEP + Math.max(0, (cx - front0) / v(SWEEP) * 1000)); }));
+    const done = () => { box.getAnimations().forEach(a => a.cancel()); mf.removeAttribute("speed"); mf.setAttribute("yaw", "0"); layers.forEach(l => l.remove());
+      this._sweeping = false; document.body.classList.remove("nx-sweep"); const f = this._after; this._after = null; if (f) f(); else this.react("greet"); };
+    move([at(0, 0), at(0, -10), at(0, dy)], STEP, "cubic-bezier(.45,0,.9,.7)")                       // a hop down to the floor
+      .then(() => move([at(0, dy), at(exit, dy)], sweepMs, "cubic-bezier(.3,0,.7,1)"))                    // the sweep, off the right edge
+      .then(() => { mf.setAttribute("speed", String(RUN)); return move([at(back, dy), at(0, dy)], -back / v(RUN) * 1000, "cubic-bezier(.2,.6,.4,1)"); })   // round from the left
+      .then(() => { mf.setAttribute("yaw", "0"); return move([at(0, dy), at(0, -10), at(0, 0)], STEP, "cubic-bezier(.2,.6,.4,1)"); })    // back up on its rock
+      .then(done, done);
+    return true;
+  }
+  // the pieces sink off the floor and fade (a short, staggered drop), then their layer goes
+  shardsAway(layers) { layers.forEach(l => { const ps = [...l.querySelectorAll(".ts-piece")];
+    Promise.all(ps.map((el, k) => el.animate([{ opacity: 1 }, { opacity: 0, translate: "0 26px" }], { duration: 420, delay: (k % 8) * 30, easing: "ease-in", fill: "forwards" }).finished))
+      .then(() => l.remove(), () => l.remove()); }); }
   levelOf(m) { const n = parseInt(String((m && m.id) || "").replace(/^Question\s*/i, ""), 10); return n > 0 ? n : 1; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
   // A drill plays as one synthetic mission of the parts it chose.
@@ -2709,7 +2758,8 @@ class Component extends DCLogic {
   part() { const m = this.mission(); return m ? m.parts[this.state.pi] : null; }
   pg(key) { return this.state.prog[key] || { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }; }
 
-  resetInputs(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, reply: null, marking: false,
+  resetInputs(extra) { if (this.nxLeave(() => this.resetNow(extra))) return; this.resetNow(extra); }
+  resetNow(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
@@ -3947,7 +3997,7 @@ class Component extends DCLogic {
       coachAlign: wide ? "center" : "flex-end", coachGap: wide ? "14px" : "10px", coachMb: wide ? "0" : "4px",
       coachW: wide ? "220px" : tablet ? "92px" : "72px", coachH: wide ? "330px" : tablet ? "138px" : "108px",
       coachShadowH: wide ? "20px" : "10px", coachShadowTint: shadowTint,
-      coachModelOn: !s.reduced && !s.saveData, coachPoster: !!(s.reduced || s.saveData) || !hall, playClip: s.playClip, playFrom: s.playFrom || (!hall && s.playClip === "greet" ? String(NX_GREET.from) : ""), playHold: s.playHold || (!hall && s.playClip === "greet" ? String(NX_GREET.hold) : ""),   /* practice: the silhouette until the model has loaded (nx-play hides it then) */
+      coachModelOn: !s.reduced && !s.saveData, coachPoster: !!(s.reduced || s.saveData) || !hall, playClip: s.playClip, playLoop: s.playLoop == null ? "once" : s.playLoop, playFrom: s.playFrom || (!hall && s.playClip === "greet" ? String(NX_GREET.from) : ""), playHold: s.playHold || (!hall && s.playClip === "greet" ? String(NX_GREET.hold) : ""),   /* practice: the silhouette until the model has loaded (nx-play hides it then) */
       // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
       coachBubble: hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? hintLine : waitHint ? words.zero : retryNow ? "Your turn. Try again." : words[outcome] || framing,
       coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : waitHint ? "wait" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
