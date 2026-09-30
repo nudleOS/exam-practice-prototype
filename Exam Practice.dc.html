@@ -2493,9 +2493,11 @@ class Component extends DCLogic {
   // The panel's feedback, under the answer (practice, non-MCQ parts): a check's result, or the hint while the learner retries.
   // Under the answer, so the field never moves; a full mark is a medal result (the tier by try, as the MCQ card).
   nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed) {
-    const hall = s.sitting === "hall", result = !hall && showBar && !!bar && outcome !== "idle", hint = !hall && !showBar && !!(reply && reply.clue && !closed);
+    // (2026-09-30, Murci: the hints come from the robot's bubble only, so the feed is a result and nothing else: no hint card while
+    // retrying, no "Hint:" line under a miss; the letters-and-shape hint gave the answer away and is gone)
+    const hall = s.sitting === "hall", result = !hall && showBar && !!bar && outcome !== "idle";
     const full = outcome === "full", k = Math.min(2, Math.max(0, ((reply && reply.try) || 1) - 1)), tier = full ? ["Gold", "Silver", "Bronze"][k] : "";
-    const part = this.part(), term = !!part && part.response_mode === "term" && !hall, pr = part ? this.pg(part.key) : {};
+    const part = this.part(), term = !!part && part.response_mode === "term" && !hall;
     const spelled = res && res.items && res.items[0] && res.items[0].spelling;
     // what it paid, and the x3 when the streak paid it (measured: "+300 XP" never said why)
     const chips = full ? [{ t: reply.replay ? "Replay · no XP" : "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 && !reply.replay ? [{ t: "×" + reply.multiplier + " streak" }] : [],
