@@ -268,12 +268,16 @@
         if (!S.practice) streak = 0; S.sel = null; S.gone.add(i); const rec = { gone: [...S.gone], tries: S.tries, ok: okHTML("The answer", ["0 XP", "0 marks"], false, "") };
         const clues = S.it.clues || [], clue = J ? (J.clue || "") : clues[Math.min(S.tries - 1, clues.length - 1)] || "", last = J ? !!J.closed : S.tries >= 3 || S.gone.size >= S.it.opts.length - 1;
         let rb = null;
-        if (PAL.el && !PAL.sweeping && !reduced) { const rain = !!opts.glassRain || !!opts.robotFixed; if (rain) palStop(); const tx = rain ? PAL.x : palUnder(t), n = S.tries; rb = { ...palHead(tx), rain, minHold: rain ? 0 : Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last, opts.robotFixed ? PAL.x : rain ? palAway() : 0);   /* robotFixed: back to where it stands, i.e. it stays */ if (back) back.then(() => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); }); } }; if (!rain) palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card (glassRain: it stays where it is; the glass finds it anyway)
+        if (PAL.el && !PAL.sweeping && !reduced) { const rain = !!opts.glassRain || !!opts.robotFixed; if (rain) palStop(); const tx = rain ? PAL.x : palUnder(t), n = S.tries; rb = { ...palHead(tx), rain, minHold: rain ? 0 : Math.max(0, palRunMs(tx) + 140 - up), onHit: () => { const back = palHit(n, last, opts.robotFixed ? PAL.x : rain ? palAway() : 0);   /* robotFixed: back to where it stands, i.e. it stays */
+          // robotFixed: it does not run anywhere, so it thinks the clue as it flinches (measured: 2.8 s from the tap, 0.76 s of it
+          // waiting for a recovery that goes nowhere); a robot that runs off says it once it is back on its feet
+          const say = () => { if (S === SQ && !S.done && S.tries === n) sayHint(clue); };
+          if (back) { if (opts.robotFixed) setTimeout(say, 280); else back.then(say); } } }; if (!rain) palRunTo(tx).then(() => { if (!PAL.hurt && !PAL.down && !PAL.anim) palIdle(); }); }   // it arrives and stands, looking up at your card (glassRain: it stays where it is; the glass finds it anyway)
         S.busy = true;                                                  // until its glass has fallen (the robot is committed to this card)
         wait(up).then(() => shatter(t, S.hit[i], rb)).then(() => { if (!last) S.busy = false;
           if (last) { S.done = true; const r = RQ(`.tile[data-i="${S.it.a}"]`); if (PAL.down) r.classList.add("nobuddy");
             r.querySelector(".ok").innerHTML = S.practice ? okHTML("The answer", ["practice"], false, "") : okHTML("The answer", ["0 XP", "0 marks"], false, ""); score(it, 0, "none", rec); fillBack(r, it); setHint(null);
-            live(`The answer is ${L[it.a]}. ${whyOf(it)}`); wait(PAL.down ? 1700 : 0).then(() => present(r, null)).then(showNext); }   // the answer rises as it hits the ground
+            live(`The answer is ${L[it.a]}. ${whyOf(it)}`); wait(PAL.down ? (opts.robotFixed ? 450 : 1700) : 0).then(() => present(r, null)).then(showNext); }   // the answer rises as it hits the ground (robotFixed: as it goes down, not after; measured 2026-09-30: 6.9 s from the last tap to the answer)
           const first = [...RQA(".tile")].find(x => !S.gone.has(+x.dataset.i));
           if (first && !last) first.querySelector(".face").focus({ preventScroll: true });
           if (!last && !rb) sayHint(clue);                                // no robot to say it: the clue comes as the glass lands
@@ -590,7 +594,7 @@
       const g = grow(t); palLook(t);
       return g.then(() => {
         if (!PAL.down && !corner) palJump(t).then(() => buddyIn(t, true));                       // it vanishes and appears in the card, then rides the spin frozen (not when it's down)
-        if (!tier) return wait(650);
+        if (!tier) return wait(opts.robotFixed ? 300 : 650);
         t.querySelectorAll(".vline, .vfill").forEach(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished.then(() => x.remove()));
         t.classList.remove("yes"); t.classList.add("shine"); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
         return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
