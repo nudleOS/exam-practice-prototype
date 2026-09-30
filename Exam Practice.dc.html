@@ -3103,7 +3103,9 @@ class Component extends DCLogic {
       doneXpShown: "+" + (cnt ? cnt.xp : xp), doneXpText: xp + " XP earned in this mission", doneXpWhy: why.join(" · "),
       doneMarksShown: (cnt ? cnt.marks : mEarned) + "/" + mTotal, doneMarksText: mEarned + " of " + mTotal + " marks",
       // The streak is a count of first tries, not a multiplier: the multiplier is the server's to compute.
-      doneHasStreak: s.streak >= 2 && !!nm, doneStreak: s.streak + " first tries in a row · the streak carries into " + (nm ? nm.id : ""),
+      // (measured 2026-09-30: "8 first tries" in the XP line beside "7 first tries in a row" read as a mismatch; both were true: the
+      // mission's count, and the unbroken run now. The run is named as the run.)
+      doneHasStreak: s.streak >= 2 && !!nm, doneStreak: "Your run now: " + s.streak + " first tries in a row, carried into " + (nm ? (/^Question/i.test(nm.id) ? nm.id : "Question " + nm.id) : ""),
       doneHasWaiting: waitingN > 0, doneWaiting: "Its marks land on the map when a marker has read it. You can keep going.",
       donePaperText: before + " → " + earned + " of " + total + " banked",
       donePaperAria: "The paper: " + before + " marks banked before this mission, " + earned + " now, of " + total,
