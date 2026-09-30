@@ -60,6 +60,25 @@ html[data-nx="dark"] .nx-rocks-l { background-image:url("assets/scenery/life-sci
   background-image:url("assets/scenery/life-sciences/rocks-middle.webp"); }
 html[data-nx="dark"] .nx-rocks-m { background-image:url("assets/scenery/life-sciences/rocks-middle-dark.webp"); }
 @media (max-width:700px) { .nx-rocks-m { display:none; } }
+/* Floor fillers (Murci, 2026-09-30: "on the expanded window of a desktop there are still spaces on the floor"). Measured at
+   1920x969: gaps of 132 px (left rock to middle) and 91 px (middle to right); from the geometry they grow with the width
+   (~430 / ~380 px at 2560) and close by 1440x900. Each strip spans exactly its gap (the rocks' own maths: the left rock ends
+   at rh x (rl + 633/375), the middle is rh x 2.4 wide and centred, the right starts at 100% - rh x 1.517), behind the rocks.
+   Two clusters cropped from the middle art tuck under the neighbours; a third (mirrored) fills the middle of a wide gap.
+   A strip of no width shows nothing (the container queries); phones have no middle and no gaps. */
+.nx-fill { position:absolute; height:calc(var(--nx-rh) * 0.34); bottom:calc(var(--nx-rh) * 0.34 * -0.07); container-type:inline-size; pointer-events:none; }
+.nx-fill-1 { left:calc(var(--nx-rh) * (var(--nx-rl) + 1.688)); width:max(0px, calc(50% - var(--nx-rh) * (var(--nx-rl) + 1.688) - var(--nx-rh) * 1.2)); }
+.nx-fill-2 { left:calc(50% + var(--nx-rh) * 1.2); width:max(0px, calc(50% - var(--nx-rh) * 1.517 - var(--nx-rh) * 1.2)); }
+.nx-fill i { position:absolute; bottom:0; height:100%; background:no-repeat center bottom / contain; }
+.nx-fill .fa { aspect-ratio:286 / 116; background-image:url("assets/scenery/life-sciences/rocks-fill-a.webp"); }
+.nx-fill .fb { aspect-ratio:214 / 126; background-image:url("assets/scenery/life-sciences/rocks-fill-b.webp"); }
+html[data-nx="dark"] .nx-fill .fa { background-image:url("assets/scenery/life-sciences/rocks-fill-a-dark.webp"); }
+html[data-nx="dark"] .nx-fill .fb { background-image:url("assets/scenery/life-sciences/rocks-fill-b-dark.webp"); }
+.nx-fill .l { left:0; translate:-30% 0; } .nx-fill .r { right:0; translate:30% 0; }
+.nx-fill .m { left:50%; translate:-50% 0; scale:-1 1; display:none; }
+@container (min-width:300px) { .nx-fill .m { display:block; } }
+@container (max-width:4px) { .nx-fill i { display:none; } }   /* measured: a 15 px gap at 1024x640 stayed empty with a 24 px cut-off */
+@media (max-width:700px) { .nx-fill { display:none; } }
 html[data-nx="dark"] .nx-rocks-r { background-image:url("assets/scenery/life-sciences/rocks-right-dark.webp"); }
 /* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). Measured on
    rocks-left: the flat top's middle is at x 0.864 and 0.560 up, as fractions of the art's height; the art starts 0.3 of its
