@@ -200,6 +200,12 @@
     .mcqp .tile.hero .copy { display:contents; }
     .mcqp .tile.hero .back .copy > * { position:relative; z-index:2; }
     .mcqp .tile.hero .buddy { grid-area:bud; width:96px; height:118px; margin:0; }
+    /* no robot in the card (celebrate "corner": it celebrates on its rock): one column, or the empty 96 px robot column
+       pushed the text right (measured at 375 px: 124-152 px from the left edge, 16 from the right) */
+    /* and no named rows: an unused "why" / "not" row still counts its gap (the answer sat 10 px high of centre); the lines that
+       show flow in order */
+    .mcqp .tile.hero.nobuddy .back { grid-template-columns:minmax(0, 1fr); grid-template-areas:none; align-content:center; padding:16px; }
+    .mcqp .tile.hero.nobuddy .back :is(.ok, .ans, .why, .not) { grid-area:auto; }
     .mcqp .tile.hero .back .ok { grid-area:ok; align-self:end; font-size:13px; } .mcqp .tile.hero .medal { width:20px; height:20px; }
     .mcqp .tile.hero .back .ans { grid-area:ans; align-self:start; font-size:17px; }
     .mcqp .tile.hero .back .why { grid-area:why; font-size:15px; line-height:1.5; margin-top:4px; }
