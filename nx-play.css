@@ -884,3 +884,66 @@ body.nx-play .mcqp .next.skip:hover { color:var(--nx-text) !important; }
 body.nx-play .mcqp .next.skip::before, body.nx-play .mcqp .next.skip::after { display:none !important; }   /* the spinning ring is Next's, not Skip's */
 /* the robot's silhouette holds its place on the rock until the 3D model has loaded (3-5 s on a first visit: the rock stood empty) */
 main > aside[aria-label="Your companion"] model-floor[data-avatar="ready"] ~ svg { display:none; }
+
+/* ==== the question page's header, redesigned (Murci, 2026-09-30: "cluttered and not neat, things all over the place") ====
+   Three zones. Left: the two logos (bottoms on one line), Map. Centre: where the learner is ("Question 1.2 · 2 of 8" over the
+   part dots), at the page's true centre. Right: ONE stats group (streak, marks, XP, level) and the profile. Back left the header
+   (it is under the panel's left edge now). */
+body.nx-play [data-playhead] > div:first-child { position:relative; }
+body.nx-play [data-playclose] .pc-chev { display:none !important; }   /* Map is a place, not a back arrow */
+body.nx-play [data-playclose]:has(.pc-lbl) { padding:0 16px 0 13px !important; gap:8px !important; }
+body.nx-play [data-playclose] .pc-map { display:block !important; opacity:0.9; }
+.nx-prog { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); margin:0 !important; height:auto; padding:0; background:none !important; border:0 !important;
+  flex-direction:column; align-items:center; gap:7px; pointer-events:none; }
+.nx-plabel { font-size:13px; font-weight:600; color:var(--nx-text2); white-space:nowrap; letter-spacing:0.01em; }
+.nx-prog .nx-count { display:none; }
+.nx-prog .nx-dots { gap:6px; }
+.nx-prog .nx-dots i { width:16px; height:5px; border-radius:3px; border:0; background:var(--nx-pill-line); }
+.nx-prog .nx-dots i.done { background:color-mix(in srgb, var(--nx-accent) 70%, transparent); }
+.nx-prog .nx-dots i.cur { width:32px; height:5px; border-radius:3px; background:linear-gradient(90deg, #0066fe, #3b8cff); }
+.nx-stats { margin-left:auto; flex:none; display:flex; align-items:center; height:44px; box-sizing:border-box; padding:0 4px; border-radius:999px; background:var(--nx-pill); border:1px solid var(--nx-pill-line); }
+.nx-stats > * { height:100% !important; border:0 !important; background:none !important; box-shadow:none !important; border-radius:0 !important; padding:0 14px !important; }
+.nx-stats > * + * { border-left:1px solid var(--nx-pill-line) !important; }
+.nx-stats > [data-streak] { color:var(--nx-text) !important; }
+body.nx-play [data-playhead] .nx-sep2 { display:none !important; }
+body.nx-play [data-playhead] .nx-av { margin-left:4px; }
+/* the two logos sit on one line: the wordmark image's bottom on the Nudle letters' baseline (nudge measured in the page) */
+.nx-brand { align-items:flex-end !important; }
+.nx-nexera { position:relative; top:var(--nx-logo-nudge, 0px); }
+.nx-sep { align-self:center; }
+/* 601-1000: two rows. Row 1: logos, stats, profile. Row 2: Map, then where the learner is (label and dots on one line, centred) */
+@media (min-width:601px) and (max-width:1000px) {
+  body.nx-play [data-playhead] > div:first-child { grid-template-columns:auto minmax(0, 1fr) auto auto !important; grid-template-areas:"brand . stats av" "map prog prog prog" !important; }
+  .nx-stats { grid-area:stats; margin:0; } .nx-av { grid-area:av; }
+  .nx-prog { grid-area:prog; position:static; transform:none; flex-direction:row; justify-self:center; gap:12px; }
+}
+/* phone: row 1 = logos, XP, level, profile; row 2 = Map, the parts as a bar with "2/8", the marks, the streak (Murci: the marks
+   are important on a phone). The stats group opens up into its pills so each takes its own place. */
+@media (max-width:600px) {
+  body.nx-play [data-playhead] > div:first-child { grid-template-columns:auto minmax(0, 1fr) auto auto auto !important; grid-template-areas:"brand brand xp lv av" "map prog marks streak streak" !important; }
+  .nx-stats { display:contents; }
+  .nx-stats > * { height:30px !important; padding:0 9px !important; border-radius:11px !important; border:1px solid var(--nx-pill-line) !important; background:var(--nx-pill) !important; }
+  .nx-stats > .nx-xp { grid-area:xp; } .nx-stats > .nx-lv { grid-area:lv; } .nx-stats > .nx-marks { grid-area:marks; margin:0 !important; justify-self:end; } .nx-stats > [data-streak] { grid-area:streak; justify-self:end; height:30px !important; }
+  body.nx-play .nx-prog { display:flex !important; grid-area:prog; position:static; transform:none; flex-direction:row; align-items:center; gap:8px; min-width:0; }
+  .nx-prog .nx-plabel { display:none; }
+  body.nx-play .nx-prog .nx-dots { display:flex !important; flex:1 1 auto; min-width:0; gap:3px; }
+  .nx-prog .nx-dots i, .nx-prog .nx-dots i.cur { flex:1 1 0; width:auto; min-width:4px; height:4px; }
+  .nx-prog .nx-count { display:block; font-size:12px; font-weight:700; color:var(--nx-text2); }
+  body.nx-play [data-playclose]:has(.pc-lbl) { padding:0 11px 0 9px !important; gap:5px !important; }
+  body.nx-play [data-playclose] .pc-map { width:15px; height:15px; }
+}
+/* 601-1000 (measured at 768): Map took the logos' column width (170 px); the progress centred in its cells (474), not the page (384).
+   Map keeps its own width; the progress spans the whole second row and centres on the page (Map at its start, clear of it). */
+@media (min-width:601px) and (max-width:1000px) {
+  body.nx-play [data-playclose] { justify-self:start; }
+  .nx-prog { grid-column:1 / -1; grid-row:2; }
+}
+/* the one-row header needs ~1120 px (measured at 1024: the centred progress ran 33 px into the stats group; stats 376 + profile 42
+   + gaps against half the progress's 186); 1160 leaves room for a 4-digit XP. So 1001-1160 takes the two-row header too. */
+@media (min-width:1001px) and (max-width:1160px) {
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto minmax(0, 1fr) auto auto !important; grid-template-areas:"brand . stats av" "map prog prog prog" !important;
+    align-items:center; column-gap:10px !important; row-gap:10px !important; padding:10px 22px 12px !important; }
+  .nx-brand { grid-area:brand; } .nx-stats { grid-area:stats; margin:0; } .nx-av { grid-area:av; }
+  body.nx-play [data-playclose] { grid-area:map; justify-self:start; }
+  .nx-prog { grid-column:1 / -1; grid-row:2; position:static; transform:none; flex-direction:row; justify-self:center; gap:12px; }
+}

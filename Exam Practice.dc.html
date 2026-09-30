@@ -668,11 +668,8 @@
           <sc-if value="{{ playCloseMap }}" hint-placeholder-val="{{ true }}"><svg class="pc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><svg class="pc-map" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span class="pc-lbl" aria-hidden="true">Map</span></sc-if>
           <sc-if value="{{ playCloseX }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
         </button>
-        <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}">
-          <button data-headback="true" onClick="{{ backPart }}" aria-label="Previous question" title="Previous question"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
-        </sc-if>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
-          <span class="nx-prog" role="progressbar" aria-label="{{ nxProgAria }}" aria-valuemin="1" aria-valuemax="{{ nxProgN }}" aria-valuenow="{{ nxProgK }}"><span class="nx-dots"><sc-for list="{{ nxDots }}" as="nd" hint-placeholder-count="9"><i class="{{ nd.cls }}"></i></sc-for></span><span class="nx-count">{{ nxProgK }} / {{ nxProgN }}</span></span>
+          <span class="nx-prog" role="progressbar" aria-label="{{ nxProgAria }}" aria-valuemin="1" aria-valuemax="{{ nxProgN }}" aria-valuenow="{{ nxProgK }}"><span class="nx-plabel" aria-hidden="true">{{ nxProgLabel }}</span><span class="nx-dots"><sc-for list="{{ nxDots }}" as="nd" hint-placeholder-count="9"><i class="{{ nd.cls }}"></i></sc-for></span><span class="nx-count">{{ nxProgK }} / {{ nxProgN }}</span></span>
         </sc-if>
         <sc-if value="{{ nxNoLook }}" hint-placeholder-val="{{ true }}"><span style="flex:1; min-width:0"></span></sc-if>   <!-- the part dots came back with the boss's design (nxLook), as the parts of this mission -->
         <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
@@ -690,21 +687,23 @@
         <sc-if value="{{ hasFixChip }}" hint-placeholder-val="{{ false }}">
           <span style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); font-size:12.5px; font-weight:800; color:#cfe0ff; white-space:nowrap">{{ fixChip }}</span>
         </sc-if>
-        <sc-if value="{{ hasStreak }}" hint-placeholder-val="{{ false }}">
-          <span data-streak="true" data-key="{{ streakKey }}" role="img" aria-label="{{ streakLabel }}" style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; gap:6px; border:1px solid rgba(224,161,15,0.5); background:rgba(224,161,15,0.12); font-size:12.5px; font-weight:800; color:#f3c14f; white-space:nowrap; animation:{{ streakAnim }}">
-            <span aria-hidden="true" style="display:flex; gap:3px"><sc-for list="{{ streakPips }}" as="sp" hint-placeholder-count="3"><i style="display:block; width:7px; height:7px; border-radius:50%; background:{{ sp.bg }}; box-shadow:{{ sp.glow }}"></i></sc-for></span>
-            <span class="nx-x3" aria-hidden="true" style="color:{{ streakMultColor }}">×3</span>
-          </span>
-        </sc-if>
         <sc-if value="{{ showPlayXp }}" hint-placeholder-val="{{ true }}">
         <span data-xppill="true" aria-label="{{ xp }} XP" style="flex:none; height:36px; padding:0 {{ xpPad }}; border-radius:14px; border:1px solid rgba(129,177,255,0.35); background:rgba(0,104,248,0.10); display:flex; align-items:center; gap:5px; font-size:13.5px; font-weight:800; color:#ffffff; animation:{{ pillAnim }}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ xp }}</span><span style="font-size:12px; font-weight:600; color:var(--tint); display:{{ xpWordDisplay }}">XP</span>
         </span>
         </sc-if>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
-          <span data-markspill="true" class="nx-pill nx-marks" aria-label="{{ playMarksAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>{{ playMarks }}/{{ playMarksOf }}</span></span>
+          <span class="nx-stats">
+            <sc-if value="{{ hasStreak }}" hint-placeholder-val="{{ false }}">
+              <span data-streak="true" data-key="{{ streakKey }}" role="img" aria-label="{{ streakLabel }}" style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; gap:6px; border:1px solid rgba(224,161,15,0.5); background:rgba(224,161,15,0.12); font-size:12.5px; font-weight:800; color:#f3c14f; white-space:nowrap; animation:{{ streakAnim }}">
+                <span aria-hidden="true" style="display:flex; gap:3px"><sc-for list="{{ streakPips }}" as="sp" hint-placeholder-count="3"><i style="display:block; width:7px; height:7px; border-radius:50%; background:{{ sp.bg }}; box-shadow:{{ sp.glow }}"></i></sc-for></span>
+                <span class="nx-x3" aria-hidden="true" style="color:{{ streakMultColor }}">×3</span>
+              </span>
+            </sc-if>
+            <span data-markspill="true" class="nx-pill nx-marks" aria-label="{{ playMarksAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>{{ playMarks }}/{{ playMarksOf }}</span></span>
           <span data-xppill="true" class="nx-pill nx-xp" aria-label="{{ xp }} XP"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>+{{ xpShort }}<span class="nx-xpw"> XP</span></span></span>
           <span class="nx-pill nx-lv" role="img" aria-label="{{ nxLevelAria }}"><span class="nx-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><span class="nx-lvw">Lv </span>{{ nxLevel }}</span>
+          </span>
           <span class="nx-sep2" aria-hidden="true"></span><span class="nx-av" role="img" aria-label="Your profile"><svg viewBox="0 0 40 40" width="42" height="42" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#dbe7f7"/><circle cx="20" cy="16" r="7" fill="#8aa3c7"/><path d="M6 36c3-8 9-11 14-11s11 3 14 11" fill="#8aa3c7"/></svg></span>
         </sc-if>
         <sc-if value="{{ showPlayMarks }}" hint-placeholder-val="{{ true }}">
@@ -1867,6 +1866,7 @@ const NX_ICONS = ['<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 // the robot stands under the panel). Measured at 360x640: the box 443-609 px, the cap's top at 466 (0.14); nx-play puts the bubble
 // beside the head at the same 15%.
 const NX_HEAD = 0.15;
+const NX_LOGO_BASE = 68.5 / 96;   // the Nexera wordmark's letter baseline, as a share of the image's height
 // a miss with tries left: defeat_03 from 0.4 s to 1.1 s (the head snaps back, a jolt), then it stands (measured on the clip: 0.55 s the
 // head snaps back, 0.8-1.3 s it jolts, 2.5 s+ it goes down)
 const NX_FLINCH = { from: 0.4, hold: 1.1 };
@@ -2185,7 +2185,7 @@ class Component extends DCLogic {
       // renders), so fit now AND once more after the padding has grown.
       const kpKey = this.state.kp ? this.state.kp + ":" + this.state.footH : null;
       if (kpKey && kpKey !== this._kpKey) { this.fitKpField(); clearTimeout(this._kpT); this._kpT = setTimeout(() => this.fitKpField(), 120); }
-      this._kpKey = kpKey; this.nxPanelCap(); }
+      this._kpKey = kpKey; this.nxLogoAlign(); this.nxPanelCap(); }
     if (sheet && this._arrow) {
       this._arrow = false;
       const o = document.querySelector('[data-sheet] [data-opt="' + this.state.optIdx + '"]'); if (o) o.focus();
@@ -2230,6 +2230,31 @@ class Component extends DCLogic {
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       if (f && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
         if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); }); } }
+  // The panel and its button row sit near the middle of the room under the header (Murci, 2026-09-30: "it looks a bit up and too
+  // close to the navbar when the window is expanded"): the space left over is shared 2 : 3 above : below (the optical centre, a
+  // touch above the true middle). Worked out once per part and screen size from the panel as it opens, so it never jumps when a
+  // result grows it (it grows down, and scrolls inside past its room). Only where the row docks under the panel (wider than a
+  // phone, the robot beside the panel): on a phone the robot has the lower half.
+  nxCentre(q) { const fe = document.querySelector("[data-footer]"), fr = document.querySelector("[data-footer] :is([data-check], [data-bar-primary])");
+    const co = document.querySelector("main > aside[aria-label='Your companion']"), part = this.part();
+    // measured again while the panel's height still changes before an answer (a first pass raced the part's render: 22 px where 98 was
+    // due); held once there is an answer, so a growing result never moves it
+    const key = (part ? part.key : "") + ":" + innerWidth + "x" + innerHeight, h = q.offsetHeight;
+    if (q._centre === key && (this.state.reply || q._centreH === h)) return;
+    q.style.removeProperty("margin-top"); const qr = q.getBoundingClientRect(), c = co ? co.getBoundingClientRect() : null;
+    const under = !!c && c.width > 0 && c.left < qr.right - 1 && c.right > qr.left + 1;
+    if (!fe || !fr || !fr.getBoundingClientRect().height) return;   // the row is not drawn yet: measure on a later pass (it cached 0 once)
+    if (innerWidth <= 600 || under || fe.querySelector("[data-keypad]")) { q._centre = key; return; }
+    const rowH = fr.getBoundingClientRect().height + 12, spare = innerHeight - 16 - qr.top - q.offsetHeight - rowH;
+    const extra = Math.max(0, Math.min(160, Math.round(spare * 0.4))); if (extra) q.style.marginTop = extra + "px"; q._centre = key; q._centreH = h; }
+  // The two logos on one line (Murci, 2026-09-30: "align the two logos so they both start on the same position from the bottom"):
+  // the Nexera wordmark image's LETTERS end 71.4% down the image (measured on assets/nexera-wordmark.webp, 280x96: the bottom row of
+  // most columns is 68; its X's point hangs lower), so the image moves until that line meets the Nudle letters' baseline. Measured
+  // live because both change size with the screen.
+  nxLogoAlign() { const n = document.querySelector("[data-playhead] .nx-nudle"), img = document.querySelector("[data-playhead] .nx-nexera"); if (!n || !img || !img.complete) return;
+    const brand = n.parentElement, m = document.createElement("span"); m.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline";
+    brand.style.setProperty("--nx-logo-nudge", "0px"); n.appendChild(m); const base = m.getBoundingClientRect().top; m.remove();
+    const r = img.getBoundingClientRect(); if (!r.height) return; brand.style.setProperty("--nx-logo-nudge", (base - (r.top + r.height * NX_LOGO_BASE)).toFixed(1) + "px"); }
   suggested() { return this.missions().findIndex(m => !m.parts.every(p => this.pg(p.key).closed)); }
   // ── Brief 23: the picker opens on "Your studies" until the learner has answered (or chosen every paper).
   openPicker(extra) {
@@ -3913,6 +3938,7 @@ class Component extends DCLogic {
     const nxKind = ((this.mission() || {}).kind || "").trim(), nxTopic = /^(multiple choice|a, b, both or none|definitions)$/i.test(nxKind) ? "" : nxKind;
     const nx = !hall, mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1), nxLv = this.levelOf(this.mission());
     const base = { nxLook: nx, nxNoLook: !nx, nxProgK: nxK, nxProgN: mParts.length, nxProgAria: "Part " + nxK + " of " + mParts.length,
+      nxProgLabel: ((this.mission() || {}).title || "") + " · " + nxK + " of " + mParts.length,   // the header's centre: "Question 1.2 · 2 of 8"
       nxDots: mParts.map((pt, k) => ({ cls: k === s.pi ? "cur" : this.pg(pt.key).closed ? "done" : "" })), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, hasPartTopic: nx && !!nxTopic, partTopic: nxTopic, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
       hallMode: hall, showPlayXp: !hall && !nx, showCoach: !hall && !mcq, hallNavCol: hall && wide, hallStrip: hall && !wide,
       playCloseMap: !hall && !fx && !s.drill, playCloseX: hall || !!fx || !!s.drill,
