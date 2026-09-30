@@ -29,10 +29,13 @@
                  as a pill at its right, a "Question N" label, the question, cards with an icon (the radio is the look's to show or hide); no try dots
      topicOf(item) -> the topic for the chip ("" = none) · iconFor(i, item) -> the card's icon (SVG markup), panel look only
      robotFixed  true = the robot keeps its corner (the boss's design): the glass rains and hits it where it stands, it never
-                 runs; on Next the broken pieces drop away instead of being swept · idleSay: its line at rest ("You got this!")
+                 runs to a card; on Next it steps down off its rock (.pal.floor), sweeps the glass as before, and steps back up · idleSay: its line at rest ("You got this!")
      fit         true = every option card fits the screen without scrolling: after each render and resize it steps the page to
                  fit-1 .. fit-5 while the last card ends below the visible area (the look's CSS defines the levels; each card is sized to its text)
      heroIn      "stage" = the answer card grows to fill the question's panel (the stage), not the middle of the screen
+     celebrate   "corner" = the robot dances / claps / is defeated where it stands (its corner), not inside the answer card
+     after       "panel" = once answered, Back and Next sit on the panel; a tap anywhere only closes the big card (it never
+                 moves on), and every wrong card, the broken ones too, comes back to its place, dimmed (the glass stays down)
    Marks only for a first-try right answer; a practice run gives no XP and no marks. Built 2026-09-29 from the concept. */
 (function () {
   const LAYERS_HTML = '<div class="backdrop" aria-hidden="true"></div>\n<div class="scrim" id="mq-scrim" aria-hidden="true"></div>\n<div class="hero-layer" id="mq-heroLayer"></div>\n<button class="next" id="mq-next"><span>Next question</span><span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>\n<div class="pal" id="mq-pal" aria-hidden="true"><div class="pal-body" id="mq-palBody"></div><div class="pal-say" id="mq-clue"><i class="puff p1"></i><i class="puff p2"></i><span class="say-txt" id="mq-clueTxt"></span></div></div>\n<canvas id="mq-fx"></canvas>\n<div class="shards" id="mq-shards" aria-hidden="true"></div>\n\n<div class="dock"><div class="dock-in">\n  <div class="say" id="mq-say"></div>\n</div></div>\n<div class="toast" id="mq-toast" role="status"></div>\n<div class="mapsheet" id="mq-mapSheet" hidden><div class="ms-in" role="dialog" aria-modal="true" aria-labelledby="mq-msTitle">\n  <div class="ms-head"><span id="mq-msTitle">Map</span><button class="ms-x" id="mq-msX" aria-label="Close map">&times;</button></div><div id="mq-msList"></div></div></div>\n<p class="sr" id="mq-live" aria-live="polite"></p>';
@@ -66,13 +69,16 @@
       // a card's face is absolute (it flips), so the card does not grow with its text: size each card to its own text, per level.
       // The text block's height, not the face's scrollHeight: the face centres its content, so it overflows at both ends and
       // scrollHeight counts only the bottom half (measured: 1.1.9's cards stayed clipped with it).
-      const size = () => { tiles.forEach(x => x.style.removeProperty("min-height")); tiles.forEach(x => { const f = x.querySelector(".face"); if (!f) return;
+      const size = () => { tiles.forEach(x => x.style.removeProperty("min-height")); tiles.forEach(x => { const f = x.querySelector(x.classList.contains("flipped") ? ".back" : ".face"); if (!f) return;   // flipped: its back
         const cs = getComputedStyle(f), kids = [...f.children].filter(c => getComputedStyle(c).display !== "none" && getComputedStyle(c).position !== "absolute");
         const need = Math.ceil(Math.max(0, ...kids.map(c => c.scrollHeight)) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
         if (need > x.offsetHeight) x.style.minHeight = need + "px"; }); };
       // layout position, not getBoundingClientRect: the cards deal in with a transform, which a mid-animation measure would count
       const top = el => { let y = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) y += e.offsetTop; return y; };
-      const overBy = () => tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0) - ((opts.screen ? PAGE.clientHeight : innerHeight) - 24);   // clear of the bottom fade (22 px in nx-play)
+      // the whole panel, not just the cards: its padding and the Back / Next row must be on screen too (measured: the cards fitted and
+      // the screen still scrolled 4 px); clear of the bottom fade (22 px in nx-play)
+      const stage = $("stage"), bottomOf = () => Math.max(tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0), stage ? top(stage) + stage.offsetHeight : 0);
+      const overBy = () => bottomOf() - ((opts.screen ? PAGE.clientHeight : innerHeight) - 24);
       // the least level that fits; if none does, the one that comes closest (the rest scrolls)
       let best = 0, bestBy = Infinity; for (let k = 0; k <= FIT_MAX; k++) { set(k); size(); const by = overBy(); if (by <= 0) return; if (by < bestBy) { bestBy = by; best = k; } }
       set(best); size(); }
@@ -142,8 +148,8 @@
       const k = ORDER.indexOf(it.n);
       const panel = opts.look === "panel", topic = panel && opts.topicOf ? (opts.topicOf(it) || "") : "";
       st.innerHTML = (panel
-        ? `<div class="qhead"><span class="chip"><span class="num">${it.n}</span>${topic ? `<span class="topic">${topic}</span>` : ""}</span><span class="qmarks"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>${it.marks} marks</span></div>` +
-          `<p class="qlabel">Question ${String(it.n).split(".")[0]}</p>`   // the paper's own question (Question 1), the number chip carries 1.1.1
+        ? `<p class="qlabel">Question ${String(it.n).split(".")[0]}</p>` +   // the paper's question (Question 1) first, then its part: the chip carries 1.1.1 (Murci: the child under its parent)
+          `<div class="qhead"><span class="chip"><span class="num">${it.n}</span>${topic ? `<span class="topic">${topic}</span>` : ""}</span><span class="qmarks"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>${it.marks} marks</span></div>`
         : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
         (panel ? `<h1><span>${stem}</span></h1>` : `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>`) +
@@ -172,6 +178,7 @@
         g.appendChild(t);
       });
       st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden><span aria-hidden="true">↻</span>&nbsp;Try again</button></div>`);   // the marks under the last card; then Try again and Next
+      if (opts.after === "panel" && k > 0 && opts.back !== false) { $("after").insertAdjacentHTML("afterbegin", `<button class="prevq" id="mq-prevq" aria-label="Previous question: ${ORDER[k - 1]}"><span aria-hidden="true">‹</span>&nbsp;Back</button>`); $("prevq").onclick = () => { if (!S.busy) go(ORDER[k - 1]); }; }
       if ($("qback") && opts.back === false) $("qback").remove();
       if ($("qback")) $("qback").onclick = () => { if (!S.busy) go(ORDER[k - 1]); };
       $("retry").onclick = () => { if (!S.busy) go(it.n, true); };
@@ -256,10 +263,11 @@
     // Next button only between groups, named for the group it opens ("Question 1.3").
     const nextN = () => ORDER[(ORDER.indexOf(S.it.n) + 1) % ORDER.length];
     const sameGroup = () => (GROUP[nextN()] || {}).id === (GROUP[S.it.n] || {}).id;
-    function placeNext() { const hero = $("heroLayer").querySelector(".tile.hero"), cont = hero && sameGroup();
-      NEXT.querySelector("span").textContent = sameGroup() ? "Continue" : (GROUP[nextN()] || {}).title || "Next question";
-      let c = $("cont"); if (cont && !c) { c = document.createElement("button"); c.className = "cont"; c.id = "mq-cont"; c.textContent = "Tap anywhere to continue"; c.onclick = e => { e.stopPropagation(); next(); }; }
-      if (cont) { $("heroLayer").appendChild(c); NEXT.remove(); } else { if (c) c.remove(); (hero ? $("heroLayer") : $("after") || $("stage")).appendChild(NEXT); }
+    function placeNext() { const hero = $("heroLayer").querySelector(".tile.hero"), onPanel = opts.after === "panel", cont = hero && (onPanel || sameGroup());
+      NEXT.querySelector("span").textContent = onPanel ? "Next" : sameGroup() ? "Continue" : (GROUP[nextN()] || {}).title || "Next question";   // on the panel: Back / Next
+      let c = $("cont"); if (cont && !c) { c = document.createElement("button"); c.className = "cont"; c.id = "mq-cont"; c.onclick = e => { e.stopPropagation(); onPanel ? dismiss() : next(); }; }
+      if (c) c.textContent = onPanel ? "Tap anywhere to close" : "Tap anywhere to continue";
+      if (cont) { $("heroLayer").appendChild(c); if (onPanel) ($("after") || $("stage")).appendChild(NEXT); else NEXT.remove(); } else { if (c) c.remove(); (hero ? $("heroLayer") : $("after") || $("stage")).appendChild(NEXT); }
       if ($("retry")) $("retry").hidden = opts.retry === false || !(S.done && !hero); }
     // A tap outside the open card, or on it: inside a group it continues; between groups it puts the card back.
     // The map: every group (as on the paper) and its sub-questions, each with its result; a tap opens that question.
@@ -273,7 +281,7 @@
     $("mapBtn").onclick = () => opts.onMap ? opts.onMap() : openMap(); $("msX").onclick = closeMap;
     $("mapSheet").addEventListener("click", e => { if (e.target === e.currentTarget) closeMap(); });
     listen(document, "keydown", e => { if (e.key === "Escape" && !$("mapSheet").hidden) { e.stopImmediatePropagation(); closeMap(); } }, true);
-    function tapOut() { if (S.done && !S.busy && $("cont") && $("cont").isConnected) next(); else dismiss(); }
+    function tapOut() { if (opts.after !== "panel" && S.done && !S.busy && $("cont") && $("cont").isConnected) next(); else dismiss(); }   // on the panel a tap only closes
     function showNext() { placeNext(); NEXT.classList.add("show"); ($("cont") && $("cont").isConnected ? $("cont") : NEXT).focus({ preventScroll: true }); nextInView(); }
     // Under the grid, Next can land behind the dock's solid fade (a tall question on a short screen): bring it up into view.
     function nextInView() { if (NEXT.parentElement !== $("stage")) return; const d = RQ(".dock").getBoundingClientRect(), clear = d.top + d.height * 0.4, r = NEXT.getBoundingClientRect();
@@ -348,18 +356,22 @@
       if (!m || PAL.sweeping) return; clearTimeout(PAL.timer); PAL.hurt = false; $("pal").classList.remove("small");
       if (m.parentElement !== $("palBody")) palHome(null);                                     // it was inside the answer card: home first
       if (!pieces.length && !PAL.down) { palRunTo(0).then(() => { if (palFree()) palGreet(); palSize(); }); return; }
-      if (opts.robotFixed) { dropAway(pieces);   // it keeps its corner: the glass drops away; if it is down it gets up where it is
-        if (PAL.down) { PAL.down = false; palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }); wait(1650).then(() => { if (palFree()) palIdle(); palSize(); }); }
-        return; }
+      // robotFixed: its home is on its rock, so it steps DOWN to the floor to sweep (the "floor" class eases it there), sweeps as
+      // before, runs home and steps back UP (Murci, 2026-09-30: "swept by our robot like it was before, then back on the rock")
+      const fixed = !!opts.robotFixed, pal = $("pal");
+      if (fixed && !pieces.length) { if (PAL.down) { PAL.down = false; palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }); wait(1650).then(() => { if (palFree()) palIdle(); palSize(); }); } return; }
       PAL.sweeping = true;
-      const up = PAL.down ? (palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }), wait(1650)) : Promise.resolve();
+      const getUp = () => PAL.down ? (palClip("defeat", { once: true, from: 4.2, speed: -2.4, hold: 0.45, fade: 0.2 }), wait(1650)) : Promise.resolve();
+      const up = getUp().then(() => fixed ? (pal.classList.add("floor"), wait(reduced ? 0 : FLOOR_MS)) : null);   // up first (if it was down), then off the rock
       PAL.down = false;
       up.then(() => { const B = palBase(), xs = pieces.map(el => { const b = el.getBoundingClientRect(); return b.left + b.width / 2; });
         const leftOfPile = Math.min(...xs) - B.left - B.w * 0.9;
         return (leftOfPile < PAL.x - 8 ? palRunTo(Math.max(4 - B.left, leftOfPile)) : Promise.resolve()).then(() => sweepRight(pieces)); })
-      .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => { if (palFree()) palGreet(); palSize(); });
+      .then(() => { PAL.sweeping = false; return palRunTo(0); }).then(() => fixed ? (pal.classList.remove("floor"), wait(reduced ? 0 : FLOOR_MS)) : null)   // home: back up on its rock
+      .then(() => { if (palFree()) palGreet(); palSize(); });
     }
-    // robotFixed: the broken pieces sink off the floor and fade (a short, staggered drop), instead of being swept.
+    const FLOOR_MS = 460;   // robotFixed: the step down from its rock to the floor, and back up (nx-play.css eases .pal.floor over this)
+    // the broken pieces sink off the floor and fade (a short, staggered drop): kept for a host that wants the glass gone without a sweep
     function dropAway(pieces) { pieces.forEach((el, k) => { const a = el.getAnimations(); a.forEach(x => x.commitStyles && x.commitStyles()); a.forEach(x => x.cancel());
       el.animate([{ opacity: 1 }, { opacity: 0, translate: "0 26px" }], { duration: 420, delay: (k % 8) * 30, easing: "ease-in", fill: "forwards" }).finished.then(() => el.remove(), () => el.remove()); }); }
     function sweepRight(pieces) { const pal = $("pal"), B = palBase(), exit = innerWidth - B.left + 40, v = palSpeed(SWEEP_RATE), start = PAL.x;
@@ -405,7 +417,14 @@
       palClip(m.clip, { once: !!m.end, from: m.end ? (hold ? 0 : m.end) : m.from, paused: hold, fit: m.fit || 0.72 }); }
     function buddyGo(t) { S.landed = true; if (PAL.el && t.contains(PAL.el)) PAL.el.removeAttribute("paused"); }
     // The wrong cards still standing go dark, one by one, once the right card is home.
-    function killWrong() { [...RQA("#mq-tiles .tile")].filter(x => +x.dataset.i !== S.it.a && !S.gone.has(+x.dataset.i) && !x.classList.contains("dead"))
+    // after "panel": the broken ones come back too, dimmed (their glass stays on the floor until the robot sweeps it)
+    function restoreGone() { if (opts.after !== "panel" || !S.gone.size) return;   // the glass stays on the floor: the robot sweeps it on Next
+      S.gone.forEach(i => { const x = RQ(`.tile[data-i="${i}"]`); if (!x) return; ["visibility", "pointer-events", "display", "opacity", "transition"].forEach(k => x.style.removeProperty(k));
+        x.removeAttribute("aria-hidden"); x.classList.remove("no", "raised", "sel");
+        // the break left: its face hidden inline, its crack / crush / impact layers, and finished animations holding their end state
+        x.getAnimations({ subtree: true }).forEach(a => a.cancel()); x.querySelectorAll(".vline, .vfill, .cracks, .crush, .impact").forEach(e => e.remove());
+        const f = x.querySelector(".face"); if (f) f.style.removeProperty("visibility"); }); }
+    function killWrong() { restoreGone(); [...RQA("#mq-tiles .tile")].filter(x => +x.dataset.i !== S.it.a && (opts.after === "panel" || !S.gone.has(+x.dataset.i)) && !x.classList.contains("dead"))
       .forEach((x, k) => { x.style.setProperty("--dd", (k * 0.12).toFixed(2) + "s"); x.classList.add("dead"); }); }
 
     const RAISE_MS = 380;
@@ -476,15 +495,17 @@
     function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
       const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on"); heroBox();
       if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
-      placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); nextInView(); }); }   // Next goes back under the grid with it
-    function lift(t) { if (S.busy) return; S.busy = true; grow(t).then(() => { placeNext(); return palJump(t); }).then(() => { buddyIn(t, false); S.busy = false; }); }
+      placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); if (opts.fit) fitCards(); nextInView(); }); }   // refit: the flipped card is sized by its back   // Next goes back under the grid with it
+    function lift(t) { if (S.busy) return; S.busy = true; if (opts.celebrate === "corner") { grow(t).then(() => { placeNext(); S.busy = false; }); return; }
+      grow(t).then(() => { placeNext(); return palJump(t); }).then(() => { buddyIn(t, false); S.busy = false; }); }
 
     function present(t, tier) {
       if (tier) t.classList.add(tier); S.busy = true; S.tier = tier || "none";
-      if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); palJump(t); buddyIn(t, false); S.busy = false; return Promise.resolve(); }
+      const corner = opts.celebrate === "corner"; if (corner) t.classList.add("nobuddy");   // corner: the card has no robot slot; it celebrates on its rock
+      if (reduced) { grow(t); t.classList.remove("sel"); t.classList.add("flipped"); if (!corner) { palJump(t); buddyIn(t, false); } S.busy = false; return Promise.resolve(); }
       const g = grow(t); palLook(t);
       return g.then(() => {
-        if (!PAL.down) palJump(t).then(() => buddyIn(t, true));                                  // it vanishes and appears in the card, then rides the spin frozen (not when it's down)
+        if (!PAL.down && !corner) palJump(t).then(() => buddyIn(t, true));                       // it vanishes and appears in the card, then rides the spin frozen (not when it's down)
         if (!tier) return wait(650);
         t.querySelectorAll(".vline, .vfill").forEach(x => x.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished.then(() => x.remove()));
         t.classList.remove("yes"); t.classList.add("shine"); buzz(HAPTIC.shine);   // green hands over to the medal colour                                          // the shine, before it turns
@@ -496,7 +517,8 @@
         const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);
           return { offset: q, transform: `translateZ(${(a * rise).toFixed(1)}px) scale(${(1 + a * swell).toFixed(4)}) rotateY(${(turn * q).toFixed(1)}deg)` }; });
         return t.animate(kf, { duration: tier ? FLIP_MS : 1100, easing: "cubic-bezier(.45,0,.25,1)" }).finished;
-      }).then(() => { buddyGo(t); if (!tier && !PAL.down) buzz(HAPTIC.defeat); S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
+      }).then(() => { buddyGo(t); if (corner && !PAL.down && PAL.el) { const m = MOVE[S.tier]; palClip(m.clip, { once: !!m.end, from: m.end || m.from }); }   // corner: it celebrates where it stands, as the card lands
+        if (!tier && !PAL.down) buzz(HAPTIC.defeat); S.busy = false; });                  // it lands: the robot dances, claps, or is defeated
     }
     function bump(id) { const b = $(id); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
     // Marks: out of the paper's total (P.total, 150 for LS P1). A question counts once (its first sitting); a later sitting changes nothing.
