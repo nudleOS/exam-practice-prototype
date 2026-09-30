@@ -53,6 +53,13 @@ body.nx-play { background:transparent !important; }
 .nx-rocks-l { left:calc(var(--nx-rh) * var(--nx-rl)); bottom:calc(var(--nx-rh) * var(--nx-sink)); aspect-ratio:633 / 375; background-image:url("assets/scenery/life-sciences/rocks-left.webp"); }
 .nx-rocks-r { right:calc(var(--nx-rh) * -0.12); bottom:calc(var(--nx-rh) * 0.86 * -0.13); height:calc(var(--nx-rh) * 0.86); aspect-ratio:613 / 322; background-image:url("assets/scenery/life-sciences/rocks-right.webp"); }
 html[data-nx="dark"] .nx-rocks-l { background-image:url("assets/scenery/life-sciences/rocks-left-dark.webp"); }
+/* the middle floor (Murci, 2026-09-30: "empty there on desktop"): rocks-middle (898x232, Gemini, cut the same way), centred between the
+   clusters, drawn before them. Its base is flatter (80% solid within 7% of its height from the bottom): sunk 7%. Not on a phone: the
+   two clusters already meet there. */
+.nx-rocks-m { left:50%; translate:-50% 0; height:calc(var(--nx-rh) * 0.62); bottom:calc(var(--nx-rh) * 0.62 * -0.07); aspect-ratio:898 / 232;
+  background-image:url("assets/scenery/life-sciences/rocks-middle.webp"); }
+html[data-nx="dark"] .nx-rocks-m { background-image:url("assets/scenery/life-sciences/rocks-middle-dark.webp"); }
+@media (max-width:700px) { .nx-rocks-m { display:none; } }
 html[data-nx="dark"] .nx-rocks-r { background-image:url("assets/scenery/life-sciences/rocks-right-dark.webp"); }
 /* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). Measured on
    rocks-left: the flat top's middle is at x 0.864 and 0.560 up, as fractions of the art's height; the art starts 0.3 of its
