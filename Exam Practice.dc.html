@@ -1232,7 +1232,7 @@
     <main data-done="true" style="box-sizing:border-box; max-width:{{ doneMaxW }}; margin:0 auto; padding:{{ donePad }}; display:grid; grid-template-columns:{{ doneCols }}; gap:{{ doneGap }}; align-items:center; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div aria-hidden="true" data-donecomp="true" style="position:relative; width:{{ doneCompW }}; height:{{ doneCompH }}; justify-self:center">
         <sc-if value="{{ doneModelOn }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/companion-robot.glb" clip="{{ doneClip }}" loop="once" autorotate="off" face="user" floor="none" fit="0.85" style="position:absolute; inset:0 0 6px 0"></model-floor>
+          <model-floor src="assets/companion-robot.glb" clip="{{ doneClip }}" loop="once" hold="{{ doneHold }}" autorotate="off" face="user" floor="none" fit="0.85" style="position:absolute; inset:0 0 6px 0"></model-floor>
         </sc-if>
         <sc-if value="{{ donePoster }}" hint-placeholder-val="{{ true }}">
           <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0 0 6px 0; width:100%; height:calc(100% - 6px)">
@@ -3017,6 +3017,9 @@ class Component extends DCLogic {
       doneMaxW: wide ? "780px" : "560px", donePad: wide ? "36px 28px 60px" : "16px 16px 48px", doneCols: wide ? "220px minmax(0, 1fr)" : "minmax(0, 1fr)", doneGap: wide ? "28px" : "12px",
       doneCompW: wide ? "220px" : "110px", doneCompH: wide ? "330px" : "160px", doneAlign: wide ? "flex-start" : "center", doneTextAlign: wide ? "left" : "center", doneH1: phone ? "24px" : "28px",
       doneModelOn: !s.reduced && !s.saveData, donePoster: !!(s.reduced || s.saveData), doneClip: clean ? "dance" : "greet",
+      // The dance ends on its pointing pose (measured on the rig: the arm is out to the side 6.85-7.05 s),
+      // not the clip's last frame (arms bent in front); "" = no hold, so the greeting just ends.
+      doneHold: clean ? "7" : "",
       doneRing: mSt.ring, doneGrade: waitingN ? (waitingN === 1 ? "1 part waiting for a marker" : waitingN + " parts waiting for a marker") : MEDAL[mSt.label] || mSt.label,
       doneKicker: "Mission " + mission.id + " complete", doneTitle: mission.title,
       doneXpShown: "+" + (cnt ? cnt.xp : xp), doneXpText: xp + " XP earned in this mission", doneXpWhy: why.join(" · "),
