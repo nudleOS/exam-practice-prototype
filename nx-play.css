@@ -714,7 +714,7 @@ body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-head { grid-column:2; gri
 body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-title { font-size:17px; }
 body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-sub { grid-column:2; grid-row:2; }
 body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-chips { grid-column:3; grid-row:1 / span 2; justify-content:flex-end; margin:0; }
-body.nx-play main:not(#mq-stage) [data-feed~="ok"] :is(.fd-body, .fd-points, .fd-right, .fd-shape) { grid-column:1 / -1; margin-top:8px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] :is(.fd-body, .fd-points) { grid-column:1 / -1; margin-top:8px; }
 /* a term: the medal is on the field itself, so not twice */
 body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] { grid-template-columns:minmax(0, 1fr) auto; }
 body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-medal { display:none; }
@@ -735,11 +735,6 @@ body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { display:inline-flex; ali
 @media (max-width:600px) {
   body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-chips, body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips { grid-column:1 / -1; grid-row:auto; justify-content:flex-start; margin-top:8px; }
 }
-/* a typed term, retrying: the words already right, and the term's shape (a word never breaks across lines) */
-body.nx-play main:not(#mq-stage) [data-feed~="term"][data-feed~="hint"] .fd-icon { background:#f2777a; }
-body.nx-play main:not(#mq-stage) [data-feed] .fd-right { font-size:14px; line-height:1.5; color:#8fe3b9; }
-body.nx-play main:not(#mq-stage) [data-feed] .fd-shape { display:flex; flex-wrap:wrap; gap:4px 20px; margin-top:2px; font-family:"Space Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size:15px; line-height:1.5; letter-spacing:0.04em; color:var(--nx-text); }
-body.nx-play main:not(#mq-stage) [data-feed] .fd-w { white-space:nowrap; }
 
 /* ==== a typed term: ONE field (practice; Murci, 2026-09-30: "not block letters") ====
    Three tries, each worth a medal: the pips beside "The term" (gold, silver, bronze; the try now ringed, a lost one cracked).
@@ -863,3 +858,5 @@ html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termstate~="silver"
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termstate~="bronze"] { --seal-ink:#5a2f12; --seal-line:#b0703f; --seal-bg:linear-gradient(180deg, rgba(187,122,76,0.3), rgba(187,122,76,0.14)); }
 html[data-nx="light"] [data-termshards] .ts-glass { color:#8a1c22; }
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { background:rgba(16,40,90,0.06); border-color:rgba(16,40,90,0.16); color:var(--nx-text); }
+/* the robot's words are reading text now (its hints live there, Murci 2026-09-30), so not bold, on both robots: it read 700 */
+body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p, body.nx-play .mcqp .pal-say .say-txt { font-weight:500 !important; }

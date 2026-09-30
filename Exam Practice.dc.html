@@ -1097,9 +1097,7 @@
               <span class="fd-head"><span class="fd-icon" aria-hidden="true">{{ nxFeedIcon }}</span><span class="fd-title">{{ nxFeedTitle }}</span></span>
               <sc-if value="{{ nxFeedHasSub }}" hint-placeholder-val="{{ false }}"><span class="fd-sub">{{ nxFeedSub }}</span></sc-if>
               <sc-if value="{{ nxFeedHasChips }}" hint-placeholder-val="{{ false }}"><span class="fd-chips"><sc-for list="{{ nxFeedChips }}" as="fc" hint-placeholder-count="2"><span class="fd-chip">{{ fc.t }}</span></sc-for></span></sc-if>
-              <sc-if value="{{ nxFeedHasRight }}" hint-placeholder-val="{{ false }}"><span class="fd-right">{{ nxFeedRight }}</span></sc-if>
               <sc-if value="{{ nxFeedHasBody }}" hint-placeholder-val="{{ false }}"><span class="fd-body">{{ nxFeedBody }}</span></sc-if>
-              <sc-if value="{{ nxFeedHasShape }}" hint-placeholder-val="{{ false }}"><span class="fd-shape" role="img" aria-label="{{ nxFeedShapeAria }}"><sc-for list="{{ nxFeedShape }}" as="fw" hint-placeholder-count="2"><span class="fd-w">{{ fw.t }}</span></sc-for></span></sc-if>
               <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
                 <span class="fd-points"><sc-for list="{{ points }}" as="pt" hint-placeholder-count="2"><span class="fd-pt"><span style="flex:none; font-weight:800; color:{{ pt.color }}">{{ pt.icon }}</span><span style="display:flex; flex-direction:column; gap:2px"><span style="font-weight:700">{{ pt.head }}</span><span style="color:var(--text2)">{{ pt.detail }}</span></span></span></sc-for><span class="fd-pfoot">{{ pointsFoot }}</span></span>
               </sc-if>
@@ -1868,6 +1866,29 @@ const NX_ICONS = ['<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 // the robot stands under the panel). Measured at 360x640: the box 443-609 px, the cap's top at 466 (0.14); nx-play puts the bubble
 // beside the head at the same 15%.
 const NX_HEAD = 0.15;
+// The robot's hints for the typed terms (Murci, 2026-09-30: "I don't want those kind of hints, it basically reveals the answer; the hints
+// should be fun, and always come from the robot's speech bubble"). Its own words, first person: an idea to think with, never the
+// term's letters, its first syllable or its word count. One line per miss (the second after the second miss). The paper's own
+// clues stay in the paper file ("G... follicle" gave the answer away) and are said as written only where no line is here.
+// CONCEPT-ONLY: written from CAPS Gr 12 Life Sciences content; a Life Sciences teacher must check them before use.
+const NX_HINTS = {
+  "ls:1.2.1": ["Think of a thermostat: the room gets too hot, so it switches the heater off. What do you call a system that undoes a change?",
+    "Picture a see-saw. One hormone goes up, the other gets pushed down, and that brings the first one back to normal."],
+  "ls:1.2.2": ["Imagine the sperm is a tiny drill. What's the cap on its very tip that melts a way into the egg?",
+    "It's like a helmet packed with enzymes, sitting on the front of the sperm's head."],
+  "ls:1.2.3": ["Follicles grow up in stages. You want the fully grown one, ready to burst and set the egg free.",
+    "Fun fact: this follicle is named after a Dutch doctor from the 1600s."],
+  "ls:1.2.4": ["Most of the pancreas makes digestive juice. But little clusters dotted through it make insulin and glucagon instead!",
+    "A German student spotted these clusters in 1869, and they got his name. Picture tiny islands in a big sea."],
+  "ls:1.2.5": ["A normal cornea is round like a basketball. This one's shaped more like a rugby ball, so everything looks a bit blurry.",
+    "It isn't short- or long-sightedness: those come from the eyeball's length. This one comes from the cornea's uneven curve."],
+  "ls:1.2.6": ["Tilt your head. Tiny hairs in your inner ear feel it, with little crystals tugging on them. What are those receptors?",
+    "Not the ones that feel you spinning round. You want the ones that feel where your head is, in the utricle and saccule."],
+  "ls:1.2.7": ["A new mum's pituitary sends a message: \"Start making milk!\" Which hormone carries it?",
+    "Careful, it's not oxytocin: that one pushes the milk out. You want the one that makes the milk."],
+  "ls:1.2.8": ["The brain and spinal cord are headquarters. Which part is all the nerves running out to the rest of your body?",
+    "Think of the edge of a map, far from the centre. That's the idea hiding in this system's name."],
+};
 const NX_TOPICS = { "1.1.1": "Plant Hormones", "1.1.2": "Human Reproduction", "1.1.3": "Plant Responses", "1.1.4": "Human Reproduction", "1.1.5": "The Human Eye",
   "1.1.6": "The Human Ear", "1.1.7": "Plant Hormones", "1.1.8": "Thermoregulation", "1.1.9": "Blood Glucose", "1.3.1": "Endocrine System", "1.3.3": "Endocrine System",
   "1.5.3": "Human Reproduction", "3.4.1(a)": "Homeostasis" };
@@ -2418,9 +2439,9 @@ class Component extends DCLogic {
   scrollReveal() { const r = document.querySelector("[data-reveal]"); if (r) r.scrollIntoView({ block: "start", behavior: this.state.reduced ? "auto" : "smooth" }); }
   tryAgain() {
     const res = this.state.reply && this.state.reply.result, part = this.part();
-    // practice, a typed term: a NEW field (the old one broke): empty, dropping into its place; the feed names the words already right
+    // practice, a typed term: a NEW field (the old one broke): empty, dropping into its place; the robot says the hint
     const term = !!part && part.response_mode === "term" && this.state.sitting !== "hall";
-    const clear = term ? { term: "", lastTerm: this.state.term, edited: Object.assign({}, this.state.edited, { term: true }) } : {};
+    const clear = term ? { term: "", edited: Object.assign({}, this.state.edited, { term: true }) } : {};
     this.setState(Object.assign({ barOpen: false }, clear), () => {
       const lost = res && res.items ? res.items.filter(x => !x.awarded).map(x => x.key) : [];
       const f = (lost.length && document.getElementById("f-" + lost[0])) || document.querySelector("[data-question] [data-field]");
@@ -2474,21 +2495,18 @@ class Component extends DCLogic {
     // what it paid, and the x3 when the streak paid it (measured: "+300 XP" never said why)
     const chips = full ? [{ t: reply.replay ? "Replay · no XP" : "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 && !reply.replay ? [{ t: "×" + reply.multiplier + " streak" }] : [],
       [{ t: reply.try > 1 ? "Marks are for the first try" : got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }]) : [];
-    // a typed term, retrying: the hint, the words already right, and the term's shape (Murci, 2026-09-30: the shape after a miss,
-    // more letters after a second); the field clears for the retry, so the right words are named
-    const misses = Math.max(0, (pr.tries || 0) - (full ? 1 : 0)), left = 3 - (pr.tries || 0);
-    const right = term && hint ? this.termRight(part, s.lastTerm || "") : [];
-    const shape = term && hint ? this.termShape(part, misses) : [];
-    const body = hint ? reply.clue : full ? (spelled ? "Accepted: it is spelled “" + spelled + "”" + (s.term && String(s.term).trim().toLowerCase() !== spelled.toLowerCase() ? " (you typed “" + String(s.term).trim() + "”)." : ".") : "") : bar && bar.body ? bar.body : "";
-    return { nxFeedOn: result || hint,
-      nxFeedTone: (hint ? "hint" : full ? "ok " + tier.toLowerCase() : ({ partial: "warn", zero: "bad", out: "bad", waiting: "warn" })[outcome] || "neutral") + (term ? " term" : ""),
-      nxFeedMedal: full, nxFeedIcon: hint ? (term ? "✕" : "?") : bar ? bar.icon : "",
-      nxFeedTitle: hint ? (term ? "Not yet · " + left + (left === 1 ? " try" : " tries") + " left" : "Hint") : full ? tier : bar ? bar.title : "",
+    const hintBody = !!(bar && reply && reply.clue && bar.body === "Hint: " + reply.clue);
+    const body = full ? (spelled ? "Accepted: it is spelled “" + spelled + "”" + (s.term && String(s.term).trim().toLowerCase() !== spelled.toLowerCase() ? " (you typed “" + String(s.term).trim() + "”)." : ".") : "") : bar && bar.body && !hintBody ? bar.body : "";
+    return { nxFeedOn: result,
+      nxFeedTone: (full ? "ok " + tier.toLowerCase() : ({ partial: "warn", zero: "bad", out: "bad", waiting: "warn" })[outcome] || "neutral") + (term ? " term" : ""),
+      nxFeedMedal: full, nxFeedIcon: bar ? bar.icon : "", nxFeedTitle: full ? tier : bar ? bar.title : "",
       nxFeedHasSub: full, nxFeedSub: full ? ["First try", "Second try", "Third try"][k] : "",
-      nxFeedHasChips: chips.length > 0, nxFeedChips: chips, nxFeedHasBody: !!body, nxFeedBody: body ? (term && hint ? "Hint: " + body : body) : "",
-      nxFeedHasRight: right.length > 0, nxFeedRight: right.length ? "“" + right.join(" ") + "” " + (right.length === 1 ? "is" : "are") + " right. Keep " + (right.length === 1 ? "it" : "them") + "." : "",
-      nxFeedHasShape: shape.length > 0, nxFeedShape: shape, nxFeedShapeAria: shape.length ? "The term has " + shape.length + (shape.length === 1 ? " word: " : " words: ") + shape.map(w => w.t.split(" ").length + " letters").join(", ") : "" };
+      nxFeedHasChips: chips.length > 0, nxFeedChips: chips, nxFeedHasBody: !!body, nxFeedBody: body };
   }
+  // The robot's hint for a miss: its own line for this part (NX_HINTS; the first after one miss, the second after two), else the
+  // paper's clue as written
+  robotHint(part, reply) { const lines = NX_HINTS[((this.paper() || {}).id || "") + ":" + part.number];
+    return lines && lines.length ? lines[Math.min(Math.max(0, (reply.try || 1) - 1), lines.length - 1)] : reply.clue; }
   // A typed term, practice (Murci, 2026-09-30: "not block letters: a single field that breaks and falls to the ground when the answer is
   // wrong, then gets replaced by another field, since there are 3 chances; and show a right field, with Gold, Silver and Bronze").
   // One field. Three tries, each worth a medal (gold, silver, bronze): the pips beside "The term" show them, a lost one cracked.
@@ -2509,14 +2527,6 @@ class Component extends DCLogic {
     return { nxTerm: true, termShow: spelled ? spelled : s.term, termState: state, termTries: [0, 1, 2].map(i => ({ cls: cls(i) })), termTriesAria: aria,
       nxTermMedal: full, nxTermSocket: state === "broken" || state === "out", termSocketText: state === "out" ? "No tries left" : "" };
   }
-  // The term's shape after a miss, one entry per word (a word never breaks across lines): the first letter of each word after
-  // one miss, the last as well after two ("N _ _ _ _ _ _ _").
-  termShape(part, misses) { const target = String(((SERVER.keys[part.key] || {}).term || [""])[0] || "");
-    return target.split(/\s+/).filter(Boolean).map(w => ({ t: w.split("").map((c, i) => (misses >= 1 && i === 0) || (misses >= 2 && i === w.length - 1) ? c.toUpperCase() : "_").join(" ") })); }
-  // the learner's words already right, in their place (measured: the second hint said "think 'negative'" to a learner who had it)
-  termRight(part, typed) { const norm = x => String(x || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-    const target = norm(((SERVER.keys[part.key] || {}).term || [""])[0]).split(" "), got = norm(typed).split(" ");
-    return target.filter((w, i) => w && got[i] === w); }
   // The break: the field's picture in pieces cut from one crack point, each flung out, falling to the ground (the screen's
   // bottom, among the plants), bouncing once, lying there, then fading. The real field is hidden meanwhile (termState "broken").
   // snap: the field as it was (its box, its text, its look), taken before the result renders. Resolves when a new field may come.
@@ -3698,6 +3708,8 @@ class Component extends DCLogic {
       : res && res.full ? "full" : reply.revealed && res ? "out" : reply.revealed ? "memo" : res && got > 0 ? "partial" : res ? "zero" : "idle";
     const tone = { full: "ok", partial: "warn", zero: "bad", out: "bad", waiting: "warn" }[outcome] || "neutral";
     const retryNow = s.sitting !== "hall" && !!reply && !!res && !res.full && !s.barOpen && !closed;
+    // practice: the hint is the robot's to say, in its bubble (never in the panel): its own line where it has one, else the paper's clue
+    const hintLine = s.sitting !== "hall" && !!reply && !!reply.clue && !closed ? this.robotHint(part, reply) : "";
     // The companion's words, from the data.
     // Frame the question from its instruction: the last sentence when the stem has a lead-in
     // ("Reaction turbines can be classified ... Name FOUR types ..." frames as "name FOUR types ...").
@@ -3719,7 +3731,7 @@ class Component extends DCLogic {
       // (practice: short, as the MCQ robot's; the "XP only" rule is on the result card's chip. The Hall never sees these.)
       full: reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
       partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
-      zero: s.sitting !== "hall" ? (reply && reply.clue ? "Not quite. The hint is under your answer." : "Not quite. Try again.") : "Not this time. Here's a hint.",
+      zero: s.sitting !== "hall" ? "Not quite. Try again." : "Not this time. Here's a hint.",
       out: "Here's how the examiner marks it.",
       memo: "Here's how the examiner marks it.",
       draw: "Compare your drawing with the examiner's list.",
@@ -3793,8 +3805,8 @@ class Component extends DCLogic {
       coachShadowH: wide ? "20px" : "10px", coachShadowTint: shadowTint,
       coachModelOn: !s.reduced && !s.saveData, coachPoster: !!(s.reduced || s.saveData), playClip: s.playClip,
       // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
-      coachBubble: retryNow ? (reply.clue ? "Your turn. The hint is under your " + (mode === "term" ? "field." : "answer.") : "Your turn. Try again.") : words[outcome] || framing,
-      coachKey: (retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,
+      coachBubble: hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? hintLine : retryNow ? "Your turn. Try again." : words[outcome] || framing,
+      coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
       // question
       toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }), ctxOpen: ctxOpen, ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
