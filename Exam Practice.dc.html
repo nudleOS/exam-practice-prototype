@@ -3684,6 +3684,7 @@ class Component extends DCLogic {
     const outcome = s.sitting === "hall" && reply && !s.marking && !reply.waiting ? "saved" : s.marking ? "marking" : !reply ? (closed ? "closed" : "idle") : reply.waiting ? "waiting" : draw ? "draw"
       : res && res.full ? "full" : reply.revealed && res ? "out" : reply.revealed ? "memo" : res && got > 0 ? "partial" : res ? "zero" : "idle";
     const tone = { full: "ok", partial: "warn", zero: "bad", out: "bad", waiting: "warn" }[outcome] || "neutral";
+    const retryNow = s.sitting !== "hall" && !!reply && !!res && !res.full && !s.barOpen && !closed;
     // The companion's words, from the data.
     // Frame the question from its instruction: the last sentence when the stem has a lead-in
     // ("Reaction turbines can be classified ... Name FOUR types ..." frames as "name FOUR types ...").
@@ -3702,7 +3703,8 @@ class Component extends DCLogic {
       idle: s.sitting !== "hall" ? "You got this!" : framing.length > 120 ? framing.slice(0, 117) + "…" : framing,
       marking: "Reading your answer…",
       waiting: "Saved. A marker will look at it.",
-      full: reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Correct on try " + (reply ? reply.try : 2) + ". Marks are for a first try, so this one is XP only.",
+      // (practice: short, as the MCQ robot's; the "XP only" rule is on the result card's chip. The Hall never sees these.)
+      full: reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
       partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
       zero: s.sitting !== "hall" ? (reply && reply.clue ? "Not quite. The hint is under your answer." : "Not quite. Try again.") : "Not this time. Here's a hint.",
       out: "Here's how the examiner marks it.",
@@ -3777,7 +3779,9 @@ class Component extends DCLogic {
       coachW: wide ? "220px" : tablet ? "92px" : "72px", coachH: wide ? "330px" : tablet ? "138px" : "108px",
       coachShadowH: wide ? "20px" : "10px", coachShadowTint: shadowTint,
       coachModelOn: !s.reduced && !s.saveData, coachPoster: !!(s.reduced || s.saveData), playClip: s.playClip,
-      coachBubble: words[outcome] || framing, coachKey: outcome + ":" + (reply ? reply.try : 0) + ":" + part.key,
+      // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
+      coachBubble: retryNow ? (reply.clue ? "Your turn. The hint is under your " + (mode === "term" ? "field." : "answer.") : "Your turn. Try again.") : words[outcome] || framing,
+      coachKey: (retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
       // question
       toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }), ctxOpen: ctxOpen, ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
