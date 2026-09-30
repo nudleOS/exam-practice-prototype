@@ -502,6 +502,23 @@
       const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on"); heroBox();
       if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
       placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); if (opts.fit) fitCards(); nextInView(); }); }   // refit: the flipped card is sized by its back   // Next goes back under the grid with it
+    // heroIn "stage": the turn inside the panel (Murci, 2026-09-30: "it should look cool when it spins inside the parent card").
+    // Measured before: the panel-wide card swelled up to 115 px past the panel mid-turn (perspective on a 900 px card plus
+    // the lift toward the viewer), was clipped, and flashed the panel's scrollbars. Here it pulls back into the panel as it
+    // turns (78% at mid-turn, under a deeper perspective: its near edge stays inside), winds up a touch, whips round and
+    // lands with a small overshoot (one eased curve, so no kinks), while a glare sweeps its faces. Transform and opacity only.
+    function spinInPanel(t, big) {
+      const L = $("heroLayer"), turn = big ? SPIN : 180, dip = big ? 0.22 : 0.1, ms = big ? 2100 : 1000;
+      L.classList.add("spinning"); t.style.willChange = "transform";
+      const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8;
+        return { offset: q, transform: `rotateY(${(turn * q).toFixed(1)}deg) scale(${(1 - dip * Math.sin(q * Math.PI)).toFixed(4)})` }; });
+      const glares = [...t.querySelectorAll(".side")].map(sd => { const g = document.createElement("i"); g.className = "glare"; g.setAttribute("aria-hidden", "true");
+        const b = document.createElement("b"); g.appendChild(b); sd.appendChild(g);
+        b.animate([{ transform: "translateX(-100%)", opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 1, offset: 0.75 }, { transform: "translateX(100%)", opacity: 0 }],
+          { duration: ms, easing: "cubic-bezier(.45,0,.25,1)" }); return g; });
+      return t.animate(kf, { duration: ms, easing: big ? "cubic-bezier(.6,-0.18,.3,1.18)" : "cubic-bezier(.5,-0.1,.3,1.1)" }).finished
+        .finally(() => { L.classList.remove("spinning"); t.style.removeProperty("will-change"); glares.forEach(g => g.remove()); });
+    }
     function lift(t) { if (S.busy) return; S.busy = true; if (opts.celebrate === "corner") { grow(t).then(() => { placeNext(); S.busy = false; }); return; }
       grow(t).then(() => { placeNext(); return palJump(t); }).then(() => { buddyIn(t, false); S.busy = false; }); }
 
@@ -518,6 +535,7 @@
         return t.animate([{ transform: "none" }, { transform: "scale(1.03)" }, { transform: "none" }], { duration: SHINE_MS, easing: "ease-in-out" }).finished;
       }).then(() => {
         t.classList.remove("sel", "shine"); t.classList.add("flipped");                          // the class holds the end state (180 = 540 mod 360)
+        if (opts.heroIn === "stage") return spinInPanel(t, !!tier);
         // One eased turn: the rotation is linear in the eased progress (no kinks); the lift is a sine arc, sampled at 9 points.
         const turn = tier ? SPIN : 180, rise = (tier ? 90 : 40) * (innerWidth <= 600 ? 0.4 : 1), swell = tier ? 0.05 : 0.02;   // a phone has no room above the card: a smaller lift
         const kf = Array.from({ length: 9 }, (_, k) => { const q = k / 8, a = Math.sin(q * Math.PI);

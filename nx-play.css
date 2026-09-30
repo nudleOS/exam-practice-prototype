@@ -384,6 +384,12 @@ body.nx-play .mcqp .radio { display:none !important; }
    the panel by the component; here the card stretches in it. The scrim stays full screen, lighter: "Tap anywhere" still means anywhere. */
 body.nx-play .mcqp .hero-layer.inpanel { box-sizing:border-box;   /* no inset override: the component's inline top/left/width/height place it (an !important inset beat them: measured at x 0, y 648) */ padding:12px !important; display:flex !important; flex-direction:column; align-items:stretch; justify-content:stretch; gap:10px !important; overflow:auto; }
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero { width:100% !important; flex:1 1 auto; min-height:0; }
+/* the turn inside the panel (mcq-play spinInPanel): a deeper perspective for a panel-wide card (1400 px swelled its near edge
+   115 px past the panel), no scrollbars while it turns (they flashed), and a glare band that sweeps the faces */
+body.nx-play .mcqp .hero-layer.inpanel { perspective:2600px; }
+body.nx-play .mcqp .hero-layer.inpanel.spinning { overflow:hidden; }
+body.nx-play .mcqp .side .glare { position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; z-index:3; }
+body.nx-play .mcqp .side .glare b { position:absolute; inset:0; opacity:0; background:linear-gradient(105deg, transparent 36%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.16) 55%, transparent 64%); }
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back { min-height:100% !important; box-sizing:border-box; }
 body.nx-play .mcqp .hero-layer.inpanel .cont { flex:none; }
 html[data-nx="dark"] body.nx-play .mcqp .scrim { background:rgba(2,10,28,0.45); }
