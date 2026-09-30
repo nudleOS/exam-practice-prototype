@@ -1178,8 +1178,9 @@ body.nx-sweep main > aside[aria-label="Your companion"] > p { visibility:hidden;
    needs to be the same font size as 1.1": the stem is the lead's size; white on the lead's grey, so it still reads as the question.
    16 / 15 / 14 px, not the lead's old 13 on a short phone: that was the smallest text on the page and the question is the reading) */
 body.nx-play { --nx-numsz:16px; }
-@media (max-width:600px) { body.nx-play { --nx-numsz:15px; } }
-@media (max-width:600px) and (max-height:740px) { body.nx-play { --nx-numsz:14px; } }
+/* (a phone a step smaller again, 2026-10-01, Murci: "decrease the font sizes of the contents even more on mobile": 14 / 13) */
+@media (max-width:600px) { body.nx-play { --nx-numsz:14px; } }
+@media (max-width:600px) and (max-height:740px) { body.nx-play { --nx-numsz:13px; } }
 body.nx-play main:not(#mq-stage) [data-question] [data-stem], body.nx-play .mcqp h1 { font-size:var(--nx-numsz) !important; line-height:1.45 !important; }
 body.nx-play main:not(#mq-stage) [data-qlabel], body.nx-play .mcqp .qlabel { font-size:var(--nx-numsz) !important; letter-spacing:0.07em; color:var(--nx-accent) !important; }
 body.nx-play main:not(#mq-stage) [data-lead], body.nx-play .mcqp .qlead { font-size:var(--nx-numsz); }
@@ -1300,4 +1301,19 @@ body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-
 @media (max-width:600px) {
   body.nx-play [data-playhead] .nx-where .nx-plabel { display:none !important; }
   body.nx-play [data-playhead] .nx-where .nx-plabel-s { display:block; font-size:13px; font-weight:600; color:var(--nx-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+}
+/* phone: the answers, labels and captions a step smaller with the question (Murci, 2026-10-01: "decrease the font sizes of the
+   contents even more on mobile"). The term's field keeps 16 px: iOS Safari zooms the page into a field under 16 px. */
+@media (max-width:600px) {
+  html body.nx-play .mcqp .tile .txt { font-size:13.5px !important; line-height:1.3; }
+  body.nx-play main:not(#mq-stage) [data-question] :is([data-termhead], [data-termhead] span) { font-size:11.5px !important; }
+  body.nx-play [data-enterhint] { font-size:11.5px; }
+  body.nx-play main:not(#mq-stage) [data-feed] .fd-title { font-size:13.5px !important; }
+  body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks], body.nx-play .mcqp .qmarks { font-size:12.5px !important; }
+  body.nx-play .mcqp .pal-say .say-txt, body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p { font-size:12.5px !important; }
+}
+/* (phone: 6 px back from the top margin under the header, now one row; measured at 360x640, LS 1.1.3 and 1.1.8 were 6 px over) */
+@media (max-width:600px) {
+  body.nx-play .mcqp .stage { margin-top:4px; --cap-off:78px; }
+  body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .tiles { gap:5px; }
 }
