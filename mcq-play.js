@@ -870,8 +870,11 @@
     // A wrapped box keeps its max width; the cloud should hug the words, so measure the lines and set the width to the longest.
     function fitCloud(el) { el.style.animation = "none"; el.style.width = "";
       const rg = document.createRange(); rg.selectNodeContents(el); const rs = [...rg.getClientRects()];
+      // the rects are on-screen (after transforms): the robot is scaled down while it is small, so they are divided back by that scale
+      // (measured 2026-10-01 at 375x812: "You got this!" measured 63 px of its 85 and broke onto two lines)
       if (rs.length) { const cs = getComputedStyle(el), pad = cs.boxSizing === "border-box" ? parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) : 0;
-        el.style.width = Math.ceil(Math.max(...rs.map(r => r.right)) - Math.min(...rs.map(r => r.left)) + pad + 1) + "px"; }
+        const k = el.offsetWidth ? el.getBoundingClientRect().width / el.offsetWidth || 1 : 1;
+        el.style.width = Math.ceil((Math.max(...rs.map(r => r.right)) - Math.min(...rs.map(r => r.left))) / k + pad + 1) + "px"; }
       void el.offsetWidth; el.style.animation = ""; }
     // The robot talks: its words for each clue, first person, to the learner (not a line lifted from a mark scheme). The
     // paper data keeps the plain clues (other pages use them); a clue without its words here is said as written.
