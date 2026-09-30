@@ -893,6 +893,7 @@
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
           <div data-parthead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-qlabel="true">Question {{ nxQNum }}</span></sc-if>
+            <sc-if value="{{ nxReplay }}" hint-placeholder-val="{{ false }}"><span data-replay="true">Practice round · no marks or XP</span></sc-if>
             <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
             <span data-partmarks="true" data-hasn="{{ partMarksHasN }}" aria-label="{{ partMarks }}" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarksN }}<span data-mw="true">{{ partMarksW }}</span></span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
@@ -1221,6 +1222,7 @@
               </sc-if>
               <span style="display:flex; gap:8px; margin-top:4px">
                 <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span data-backword="true">Back</span></button></sc-if>
+                <sc-if value="{{ nxCanRetry }}" hint-placeholder-val="{{ false }}"><button data-retry="true" onClick="{{ retryPart }}" aria-label="Try this question again, practice only: no marks or XP">Try it again</button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
                   <button onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
@@ -2589,6 +2591,9 @@ class Component extends DCLogic {
   // Back: the part before this one, in the mission (practice; a drill or a fix has its own order); it opens as it stands, closed or not
   canBack() { const s = this.state; return s.screen === "play" && s.sitting !== "hall" && !s.fix && !s.drill && !s.revisit && s.pi > 0; }
   prevPart() { if (this.canBack()) this.resetInputs({ pi: this.state.pi - 1 }); }
+  // the part again, as practice (a replay: no marks or XP), with 3 fresh chances; its first attempt's marks and medal stand
+  retryPart(key) { const part = this.part(), k = key || (part && part.key); if (!k) return;
+    const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false, replay: true }); this.resetInputs({ prog: pp }); }
   // The panel's feedback, under the answer (practice, non-MCQ parts): a check's result, or the hint while the learner retries.
   // Under the answer, so the field never moves; a full mark is a medal result (the tier by try, as the MCQ card).
   nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed) {
@@ -2599,8 +2604,10 @@ class Component extends DCLogic {
     const part = this.part(), term = !!part && part.response_mode === "term" && !hall;
     const spelled = res && res.items && res.items[0] && res.items[0].spelling;
     // what it paid, and the x3 when the streak paid it (measured: "+300 XP" never said why)
-    const chips = full ? [{ t: reply.replay ? "Replay · no XP" : "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 && !reply.replay ? [{ t: "×" + reply.multiplier + " streak" }] : [],
-      [{ t: reply.try > 1 ? "Marks are for the first try" : got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }]) : [];
+    // a practice round (Try it again) pays nothing: one chip says so (measured: it showed "+1 mark", the marks the answer is worth, while
+    // none were banked)
+    const chips = full ? (reply.replay ? [{ t: "Practice · no marks or XP" }] : [{ t: "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 ? [{ t: "×" + reply.multiplier + " streak" }] : [],
+      [{ t: reply.try > 1 ? "Marks are for the first try" : got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }])) : [];
     const hintBody = !!(bar && reply && reply.clue && bar.body === "Hint: " + reply.clue);
     const body = full ? (spelled ? "Accepted: it is spelled “" + spelled + "”" + (s.term && String(s.term).trim().toLowerCase() !== spelled.toLowerCase() ? " (you typed “" + String(s.term).trim() + "”)." : ".") : "") : bar && bar.body && !hintBody ? bar.body : "";
     return { nxFeedOn: result,
@@ -2902,7 +2909,8 @@ class Component extends DCLogic {
     const items = m.parts.filter(q => q.response_mode === "mcq").map(q => ({ n: q.number, q: q.stem, opts: q.options, marks: q.marks }));
     const paper = { sections: [{ title: m.section || "", missions: [{ id: m.id, title: m.title, items: items }] }] };
     const head = () => document.querySelector("[data-playhead]");
-    this._mcq = window.McqPlay.mount({ paper: paper, order: items.map(q => q.n), start: part.number, hud: false, screen: true, back: false, retry: false,
+    this._mcq = window.McqPlay.mount({ paper: paper, order: items.map(q => q.n), start: part.number, hud: false, screen: true, back: false,
+      retry: true, onRetry: n => { const pt = m.parts.find(q => q.number === n); if (pt) this.retryPart(pt.key); },   // Try it again: practice, no marks or XP
       topOffset: () => { const h = head(); return h ? Math.round(h.getBoundingClientRect().bottom) : 58; }, topEl: head() || undefined,
       targets: { xpBox: document.querySelector("[data-playhead] [data-xppill]") || undefined, marksBox: document.querySelector("[data-playhead] [data-markspill]") || undefined },
       judge: (item, pick) => this.mcqTry(pick),
@@ -3864,7 +3872,7 @@ class Component extends DCLogic {
       marking: "Reading your answer…",
       waiting: "Saved. A marker will look at it.",
       // (practice: short, as the MCQ robot's; the "XP only" rule is on the result card's chip. The Hall never sees these.)
-      full: reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
+      full: reply && reply.replay ? "Nailed it! That one was practice." : reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
       partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
       zero: s.sitting !== "hall" ? "Not quite. Try again." : "Not this time. Here's a hint.",
       out: "Here's how the examiner marks it.",
@@ -3898,7 +3906,8 @@ class Component extends DCLogic {
       saved: { icon: "•", title: "Answer saved", body: "In the Hall you see your marks when the paper is released.", primary: [nextLabel, next] },
       memo: { icon: "•", title: "Memo shown · no XP for this part", body: "The memo is below your answer.", primary: [nextLabel, next] },
       draw: { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for, below.", primary: [nextLabel, next] },
-      closed: { icon: "✓", title: "Closed · " + best + " of " + (part.marks || 0), body: "", primary: [nextLabel, next], secondary: ["Replay — no XP", () => { const k = part.key; const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false, replay: true }); this.resetInputs({ prog: pp }); }] },
+      // (practice: "Try it again" in the row does this, so no second button; the Hall keeps its Replay)
+      closed: { icon: "✓", title: "Closed · " + best + " of " + (part.marks || 0), body: "", primary: [nextLabel, next], secondary: s.sitting !== "hall" ? null : ["Replay — no XP", () => this.retryPart()] },
     }[outcome];
     const showBar = s.sitting !== "hall" && !!bar && (outcome === "marking" || outcome === "closed" || outcome === "saved" || (reply && (s.barOpen || closed)));
     const primaryIsSuccess = outcome === "full";
@@ -3958,6 +3967,10 @@ class Component extends DCLogic {
       nxQNum: String(part.number).split(".")[0],
       nxCanSkip: !hall && !closed && !s.marking && !(reply && s.barOpen) && this.canSkip(), skipPart: () => this.advance(),
       nxCanBack: !hall && !s.marking && this.canBack(), backPart: () => this.prevPart(),
+      // Try it again (Murci, 2026-09-30): any finished question, as practice: 3 fresh chances, the medal as a badge, no marks or XP
+      // (check() pays neither on a replay: best_marks only counts a first try that is not one)
+      nxCanRetry: !hall && closed && !s.fix && !s.drill && !s.marking && mode !== "draw", retryPart: () => this.retryPart(),
+      nxReplay: !hall && !!pr.replay && !closed,
       ...this.nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed),
       ...this.termVals(s, part, reply, res, locked, mode),
       isSteps: mode === "steps", locked: locked,

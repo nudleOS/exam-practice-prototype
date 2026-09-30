@@ -232,14 +232,15 @@
         t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) tapOut(); else if (t.classList.contains("flipped")) lift(t); });
         g.appendChild(t);
       });
-      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden><span aria-hidden="true">↻</span>&nbsp;Try again</button></div>`);   // the marks under the last card; then Try again and Next
+      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden aria-label="Try this question again, practice only: no marks or XP">Try it again</button></div>`);   // the marks under the last card; then Try again and Next
       // opts.onBack / opts.canBack: the host owns the order (it mounts one mission's MCQs, but a Back can lead to a part of another
       // type): the host says whether there is a way back and takes it (measured 2026-09-30: back:false left no Back at all)
       const hostBack = typeof opts.onBack === "function", canBack = hostBack ? !!(opts.canBack ? opts.canBack() : true) : k > 0 && opts.back !== false;
       if (opts.after === "panel" && canBack) { $("after").insertAdjacentHTML("afterbegin", `<button class="prevq" id="mq-prevq" aria-label="${hostBack ? "Previous question" : "Previous question: " + ORDER[k - 1]}"><span aria-hidden="true">‹</span>&nbsp;Back</button>`); $("prevq").onclick = () => { if (!S.busy) hostBack ? opts.onBack() : go(ORDER[k - 1]); }; }
       if ($("qback") && opts.back === false) $("qback").remove();
       if ($("qback")) $("qback").onclick = () => { if (!S.busy) go(ORDER[k - 1]); };
-      $("retry").onclick = () => { if (!S.busy) go(it.n, true); };
+      // opts.onRetry(n): the host reopens the question as practice (its own record: no marks or XP) before the fresh deal
+      $("retry").onclick = () => { if (S.busy) return; if (opts.onRetry) opts.onRetry(it.n); go(it.n, true); };
       $("after").appendChild(NEXT); paintTiles(); paintTop(); say();   // Next lives just under the cards
       // opts.skip (Murci, 2026-09-30: "showing Next before the learner answers, so they can skip"): the button is there from the start
       // as "Skip"; an answer turns it into "Next" (placeNext). The host decides what a skip does (Exam Practice: it comes back round).
@@ -282,7 +283,7 @@
         if (!pr) streak = S.tries === 1 ? streak + 1 : 0; setHint(null);   // practice: the medal shows how it went, nothing is added
         const name = tier[0].toUpperCase() + tier.slice(1), mkText = mk ? "+" + mk + (mk === 1 ? " mark" : " marks") : "0 marks";
         // the host's streak multiplier as its own chip ("x3 streak"): "+300 XP" alone never said why (measured 2026-09-30)
-        t.querySelector(".ok").innerHTML = okHTML(name, pr ? ["practice, no XP"] : ["+" + gain + " XP"].concat(J && J.mult > 1 ? ["×" + J.mult + " streak"] : [], [mkText]), true, ["First try", "Second try", "Third try"][S.tries - 1]);
+        t.querySelector(".ok").innerHTML = okHTML(name, pr ? ["Practice · no marks or XP"] : ["+" + gain + " XP"].concat(J && J.mult > 1 ? ["×" + J.mult + " streak"] : [], [mkText]), true, ["First try", "Second try", "Third try"][S.tries - 1]);
         fillBack(t, it); const rec = { gone: [...S.gone], tries: S.tries, ok: t.querySelector(".ok").innerHTML };
         live(pr ? `Correct, ${L[i]}. ${name}, practice: no XP or marks. ${whyOf(it)}` : `Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
         const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
