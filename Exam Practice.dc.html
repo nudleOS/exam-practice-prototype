@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=69">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=70">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -728,7 +728,7 @@
       <aside aria-label="Your companion" style="position:{{ coachPos }}; top:{{ coachTop }}; align-self:start; z-index:2; display:flex; flex-direction:{{ coachDir }}; align-items:{{ coachAlign }}; gap:{{ coachGap }}; margin-bottom:{{ coachMb }}">
         <div aria-hidden="true" style="position:relative; width:{{ coachW }}; height:{{ coachH }}; flex:none">
           <sc-if value="{{ coachModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/companion-robot.glb" clip="{{ playClip }}" autorotate="off" face="user" floor="none" fit="{{ coachFit }}" style="position:absolute; inset:0 0 4px 0"></model-floor>
+            <model-floor src="assets/companion-robot.glb" clip="{{ playClip }}" from="{{ playFrom }}" hold="{{ playHold }}" autorotate="off" face="user" floor="none" fit="{{ coachFit }}" style="position:absolute; inset:0 0 4px 0"></model-floor>
           </sc-if>
           <sc-if value="{{ coachPoster }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -1867,6 +1867,9 @@ const NX_ICONS = ['<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 // the robot stands under the panel). Measured at 360x640: the box 443-609 px, the cap's top at 466 (0.14); nx-play puts the bubble
 // beside the head at the same 15%.
 const NX_HEAD = 0.15;
+// a miss with tries left: defeat_03 from 0.4 s to 1.1 s (the head snaps back, a jolt), then it stands (measured on the clip: 0.55 s the
+// head snaps back, 0.8-1.3 s it jolts, 2.5 s+ it goes down)
+const NX_FLINCH = { from: 0.4, hold: 1.1 };
 // The robot's hints for the typed terms (Murci, 2026-09-30: "I don't want those kind of hints, it basically reveals the answer; the hints
 // should be fun, and always come from the robot's speech bubble"). Its own words, first person: an idea to think with, never the
 // term's letters, its first syllable or its word count. One line per miss (the second after the second miss). The paper's own
@@ -2449,10 +2452,15 @@ class Component extends DCLogic {
     else this.setState({ inputs: inputs, edited: edited, kp: null, kpExpr: "", kpErr: "" });
   }
   // Restart a clip without remounting the model (a remount would re-parse the 4.7 MB file).
-  react(clip) {
-    clearTimeout(this._rc);
-    if (this.state.reduced) { this.setState({ playClip: clip }); return; }
-    this.setState({ playClip: "" }); this._rc = setTimeout(() => this.setState({ playClip: clip }), 60);
+  // part (optional): { from, hold } in seconds, a stretch of the clip that stops on its last frame (model-floor reads them when the
+  // clip starts). A miss with tries left is a flinch, not the whole fall (Murci, 2026-09-30: the fall took ~3 s to undo, so the
+  // hint's bubble came before the robot was up): defeat_03 0.4-1.1 s is the head snapping back and a jolt (as mcq-play's first hit).
+  react(clip, part) {
+    clearTimeout(this._rc); clearTimeout(this._rc2); const f = part ? { playFrom: String(part.from), playHold: String(part.hold) } : { playFrom: "", playHold: "" };
+    if (this.state.reduced) { this.setState(Object.assign({ playClip: clip }, f)); return; }
+    this.setState(Object.assign({ playClip: "" }, f)); this._rc = setTimeout(() => this.setState({ playClip: clip }), 60);
+    // a flinch stands back up (the greeting) once it has played
+    if (part) this._rc2 = setTimeout(() => { if (this.state.playClip === clip) this.react("greet"); }, 60 + (part.hold - part.from) * 1000 + 150);
   }
 
   scrollReveal() { const r = document.querySelector("[data-reveal]"); if (r) r.scrollIntoView({ block: "start", behavior: this.state.reduced ? "auto" : "smooth" }); }
@@ -2747,7 +2755,10 @@ class Component extends DCLogic {
       const got = result.marks_awarded || 0;
       // The Hall gives no instant verdicts: no reaction.
       if (this.state.sitting === "hall") { this.react("greet"); return reply; }
-      if (!quiet) this.react(draw || revealed ? "greet" : result.full ? "dance" : got > 0 ? "greet" : "defeat");
+      const flinch = !closed && !result.full && got === 0 && !draw;
+      if (!quiet) this.react(draw || revealed ? "greet" : result.full ? "dance" : got > 0 ? "greet" : "defeat", flinch ? NX_FLINCH : undefined);
+      // the robot says the hint once it is back up (never words floating over a robot still falling)
+      clearTimeout(this._hr); if (!quiet) { if (flinch && !this.state.reduced) { this.setState({ hintReady: false }); this._hr = setTimeout(() => this.setState({ hintReady: true }), (NX_FLINCH.hold - NX_FLINCH.from) * 1000 + 260); } else this.setState({ hintReady: true }); }
       // a typed term, wrong: the field breaks and falls; a new one drops in for the next try (none after the last)
       if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       return reply;
@@ -3729,7 +3740,8 @@ class Component extends DCLogic {
     const tone = { full: "ok", partial: "warn", zero: "bad", out: "bad", waiting: "warn" }[outcome] || "neutral";
     const retryNow = s.sitting !== "hall" && !!reply && !!res && !res.full && !s.barOpen && !closed;
     // practice: the hint is the robot's to say, in its bubble (never in the panel): its own line where it has one, else the paper's clue
-    const hintLine = s.sitting !== "hall" && !!reply && !!reply.clue && !closed ? this.robotHint(part, reply) : "";
+    const hintLine = s.sitting !== "hall" && !!reply && !!reply.clue && !closed && s.hintReady !== false ? this.robotHint(part, reply) : "";
+    const waitHint = s.sitting !== "hall" && !!reply && !closed && s.hintReady === false;   // it is still flinching: one line ("Not quite") until the hint
     // The companion's words, from the data.
     // Frame the question from its instruction: the last sentence when the stem has a lead-in
     // ("Reaction turbines can be classified ... Name FOUR types ..." frames as "name FOUR types ...").
@@ -3823,10 +3835,10 @@ class Component extends DCLogic {
       coachAlign: wide ? "center" : "flex-end", coachGap: wide ? "14px" : "10px", coachMb: wide ? "0" : "4px",
       coachW: wide ? "220px" : tablet ? "92px" : "72px", coachH: wide ? "330px" : tablet ? "138px" : "108px",
       coachShadowH: wide ? "20px" : "10px", coachShadowTint: shadowTint,
-      coachModelOn: !s.reduced && !s.saveData, coachPoster: !!(s.reduced || s.saveData), playClip: s.playClip,
+      coachModelOn: !s.reduced && !s.saveData, coachPoster: !!(s.reduced || s.saveData) || !hall, playClip: s.playClip, playFrom: s.playFrom || "", playHold: s.playHold || "",   /* practice: the silhouette until the model has loaded (nx-play hides it then) */
       // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
-      coachBubble: hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? hintLine : retryNow ? "Your turn. Try again." : words[outcome] || framing,
-      coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
+      coachBubble: hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? hintLine : waitHint ? words.zero : retryNow ? "Your turn. Try again." : words[outcome] || framing,
+      coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : waitHint ? "wait" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
       // question
       toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }), ctxOpen: ctxOpen, ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",

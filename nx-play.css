@@ -882,3 +882,5 @@ body.nx-play .mcqp .next.skip .arr { background:none !important; width:auto; }
 body.nx-play .mcqp .next.skip .arr svg { stroke:currentColor; }
 body.nx-play .mcqp .next.skip:hover { color:var(--nx-text) !important; }
 body.nx-play .mcqp .next.skip::before, body.nx-play .mcqp .next.skip::after { display:none !important; }   /* the spinning ring is Next's, not Skip's */
+/* the robot's silhouette holds its place on the rock until the 3D model has loaded (3-5 s on a first visit: the rock stood empty) */
+main > aside[aria-label="Your companion"] model-floor[data-avatar="ready"] ~ svg { display:none; }
