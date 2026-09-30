@@ -101,7 +101,15 @@
       // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
       const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
       let best = -1, bestBy = Infinity; for (let k = 0; k <= top_; k++) { set(k); size(); const by = overBy(); if (by <= 0) { best = k; break; } if (by < bestBy) { bestBy = by; best = k; } }
-      set(best); size(); panelScroll(); }
+      set(best); size(); centreStage(); panelScroll(); }
+    // opts.centreY (0-1): where the panel and its Back / Next row sit in the room left under them (Exam Practice: 0.4, the optical
+    // centre; Murci, 2026-09-30: "it looks a bit up and too close to the navbar"). Wider than a phone only (a phone's robot has the
+    // lower half). The room is the fit's own: the screen less the row's room (--cap-off) and the 24 px floor gap.
+    function centreStage() { const st = $("stage"); if (!st || opts.centreY == null) return; st.style.removeProperty("margin-top"); if (innerWidth <= 600) return;
+      const top = el => { let y = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) y += e.offsetTop; return y; };
+      const H = opts.screen ? PAGE.clientHeight : innerHeight, off = parseFloat(getComputedStyle(st).getPropertyValue("--cap-off")) || 0, base = parseFloat(getComputedStyle(st).marginTop) || 0;
+      const spare = H - (off - base) - (top(st) + st.offsetHeight), extra = Math.max(0, Math.min(160, Math.round(spare * opts.centreY)));
+      if (extra) st.style.marginTop = (base + extra) + "px"; }
     // The panel (the host caps its height) scrolls inside when its question is longer than the room: "scrolls" shows the fade
     // at its bottom edge, "atend" drops it once the end is in view (so the fade never covers the last card).
     function panelScroll() { const st = $("stage"); if (!st) return; st.scrollTop = 0;

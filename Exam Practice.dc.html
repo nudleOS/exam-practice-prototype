@@ -2197,6 +2197,7 @@ class Component extends DCLogic {
   // page 791 px tall on a 648 px screen (the header went under the top bar); on a phone the grown panel hid "Clean. Full marks.".
   // A new result or hint is scrolled into view inside it; a new part starts at its top.
   nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock"); return; }
+    this.nxCentre(q);
     const qr = q.getBoundingClientRect(), fe = document.querySelector("[data-footer]"); let bottom = innerHeight - 16;
     const fr = document.querySelector("[data-footer] :is([data-check], [data-bar-primary])"), rowH = fr ? fr.getBoundingClientRect().height : 0;
     // wider than a phone, the action row DOCKS under the panel (Murci, 2026-09-30: at the screen's corner Check was ~700 px from the
@@ -2834,6 +2835,9 @@ class Component extends DCLogic {
       onMarksLanded: () => { this._mcqPending = 0; this.forceUpdate(); },
       onNext: () => this.advance(),
       seed: s.fix || s.drill ? {} : this.mcqBook(),
+      noWave: true,   // its robot stands, no wave
+      centreY: 0.4,   // the panel at the optical centre
+      canBack: () => this.canBack(), onBack: () => this.prevPart(),   // Back under the panel's left edge
       onScore: r => { if (!s.fix && !s.drill) this.mcqBook()[r.n] = { got: r.marks, of: r.item.marks, tier: r.tier, gone: r.gone || [], tries: r.tries, ok: r.ok, a: r.item.a }; },
       onMap: () => this.setState({ screen: "map" }),
       look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 3 : 5, skip: () => this.canSkip(), heroIn: "stage", celebrate: "corner", after: "panel",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
