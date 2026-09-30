@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=63">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=64">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -889,14 +889,15 @@
         </sc-if>
 
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+          <div data-parthead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+            <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-qlabel="true">Question {{ nxQNum }}</span></sc-if>
             <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
             <span data-partmarks="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
               <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:12px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
             </sc-if>
             <span style="flex:1"></span>
-            <span style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
+            <span data-try="true" style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
           </div>
           <h2 data-stem="true" tabIndex="-1" style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty; outline:none">{{ stem }}</h2>
 
@@ -990,7 +991,10 @@
           <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:8px">
               <span style="font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">The term</span>
-              <span style="display:flex; align-items:center; gap:8px">
+              <span data-termrow="true" style="display:flex; align-items:center; gap:8px">
+                <sc-if value="{{ nxTiles }}" hint-placeholder-val="{{ false }}">
+                  <span data-tiles="{{ termTilesState }}" aria-hidden="true"><sc-for list="{{ termTiles }}" as="tt" hint-placeholder-count="8"><i class="{{ tt.cls }}" style="--k:{{ tt.k }}">{{ tt.ch }}</i></sc-for></span>
+                </sc-if>
                 <input data-field="true" value="{{ termVal }}" onChange="{{ onTerm }}" onKeyDown="{{ onEnter }}" aria-label="The term" placeholder="Type the term" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:52px; padding:0 14px; border-radius:12px; border:1px solid {{ termBorder }}; background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
                 <sc-if value="{{ termHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ termStampBg }}; font-size:12px; font-weight:800; color:{{ termStampColor }}">{{ termStamp }}</span>
@@ -1080,6 +1084,19 @@
             <div style="padding:18px; border-radius:16px; border:1px dashed var(--line2); display:flex; gap:12px; align-items:flex-start">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
               <span style="display:flex; flex-direction:column; gap:4px"><span style="font-size:15px; font-weight:700">Draw it on paper. This one isn't marked online.</span><span style="font-size:13px; line-height:1.55; color:var(--text2)">When you are done, tap "I've drawn it" to see what the examiner looks for.</span></span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ nxFeedOn }}" hint-placeholder-val="{{ false }}">
+            <div data-feed="{{ nxFeedTone }}" role="status" aria-live="polite">
+              <sc-if value="{{ nxFeedMedal }}" hint-placeholder-val="{{ false }}"><span class="fd-medal" aria-hidden="true"></span></sc-if>
+              <span class="fd-head"><span class="fd-icon" aria-hidden="true">{{ nxFeedIcon }}</span><span class="fd-title">{{ nxFeedTitle }}</span></span>
+              <sc-if value="{{ nxFeedHasSub }}" hint-placeholder-val="{{ false }}"><span class="fd-sub">{{ nxFeedSub }}</span></sc-if>
+              <sc-if value="{{ nxFeedHasChips }}" hint-placeholder-val="{{ false }}"><span class="fd-chips"><sc-for list="{{ nxFeedChips }}" as="fc" hint-placeholder-count="2"><span class="fd-chip">{{ fc.t }}</span></sc-for></span></sc-if>
+              <sc-if value="{{ nxFeedHasBody }}" hint-placeholder-val="{{ false }}"><span class="fd-body">{{ nxFeedBody }}</span></sc-if>
+              <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
+                <span class="fd-points"><sc-for list="{{ points }}" as="pt" hint-placeholder-count="2"><span class="fd-pt"><span style="flex:none; font-weight:800; color:{{ pt.color }}">{{ pt.icon }}</span><span style="display:flex; flex-direction:column; gap:2px"><span style="font-weight:700">{{ pt.head }}</span><span style="color:var(--text2)">{{ pt.detail }}</span></span></span></sc-for><span class="fd-pfoot">{{ pointsFoot }}</span></span>
+              </sc-if>
             </div>
           </sc-if>
 
@@ -1220,6 +1237,7 @@
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ flagFill }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22V4"></path><path d="M5 4h12l-2.5 4.5L17 13H5"></path></svg>{{ flagLabel }}
                 </button>
               </sc-if>
+              <sc-if value="{{ nxCanSkip }}" hint-placeholder-val="{{ false }}"><button data-skip="true" onClick="{{ skipPart }}" aria-label="Skip this question for now">Skip</button></sc-if>
               <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-width:0; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
               </div>
             </div>
@@ -2366,8 +2384,10 @@ class Component extends DCLogic {
 
   scrollReveal() { const r = document.querySelector("[data-reveal]"); if (r) r.scrollIntoView({ block: "start", behavior: this.state.reduced ? "auto" : "smooth" }); }
   tryAgain() {
-    const res = this.state.reply && this.state.reply.result;
-    this.setState({ barOpen: false }, () => {
+    const res = this.state.reply && this.state.reply.result, part = this.part();
+    // practice, a typed term: the field clears, so the retry is typed into the word's shape (the tiles' slots)
+    const clear = part && part.response_mode === "term" && this.state.sitting !== "hall" ? { term: "", edited: Object.assign({}, this.state.edited, { term: true }) } : {};
+    this.setState(Object.assign({ barOpen: false }, clear), () => {
       const lost = res && res.items ? res.items.filter(x => !x.awarded).map(x => x.key) : [];
       const f = (lost.length && document.getElementById("f-" + lost[0])) || document.querySelector("[data-question] [data-field]");
       if (f) f.focus();
@@ -2402,6 +2422,37 @@ class Component extends DCLogic {
   // Skip shows unless it would lead nowhere: on the last part with no other part open
   canSkip() { const m = this.mission(); if (!m || this.state.fix || this.state.drill) return false; if (this.state.pi < m.parts.length - 1) return true;
     const k = this.firstOpenPart(m); return k >= 0 && k !== this.state.pi; }
+  // The panel's feedback, under the answer (practice, non-MCQ parts): a check's result, or the hint while the learner retries.
+  // Under the answer, so the field never moves; a full mark is a medal result (the tier by try, as the MCQ card).
+  nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed) {
+    const hall = s.sitting === "hall", result = !hall && showBar && !!bar && outcome !== "idle", hint = !hall && !showBar && !!(reply && reply.clue && !closed);
+    const full = outcome === "full", k = Math.min(2, Math.max(0, ((reply && reply.try) || 1) - 1)), tier = full ? ["Gold", "Silver", "Bronze"][k] : "";
+    const spelled = res && res.items && res.items[0] && res.items[0].spelling;
+    const chips = full ? [{ t: reply.replay ? "Replay · no XP" : "+" + (reply.xp_awarded || 0) + " XP" }, { t: reply.try > 1 ? "Marks are for the first try" : got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }] : [];
+    const body = hint ? reply.clue : full ? (spelled ? "Accepted. It is spelled “" + spelled + "”." : "") : bar && bar.body ? bar.body : "";
+    return { nxFeedOn: result || hint,
+      nxFeedTone: hint ? "hint" : full ? "ok " + tier.toLowerCase() : ({ partial: "warn", zero: "bad", out: "bad", waiting: "warn" })[outcome] || "neutral",
+      nxFeedMedal: full, nxFeedIcon: hint ? "?" : bar ? bar.icon : "", nxFeedTitle: hint ? "Hint" : full ? tier : bar ? bar.title : "",
+      nxFeedHasSub: full, nxFeedSub: full ? ["First try", "Second try", "Third try"][k] : "",
+      nxFeedHasChips: chips.length > 0, nxFeedChips: chips, nxFeedHasBody: !!body, nxFeedBody: body || "" };
+  }
+  // A typed term as letter tiles (practice; Murci, 2026-09-30): the letters typed so far; after a miss the answer's shape as empty
+  // slots (the first letter of each word after one miss, and the last after two); a right answer turns them gold, a wrong one
+  // cracks them. The real field lies over the tiles (it takes the keyboard, the screen reader and paste); the tiles are a picture.
+  termTileVals(s, part, reply, res, locked, mode) {
+    if (mode !== "term" || s.sitting === "hall") return { nxTiles: false, termTiles: [], termTilesState: "" };
+    const target = String(((SERVER.keys[part.key] || {}).term || [""])[0] || ""), typed = String(s.term || "");
+    const full = !!(res && res.full), showing = !!(reply && s.barOpen), misses = Math.max(0, this.pg(part.key).tries - (full ? 1 : 0));
+    const state = full ? "ok" : showing && res ? "no" : "typing";
+    const reveal = new Set(); let at = 0;
+    target.split(" ").forEach(w => { if (w) { if (misses >= 1) reveal.add(at); if (misses >= 2) reveal.add(at + w.length - 1); } at += w.length + 1; });
+    const len = state === "typing" && misses > 0 ? Math.max(typed.length, target.length) : typed.length, tiles = [];
+    for (let i = 0; i < len; i++) { const c = typed[i], tc = target[i];
+      if (c != null) tiles.push(c === " " ? { ch: "", cls: "gap", k: i } : { ch: c, cls: "t " + (state === "ok" ? "ok" : state === "no" ? "no" : "on"), k: i });
+      else tiles.push(tc === " " ? { ch: "", cls: "gap", k: i } : { ch: reveal.has(i) ? tc : "", cls: "t gh", k: i }); }
+    if (!locked) tiles.splice(Math.min(typed.length, tiles.length), 0, { ch: "", cls: "caret", k: 0 });
+    return { nxTiles: true, termTiles: tiles, termTilesState: state };
+  }
   levelOf(m) { const n = parseInt(String((m && m.id) || "").replace(/^Question\s*/i, ""), 10); return n > 0 ? n : 1; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
   // A drill plays as one synthetic mission of the parts it chose.
@@ -3545,12 +3596,13 @@ class Component extends DCLogic {
       + (part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") + (allOnes ? ", one per step." : ".") : "It isn't marked online.");
     const best = pr ? pr.best : 0;
     const words = {
-      idle: framing.length > 120 ? framing.slice(0, 117) + "…" : framing,
+      // practice: short lines, as the MCQ robot's (Murci, 2026-09-30: the bubble repeated the whole question, cut off); the Hall keeps its framing
+      idle: s.sitting !== "hall" ? "You got this!" : framing.length > 120 ? framing.slice(0, 117) + "…" : framing,
       marking: "Reading your answer…",
       waiting: "Saved. A marker will look at it.",
       full: reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Correct on try " + (reply ? reply.try : 2) + ". Marks are for a first try, so this one is XP only.",
       partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
-      zero: "Not this time. Here's a hint.",
+      zero: s.sitting !== "hall" ? (reply && reply.clue ? "Not quite. The hint is under your answer." : "Not quite. Try again.") : "Not this time. Here's a hint.",
       out: "Here's how the examiner marks it.",
       memo: "Here's how the examiner marks it.",
       draw: "Compare your drawing with the examiner's list.",
@@ -3634,7 +3686,11 @@ class Component extends DCLogic {
       stem: part.stem, showRules: !!(this.paper() && this.paper().id === "fm" && mode === "steps"),
       rulesLine: "3 decimals · g = 9,81 m/s² · decimal comma OK",
       openFormulas: () => this.setState({ kit: true, kitTab: "formulas" }),
-      hasHint: !!(reply && reply.clue && !closed && !s.barOpen && !hall), hintTitle: "Hint", hintText: reply ? reply.clue || "" : "",
+      hasHint: false, hintTitle: "Hint", hintText: reply ? reply.clue || "" : "",   // (the hint shows under the answer now: nxFeedVals; the box above the field made it jump 55 px)
+      nxQNum: String(part.number).split(".")[0],
+      nxCanSkip: !hall && !closed && !s.marking && !(reply && s.barOpen) && this.canSkip(), skipPart: () => this.advance(),
+      ...this.nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed),
+      ...this.termTileVals(s, part, reply, res, locked, mode),
       isSteps: mode === "steps", locked: locked,
       stepCards: mode === "steps" ? part.steps.map((st, i) => { const it = s.edited[st.id] ? null : itemsBy[st.id]; const sp = stampOf(it);
         return { label: st.label, marks: st.marks + (st.marks === 1 ? " mark" : " marks"), value: s.inputs[st.id] || "", unit: unitText(st.unit_hint), hasUnit: !!st.unit_hint,

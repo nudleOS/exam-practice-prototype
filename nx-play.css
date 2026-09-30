@@ -362,7 +362,7 @@ html[data-nx="light"] body.nx-play {
 body.nx-play main:not(#mq-stage):not([data-done]) { display:block !important; box-sizing:border-box; max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)) !important;
   margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)) !important; margin-right:auto !important; padding:26px 0 var(--nx-dockH, 150px) !important; }
 body.nx-play main:not(#mq-stage) [data-question] { box-sizing:border-box; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
-body.nx-play main:not(#mq-stage) [data-question] [data-stem] { font-size:clamp(18px, 1.7vw, 23px) !important; line-height:1.35 !important; font-weight:800 !important; letter-spacing:-0.01em; color:var(--nx-h1); }
+body.nx-play main:not(#mq-stage) [data-question] [data-stem] { font-size:clamp(18px, 1.7vw, 23px) !important; line-height:1.35 !important; font-weight:400 !important; letter-spacing:-0.01em; color:var(--nx-h1); }
 /* the part's header as the MCQ panel's: the number chip, the marks pill */
 body.nx-play main:not(#mq-stage) section[data-key] [data-partnum] { position:relative; z-index:1; padding:9px 16px !important; border-radius:999px !important; background:var(--nx-chip-num) !important; color:var(--nx-chip-num-ink) !important; font-size:14.5px !important; }
 /* the topic: the paper's own heading for the question, tucked behind the number as the MCQ chip (number pill on a chip) */
@@ -379,10 +379,10 @@ body.nx-play main:not(#mq-stage) [data-question] :is(input, textarea)::placehold
 body.nx-play [data-footer] > div { display:block !important; box-sizing:border-box; max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)) !important;
   margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)) !important; margin-right:auto !important; padding:0 !important; }
 body.nx-play [data-footer] > div > span:first-child { display:none !important; }
-/* the page's own companion (non-MCQ parts): on its rock, as the MCQ robot, its bubble a speech bubble above its head.
-   From 601 px only. On a phone every non-MCQ part is typed: a robot fixed at the bottom sits where the keyboard opens, over
-   the answer. There the page keeps its own small companion, inline above the question (its phone layout). */
-@media (min-width:601px) {
+/* the page's own companion (non-MCQ parts): on its rock, as the MCQ robot, its bubble a speech bubble above its head. Every size
+   (2026-09-30, Murci: the MCQ look for the other types; the phone had a small robot inline above the question). On a phone it
+   stands BEHIND the panel (below): a long question or the keyboard covers the robot, never the robot the answer. */
+@media all {
   body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] { position:fixed !important; z-index:4; top:auto !important; margin:0 !important; display:block !important; pointer-events:none;
     left:calc(var(--nx-rh) * var(--nx-fx) - var(--ph) * 0.357) !important; bottom:calc(var(--nx-rh) * var(--nx-fy) - var(--ph) * 0.148) !important;
     width:calc(var(--ph) * 0.7143); height:var(--ph); }
@@ -391,11 +391,13 @@ body.nx-play [data-footer] > div > span:first-child { display:none !important; }
     padding:11px 18px !important; border-radius:20px !important; background:var(--nx-bubble) !important; border:1.5px solid var(--nx-bubble-line) !important; box-shadow:0 12px 26px -14px rgba(8,30,80,0.5) !important;
     color:var(--nx-text) !important; font-size:14.5px !important; font-weight:700 !important; text-wrap:balance; pointer-events:auto; }
 }
-/* phone: the whole width, no panel box (as the phone mockup and the MCQ on a phone) */
+/* phone: the question in its panel, as the MCQ on a phone (Murci, 2026-09-30); the robot on its rock behind it; room at the bottom
+   for the action row (Skip / Check / Next at the screen's bottom-right) */
 @media (max-width:600px) {
-  body.nx-play main:not(#mq-stage):not([data-done]) { max-width:none !important; margin:0 !important; padding:12px 16px var(--nx-dockH, 150px) !important; }
-  body.nx-play main:not(#mq-stage) [data-question] { padding:0; border:0; border-radius:0; background:none; box-shadow:none; }
-  body.nx-play main:not(#mq-stage) [data-question] [data-stem] { font-size:19px !important; }
+  body.nx-play main:not(#mq-stage):not([data-done]) { max-width:none !important; margin:0 !important; padding:14px 12px 96px !important; }
+  body.nx-play main:not(#mq-stage) [data-question] { position:relative; z-index:1; padding:14px; border-radius:22px; }
+  body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] { z-index:0 !important; }
+  body.nx-play main:not(#mq-stage) [data-question] [data-stem] { font-size:17.5px !important; }
   body.nx-play [data-footer] > div { max-width:none !important; margin:0 !important; padding:0 16px !important; }
   body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p { background:var(--nx-bubble) !important; border:1.5px solid var(--nx-bubble-line) !important; box-shadow:none !important; color:var(--nx-text) !important; }
 }
@@ -638,4 +640,104 @@ body.nx-app [data-donestreak] { justify-content:center; text-align:center; }
    the meter drops its "x3" and the pill its "XP" (both stay in their aria-labels). */
 @media (max-width:600px) {
   body.nx-play .nx-xp .nx-xpw { display:none; }   /* the meter keeps its "x3" now that it has row 2 to itself */
+}
+
+/* ==== the other question types in the MCQ's look (practice, non-MCQ parts; Murci, 2026-09-30) ====
+   The Hall never gets body.nx-play, so none of this reaches it. */
+/* the header on one line, as the MCQ panel's: "Question 1", the part's chip, the marks on the right; no "Try 1 of 3" (it did not
+   count up; the robot and the feedback say where a learner is) */
+body.nx-play main:not(#mq-stage) [data-parthead] { flex-wrap:nowrap !important; gap:10px !important; }
+body.nx-play main:not(#mq-stage) [data-qlabel] { flex:none; white-space:nowrap; font-size:17px; font-weight:500; color:var(--nx-text); }
+body.nx-play main:not(#mq-stage) [data-parthead] [data-partmarks] { order:5; flex:none; white-space:nowrap; }
+body.nx-play main:not(#mq-stage) [data-parthead] [data-try] { display:none; }
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-parthead] { gap:8px !important; }
+  body.nx-play main:not(#mq-stage) [data-qlabel] { font-size:14px; }
+  body.nx-play main:not(#mq-stage) section[data-key] [data-partnum] { padding:9px 11px !important; font-size:13px !important; }
+  body.nx-play main:not(#mq-stage) section[data-key] [data-parttopic] { padding:9px 12px 9px 30px; font-size:13px !important; }
+  body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks] { padding:0 10px; height:36px; display:inline-flex; align-items:center; font-size:13.5px !important; }
+}
+/* the action row at the screen's bottom-right, opposite the robot, as the MCQ's Next (the dock was a full-width bar at the bottom;
+   on a phone 280 px under the field, where the keyboard opens). The result's words are in the panel now (under the answer), so
+   the bar keeps only its buttons. The calculator keypad keeps the full-width dock. */
+body.nx-play [data-footer]:not(:has([data-keypad])) { left:auto !important; right:28px !important; bottom:calc(24px + env(safe-area-inset-bottom, 0px)) !important; }
+body.nx-play [data-footer]:not(:has([data-keypad])) > div { display:block !important; max-width:none !important; margin:0 !important; padding:0 !important; }
+body.nx-play [data-footer]:not(:has([data-keypad])) > div > div { display:flex; justify-content:flex-end; }
+body.nx-play [data-footer] [data-bar] { padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important; animation:none !important; }
+body.nx-play [data-footer] [data-bar] > :not(:last-child) { display:none !important; }
+body.nx-play [data-footer] [data-bar] > :last-child { margin:0 !important; gap:10px !important; justify-content:flex-end; }
+body.nx-play [data-footer] [role="status"]:not([data-bar]) { display:none; }   /* "Enter your answer" over Check: the disabled Check says it */
+body.nx-play [data-footer] div:has(> div > [data-check]) { padding:0 !important; background:none !important; }
+body.nx-play [data-footer] div:has(> [data-check]) { gap:10px !important; }
+body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-bar] button) { flex:none !important; min-height:46px !important; height:46px; padding:0 24px !important; border-radius:999px !important;
+  font-size:15px !important; font-weight:800 !important; white-space:nowrap; cursor:pointer; }
+body.nx-play [data-footer] [data-skip], body.nx-play [data-footer] [data-bar] button:not([data-bar-primary]) { border:1px solid var(--nx-pill-line) !important; background:var(--nx-pill) !important; color:var(--nx-text) !important; box-shadow:none !important; }
+@media (max-width:600px) {
+  body.nx-play [data-footer]:not(:has([data-keypad])) { right:16px !important; bottom:calc(16px + env(safe-area-inset-bottom, 0px)) !important; }
+  body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-bar] button) { padding:0 18px !important; font-size:14px !important; }
+}
+/* the feedback, in the panel under the answer: a check's result, or the hint while the learner retries (the hint box above the
+   field pushed it 55 px down on a retry; the result bar sat at the screen's bottom, far from the answer) */
+body.nx-play main:not(#mq-stage) [data-feed] { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:14px 16px; border-radius:16px;
+  border:1px solid var(--nx-pill-line); background:rgba(255,255,255,0.04); animation:rise 320ms cubic-bezier(0.22,0.61,0.36,1) both; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-head { display:flex; align-items:center; gap:10px; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-icon { flex:none; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-size:14px; font-weight:900; color:#10151f; background:#9aa6b8; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-title { font-size:15.5px; font-weight:700; color:var(--nx-text); }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-body { font-size:14px; line-height:1.55; color:var(--nx-text2); text-wrap:pretty; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-points { display:flex; flex-direction:column; gap:6px; font-size:13px; line-height:1.5; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-pt { display:flex; gap:8px; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-pfoot { font-size:12px; color:var(--text3); }
+body.nx-play main:not(#mq-stage) [data-feed~="bad"] { border-color:rgba(242,119,122,0.45); }
+body.nx-play main:not(#mq-stage) [data-feed~="bad"] .fd-icon { background:#f2777a; }
+body.nx-play main:not(#mq-stage) [data-feed~="warn"] { border-color:rgba(224,161,15,0.45); }
+body.nx-play main:not(#mq-stage) [data-feed~="warn"] .fd-icon { background:#e0a10f; }
+body.nx-play main:not(#mq-stage) [data-feed~="hint"] { border-color:rgba(224,161,15,0.4); background:rgba(224,161,15,0.07); }
+body.nx-play main:not(#mq-stage) [data-feed~="hint"] .fd-icon { background:#e0a10f; }
+/* a full mark: the medal result, as the MCQ card (the tier by try), centred */
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] { align-items:center; text-align:center; gap:6px; padding:20px 18px 18px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-icon { display:none; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-title { font-size:22px; }
+body.nx-play main:not(#mq-stage) [data-feed~="gold"] { --fd-medal:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%); --fd-glow:#e3b341; border-color:rgba(227,179,65,0.55); background:linear-gradient(180deg, rgba(227,179,65,0.12), rgba(227,179,65,0.03)); }
+body.nx-play main:not(#mq-stage) [data-feed~="silver"] { --fd-medal:radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%); --fd-glow:#cfd4db; border-color:rgba(207,212,219,0.5); background:linear-gradient(180deg, rgba(207,212,219,0.1), rgba(207,212,219,0.02)); }
+body.nx-play main:not(#mq-stage) [data-feed~="bronze"] { --fd-medal:radial-gradient(circle at 35% 28%, #f3bf98, #bb7a4c 46%, #683b1d 100%); --fd-glow:#bb7a4c; border-color:rgba(187,122,76,0.5); background:linear-gradient(180deg, rgba(187,122,76,0.12), rgba(187,122,76,0.03)); }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-medal { position:relative; width:52px; height:52px; border-radius:50%; margin-bottom:6px; background:var(--fd-medal);
+  box-shadow:0 0 0 3px rgba(255,255,255,0.2), 0 8px 24px rgba(0,0,0,0.4), 0 0 30px var(--fd-glow); animation:pop 420ms cubic-bezier(0.34,1.56,0.64,1) both; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-medal::after { content:""; position:absolute; inset:24%; background:rgba(20,16,6,0.62);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8l2.8 6 6.5.6-4.9 4.4 1.4 6.4L12 16.9l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.6z'/%3E%3C/svg%3E") center / contain no-repeat; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-sub { font-size:11.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--nx-text2); }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-chips { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:6px; }
+body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { display:inline-flex; align-items:center; height:30px; padding:0 12px; border-radius:999px; font-size:13px; font-weight:700;
+  background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.16); color:var(--nx-text); }
+/* the typed term as letter tiles: the real field lies over them, invisible (it takes the keyboard, paste and the screen reader);
+   the tiles show what is typed, the answer's shape after a miss, gold on a right answer, cracked on a wrong one */
+body.nx-play main:not(#mq-stage) [data-termrow] { position:relative; }
+body.nx-play main:not(#mq-stage) [data-termrow]:has([data-tiles]) > input { position:absolute !important; inset:0; width:100%; height:100% !important; opacity:0; cursor:text; }
+body.nx-play main:not(#mq-stage) [data-termrow]:has([data-tiles]) > :not([data-tiles]):not(input) { display:none !important; }   /* the old stamp (x0 / check 1): the tiles say it */
+body.nx-play main:not(#mq-stage) [data-tiles] { display:flex; flex-wrap:wrap; align-items:center; gap:6px; width:100%; min-height:56px; box-sizing:border-box; padding:6px 10px;
+  border-radius:14px; border:1px solid var(--nx-pill-line); background:rgba(255,255,255,0.03); }
+body.nx-play main:not(#mq-stage) [data-termrow]:focus-within [data-tiles] { border-color:var(--nx-accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-accent) 28%, transparent); }
+body.nx-play main:not(#mq-stage) [data-tiles] i { font-style:normal; }
+body.nx-play main:not(#mq-stage) [data-tiles] .t { flex:none; width:34px; height:44px; box-sizing:border-box; border-radius:9px; display:grid; place-items:center; font-size:19px; font-weight:700;
+  text-transform:uppercase; color:var(--nx-text); background:var(--nx-pill); border:1.5px solid var(--nx-pill-line); }
+body.nx-play main:not(#mq-stage) [data-tiles] .t.on { animation:nxTileIn 160ms cubic-bezier(0.34,1.56,0.64,1) both; }
+body.nx-play main:not(#mq-stage) [data-tiles] .t.gh { border-style:dashed; background:transparent; color:var(--nx-text2); }
+body.nx-play main:not(#mq-stage) [data-tiles] .gap { flex:none; width:14px; }
+body.nx-play main:not(#mq-stage) [data-tiles] .caret { flex:none; width:2px; height:30px; border-radius:1px; background:var(--nx-accent); opacity:0; }
+body.nx-play main:not(#mq-stage) [data-termrow]:focus-within [data-tiles] .caret { animation:nxCaret 1s steps(1) infinite; }
+body.nx-play main:not(#mq-stage) [data-tiles="ok"] .t { color:#241903; border-color:#ffe7a0; background:radial-gradient(circle at 35% 28%, #fbe39a, #dca834 60%, #a7791d 100%);
+  animation:nxTileFlip 520ms calc(var(--k) * 70ms) cubic-bezier(0.22,0.61,0.36,1) both; }
+body.nx-play main:not(#mq-stage) [data-tiles="no"] .t { color:#ffd6d7; border-color:rgba(242,119,122,0.7); background:rgba(242,119,122,0.14);
+  animation:nxTileCrack 620ms calc(var(--k) * 30ms) ease both; }
+@keyframes nxTileIn { from { transform:scale(0.6); opacity:0; } to { transform:none; opacity:1; } }
+@keyframes nxCaret { 0% { opacity:1; } 50% { opacity:0; } }
+@keyframes nxTileFlip { 0% { transform:perspective(300px) rotateX(0); } 50% { transform:perspective(300px) rotateX(90deg); } 100% { transform:perspective(300px) rotateX(0); } }
+@keyframes nxTileCrack { 0% { transform:none; } 25% { transform:translateX(-3px) rotate(-3deg); } 50% { transform:translateX(3px) rotate(3deg); } 100% { transform:translateY(5px) rotate(calc((var(--k) - 4) * 1.5deg)); opacity:0.55; } }
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-tiles] .t { width:28px; height:38px; font-size:16px; border-radius:8px; }
+  body.nx-play main:not(#mq-stage) [data-tiles] { gap:4px; padding:6px 8px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  body.nx-play main:not(#mq-stage) [data-tiles] .t, body.nx-play main:not(#mq-stage) [data-feed], body.nx-play main:not(#mq-stage) [data-feed] .fd-medal { animation:none !important; }
 }
