@@ -872,3 +872,11 @@ body.nx-play.nx-dock [data-footer]:not(:has([data-keypad])) { top:var(--dock-top
   body.nx-play .mcqp .stage > .after { --after-dock:1; }
   body.nx-play .mcqp .stage > .after.docked { top:var(--dock-top) !important; bottom:auto !important; right:var(--dock-right) !important; }
 }
+/* 3 · Skip is the quiet choice: text, not a pill; Check / Next the one filled button. Its tap area stays 46 px tall. */
+body.nx-play [data-footer] [data-skip] { border:0 !important; background:none !important; box-shadow:none !important; color:var(--nx-text2) !important; padding:0 14px !important; margin-right:6px; font-weight:700 !important; }
+body.nx-play [data-footer] [data-skip]:hover { color:var(--nx-text) !important; text-decoration:underline; text-underline-offset:4px; }
+body.nx-play .mcqp .next.skip { background:none !important; border:0 !important; box-shadow:none !important; color:var(--nx-text2) !important; padding:0 14px !important; }
+body.nx-play .mcqp .next.skip .arr { background:none !important; width:auto; }
+body.nx-play .mcqp .next.skip .arr svg { stroke:currentColor; }
+body.nx-play .mcqp .next.skip:hover { color:var(--nx-text) !important; }
+body.nx-play .mcqp .next.skip::before, body.nx-play .mcqp .next.skip::after { display:none !important; }   /* the spinning ring is Next's, not Skip's */
