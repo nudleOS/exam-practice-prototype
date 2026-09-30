@@ -213,6 +213,11 @@ body.nx-play .mcqp .qid { display:flex; align-items:center; gap:12px; min-width:
 body.nx-play .mcqp .qlabel { margin:0; flex:none; white-space:nowrap; font-size:17px; font-weight:700; color:var(--nx-text); }
 body.nx-play .mcqp .qhead { margin-bottom:18px; }
 body.nx-play .mcqp .qdesc { color:var(--nx-text2); }
+/* reading text is not bold (Murci, 2026-09-30: the questions and the answer cards "need not be bold", on every size): the stem
+   medium (it leads by size), the options and the back's explanation regular; the A-D badges stay bold (labels, not reading) */
+body.nx-play .mcqp h1 { font-weight:500 !important; }
+body.nx-play .mcqp .tile .txt { font-weight:400 !important; }
+body.nx-play .mcqp .tile .back .ans { font-weight:500 !important; } body.nx-play .mcqp .tile .back .why { font-weight:400 !important; }
 body.nx-play .mcqp h1 { font-size:clamp(20px, 2.2vw, 30px); line-height:1.2;   /* smaller (Murci, 2026-09-29; was 25-44 px) */ font-weight:800; letter-spacing:-0.02em; color:var(--nx-h1); margin:0 0 24px; }
 body.nx-play .mcqp .tiles { gap:18px; }
 body.nx-play .mcqp .tile { min-height:104px; }
