@@ -361,13 +361,13 @@ html[data-nx="light"] body.nx-play .mcqp .scrim { background:rgba(214,226,244,0.
    target); 13 px the smallest text. Measured at 360x640 on LS 1.1.9 (a 4-line stem, 3-line options): the text needs 54-88 px
    per card, and the rock + robot take ~28% of the height, hence fit-4 (the robot steps back). */
 body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .qlabel { margin:0 0 6px; font-size:14px; }
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) h1 { font-size:17px; margin-bottom:10px; }
+body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) h1 { font-size:17px; margin-bottom:10px; }
 body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .tiles { gap:8px; }
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .tile { min-height:50px; }
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .face { padding:6px 12px 6px 8px !important; gap:10px; }
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .letter { width:36px; height:36px; font-size:16px; border-radius:10px; }
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .ico { width:30px; height:30px; }
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .txt { font-size:14.5px; line-height:1.3; }
+body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .tile { min-height:50px; }
+body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .face { padding:6px 12px 6px 8px !important; gap:10px; }
+body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .letter { width:36px; height:36px; font-size:16px; border-radius:10px; }
+body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .ico { width:30px; height:30px; }
+body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .txt { font-size:14.5px; line-height:1.3; }
 /* fit-2: no "Question N" line (the chip already says which question); a smaller stem */
 body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .qlabel { display:none; }
 body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) h1 { font-size:16px; margin:10px 0 8px; }
@@ -441,3 +441,18 @@ body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .back .ok { justify-co
 /* no page scroll behind the question (Murci, 2026-09-30: "make sure I can't scroll down"): the page's own question column is hidden
    under the component's screen but still took room (measured: the page scrolled 76 px at 808x648) */
 html:has(body.nx-play.mcqp-on), body.nx-play.mcqp-on { overflow:hidden !important; }
+
+/* ONE card size for every question (Murci, 2026-09-30: "the first question's cards are bigger than the second's; I like the second's; keep
+   them consistent, larger only for their content"). Measured at 1348x648: 1.1.1 fitted as it was (104 px cards, 58 px badges, a 30 px
+   question) while 1.1.2 needed fit-1 (50 / 36 / 17 px): the size jumped with each question. Now the size he chose is the size, on every
+   screen from a tablet up; a card still grows with its own text (the component sizes it); fit-1 only tightens the spacing; fit-2..5
+   shrink further only when a question truly does not fit. */
+@media (min-width:601px) {
+  body.nx-play .mcqp .tiles { gap:10px; }
+  body.nx-play .mcqp .tile { min-height:50px; }
+  body.nx-play .mcqp .face { padding:6px 12px 6px 8px !important; gap:10px; }
+  body.nx-play .mcqp .letter { width:36px; height:36px; font-size:16px; border-radius:10px; }
+  body.nx-play .mcqp .ico { width:30px; height:30px; }
+  body.nx-play .mcqp .txt { font-size:14.5px; line-height:1.3; }
+  body.nx-play .mcqp h1 { font-size:clamp(17px, 1.5vw, 20px); line-height:1.3; margin-bottom:14px; }
+}
