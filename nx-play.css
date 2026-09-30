@@ -839,3 +839,18 @@ html[data-nx="light"] body.nx-play .mcqp .toast.no { background:#fdecec; } html[
    just that walk (the answer card is not up then, so nothing of the page's own order changes). */
 body.nx-play .mcqp .pal.floor .pal-say { display:none !important; }
 body.nx-play:has(.mcqp .pal.floor) .mcqp-page { z-index:43; }
+/* a phone: the marks pill as the MCQ header's, a page icon and the number ("1 mark" took the width the topic needed: measured at
+   360 px, "Biological te..." cut short); the full "1 mark" stays as its label */
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-partmarks][data-hasn="true"] [data-mw] { display:none; }
+  body.nx-play main:not(#mq-stage) [data-partmarks][data-hasn="true"] { gap:6px; }
+  body.nx-play main:not(#mq-stage) [data-partmarks][data-hasn="true"]::before { content:""; width:15px; height:15px; background:currentColor;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 2v6h6M16 13H8M16 17H8'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 2v6h6M16 13H8M16 17H8'/%3E%3C/svg%3E") center / contain no-repeat; }
+}
+/* a narrow phone: the header's last 8 px (measured at 360: the topic 151 px in 143) from its gaps and the pills' inner air */
+@media (max-width:400px) {
+  body.nx-play main:not(#mq-stage) [data-parthead] { gap:6px !important; }
+  body.nx-play main:not(#mq-stage) section[data-key] [data-parttopic] { padding-right:9px; }
+  body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks][data-hasn="true"] { padding:0 8px; }
+}

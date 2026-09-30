@@ -892,7 +892,7 @@
           <div data-parthead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-qlabel="true">Question {{ nxQNum }}</span></sc-if>
             <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
-            <span data-partmarks="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarks }}</span>
+            <span data-partmarks="true" data-hasn="{{ partMarksHasN }}" aria-label="{{ partMarks }}" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarksN }}<span data-mw="true">{{ partMarksW }}</span></span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
               <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:12px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
             </sc-if>
@@ -3801,6 +3801,8 @@ class Component extends DCLogic {
       hasContext: !!ctxText, context: ctxText,
       partKey: part.key + ":" + s.pi, partNumber: part.number,
       partMarks: part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") : "Not marked online",
+      // the number and the word apart, so a phone can show "[icon] 1" as the MCQ header does (it reads the same everywhere else)
+      partMarksHasN: part.marks ? "true" : "false", partMarksN: part.marks ? String(part.marks) : "", partMarksW: part.marks ? (part.marks === 1 ? " mark" : " marks") : "Not marked online",
       tryLabel: draw ? "" : closed ? "Closed" : "Try " + Math.min(3, tryN + (s.barOpen && reply ? 0 : 1)) + " of 3", tryColor: tryN >= 2 && !closed ? "#e0a10f" : "var(--text2)",
       stem: part.stem, showRules: !!(this.paper() && this.paper().id === "fm" && mode === "steps"),
       rulesLine: "3 decimals · g = 9,81 m/s² · decimal comma OK",
