@@ -2393,6 +2393,10 @@ class Component extends DCLogic {
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
+  // The level is the paper's question (Murci, 2026-09-30): Question 1 and all its sub-questions are level 1, Question 2 is
+  // level 2, and so on. It reads the mission's own number ("2.3" -> 2), the one rule that holds on every paper: FM's sections
+  // are its questions, but LS's are "Section A/B" (Section B holds Questions 2 and 3). Was a placeholder from XP (xp / 300).
+  levelOf(m) { const n = parseInt(String((m && m.id) || "").replace(/^Question\s*/i, ""), 10); return n > 0 ? n : 1; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
   // A drill plays as one synthetic mission of the parts it chose.
   mission() { if (this.state.drill) return this.state.drill.mission; return this.missions()[this.state.mi] || null; }
@@ -3658,7 +3662,7 @@ class Component extends DCLogic {
     // parts; the level is a PLACEHOLDER from XP (a new level every 300 XP on the mocked 740 + this session): the platform owns levels.
     // the chip's topic on non-MCQ parts: the paper's own heading for the question (mission.kind), unless it names a format
     const nxKind = ((this.mission() || {}).kind || "").trim(), nxTopic = /^(multiple choice|a, b, both or none|definitions)$/i.test(nxKind) ? "" : nxKind;
-    const nx = !hall, mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1), nxLv = 1 + Math.floor(((HOME.me.xp_total || 0) + (s.xp || 0)) / 300);
+    const nx = !hall, mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1), nxLv = this.levelOf(this.mission());
     const base = { nxLook: nx, nxNoLook: !nx, nxProgK: nxK, nxProgN: mParts.length, nxProgAria: "Part " + nxK + " of " + mParts.length,
       nxDots: mParts.map((pt, k) => ({ cls: k === s.pi ? "cur" : this.pg(pt.key).closed ? "done" : "" })), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, hasPartTopic: nx && !!nxTopic, partTopic: nxTopic, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
       hallMode: hall, showPlayXp: !hall && !nx, showCoach: !hall && !mcq, hallNavCol: hall && wide, hallStrip: hall && !wide,
