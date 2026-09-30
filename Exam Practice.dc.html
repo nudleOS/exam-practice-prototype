@@ -2195,8 +2195,13 @@ class Component extends DCLogic {
   nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) return;
     const qr = q.getBoundingClientRect(); let bottom = innerHeight - 16;
     const fr = document.querySelector("[data-footer] :is([data-check], [data-bar-primary])"); if (fr) { const b = fr.getBoundingClientRect(); if (b.height) bottom = Math.min(bottom, b.top - 14); }
-    const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co) { const c = co.getBoundingClientRect();
-      if (c.width && c.left < qr.right - 1 && c.right > qr.left + 1) bottom = Math.min(bottom, c.top + c.height * NX_HEAD - 12); }
+    const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
+      const under = c.width && c.left < qr.right - 1 && c.right > qr.left + 1;
+      // the robot under the panel: its bubble (beside its head) sits clear of the action row, bottom-anchored so a long hint grows UP
+      // (measured at 360x640: a 5-line hint ran 23 px under Skip / Check), and the panel stops above the bubble as well as the head
+      if (bub) { if (under && fr) { const top = fr.getBoundingClientRect().top; bub.style.top = "auto"; bub.style.bottom = Math.round(c.bottom - (top - 12)) + "px"; }
+        else { bub.style.removeProperty("top"); bub.style.removeProperty("bottom"); } }
+      if (under) bottom = Math.min(bottom, c.top + c.height * NX_HEAD - 12, bub ? bub.getBoundingClientRect().top - 12 : Infinity); }
     const cap = Math.max(220, Math.floor(bottom - qr.top)); if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
     // a sealed term is read whole: its text steps down (to 13 px) until it fits beside the medal (measured at 360 px: "negative
     // feedback mechanis" ran under the medal)
