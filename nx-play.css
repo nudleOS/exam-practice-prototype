@@ -95,6 +95,11 @@ body.nx-play { --nx-rh:min(30vh, 250px); --nx-rl:-0.3; --nx-sink:-0.08; --nx-fx:
 body.nx-play [data-playhead] { background:var(--nx-head) !important; border-bottom:1px solid var(--nx-line) !important; -webkit-backdrop-filter:blur(12px) !important; backdrop-filter:blur(12px) !important; }
 body.nx-play [data-playhead] > div:first-child { max-width:none !important; gap:12px !important; padding:10px 22px !important; }
 body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px solid var(--nx-pill-line) !important; color:var(--nx-text2) !important; border-radius:12px !important; }
+/* the way back to the map is a labelled back button, "< Map" (Murci, 2026-09-30: the folded-map icon alone "does not look like an
+   icon that take you back to the map"): the back chevron + the word, the map glyph beside them where there is room. The
+   Hall's / fix round's close (an X) stays a square. */
+body.nx-play [data-playclose]:has(.pc-lbl) { width:auto !important; gap:6px; padding:0 14px 0 10px; color:var(--nx-text) !important; font-size:14px; font-weight:700; }
+body.nx-play [data-playclose] .pc-map { opacity:0.8; }
 .nx-brand { display:flex; align-items:center; gap:10px; flex:none; margin-right:4px; }
 /* the Nudle wordmark: rounded (Fredoka), green into light blue (Murci, 2026-09-30; no logo file yet: this resembles it) */
 .nx-nudle { font-family:"Fredoka", "Sora", system-ui, sans-serif; font-size:27px; font-weight:700; letter-spacing:0; line-height:1;
@@ -115,7 +120,8 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
 .nx-av { flex:none; width:42px; height:42px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 2px var(--nx-pill-line); }
 .nx-av svg { width:100%; height:100%; display:block; }
 /* phone: the progress takes its own row under the header's first row (as the mockup); marks move to the panel */
-@media (max-width:760px) { .nx-marks, .nx-sep2 { display:none !important; } }
+@media (max-width:760px) { .nx-sep2 { display:none !important; } }
+@media (min-width:601px) and (max-width:760px) { .nx-marks { display:none !important; } }
 /* tablet and small laptop. Measured: the one-row header needs ~1028 px (items 892 + gaps 84 + padding 44 + 8). Below that
    nothing overlapped side by side, but the progress pill was squeezed under its 290 px (42 px at 768) and its dots and count
    spilled out under the pills beside it. 1001-1100: tighter spacing, one row still fits (with a 3-digit XP, "+999 XP" is 18 px wider:
@@ -137,28 +143,39 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
 /* phone: two rows, as the phone mockup (brand, +XP, level, profile / the progress). Measured: in one wrapping row it took 3
    rows (149 px) at 390 px. The mockup has no map button; the map is how a learner moves on, so it starts the second row. */
 @media (max-width:600px) {
-  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto; grid-template-areas:"brand brand xp lv av" "map prog prog prog streak";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
-    align-items:center; column-gap:6px !important; row-gap:10px !important; padding:10px 16px 12px !important; }
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto; grid-template-areas:"brand brand xp lv av" "map marks marks streak streak";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
+    align-items:center; column-gap:6px !important; row-gap:8px !important; padding:8px 16px 10px !important; }
   .nx-brand { grid-area:brand; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-av { grid-area:av; } .nx-prog { grid-area:prog; }
   /* the streak meter ends the progress row (Murci, 2026-09-30: no clutter on the phone's navbar). Row 1 is the mockup's: brand,
      +XP, level, profile; the meter on row 1 sat 2 px from the wordmark at 375 px and hid the level below 371 px. */
   body.nx-play [data-streak] { grid-area:streak; justify-self:end; } body.nx-play .nx-av { justify-self:end; }
-  /* the meter is the avatar's width (38 px) so the column above it does not widen: measured, a 45 px meter made the gap before
-     the avatar 13 px against 6 between the other pills */
-  body.nx-play [data-streak] { box-sizing:border-box; width:38px; padding:0 !important; justify-content:center; } body.nx-play [data-streak] i { width:6px !important; height:6px !important; }
-  body.nx-play [data-playclose] { grid-area:map; width:44px !important; height:44px !important; }   /* 44 px: the smallest tap target (Apple HIG 44 pt; measured 38 before) */
-  .nx-nudle { font-size:22px; } .nx-nexera { height:18px; } .nx-sep { height:18px; }
+  /* row 2 = map, "1 / 9", the meter with its "x3" (Murci, 2026-09-30: the part dots "eat up space on the navbar"). The meter
+     spans the level and profile columns, so it never widens the one above it (a 45 px meter in the profile's column made the
+     gap before the avatar 13 px against 6). */
+  body.nx-play .nx-dots { display:none !important; }
+  body.nx-play [data-streak] { height:26px !important; padding:0 9px !important; font-size:11.5px !important; }   /* !important: the chip sets its height inline (measured 34 px without) */
+  /* the map button looks the pills' size (32 px) but keeps a 44 px tap target (Apple HIG 44 pt) through an invisible hit area */
+  body.nx-play [data-playclose] { grid-area:map; height:32px !important; position:relative; justify-self:start; }
+  body.nx-play [data-playclose]:has(.pc-lbl) { padding:0 11px 0 7px; gap:3px; font-size:13px; } body.nx-play [data-playclose] .pc-map { display:none; }
+  body.nx-play [data-playclose]::after { content:""; position:absolute; inset:-6px -2px; }
+  .nx-nudle { font-size:18px; } .nx-nexera { height:14px; } .nx-sep { height:14px; }
   .nx-prog { margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
-  .nx-dots { gap:7px; } .nx-dots i { width:11px; height:11px; } .nx-dots i.cur { width:32px; }   /* 7 / 32 (were 9 / 38): nine parts + the meter fit at 360 px */
-  .nx-count { margin-left:auto; }
-  .nx-pill { height:38px; padding:0 8px; font-size:13.5px; gap:5px; }   /* tight: at 375 px the +XP pill ran 11 px over the wordmark */ .nx-av { width:38px; height:38px; } .nx-star { width:22px; height:22px; }
+  /* row 2 = the way back, the marks, the streak (Murci, 2026-09-30: the marks "important", the 1 / 9 progress "not that important
+     to show on mobile") */
+  .nx-marks { grid-area:marks; justify-self:start; margin-left:4px; } body.nx-play .nx-prog { display:none !important; }
+  .nx-pill { height:30px; padding:0 8px; font-size:12px; gap:4px; border-radius:11px; }   /* tight: at 375 px the +XP pill ran 11 px over the wordmark */ .nx-av { width:30px; height:30px; } .nx-star { width:18px; height:18px; } .nx-pill > svg { width:14px; height:14px; }
 }
 /* phone: the level is the star and its number (the word "Lv" goes; the pill's aria-label still says "Level 3"). Measured at
    390 px with a 3-digit XP ("+999 XP" is 18 px wider than "+0 XP"): with "Lv" the pills left 5 px before the wordmark. */
 @media (max-width:600px) { .nx-lvw { display:none; } }
 /* a small phone: a slightly smaller wordmark, so the pills keep their distance from it (measured at 360 px: a 4-digit XP sat
    6 px onto it once the level pill came back) */
-@media (max-width:380px) { .nx-nudle { font-size:19px !important; } .nx-nexera, .nx-sep { height:15px !important; } }
+@media (max-width:380px) { .nx-nudle { font-size:16px !important; } .nx-nexera, .nx-sep { height:12px !important; } }
+/* the one-line question header at <= 380 px: measured at 360, "Plant Hormones" was 15 px short; the spacing gives it back
+   (the topic keeps its size) */
+@media (max-width:380px) { html body.nx-play .mcqp .qhead { gap:8px; } html body.nx-play .mcqp .qid { gap:6px; } html body.nx-play .mcqp .qlabel { font-size:13px; }
+  html body.nx-play .mcqp .chip .num { padding:9px 9px; } html body.nx-play .mcqp .chip .topic { padding:9px 10px 9px 8px; } html body.nx-play .mcqp .qmarks { padding:0 9px; } }
+/* (html-prefixed: this block sits before the phone panel rules it overrides, and a later rule wins at equal specificity) */
 
 /* ---- the MCQ on the panel (mcq-play look:"panel") ---- */
 /* The host's own MCQ input stays rendered under the component's screen; the old screen was opaque and hid it. This one is
@@ -556,6 +573,5 @@ body.nx-app [data-donestreak] { justify-content:center; text-align:center; }
    the XP pill slid onto the Nexera wordmark (pill from x=124, wordmark to x=147). Phones keep the pips and the number:
    the meter drops its "x3" and the pill its "XP" (both stay in their aria-labels). */
 @media (max-width:600px) {
-  body.nx-play [data-streak] { padding:0 8px !important; }
-  body.nx-play [data-streak] .nx-x3, body.nx-play .nx-xp .nx-xpw { display:none; }
+  body.nx-play .nx-xp .nx-xpw { display:none; }   /* the meter keeps its "x3" now that it has row 2 to itself */
 }
