@@ -2638,7 +2638,7 @@ class Component extends DCLogic {
     if (!reply) return { correct: false, closed: true };
     const r = reply.result || {}, marks = reply.try === 1 && !reply.replay && !s.fix ? (r.marks_awarded || 0) : 0;
     if (r.full && marks) this._mcqPending = (this._mcqPending || 0) + marks;   // the header's marks wait for the flying marks
-    return { correct: !!r.full, xp: reply.xp_awarded || 0, marks: marks, clue: reply.clue || "", closed: !!reply.closed,
+    return { correct: !!r.full, xp: reply.xp_awarded || 0, mult: reply.multiplier || 1, marks: marks, clue: reply.clue || "", closed: !!reply.closed,
       answer: reply.reveal && reply.reveal.answer != null ? reply.reveal.answer : null, replay: !!reply.replay || !!pr.replay || !!s.fix };
   }
   syncMcq() {

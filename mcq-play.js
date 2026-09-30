@@ -255,7 +255,8 @@
         S.done = true; const pr = S.practice || !!(J && J.replay), gain = pr ? 0 : J ? (J.xp || 0) : opts.xpFor ? opts.xpFor({ item: S.it, tries: S.tries }) : XP_BY_TRY[S.tries - 1], tier = TIER_BY_TRY[S.tries - 1], mk = pr ? 0 : J ? (J.marks || 0) : S.tries === 1 ? S.it.marks : 0;
         if (!pr) streak = S.tries === 1 ? streak + 1 : 0; setHint(null);   // practice: the medal shows how it went, nothing is added
         const name = tier[0].toUpperCase() + tier.slice(1), mkText = mk ? "+" + mk + (mk === 1 ? " mark" : " marks") : "0 marks";
-        t.querySelector(".ok").innerHTML = okHTML(name, pr ? ["practice, no XP"] : ["+" + gain + " XP", mkText], true, ["First try", "Second try", "Third try"][S.tries - 1]);
+        // the host's streak multiplier as its own chip ("x3 streak"): "+300 XP" alone never said why (measured 2026-09-30)
+        t.querySelector(".ok").innerHTML = okHTML(name, pr ? ["practice, no XP"] : ["+" + gain + " XP"].concat(J && J.mult > 1 ? ["×" + J.mult + " streak"] : [], [mkText]), true, ["First try", "Second try", "Third try"][S.tries - 1]);
         fillBack(t, it); const rec = { gone: [...S.gone], tries: S.tries, ok: t.querySelector(".ok").innerHTML };
         live(pr ? `Correct, ${L[i]}. ${name}, practice: no XP or marks. ${whyOf(it)}` : `Correct, ${L[i]}. ${name}: plus ${gain} XP, ${mk ? "plus " + mk + " marks" : "no marks, marks are for a first try"}. ${whyOf(it)}`);
         const S0 = S; S.busy = true;                                   // S0: a question switched during the green light must not get this card
@@ -856,8 +857,16 @@
     const fx = $("fx"), cx = fx.getContext("2d"); let parts = [];
     function size() { fx.width = innerWidth * devicePixelRatio; fx.height = innerHeight * devicePixelRatio; cx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); } size(); listen(window, "resize", size);
     const BURST = { gold: ["#fbe39a", "#e3b341", "#ffffff", "#dca834"], silver: ["#ffffff", "#cfd4db", "#9aa1ab", "#e8ebef"], bronze: ["#f3bf98", "#bb7a4c", "#ffffff", "#d99b6c"] };
+    // A card that fills the panel (heroIn "stage"): the sparks start on its edge and fly OUT, so they never cross its words
+    // (measured: from the centre they ran over the medal line and the answer)
     function burst(t, tier) { if (reduced) return; const pal = BURST[tier] || BURST.gold; const r = t.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + r.height / 2, start = !parts.length;
-      for (let k = 0; k < 46; k++) { const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 5; parts.push({ x: ox, y: oy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 1, c: pal[k % 4] }); }
+      const rim = opts.heroIn === "stage" && t.classList.contains("hero");
+      for (let k = 0; k < 46; k++) { const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 5;
+        if (rim) { const s = Math.random() * 2 * (r.width + r.height), top = s < r.width, right = !top && s < r.width + r.height, bottom = !top && !right && s < 2 * r.width + r.height;
+          const x = top ? r.left + s : right ? r.right : bottom ? r.right - (s - r.width - r.height) : r.left, y = top ? r.top : right ? r.top + (s - r.width) : bottom ? r.bottom : r.bottom - (s - 2 * r.width - r.height);
+          const nx = right ? 1 : x === r.left && !top && !bottom ? -1 : 0, ny = top ? -1 : bottom ? 1 : 0;
+          parts.push({ x, y, vx: nx * v + (Math.random() - 0.5) * 2, vy: ny * v - (ny ? 0 : 1.5) + (Math.random() - 0.5) * 2, life: 1, c: pal[k % 4] }); continue; }
+        parts.push({ x: ox, y: oy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 1, c: pal[k % 4] }); }
       if (start) requestAnimationFrame(loop); }
     function loop() { cx.clearRect(0, 0, innerWidth, innerHeight); parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.life -= 0.018; cx.globalAlpha = Math.max(0, p.life); cx.fillStyle = p.c; cx.fillRect(p.x, p.y, p.sz || 4, p.sz || 4); });
       parts = parts.filter(p => p.life > 0); cx.globalAlpha = 1; if (parts.length) requestAnimationFrame(loop); }
