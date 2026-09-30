@@ -1203,7 +1203,7 @@
               <span style="display:flex; gap:8px; margin-top:4px">
                 <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span aria-hidden="true">‹</span><span data-backword="true">&nbsp;Back</span></button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
-                  <button onClick="{{ barSecondary }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
+                  <button onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
                 <button data-bar-primary="true" onClick="{{ barPrimary }}" disabled="{{ barPrimaryDisabled }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:{{ barPrimaryBg }}; color:{{ barPrimaryColor }}; font-size:15.5px; font-weight:800; cursor:pointer; box-shadow:{{ barPrimaryShadow }}">{{ barPrimaryLabel }}</button>
               </span>
@@ -3846,7 +3846,7 @@ class Component extends DCLogic {
       barAnim: s.reduced ? "none" : "barup 340ms cubic-bezier(0.22,0.61,0.36,1) both",
       barIcon: bar ? bar.icon : "", barTitle: bar ? bar.title : "", barHasXp: !!(bar && bar.xp), barXp: bar ? bar.xp || "" : "",
       barMarking: outcome === "marking", barHasBody: !!(bar && bar.body), barBody: bar ? bar.body || "" : "",
-      barHasSecondary: !!(bar && bar.secondary), barSecondaryLabel: bar && bar.secondary ? bar.secondary[0] : "", barSecondary: bar && bar.secondary ? bar.secondary[1] : () => {},
+      barHasSecondary: !!(bar && bar.secondary), barSecondaryLabel: bar && bar.secondary ? (phone && s.vw <= 400 && s.sitting !== "hall" && bar.secondary[0] === "Show the memo" ? "Memo" : bar.secondary[0]) : "", barSecondaryAria: bar && bar.secondary ? bar.secondary[0] : "",   /* a small phone: "Memo", so the row clears the robot (measured at 360x640: it covered its rock) */ barSecondary: bar && bar.secondary ? bar.secondary[1] : () => {},
       barPrimaryLabel: bar ? bar.primary[0] : "", barPrimary: bar && bar.primary[1] ? bar.primary[1] : () => {}, barPrimaryDisabled: !(bar && bar.primary[1]),
       barPrimaryBg: primaryIsSuccess ? "#3ddc97" : bar && bar.primary[1] ? "var(--grad)" : "var(--panel)",
       barPrimaryColor: primaryIsSuccess ? "#0d2419" : bar && bar.primary[1] ? "#ffffff" : "var(--text4)",
