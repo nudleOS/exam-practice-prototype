@@ -63,16 +63,20 @@
     // visible area, step the layout tighter (fit-1 .. fit-5 on the page; the look's CSS says what each level does) until it fits.
     // A question too long even at fit-5 scrolls, as before. Measured, not guessed: question lengths differ.
     const FIT_MAX = 5;
+    // one card sized to its own text: its back when it is flipped (the side that shows). fitCards runs it on every card; dismiss
+    // runs it on the closing card BEFORE it glides home, so it lands at its real height (measured: it glided to its face's
+    // 48 px while its back needed 56, spilled for ~170 ms, then the refit after the glide grew it: "overflows, then settles").
+    function fitTile(x) { const f = x.querySelector(x.classList.contains("flipped") ? ".back" : ".face"); if (!f) return;
+      const cs = getComputedStyle(f), kids = [...f.children].filter(c => getComputedStyle(c).display !== "none" && getComputedStyle(c).position !== "absolute");
+      const need = Math.ceil(Math.max(0, ...kids.map(c => c.scrollHeight)) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
+      if (need > x.offsetHeight) x.style.minHeight = need + "px"; }
     function fitCards() { const tiles = [...PAGE.querySelectorAll("#mq-tiles .tile")]; if (!tiles.length) return;
       // the level goes on the page AND the layers: the last one also makes the robot smaller (on the same rock), lowering the floor
       const set = k => { for (let j = 1; j <= FIT_MAX; j++) { PAGE.classList.toggle("fit-" + j, j === k); LAYERS.classList.toggle("fit-" + j, j === k); } };
       // a card's face is absolute (it flips), so the card does not grow with its text: size each card to its own text, per level.
       // The text block's height, not the face's scrollHeight: the face centres its content, so it overflows at both ends and
       // scrollHeight counts only the bottom half (measured: 1.1.9's cards stayed clipped with it).
-      const size = () => { tiles.forEach(x => x.style.removeProperty("min-height")); tiles.forEach(x => { const f = x.querySelector(x.classList.contains("flipped") ? ".back" : ".face"); if (!f) return;   // flipped: its back
-        const cs = getComputedStyle(f), kids = [...f.children].filter(c => getComputedStyle(c).display !== "none" && getComputedStyle(c).position !== "absolute");
-        const need = Math.ceil(Math.max(0, ...kids.map(c => c.scrollHeight)) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
-        if (need > x.offsetHeight) x.style.minHeight = need + "px"; }); };
+      const size = () => { tiles.forEach(x => x.style.removeProperty("min-height")); tiles.forEach(fitTile); };
       // layout position, not getBoundingClientRect: the cards deal in with a transform, which a mid-animation measure would count
       const top = el => { let y = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) y += e.offsetTop; return y; };
       // the whole panel, not just the cards: its padding and the Back / Next row must be on screen too (measured: the cards fitted and
@@ -500,6 +504,7 @@
     // Back to its slot, still flipped (tap outside, tap the card, or Esc). Tapping the small card lifts it again.
     function dismiss() { const t = S.heroT; if (!t || S.busy || !t.classList.contains("hero")) return;
       const r0 = t.getBoundingClientRect(); palHome(t); S.slot.replaceWith(t); t.classList.remove("hero"); $("scrim").classList.remove("on"); heroBox();
+      if (opts.fit) { t.style.removeProperty("min-height"); fitTile(t); }
       if (reduced) { killWrong(); return; } S.busy = true; $("stage").style.zIndex = "36";   // the card glides home above the fading scrim, never under its blur
       placeNext(); glide(t, r0, BACK_MS, " rotateY(180deg)").then(() => { S.busy = false; $("stage").style.zIndex = ""; killWrong(); if (opts.fit) fitCards(); nextInView(); }); }   // refit: the flipped card is sized by its back   // Next goes back under the grid with it
     // heroIn "stage": the turn inside the panel (Murci, 2026-09-30: "it should look cool when it spins inside the parent card").
