@@ -671,7 +671,9 @@ body.nx-play main:not(#mq-stage) [data-parthead] [data-try] { display:none; }
 /* the action row at the screen's bottom-right, opposite the robot, as the MCQ's Next (the dock was a full-width bar at the bottom;
    on a phone 280 px under the field, where the keyboard opens). The result's words are in the panel now (under the answer), so
    the bar keeps only its buttons. The calculator keypad keeps the full-width dock. */
-body.nx-play [data-footer]:not(:has([data-keypad])) { left:auto !important; right:28px !important; bottom:calc(24px + env(safe-area-inset-bottom, 0px)) !important; }
+/* --kb: the on-screen keyboard's height (the host measures it from visualViewport; 0 when shut). The row rides on top of it: this
+   rule's !important had overridden the host's own bottom:{{ kbOff }}, so on a phone the row sat behind the keyboard (2026-09-30) */
+body.nx-play [data-footer]:not(:has([data-keypad])) { left:auto !important; right:28px !important; bottom:calc(24px + max(var(--kb, 0px), env(safe-area-inset-bottom, 0px))) !important; }
 body.nx-play [data-footer]:not(:has([data-keypad])) > div { display:block !important; max-width:none !important; margin:0 !important; padding:0 !important; }
 body.nx-play [data-footer]:not(:has([data-keypad])) > div > div { display:flex; justify-content:flex-end; }
 body.nx-play [data-footer] [data-bar] { padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important;
@@ -685,7 +687,7 @@ body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [d
   font-size:15px !important; font-weight:800 !important; white-space:nowrap; cursor:pointer; }
 body.nx-play [data-footer] [data-skip], body.nx-play [data-footer] [data-bar] button:not([data-bar-primary]) { border:1px solid var(--nx-pill-line) !important; background:var(--nx-pill) !important; color:var(--nx-text) !important; box-shadow:none !important; }
 @media (max-width:600px) {
-  body.nx-play [data-footer]:not(:has([data-keypad])) { right:16px !important; bottom:calc(16px + env(safe-area-inset-bottom, 0px)) !important; }
+  body.nx-play [data-footer]:not(:has([data-keypad])) { right:16px !important; bottom:calc(16px + max(var(--kb, 0px), env(safe-area-inset-bottom, 0px))) !important; }
   body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-bar] button) { padding:0 18px !important; font-size:14px !important; }
 }
 /* the feedback, in the panel under the answer: a check's result, or the hint while the learner retries (the hint box above the

@@ -1174,7 +1174,7 @@
         </div>
       </div>
     </sc-if>
-    <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; z-index:24; pointer-events:none; display:{{ footShow }}">
+    <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; --kb:{{ kbOff }}; z-index:24; pointer-events:none; display:{{ footShow }}">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; padding:0 {{ footPadX }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
         <span style="display:{{ footSpacer }}"></span>
         <div style="pointer-events:auto; min-width:0">
@@ -2213,6 +2213,9 @@ class Component extends DCLogic {
     if (dock) bottom -= rowH + 12;
     const cap = Math.max(220, Math.floor(bottom - qr.top)); if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
     document.body.classList.toggle("nx-dock", dock);
+    // the keyboard is up (a phone): the panel just got shorter, so the field being typed in is scrolled back into its view
+    const ae = document.activeElement; if (this.state.kbOff > 80 && ae && q.contains(ae)) { const a = ae.getBoundingClientRect(), b = q.getBoundingClientRect();
+      if (a.bottom > b.bottom - 8 || a.top < b.top) q.scrollBy({ top: a.bottom > b.bottom - 8 ? a.bottom - b.bottom + 16 : a.top - b.top - 16 }); }
     if (dock) { const r = q.getBoundingClientRect(); fe.style.setProperty("--dock-top", Math.round(r.bottom + 12) + "px"); fe.style.setProperty("--dock-right", Math.max(12, Math.round(innerWidth - r.right)) + "px"); }
     // a sealed term is read whole: its text steps down (to 13 px) until it fits beside the medal (measured at 360 px: "negative
     // feedback mechanis" ran under the medal)
