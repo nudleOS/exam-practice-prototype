@@ -792,8 +792,28 @@ body.nx-play main:not(#mq-stage) [data-termmedal]::after { content:""; position:
   body.nx-play main:not(#mq-stage) :is([data-feed], [data-feed] .fd-medal, [data-termmedal], [data-termsocket], [data-termstate] > input, [data-tries] .tp), body.nx-play main:not(#mq-stage) [data-termstate~="ok"]::after { animation:none !important; }
 }
 
+/* ==== the panel keeps to its room and scrolls inside (non-MCQ parts; the host's nxPanelCap sets its max-height) ==== */
+body.nx-play main:not(#mq-stage) [data-question] { overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+body.nx-play main:not(#mq-stage) [data-question]::-webkit-scrollbar { display:none; }
+/* where the robot stands UNDER the panel (a phone; an upright tablet), its words go beside its head, not above it: the panel stops
+   just above its head (nxPanelCap), and a bubble over the head was hidden by a grown panel (measured at 375x812 and 360x640) */
+@media (max-width:600px), (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
+  body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p { left:86%; bottom:auto; top:15%;   /* the head top: the host's NX_HEAD (the panel stops 12 px above it) */
+    max-width:min(260px, calc(100vw - 16px - (var(--nx-rh) * var(--nx-fx) - var(--ph) * 0.357) - var(--ph) * 0.7143 * 0.86)) !important; }
+}
+/* an upright tablet: the panel centred over the robot as on a phone (measured at 768x1024: the panel pushed right of the robot's
+   column, 454 px wide, the left third of the screen empty) */
+@media (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
+  body.nx-play main:not(#mq-stage):not([data-done]) { max-width:720px !important; margin:0 auto !important; padding:24px 24px 0 !important; }
+  body.nx-play main:not(#mq-stage) [data-question] { position:relative; z-index:1; }
+  body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] { z-index:0 !important; }
+  body.nx-play [data-footer] > div { max-width:none !important; margin:0 !important; }
+}
 /* the toast over the top bar, not over the panel's top border (measured at 1348x648: top 74 px, the panel's edge at 93) */
 body.nx-play .mcqp .toast { top:12px; }
+/* the question column needs no room under it for the dock any more: the panel keeps above the action row (nxPanelCap), and the
+   old bottom padding (the dock's height) made the page scroll 66 px at 808x648 with the panel capped */
+body.nx-play main:not(#mq-stage):not([data-done]) { padding-bottom:0 !important; }
 /* the small answer card (a finished question, back in its slot) as two tight lines on every size, the tap hint a chevron: its three
    lines stood 95 px tall beside 50 px cards (measured at 1348x648), the row lopsided. mcq-play.css has this for a phone only. */
 body.nx-play .mcqp .tile.flipped:not(.hero) .back { padding:8px 40px 8px 14px !important; gap:3px !important; justify-content:center; }
