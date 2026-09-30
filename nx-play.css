@@ -246,9 +246,11 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
   body.nx-play .mcqp .stage { padding:24px 28px 26px; }
 }
 @media (min-width:601px) and (max-width:900px) { body.nx-play .mcqp .tiles { grid-template-columns:1fr; } }
-/* phone: no panel box (the question sits on the page, as the phone mockup), one column of cards */
+/* phone: the question in its panel, as on desktop (Murci, 2026-09-30: "it should have the panel cause i want it"; the boss's
+   phone mockup had the question straight on the page, and this was built to it). One column of cards. The bottom padding is
+   14 px (was 32): with 32, fit-2 missed by 1 px at 375x812 and the page fell to fit-4 (the smallest cards, no "Question 1"). */
 @media (max-width:600px) {
-  body.nx-play .mcqp .stage { max-width:none; margin:0; padding:14px 18px 32px; border-radius:0; background:none; border:0; box-shadow:none; }
+  body.nx-play .mcqp .stage { max-width:none; margin:6px 12px 0; padding:14px 14px 14px; border-radius:22px; }
   /* The question ends where the robot's corner starts: the screen (the question's scroll box) stops at the robot's head, so
      a card scrolls ABOVE the robot and never under it, whatever the question's length. Measured before: the robot covered
      cards C and D by 186 px at 375x667 and 27 px at 360x800. The robot and the glass are on their own fixed layer (LAYERS),
@@ -427,7 +429,7 @@ body.nx-play .mcqp.fit-5 .face { padding:6px 8px 6px 6px !important; gap:8px; }
 body.nx-play .mcqp.fit-5 .letter { width:30px; height:30px; font-size:14px; border-radius:9px; }
 body.nx-play .mcqp.fit-5 .txt { font-size:13px; line-height:1.25; }
 /* fit-4+: the last spacing back (measured: LS 1.1.9 at 360x640 was 6 px into the fade at fit-4) */
-body.nx-play .mcqp:is(.fit-4, .fit-5) .stage { padding-top:4px !important; }
+body.nx-play .mcqp:is(.fit-4, .fit-5) .stage { padding-top:8px !important; }   /* 8: in the phone panel, 4 put the chip on its border */
 body.nx-play .mcqp:is(.fit-4, .fit-5) h1 { margin-top:6px; }
 /* ...and the bottom fade shrinks to 6 px there: at 360x640 LS 1.1.9's last card ends 4 px above the edge, inside a 22 px fade */
 @media (max-width:600px) { body.nx-play .mcqp-screen:is(.fit-4, .fit-5) { -webkit-mask-image:linear-gradient(180deg, #000 calc(100% - 6px), transparent); mask-image:linear-gradient(180deg, #000 calc(100% - 6px), transparent); } }
