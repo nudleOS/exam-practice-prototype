@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
-  <script type="module" src="vortex-map.js?v=16"></script>
+  <script type="module" src="vortex-map.js?v=21"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
@@ -445,7 +445,7 @@
       </div>
       <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
       <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
-        <div style="box-sizing:border-box; width:{{ roadWpx }}; max-width:100%; margin:6px auto 128px; padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</div>
+        <div data-mapnote="true" style="box-sizing:border-box; width:{{ roadWpx }}; max-width:100%; margin:6px auto 128px; padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</div>
       </sc-if>
 
       <div data-road="true" style="position:relative; width:{{ roadWpx }}; height:{{ roadHpx }}; margin:0 auto">
@@ -4081,7 +4081,7 @@ class Component extends DCLogic {
       vmLit: String(Math.round(1000 * lit / Math.max(1, total || 100)) / 1000),
       vmGeom: JSON.stringify({ nodes: items.filter(it => it.kind === "m").map(it => ({ i: it.i, x: f(it.x), y: f(it.y) })), fin: { x: f(finIt.x), y: f(finIt.y) },
         caps: items.filter(it => it.kind === "cap").map(it => { const L = it.sec, e = L.missions.reduce((a, m) => a + got(m), 0);
-          return { y: f(it.y), lv: L.lv, label: L.title + (L.total ? " · " + L.total + " marks" : ""), sub: L.section,
+          return { y: f(it.y), lv: L.lv, q: L.title, label: L.title + (L.total ? " · " + L.total + " marks" : ""), sub: L.section,
             pct: L.total ? Math.min(100, Math.round(100 * e / L.total)) : 0 }; }) }),
       vmPaint: JSON.stringify(roadNodes.map(n => ({ i: +n.idx, id: n.number, title: n.title, chip: n.state, chipBg: n.stateBg, chipColor: n.stateColor, tags: n.tags,
         titleColor: n.titleColor, fill: n.fill, ring: n.ring, lip: n.lip, num: n.numColor, big: n.vmBig, halo: n.halo, badge: n.hasBadge, anim: n.anim, aria: n.aria }))),

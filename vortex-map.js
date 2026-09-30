@@ -253,11 +253,22 @@ vortex-map .vm-tag { background:rgba(129,177,255,0.14); color:var(--tint, #81b1f
 vortex-map .vm-cap { position:absolute; left:0; top:0; width:220px; text-align:center; will-change:transform, opacity; padding:9px 12px; border-radius:16px; background:var(--surface); border:1px solid var(--hair);
   font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; box-shadow:var(--card-shadow); pointer-events:none; white-space:nowrap; }
 /* a level gate (Murci, 2026-09-30): "Lv 1" over its question, the section it opens (LS), and how much of it is banked */
-vortex-map .vm-cap { display:flex; flex-direction:column; align-items:center; gap:5px; box-sizing:border-box; }
-vortex-map .vm-cap .cap-lv { display:inline-flex; align-items:center; gap:5px; padding:2px 9px 2px 3px; border-radius:11px; background:rgba(129,177,255,0.14); color:#cfe0ff; font-size:11px; letter-spacing:0.08em; }
-vortex-map .vm-cap .cap-lv svg { width:15px; height:15px; padding:2px; box-sizing:border-box; border-radius:50%; background:linear-gradient(135deg, #0068f8, #671dff); }
+vortex-map .vm-cap { display:flex; flex-direction:column; align-items:center; gap:5px; box-sizing:border-box; padding:6px 12px 7px; }
+/* a gate is ONE row on the road ("Lv 3 · Question 3") + its bar: measured, the 4-row gate (86 px) was taller than the gap
+   between medals in perspective and sat on the medal below it. The section and marks are in the level strip. */
+vortex-map .vm-cap .cap-row { display:flex; align-items:center; gap:8px; }
+vortex-map .vm-cap .cap-lv, vortex-map .vm-hud .cap-lv { display:inline-flex; align-items:center; gap:5px; padding:2px 9px 2px 3px; border-radius:11px; background:rgba(129,177,255,0.14); color:#cfe0ff; font-size:11px; letter-spacing:0.08em; }
+vortex-map .vm-cap .cap-lv svg, vortex-map .vm-hud .cap-lv svg { flex:none; width:15px; height:15px; padding:2px; box-sizing:border-box; border-radius:50%; background:linear-gradient(135deg, #0068f8, #671dff); }
 vortex-map .vm-cap .cap-sec { font-size:10.5px; font-weight:700; letter-spacing:0.1em; color:var(--muted); }
 vortex-map .vm-cap .cap-bar { width:110px; height:4px; border-radius:2px; background:rgba(0,0,0,0.4); overflow:hidden; }
+/* the level strip (Murci, 2026-09-30: the Lv text "clearly visible as the user scrolls"): the level of the road in front of you,
+   pinned under the header. Level 1's gate sits in the vortex's mouth at the start, so on the road it can never show. */
+vortex-map .vm-hud { position:fixed; left:50%; translate:-50% 0; z-index:5; display:flex; align-items:center; gap:8px; padding:5px 14px 5px 5px; border-radius:18px;
+  background:var(--surface); border:1px solid rgba(129,177,255,0.45); box-shadow:var(--card-shadow); color:var(--text); font-size:12.5px; font-weight:800; white-space:nowrap;
+  pointer-events:none; transition:opacity 200ms; }
+vortex-map .vm-hud[hidden] { display:none; }
+vortex-map .vm-hud .cap-lv { font-size:12px; }
+vortex-map .vm-hud .hud-sec { font-weight:700; color:var(--muted); }
 vortex-map .vm-cap .cap-bar i { display:block; height:100%; border-radius:2px; background:linear-gradient(90deg, #0068f8, #671dff); }
 /* The finish: a marathon arch (checkered banner, posts, tape), the cup on its podium, and the paper's pill. */
 vortex-map .vm-fin { position:absolute; left:0; top:0; width:320px; height:250px; will-change:transform; pointer-events:none; transform-origin:50% 236px; }
@@ -414,16 +425,26 @@ class VortexMap extends HTMLElement {
       + '<i class="fin-glow halo"></i><i class="fin-glow pool"></i><div class="fin-banner"><i class="chk"></i><span>FINISH</span><i class="chk"></i></div><i class="fin-post l"></i><i class="fin-post r"></i><div class="fin-cup">' + CUP + '</div>' + TAPE + '<i class="fin-line"></i>';
     add(fe, fin.y, 320, 236)._fin = true; fe._txt = [];
     // A plaque is a level gate when the page sends its level (lv), else the plain label it always was. Paper text goes in
-    // by textContent, never as HTML. Its anchor is its middle (a plain plaque is 36 px tall).
+    // by textContent, never as HTML. Its anchor is its middle (a gate is ~42 px tall, a plain plaque 36).
+    if (S.hud) S.hud.remove();
+    S.hud = document.createElement("div"); S.hud.className = "vm-hud"; S.hud.hidden = true; S.hud.setAttribute("role", "status"); S.hud.style.top = (G.hdr + 12) + "px"; this.appendChild(S.hud);
+    S.lvCaps = (geom.caps || []).filter(c => c.lv != null).sort((a, b) => a.y - b.y); S.hudKey = null;
+    // The page's notice at the top of the road ([data-mapnote], LS's "Design sample"): the strip keeps below it while it is
+    // on screen (measured: they overlapped at the top). The page draws it after the map builds, so the frame looks it up
+    // (for up to ~2 s) and reads its page position once: no layout read per frame.
+    S.noteB = null; S.noteTries = 0; S.hudTop = null;
+    // the strip names the section a level sits in, carried up the road from the gate that opened it (LS: Lv 3 is in Section B)
+    let secNow = ""; S.lvCaps.slice().reverse().forEach(c => { if (c.sub) secNow = c.sub; c.sec = secNow; });
     const STAR = '<svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg>';
+    S.star = STAR;
     (geom.caps || []).forEach(c => { const e = document.createElement("div"); e.className = "vm-cap"; e.setAttribute("aria-hidden", "true");
       if (c.lv == null) { e.textContent = c.label; add(e, c.y, 220, 18)._cap = true; return; }
       const row = (cls, txt) => { const x = document.createElement("span"); x.className = cls; if (txt != null) x.textContent = txt; e.appendChild(x); return x; };
-      if (c.sub) row("cap-sec", c.sub);
-      const lv = row("cap-lv"); lv.innerHTML = STAR; lv.appendChild(document.createTextNode("Lv " + c.lv));
-      row("cap-q", c.label);
+      const line = row("cap-row"), lv = document.createElement("span"), qn = document.createElement("span");
+      lv.className = "cap-lv"; lv.innerHTML = STAR; lv.appendChild(document.createTextNode("Lv " + c.lv)); qn.className = "cap-q"; qn.textContent = c.q || c.label;
+      line.appendChild(lv); line.appendChild(qn);
       const bar = row("cap-bar"), fill = document.createElement("i"); fill.style.width = Math.max(0, Math.min(100, +c.pct || 0)) + "%"; bar.appendChild(fill);
-      add(e, c.y, 220, c.sub ? 43 : 34)._cap = true; });   // measured: 86 px with a section line, 68 without
+      add(e, c.y, 220, 21)._cap = true; });
     geom.nodes.forEach(n => { const e = document.createElement("div"); e.className = "vm-node";
       e.innerHTML = '<button class="vm-orb" data-node="' + n.i + '" data-orb="true" aria-haspopup="dialog"><span class="vm-num"></span></button><div class="vm-lbl"></div><div class="vm-chips"></div>';
       e.firstChild.onclick = () => dispatchEvent(new CustomEvent("vortex-open", { detail: { index: n.i } }));
@@ -609,6 +630,16 @@ class VortexMap extends HTMLElement {
     const near = S.els.filter(e => e._i != null && e._ry > ryLip - 1e5 && e._ry - ryLip < G.ZS * 0.3).sort((a, b) => (ryLip - a._ry) - (ryLip - b._ry));
     const byNear = this._byNear || (this._byNear = new Map()); byNear.clear(); near.forEach((e, k) => byNear.set(e, k));
     const d0 = near.length ? ryLip - near[0]._ry : 0, third = clamp(-d0 / (G.ZS * 0.3), 0, 1);
+    // The level strip names the level of the mission in front (nearest the vortex): the gate just below it on the road
+    // (road y grows downwards). Rewritten only when that level changes.
+    if (S.hud && S.noteB == null && S.noteTries < 120) { S.noteTries++; const nt = document.querySelector("[data-mapnote]"); if (nt) S.noteB = nt.getBoundingClientRect().bottom + scrollY; }
+    if (S.hud && S.noteB != null) { const t = Math.round(Math.max(G.hdr + 12, S.noteB - (S.SY != null ? S.SY : scrollY) + 8)); if (S.hudTop !== t) { S.hudTop = t; S.hud.style.top = t + "px"; } }
+    if (S.hud && S.lvCaps && S.lvCaps.length && near.length) {
+      const cap = S.lvCaps.find(c => c.y > near[0]._ry) || S.lvCaps[S.lvCaps.length - 1];
+      if (S.hudKey !== cap.lv) { S.hudKey = cap.lv; const h = S.hud; h.textContent = ""; h.hidden = false;
+        const lv = document.createElement("span"); lv.className = "cap-lv"; lv.innerHTML = S.star; lv.appendChild(document.createTextNode("Lv " + cap.lv)); h.appendChild(lv);
+        h.appendChild(document.createTextNode(cap.label));
+        if (cap.sec) { const x = document.createElement("span"); x.className = "hud-sec"; x.textContent = "· " + cap.sec; h.appendChild(x); } } }
     // Medals, labels and plaques ride the same model.
     S.els.forEach(e => {
       const q = this._place(e._ry, e._qo || (e._qo = {}));
@@ -617,15 +648,19 @@ class VortexMap extends HTMLElement {
       e.style.visibility = "";
       let tf = "translate3d(" + (q.x - e._w / 2).toFixed(1) + "px," + (q.y - e._ay).toFixed(1) + "px,0)";
       if (e._fin) { const k = Math.max(q.s, 0.04); tf += " scale(" + k.toFixed(3) + ")"; this._finScale(e, k, q.persp); }   // shrinks as the medals do: small at the far end
-      else if (e._cap) { /* plaques keep their size (their text is the whole plaque); they fade instead */ }
+      else if (e._cap) tf += " scale(" + clamp(q.persp * 1.15, 0.8, 1).toFixed(3) + ")";
       else if (q.p === 0 && q.s < 0.999) tf += " scale(" + q.s.toFixed(3) + ")";
       else if (q.p > 0) tf += reduced ? " scale(" + q.s.toFixed(3) + ")" : " perspective(600px) rotateX(" + (48 * E(q.p)).toFixed(1) + "deg) rotateZ(" + (300 * E(q.p)).toFixed(1) + "deg) scale(" + q.s.toFixed(3) + ")";
       e.style.transform = tf;
-      const rk = byNear.has(e) ? byNear.get(e) : 99, readable = rk < 2 ? 1 : rk === 2 ? third : 0;   // the two nearest the vortex; the collision pass still clears overlaps
+      // Names: the two nearest the vortex always; every other mission's too wherever it fits (Murci, 2026-09-30: "clearly
+      // visible as the user scrolls"; was the two nearest only), fading out far back where the road is dense. The
+      // collision pass (_labels) still drops any name that would cover another, a medal or a level gate.
+      const deep = clamp((q.persp - 0.42) / 0.12, 0, 1);
+      const rk = byNear.has(e) ? byNear.get(e) : 99, readable = rk < 2 ? 1 : rk === 2 ? Math.max(third, deep) : deep;
       e._q = q;
       if (e._i != null) { const far = q.p === 0 && q.s < 0.36; if (far !== !!e._far) { e._far = far; e.classList.toggle("far", far); } }
       if (e._fin) { e.style.opacity = (q.p > 0.86 ? 1 - (q.p - 0.86) / 0.14 : 1).toFixed(3); }          // it glows: the haze does not dim it
-      else if (e._cap) { const CB = G.phone ? 150 : 180, u = clamp(((e._ry - (ryLip - CB)) / CB - 0.35) / 0.65, 0, 1),   /* plaques keep their own fade distance */ near = clamp((q.persp - 0.55) / 0.12, 0, 1);   // plaques: the near road only
+      else if (e._cap) { const CB = G.phone ? 150 : 180, u = clamp(((e._ry - (ryLip - CB)) / CB - 0.35) / 0.65, 0, 1),   /* plaques keep their own fade distance */ near = clamp((q.persp - 0.36) / 0.12, 0, 1);
         e.style.opacity = q.p > 0 ? "0" : (q.fog * near * (1 - E(u))).toFixed(3); }
       else { e.style.opacity = (q.fog * (q.p > 0.86 ? 1 - (q.p - 0.86) / 0.14 : 1)).toFixed(3); const to = ((1 - clamp(q.p / 0.3, 0, 1)) * readable).toFixed(3);
         // Labels stay at full size however far the medal is (compensating its scale), so text never drops below 12px.
@@ -667,6 +702,12 @@ class VortexMap extends HTMLElement {
     const vis = S.els.filter(e => e._i != null && e._q && e.style.visibility !== "hidden" && e._q.p === 0);
     const orbs = vis.map(e => { const r = e._ay * e._q.s; return { e, l: e._q.x - r, r: e._q.x + r, t: e._q.y - r, b: e._q.y + r }; });
     const hit = (a, b) => a.l < b.r && a.r > b.l && a.t < b.b && a.b > b.t, placed = [];
+    // Level gates first, so the names go around them (the gates are few and name the question). A gate over a medal's
+    // centre gives way instead: the medal is the button.
+    S.els.forEach(e => { if (!e._cap || !e._q || e.style.visibility === "hidden" || +e.style.opacity <= 0.05) return;
+      const k = clamp(e._q.persp * 1.15, 0.8, 1), h = (e._h || (e._h = e.offsetHeight || 36)) * k, b = { l: e._q.x - 110 * k, r: e._q.x + 110 * k, t: e._q.y - e._ay * k, b: e._q.y - e._ay * k + h };
+      if (orbs.some(o => { const cx = (o.l + o.r) / 2, cy = (o.t + o.b) / 2; return cx > b.l && cx < b.r && cy > b.t && cy < b.b; })) { e.style.opacity = "0"; return; }
+      placed.push(b); });
     const ov = (a, b) => Math.max(0, Math.min(a.r, b.r) - Math.max(a.l, b.l)) * Math.max(0, Math.min(a.b, b.b) - Math.max(a.t, b.t));
     const cost = (e, b) => (b.l < 4 || b.r > innerWidth - 4 ? 1e6 : 0) + placed.reduce((c, p) => c + ov(p, b) * 10, 0) + orbs.reduce((c, o) => c + (o.e !== e ? ov(o, b) : 0), 0);
     vis.filter(e => +e._txt[0]._o > 0.05).sort((a, b) => (b._i === this._next) - (a._i === this._next) || b._q.persp - a._q.persp).forEach(e => {
@@ -683,10 +724,6 @@ class VortexMap extends HTMLElement {
       placed.push({ l: q.x + pick.dx - hw, r: q.x + pick.dx + hw, t: top + pick.dy, b: top + pick.dy + lh });
       if (pick.dx) { const sc = Math.max(q.s, 0.01), inv = 1 / Math.max(q.persp, 0.3);                // the node is scaled by q.s: shift in its units
         const tf = "translate(" + (pick.dx / sc).toFixed(1) + "px," + (pick.dy / sc).toFixed(1) + "px) scale(" + inv.toFixed(3) + ")"; e._txt.forEach(t => t._t = tf); } });
-    // A plaque that would cover a placed label gives way: mission names matter more than section names. Its box is its own
-    // (a level gate is 68-86 px tall, a plain plaque 36).
-    S.els.forEach(e => { if (!e._cap || !e._q || e.style.visibility === "hidden" || +e.style.opacity <= 0.01) return;
-      const h = e._h || (e._h = e.offsetHeight || 36), b = { l: e._q.x - 110, r: e._q.x + 110, t: e._q.y - e._ay, b: e._q.y - e._ay + h }; if (placed.some(p => hit(p, b))) e.style.opacity = "0"; });
   }
 
   // ── The vortex: an ocean whirlpool seen from 35° above, in nexera-hero's field colours ──
