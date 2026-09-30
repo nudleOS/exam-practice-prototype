@@ -1097,6 +1097,15 @@ body.nx-play [data-footer] [data-check]::after { --ic:var(--ic-arrow) !important
 /* out of tries: the socket shows the term, in grey, marked "The answer" */
 body.nx-play main:not(#mq-stage) [data-termsocket="answer"] { display:flex; align-items:center; justify-content:flex-start; gap:10px; padding:0 14px 0 16px; font-size:18px; font-weight:500; color:var(--nx-text2); text-align:left; }
 body.nx-play main:not(#mq-stage) [data-anstag] { margin-left:auto; flex:none; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--nx-text2); padding:4px 9px; border-radius:999px; border:1px solid var(--nx-pill-line); }
+/* the wrong answer's first beat (the host's termBreak): the whole field red with a cross, shaking, then cracks */
+[data-termshards] .ts-whole { position:absolute; }
+[data-termshards] .ts-whole .ts-glass { border-width:2px; background:linear-gradient(180deg, rgba(242,119,122,0.28), rgba(242,119,122,0.12)), var(--field, #0f1d3a); box-shadow:0 0 0 4px rgba(242,119,122,0.18); }
+[data-termshards] .ts-x { position:absolute; right:12px; top:50%; width:28px; height:28px; margin-top:-14px; border-radius:50%; background:#f2777a; animation:pop 260ms cubic-bezier(0.34,1.56,0.64,1) both; }
+[data-termshards] .ts-x::before, [data-termshards] .ts-x::after { content:""; position:absolute; left:50%; top:50%; width:14px; height:2.6px; margin:-1.3px 0 0 -7px; border-radius:2px; background:#fff; transform:rotate(45deg); }
+[data-termshards] .ts-x::after { transform:rotate(-45deg); }
+[data-termshards] .ts-cracks { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+[data-termshards] .ts-cracks path { fill:none; stroke:rgba(255,225,225,0.95); stroke-width:1.6; stroke-linecap:round; }
+
 /* the robot a size up (about 15%), on every screen */
 body.nx-play, body.nx-play .mcqp { --ph:min(414px, 50vh); }
 @media (min-width:1280px) and (min-height:800px) { body.nx-play, body.nx-play .mcqp { --ph:min(552px, 56vh); } }

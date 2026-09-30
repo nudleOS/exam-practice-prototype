@@ -2654,6 +2654,22 @@ class Component extends DCLogic {
     const edge = a => { const dx = Math.cos(a), dy = Math.sin(a), tx = dx > 0 ? (W - cx) / dx : dx < 0 ? -cx / dx : Infinity, ty = dy > 0 ? (H - cy) / dy : dy < 0 ? -cy / dy : Infinity, t = Math.min(tx, ty); return [cx + dx * t, cy + dy * t]; };
     const corners = [[0, 0], [W, 0], [W, H], [0, H]].map(p => ({ p, a: Math.atan2(p[1] - cy, p[0] - cx) }));
     const ground = innerHeight - 26, G = 2600, all = [];
+    // 1 · it is WRONG, unmistakably (Murci, 2026-09-30: "users really perceive that as being the wrong answer and not guess what
+    // happened"): the whole field turns red with a cross, the phone buzzes (Android: iOS gives the web no vibration), it shakes
+    // three times, then cracks run out from one point; only then does it break (below, at CRACK_AT)
+    const SHAKE = 460, CRACK_AT = 700, whole = document.createElement("div"), wg = document.createElement("div"), wt = document.createElement("span"), x = document.createElement("i");
+    whole.className = "ts-whole"; whole.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px";
+    wg.className = "ts-glass"; wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad;
+    x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt, x); whole.appendChild(wg); layer.appendChild(whole);
+    if (navigator.vibrate) try { navigator.vibrate([70, 50, 90]); } catch (e) { /* not allowed here */ }
+    whole.animate([{ transform: "none" }, { transform: "translateX(-9px)", offset: 0.12 }, { transform: "translateX(8px)", offset: 0.3 }, { transform: "translateX(-7px)", offset: 0.48 },
+      { transform: "translateX(6px)", offset: 0.64 }, { transform: "translateX(-3px)", offset: 0.82 }, { transform: "none" }], { duration: SHAKE, easing: "ease-in-out" });
+    const NSV = "http://www.w3.org/2000/svg", svg = document.createElementNS(NSV, "svg"); svg.setAttribute("class", "ts-cracks"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    ang.forEach(a => { const e = edge(a), ln = document.createElementNS(NSV, "path"), len = Math.hypot(e[0] - cx, e[1] - cy);
+      ln.setAttribute("d", "M" + cx.toFixed(1) + " " + cy.toFixed(1) + " L" + e[0].toFixed(1) + " " + e[1].toFixed(1)); ln.style.strokeDasharray = len; ln.style.strokeDashoffset = len; svg.appendChild(ln);
+      ln.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 200, delay: SHAKE + 20, fill: "forwards", easing: "ease-out" }); });
+    wg.appendChild(svg);
+    const pieces = [];
     for (let i = 0; i < N; i++) { const a0 = ang[i], a1 = i === N - 1 ? ang[0] + Math.PI * 2 : ang[i + 1];
       const mid = corners.map(c => ({ p: c.p, a: c.a < a0 ? c.a + Math.PI * 2 : c.a })).filter(c => c.a > a0 && c.a < a1).sort((x, y) => x.a - y.a).map(c => c.p);
       const pts = [[cx, cy], edge(a0)].concat(mid, [edge(a1)]);
@@ -2661,7 +2677,7 @@ class Component extends DCLogic {
       const outer = document.createElement("div"), inner = document.createElement("div"), txt = document.createElement("span");
       outer.className = "ts-piece"; outer.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px; transform-origin:" + mx.toFixed(1) + "px " + my.toFixed(1) + "px";
       inner.className = "ts-glass"; inner.style.cssText = "border-radius:" + snap.radius + "; clip-path:polygon(" + pts.map(p => p[0].toFixed(1) + "px " + p[1].toFixed(1) + "px").join(",") + ")";
-      txt.textContent = snap.text; txt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad; inner.appendChild(txt); outer.appendChild(inner); layer.appendChild(outer);
+      txt.textContent = snap.text; txt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad; inner.appendChild(txt); outer.appendChild(inner); outer.style.visibility = "hidden"; layer.appendChild(outer); pieces.push(outer);
       // the fall: out from the crack, a little up, then gravity; it lands where its centre meets the ground, bounces once, lies there
       const ux = mx - cx, uy = my - cy, ul = Math.hypot(ux, uy) || 1, v = 90 + Math.random() * 140;
       const vx = ux / ul * v + (Math.random() - 0.5) * 60, vy = uy / ul * v * 0.6 - 160 - Math.random() * 120, spin = (Math.random() < 0.5 ? -1 : 1) * (160 + Math.random() * 420);
@@ -2673,10 +2689,11 @@ class Component extends DCLogic {
         { offset: 0.93, transform: "translate(" + (xl + vx * 0.06).toFixed(1) + "px," + yl.toFixed(1) + "px) rotate(" + rest.toFixed(1) + "deg)" },
         { offset: 1, transform: "translate(" + (xl + vx * 0.06).toFixed(1) + "px," + yl.toFixed(1) + "px) rotate(" + rest.toFixed(1) + "deg)" });
       const dur = Math.round(tl * 1000 / 0.64 + 160);
-      all.push(outer.animate(kf, { duration: dur, easing: "linear", fill: "forwards" }).finished
+      all.push(outer.animate(kf, { duration: dur, delay: CRACK_AT, easing: "linear", fill: "both" }).finished
         .then(() => outer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: 700 + i * 40, fill: "forwards" }).finished)); }
+    setTimeout(() => { whole.remove(); pieces.forEach(o => { o.style.visibility = ""; }); }, CRACK_AT);
     Promise.all(all).then(() => layer.remove(), () => layer.remove());
-    return new Promise(res => setTimeout(res, 620));   // the new field comes while the pieces are still falling
+    return new Promise(res => setTimeout(res, CRACK_AT + 560));   // the new field comes while the pieces are still falling (~1.26 s)
   }
   levelOf(m) { const n = parseInt(String((m && m.id) || "").replace(/^Question\s*/i, ""), 10); return n > 0 ? n : 1; }
   missions() { const p = this.paper(); return p ? p.sections.reduce((a, s) => a.concat(s.missions.map(m => Object.assign({ section: s.title }, m))), []) : []; }
