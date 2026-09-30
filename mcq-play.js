@@ -128,7 +128,9 @@
     // the screen's corner it was ~700 px from the answer on a desktop). The place goes in custom properties the host's CSS reads.
     function dockAfter() { const af = $("after"), st = $("stage"); if (!af || !st) return; const cs = getComputedStyle(af);
       const on = cs.getPropertyValue("--after-dock").trim() === "1" && cs.position === "fixed"; af.classList.toggle("docked", on); if (!on) return;
-      const r = st.getBoundingClientRect(); af.style.setProperty("--dock-top", Math.round(r.bottom + 12) + "px"); af.style.setProperty("--dock-right", Math.max(12, Math.round(innerWidth - r.right)) + "px"); af.style.setProperty("--dock-left", Math.round(r.left) + "px"); }
+      // --after-inset (the host's, optional): how far in from the panel's box the row lines up (a phone with no panel card: the text's edge)
+      const r = st.getBoundingClientRect(), inset = parseFloat(cs.getPropertyValue("--after-inset")) || 0;
+      af.style.setProperty("--dock-top", Math.round(r.bottom + 12) + "px"); af.style.setProperty("--dock-right", Math.max(12, Math.round(innerWidth - r.right + inset)) + "px"); af.style.setProperty("--dock-left", Math.round(r.left + inset) + "px"); }
     // measured 2026-09-30: docked while the page still rose in (its animation moved the panel), Skip landed at y 2973, off screen, and
     // nothing measured again. So it docks again whenever an animation or transition in the page ends (one pass per frame).
     let dockRaf = 0; const dockSoon = () => { if (!dockRaf) dockRaf = requestAnimationFrame(() => { dockRaf = 0; dockAfter(); }); };

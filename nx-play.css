@@ -1215,6 +1215,25 @@ body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-sub { 
 body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips { margin:0 0 0 auto !important; gap:6px; }
 body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chip { height:26px; padding:0 10px; font-size:12px; }
 
+/* phone: the question straight on the page, no panel (Murci, 2026-10-01: "not to have the question contents on mobile inside the
+   panel as we are on desktop"; it had one since 2026-09-30, when he wanted it). The page's 16 px gutter holds the text. */
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-question] { padding:4px 4px 0; border:0; border-radius:0; background:none; box-shadow:none; }
+  body.nx-play main:not(#mq-stage):not([data-done]) { padding-left:12px !important; padding-right:12px !important; }
+  body.nx-play .mcqp .stage { margin:10px 12px 0; padding:4px 4px 0; border:0; border-radius:0; background:none; box-shadow:none; }
+}
+/* phone, a size down where it costs no reading (Murci, 2026-10-01: "try shrinking things please but not too much so we lose
+   visibility"; measured at 360x640: LS 1.1.1's card D ran 12 px under the robot's head at fit-2). A card's height is its letter
+   badge (36) + padding (12), so the badge and the padding shrink and the answer's text keeps its 14.5 px: 48 -> 42 per card. */
+/* (and smaller still, 2026-10-01, Murci: "you can decrease the sizes of the answer choice cards on mobile to avoid scrolling": the
+   badge 28, the text 14 px, 38 px a card; the robot then keeps its size on a 640 px screen instead of stepping back at fit-4) */
+@media (max-width:600px) {
+  body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .face { padding:5px 10px 5px 6px !important; gap:9px; }
+  body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .letter { width:28px; height:28px; font-size:14px; border-radius:8px; }
+  body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .ico { width:24px; height:24px; }
+  body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .txt { font-size:14px; line-height:1.3; }
+  body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .tile { min-height:38px; }
+}
 /* the sweep comes before the next question (nxLeave): the one answered fades while the robot runs, so it reads "moving on", and its
    buttons go (a second tap would only wait behind the first) */
 body.nx-sweep main:not(#mq-stage) [data-question], body.nx-sweep [data-footer] { opacity:0; pointer-events:none; transition:opacity 220ms ease; }
@@ -1225,3 +1244,15 @@ body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) { fl
   border:0 !important; background:none !important; box-shadow:none !important; }
 body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-icon { width:20px; height:20px; font-size:11px; }
 body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-title { font-size:14px; font-weight:600; color:var(--nx-text2); }
+/* phone: the action row just under the cards, as on desktop (Murci, 2026-10-01: "the skip, next, back etc buttons on mobile also need
+   to be just under the cards like on desktop and not down where they currently are"; since 09-30 it sat at the screen's bottom).
+   The host docks [data-footer] (nxPanelCap); the MCQ docks its row (dockAfter) and its fit keeps the row's room under the panel:
+   10 margin + 12 clear of the robot's head + 46 row + 12 gap. The row lines up with the text (the panel card is gone on a phone: 4 px in). */
+@media (max-width:600px) {
+  body.nx-play .mcqp .stage > .after { --after-dock:1; --after-inset:4px; }
+  body.nx-play .mcqp .stage { --cap-off:84px; }
+  body.nx-play .mcqp .stage > .after.docked { top:var(--dock-top) !important; bottom:auto !important; right:var(--dock-right) !important; left:var(--dock-left) !important; }
+}
+/* (phone, no panel card: the top padding that kept the chip off the card's border at fit-4 has no border to clear; measured at 360x640
+   the question was 2 px over) */
+@media (max-width:600px) { body.nx-play .mcqp:is(.fit-4, .fit-5) .stage { padding-top:2px !important; } }
