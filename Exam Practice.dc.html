@@ -10,14 +10,14 @@
 <helmet>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
   <script type="module" src="vortex-map.js?v=15"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js"></script>
-  <script src="mcq-play.js?v=6"></script>
+  <script src="mcq-play.js?v=11"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=22">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=29">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -698,7 +698,7 @@
         </span>
         </sc-if>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
-          <span data-markspill="true" class="nx-pill nx-marks" aria-label="{{ playMarksAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>{{ playMarks }} marks</span></span>
+          <span data-markspill="true" class="nx-pill nx-marks" aria-label="{{ playMarksAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>{{ playMarks }}/{{ playMarksOf }}</span></span>
           <span data-xppill="true" class="nx-pill nx-xp" aria-label="{{ xp }} XP"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>+{{ xp }} XP</span></span>
           <span class="nx-pill nx-lv" role="img" aria-label="{{ nxLevelAria }}"><span class="nx-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><span class="nx-lvw">Lv </span>{{ nxLevel }}</span>
           <span class="nx-sep2" aria-hidden="true"></span><span class="nx-av" role="img" aria-label="Your profile"><svg viewBox="0 0 40 40" width="42" height="42" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#dbe7f7"/><circle cx="20" cy="16" r="7" fill="#8aa3c7"/><path d="M6 36c3-8 9-11 14-11s11 3 14 11" fill="#8aa3c7"/></svg></span>
@@ -2582,7 +2582,7 @@ class Component extends DCLogic {
       onMarksLanded: () => { this._mcqPending = 0; this.forceUpdate(); },
       onNext: () => this.advance(),
       onMap: () => this.setState({ screen: "map" }),
-      look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, heroIn: "stage",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
+      look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, heroIn: "stage", celebrate: "corner", after: "panel",   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
       topicOf: it => NX_TOPICS[it.n] || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });
   }
 

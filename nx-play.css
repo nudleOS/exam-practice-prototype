@@ -37,26 +37,30 @@ html[data-nx="light"] body.nx-play {
    the body's box, which is short here (the play screen is mostly fixed layers), so the html's charcoal showed around it. */
 body.nx-play { background:transparent !important; }
 .nx-bg { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; color:var(--nx-doodle); background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)); }
-/* the doodles (Murci, 2026-09-29: sharp, many, not too large): two tiles of Lucide icons (assets/scenery/life-sciences/doodles-a/b.svg,
-   16 icons each, 22-34 px, each line drawn at 1.4 px whatever the icon's size), used as a MASK so the theme's --nx-doodle colours
+/* the doodles (Murci, 2026-09-29: sharp, many, not too large; 09-30: "add more doodles"): three tiles of 25 kinds of Lucide icon
+   (assets/scenery/life-sciences/doodles-a/b/c.svg; c is a finer 290 px layer, 16-24 px icons),
+   25 icons each (5x5; 16 before, Murci 2026-09-30: "add more"), 20-30 px, each line drawn at 1.4 px whatever the icon's size), used as a MASK so the theme's --nx-doodle colours
    them. Two tile sizes (360 and 470 px), offset, so the repeat does not read as a grid. Before: 18 icons up to 120 px, their 1.15
    line scaled with them to ~5.75 px, soft and thick. */
 .nx-doodles { position:absolute; inset:0; background:var(--nx-doodle);
-  -webkit-mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat;
-  mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat; }
+  -webkit-mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat, url("assets/scenery/life-sciences/doodles-c.svg") 70px 210px / 290px 290px repeat;
+  mask:url("assets/scenery/life-sciences/doodles-a.svg") 0 0 / 360px 360px repeat, url("assets/scenery/life-sciences/doodles-b.svg") 150px 90px / 470px 470px repeat, url("assets/scenery/life-sciences/doodles-c.svg") 70px 210px / 290px 290px repeat; }
 /* Rendered art (Gemini, 2026-09-29), cut off its magenta by assets/scenery/cutout.py: rocks-left 633x375 (the flat-topped
    rock the robot stands on), rocks-right 613x322. A CSS background, not an <img>: the browser downloads only the pair of
    the theme in use (a hidden <img> still downloads). Light uses the render as is; dark uses the night grade (rocks darkened
    to the mockup's measured dark rock, leaves kept green). 77 KB per theme. */
 .nx-rocks { position:absolute; bottom:0; height:var(--nx-rh); background:no-repeat center bottom / contain; }
-.nx-rocks-l { left:calc(var(--nx-rh) * var(--nx-rl)); aspect-ratio:633 / 375; background-image:url("assets/scenery/life-sciences/rocks-left.webp"); }
-.nx-rocks-r { right:calc(var(--nx-rh) * -0.12); height:calc(var(--nx-rh) * 0.86); aspect-ratio:613 / 322; background-image:url("assets/scenery/life-sciences/rocks-right.webp"); }
+.nx-rocks-l { left:calc(var(--nx-rh) * var(--nx-rl)); bottom:calc(var(--nx-rh) * var(--nx-sink)); aspect-ratio:633 / 375; background-image:url("assets/scenery/life-sciences/rocks-left.webp"); }
+.nx-rocks-r { right:calc(var(--nx-rh) * -0.12); bottom:calc(var(--nx-rh) * 0.86 * -0.13); height:calc(var(--nx-rh) * 0.86); aspect-ratio:613 / 322; background-image:url("assets/scenery/life-sciences/rocks-right.webp"); }
 html[data-nx="dark"] .nx-rocks-l { background-image:url("assets/scenery/life-sciences/rocks-left-dark.webp"); }
 html[data-nx="dark"] .nx-rocks-r { background-image:url("assets/scenery/life-sciences/rocks-right-dark.webp"); }
 /* The rock the robot stands on (the left one): its height sets where the robot's feet go (see .pal below). Measured on
    rocks-left: the flat top's middle is at x 0.864 and 0.560 up, as fractions of the art's height; the art starts 0.3 of its
    height off the left edge (the ferns bleed off-screen, as the mockup's rocks do), so the feet are 0.564 across. */
-body.nx-play { --nx-rh:min(30vh, 250px); --nx-rl:-0.3; --nx-fx:calc(0.864 + var(--nx-rl)); --nx-fy:0.56; }
+/* Sunk into the floor (Murci, 2026-09-30: "not fully on the floor"): the renders have rounded, floating bases, so the page showed
+   under them. Measured: the left art is 70-80% solid across its width at 5-10% of its height from the bottom, the right at 12-17%;
+   sunk 8% and 13%, so the screen edge cuts the bases. The feet follow: --nx-fy = the flat top (0.56) + the sink. */
+body.nx-play { --nx-rh:min(30vh, 250px); --nx-rl:-0.3; --nx-sink:-0.08; --nx-fx:calc(0.864 + var(--nx-rl)); --nx-fy:calc(0.56 + var(--nx-sink)); }
 @media (max-width:600px) { body.nx-play { --nx-rh:min(22svh, 170px); } .nx-doodles { opacity:0.8; } }
 /* a short phone (360x640, 375x667): a lower rock, so the robot's corner takes less of the height */
 @media (max-width:600px) and (max-height:740px) { body.nx-play { --nx-rh:min(18svh, 170px); } }
@@ -66,7 +70,9 @@ body.nx-play [data-playhead] { background:var(--nx-head) !important; border-bott
 body.nx-play [data-playhead] > div:first-child { max-width:none !important; gap:12px !important; padding:10px 22px !important; }
 body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px solid var(--nx-pill-line) !important; color:var(--nx-text2) !important; border-radius:12px !important; }
 .nx-brand { display:flex; align-items:center; gap:10px; flex:none; margin-right:4px; }
-.nx-nudle { font-size:24px; font-weight:800; letter-spacing:-0.02em; color:#12d592; line-height:1; }
+/* the Nudle wordmark: rounded (Fredoka), green into light blue (Murci, 2026-09-30; no logo file yet: this resembles it) */
+.nx-nudle { font-family:"Fredoka", "Sora", system-ui, sans-serif; font-size:27px; font-weight:700; letter-spacing:0; line-height:1;
+  background:linear-gradient(90deg, #12d592 0%, #2fd0c4 50%, #5ab8ff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
 .nx-sep { width:1.5px; height:24px; border-radius:1px; background:var(--nx-line2); }
 .nx-nexera { height:25px; width:auto; display:block; }
 .nx-prog { margin:0 auto; flex:0 1 auto; min-width:0; display:flex; align-items:center; gap:16px; height:44px; padding:0 20px; border-radius:999px; background:var(--nx-pill); border:1px solid var(--nx-pill-line); }
@@ -108,7 +114,7 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
     align-items:center; column-gap:6px !important; row-gap:10px !important; padding:10px 16px 12px !important; }
   .nx-brand { grid-area:brand; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-av { grid-area:av; } .nx-prog { grid-area:prog; }
   body.nx-play [data-playclose] { grid-area:map; width:44px !important; height:44px !important; }   /* 44 px: the smallest tap target (Apple HIG 44 pt; measured 38 before) */
-  .nx-nudle { font-size:19px; } .nx-nexera { height:18px; } .nx-sep { height:18px; }
+  .nx-nudle { font-size:22px; } .nx-nexera { height:18px; } .nx-sep { height:18px; }
   .nx-prog { margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
   .nx-dots { gap:9px; } .nx-dots i { width:11px; height:11px; } .nx-dots i.cur { width:38px; }
   .nx-count { margin-left:auto; }
@@ -132,7 +138,7 @@ body.nx-play .mcqp .dock { background:none; }
    is wide enough, otherwise it starts past the robot's box (its right edge = rock x + half the box) and narrows. */
 body.nx-play, body.nx-play .mcqp { --nx-botR:calc(var(--nx-rh) * var(--nx-fx) + var(--ph) * 0.357 + 20px); }
 body.nx-play .mcqp .stage { max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)); margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)); margin-right:auto; }
-body.nx-play .mcqp .stage { box-sizing:border-box; margin-top:26px; margin-bottom:320px; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
+body.nx-play .mcqp .stage { box-sizing:border-box; margin-top:26px; margin-bottom:0; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
 body.nx-play .mcqp .qhead { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 body.nx-play .mcqp .chip { display:inline-flex; align-items:stretch; border-radius:999px; background:var(--nx-chip); overflow:hidden; font-size:15.5px; line-height:1; }
 body.nx-play .mcqp .chip .num { padding:11px 20px; border-radius:999px; background:var(--nx-chip-num); color:var(--nx-chip-num-ink); font-weight:800; font-size:15.5px; }
@@ -140,7 +146,9 @@ body.nx-play .mcqp .chip .topic { padding:11px 20px 11px 16px; color:var(--nx-ch
 body.nx-play .mcqp .qmarks { margin:0; display:flex; align-items:center; gap:8px; height:46px; box-sizing:border-box; padding:0 18px; border-radius:16px; border:1px solid var(--nx-pill-line);
   background:var(--nx-pill); color:var(--nx-text); font-size:15.5px; font-weight:700; text-align:left; }
 body.nx-play .mcqp .qmarks.earned { color:#e3a412; }
-body.nx-play .mcqp .qlabel { margin:24px 0 6px; font-size:18px; font-weight:700; color:var(--nx-text); }
+/* "Question 1" first, then its part's chip (Murci, 2026-09-30: 1.1.1 is a child of Question 1) */
+body.nx-play .mcqp .qlabel { margin:0 0 12px; font-size:18px; font-weight:700; color:var(--nx-text); }
+body.nx-play .mcqp .qhead { margin-bottom:18px; }
 body.nx-play .mcqp .qdesc { color:var(--nx-text2); }
 body.nx-play .mcqp h1 { font-size:clamp(20px, 2.2vw, 30px); line-height:1.2;   /* smaller (Murci, 2026-09-29; was 25-44 px) */ font-weight:800; letter-spacing:-0.02em; color:var(--nx-h1); margin:0 0 24px; }
 body.nx-play .mcqp .tiles { gap:18px; }
@@ -164,16 +172,22 @@ body.nx-play .mcqp .tile.sel .radio, body.nx-play .mcqp .tile.raised .radio { bo
 /* the verdict keeps the prototype's light (green right, red cracks); a card gone dark fades on the panel */
 body.nx-play .mcqp .tile.dead .face::after { background:color-mix(in srgb, var(--nx-panel) 70%, transparent) !important; }
 /* broken glass: the pieces are the new card (its colour, its hairline) */
-body.nx-play .mcqp .shard-in { background:var(--nx-card) !important; border-color:var(--nx-card-line) !important; box-shadow:0 8px 18px -12px rgba(10,40,100,0.5) !important; }
+/* the glass (Murci, 2026-09-30: "refine our glass break"): the pieces were flat card colour (read as cardboard). Now they are the card's
+   glass: its navy, a diagonal sheen, a bright top edge, a soft blue inner glow, and cut edges that catch the light (light blue, not white) */
+body.nx-play .mcqp .shard-in { border-color:rgba(150,190,255,0.55) !important;
+  background:linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 34%, transparent 52%, rgba(140,185,255,0.10) 100%), var(--nx-card) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), inset 0 0 14px -4px rgba(90,150,255,0.45), 0 10px 18px -12px rgba(0,10,40,0.7) !important; }
+body.nx-play .mcqp .shard .edge polygon { stroke:rgba(190,220,255,0.95); stroke-width:1.2; }
+html[data-nx="light"] body.nx-play .mcqp .shard .edge polygon { stroke:rgba(40,110,230,0.7); }
 body.nx-play .mcqp .shard .letter { background:var(--nx-badge); color:var(--nx-badge-ink); }
 body.nx-play .mcqp .scrim { background:var(--nx-scrim); }
 /* dark: the medal backs on the navy card, not the base's brown and charcoal fills (#3a3016 gold, #34383e silver, #3a2618 bronze,
    #262a30 plain). The mockups show no answer card, so this follows their card language: the flat navy card, lifted a step
    at the top. The medal is its ring and glow (the base's --ring / --glow shadow stays), its coin and its ink. Not a medal
    colour mixed in: gold into navy is complementary and measured grey-olive (rgb 51,55,56), no longer read as gold. */
-html[data-nx="dark"] body.nx-play .mcqp .back,
-html[data-nx="dark"] body.nx-play .mcqp .tile.gold .back, html[data-nx="dark"] body.nx-play .mcqp .tile.silver .back, html[data-nx="dark"] body.nx-play .mcqp .tile.bronze .back {
-  background:linear-gradient(180deg, #13294f, var(--nx-card) 75%); }
+/* 2026-09-30, Murci: the medal cards back in their medal colours (the component's own gold / silver / bronze backs, as before the
+   navy change); only the plain back (a revealed answer, no medal) stays navy. */
+html[data-nx="dark"] body.nx-play .mcqp .tile:not(.gold):not(.silver):not(.bronze) .back { background:linear-gradient(180deg, #13294f, var(--nx-card) 75%); }
 html[data-nx="dark"] body.nx-play .mcqp .back .not { border-top-color:var(--nx-card-line); }
 /* light: the medal backs in light (the base draws them dark), with inks dark enough to read on them */
 html[data-nx="light"] body.nx-play .mcqp .tile.gold .back { background:linear-gradient(180deg, #fff8e3, #fdeec6); --ink:#8a6414; }
@@ -211,7 +225,7 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
   body.nx-play .mcqp .chip, body.nx-play .mcqp .chip .num { font-size:14.5px; } body.nx-play .mcqp .chip .num { flex:none; padding:10px 13px; white-space:nowrap; }
   body.nx-play .mcqp .chip .topic { min-width:0; padding:10px 14px 10px 10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   body.nx-play .mcqp .qmarks { flex:none; height:42px; padding:0 12px; gap:6px; font-size:14.5px; white-space:nowrap; }
-  body.nx-play .mcqp .qlabel { margin:18px 0 4px; font-size:16px; }
+  body.nx-play .mcqp .qlabel { margin:0 0 8px; font-size:16px; }
   body.nx-play .mcqp h1 { font-size:20px; margin-bottom:14px; }
   body.nx-play .mcqp .tiles { gap:12px; } body.nx-play .mcqp .tile { min-height:62px; }
   body.nx-play .mcqp .face { gap:14px; padding:8px 14px 8px 10px !important; }
@@ -223,7 +237,7 @@ html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
 @media (max-width:600px) and (max-height:740px) {
   body.nx-play, body.nx-play .mcqp { --ph:min(250px, 26svh); }
   body.nx-play .mcqp .stage { padding-top:10px; }
-  body.nx-play .mcqp .qlabel { margin-top:12px; } body.nx-play .mcqp h1 { font-size:19px; margin-bottom:12px; }
+  body.nx-play .mcqp .qlabel { margin-top:0; } body.nx-play .mcqp h1 { font-size:19px; margin-bottom:12px; }
   body.nx-play .mcqp .tiles { gap:10px; } body.nx-play .mcqp .tile { min-height:56px; }
 }
 
@@ -339,7 +353,7 @@ html[data-nx="light"] body.nx-play .mcqp .scrim { background:rgba(214,226,244,0.
    keeps the last card clear of the bottom fade. Each level includes the ones before it. 44 px stays the smallest card (a tap
    target); 13 px the smallest text. Measured at 360x640 on LS 1.1.9 (a 4-line stem, 3-line options): the text needs 54-88 px
    per card, and the rock + robot take ~28% of the height, hence fit-4 (the robot steps back). */
-body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .qlabel { margin:10px 0 2px; font-size:14px; }
+body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .qlabel { margin:0 0 6px; font-size:14px; }
 body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) h1 { font-size:17px; margin-bottom:10px; }
 body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .tiles { gap:8px; }
 body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .tile { min-height:50px; }
@@ -389,3 +403,34 @@ html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradie
 html[data-nx="dark"].nx-app { background:var(--nx-top); }
 /* the map (vortex-map.js) on the navy look: its plates, caption card and road in navy, not the module's charcoal (--surface #1f2226) */
 html[data-nx="dark"] body.nx-app .vm { --surface:#0c1c36; --surface2:#13294f; --road-top:#1a2e54; --road-edge:#06102a; --hair:rgba(120,160,230,0.16); }
+
+/* the border shine back on the waiting cards (Murci, 2026-09-30): the component's running light (a bright arc around the 1 px ring),
+   over the navy card's hairline. The earlier navy rule had switched it off (animation:none). */
+body.nx-play .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(170,205,255,0.95) 330deg, transparent 350deg), linear-gradient(var(--nx-card-line), var(--nx-card-line)) !important;
+  animation:mq-edgeShine 6s linear infinite !important; }
+html[data-nx="light"] body.nx-play .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
+  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(2,133,251,0.9) 330deg, transparent 350deg), linear-gradient(var(--nx-card-line), var(--nx-card-line)) !important; }
+@media (prefers-reduced-motion: reduce) { body.nx-play .mcqp .face::before { animation:none !important; } }
+
+/* after "panel": Back and Next on the panel, under the cards (a tap anywhere only closes the big card) */
+body.nx-play .mcqp .after { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; min-height:46px; }
+body.nx-play .mcqp .after .next { margin:0 0 0 auto; }
+body.nx-play .mcqp .prevq { display:inline-flex; align-items:center; gap:4px; height:44px; padding:0 16px; border-radius:999px; border:1px solid var(--nx-pill-line);
+  background:var(--nx-pill); color:var(--nx-text); font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+body.nx-play .mcqp .prevq:focus-visible { outline:2px solid var(--nx-accent); outline-offset:3px; }
+
+/* robotFixed sweep (Murci, 2026-09-30): on Next it steps down off its rock to the floor (the screen's bottom edge, feet at 14.8% of its
+   box, as the component's own floor line), sweeps the glass, runs home and steps back up. The component waits FLOOR_MS (460) for this. */
+body.nx-play .mcqp .pal { transition:bottom 460ms cubic-bezier(.3,.7,.3,1); }
+body.nx-play .mcqp .pal.floor { bottom:calc(var(--ph) * -0.148); }
+@media (prefers-reduced-motion: reduce) { body.nx-play .mcqp .pal { transition:none; } }
+/* while the big card is open, Back / Next wait hidden under it (measured: Next peeked out under the card's bottom edge) */
+body.nx-play:has(.mcqp .hero-layer.inpanel .tile.hero) .mcqp .after { visibility:hidden; }
+/* celebrate "corner": no robot in the card, so its words are centred in it */
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .back { text-align:center; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .copy { align-items:center; flex:0 1 auto; }
+body.nx-play .mcqp .hero-layer.inpanel .tile.hero.nobuddy .back .ok { justify-content:center; }
+/* no page scroll behind the question (Murci, 2026-09-30: "make sure I can't scroll down"): the page's own question column is hidden
+   under the component's screen but still took room (measured: the page scrolled 76 px at 808x648) */
+html:has(body.nx-play.mcqp-on), body.nx-play.mcqp-on { overflow:hidden !important; }
