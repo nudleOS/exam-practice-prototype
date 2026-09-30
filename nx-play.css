@@ -932,6 +932,60 @@ body.nx-play [data-playhead] .nx-av { margin-left:4px; }
   body.nx-play [data-playclose]:has(.pc-lbl) { padding:0 11px 0 9px !important; gap:5px !important; }
   body.nx-play [data-playclose] .pc-map { width:15px; height:15px; }
 }
+
+/* ==== the buttons, one system (Murci, 2026-09-30: "redesign the skip button and the others"; Back "on the opposite side") ====
+   48 px pills. Primary (Check, Next part, Next, Try again) filled, as before. Secondary (Skip, Show the memo, Back) a soft tonal
+   pill: the same shape and height, no loud colour. Icons are masks in the text colour. */
+/* (solid, not translucent: over the phone's plants a 11% tint vanished, measured at 375x812; a hairline edge gives it its shape) */
+body.nx-play { --nx-tone:#15284f; --nx-tone-h:#1c3565; --nx-tone-line:rgba(129,177,255,0.22);
+  --ic-check:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  --ic-skip:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 5l9 7-9 7z'/%3E%3Cpath d='M18 5v14'/%3E%3C/svg%3E");
+  --ic-back:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5'/%3E%3Cpath d='M11 6l-6 6 6 6'/%3E%3C/svg%3E"); }
+html[data-nx="light"] body.nx-play { --nx-tone:#e6eefb; --nx-tone-h:#d9e5f8; --nx-tone-line:rgba(16,60,140,0.16); }
+body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-back], [data-bar] button), body.nx-play .mcqp :is(.next, .prevq) {
+  height:48px !important; min-height:48px !important; box-sizing:border-box; padding:0 22px !important; border-radius:999px !important; display:inline-flex !important; align-items:center; justify-content:center; gap:9px !important;
+  font-size:15px !important; font-weight:700 !important; letter-spacing:0.01em; white-space:nowrap; cursor:pointer; transition:background 160ms ease, color 160ms ease, transform 120ms ease; }
+body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-back], [data-bar] button):active, body.nx-play .mcqp :is(.next, .prevq):active { transform:scale(0.97); }
+/* secondary: tonal */
+body.nx-play [data-footer] :is([data-skip], [data-back], [data-bar] button:not([data-bar-primary])), body.nx-play .mcqp :is(.next.skip, .prevq) {
+  background:var(--nx-tone) !important; border:1px solid var(--nx-tone-line) !important; box-shadow:0 6px 16px -10px rgba(0,0,0,0.5) !important; color:var(--nx-text) !important; text-decoration:none !important; }
+body.nx-play [data-footer] :is([data-skip], [data-back], [data-bar] button:not([data-bar-primary])):hover, body.nx-play .mcqp :is(.next.skip, .prevq):hover { background:var(--nx-tone-h) !important; }
+/* Check, disabled until there is an answer: the tonal pill, its words quieter */
+body.nx-play [data-footer] [data-check]:disabled { background:var(--nx-tone) !important; border:1px solid var(--nx-tone-line) !important; box-shadow:none !important; color:color-mix(in srgb, var(--nx-text) 55%, var(--nx-tone)) !important; cursor:default; }
+/* the icons */
+body.nx-play [data-footer] [data-check]::after, body.nx-play [data-footer] [data-skip]::after, body.nx-play .mcqp .next.skip::after, body.nx-play [data-footer] [data-back]::before, body.nx-play .mcqp .prevq::before {
+  content:""; flex:none; width:17px; height:17px; background:currentColor; -webkit-mask:var(--ic) center / contain no-repeat; mask:var(--ic) center / contain no-repeat; }
+body.nx-play [data-footer] [data-check]::after { --ic:var(--ic-check); }
+body.nx-play [data-footer] [data-skip]::after, body.nx-play .mcqp .next.skip::after { --ic:var(--ic-skip); width:15px; height:15px; display:block !important; position:static; }
+body.nx-play [data-footer] [data-back]::before, body.nx-play .mcqp .prevq::before { --ic:var(--ic-back); }
+body.nx-play .mcqp .next.skip .arr, body.nx-play .mcqp .prevq > span[aria-hidden] { display:none !important; }
+body.nx-play [data-footer] [data-back] { flex:none; }
+/* the row: Back at its left end, the rest at its right end */
+body.nx-play [data-footer] [data-back], body.nx-play .mcqp .prevq { margin-right:auto !important; }
+body.nx-play [data-footer] div:has(> [data-check]), body.nx-play [data-footer] [data-bar] > :last-child { width:100%; }
+/* wider than a phone: the docked row spans the panel's width, so Back sits under its left edge and Skip / Check under its right */
+body.nx-play.nx-dock [data-footer]:not(:has([data-keypad])) { left:var(--dock-left) !important; }
+body.nx-play.nx-dock [data-footer] > div, body.nx-play.nx-dock [data-footer] > div > div { width:100%; }
+@media (min-width:601px) {
+  body.nx-play .mcqp .stage > .after.docked { left:var(--dock-left) !important; justify-content:space-between !important; }
+}
+/* a phone: the row across the bottom, Back at its left end (an arrow alone, its name for the screen reader) */
+@media (max-width:600px) {
+  body.nx-play [data-footer]:not(:has([data-keypad])) { left:16px !important; }
+  body.nx-play [data-footer] > div, body.nx-play [data-footer] > div > div { width:100%; }
+  body.nx-play .mcqp .stage > .after { left:16px !important; justify-content:space-between !important; }
+  body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-back], [data-bar] button), body.nx-play .mcqp :is(.next, .prevq) { height:46px !important; min-height:46px !important; padding:0 16px !important; font-size:14px !important; gap:7px !important; }
+  body.nx-play [data-footer] [data-back], body.nx-play .mcqp .prevq { width:46px; padding:0 !important; font-size:0 !important; }
+  body.nx-play [data-footer] [data-back] [data-backword] { display:none; }
+}
+/* (the Check row's wrapper and the result bar are items of a right-aligned flex box: they shrank to their buttons, so Back could not
+   reach the left edge; measured 353 px of the 900 px row) */
+body.nx-play [data-footer] div:has(> div > [data-check]), body.nx-play [data-footer] [data-bar] { width:100%; box-sizing:border-box; }
+/* (the tonal rule's :is() outweighed Back's margin-right:auto, so the whole group sat left; and the dark theme's navy result-bar
+   fill, from the full-width dock days, showed as a strip once the bar spanned the panel) */
+body.nx-play [data-footer] [data-skip] { margin:0 !important; }
+body.nx-play [data-footer] :is(div, span) > [data-back][data-back], body.nx-play .mcqp .after > .prevq.prevq { margin:0 auto 0 0 !important; }
+html[data-nx] body.nx-play [data-footer] [data-bar] { background:none !important; box-shadow:none !important; }
 /* 601-1000 (measured at 768): Map took the logos' column width (170 px); the progress centred in its cells (474), not the page (384).
    Map keeps its own width; the progress spans the whole second row and centres on the page (Map at its start, clear of it). */
 @media (min-width:601px) and (max-width:1000px) {
