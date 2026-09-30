@@ -85,9 +85,15 @@
       // scrolls inside), and the capped box hid its own overflow (measured: fit-0 "fitted" at 412x915 while the panel ran 6 px
       // over). Not scrollHeight: it counts the cards' deal-in transforms.
       const stage = $("stage"), padB = () => parseFloat(getComputedStyle(stage).paddingBottom) || 0,
-        contentBottom = () => { const last = stage.lastElementChild; return last ? top(last) + last.offsetHeight + padB() : top(stage) + stage.offsetHeight; },
+        // the last row IN the panel: a row the host lifts out of it (position absolute / fixed, e.g. a phone's Next row under the
+        // panel) is not the panel's content
+        contentBottom = () => { const rows = [...stage.children].filter(c => !/^(absolute|fixed)$/.test(getComputedStyle(c).position)), last = rows[rows.length - 1];
+          return last ? top(last) + last.offsetHeight + padB() : top(stage) + stage.offsetHeight; },
         bottomOf = () => Math.max(tiles.reduce((m, x) => Math.max(m, top(x) + x.offsetHeight), 0), stage ? Math.max(top(stage) + stage.offsetHeight, contentBottom()) : 0);
-      const overBy = () => bottomOf() - ((opts.screen ? PAGE.clientHeight : innerHeight) - 24);
+      // the room: the screen less the fade, or the panel's own height cap when the host sets one (it may keep room under the
+      // panel, e.g. for a phone's Next row), whichever is lower
+      const capB = () => { const mh = stage ? parseFloat(getComputedStyle(stage).maxHeight) : NaN; return isFinite(mh) ? top(stage) + mh : Infinity; };
+      const overBy = () => bottomOf() - Math.min((opts.screen ? PAGE.clientHeight : innerHeight) - 24, capB());
       // the least level that fits; if none does, the one that comes closest (the rest scrolls). opts.fitMax() caps the level
       // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
       const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
@@ -97,6 +103,11 @@
     // at its bottom edge, "atend" drops it once the end is in view (so the fade never covers the last card).
     function panelScroll() { const st = $("stage"); if (!st) return; st.scrollTop = 0;
       const more = st.scrollHeight > st.clientHeight + 1; st.classList.toggle("scrolls", more); st.classList.remove("atend");
+      // a Back / Next row the host lifts out of the panel (position absolute: a phone) follows the panel's real bottom edge, --after-gap
+      // under it (measured: pinned to the area's bottom, it sat 136 px under a short question's panel at 412x915)
+      const af = $("after"); if (af) { if (/^(absolute|fixed)$/.test(getComputedStyle(af).position)) {
+        const gap = parseFloat(getComputedStyle(af).getPropertyValue("--after-gap")) || 12; af.style.top = (st.offsetTop + st.offsetHeight + gap) + "px"; af.style.bottom = "auto"; }
+        else { af.style.removeProperty("top"); af.style.removeProperty("bottom"); } }
       if (!st._scrollHooked) { st._scrollHooked = true;
         listen(st, "scroll", () => st.classList.toggle("atend", st.scrollTop + st.clientHeight >= st.scrollHeight - 2), { passive: true }); } }
     if (opts.fit) listen(window, "resize", () => fitCards());
