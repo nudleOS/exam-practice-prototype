@@ -1001,3 +1001,7 @@ html[data-nx] body.nx-play [data-footer] [data-bar] { background:none !important
   body.nx-play [data-playclose] { grid-area:map; justify-self:start; }
   .nx-prog { grid-column:1 / -1; grid-row:2; position:static; transform:none; flex-direction:row; justify-self:center; gap:12px; }
 }
+/* (with no Back, on a mission's first part, Skip and Check sat at the row's LEFT end: the row is right-aligned, Back's auto margin
+   takes it to the left end when it is there) */
+body.nx-play [data-footer] div:has(> [data-check]), body.nx-play [data-footer] [data-bar] > :last-child { justify-content:flex-end !important; }
+body.nx-play .mcqp .stage > .after, body.nx-play .mcqp .stage > .after.docked { justify-content:flex-end !important; }
