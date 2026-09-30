@@ -383,7 +383,8 @@
       if (o.speed) m.setAttribute("speed", o.speed); if (o.fade) m.setAttribute("fade", o.fade);
       m.setAttribute("fit", String(o.fit || 0.8)); m.setAttribute("clip", ""); m.setAttribute("clip", clip); }
     const GREET_POSE = 1.95;   // measured on greet_04 (2.79 s): the arm raised out to the side, open hand up (Murci: it stands like this)
-    const palGreet = () => { if (!palFree()) return; palClip("greet", { once: true, hold: GREET_POSE }); };   // waves, then holds with the hand raised
+    // (opts.noWave: it goes straight to the pose, no wave: Exam Practice's question pages, Murci 2026-09-30)
+    const palGreet = () => { if (!palFree()) return; if (opts.noWave) return palIdle(); palClip("greet", { once: true, hold: GREET_POSE }); };   // waves, then holds with the hand raised
     const palIdle = () => palClip("greet", { once: true, from: GREET_POSE - 0.05, hold: GREET_POSE, fade: 0.25 });   // standing: the same raised-hand frame
     // Free = standing in its spot: not running, hurt, down, sweeping or inside a card.
     const palFree = () => !PAL.anim && !PAL.down && !PAL.sweeping && !PAL.hurt && !$("pal").classList.contains("away");
