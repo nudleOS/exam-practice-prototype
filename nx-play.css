@@ -1005,6 +1005,66 @@ html[data-nx] body.nx-play [data-footer] [data-bar] { background:none !important
    takes it to the left end when it is there) */
 body.nx-play [data-footer] div:has(> [data-check]), body.nx-play [data-footer] [data-bar] > :last-child { justify-content:flex-end !important; }
 body.nx-play .mcqp .stage > .after, body.nx-play .mcqp .stage > .after.docked { justify-content:flex-end !important; }
+
+/* ==== the question page, round 3 (Murci, 2026-09-30) ==== */
+/* header: the location IS the map (the Map button and the part dots went); the stats smaller; no paper icon on the marks */
+body.nx-play [data-playclose]:has(.pc-lbl) { display:none !important; }
+body.nx-play [data-playhead] .nx-where { pointer-events:auto; flex-direction:row; gap:8px; height:40px; padding:0 14px 0 17px; border-radius:999px; cursor:pointer;
+  background:var(--nx-pill) !important; border:1px solid var(--nx-pill-line) !important; color:var(--nx-text); font:inherit; transition:border-color 160ms ease, background 160ms ease; }
+body.nx-play [data-playhead] .nx-where:hover { border-color:var(--nx-accent) !important; }
+body.nx-play [data-playhead] .nx-where:focus-visible { outline:2px solid var(--nx-accent); outline-offset:2px; }
+body.nx-play [data-playhead] .nx-where .nx-plabel { display:block !important; font-size:14px; font-weight:600; color:var(--nx-text); letter-spacing:0.01em; }
+body.nx-play [data-playhead] .nx-where-chev { flex:none; opacity:0.75; }
+body.nx-play [data-playhead] .nx-where:disabled { cursor:default; background:none !important; border-color:transparent !important; }
+body.nx-play [data-playhead] .nx-where:disabled .nx-where-chev { display:none; }
+.nx-marks svg { display:none !important; }
+.nx-marks > span::after { content:" marks"; font-weight:600; color:var(--nx-text2); }
+.nx-stats { height:40px; }
+.nx-stats > * { padding:0 12px !important; font-size:13.5px !important; gap:6px !important; }
+.nx-xp svg { width:14px !important; height:14px !important; }
+.nx-star { width:20px !important; height:20px !important; }
+.nx-star svg { width:10px; height:10px; }
+.nx-stats > [data-streak] i { width:6px !important; height:6px !important; }
+body.nx-play [data-playhead] .nx-av { width:34px !important; height:34px !important; box-shadow:0 0 0 1.5px var(--nx-pill-line); }
+@media (max-width:600px) {
+  body.nx-play [data-playhead] > div:first-child { grid-template-areas:"brand brand xp lv av" "prog prog marks streak streak" !important; }
+  body.nx-play [data-playhead] .nx-where { height:32px; padding:0 10px 0 12px; justify-self:start; max-width:100%; }
+  body.nx-play [data-playhead] .nx-where .nx-plabel { font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .nx-marks > span::after { content:""; }
+  body.nx-play [data-playhead] .nx-av { width:28px !important; height:28px !important; }
+  .nx-stats > * { font-size:12px !important; }
+}
+/* the question map (the location's panel) */
+[data-qmap] { position:fixed; inset:0; z-index:70; background:rgba(2,8,24,0.42); animation:nxFade 160ms ease both; }
+html[data-nx="light"] [data-qmap] { background:rgba(20,40,80,0.18); }
+[data-qmap-panel] { position:absolute; top:74px; left:50%; transform:translateX(-50%); box-sizing:border-box; width:min(560px, calc(100vw - 24px)); max-height:calc(100svh - 96px); overflow-y:auto;
+  scrollbar-width:none; padding:16px 18px 18px; border-radius:20px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:0 24px 60px -20px rgba(0,0,0,0.6); outline:none;
+  animation:nxDrop 200ms cubic-bezier(0.2,0.8,0.3,1) both; }
+[data-qmap-panel]::-webkit-scrollbar { display:none; }
+@media (max-width:1160px) { [data-qmap-panel] { top:124px; } }
+@media (max-width:600px) { [data-qmap-panel] { top:104px; } }
+@keyframes nxFade { from { opacity:0; } }
+@keyframes nxDrop { from { opacity:0; transform:translate(-50%, -8px); } }
+[data-qmap] .qm-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+[data-qmap] .qm-title { flex:1; font-size:13px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--nx-text2); }
+[data-qmap] .qm-x { width:36px; height:36px; border-radius:50%; border:1px solid var(--nx-pill-line); background:var(--nx-pill); color:var(--nx-text); font-size:20px; line-height:1; cursor:pointer; }
+[data-qmap] .qm-group { padding:12px 0; border-top:1px solid var(--nx-pill-line); }
+[data-qmap] .qm-group:first-child { border-top:0; }
+[data-qmap] .qm-gh { display:flex; align-items:baseline; gap:10px; margin-bottom:9px; }
+[data-qmap] .qm-gnum { font-size:15px; font-weight:700; color:var(--nx-text); }
+[data-qmap] .qm-gkind { flex:1; font-size:14px; color:var(--nx-text2); }
+[data-qmap] .qm-gcount { font-size:12.5px; color:var(--nx-text2); white-space:nowrap; }
+[data-qmap] .qm-group[data-cur="true"] .qm-gnum { color:var(--nx-accent); }
+[data-qmap] .qm-parts { display:flex; flex-wrap:wrap; gap:7px; }
+[data-qmap] .qp { min-width:62px; height:36px; padding:0 10px; border-radius:10px; border:1px solid var(--nx-pill-line); background:transparent; color:var(--nx-text); font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+[data-qmap] .qp:hover { border-color:var(--nx-accent); }
+[data-qmap] .qp.ok { background:rgba(61,220,151,0.14); border-color:rgba(61,220,151,0.45); }
+[data-qmap] .qp.miss { background:rgba(224,161,15,0.12); border-color:rgba(224,161,15,0.45); }
+[data-qmap] .qp.tried { border-style:dashed; }
+[data-qmap] .qp.cur { background:var(--nx-accent); border-color:var(--nx-accent); color:#fff; }
+[data-qmap] .qm-map { margin-top:10px; width:100%; height:46px; display:flex; align-items:center; justify-content:center; gap:9px; border-radius:999px; cursor:pointer; font:inherit; font-size:14.5px; font-weight:700;
+  background:var(--nx-tone); border:1px solid var(--nx-tone-line); color:var(--nx-text); }
+
 /* the robot a size up (about 15%), on every screen */
 body.nx-play, body.nx-play .mcqp { --ph:min(414px, 50vh); }
 @media (min-width:1280px) and (min-height:800px) { body.nx-play, body.nx-play .mcqp { --ph:min(552px, 56vh); } }
@@ -1023,4 +1083,10 @@ body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p::after
 @media (max-width:600px), (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
   body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p::before { right:auto; left:-11px; bottom:auto; top:38%; width:11px; height:11px; }
   body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"] > p::after { right:auto; left:-21px; bottom:auto; top:58%; width:7px; height:7px; }
+}
+/* a narrow phone (measured at 360: "Question 1.1 · 2 of 9" needed 125 px in 112): the location button's own air goes, not its words */
+@media (max-width:400px) {
+  body.nx-play [data-playhead] .nx-where { padding:0 8px 0 11px; gap:5px; }
+  body.nx-play [data-playhead] .nx-where .nx-plabel { font-size:12px; }
+  body.nx-play [data-playhead] .nx-where-chev { width:12px; height:12px; }
 }

@@ -669,7 +669,7 @@
           <sc-if value="{{ playCloseX }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
         </button>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
-          <span class="nx-prog" role="progressbar" aria-label="{{ nxProgAria }}" aria-valuemin="1" aria-valuemax="{{ nxProgN }}" aria-valuenow="{{ nxProgK }}"><span class="nx-plabel" aria-hidden="true">{{ nxProgLabel }}</span><span class="nx-dots"><sc-for list="{{ nxDots }}" as="nd" hint-placeholder-count="9"><i class="{{ nd.cls }}"></i></sc-for></span><span class="nx-count">{{ nxProgK }} / {{ nxProgN }}</span></span>
+          <button class="nx-prog nx-where" data-where="true" onClick="{{ openQmap }}" disabled="{{ nxWhereOff }}" aria-haspopup="dialog" aria-expanded="{{ qmapExpanded }}" aria-label="{{ nxWhereAria }}"><span class="nx-plabel">{{ nxProgLabel }}</span><svg class="nx-where-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
         </sc-if>
         <sc-if value="{{ nxNoLook }}" hint-placeholder-val="{{ true }}"><span style="flex:1; min-width:0"></span></sc-if>   <!-- the part dots came back with the boss's design (nxLook), as the parts of this mission -->
         <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
@@ -1170,6 +1170,22 @@
             <button data-hs-cancel="true" onClick="{{ closeHallSheet }}" style="flex:1; min-height:52px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text); font-size:15px; font-weight:700; cursor:pointer">{{ hsCancel }}</button>
             <button data-hs-confirm="true" onClick="{{ hsConfirm }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 10px 26px rgba(30,70,255,0.3)">{{ hsConfirmLabel }}</button>
           </div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ qmapOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-qmap="true" onClick="{{ qmapScrim }}">
+        <div data-qmap-panel="true" role="dialog" aria-modal="true" aria-label="{{ qmapTitle }}" tabIndex="-1" onKeyDown="{{ qmapKeys }}">
+          <div class="qm-head"><span class="qm-title">{{ qmapTitle }}</span><button class="qm-x" onClick="{{ closeQmap }}" aria-label="Close">×</button></div>
+          <div class="qm-list">
+            <sc-for list="{{ qmapGroups }}" as="g" hint-placeholder-count="3">
+              <div class="qm-group" data-cur="{{ g.cur }}">
+                <div class="qm-gh"><span class="qm-gnum">{{ g.id }}</span><span class="qm-gkind">{{ g.kind }}</span><span class="qm-gcount">{{ g.count }}</span></div>
+                <div class="qm-parts"><sc-for list="{{ g.parts }}" as="pt" hint-placeholder-count="6"><button class="{{ pt.cls }}" onClick="{{ pt.go }}" aria-label="{{ pt.aria }}" aria-current="{{ pt.current }}">{{ pt.label }}</button></sc-for></div>
+              </div>
+            </sc-for>
+          </div>
+          <button class="qm-map" onClick="{{ openPaperMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Open the paper map</button>
         </div>
       </div>
     </sc-if>
@@ -2237,6 +2253,27 @@ class Component extends DCLogic {
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       if (f && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
         if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); }); } }
+  // The header's location is the map (Murci, 2026-09-30: the Map button "doesn't look nice ... handle that in a different way"; the
+  // part dots went too): "Question 1.2 · 2 of 8" opens a panel of this Question's groups and every sub-question with how it went,
+  // a tap goes there, and "Open the paper map" leads to the whole map. Off in a fix or a drill round (their own order).
+  nxMapVals(s, nx) {
+    const m = this.mission(), ms = this.missions(), on = nx && !!m && !s.fix && !s.drill, q = m ? String(m.id).split(".")[0] : "";
+    const close = () => this.setState({ qmap: false }, () => { const w = document.querySelector("[data-where]"); if (w) w.focus(); });
+    const go = (gi, k) => { this.setState({ qmap: false }); if (gi === s.mi) { if (k !== s.pi) this.resetInputs({ pi: k }); return; }
+      this.openMission(gi); setTimeout(() => this.resetInputs({ pi: k }), 0); };
+    const groups = on ? ms.map((g, gi) => ({ g, gi })).filter(x => String(x.g.id).split(".")[0] === q).map(({ g, gi }) => {
+      const done = g.parts.filter(pt => this.pg(pt.key).closed).length;
+      return { id: g.id, kind: g.kind || g.title || "", cur: gi === s.mi ? "true" : "false", count: done + " of " + g.parts.length,
+        parts: g.parts.map((pt, k) => { const pr = this.pg(pt.key), here = gi === s.mi && k === s.pi, got = pr.closed && (pr.best || 0) >= (pt.marks || 0) && pt.marks;
+          const st = pr.closed ? (got ? "ok" : "miss") : pr.tries ? "tried" : "";
+          return { label: pt.number, cls: "qp" + (here ? " cur" : "") + (st ? " " + st : ""), current: here ? "true" : "false",
+            aria: pt.number + (here ? ", you are here" : st === "ok" ? ", full marks" : st === "miss" ? ", finished" : st === "tried" ? ", started" : ""), go: () => go(gi, k) }; }) }; }) : [];
+    const sec = m ? (m.section || "") : "";
+    return { nxWhereOff: !on, nxWhereAria: on ? "Where you are: " + (m.title || "") + ". Open the question map" : (m ? m.title || "" : ""),
+      qmapOpen: on && !!s.qmap, qmapExpanded: s.qmap ? "true" : "false", openQmap: () => { if (on) this.setState({ qmap: true }, () => { const c = document.querySelector("[data-qmap] .qp.cur") || document.querySelector("[data-qmap-panel]"); if (c) c.focus(); }); },
+      closeQmap: close, qmapScrim: e => { if (e.target === e.currentTarget) close(); }, qmapKeys: e => { if (e.key === "Escape") { e.preventDefault(); close(); } },
+      qmapTitle: "Question " + q + (sec ? " · " + sec : ""), qmapGroups: groups, openPaperMap: () => this.setState({ qmap: false, screen: "map" }) };
+  }
   // The panel and its button row sit near the middle of the room under the header (Murci, 2026-09-30: "it looks a bit up and too
   // close to the navbar when the window is expanded"): the space left over is shared 2 : 3 above : below (the optical centre, a
   // touch above the true middle). Worked out once per part and screen size from the panel as it opens, so it never jumps when a
@@ -3956,7 +3993,9 @@ class Component extends DCLogic {
     const nx = !hall, mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1), nxLv = this.levelOf(this.mission());
     const base = { nxLook: nx, nxNoLook: !nx, nxProgK: nxK, nxProgN: mParts.length, nxProgAria: "Part " + nxK + " of " + mParts.length,
       nxProgLabel: ((this.mission() || {}).title || "") + " · " + nxK + " of " + mParts.length,   // the header's centre: "Question 1.2 · 2 of 8"
-      nxDots: mParts.map((pt, k) => ({ cls: k === s.pi ? "cur" : this.pg(pt.key).closed ? "done" : "" })), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, hasPartTopic: nx && !!nxTopic, partTopic: nxTopic, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
+      // the paper's order in the panel (Murci, 2026-09-30): the group's own lead-in line under "Question 1", then the numbered sub-question
+      nxHasLead: nx && !!(this.mission() || {}).lead, nxLead: (this.mission() || {}).lead || "", nxLeadNum: (this.mission() || {}).id || "",
+      ...this.nxMapVals(s, nx), nxLevel: nxLv, nxLevelAria: "Level " + nxLv, hasPartTopic: nx && !!nxTopic, partTopic: nxTopic, coachFit: nx ? "0.8" : "1",   // 0.8 = the MCQ robot's framing: nx-play puts its feet on the rock with that
       hallMode: hall, showPlayXp: !hall && !nx, showCoach: !hall && !mcq, hallNavCol: hall && wide, hallStrip: hall && !wide,
       playCloseMap: !hall && !fx && !s.drill, playCloseX: hall || !!fx || !!s.drill,
       showPlayMarks: !hall && !nx, playMarks: Math.max(0, this.earnedNow() - (this._mcqPending || 0)), playMarksOf: (this.paper() || {}).total || 0,
