@@ -27,7 +27,7 @@
                  hand on the screen's left, so with the bubble on its right it is mirrored (a quick turn), and back as it moves
      look        "panel" = the question on a panel (the boss's design, 2026-09-29): a chip with the number and topic, the marks
                  as a pill at its right, a "Question N" label, the question, cards with an icon (the radio is the look's to show or hide); no try dots
-     topicOf(item) -> the topic for the chip ("" = none) · iconFor(i, item) -> the card's icon (SVG markup), panel look only
+     leadFor(item) -> the group's lead-in line ("" = none) · iconFor(i, item) -> the card's icon (SVG markup), panel look only
      robotFixed  true = the robot keeps its corner (the boss's design): the glass rains and hits it where it stands, it never
                  runs to a card; on Next it steps down off its rock (.pal.floor), sweeps the glass as before, and steps back up · idleSay: its line at rest ("You got this!")
      fit         true = every option card fits the screen without scrolling: after each render and resize it steps the page to
@@ -198,13 +198,16 @@
       // An "A: … · B: …" pair (Column II on the paper) sits under the stem as its two lines; the stem is otherwise as printed.
       const ab = it.q.match(/^(.*?)\s*A:\s*(.+?)\s*·\s*B:\s*(.+)$/), stem = ab ? ab[1] : it.q;
       const k = ORDER.indexOf(it.n);
-      const panel = opts.look === "panel", topic = panel && opts.topicOf ? (opts.topicOf(it) || "") : "";
+      // panel look (Murci, 2026-09-30: "as in the original question papers"): the paper's order, "Question 1" and the marks as plain
+      // text, then the group's own lead-in line (opts.leadFor, "1.2 Give the correct ..."), then the sub-question with its number
+      const panel = opts.look === "panel", lead = panel && opts.leadFor ? String(opts.leadFor(it) || "") : "";
+      const esc = t => t.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
       st.innerHTML = (panel
         // one line (Murci, 2026-09-30): the paper's question ("Question 1") beside its part's chip (1.1.1), the marks on the right
-        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span><span class="chip"><span class="num">${it.n}</span>${topic ? `<span class="topic">${topic}</span>` : ""}</span></span><span class="qmarks" aria-label="${it.marks} marks"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>${it.marks}<span class="mw"> marks</span></span></div>`
+        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span></div>` + (lead ? `<p class="qlead"><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` : "")
         : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
-        (panel ? `<h1><span>${stem}</span></h1>` : `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>`) +
+        `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
         (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "") +
       (it.fig ? `<div class="qfig"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/></svg><span>The diagram is on ${it.fig} of the paper</span></div>` : "");   // a question never loses its figure (the paper images are not in yet)
       const g = document.createElement("div"); g.className = "tiles"; g.id = "mq-tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
