@@ -856,3 +856,10 @@ body.nx-play:has(.mcqp .pal.floor) .mcqp-page { z-index:43; }
   body.nx-play main:not(#mq-stage) section[data-key] [data-parttopic] { padding-right:9px; }
   body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks][data-hasn="true"] { padding:0 8px; }
 }
+/* light theme: the sealed field, its pieces and the result chips in dark ink (measured 2026-09-30: the dark theme's near-white
+   seal ink on the light field was unreadable, "negative feedback mechanism" barely visible; the chips had white on white) */
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termstate~="gold"] { --seal-ink:#5a3f06; --seal-line:#c9951f; --seal-bg:linear-gradient(180deg, rgba(227,179,65,0.3), rgba(227,179,65,0.14)); }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termstate~="silver"] { --seal-ink:#2c3440; --seal-line:#8d96a3; --seal-bg:linear-gradient(180deg, rgba(150,160,175,0.3), rgba(150,160,175,0.14)); }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termstate~="bronze"] { --seal-ink:#5a2f12; --seal-line:#b0703f; --seal-bg:linear-gradient(180deg, rgba(187,122,76,0.3), rgba(187,122,76,0.14)); }
+html[data-nx="light"] [data-termshards] .ts-glass { color:#8a1c22; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed] .fd-chip { background:rgba(16,40,90,0.06); border-color:rgba(16,40,90,0.16); color:var(--nx-text); }
