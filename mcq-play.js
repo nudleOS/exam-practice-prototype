@@ -112,8 +112,19 @@
       const af = $("after"); if (af) { if (getComputedStyle(af).position === "absolute") {
         const gap = parseFloat(getComputedStyle(af).getPropertyValue("--after-gap")) || 12; af.style.top = (st.offsetTop + st.offsetHeight + gap) + "px"; af.style.bottom = "auto"; }
         else { af.style.removeProperty("top"); af.style.removeProperty("bottom"); } }
+      dockAfter();
       if (!st._scrollHooked) { st._scrollHooked = true;
         listen(st, "scroll", () => st.classList.toggle("atend", st.scrollTop + st.clientHeight >= st.scrollHeight - 2), { passive: true }); } }
+    // A host may DOCK the Back / Next row under the panel (nx-play wider than a phone sets --after-dock:1 on the row): still fixed, so it
+    // never scrolls with the panel, placed 12 px under the panel's real bottom edge and flush with its right edge (Murci, 2026-09-30: at
+    // the screen's corner it was ~700 px from the answer on a desktop). The place goes in custom properties the host's CSS reads.
+    function dockAfter() { const af = $("after"), st = $("stage"); if (!af || !st) return; const cs = getComputedStyle(af);
+      const on = cs.getPropertyValue("--after-dock").trim() === "1" && cs.position === "fixed"; af.classList.toggle("docked", on); if (!on) return;
+      const r = st.getBoundingClientRect(); af.style.setProperty("--dock-top", Math.round(r.bottom + 12) + "px"); af.style.setProperty("--dock-right", Math.max(12, Math.round(innerWidth - r.right)) + "px"); }
+    // measured 2026-09-30: docked while the page still rose in (its animation moved the panel), Skip landed at y 2973, off screen, and
+    // nothing measured again. So it docks again whenever an animation or transition in the page ends (one pass per frame).
+    let dockRaf = 0; const dockSoon = () => { if (!dockRaf) dockRaf = requestAnimationFrame(() => { dockRaf = 0; dockAfter(); }); };
+    listen(PAGE, "animationend", dockSoon); listen(PAGE, "transitionend", dockSoon); listen(window, "resize", dockSoon);
     if (opts.fit) listen(window, "resize", () => fitCards());
     if (opts.fit && document.fonts) document.fonts.ready.then(() => fitCards());   // the web font changes the text's height
     if (opts.screen && opts.topOffset) { listen(window, "resize", placeScreen);
@@ -535,11 +546,11 @@
     function heroTop() { const t = opts.topOffset ? opts.topOffset() : RQ(".top").getBoundingClientRect().bottom; $("heroLayer").style.setProperty("--ht", Math.max(16, Math.round(t + 12)) + "px"); }
     // heroIn "stage": the layer takes the panel's box (clipped to what is on screen), so the card fills the panel, not the screen
     function heroBox() { if (opts.heroIn !== "stage") return; const L = $("heroLayer"), on = !!L.querySelector(".tile.hero");
-      L.classList.toggle("inpanel", on); if (!on) { ["top", "left", "width", "height"].forEach(k => L.style.removeProperty(k)); L.classList.remove("tight"); $("stage").style.removeProperty("min-height"); return; }
+      L.classList.toggle("inpanel", on); if (!on) { ["top", "left", "width", "height"].forEach(k => L.style.removeProperty(k)); L.classList.remove("tight"); $("stage").style.removeProperty("min-height"); dockAfter(); return; }
       const place = () => { const st = $("stage").getBoundingClientRect(), sc = opts.screen ? PAGE.getBoundingClientRect() : { top: 0, bottom: innerHeight };
         const top = Math.max(st.top, sc.top), bottom = Math.min(st.bottom, sc.bottom);
         Object.assign(L.style, { top: top + "px", left: st.left + "px", width: st.width + "px", height: Math.max(0, bottom - top) + "px" }); return sc; };
-      const sc = place(); heroFit(L, sc) && place(); }
+      const sc = place(); heroFit(L, sc) && place(); dockAfter(); }
     // The big card must fit the panel it fills (Murci, 2026-09-30: "the correct card after flipping has a huge part of it hidden
     // below the panel"; measured at 1348x648: the panel 332 px, the card's back 338 + the "Tap anywhere" row). Its need is its
     // back's natural height plus the layer's padding and the tap row. The panel grows to it while the card is up (down to 16 px

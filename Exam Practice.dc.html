@@ -2193,17 +2193,27 @@ class Component extends DCLogic {
   // under the panel (a phone, an upright tablet), down to its head, so its words stay in view. Measured before: the memo made the
   // page 791 px tall on a 648 px screen (the header went under the top bar); on a phone the grown panel hid "Clean. Full marks.".
   // A new result or hint is scrolled into view inside it; a new part starts at its top.
-  nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) return;
-    const qr = q.getBoundingClientRect(); let bottom = innerHeight - 16;
-    const fr = document.querySelector("[data-footer] :is([data-check], [data-bar-primary])"); if (fr) { const b = fr.getBoundingClientRect(); if (b.height) bottom = Math.min(bottom, b.top - 14); }
+  nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock"); return; }
+    const qr = q.getBoundingClientRect(), fe = document.querySelector("[data-footer]"); let bottom = innerHeight - 16;
+    const fr = document.querySelector("[data-footer] :is([data-check], [data-bar-primary])"), rowH = fr ? fr.getBoundingClientRect().height : 0;
+    // wider than a phone, the action row DOCKS under the panel (Murci, 2026-09-30: at the screen's corner Check was ~700 px from the
+    // field): the panel keeps the row's room (its height + 12) under it, then the row takes its place 12 px under the panel's real
+    // bottom, flush with its right edge. A phone keeps the row at the screen's bottom-right, in the thumb's reach. The place goes in
+    // custom properties (nx-play reads them) so the page's own inline style for the footer never fights it. Not with the keypad.
+    const dock = innerWidth > 600 && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
+    if (!dock && fr && rowH) bottom = Math.min(bottom, fr.getBoundingClientRect().top - 14);
     const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
       const under = c.width && c.left < qr.right - 1 && c.right > qr.left + 1;
-      // the robot under the panel: its bubble (beside its head) sits clear of the action row, bottom-anchored so a long hint grows UP
-      // (measured at 360x640: a 5-line hint ran 23 px under Skip / Check), and the panel stops above the bubble as well as the head
-      if (bub) { if (under && fr) { const top = fr.getBoundingClientRect().top; bub.style.top = "auto"; bub.style.bottom = Math.round(c.bottom - (top - 12)) + "px"; }
-        else { bub.style.removeProperty("top"); bub.style.removeProperty("bottom"); } }
-      if (under) bottom = Math.min(bottom, c.top + c.height * NX_HEAD - 12, bub ? bub.getBoundingClientRect().top - 12 : Infinity); }
+      // the robot under the panel on a phone: its bubble (beside its head) sits clear of the action row, bottom-anchored so a long hint
+      // grows UP (measured at 360x640: a 5-line hint ran 23 px under Skip / Check); the panel stops above the bubble and the head
+      // (only when it would reach the row: a short line stays beside the head, measured at 375x812 "You got this!" sat by its feet)
+      if (bub) { bub.style.removeProperty("top"); bub.style.removeProperty("bottom");
+        if (under && fr && !dock) { const top = fr.getBoundingClientRect().top; if (c.top + c.height * NX_HEAD + bub.offsetHeight > top - 12) {   /* layout size: its pop-in scale would under-measure a rect */ bub.style.top = "auto"; bub.style.bottom = Math.round(c.bottom - (top - 12)) + "px"; } } }
+      if (under) bottom = Math.min(bottom, c.top + c.height * NX_HEAD - 12, bub ? (bub.style.bottom ? c.bottom - parseFloat(bub.style.bottom) - bub.offsetHeight : c.top + c.height * NX_HEAD) - 12 : Infinity); }
+    if (dock) bottom -= rowH + 12;
     const cap = Math.max(220, Math.floor(bottom - qr.top)); if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
+    document.body.classList.toggle("nx-dock", dock);
+    if (dock) { const r = q.getBoundingClientRect(); fe.style.setProperty("--dock-top", Math.round(r.bottom + 12) + "px"); fe.style.setProperty("--dock-right", Math.max(12, Math.round(innerWidth - r.right)) + "px"); }
     // a sealed term is read whole: its text steps down (to 13 px) until it fits beside the medal (measured at 360 px: "negative
     // feedback mechanis" ran under the medal)
     const tf = q.querySelector("[data-termstate~='ok'] > input"); if (tf) { tf.style.removeProperty("font-size"); let fs = parseFloat(getComputedStyle(tf).fontSize);

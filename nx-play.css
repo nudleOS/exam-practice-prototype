@@ -865,3 +865,10 @@ body.nx-play [data-headback]:focus-visible { outline:2px solid var(--nx-accent);
   body.nx-play [data-headback] { grid-area:back; width:32px; height:32px; border-radius:11px; position:relative; }
   body.nx-play [data-headback]::after { content:""; position:absolute; inset:-6px -4px; }
 }
+/* 2 · wider than a phone, the action row docks under the panel's bottom-right corner, outside the panel (it was the screen's
+       corner, ~700 px from the field on a desktop). The host (nxPanelCap) and mcq-play (dockAfter) set the place. */
+body.nx-play.nx-dock [data-footer]:not(:has([data-keypad])) { top:var(--dock-top) !important; bottom:auto !important; right:var(--dock-right) !important; }
+@media (min-width:601px) {
+  body.nx-play .mcqp .stage > .after { --after-dock:1; }
+  body.nx-play .mcqp .stage > .after.docked { top:var(--dock-top) !important; bottom:auto !important; right:var(--dock-right) !important; }
+}
