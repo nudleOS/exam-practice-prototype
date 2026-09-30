@@ -107,9 +107,10 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
   .nx-pill { padding:0 12px; } .nx-prog { padding:0 14px; gap:12px; } .nx-dots { gap:8px; }
 }
 @media (min-width:601px) and (max-width:1000px) {
-  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto auto auto;
-    grid-template-areas:"brand brand marks xp lv sep2 av" "map prog prog prog prog prog prog"; align-items:center; column-gap:10px !important; row-gap:10px !important; padding:10px 22px 12px !important; }
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto auto auto auto;
+    grid-template-areas:"brand brand streak marks xp lv sep2 av" "map prog prog prog prog prog prog prog"; align-items:center; column-gap:10px !important; row-gap:10px !important; padding:10px 22px 12px !important; }
   .nx-brand { grid-area:brand; } .nx-marks { grid-area:marks; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-sep2 { grid-area:sep2; } .nx-av { grid-area:av; }
+  body.nx-play [data-streak] { grid-area:streak; }   /* its own slot: with none it took a third header row (measured 768 px) */
   body.nx-play [data-playclose] { grid-area:map; }
   .nx-prog { grid-area:prog; margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
   .nx-count { margin-left:auto; }
@@ -117,9 +118,10 @@ body.nx-play [data-playclose] { background:var(--nx-pill) !important; border:1px
 /* phone: two rows, as the phone mockup (brand, +XP, level, profile / the progress). Measured: in one wrapping row it took 3
    rows (149 px) at 390 px. The mockup has no map button; the map is how a learner moves on, so it starts the second row. */
 @media (max-width:600px) {
-  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto; grid-template-areas:"brand brand xp lv av" "map prog prog prog prog";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
+  body.nx-play [data-playhead] > div:first-child { display:grid !important; grid-template-columns:auto 1fr auto auto auto auto; grid-template-areas:"brand brand streak xp lv av" "map prog prog prog prog prog";   /* brand spans 2 columns: column 1 sizes to the map (a shared column made the progress start at the wordmark's width, 161 px, and cut its count off) */
     align-items:center; column-gap:6px !important; row-gap:10px !important; padding:10px 16px 12px !important; }
   .nx-brand { grid-area:brand; } .nx-xp { grid-area:xp; } .nx-lv { grid-area:lv; } .nx-av { grid-area:av; } .nx-prog { grid-area:prog; }
+  body.nx-play [data-streak] { grid-area:streak; }   /* its own slot on row 1: with none it took a third row (measured 390 px: y 112-146) */
   body.nx-play [data-playclose] { grid-area:map; width:44px !important; height:44px !important; }   /* 44 px: the smallest tap target (Apple HIG 44 pt; measured 38 before) */
   .nx-nudle { font-size:22px; } .nx-nexera { height:18px; } .nx-sep { height:18px; }
   .nx-prog { margin:0; height:auto; padding:0 0 0 4px; background:none; border:0; justify-content:flex-start; }
@@ -502,3 +504,11 @@ body.nx-app [data-donehead] { align-items:center !important; text-align:center !
 /* the streak line sits right under the title, centred with it (Murci, 2026-09-30); the paper's bar runs box to box across both
    columns from 1100 px ("streak streak" / "paper paper" above) */
 body.nx-app [data-donestreak] { justify-content:center; text-align:center; }
+
+/* the streak meter is always on now (three pips toward x3): on a phone the header row had no room for it. Measured at 360 px,
+   the XP pill slid onto the Nexera wordmark (pill from x=124, wordmark to x=147). Phones keep the pips and the number:
+   the meter drops its "x3" and the pill its "XP" (both stay in their aria-labels). */
+@media (max-width:600px) {
+  body.nx-play [data-streak] { padding:0 8px !important; }
+  body.nx-play [data-streak] .nx-x3, body.nx-play .nx-xp .nx-xpw { display:none; }
+}

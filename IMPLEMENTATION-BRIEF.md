@@ -469,11 +469,11 @@ The Fluid Mechanics paper **shipped with no marking guideline**, and this is not
 
 ```js
 const XP_LADDER = [100, 60, 20];                                  // by try
-const mult = tries === 0 ? min(1 + floor(combo / 2), 4) : 1;      // clean-streak only
+const mult = tries === 0 && combo % 3 === 0 ? 3 : 1;              // clean-streak only: every third first try in a row is x3 (combo counts this answer)
 gained = XP_LADDER[tries] * mult;
 ```
 
-Three tries, a clue after each miss, then the memo answer for zero. **A multiplier only ever applies to a first-try answer** — it rewards sustained accuracy, not persistence. There is no speed bonus: rewarding speed on an exam-prep tool teaches the wrong habit.
+Three tries, a clue after each miss, then the memo answer for zero. The streak pays in threes (Murci, 2026-09-30): the third first try in a row earns x3 (300 XP), then the count starts again, so a clean run of nine earns 100, 100, 300 three times (1 500 XP); a miss resets it. It replaced a x1-x4 ramp. **A multiplier only ever applies to a first-try answer** — it rewards sustained accuracy, not persistence. There is no speed bonus: rewarding speed on an exam-prep tool teaches the wrong habit.
 
 **Retakes award no XP.** `earned[]` records what a question has already paid; re-running a mission re-scores the mark but never pays twice.
 

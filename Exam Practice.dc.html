@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=37">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=39">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
@@ -688,8 +688,9 @@
           <span style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); font-size:12.5px; font-weight:800; color:#cfe0ff; white-space:nowrap">{{ fixChip }}</span>
         </sc-if>
         <sc-if value="{{ hasStreak }}" hint-placeholder-val="{{ false }}">
-          <span data-key="{{ streakKey }}" aria-label="{{ streakLabel }}" style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; gap:4px; border:1px solid rgba(224,161,15,0.5); background:rgba(224,161,15,0.12); font-size:12.5px; font-weight:800; color:#f3c14f; white-space:nowrap; animation:{{ streakAnim }}">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#f3c14f" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ streakText }}
+          <span data-streak="true" data-key="{{ streakKey }}" role="img" aria-label="{{ streakLabel }}" style="flex:none; height:32px; padding:0 10px; border-radius:16px; display:flex; align-items:center; gap:6px; border:1px solid rgba(224,161,15,0.5); background:rgba(224,161,15,0.12); font-size:12.5px; font-weight:800; color:#f3c14f; white-space:nowrap; animation:{{ streakAnim }}">
+            <span aria-hidden="true" style="display:flex; gap:3px"><sc-for list="{{ streakPips }}" as="sp" hint-placeholder-count="3"><i style="display:block; width:7px; height:7px; border-radius:50%; background:{{ sp.bg }}; box-shadow:{{ sp.glow }}"></i></sc-for></span>
+            <span class="nx-x3" aria-hidden="true" style="color:{{ streakMultColor }}">×3</span>
           </span>
         </sc-if>
         <sc-if value="{{ showPlayXp }}" hint-placeholder-val="{{ true }}">
@@ -699,7 +700,7 @@
         </sc-if>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
           <span data-markspill="true" class="nx-pill nx-marks" aria-label="{{ playMarksAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>{{ playMarks }}/{{ playMarksOf }}</span></span>
-          <span data-xppill="true" class="nx-pill nx-xp" aria-label="{{ xp }} XP"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>+{{ xp }} XP</span></span>
+          <span data-xppill="true" class="nx-pill nx-xp" aria-label="{{ xp }} XP"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>+{{ xp }}<span class="nx-xpw"> XP</span></span></span>
           <span class="nx-pill nx-lv" role="img" aria-label="{{ nxLevelAria }}"><span class="nx-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><span class="nx-lvw">Lv </span>{{ nxLevel }}</span>
           <span class="nx-sep2" aria-hidden="true"></span><span class="nx-av" role="img" aria-label="Your profile"><svg viewBox="0 0 40 40" width="42" height="42" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#dbe7f7"/><circle cx="20" cy="16" r="7" fill="#8aa3c7"/><path d="M6 36c3-8 9-11 14-11s11 3 14 11" fill="#8aa3c7"/></svg></span>
         </sc-if>
@@ -2521,7 +2522,16 @@ class Component extends DCLogic {
       const revealed = !draw && !result.full && tryNo >= 3;
       let xp = 0, mult = 1, streak = s.streak;
       const replay = !!s.paid[part.key] || !!pr.replay;
-      if (result.full && tryNo === 1) { mult = Math.min(1 + Math.floor(s.streak / 2), 4); streak = s.streak + 1; } else if (!draw) streak = 0;
+      // The streak rule (Murci, 2026-09-30): a clean streak is x3, paid once every THREE first tries in a row, then the count
+      // starts from scratch for the next three (100, 100, 300, 100, 100, 300 ...). Was a ramp: x1, x1, x2, x2, x3, x3, x4 cap.
+      // `streak` stays the whole unbroken run (bestStreak and the done screen's "9 first tries in a row" read it).
+      // A replay neither counts nor breaks it: it pays no XP, and a replay resets the part's tries, so without this an easy
+      // replayed question would line up the x3 for a real one. Partial marks break it (a clean streak = full marks).
+      if (replay) { /* the streak stands as it was */ }
+      else if (result.full && tryNo === 1) {
+        streak = s.streak + 1;
+        mult = streak % 3 === 0 ? 3 : 1;   // the 3rd, 6th, 9th ... first try in a row
+      } else if (!draw) streak = 0;
       // In the Hall XP is paid at release, not per answer.
       if (result.full && !replay && s.sitting !== "hall") xp = XP_LADDER[tryNo - 1] * mult;
       const clues = SERVER.clues[part.key] || [];
@@ -2530,7 +2540,7 @@ class Component extends DCLogic {
         clue: !closed ? (clues[tryNo - 1] || clues[clues.length - 1] || null) : null,
         reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay };
       this.setState({ marking: false, reply: reply, barOpen: !quiet, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
-        lastMult: result.full && tryNo === 1 ? mult : draw ? s.lastMult : 1,
+        lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
         paid: result.full ? Object.assign({}, s.paid, { [part.key]: true }) : s.paid, flySeq: xp ? s.flySeq + 1 : s.flySeq,
         // The run log is what page 4 counts; `multiplier` is the server's, never recomputed here.
@@ -3566,6 +3576,7 @@ class Component extends DCLogic {
     const primaryIsSuccess = outcome === "full";
     // Stamps.
     const hall = s.sitting === "hall";
+    const sPaid = s.lastMult === 3 && s.streak > 0 && s.streak % 3 === 0, sLit = sPaid ? 3 : s.streak % 3;   // the streak meter's state
     const stampOf = it => {
       if (!it || hall) return null;
       const v = it.verdict;
@@ -3585,7 +3596,11 @@ class Component extends DCLogic {
       // room
       glowBase: tone === "neutral" ? "1" : "0.35", glowOk: tone === "ok" ? "1" : "0", glowWarn: tone === "warn" ? "1" : "0", glowBad: tone === "bad" ? "1" : "0",
       // header
-      hasStreak: s.lastMult > 1, streakText: "×" + s.lastMult + " streak", streakLabel: "×" + s.lastMult + " first-try streak", streakKey: "st" + s.lastMult,
+      // The streak meter (Murci, 2026-09-30: the x3 rule): three pips fill with first tries in a row; the third pays x3, all three
+      // glow, then they empty for the next three. Always on in practice (the goal shows before the first answer); not in the Hall.
+      hasStreak: !hall, streakPips: [0, 1, 2].map(k => { const lit = k < sLit; return { bg: lit ? "#f3c14f" : "rgba(243,193,79,0.22)", glow: lit && sPaid ? "0 0 8px rgba(243,193,79,0.85)" : "none" }; }),
+      streakMultColor: sPaid ? "#f3c14f" : "rgba(243,193,79,0.55)", streakKey: "st" + s.streak,
+      streakLabel: sPaid ? "Triple XP: " + s.streak + " first tries in a row" : (s.streak % 3) + " of 3 first tries in a row. The third earns triple XP",
       streakAnim: s.reduced ? "none" : "pop 360ms cubic-bezier(0.34,1.56,0.64,1) both",
      
       // layout + companion
@@ -4278,7 +4293,7 @@ class Component extends DCLogic {
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
       hasHomeSub: !returning || picking,
-      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. A clean streak multiplies it." : "Fluid Mechanics N6 · November 2022",
+      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. Three first tries in a row triple the third." : "Fluid Mechanics N6 · November 2022",
       homeH1: phone ? "30px" : "clamp(32px, 3.6vw, 44px)", homeSubSize: phone ? "13px" : "14px",
       homeMinH: phone ? "560px" : tabletLand ? "560px" : "640px",
       headPad: phone ? "8px 18px 0" : tabletLand ? "0 32px 10px 8px" : "clamp(8px, 2vh, 20px) 20px 0",
