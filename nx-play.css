@@ -434,6 +434,17 @@ body.nx-play .mcqp .side .glare { position:absolute; inset:0; border-radius:inhe
 body.nx-play .mcqp .side .glare b { position:absolute; inset:0; opacity:0; background:linear-gradient(105deg, transparent 36%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.16) 55%, transparent 64%); }
 body.nx-play .mcqp .hero-layer.inpanel .tile.hero .back { min-height:100% !important; box-sizing:border-box; }
 body.nx-play .mcqp .hero-layer.inpanel .cont { flex:none; }
+/* the panel grows to the card (mcq-play heroFit); if the screen is still too short the card tightens, and the last resort scrolls
+   with no scrollbar drawn (Murci: never a scrollbar line on the panel; measured: an 18 px scroll drew one, also during the grow) */
+body.nx-play .mcqp .hero-layer.inpanel { scrollbar-width:none; }
+body.nx-play .mcqp .hero-layer.inpanel::-webkit-scrollbar { display:none; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .tile.hero .back { padding-top:16px !important; padding-bottom:16px !important; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .tile.hero .medal { flex-basis:44px !important; width:44px !important; height:44px !important; margin:0 calc(50% - 22px) 8px !important; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .tile.hero .ok-name { font-size:20px !important; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .tile.hero .ok-sub { margin:2px 0 10px !important; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .tile.hero .back .ans { margin-top:12px !important; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .tile.hero .back .why:not(:empty) { margin-top:10px !important; font-size:14px !important; line-height:1.45 !important; }
+body.nx-play .mcqp .hero-layer.inpanel.tight .cont { padding-top:4px; padding-bottom:4px; }
 html[data-nx="dark"] body.nx-play .mcqp .scrim { background:rgba(2,10,28,0.45); }
 body.nx-play .mcqp .scrim { -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }   /* no blur of the whole screen: only the panel holds the card */
 html[data-nx="light"] body.nx-play .mcqp .scrim { background:rgba(214,226,244,0.45); }

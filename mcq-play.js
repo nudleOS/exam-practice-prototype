@@ -526,10 +526,26 @@
     function heroTop() { const t = opts.topOffset ? opts.topOffset() : RQ(".top").getBoundingClientRect().bottom; $("heroLayer").style.setProperty("--ht", Math.max(16, Math.round(t + 12)) + "px"); }
     // heroIn "stage": the layer takes the panel's box (clipped to what is on screen), so the card fills the panel, not the screen
     function heroBox() { if (opts.heroIn !== "stage") return; const L = $("heroLayer"), on = !!L.querySelector(".tile.hero");
-      L.classList.toggle("inpanel", on); if (!on) { ["top", "left", "width", "height"].forEach(k => L.style.removeProperty(k)); return; }
-      const st = $("stage").getBoundingClientRect(), sc = opts.screen ? PAGE.getBoundingClientRect() : { top: 0, bottom: innerHeight };
-      const top = Math.max(st.top, sc.top), bottom = Math.min(st.bottom, sc.bottom);
-      Object.assign(L.style, { top: top + "px", left: st.left + "px", width: st.width + "px", height: Math.max(0, bottom - top) + "px" }); }
+      L.classList.toggle("inpanel", on); if (!on) { ["top", "left", "width", "height"].forEach(k => L.style.removeProperty(k)); L.classList.remove("tight"); $("stage").style.removeProperty("min-height"); return; }
+      const place = () => { const st = $("stage").getBoundingClientRect(), sc = opts.screen ? PAGE.getBoundingClientRect() : { top: 0, bottom: innerHeight };
+        const top = Math.max(st.top, sc.top), bottom = Math.min(st.bottom, sc.bottom);
+        Object.assign(L.style, { top: top + "px", left: st.left + "px", width: st.width + "px", height: Math.max(0, bottom - top) + "px" }); return sc; };
+      const sc = place(); heroFit(L, sc) && place(); }
+    // The big card must fit the panel it fills (Murci, 2026-09-30: "the correct card after flipping has a huge part of it hidden
+    // below the panel"; measured at 1348x648: the panel 332 px, the card's back 338 + the "Tap anywhere" row). Its need is its
+    // back's natural height plus the layer's padding and the tap row. The panel grows to it while the card is up (down to 16 px
+    // off the screen's bottom); past that the card tightens (.tight: a smaller medal, less air); past that the layer scrolls,
+    // with no scrollbar drawn. Returns true when the panel changed size (the layer is placed again).
+    function heroFit(L, sc) { const st = $("stage"), t = L.querySelector(".tile.hero"), b = t && t.querySelector(".back"); if (!b) return false;
+      const need = () => { b.style.setProperty("min-height", "0", "important"); const cs = getComputedStyle(L), c = $("cont");
+        const h = b.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + (opts.after === "panel" ? (c && c.isConnected ? c.offsetHeight : 38) + (parseFloat(cs.rowGap) || 10) : 0);
+        b.style.removeProperty("min-height"); return Math.ceil(h); };
+      const before = st.style.minHeight; L.classList.remove("tight");
+      const room = Math.floor(sc.bottom - 16 - st.getBoundingClientRect().top);
+      let n = need(); if (n > room) { L.classList.add("tight"); n = need(); }
+      const want = Math.min(n, room), has = st.getBoundingClientRect().height;
+      if (want > has + 1) st.style.minHeight = want + "px"; else if (!before) return false;
+      return st.style.minHeight !== before; }
     listen(SC, "scroll", () => { if ($("heroLayer").querySelector(".tile.hero")) { heroTop(); heroBox(); } }, { passive: true });
     listen(window, "resize", () => heroBox());
     function grow(t) {
