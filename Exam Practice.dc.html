@@ -952,7 +952,7 @@
           </sc-if>
 
           <sc-if value="{{ isTiles }}" hint-placeholder-val="{{ false }}">
-            <div role="{{ tilesRole }}" aria-label="{{ tilesAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-direction:column; gap:10px">
+            <div data-chips="{{ tilesChips }}" role="{{ tilesRole }}" aria-label="{{ tilesAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-direction:column; gap:10px">
               <sc-if value="{{ hasCounter }}" hint-placeholder-val="{{ false }}">
                 <span data-key="{{ counterKey }}" role="status" style="font-size:12.5px; font-weight:700; color:{{ counterColor }}; animation:{{ counterAnim }}">{{ counterText }}</span>
               </sc-if>
@@ -3889,6 +3889,9 @@ class Component extends DCLogic {
     const reason = mode === "mcq" ? "Pick one answer" : mode === "pickn" ? "Pick " + need + " · " + pickedN + " picked" : mode === "order" ? "Place all " + opts.length + " · " + s.orderSeq.length + " placed"
       : mode === "lettername" ? "Pick the letter and give the name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? "" : "Enter your answer";
     return {
+      // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
+      // the panel 242 px over at 412x915 and pushed the figure out of sight (Murci, 2026-10-01: "be able to see the images from 1.4")
+      tilesChips: isTiles && (part.options || []).length > 0 && (part.options || []).every(o => /^[A-Z]$/.test(String(o).trim())) ? "true" : "false",
       isTiles: isTiles, tiles: tiles, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
       tilesKeys: e => { if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].indexOf(e.key) === -1) return;
         const ts = [].slice.call(e.currentTarget.querySelectorAll("[data-tile]")); const i = ts.indexOf(document.activeElement); if (i < 0) return;

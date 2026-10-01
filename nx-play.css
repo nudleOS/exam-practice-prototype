@@ -1350,3 +1350,10 @@ body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips 
   body.nx-play main:not(#mq-stage) [data-termtier] { left:52px; right:52px; bottom:11px; font-size:10.5px; }
 }
 @media (prefers-reduced-motion:reduce) { body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] { animation:none !important; } }
+/* letter options as one row of chips (Exam Practice tilesChips: every option a single letter, e.g. the labels on a figure): the letter
+   alone, no A/B badge beside a P/Q label; the counter keeps its own line; still 44 px tap targets */
+body.nx-play main:not(#mq-stage) [data-chips="true"] { flex-direction:row !important; flex-wrap:wrap; gap:8px !important; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] > [role="status"], body.nx-play main:not(#mq-stage) [data-chips="true"] > span:not([data-tile]) { flex-basis:100%; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] { flex:0 0 auto; min-width:54px; min-height:44px !important; padding:0 14px !important; gap:6px !important; justify-content:center; border-radius:12px !important; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] > span:first-child { display:none !important; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] > span:nth-child(2) { flex:none !important; font-size:16px !important; font-weight:700 !important; }
