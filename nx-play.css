@@ -1371,6 +1371,9 @@ body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:last-c
 body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:has(> [data-figbox]) { padding:8px 8px 6px !important; }
 /* the lead that only introduces the figure above it (Exam Practice figSaysLead): not shown */
 body.nx-play main:not(#mq-stage) [data-lead][data-figlead="true"] { display:none !important; }
+/* a phone: no "Press Enter or the arrow to answer" (a phone has no Enter key; the arrow in the field says it), 20 px back for the
+   question (measured: 1.4.1 with its figure was 12 px over at 375x812) */
+@media (max-width:600px) { body.nx-play [data-enterhint] { display:none !important; } }
 /* a short desktop or tablet (under 760 px tall): the figure as large as fits beside the question, at its own ratio, centred, and the
    panel's padding a step less (measured at 808x648: the panel is capped at 433 px above the docked row; with its 30 px padding, the
    question (172) and the figure's frame + buttons (52) the image had 131 px; with 18 px padding 155: 100svh - 493 px) */
