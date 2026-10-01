@@ -234,7 +234,7 @@
         t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) tapOut(); else if (t.classList.contains("flipped")) lift(t); });
         g.appendChild(t);
       });
-      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden aria-label="Try this question again, practice only: no marks or XP">Try it again</button></div>`);   // the marks under the last card; then Try again and Next
+      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden aria-label="Try this question again, practice only: no marks or XP">Try again</button></div>`);   // the marks under the last card; then Try again and Next
       // opts.onBack / opts.canBack: the host owns the order (it mounts one mission's MCQs, but a Back can lead to a part of another
       // type): the host says whether there is a way back and takes it (measured 2026-09-30: back:false left no Back at all)
       const hostBack = typeof opts.onBack === "function", canBack = hostBack ? !!(opts.canBack ? opts.canBack() : true) : k > 0 && opts.back !== false;

@@ -1233,7 +1233,7 @@
               </sc-if>
               <span style="display:flex; gap:8px; margin-top:4px">
                 <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span data-backword="true">Back</span></button></sc-if>
-                <sc-if value="{{ nxCanRetry }}" hint-placeholder-val="{{ false }}"><button data-retry="true" onClick="{{ retryPart }}" aria-label="Try this question again, practice only: no marks or XP">Try it again</button></sc-if>
+                <sc-if value="{{ nxCanRetry }}" hint-placeholder-val="{{ false }}"><button data-retry="true" onClick="{{ retryPart }}" aria-label="Try this question again, practice only: no marks or XP">Try again</button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
                   <button onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
