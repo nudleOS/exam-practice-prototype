@@ -692,7 +692,7 @@
 
     <div data-playhead="true" style="position:sticky; top:0; z-index:22; background:rgba(var(--nx-c, 25,27,30), 0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:8px; padding:6px 12px">
-        <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span class="nx-brand"><span class="nx-mono" role="img" aria-label="Nudle">N</span><span class="nx-nudle">Nudle</span><span class="nx-sep" aria-hidden="true"></span><img class="nx-nexera" src="assets/nexera-wordmark.webp" alt="Nexera"></span></sc-if>
+        <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span class="nx-brand"><img class="nx-mono" src="assets/nexera-mark.png" alt="Nexera" width="48" height="48"><span class="nx-nudle">Nudle</span><span class="nx-sep" aria-hidden="true"></span><img class="nx-nexera" src="assets/nexera-wordmark.webp" alt="Nexera"></span></sc-if>
         <button data-playclose="true" onClick="{{ playClose }}" aria-label="{{ playCloseAria }}" aria-haspopup="{{ playCloseHasPopup }}" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer">
           <sc-if value="{{ playCloseMap }}" hint-placeholder-val="{{ true }}"><svg class="pc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><svg class="pc-map" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span class="pc-lbl" aria-hidden="true">Map</span></sc-if>
           <sc-if value="{{ playCloseX }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
@@ -903,12 +903,11 @@
           </div>
         </sc-if>
 
-        <sc-if value="{{ hasFigure }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ figFrameOn }}" hint-placeholder-val="{{ false }}">
           <div data-scene="true" data-figure="true" data-fighot="{{ figHot }}" data-fighidden="{{ figHiddenAttr }}" style="--fig-ar:{{ figAr }}; border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
-            <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ figAlt }}</span>
-            <div style="padding:10px 10px 0">
+            <div data-figpad="true" style="position:relative; padding:8px">
               <div data-figbox="true" onClick="{{ figBoxTap }}" style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
-                <img src="{{ figSrc }}" alt="" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; user-select:none" />
+                <img src="{{ figSrc }}" alt="{{ figAlt }}" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:fill; user-select:none" />
                 <sc-for list="{{ figSpots }}" as="fs" hint-placeholder-count="5">
                   <button data-hotspot="{{ fs.letter }}" onClick="{{ fs.tap }}" aria-label="{{ fs.aria }}" aria-pressed="{{ fs.pressed }}" disabled="{{ fs.disabled }}" style="position:absolute; left:{{ fs.x }}; top:{{ fs.y }}; transform:translate(-50%, -50%); width:{{ figSpotSize }}; height:{{ figSpotSize }}; padding:0; border-radius:50%; border:{{ fs.border }}; background:{{ fs.bg }}; box-shadow:{{ fs.shadow }}; cursor:pointer">
                     <sc-if value="{{ fs.hasBadge }}" hint-placeholder-val="{{ false }}">
@@ -917,14 +916,11 @@
                   </button>
                 </sc-for>
               </div>
-            </div>
-            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:9px 12px 11px">
-              <span style="flex:1; min-width:0; font-size:12px; font-weight:600; color:{{ figHintColor }}">{{ figHint }}</span>
-              <sc-if value="{{ figCanHide }}" hint-placeholder-val="{{ false }}"><button data-figtoggle="true" onClick="{{ toggleFig }}" aria-expanded="{{ figExpanded }}">{{ figToggleLabel }}</button></sc-if>
-              <button data-enlarge="true" onClick="{{ openFigBig }}" aria-haspopup="dialog" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Enlarge</button>
+              <sc-if value="{{ figCanHide }}" hint-placeholder-val="{{ false }}"><button data-figtoggle="true" onClick="{{ toggleFig }}" aria-expanded="true" aria-label="Hide the figure" title="Hide the figure"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.8 9.8 0 0 0 5.4-1.6"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg></button></sc-if>
             </div>
           </div>
         </sc-if>
+        <sc-if value="{{ figShowOn }}" hint-placeholder-val="{{ false }}"><button data-figshow="true" onClick="{{ toggleFig }}" aria-expanded="false"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>Show figure</button></sc-if>
 
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
           <div data-parthead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
@@ -1227,6 +1223,7 @@
             </sc-for>
           </div>
           <button class="qm-map" onClick="{{ openPaperMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Open the paper map</button>
+          <sc-if value="{{ paperSourceButtonOn }}" hint-placeholder-val="{{ false }}"><button class="qm-map" data-qm-source="true" onClick="{{ openSourceFromMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>View the original paper</button></sc-if>
         </div>
       </div>
     </sc-if>
@@ -2258,7 +2255,7 @@ class Component extends DCLogic {
   // under the panel (a phone, an upright tablet), down to its head, so its words stay in view. Measured before: the memo made the
   // page 791 px tall on a 648 px screen (the header went under the top bar); on a phone the grown panel hid "Clean. Full marks.".
   // A new result or hint is scrolled into view inside it; a new part starts at its top.
-  nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock"); return; }
+  nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock", "nx-robot-back"); this._robotBack = null; return; }
     this.nxCentre(q);
     const qr = q.getBoundingClientRect(), fe = document.querySelector("[data-footer]"); let bottom = innerHeight - 16;
     // the row's first visible button (Check is hidden where the field answers itself: measured, the dock then found no row)
@@ -2281,6 +2278,25 @@ class Component extends DCLogic {
     if (dock) bottom -= rowH + 12;
     const cap = Math.max(220, Math.floor(bottom - qr.top)); if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
     document.body.classList.toggle("nx-dock", dock);
+    // A question's figure gets the room the question leaves it (Murci, 2026-10-01: with "Show figure" 1.4's parts scrolled on desktop,
+    // measured 87-103 px at 1366x768 when the figure kept its full proportions): the panel's cap less everything but the image, up to
+    // the image's own height at the frame's width, never under a floor (a figure with letters keeps its spots tappable). It fills the
+    // frame's width and is stretched to that height ("don't care if they are stretched"). Measured, not set per screen: the rest of the
+    // panel differs by question type. Stable across renders (the rest does not change).
+    const fig = q.querySelector("[data-figure]"), fbx = fig && fig.querySelector("[data-figbox]");
+    if (fbx && fbx.clientWidth) { const ar = parseFloat(getComputedStyle(fig).getPropertyValue("--fig-ar")) || 1.6, full = Math.round(fbx.clientWidth / ar);
+      // (the panel's borders are inside its cap but outside its scroll box: measured, leaving them in kept a 2 px scroll)
+      const cur = fbx.offsetHeight, rest = q.scrollHeight - cur, room = Math.floor(cap - (q.offsetHeight - q.clientHeight) - rest),
+        floor = fig.dataset.fighot !== "true" ? 110 : q.querySelector('[data-chips="true"]') ? 120 : 150;   // (letters with chips to tap too: the figure is not the only input)
+      const h = Math.max(floor, Math.min(full, room));
+      if (Math.abs(h - cur) > 1) fig.style.setProperty("--fig-h", h + "px"); }
+    // A phone whose question still does not fit (the figure at its floor, or a long question): the robot steps back, smaller on the
+    // same rock, as the MCQ's fit-4 does, and the panel is measured again (measured at 360x780: 1.4.2 was 100 px over with the figure
+    // at its floor, the robot taking the lower half). Kept for the rest of that question (no flicker as the figure then grows);
+    // cleared when the question changes.
+    const pk = (this.part() || {}).key || "";
+    if (this._robotBack && this._robotBack !== pk) { this._robotBack = null; document.body.classList.remove("nx-robot-back"); requestAnimationFrame(() => this.nxPanelCap()); }
+    else if (!this._robotBack && innerWidth <= 600 && q.scrollHeight - q.clientHeight > 1) { this._robotBack = pk; document.body.classList.add("nx-robot-back"); requestAnimationFrame(() => this.nxPanelCap()); }
     // the keyboard is up (a phone): the panel just got shorter, so the field being typed in is scrolled back into its view
     const ae = document.activeElement; if (this.state.kbOff > 80 && ae && q.contains(ae)) { const a = ae.getBoundingClientRect(), b = q.getBoundingClientRect();
       if (a.bottom > b.bottom - 8 || a.top < b.top) q.scrollBy({ top: a.bottom > b.bottom - 8 ? a.bottom - b.bottom + 16 : a.top - b.top - 16 }); }
@@ -3698,7 +3714,7 @@ class Component extends DCLogic {
     const sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + (part._mid || mission.id)];
     if (sc && sc.template === "figure") return this.figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall);
     const binds = sc && sc.tags[part.number];
-    const off = { hasScene: false, hasFigure: false, figBigOpen: false, figSaysLead: "false" };
+    const off = { hasScene: false, hasFigure: false, figFrameOn: false, figShowOn: false, figBigOpen: false, figSaysLead: "false" };
     if (!sc || !binds || part.response_mode !== "steps" || hall) return off;
     const G = {}; (part.givens || []).forEach(g => { G[g.symbol] = g.value; });
     const f1 = v => fmtNum(Math.round(v * 1000) / 1000);
@@ -3792,7 +3808,10 @@ class Component extends DCLogic {
     return Object.assign(out, { sceneAlt: alt, sceneGivens: givensLine, hasSceneNote: !!note, sceneNote: note, sceneNoteColor: noteColor });
   }
 
-  closeFigBig() { this.setState({ figBig: false }, () => { const b = document.querySelector("[data-enlarge]"); if (b) b.focus(); }); }
+  closeFigBig() { this.setState({ figBig: false }, () => {
+    const b = document.querySelector("[data-figtoggle]") || document.querySelector("[data-figbox]");
+    if (b) b.focus();
+  }); }
   // A tap on a printed letter writes the SAME state as the layer-2 control for that question.
   figTap(L) {
     const s = this.state, part = this.part(); if (!part) return;
@@ -3809,7 +3828,7 @@ class Component extends DCLogic {
       this.setState({ orderSeq: pos === -1 ? s.orderSeq.concat([i]) : s.orderSeq.slice(0, pos), edited: Object.assign({}, s.edited, { order: true }) }); }
   }
   figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall) {
-    const F = FIGS[sc.fig]; if (!F) return { hasScene: false, hasFigure: false, figSaysLead: "false" };
+    const F = FIGS[sc.fig]; if (!F) return { hasScene: false, hasFigure: false, figFrameOn: false, figShowOn: false, figSaysLead: "false" };
     const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim());
     const letterSet = mode === "lettername" ? (part.letters || []) : (["pickn", "order", "mcq"].indexOf(mode) !== -1 && opts.length && opts.every(o => /^[A-Z]$/.test(o))) ? opts : [];
     const locked = closed || s.marking || (s.barOpen && !!reply);
@@ -3851,10 +3870,11 @@ class Component extends DCLogic {
       // line goes (Murci, 2026-10-01: "eats space and is wrong because it says below"); the figure's description still reads it out
       figSaysLead: F.caption === String((this.mission() || {}).lead || "") ? "true" : "false",   // (a figure to tap too: its row shows the tap hint, not the caption)
       figAr: (F.w / F.h).toFixed(4), figHot: letterSet.length ? "true" : "false", figCanHide: canHide, figHiddenAttr: hidden ? "true" : "false",
-      figExpanded: hidden ? "false" : "true",
-      // (a figure to read, as a thumbnail on a short screen: a tap on it enlarges it; the Enlarge button is the keyboard's way)
-      figBoxTap: !letterSet.length ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, figToggleLabel: hidden ? "Show figure" : "Hide", toggleFig: () => this.setState({ figHidden: !s.figHidden }),
-      figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint, figHintColor: letterSet.length && !locked ? "var(--tint)" : "var(--text3)",
+      // the frame holds the figure and nothing else (Murci, 2026-10-01: "never has text inside it": no caption, no hint, no Enlarge);
+      // Hide sits on the figure, folded it is one "Show figure" button. A tap on a figure to read still opens it big.
+      figFrameOn: !hidden, figShowOn: hidden,
+      figBoxTap: !letterSet.length ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, toggleFig: () => this.setState({ figHidden: !s.figHidden }),
+      figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint,   // (the enlarged view's line)
       figBigOpen: s.figBig, openFigBig: () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }),
       closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: Math.min(2 * 640, Math.round(F.w * 0.9)) + "px",
       figBigKeys: e => { if (e.key !== "Tab") return; const fs = [].slice.call(document.querySelectorAll("[data-figdialog] button:not([disabled])")); if (!fs.length) return;
@@ -4897,6 +4917,8 @@ class Component extends DCLogic {
       sourceButtonAria: activePaperSource ? "View original " + activePaperSource.title : "View original paper",
       sourceButtonTextDisplay: phone ? "none" : "inline",
       openActivePaperSource: () => { if (activePaperSource) this.openPaperSource(activePaperSource.id, 1); },
+      // (a phone's one-row header has no room for the button: the question map carries it there, and closes first)
+      openSourceFromMap: () => this.setState({ qmap: false }, () => { if (activePaperSource) this.openPaperSource(activePaperSource.id, 1); }),
       paperSourceOpen: !!s.paperSourceOpen, closePaperSource: () => this.closePaperSource(),
       sourceOverlayPad: phone ? "0" : "24px", sourcePanelWidth: phone ? "100vw" : "min(92vw, 1120px)",
       sourcePanelHeight: phone ? "100dvh" : "min(90dvh, 920px)", sourcePanelRadius: phone ? "0" : "16px",
