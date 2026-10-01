@@ -15,7 +15,6 @@
   <script type="module" src="model-floor.js?v=20"></script>
   <script type="module" src="vortex-map.js?v=21"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
-  <script src="paper-fm-n6-2022.js"></script>
   <script src="paper-ls-p1-2026.js?v=2"></script>
   <script src="mcq-play.js?v=43"></script>
   <style>
@@ -83,7 +82,7 @@
   <link rel="stylesheet" href="nx-play.css?v=121">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
 </helmet>
 
-<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), var(--bg)">
+<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
 
   <sc-if value="{{ mapPopOn }}" hint-placeholder-val="{{ false }}">
     <span onClick="{{ closePops }}" aria-hidden="true" style="position:fixed; inset:0; z-index:19"></span>
@@ -183,6 +182,10 @@
         <button data-trigger="preview" onClick="{{ togglePreview }}" aria-expanded="{{ pvOpen }}" aria-controls="design-preview" aria-label="Design preview controls" style="box-sizing:border-box; min-height:36px; margin-left:4px; padding:0 10px; border:1px dashed var(--line2); border-radius:18px; background:transparent; color:var(--text3); display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg><span style="display:{{ brandTextDisplay }}">Preview</span>
         </button>
+        <div role="group" aria-label="Prototype role" style="display:flex; flex:none; gap:2px; padding:3px; border:1px solid rgba(255,255,255,0.08); border-radius:12px; background:rgba(var(--nx-c, 32,35,39),0.72)">
+          <button aria-current="page" style="min-height:30px; padding:0 8px; border:0; border-radius:9px; background:rgba(0,104,248,0.2); color:#ffffff; font-size:11.5px; font-weight:700">Learner</button>
+          <a href="./Teach%20Exams.dc.html" style="min-height:30px; display:flex; align-items:center; padding:0 8px; border-radius:9px; color:var(--text3); font-size:11.5px; font-weight:700; text-decoration:none">Educator</a>
+        </div>
         <span style="flex:1; min-width:0"></span>
         <sc-if value="{{ isReturning }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex; gap:6px; flex-wrap:nowrap; flex:none; animation:rise 480ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">
@@ -324,8 +327,8 @@
             <span aria-hidden="true" style="align-self:center; width:40px; height:4px; border-radius:2px; background:rgba(255,255,255,0.18)"></span>
           </sc-if>
           <div style="flex:none; display:flex; align-items:center; gap:10px">
-            <sc-if value="{{ sheetBack }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ sheetGoBack }}" aria-label="Back to subjects" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+              <sc-if value="{{ sheetBack }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ sheetGoBack }}" aria-label="{{ sheetBackAria }}" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
             </sc-if>
             <h2 style="flex:1; margin:0; font-size:17px; font-weight:800">{{ sheetTitle }}</h2>
             <button onClick="{{ closePops }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
@@ -351,11 +354,24 @@
               </sc-if>
               <sc-if value="{{ studyStep2 }}" hint-placeholder-val="{{ false }}">
                 <span style="font-size:13.5px; line-height:1.5; color:var(--text2)">{{ studyHint }}</span>
+                <sc-if value="{{ studyFoldersOn }}" hint-placeholder-val="{{ true }}">
                 <div role="{{ studyListRole }}" aria-label="{{ studyOptsLabel }}" style="display:flex; flex-direction:column; gap:6px">
                   <sc-for list="{{ studyOpts }}" as="so" hint-placeholder-count="3">
-                    <button role="{{ so.role }}" aria-checked="{{ so.on }}" onClick="{{ so.pick }}" style="box-sizing:border-box; min-height:52px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; padding:8px 14px; border-radius:14px; border:{{ so.border }}; background:{{ so.bg }}; color:var(--text); text-align:left; cursor:pointer"><span style="font-size:14px; font-weight:700; text-wrap:pretty">{{ so.label }}</span><span style="font-size:12.5px; font-weight:700; color:{{ so.subColor }}">{{ so.sub }}</span></button>
+                    <button role="{{ so.role }}" aria-selected="{{ so.on }}" onClick="{{ so.pick }}" style="box-sizing:border-box; min-height:52px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; padding:8px 14px; border-radius:14px; border:{{ so.border }}; background:{{ so.bg }}; color:var(--text); text-align:left; cursor:pointer"><span style="font-size:14px; font-weight:700; text-wrap:pretty">{{ so.label }}</span><span style="font-size:12.5px; font-weight:700; color:{{ so.subColor }}">{{ so.sub }}</span></button>
                   </sc-for>
                 </div>
+                </sc-if>
+                <sc-if value="{{ studyFolderOn }}" hint-placeholder-val="{{ false }}">
+                  <div role="list" aria-label="{{ studyPaperListLabel }}" style="display:flex; flex-direction:column; gap:8px">
+                    <sc-for list="{{ studyPaperRows }}" as="spr" hint-placeholder-count="2">
+                      <div role="listitem" style="display:flex; align-items:center; gap:8px; min-height:64px; padding:10px 12px; border:1px solid var(--line2); border-radius:14px; background:rgba(255,255,255,0.025)">
+                        <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px"><strong style="font-size:14px">{{ spr.title }}</strong><span style="font-size:12px; color:var(--text3)">{{ spr.meta }}</span></span>
+                        <sc-if value="{{ spr.hasSource }}" hint-placeholder-val="{{ false }}"><button onClick="{{ spr.preview }}" aria-label="View original {{ spr.title }}" style="min-height:40px; padding:0 11px; border:1px solid var(--line2); border-radius:11px; background:transparent; color:var(--text2); font-size:12px; font-weight:700; cursor:pointer">Original</button></sc-if>
+                        <button onClick="{{ spr.pick }}" style="min-height:40px; padding:0 12px; border:0; border-radius:11px; background:var(--grad); color:#ffffff; font-size:12px; font-weight:800; cursor:pointer">Choose</button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
                 <sc-if value="{{ studyEmpty }}" hint-placeholder-val="{{ false }}">
                   <span role="status" style="padding:10px 12px; border-radius:12px; background:rgba(255,255,255,0.04); font-size:13.5px; line-height:1.5; color:var(--text2)">{{ studyEmptyText }}</span>
                 </sc-if>
@@ -366,7 +382,7 @@
             </div>
             <div style="flex:none; display:flex; gap:8px">
               <sc-if value="{{ studyStep2 }}" hint-placeholder-val="{{ false }}">
-                <button onClick="{{ studyBackGo }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Back</button>
+                <button onClick="{{ studyBackGo }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">{{ studyBackLabel }}</button>
               </sc-if>
               <button data-studies-primary="true" onClick="{{ studyPrimaryGo }}" style="flex:1; min-height:52px; padding:0 22px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:15px; font-weight:800; cursor:pointer">{{ studyPrimary }}</button>
             </div>
@@ -391,6 +407,19 @@
               <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
                 <span role="status" style="padding:18px 8px; font-size:14px; color:var(--text2)">We don't have that subject yet.</span>
               </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ sheetPapers }}" hint-placeholder-val="{{ false }}">
+            <div role="listbox" aria-label="{{ paperRowsLabel }}" data-noscrollbar="true" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:8px; overflow-y:auto; overscroll-behavior:contain">
+              <sc-for list="{{ paperRows }}" as="pr" hint-placeholder-count="2">
+                <div role="option" data-opt="{{ pr.idx }}" aria-selected="{{ pr.on }}" tabIndex="{{ pr.tab }}" style="display:flex; align-items:center; gap:10px; min-height:64px; padding:10px 12px; border:1px solid {{ pr.border }}; border-radius:14px; background:{{ pr.bg }}">
+                  <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px"><strong style="font-size:14px">{{ pr.title }}</strong><span style="font-size:12px; color:var(--text3)">{{ pr.meta }}</span></span>
+                  <sc-if value="{{ pr.hasSource }}" hint-placeholder-val="{{ false }}"><button onClick="{{ pr.preview }}" aria-label="View original {{ pr.title }}" style="min-height:40px; padding:0 11px; border:1px solid var(--line2); border-radius:11px; background:transparent; color:var(--text2); font-size:12px; font-weight:700; cursor:pointer">Original</button></sc-if>
+                  <button onClick="{{ pr.pick }}" style="min-height:40px; padding:0 12px; border:0; border-radius:11px; background:var(--grad); color:#ffffff; font-size:12px; font-weight:800; cursor:pointer">Choose</button>
+                </div>
+              </sc-for>
+              <sc-if value="{{ paperRowsEmpty }}" hint-placeholder-val="{{ false }}"><span role="status" style="padding:18px 8px; font-size:14px; color:var(--text2)">No papers have been added to this subject yet.</span></sc-if>
             </div>
           </sc-if>
 
@@ -670,6 +699,11 @@
         </button>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
           <button class="nx-prog nx-where" data-where="true" onClick="{{ openQmap }}" disabled="{{ nxWhereOff }}" aria-haspopup="dialog" aria-expanded="{{ qmapExpanded }}" aria-label="{{ nxWhereAria }}"><span class="nx-plabel">{{ nxProgLabel }}</span><span class="nx-plabel-s" aria-hidden="true">{{ nxProgShort }}</span><svg class="nx-where-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+        </sc-if>
+        <sc-if value="{{ paperSourceButtonOn }}" hint-placeholder-val="{{ false }}">
+          <button data-paper-source-button="true" onClick="{{ openActivePaperSource }}" aria-label="{{ sourceButtonAria }}" title="View original question paper" style="height:40px; flex:none; display:flex; align-items:center; gap:6px; padding:0 10px; border:1px solid var(--line2); border-radius:12px; background:rgba(255,255,255,0.03); color:var(--text2); font-size:12px; font-weight:700; cursor:pointer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M8 13h8M8 17h6"></path></svg><span style="display:{{ sourceButtonTextDisplay }}">Original</span>
+          </button>
         </sc-if>
         <sc-if value="{{ nxNoLook }}" hint-placeholder-val="{{ true }}"><span style="flex:1; min-width:0"></span></sc-if>   <!-- the part dots came back with the boss's design (nxLook), as the parts of this mission -->
         <sc-if value="{{ hallMode }}" hint-placeholder-val="{{ false }}">
@@ -1005,11 +1039,10 @@
                 <sc-if value="{{ termHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ termStampBg }}; font-size:12px; font-weight:800; color:{{ termStampColor }}">{{ termStamp }}</span>
                 </sc-if>
-                <sc-if value="{{ nxInlineSubmit }}" hint-placeholder-val="{{ false }}"><button data-submit="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if>
                 <sc-if value="{{ nxTermMedal }}" hint-placeholder-val="{{ false }}"><span data-termmedal="true" aria-hidden="true"></span><span data-termtier="true">{{ termTierText }}</span></sc-if>
                 <sc-if value="{{ nxTermSocket }}" hint-placeholder-val="{{ false }}"><span data-termsocket="{{ termSocketKind }}" aria-hidden="{{ termSocketHidden }}">{{ termSocketText }}<sc-if value="{{ termSocketIsAnswer }}" hint-placeholder-val="{{ false }}"><span data-anstag="true">The answer</span></sc-if></span></sc-if>
               </span>
-              <sc-if value="{{ nxInlineSubmit }}" hint-placeholder-val="{{ false }}"><span data-enterhint="true">Press Enter or the arrow to answer</span></sc-if>
+              <sc-if value="{{ nxInlineSubmit }}" hint-placeholder-val="{{ false }}"><span data-enterhint="true">Press Enter or choose Check to submit</span></sc-if>
             </div>
           </sc-if>
 
@@ -1597,6 +1630,20 @@
     </aside>
   </sc-if>
 
+  <sc-if value="{{ paperSourceOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-paper-source="true" style="position:fixed; inset:0; z-index:100; box-sizing:border-box; display:grid; place-items:center; padding:{{ sourceOverlayPad }}; background:rgba(0,0,0,0.5)">
+      <div aria-hidden="true" onClick="{{ closePaperSource }}" style="position:absolute; inset:0; background:rgba(0,0,0,0.28); backdrop-filter:blur(2px)"></div>
+      <aside role="dialog" aria-modal="true" aria-label="{{ paperSourceTitle }} original paper" style="position:relative; box-sizing:border-box; display:flex; flex-direction:column; width:{{ sourcePanelWidth }}; max-width:100vw; height:{{ sourcePanelHeight }}; max-height:100dvh; overflow:hidden; border:1px solid var(--line2); border-radius:{{ sourcePanelRadius }}; background:var(--panel); box-shadow:0 24px 70px rgba(0,0,0,0.55)">
+        <div style="flex:none; display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid var(--line)">
+          <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px"><strong style="font-size:14px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{ paperSourceTitle }}</strong><span style="font-size:12px; color:var(--text3)">{{ paperSourceMeta }}</span></span>
+          <a href="{{ paperSourceUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Open original paper in a new tab" style="min-height:40px; display:flex; align-items:center; padding:0 10px; border:1px solid var(--line2); border-radius:10px; color:var(--text2); font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap">New tab</a>
+          <button data-source-close="true" onClick="{{ closePaperSource }}" aria-label="Close original paper" style="width:40px; height:40px; flex:none; border:1px solid var(--line2); border-radius:10px; background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
+        </div>
+        <iframe title="{{ paperSourceTitle }} original question paper" src="{{ paperSourceUrl }}" style="flex:1; min-height:0; width:100%; border:0; background:#ffffff"></iframe>
+      </aside>
+    </div>
+  </sc-if>
+
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;markerOnline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
@@ -1614,7 +1661,19 @@ const SAMPLE_REPLY = {"part":"1.1.1","try":1,"tries_left":2,"closed":false,"reve
  "clue":"With shock losses ignored, the whole difference in level between the reservoirs is used up by pipe friction.",
  "reveal":null,"xp_awarded":0,"multiplier":1,"streak":0};
 
-const HOME = {"papers":[{"id":"fm-n6-2022-11","title":"Fluid Mechanics N6","subject":"Fluid Mechanics","qualification":"nated","level":"N6","level_detail":"N6","sitting":"November 2022","total_marks":100,"duration_minutes":180,"parts":32,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"aet-l4-2019-02","title":"Applied Engineering Technology","subject":"Applied Engineering Technology","qualification":"ncv","level":"L4","level_detail":"Level 4","sitting":"February 2019","total_marks":100,"duration_minutes":180,"parts":28,"provenance_label":"DHET question paper · marking reviewed by Nexera"},{"id":"ls-p1-2026","title":"Life Sciences P1","subject":"Life Sciences","qualification":"nsc","level":"G12","level_detail":"Grade 12","sitting":"May/June 2026","total_marks":150,"duration_minutes":150,"parts":85,"provenance_label":"Design sample · a DBE NSC paper, not a TVET paper"}],"resume":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":{"id":"m1-4","number":"1.4","title":"Stand pipes on pipe AC"},"marks_earned":21,"total_marks":100,"finished":false},"resume_finished":{"attempt_id":"…","paper_id":"fm-n6-2022-11","next_mission":null,"marks_earned":64,"total_marks":100,"finished":true},"subjects":[{"name":"Fluid Mechanics N6","qualification":"nated","paper_ids":["fm-n6-2022-11"]},{"name":"Applied Engineering Technology (Level 4)","qualification":"ncv","paper_ids":["aet-l4-2019-02"]},{"name":"Life Sciences P1 (design sample)","qualification":"nsc","paper_ids":["ls-p1-2026"]}],"me":{"xp_total":740,"days_practised_this_week":3}};
+const HOME = {
+  papers: [
+    { id: "aet-l4-2019-02", title: "Applied Engineering Technology", subject: "Applied Engineering Technology", qualification: "ncv", level: "L4", level_detail: "Level 4", sitting: "February 2019", total_marks: 100, duration_minutes: 180, parts: 28, provenance_label: "DHET question paper · marking reviewed by Nexera" },
+    { id: "ls-p1-2026", title: "Life Sciences P1", subject: "Life Sciences", qualification: "high_school", curriculum: "CAPS", grade: 12, level: "G12", level_detail: "Grade 12", sitting: "May/June 2026", total_marks: 150, duration_minutes: 150, parts: 85, source_pdf: "uploads/Life Sciences P1 May-June 2026 Eng.pdf", provenance_label: "DBE question paper · May/June 2026" }
+  ],
+  resume: { attempt_id: "…", paper_id: "ls-p1-2026", next_mission: { id: "1.4", number: "1.4", title: "Reproduction in vertebrates" }, marks_earned: 21, total_marks: 150, finished: false },
+  resume_finished: { attempt_id: "…", paper_id: "ls-p1-2026", next_mission: null, marks_earned: 112, total_marks: 150, finished: true },
+  subjects: [
+    { name: "Applied Engineering Technology", qualification: "ncv", level: "L4", paper_ids: ["aet-l4-2019-02"] },
+    { name: "Life Sciences", qualification: "high_school", level: "G12", paper_ids: ["ls-p1-2026"] }
+  ],
+  me: { xp_total: 740, days_practised_this_week: 3 }
+};
 // Home paper id → the in-page paper it opens.
 // Missions are only stated where the whole paper is transcribed; otherwise parts, which are known.
 // The companion's greet still (≤60 KB, rendered from companion-robot.glb, same framing as the 3D
@@ -1708,9 +1767,9 @@ const betaQ = (a, b, q) => { const N = 2000, lp = []; let mx = -Infinity, tot = 
   let acc = 0; for (let i = 0; i < N; i++) { acc += w[i]; if (acc >= q * tot) return (i + 0.5) / N; } return 1; };
 // ── The Hall (brief 08). A paper opens in the Hall only when its version is not `disclosed` (§3)
 // and the whole paper is transcribed; AET is partial in this prototype, so it stays practice-only.
-const PAPER_VERSION = { fm: "open", aet: "open", ls: "open" };
-const HALL_FULL = { fm: true, aet: false, ls: true };
-const HALL_MINUTES = { fm: 180, aet: 180, ls: 150 };
+const PAPER_VERSION = { aet: "open", ls: "open" };
+const HALL_FULL = { aet: false, ls: true };
+const HALL_MINUTES = { aet: 180, ls: 150 };
 // PLACEHOLDER amounts: the platform owns XP and tokens (R2 refinement 2). The design pays a FLAT
 // reward for a full paper sat under conditions and for a finished fix round, never one scaled to the score.
 // MOCK of GET /v1/me/assignments: one class test on FM N6. The teacher's display name comes from the
@@ -1731,12 +1790,10 @@ const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY
 const MAP_GROUND = { hex: "#23262b", rgb: "35,38,43" };
 // the map's ground on the navy look: the page's navy (its dots dissolve into it, so backdrop and fade must be the same colour)
 const NX_GROUND = { hex: "#03122c", rgb: "3,18,44" };
-const PASS_MARKS = {
-  fm: { pct: 40, source: "DHET, Report 191 ICASS Guidelines (Jan 2026) p.20: pass 40% or higher; Report 191 Part 2 lists no override for Fluid Mechanics N6 (08190216)" },
-  aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
-// Top form at 80%+ (named by its number, never "distinction": NATED has none on record); solid at the pass mark (else 50%).
+const PASS_MARKS = { aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
+// Top form at 80%+; solid at the paper's pass mark (else 50%).
 function finishTier(pct, pass) { return pct >= 80 ? "top" : pct >= (pass != null ? pass : 50) ? "solid" : "finished"; }
-const CLASS_TEST = { ref: "asg-fm-n6-mock-1", kind: "class_test", mode: "assessment", paperId: "fm", teacher: "Ms Rivera", minutes: 180 };
+const CLASS_TEST = { ref: "asg-ls-p1-mock-1", kind: "class_test", mode: "assessment", paperId: "ls", teacher: "Ms Rivera", minutes: 150 };
 const HALL_REWARD_XP = 300, FIX_REWARD_XP = 100, HALL_ANSWERED_MIN = 0.8;
 const EMPTY_UI = { inputs: {}, list: [], written: "", matchPairs: {}, drawn: false, pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "" };
 const filled = a => a == null || a === false ? false : typeof a === "string" ? !!a.trim() : typeof a === "number" ? true
@@ -1817,19 +1874,15 @@ const HALL_API = {
       fix_parts: online.filter(m => m.available > 0 && m.awarded < m.available).map(m => m.key) } };
   },
 };
-const PAPER_UNITS = { "fm-n6-2022-11": "13 missions", "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
-const PROG_SHORT = { nated: "NATED", ncv: "NC(V)", nsc: "NSC · design sample" };
-const HOME_TO_LOCAL = { "fm-n6-2022-11": "fm", "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
-const PROGRAMMES = { nated: "NATED (Report 191)", ncv: "NC(V)", nsc: "NSC (design sample)" };
+const PAPER_UNITS = { "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
+const PROG_SHORT = { ncv: "NC(V)", high_school: "High school" };
+const HOME_TO_LOCAL = { "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
 // Subjects without a paper are listed so the empty state is honest, not hidden.
-const OTHER_SUBJECTS = {
-  nated: ["Financial Management", "Farming Management", "Management Assistant", "Marketing Management", "Public Management", "Tourism", "Civil Engineering", "Electrical Engineering", "Mechanical Engineering", "Multi-Disciplinary Drawing Office Practice"],
-  ncv: ["Finance, Economics and Accounting", "Marketing", "Management", "Office Administration", "Information Technology and Computer Science", "Civil Engineering & Building Construction", "Electrical Infrastructure Construction", "Education and Development", "Hospitality", "Primary Agriculture", "Tourism"] };
-// ── Brief 23: "Your studies". What learners are OFFERED: NC(V) L2-L4 and NATED N4-N6 (the service also accepts
-// NATED N1-N3, occupational and NSC; NSC stays hidden until there is a real NSC paper and a school on the platform).
+const OTHER_SUBJECTS = { ncv: ["Finance, Economics and Accounting", "Marketing", "Management", "Office Administration", "Information Technology and Computer Science", "Civil Engineering & Building Construction", "Electrical Infrastructure Construction", "Education and Development", "Hospitality", "Primary Agriculture", "Tourism"] };
+// Study paths currently represented in this prototype.
 const STUDY_QUALS = [{ id: "ncv", label: "NC(V)", sub: "Levels 2 to 4", levels: ["L2", "L3", "L4"] },
-  { id: "nated", label: "NATED", sub: "N4 to N6", levels: ["N4", "N5", "N6"] }];
-const LEVEL_LABEL = c => c.charAt(0) === "L" ? "Level " + c.slice(1) : c;
+  { id: "high_school", label: "High school", sub: "Grade 12", levels: ["G12"] }];
+const LEVEL_LABEL = c => c.charAt(0) === "L" ? "Level " + c.slice(1) : c === "G12" ? "Grade 12" : c;
 // MOCK of GET /v1/curricula/ncv (nexera-exam-service 70977de, data/curricula/ncv.json): DHET's NC(V) programmes,
 // researched and cited. 17 are verified (DHET's 2026 ICASS Guidelines, Annex F); 3 are single-source and kept. A
 // programme's paper_ids are the approved papers carrying one of its subjects' codes (AET, 6021024, is Engineering and
@@ -1853,8 +1906,7 @@ const levelCode = d => { const m = /\b(N|LEVEL|L|GRADE|G)\s*(\d{1,2})\b/.exec(St
 // must be one of its qualification's; whitespace folded; duplicate subjects dropped (case-insensitive); at most 12.
 // "Show me every paper" is DELETE plus a device-only note that the learner was asked: the service stores answers,
 // never "didn't answer", so the skip lives with the client.
-const SERVICE_LEVELS = { nated: ["N1", "N2", "N3", "N4", "N5", "N6"], ncv: ["L2", "L3", "L4"], nsc: ["G10", "G11", "G12"],
-  occupational: ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8"] };
+const SERVICE_LEVELS = { ncv: ["L2", "L3", "L4"], high_school: ["G12"] };
 const fold = t => String(t || "").split(/\s+/).join(" ").trim();
 const STUDIES_API = {
   get() { try { return JSON.parse(localStorage.getItem("exam.studies") || "null"); } catch (e) { return null; } },
@@ -1875,7 +1927,7 @@ const STUDIES_API = {
   del() { try { localStorage.removeItem("exam.studies"); localStorage.setItem("exam.studiesAsked", "1"); } catch (e) {} },
   // Design-only: forget the answer AND the "asked", to show the first visit again.
   reset() { try { localStorage.removeItem("exam.studies"); localStorage.removeItem("exam.studiesAsked"); } catch (e) {} } };
-const subjectName = p => p.qualification === "nated" ? p.title : p.title + " (" + p.level_detail + ")";
+const subjectName = p => p.subject;
 const XP_LADDER = [100, 60, 20];
 const PROVENANCE = "DHET question paper · marking reviewed by Nexera";
 const FM_RULES = ["Round to THREE decimal places", "g = 9,81 m/s²"];
@@ -1971,53 +2023,6 @@ const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").repl
 const SERVER = { keys: {}, clues: {}, memo: {} };
 
 function buildPapers() {
-  const src = window.PAPER_FM_N6_2022;
-  const fm = { id: "fm", title: "Fluid Mechanics N6", programme: "NATED · N6", sitting: "November 2022", total: 100, time: "3 hours",
-    note: src ? src.memoNote : "", sections: [] };
-  if (src) src.sections.forEach(s => {
-    const sec = { title: "Question " + s.id, total: s.total, missions: [] };
-    (s.missions || []).forEach(m => {
-      const id = String(m.id || "").replace("Question ", "");
-      const qs = m.parts || m.items || [];
-      let context = "";
-      const parts = qs.map((q, k) => {
-        const key = "fm:" + q.n;
-        let stem = q.q;
-        if (qs.length > 1 && k === 0) {
-          const cut = q.q.lastIndexOf(". ", q.q.length - 3);
-          if (cut > 0) { context = q.q.slice(0, cut + 1); stem = q.q.slice(cut + 2); }
-        }
-        SERVER.clues[key] = q.clues || [];
-        SERVER.memo[key] = q.bullets || [];
-        if (FM_SERVICE[q.n]) { const d = FM_SERVICE[q.n]; SERVER.keys[key] = { steps: d.key }; SERVER.clues[key] = d.clues; SERVER.memo[key] = [];
-          return Object.assign({ key: key }, d.learner); }
-        if (q.n === "1.1.1") {
-          SERVER.keys[key] = { steps: { s1: { a: 8, tol: 0.01, v: "hf = 8 m" }, s2: { a: 2.557, tol: 0.006, v: "V = 2,557 m/s" },
-            s3: { a: 2.892, tol: 0.01, v: "Q = 2,892 m³/s", ft: vals => Math.PI * 1.2 * 1.2 / 4 * vals.s2 } } };
-          return Object.assign({ key: key }, SAMPLE_PART);
-        }
-        if (q.t === "num") {
-          SERVER.keys[key] = { steps: { v: { a: q.a, tol: q.tol || 0.001, v: String(q.a).replace(".", ",") + " " + q.unit } } };
-          return { key: key, number: q.n, marks: q.marks, response_mode: "steps", marking_mode: "method", stem: stem,
-            clues_available: (q.clues || []).length, steps: [{ id: "v", label: "Your answer", marks: q.marks, unit_hint: q.unit }] };
-        }
-        if (q.t === "list") {
-          SERVER.keys[key] = { pool: q.pool };
-          return { key: key, number: q.n, marks: q.marks, response_mode: "list", marking_mode: "answer", stem: stem, count: q.count, clues_available: (q.clues || []).length };
-        }
-        if (q.methodOnly) {
-          const b = q.bullets || ["Working"];
-          const each = Math.floor(q.marks / b.length);
-          const steps = b.map((t, i) => ({ id: "s" + (i + 1), label: t, marks: i === b.length - 1 ? q.marks - each * (b.length - 1) : each, unit_hint: "" }));
-          return { key: key, number: q.n, marks: q.marks, response_mode: "steps", marking_mode: "method", stem: stem, clues_available: (q.clues || []).length, steps: steps };
-        }
-        SERVER.keys[key] = { rubric: q.bullets || [] };
-        return { key: key, number: q.n, marks: q.marks, response_mode: "rubric", marking_mode: "criteria", stem: stem, clues_available: (q.clues || []).length };
-      });
-      sec.missions.push({ id: id, title: FM_TITLES[id] || m.title, kind: m.kind || "", context: context, tags: FM_TAGS[id] || [], parts: parts });
-    });
-    fm.sections.push(sec);
-  });
   // AET: only the structure the brief describes. Its text is not in this project yet, so nothing is invented.
   const left = [], right = [];
   for (let i = 0; i < 10; i++) left.push("Column A term 4.2." + (i + 1));
@@ -2034,7 +2039,7 @@ function buildPapers() {
         { id: "4.2", title: "Matching columns", context: "", tags: ["TEXT PENDING"], parts: [{ key: "aet:4.2", number: "4.2", marks: 10, response_mode: "match",
           stem: "Match each term in Column A with a description in Column B.", clues_available: 0, match: { left: left, right: right } }] } ] } ] };
   aet.partCount = 28;
-  fm.prov = PROVENANCE; aet.prov = PROVENANCE;
+  aet.prov = PROVENANCE;
   const lsSrc = window.PAPER_LS_P1_2026;
   const ls = { id: "ls", title: "Life Sciences P1", programme: "NSC · Grade 12 · design sample", sitting: "May/June 2026", total: 150, time: "2½ hours",
     note: "Design sample: a DBE NSC paper used to test question types. It is not a TVET paper and is not in the service.", prov: "Design sample · a DBE NSC paper, not a TVET paper", sections: [] };
@@ -2063,8 +2068,7 @@ function buildPapers() {
     ls.sections.push(sec);
   });
   ls.partCount = lsCount;
-  fm.partCount = 32;
-  return [fm, aet, ls];
+  return [aet, ls];
 }
 
 class Component extends DCLogic {
@@ -2072,17 +2076,34 @@ class Component extends DCLogic {
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
-    studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyErr: "",
-    home: null, menu: null, selQual: "nated", selSubj: "Fluid Mechanics N6", selPaper: "fm-n6-2022-11", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
+    studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyFolder: null, studyErr: "",
+    paperSourceOpen: false, paperSourceId: null, paperSourcePage: 1, paperSourceUrl: "",
+    home: null, menu: null, selQual: "high_school", selSubj: "Life Sciences", selPaper: "ls-p1-2026", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, sitting: "practice", lastSub: null, describeOpen: false, sceneOn: true, figBig: false, hall: null, hallNow: 0, hallSheet: null, hallLive: "", hallErr: "", hoOpen: {}, fix: null, runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", asg: null, gateKind: "hall", testPreview: "open", bus: busEmpty(), liveAsg: null, homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
+  openPaperSource(id, page) {
+    const paper = HOME.papers.find(p => p.id === id || HOME_TO_LOCAL[p.id] === id);
+    if (!paper || !paper.source_pdf) return;
+    const pageNo = Math.max(1, Number(page) || 1), url = new URL(paper.source_pdf, document.baseURI);
+    url.hash = "page=" + pageNo;
+    this._paperSourceOpener = document.activeElement;
+    setTimeout(() => this.setState({ paperSourceOpen: true, paperSourceId: paper.id, paperSourcePage: pageNo, paperSourceUrl: url.href }, () => {
+      const close = document.querySelector("[data-source-close]"); if (close) close.focus();
+    }), 40);
+  }
+  closePaperSource() {
+    this.setState({ paperSourceOpen: false }, () => {
+      const opener = this._paperSourceOpener; this._paperSourceOpener = null;
+      if (opener && document.body.contains(opener)) opener.focus();
+    });
+  }
   componentDidMount() {
     // ?sitting=hall opens the Hall entrance (a design preview switch); &paper=ls picks Life Sciences.
     // ?play=N opens mission N of the paper straight away (a design preview switch, like ?sitting): e.g. ?paper=ls&play=0.
     document.documentElement.dataset.nx = new URLSearchParams(location.search).get("theme") === "light" ? "light" : "dark";   // the play look's theme: dark (the app's), ?theme=light to review
-    const qs = new URLSearchParams(location.search), sitQ = qs.get("sitting"), playQ = qs.get("play"), paperQ = HALL_FULL[qs.get("paper")] ? qs.get("paper") : "fm";
-    const testQ = qs.get("test"), testK = ["upcoming", "open", "inprogress", "handed", "released", "missed"].indexOf(testQ) !== -1 ? testQ : "open";
-    const ready = () => { this.papers = buildPapers(); this.setTestPreview(testK);
+    const qs = new URLSearchParams(location.search), sitQ = qs.get("sitting"), playQ = qs.get("play"), paperQ = HALL_FULL[qs.get("paper")] ? qs.get("paper") : "ls";
+    const testQ = qs.get("test"), testK = ["upcoming", "open", "inprogress", "handed", "released", "missed"].indexOf(testQ) !== -1 ? testQ : null;
+    const ready = () => { this.papers = buildPapers(); if (testK) this.setTestPreview(testK); else this.setState({ asg: null, testPreview: "off" });
       // A class test approved in the teacher tool wins over the preview seed (unless ?test= asked for one).
       const b = busRead(), L = this.liveFromBus(b); this.setState({ bus: b }); if (L && !testQ) this.goLive(L);
       if (sitQ === "hall" || this.props.sitting === "hall") this.setState({ paperId: paperQ, screen: "hallgate", gateKind: "hall" }, () => window.scrollTo(0, 0));
@@ -2090,7 +2111,7 @@ class Component extends DCLogic {
         const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0);
         if (qs.get("done")) setTimeout(() => this.setState({ screen: "done" }), 0); });   // &done=1: the mission's done screen (design preview)
       else this.forceUpdate(); };
-    if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
+    if (window.PAPER_LS_P1_2026) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_LS_P1_2026 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     window.addEventListener("resize", this._rs); this._rs();
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -2347,33 +2368,45 @@ class Component extends DCLogic {
   // subjects), the chip that reopens them, and the design-only reset.
   studyVals(s) {
     const st = s.studies, dr = s.studyDraft || this.studyDraftFrom(st), step = s.studyStep === 2 ? 2 : 1;
-    const q = STUDY_QUALS.filter(x => x.id === dr.qualification)[0] || null, ncv = dr.qualification === "ncv";
+    const q = STUDY_QUALS.filter(x => x.id === dr.qualification)[0] || null, folder = s.studyFolder || null;
     const set = patch => this.setState({ studyDraft: Object.assign({}, dr, patch), studyErr: "" });
     const onOff = on => ({ on: on ? "true" : "false", border: on ? "2px solid rgba(129,177,255,0.75)" : "1px solid var(--line2)", bg: on ? "rgba(0,104,248,0.16)" : "transparent" });
-    const levelPapers = HOME.papers.filter(p => q && p.qualification === q.id && p.level === dr.level);
-    const opts = !q || !dr.level ? [] : ncv
-      ? NCV_PROGRAMMES.map(name => { const n = levelPapers.filter(p => PAPER_PROGRAMME[p.id] === name).length;
-          return Object.assign({ role: "radio", label: name, sub: n ? n + (n === 1 ? " paper" : " papers") : "No paper yet", subColor: n ? "#81b1ff" : "var(--text3)",
-            pick: () => set({ study_programme: dr.study_programme === name ? null : name }) }, onOff(dr.study_programme === name)); })
-      : levelPapers.map(p => p.subject).filter((v, i, a) => a.indexOf(v) === i).map(name => { const on = dr.subjects.indexOf(name) !== -1;
-          return Object.assign({ role: "checkbox", label: name, sub: "1 paper", subColor: "#81b1ff",
-            pick: () => set({ subjects: on ? dr.subjects.filter(x => x !== name) : dr.subjects.concat([name]) }) }, onOff(on)); });
-    const chip = st ? PROG_SHORT[st.qualification] + " " + LEVEL_LABEL(st.level)
-      + (st.study_programme ? " · " + st.study_programme.split(" ")[0] : st.subjects && st.subjects.length ? " · " + st.subjects.length + (st.subjects.length === 1 ? " subject" : " subjects") : "") : "Set your studies";
-    return { title: step === 1 ? "What are you studying?" : ncv ? "Your programme" : "Your subjects", vals: {
+    const levelSubjects = !q || !dr.level ? [] : HOME.subjects.filter(x => x.qualification === q.id && x.level === dr.level);
+    const opts = levelSubjects.map(subject => {
+      const count = HOME.papers.filter(p => p.qualification === q.id && p.level === dr.level && p.subject === subject.name).length;
+      return Object.assign({ role: "option", label: subject.name, sub: count + (count === 1 ? " paper · open folder" : " papers · open folder"), subColor: "#81b1ff",
+        pick: () => this.setState({ studyFolder: subject.name, studyErr: "" }) }, onOff(folder === subject.name));
+    });
+    const papers = folder ? HOME.papers.filter(p => p.qualification === dr.qualification && p.level === dr.level && p.subject === folder) : [];
+    const paperRows = papers.map(p => ({ title: p.title, meta: p.sitting + " · " + p.total_marks + " marks · " + Math.round(p.duration_minutes / 60 * 10) / 10 + " hours",
+      hasSource: !!p.source_pdf, preview: () => this.openPaperSource(p.id, 1), pick: () => {
+        const next = Object.assign({}, dr, { study_programme: null, subjects: [folder] });
+        try {
+          const saved = STUDIES_API.put(next);
+          this.setState({ studyDraft: next, studyFolder: null, studies: saved, studiesAsked: true, studyErr: "", selQual: dr.qualification,
+            selSubj: folder, selPaper: p.id, swap: s.swap + 1, sheet: null, picking: false, ticketSeen: true }, () => this.nod());
+        } catch (e) { this.setState({ studyErr: e && e.message ? e.message : "That didn't save. Try again." }); }
+      } }));
+    const chip = st ? PROG_SHORT[st.qualification] + " · " + LEVEL_LABEL(st.level)
+      + (st.subjects && st.subjects.length ? " · " + st.subjects.length + (st.subjects.length === 1 ? " subject" : " subjects") : "") : "Set your studies";
+    return { title: step === 1 ? "What are you studying?" : folder ? folder + " papers" : "Your subjects", vals: {
       sheetStudies: s.sheet === "studies", studyStep1: step === 1, studyStep2: step === 2, studyStepLabel: "Your studies · " + step + " of 2",
       studyQuals: STUDY_QUALS.map(x => Object.assign({ label: x.label, sub: x.sub,
         pick: () => set({ qualification: x.id, level: x.levels.indexOf(dr.level) !== -1 ? dr.level : null, study_programme: null, subjects: [] }) }, onOff(dr.qualification === x.id))),
-      studyHasLevels: !!q, studyLevels: (q ? q.levels : []).map(c => Object.assign({ label: LEVEL_LABEL(c), pick: () => set({ level: c, study_programme: null, subjects: [] }) }, onOff(dr.level === c))),
-      studyOpts: opts, studyListRole: ncv ? "radiogroup" : "group", studyOptsLabel: ncv ? "Programmes" : "Subjects",
-      studyHint: ncv ? "Your 7 subjects come with your programme. Pick it, or skip this and we'll use your level."
-        : opts.length ? "Tick the subjects you're taking. Leave them all unticked to see every paper at your level." : "",
-      studyEmpty: step === 2 && !ncv && !opts.length, studyEmptyText: "Nexera has no NATED " + (dr.level || "") + " paper yet. You'll see every paper until one arrives.",
+      studyHasLevels: !!q, studyLevels: (q ? q.levels : []).map(c => Object.assign({ label: LEVEL_LABEL(c), pick: () => this.setState({ studyDraft: Object.assign({}, dr, { level: c, study_programme: null, subjects: [] }), studyFolder: null, studyErr: "" }) }, onOff(dr.level === c))),
+      studyFoldersOn: step === 2 && !folder, studyFolderOn: step === 2 && !!folder, studyPaperRows: paperRows,
+      studyListRole: "listbox", studyOptsLabel: "Subjects", studyOpts: opts,
+      studyHint: step !== 2 ? "" : folder ? "Choose a paper to practise, or view its original document first." : "Choose a subject folder to see its question papers.",
+      studyEmpty: step === 2 && (folder ? !paperRows.length : !opts.length),
+      studyEmptyText: folder ? "No papers have been added to this subject yet." : "There are no paper folders for this level yet.",
+      studyPaperListLabel: folder ? "Papers for " + folder : "Subject papers",
       studyErr: s.studyErr || "", studyHasErr: !!s.studyErr,
-      studyPrimary: step === 1 ? "Next" : "Done",
+      studyBackLabel: folder ? "Back to subjects" : "Back",
+      studyPrimary: step === 1 ? "Next" : folder ? "Back to subjects" : "Done",
       studyPrimaryGo: () => { if (step === 1) { if (!q || !dr.level) { this.setState({ studyErr: "Pick what you're studying and your level first." }); return; }
-        this.setState({ studyStep: 2, studyErr: "" }); return; } this.saveStudies(); },
-      studyBackGo: () => this.setState({ studyStep: 1, studyErr: "" }),
+        this.setState({ studyStep: 2, studyFolder: null, studyErr: "" }); return; }
+        if (folder) { this.setState({ studyFolder: null, studyErr: "" }); return; } this.saveStudies(); },
+      studyBackGo: () => folder ? this.setState({ studyFolder: null, studyErr: "" }) : this.setState({ studyStep: 1, studyErr: "" }),
       skipStudiesGo: () => this.skipStudies(),
       studyChip: chip, studyChipAria: st ? "Your studies: " + chip + ". Change them" : "Set your studies to see your papers first",
       editStudies: () => this.editStudies(),
@@ -2405,28 +2438,28 @@ class Component extends DCLogic {
   }
   // Map preview seeds. "progress" is the home page's returning learner: 21 of 100, next up 1.4.
   seedMap(kind, after) {
-    const fm = (this.papers || []).filter(x => x.id === "fm")[0]; if (!fm) return;
-    const byId = {}; fm.sections.forEach(sec => sec.missions.forEach(m => { byId[m.id] = m; }));
+    const paper = this.paper() || (this.papers || []).filter(x => x.id === HOME_TO_LOCAL[HOME.resume.paper_id])[0]; if (!paper) return;
+    const byId = {}; paper.sections.forEach(sec => sec.missions.forEach(m => { byId[m.id] = m; }));
     const prog = {}, paid = {};
     const close = (id, how, best) => byId[id].parts.forEach(q => { const full = how !== "memo";
       prog[q.key] = { tries: how === "clean" ? 1 : how === "hints" ? 2 : 3, best: full ? (q.marks || 0) : best, closed: true,
         revealed: how === "memo", firstTryFull: how === "clean", waiting: false,
-        obs: [{ x: how === "clean" ? 1 : how === "hints" ? 0.5 : 0, c: 1, src: "fm" }] };
+        obs: [{ x: how === "clean" ? 1 : how === "hints" ? 0.5 : 0, c: 1, src: paper.id }] };
       if (full) paid[q.key] = true; });
     if (kind !== "fresh") {
       close("1.1", "clean"); close("1.2", "hints"); close("1.3", "memo", 4); close("3.3", "clean");
       const q21 = byId["2.1"].parts[0];
-      prog[q21.key] = { tries: 1, best: 2, closed: false, revealed: false, firstTryFull: false, waiting: false, obs: [{ x: 2 / (q21.marks || 4), c: 1, src: "fm" }] };
+      prog[q21.key] = { tries: 1, best: 2, closed: false, revealed: false, firstTryFull: false, waiting: false, obs: [{ x: 2 / (q21.marks || 4), c: 1, src: paper.id }] };
     }
     if (kind === "finished14") close("1.4", "clean");
     // Brief 20 previews: every part closed, marks interleaved so the running share stays near the target.
     if (kind.indexOf("fin") === 0 && kind !== "finished14") { const T = +kind.slice(3) / 100; let got = 0, seen = 0;
-      fm.sections.forEach(sec => sec.missions.forEach(m => m.parts.forEach(q => { const full = q.marks || 0, hit = full && (got + full) / (seen + full) <= T + 0.02;
+      paper.sections.forEach(sec => sec.missions.forEach(m => m.parts.forEach(q => { const full = q.marks || 0, hit = full && (got + full) / (seen + full) <= T + 0.02;
         seen += full; if (hit) got += full; delete paid[q.key];
-        prog[q.key] = { tries: hit ? 1 : 3, best: hit ? full : 0, closed: true, revealed: !hit, firstTryFull: !!hit, waiting: false, obs: [{ x: hit ? 1 : 0, c: 1, src: "fm" }] };
+        prog[q.key] = { tries: hit ? 1 : 3, best: hit ? full : 0, closed: true, revealed: !hit, firstTryFull: !!hit, waiting: false, obs: [{ x: hit ? 1 : 0, c: 1, src: paper.id }] };
         if (hit) paid[q.key] = true; }))); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
-    this.setState({ paperId: "fm", screen: "map", mapMode: kind, prog: prog, paid: paid, streak: 0, card: null, cel: null, litHold: null,
+    this.setState({ paperId: paper.id, screen: "map", mapMode: kind, prog: prog, paid: paid, streak: 0, card: null, cel: null, litHold: null,
       xp: kind === "fresh" ? 0 : kind === "finished14" ? 1240 : 740 }, () => {
       if (kind === "finished14") this.celebrate(this.missions().findIndex(m => m.id === "1.4"), 21);
       else if (kind.indexOf("fin") === 0) { const ms = this.missions(), last = ms.length - 1, gotLast = ms[last].parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
@@ -3050,8 +3083,8 @@ class Component extends DCLogic {
   // ── Teacher class tests, the learner side (brief 11). The Hall's engine, started by an
   // assignment with a window; released by the college's moderator after the window closes.
   // The class test in play: the live one from the teacher tool, or the preview seed.
-  ct() { const L = this.state.liveAsg; return L ? { ref: L.ref, paperId: "fm", teacher: L.setterName, minutes: L.minutes || 180, live: true } : Object.assign({ live: false }, CLASS_TEST); }
-  liveFromBus(b) { return ((b || this.state.bus).assignments || []).filter(a => a.kind === "class_test" && a.paperId === "fm-n6-2022-11" && a.state === "open")
+  ct() { const L = this.state.liveAsg; return L ? { ref: L.ref, paperId: "ls", teacher: L.setterName, minutes: L.minutes || 150, kind: L.kind, audience: L.audience, live: true } : Object.assign({ live: false }, CLASS_TEST); }
+  liveFromBus(b) { return ((b || this.state.bus).assignments || []).filter(a => ["class_test", "practice"].indexOf(a.kind) !== -1 && a.paperId === "ls-p1-2026" && a.state === "open")
     .sort((x, y) => (y.opensAt || 0) - (x.opensAt || 0))[0] || null; }
   // Follow the live assignment: its window, its teacher, and (for a sitting already made) its close and release.
   goLive(L) {
@@ -3160,11 +3193,11 @@ class Component extends DCLogic {
       showPracticeLink: (returning && !picking) || (cardOn && !returning),
       homeMoreOn: others.length > 0 && !picking, homeMoreText: moreText, homeMoreAria: "Your class tests: " + moreText,
       homeMoreGo: () => this.setState({ sheet: "tests", pop: null, sheetBack: false }),
-      testRows: listed.map(t => ({ ref: t.ref, kicker: "Class test · " + t.teacher, title: t.title, line: t.line,
+      testRows: listed.map(t => ({ ref: t.ref, kicker: t.kind === "practice" ? "Practice · set by " + t.teacher : "Class test · " + t.teacher, title: t.title, line: t.line,
         color: t.k === "open" || t.k === "inprogress" ? "#81b1ff" : t.k === "released" ? "#5fe6ab" : "var(--text2)",
         tone: t !== card ? "calm" : t.k === "released" ? "released" : "live",
         hasAction: !!(t.action && t.go), action: t.action || "", go: t.go ? () => { const g = seenGo(t); this.setState({ sheet: null }, () => g()); } : () => {} })),
-      ...(card ? { ctTone: card.k === "released" ? "released" : "live", ctKicker: "Class test · " + card.teacher, ctTitle: card.title, ctLine: card.line, ctAction: card.action || "", ctGo: seenGo(card) } : {}),
+      ...(card ? { ctTone: card.k === "released" ? "released" : "live", ctKicker: card.kind === "practice" ? "Practice · set by " + card.teacher : "Class test · " + card.teacher, ctTitle: card.title, ctLine: card.line, ctAction: card.action || "", ctGo: seenGo(card) } : {}),
       secondOn: s.secondTest ? "true" : "false", secondBg: s.secondTest ? "rgba(0,104,248,0.18)" : "transparent", secondColor: s.secondTest ? "#ffffff" : "var(--text3)",
       toggleSecond: () => this.setState({ secondTest: s.secondTest ? null : { opensAt: now + 3 * D, closesAt: now + 6 * D } }),
     };
@@ -3178,10 +3211,12 @@ class Component extends DCLogic {
     const clock = Math.floor(remain / 3600000) + ":" + ("0" + Math.floor(remain % 3600000 / 60000)).slice(-2) + ":" + ("0" + Math.floor(remain % 60000 / 1000)).slice(-2);
     const R = H && H.result, days = Math.max(1, Math.round((A.opensAt - now) / 86400000));
     const toResult = () => this.setState({ paperId: pid, screen: "hallout" }, () => window.scrollTo(0, 0));
+    const openAssignedPaper = () => this.setState({ paperId: pid, screen: "map", mapView: "paper", asg: null, liveAsg: null, hall: null,
+      hallErr: "", bubbleMsg: "This Life Sciences paper was set by " + this.ct().teacher + "." }, () => window.scrollTo(0, 0));
     const C = {
       upcoming: ["Opens " + fmt(A.opensAt) + " · in " + days + (days === 1 ? " day" : " days"), null, null],
-      open: ["Open now · closes " + fmt(A.closesAt) + " · " + P.time + " once you start", "Start the test", () => this.openClassNotice()],
-      inprogress: ["In progress · " + clock + " left", "Back to the test", () => this.resumeHall()],
+      open: ["Question paper · set by " + this.ct().teacher, "Open assigned paper", openAssignedPaper],
+      inprogress: ["Assigned paper · ready to continue", "Open assigned paper", openAssignedPaper],
       handed: ["Handed in · marks after moderation", "See where it's at", toResult],
       released: [(R ? R.marks + " of " + R.total_marks : "Marks") + " · released", "See your result", toResult],
       missed: ["Closed · you didn't sit this one", "Practise this paper", () => this.setState({ paperId: pid, screen: "map", mapView: "paper" })] }[ph.k];
@@ -3198,10 +3233,10 @@ class Component extends DCLogic {
       ctModes: (this.liveFromBus() ? [["live", "Live"]] : []).concat([["upcoming", "Upcoming"], ["open", "Open"], ["inprogress", "In progress"], ["handed", "Handed in"], ["released", "Released"], ["missed", "Missed"]]).map(x => { const on = s.testPreview === x[0];
         return { label: x[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)", pick: () => x[0] === "live" ? this.goLive(this.liveFromBus()) : this.setTestPreview(x[0]) }; }),
       // The card is decided by the one-card rule (homeTestVals), not by the phase alone.
-      ...this.homeTestVals(s, { ref: this.ct().ref, title: P.title, teacher: this.ct().teacher, k: ph.k, line: C[0], action: C[1], go: C[2], opensAt: A.opensAt, closesAt: A.closesAt }),
+      ...this.homeTestVals(s, { ref: this.ct().ref, title: P.title, teacher: this.ct().teacher, kind: this.ct().kind, k: ph.k, line: C[0], action: C[1], go: C[2], opensAt: A.opensAt, closesAt: A.closesAt }),
       // Phones: the card shares one screen with the companion, so the stage gives up the room.
       ...(phone && s.screen === "pick" ? { stageMin: "22vh" } : {}),
-      ctMapOn: s.screen === "map" && !!paper && paper.id === pid && live,
+      ctMapOn: s.screen === "map" && !!paper && paper.id === pid && live && this.ct().kind === "class_test",
 
       ctLineColor: live ? "#81b1ff" : ph.k === "released" ? "#5fe6ab" : "var(--text2)",
       ctBorder: live ? "rgba(129,177,255,0.6)" : "var(--line2)", ctBg: live ? "rgba(14,24,44,0.88)" : "rgba(29,32,35,0.86)",
@@ -4688,7 +4723,7 @@ class Component extends DCLogic {
     const mEarned = mParts.reduce((a, p) => a + (this.pg(p.key).best || 0), 0), mTotal = mParts.reduce((a, p) => a + (p.marks || 0), 0);
 
     const progFor = pp => { const ps = pp.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts)), []); const n = ps.filter(p => this.pg(p.key).tries > 0 || this.pg(p.key).closed).length; return { n: n, of: ps.length }; };
-    const shown = papers.filter(p => s.programme === "All" || (s.programme === "NATED" ? p.id === "fm" : s.programme === "NC(V)" ? p.id === "aet" : false));
+    const shown = papers.filter(p => s.programme === "All" || (s.programme === "NC(V)" ? p.id === "aet" : s.programme === "High school" ? p.id === "ls" : false));
     const allParts = paper ? paper.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts.map(p => Object.assign({ mi: missions.indexOf(m) }, p)))), []) : [];
 
     const onHallScreen = s.screen === "hallgate" || s.screen === "hallout";
@@ -4716,8 +4751,7 @@ class Component extends DCLogic {
     const st = s.studies, paperById = id => HOME.papers.filter(p => p.id === id)[0];
     const ctPaperId = Object.keys(HOME_TO_LOCAL).filter(k => HOME_TO_LOCAL[k] === this.ct().paperId)[0];
     const paperMine = p => !!(st && p && p.qualification === st.qualification && p.level === st.level
-      && (st.qualification !== "ncv" || !st.study_programme || !PAPER_PROGRAMME[p.id] || PAPER_PROGRAMME[p.id] === st.study_programme)
-      && (st.qualification !== "nated" || !(st.subjects || []).length || st.subjects.indexOf(p.subject) !== -1));
+      && (!(st.subjects || []).length || st.subjects.indexOf(p.subject) !== -1));
     const isCt = x => x.paper_ids.indexOf(ctPaperId) !== -1, isMine = x => isCt(x) || x.paper_ids.some(id => paperMine(paperById(id)));
     const subj = withPaper.concat(without).filter(x => x.name === s.selSubj)[0] || withPaper[0];
     const papersOf = x => (x ? x.paper_ids : []).map(id => HOME.papers.filter(p => p.id === id)[0]).filter(Boolean);
@@ -4726,14 +4760,10 @@ class Component extends DCLogic {
     const q = norm(s.query);
     const match = x => !q || norm(x.name + " " + PROG_SHORT[x.qualification] + " " + (x.name.match(/N\d|Level \d/) || [""])[0]).indexOf(q) !== -1;
     const rowsA = withPaper.filter(match), rowsB = without.filter(match);
-    // Step 1 → step 2 only when the subject has more than one sitting to choose from.
     const pickSubj = x => {
-      const ps = papersOf(x);
-      if (ps.length > 1) { this.setState({ selSubj: x.name, selQual: x.qualification, selPaper: ps[0].id, sheet: "paper", sheetBack: true, optIdx: 0, query: "", bubbleMsg: "" }); return; }
-      this.setState({ selSubj: x.name, selQual: x.qualification, selPaper: ps.length ? ps[0].id : null, bubbleMsg: "", swap: s.swap + 1 }, () => {
-        if (ps.length) this.nod();
-        this.closeLayer();
-      });
+      const ps = papersOf(x), current = ps.filter(p => p.id === s.selPaper)[0] || ps[0] || null;
+      this.setState({ selSubj: x.name, selQual: x.qualification, selPaper: current ? current.id : null,
+        sheet: "papers", sheetBack: true, optIdx: 0, query: "", bubbleMsg: "" });
     };
     let idx = 0;
     const optRow = x => { const i = idx++; const on = x.name === s.selSubj; const has = x.paper_ids.length > 0;
@@ -4750,6 +4780,11 @@ class Component extends DCLogic {
         .concat(rest.length ? [head("Also on Nexera")] : [], rest.map(optRow)); }
     const optCount = idx;
     const studyVals = this.studyVals(s);
+    const paperRows = sp.map((p, i) => ({ idx: String(i), tab: i === s.optIdx ? "0" : "-1", title: p.title,
+      meta: p.sitting + " · " + p.total_marks + " marks · " + (p.duration_minutes / 60) + " hours", hasSource: !!p.source_pdf,
+      on: p.id === (paper0 && paper0.id) ? "true" : "false", border: p.id === (paper0 && paper0.id) ? "rgba(129,177,255,0.65)" : "var(--line2)",
+      bg: p.id === (paper0 && paper0.id) ? "rgba(0,104,248,0.10)" : "rgba(255,255,255,0.025)", preview: () => this.openPaperSource(p.id, 1),
+      pick: () => this.setState({ selPaper: p.id, swap: s.swap + 1, bubbleMsg: "", sheet: null }, () => { this.nod(); this.closeLayer(); }) }));
     const facts = p => p ? p.total_marks + " marks · " + (p.duration_minutes / 60) + " hours · " + (PAPER_UNITS[p.id] || p.parts + " parts") : "";
     const bubble = s.bubbleMsg ? s.bubbleMsg
       : showPicker ? "Pick your paper here, then tap Start."
@@ -4759,16 +4794,18 @@ class Component extends DCLogic {
     const resumePaper = HOME.papers.filter(p => p.id === rs.paper_id)[0];
     const resumeName = resumePaper ? subjectName(resumePaper) : "";
     const hours = p => (p.duration_minutes / 60) + " hours";
+    const sourcePaper = HOME.papers.filter(p => p.id === s.paperSourceId)[0] || null;
+    const activePaperSource = HOME.papers.filter(p => HOME_TO_LOCAL[p.id] === s.paperId)[0] || null;
 
     return {
       headerDisplay: s.screen === "pick" || s.screen === "play" ? "none" : "flex",
       homeDisplay: tabletLand ? "grid" : "flex",
-      actBg: tabletLand ? "transparent" : "linear-gradient(180deg, rgba(25,27,30,0), rgba(25,27,30,0.9) 40%)",
+      actBg: tabletLand ? "transparent" : "linear-gradient(180deg, rgba(3,18,44,0), rgba(3,18,44,0.94) 48%)",
       isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
       hasHomeSub: !returning || picking,
-      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. Three first tries in a row triple the third." : "Fluid Mechanics N6 · November 2022",
+      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. Three first tries in a row triple the third." : resumeName + " · " + rs.next_mission.title,
       homeH1: phone ? "30px" : "clamp(32px, 3.6vw, 44px)", homeSubSize: phone ? "13px" : "14px",
       homeMinH: phone ? "560px" : tabletLand ? "560px" : "640px",
       headPad: phone ? "8px 18px 0" : tabletLand ? "0 32px 10px 8px" : "clamp(8px, 2vh, 20px) 20px 0",
@@ -4847,16 +4884,28 @@ class Component extends DCLogic {
       // Two gentle glows on a first visit only, then still for good.
       ticketAnim: !s.reduced && home === "first" && !s.ticketSeen ? "suggest 1.6s ease-out 900ms 2" : "none",
       openTicket: () => this.openPicker(),
-      sheetBack: s.sheet === "paper" && s.sheetBack,
-      sheetGoBack: () => this.setState({ sheet: "subj", sheetBack: false, optIdx: 0 }),
+      paperSourceButtonOn: !!(activePaperSource && activePaperSource.source_pdf),
+      sourceButtonAria: activePaperSource ? "View original " + activePaperSource.title : "View original paper",
+      sourceButtonTextDisplay: phone ? "none" : "inline",
+      openActivePaperSource: () => { if (activePaperSource) this.openPaperSource(activePaperSource.id, 1); },
+      paperSourceOpen: !!s.paperSourceOpen, closePaperSource: () => this.closePaperSource(),
+      sourceOverlayPad: phone ? "0" : "24px", sourcePanelWidth: phone ? "100vw" : "min(92vw, 1120px)",
+      sourcePanelHeight: phone ? "100dvh" : "min(90dvh, 920px)", sourcePanelRadius: phone ? "0" : "16px",
+      paperSourceTitle: sourcePaper ? sourcePaper.title : "Original question paper",
+      paperSourceMeta: sourcePaper ? sourcePaper.sitting + " · " + sourcePaper.provenance_label : "",
+      paperSourceUrl: s.paperSourceUrl,
+      sheetBack: (s.sheet === "paper" || s.sheet === "papers") && s.sheetBack || s.sheet === "studies" && !!s.studyFolder,
+      sheetBackAria: "Back to subjects",
+      sheetGoBack: () => s.sheet === "studies" && s.studyFolder ? this.setState({ studyFolder: null, studyErr: "" }) : this.setState({ sheet: "subj", sheetBack: false, optIdx: 0 }),
       startW: phone ? "100%" : "min(460px, 100%)",
       startPaper: () => {
         if (paper0) { this.setState({ paperId: HOME_TO_LOCAL[paper0.id], screen: "map", sheet: null, bubbleMsg: "" }); return; }
         this.setState({ bubbleMsg: "No paper for this subject yet. Pick another one?", sheet: "subj", sheetBack: false, query: "", optIdx: 0, ticketSeen: true });
       },
       isPhone: phone,
-      sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPaper: s.sheet === "paper", sheetTests: s.sheet === "tests",
-      sheetTitle: onSubjSheet ? "Pick a paper" : s.sheet === "tests" ? "Your class tests"
+      sheetOpen: !!s.sheet, sheetSubj: onSubjSheet, sheetPapers: s.sheet === "papers", paperRows: paperRows,
+      paperRowsEmpty: !paperRows.length, paperRowsLabel: subj ? "Papers for " + subj.name : "Subject papers", sheetPaper: s.sheet === "paper", sheetTests: s.sheet === "tests",
+      sheetTitle: s.sheet === "papers" ? (subj ? subj.name + " papers" : "Subject papers") : onSubjSheet ? "Pick a paper" : s.sheet === "tests" ? "Your class tests"
         : s.sheet === "studies" ? studyVals.title : "Which sitting?",
       ...studyVals.vals,
       // The overlay grid does the centring; the sheet itself only animates.
@@ -4897,7 +4946,7 @@ class Component extends DCLogic {
       xp: s.xp, xpShort: s.xp >= 10000 ? Math.round(s.xp / 1000) + "k" : String(s.xp), pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
 
       onPick: s.screen === "pick", onMap: s.screen === "map" && !!paper, onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
-      programmes: ["All", "NATED", "NC(V)", "Occupational"].map(l => ({ label: l, on: s.programme === l, pick: () => this.setState({ programme: l }),
+      programmes: ["All", "NC(V)", "High school"].map(l => ({ label: l, on: s.programme === l, pick: () => this.setState({ programme: l }),
         border: s.programme === l ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.programme === l ? "rgba(0,104,248,0.14)" : "transparent", color: s.programme === l ? "#ffffff" : "var(--text2)" })),
       // One gradient per screen: the paper already in progress, otherwise the first card.
       paperCards: shown.map((p, idx) => { const g = progFor(p);
@@ -4969,9 +5018,9 @@ class Component extends DCLogic {
       kitOpen: s.kit, closeKit: () => this.setState({ kit: false }),
       kitTabs: [["rules", "Instructions"], ["formulas", "Formula sheet"], ["figures", "Figures"]].map(t => ({ label: t[1], on: s.kitTab === t[0], pick: () => this.setState({ kitTab: t[0] }),
         border: s.kitTab === t[0] ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.kitTab === t[0] ? "rgba(0,104,248,0.14)" : "transparent" })),
-      kitItems: s.kitTab === "rules" ? FM_RULES.map(r => ({ head: r, body: "Printed on the question paper." })).concat([{ head: "Decimal comma", body: "Write 2,557 or 2.557 — both are read the same." }])
-        : s.kitTab === "formulas" ? [1, 2, 3].map(n => ({ head: "Formula sheet · page " + n + " of 3", body: "The scan of the printed page opens here." }))
-        : [{ head: "FIGURE 1", body: "Stand pipes on pipe AC — used in 1.4. The scan opens here." }, { head: "Data table", body: "Printed with the paper. The scan opens here." }],
+      kitItems: s.kitTab === "rules" ? [{ head: "Exam instructions", body: "Follow the directions printed with each question. Open the original paper to check its diagrams and page layout." }]
+        : s.kitTab === "formulas" ? [{ head: "No formula sheet", body: "This Life Sciences paper does not include a formula sheet." }]
+        : [{ head: "Original figures", body: "Open the original paper to view each figure in its printed context." }],
 
       ...this.playVals(s, phone, tablet, tabletLand, desk, mission, part, pr, reply, res, closed, mode, tryN, primaryDisabled, itemsBy, verdictInfo),
       // Kept from the old play values: the memo lines, the AI-marked points, the XP flight.

@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="paper-fm-n6-2022.js"></script>
+  <script src="paper-ls-p1-2026.js"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff; --bar:#5b8def;
@@ -27,30 +27,31 @@
   </style>
 </helmet>
 
-<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; background:var(--bg); overflow-x:clip">
+<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.14), transparent 68%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.15), transparent 65%), var(--bg); overflow-x:clip">
   <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ live }}</p>
 
-  <header style="position:sticky; top:0; z-index:20; background:rgba(25,27,30,0.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
-    <div style="box-sizing:border-box; max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:10px; padding:10px {{ pad }}">
+  <header style="position:sticky; top:0; z-index:20; background:rgba(3,18,44,0.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid rgba(129,177,255,0.18)">
+    <div style="box-sizing:border-box; width:100%; display:flex; align-items:center; gap:10px; padding:10px clamp(20px, 3vw, 48px)">
       <img src="assets/nexera-mark.png" alt="Nexera" style="width:26px; height:26px; flex:none" />
       <span style="flex:1; min-width:0; display:flex; flex-direction:column">
         <span style="font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Teaching · Exams</span>
         <span style="font-size:11.5px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ collegeLine }}</span>
       </span>
+      <a href="./Exam%20Practice.dc.html" style="min-height:36px; display:flex; align-items:center; padding:0 10px; border:1px solid var(--line2); border-radius:10px; color:var(--text2); font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap">Learner</a>
       <div role="group" aria-label="Viewing as (design preview)" style="display:flex; gap:2px; padding:3px; border-radius:12px; background:rgba(32,35,39,0.8); border:1px solid rgba(255,255,255,0.07)">
         <sc-for list="{{ roles }}" as="rl" hint-placeholder-count="2">
           <button data-role="{{ rl.id }}" onClick="{{ rl.pick }}" aria-pressed="{{ rl.on }}" style="min-height:36px; padding:0 10px; border:none; border-radius:9px; background:{{ rl.bg }}; color:{{ rl.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ rl.label }}</button>
         </sc-for>
       </div>
     </div>
-    <nav aria-label="Teaching" data-noscrollbar="true" style="box-sizing:border-box; max-width:1180px; margin:0 auto; display:flex; gap:4px; padding:0 {{ pad }} 8px; overflow-x:auto">
+    <nav aria-label="Teaching" data-noscrollbar="true" style="box-sizing:border-box; width:100%; display:flex; gap:6px; padding:0 clamp(20px, 3vw, 48px) 8px; overflow-x:auto">
       <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5">
         <button data-tab="{{ tb.id }}" onClick="{{ tb.go }}" aria-current="{{ tb.current }}" style="flex:none; min-height:38px; padding:0 13px; border-radius:10px; border:1px solid {{ tb.border }}; background:{{ tb.bg }}; color:{{ tb.color }}; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap">{{ tb.label }}<sc-if value="{{ tb.hasCount }}" hint-placeholder-val="{{ false }}"><span style="margin-left:6px; padding:1px 7px; border-radius:9px; background:rgba(0,104,248,0.25); font-size:11px">{{ tb.count }}</span></sc-if></button>
       </sc-for>
     </nav>
   </header>
 
-  <main style="box-sizing:border-box; max-width:1180px; margin:0 auto; padding:18px {{ pad }} 64px; display:flex; flex-direction:column; gap:16px">
+  <main style="box-sizing:border-box; width:100%; max-width:none; min-height:calc(100vh - 112px); margin:0; padding:18px clamp(20px, 3vw, 48px) 40px; display:flex; flex-direction:column; gap:16px">
 
     <sc-if value="{{ onHome }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap">
@@ -58,8 +59,8 @@
         <button data-assign="true" onClick="{{ startAssign }}" style="min-height:44px; padding:0 18px; border:none; border-radius:12px; background:var(--grad); color:#ffffff; font-size:14px; font-weight:800; cursor:pointer">Assign a paper</button>
       </div>
       <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--text3)"><span>{{ busLine }}</span><button data-busreset="true" onClick="{{ resetBus }}" style="min-height:32px; padding:0 10px; border-radius:9px; border:1px dashed var(--line2); background:transparent; color:var(--text3); font-size:11.5px; font-weight:700; cursor:pointer">Reset the shared demo</button></span>
-      <p style="margin:0; padding:10px 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.3); background:rgba(0,104,248,0.08); font-size:13px; line-height:1.55; color:#cfe0ff">Classes aren't on the platform yet, so you assign to your whole college or a campus. Tests here are mocks and practice, not ICASS tasks.</p>
-      <div style="display:grid; grid-template-columns:{{ homeCols }}; gap:14px; align-items:start">
+      <p style="margin:0; padding:10px 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.3); background:rgba(0,104,248,0.08); font-size:13px; line-height:1.55; color:#cfe0ff">Presentation demo only: this sample Grade 12 class and learner handoff use shared browser storage, not a live roster or gradebook.</p>
+      <div style="flex:1; display:grid; grid-template-columns:{{ homeCols }}; gap:12px; align-items:stretch">
         <section aria-labelledby="h-wait" style="display:flex; flex-direction:column; gap:8px; padding:16px; border-radius:16px; border:1px solid var(--line2); background:var(--panel)">
           <h2 id="h-wait" style="margin:0 0 4px; font-size:14px; font-weight:800">Waiting for you</h2>
           <sc-for list="{{ waiting }}" as="wt" hint-placeholder-count="3">
@@ -126,13 +127,14 @@
         <sc-if value="{{ step1 }}" hint-placeholder-val="{{ true }}">
           <div role="radiogroup" aria-label="Paper" style="display:flex; flex-direction:column; gap:8px">
             <sc-for list="{{ paperOpts }}" as="po" hint-placeholder-count="3">
-              <button data-paper="{{ po.id }}" role="radio" aria-checked="{{ po.on }}" onClick="{{ po.pick }}" style="display:flex; flex-direction:column; gap:4px; padding:12px 14px; border-radius:12px; border:{{ po.border }}; background:{{ po.bg }}; color:var(--text); text-align:left; cursor:pointer">
+              <button data-paper="{{ po.id }}" role="radio" aria-checked="{{ po.on }}" disabled="{{ po.disabled }}" onClick="{{ po.pick }}" style="display:flex; flex-direction:column; gap:4px; padding:12px 14px; border-radius:12px; border:{{ po.border }}; background:{{ po.bg }}; color:var(--text); text-align:left; cursor:{{ po.cursor }}; opacity:{{ po.opacity }}">
                 <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap"><span style="font-size:14px; font-weight:800">{{ po.title }}</span><span style="padding:2px 8px; border-radius:7px; background:{{ po.badgeBg }}; color:{{ po.badgeColor }}; font-size:11px; font-weight:800">{{ po.badge }}</span></span>
                 <span style="font-size:12.5px; color:var(--text2)">{{ po.facts }}</span>
                 <sc-if value="{{ po.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px; line-height:1.5; color:{{ po.noteColor }}">{{ po.note }}</span></sc-if>
               </button>
             </sc-for>
           </div>
+          <sc-if value="{{ paperBankEmpty }}" hint-placeholder-val="{{ false }}"><span role="status" style="font-size:13px; line-height:1.5; color:var(--text2)">Upload a paper and memo, review them, and get approval before assigning them to learners.</span></sc-if>
         </sc-if>
 
         <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
@@ -417,7 +419,7 @@
         </div>
         <label style="display:flex; align-items:flex-start; gap:10px; font-size:13.5px; cursor:pointer"><input data-nomemo="true" type="checkbox" checked="{{ noMemo }}" onChange="{{ toggleNoMemo }}" style="width:20px; height:20px; margin:1px 0 0; accent-color:#1e46ff" /><span><b style="font-weight:700">No memo was published</b><br><span style="color:var(--text2); font-size:12.5px">It can be kept, but not given to learners until a memo exists.</span></span></label>
         <sc-if value="{{ upHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0; padding:10px 12px; border-radius:12px; border:1px solid rgba(242,119,122,0.4); background:rgba(242,119,122,0.08); font-size:13px; line-height:1.5; color:#ffb3b5">{{ upErr }}</p></sc-if>
-        <span style="font-size:12px; color:var(--text3)">Prototype: reading is simulated with the Fluid Mechanics N6 paper the service already holds. The checks show the real faults its board memo has.</span>
+        <span style="font-size:12px; color:var(--text3)">Presentation prototype: the upload and review steps are simulated. The Life Sciences source files are the actual uploaded documents.</span>
         <span style="display:flex; justify-content:flex-end"><button data-read="true" onClick="{{ startRead }}" disabled="{{ readDisabled }}" style="min-height:48px; padding:0 20px; border:none; border-radius:12px; background:{{ readBg }}; color:{{ readColor }}; font-size:14px; font-weight:800; cursor:pointer">Read the paper</button></span>
       </section>
     </sc-if>
@@ -558,10 +560,7 @@
 const COLLEGE = { name: "Riverside College (sample)", campuses: ["North", "South"] };
 const PEOPLE = { t1: { id: "t1", name: "Ms Rivera", role: "teacher" }, a1: { id: "a1", name: "Mr Okafor", role: "institution_admin" } };
 const FM_TOPIC_OF = {"1.1.1": "Pipe flow", "1.1.2": "Pipe flow", "1.2": "Pipe flow", "1.3": "Pipe flow", "1.4.1": "Pipe flow", "1.4.2": "Pipe flow", "1.4.3": "Open channels", "1.4.4": "Pipe flow", "1.4.5": "Pipe flow", "2.1": "Open channels", "2.2.1": "Orifices", "2.2.2": "Orifices", "2.2.3": "Orifices", "2.3": "Ventilation", "3.1.1": "Pumps", "3.1.2": "Pumps", "3.1.3": "Pumps", "3.1.4": "Pumps", "3.1.5": "Pumps", "3.1.6": "Pumps", "3.2.1": "Pumps", "3.2.2": "Pumps", "3.3.1": "Pumps", "3.3.2": "Pumps", "3.3.3": "Pumps", "4.1.1": "Pelton wheel", "4.1.2": "Pelton wheel", "4.1.3": "Pelton wheel", "4.1.4": "Pelton wheel", "4.2": "Water turbines", "4.3.1": "Water turbines", "4.3.2": "Water turbines"};
-const BANK = [
-  { id: "fm-n6-2022-11", title: "Fluid Mechanics N6 · November 2022", marks: 100, minutes: 180, origin: "faithful_past_paper", version: "open", badge: "Checked by Nexera", practised: 22 },
-  { id: "fm-n6-2022-11-cards", title: "Fluid Mechanics N6 · November 2022 · flashcard edition", marks: 100, minutes: 180, origin: "faithful_past_paper", version: "disclosed", badge: "Checked by Nexera", practised: 0 },
-  { id: "ls-p1-2026", title: "Life Sciences P1 · May/June 2026", marks: 150, minutes: 150, origin: "faithful_past_paper", version: "open", badge: "Design sample · NSC", practised: 0 } ];
+const BANK = [];
 // ── Brief 13: teacher upload. The replay's MEASURED findings on the real FM N6 board memo
 // (ENGINE §6.4 table; QTYPES §2.5). The prototype simulates reading; these faults are real.
 const U41 = "The memo uses 430 m (the question says 500 m), U = 0,5V (the question: 0,45 of the jet) and 0,005 × 3 000 (the question: f = 0,007, L = 1,5 km). It gets 82,142 m/s where the question's own numbers give 88,576 m/s.";
@@ -666,8 +665,8 @@ class Component extends DCLogic {
   componentDidMount() {
     this._rs = () => this.setState({ vw: window.innerWidth });
     window.addEventListener("resize", this._rs); this._rs();
-    const ready = () => { this.data = buildScripts(); this.seed(); };
-    if (window.PAPER_FM_N6_2022) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_FM_N6_2022 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
+    this.data = null;
+    this.seed();
     this._esc = e => { if (e.key === "Escape" && this.state.confirm) { e.preventDefault(); this.closeConfirm(); } };
     document.addEventListener("keydown", this._esc);
     // The other prototype's writes arrive as a storage event (a tab never hears its own writes).
@@ -683,21 +682,22 @@ class Component extends DCLogic {
     if (this.state.confirm && !this._lastConfirm) { const c = document.querySelector("[data-cfcancel]"); if (c) c.focus(); }
     this._lastConfirm = !!this.state.confirm;
   }
-  // The closed FM class test from the learner prototype (brief 11), with 38 of 40 learners submitted.
+  // Existing assignments plus any this teacher sets in the shared browser demo.
   seed() {
-    const now = Date.now(), D = 86400000;
-    this.setState({ seeded: true, asgs: [
-      { ref: "asg-fm-n6-mock-1", paperId: "fm-n6-2022-11", kind: "class_test", audience: "college", opensAt: now - 6 * D, closesAt: now - D, setter: "t1", state: "open", approvedBy: "a1", eligible: 40, released: false } ]
-      .concat(busRead().assignments.map(b => ({ ref: b.ref, paperId: b.paperId, kind: b.kind, audience: "college", opensAt: b.opensAt, closesAt: b.closesAt,
-        setter: b.setterName === PEOPLE.a1.name ? "a1" : "t1", state: b.state === "open" ? "open" : "awaiting_moderation", approvedBy: b.state === "open" ? "a1" : null, eligible: 40, released: !!b.releasedAt, releasedAt: b.releasedAt }))) });
+    this.setState({ seeded: true, asgs: busRead().assignments.map(b => ({ ref: b.ref, paperId: b.paperId, kind: b.kind, audience: "college", opensAt: b.opensAt, closesAt: b.closesAt,
+        setter: b.setterName === PEOPLE.a1.name ? "a1" : "t1", state: b.state === "open" ? "open" : "awaiting_moderation", approvedBy: b.state === "open" ? "a1" : null, eligible: 40, released: !!b.releasedAt, releasedAt: b.releasedAt })) });
   }
   // ── One review for every draft (brief 14 generalises brief 13): these accessors are the only
   // place an upload and a generated draft differ.
-  partsOf(u) { return u && u.src === "generated" ? GEN_PARTS.map(q => Object.assign({ sec: q.topic }, q)) : this.fmParts(); }
-  fOf(u, n) { return u.noMemo ? [] : (u.src === "generated" ? GEN_FINDINGS[n] : FINDINGS[n]) || []; }
-  carOf(u, n) { return u.src === "generated" || u.noMemo ? null : CARRIES[n] || null; }
-  smeOf(u, n) { return u.src !== "generated" && !u.noMemo && !!SME_CHECK[n]; }
-  inGroup(u, n) { return u.src !== "generated" && !u.noMemo && Q4_GROUP.indexOf(n) !== -1; }
+  partsOf(u) {
+    if (u && u.src === "generated") return GEN_PARTS.map(q => Object.assign({ sec: q.topic }, q));
+    if (u && u.paperId === "ls-p1-2026" && window.PAPER_LS_P1_2026) return window.PAPER_LS_P1_2026.sections.flatMap(sec => sec.missions.flatMap(m => (m.parts || m.items || []).map(q => Object.assign({ sec: sec.id }, q))));
+    return [];
+  }
+  fOf(u, n) { return u.noMemo || u.paperId === "ls-p1-2026" ? [] : (u.src === "generated" ? GEN_FINDINGS[n] : FINDINGS[n]) || []; }
+  carOf(u, n) { return u.src === "generated" || u.noMemo || u.paperId === "ls-p1-2026" ? null : CARRIES[n] || null; }
+  smeOf(u, n) { return u.src !== "generated" && u.paperId !== "ls-p1-2026" && !u.noMemo && !!SME_CHECK[n]; }
+  inGroup(u, n) { return u.src !== "generated" && u.paperId !== "ls-p1-2026" && !u.noMemo && Q4_GROUP.indexOf(n) !== -1; }
   // The longest run of words a stem shares with the bank's FM paper; 12 or more is a hit.
   overlapRun(text) {
     if (!this._corpus) { const c = []; this.fmParts().forEach(q => c.push(wordsOf(q.q))); this._corpus = c; }
@@ -734,8 +734,11 @@ class Component extends DCLogic {
   }
   // ── Brief 13: upload → reading → review → approval. The college bank = Nexera papers + approved uploads.
   bank() {
-    return BANK.concat(this.state.uploads.filter(u => u.state === "approved").map(u => ({ id: u.id, title: u.title, marks: u.src === "generated" ? u.total : 100, minutes: u.src === "generated" ? u.minutes : 180,
-      origin: u.src === "generated" ? "generated" : "faithful_past_paper", version: "open", badge: u.src === "generated" ? "Your college · generated" : "Your college · approved", practised: 0 })));
+    const approved = this.state.uploads.filter(u => u.state === "approved");
+    return BANK.concat(approved.map(u => { const playable = u.paperId === "ls-p1-2026";
+      return { id: u.paperId || u.id, title: u.title, marks: playable ? 150 : u.total || 0, minutes: playable ? 150 : u.minutes || 0,
+        origin: u.src === "generated" ? "generated" : "faithful_past_paper", version: "open", playable: playable,
+        badge: playable ? "Your college · approved" : "Approved · question mapping needed", practised: 0 }; }));
   }
   fmParts() { const src = window.PAPER_FM_N6_2022, out = []; if (src) src.sections.forEach(sec => (sec.missions || []).forEach(m => (m.parts || m.items || []).forEach(q => out.push(Object.assign({ sec: sec.id }, q))))); return out; }
   upCur() { return this.state.uploads.filter(u => u.id === this.state.upCur)[0] || null; }
@@ -774,7 +777,10 @@ class Component extends DCLogic {
     if (err) { this.setState({ upForm: Object.assign({}, f, { err: err }), live: err }); return; }
     // MOCK POST /v1/banks/{bank_ref}/sources → a reading job.
     const id = "up-" + Date.now(), m = f.mode;
-    const u = { id: id, src: "upload", title: "Fluid Mechanics N6 · November 2022 (uploaded)", by: me.id, state: "reading", stage: 0, failed: null, noMemo: !!f.noMemo,
+    const mapped = m === "clean" && !f.noMemo && f.paper.name === "Life Sciences P1 May-June 2026 Eng.pdf" && f.memo && f.memo.name === "Life Sciences P1 May-June 2026 MG Eng.pdf";
+    const paperId = mapped ? "ls-p1-2026" : null;
+    const title = mapped ? "Life Sciences P1 · May/June 2026 (uploaded)" : String(f.paper.name).replace(/\.pdf$/i, "") + " (uploaded)";
+    const u = { id: id, paperId: paperId, src: "upload", title: title, by: me.id, state: "reading", stage: 0, failed: null, noMemo: !!f.noMemo,
       failAt: m === "encrypted" ? 0 : null, failReason: m === "encrypted" ? "pdf_refused" : null, failSentence: "This PDF is encrypted, so it can't be read safely. Export a plain PDF and upload again.",
       flags: { scan: m === "scan", pair: m === "pair", hidden: m === "hidden", encrypted: m === "encrypted" }, items: {}, group: null, pairAck: false, note: "" };
     this.setState({ uploads: this.state.uploads.concat([u]), upCur: id, view: "reading", upForm: Object.assign({}, f, { err: "" }) }, () => this.tickRead(id));
@@ -819,10 +825,13 @@ class Component extends DCLogic {
   api = {
     // POST /v1/assignments: practice publishes (setter's own audience); a class test waits for moderation.
     create: (draft, actor) => {
-      const P = BANK.filter(b => b.id === draft.paperId)[0];
+      const P = this.bank().filter(b => b.id === draft.paperId)[0];
+      if (!P || !P.playable) return { status: 409, body: { error: "paper_not_ready" } };
       if (draft.mode === "class_test" && P.version === "disclosed") return { status: 409, body: { error: "version_disclosed" } };
       const a = { ref: "asg-" + P.id + "-" + Date.now(), paperId: P.id, kind: draft.mode, audience: draft.audience, opensAt: draft.opensAt, closesAt: draft.closesAt,
-        setter: actor.id, state: draft.mode === "class_test" ? "awaiting_moderation" : "published", approvedBy: null, eligible: draft.audience === "South" ? 3 : draft.audience === "North" ? 37 : 40, released: false };
+        setter: actor.id, state: draft.mode === "class_test" ? "awaiting_moderation" : "published", approvedBy: null,
+        eligible: draft.audience === "class" ? 28 : draft.audience === "South" ? 3 : draft.audience === "North" ? 37 : 40,
+        classId: draft.audience === "class" ? "demo-grade12-life-sciences" : null, released: false };
       return { status: 201, body: a };
     },
     // POST /v1/assignments/{ref}/approve: only an institution admin, never the setter (R1).
@@ -894,8 +903,8 @@ class Component extends DCLogic {
       Object.assign(vals, {
         upModes: MODES.map(m => { const on = f.mode === m[0];
           return { label: m[1], on: on ? "true" : "false", bg: on ? "rgba(0,104,248,0.2)" : "transparent", color: on ? "#ffffff" : "var(--text3)",
-            pick: () => this.setState({ upForm: { mode: m[0], err: "", noMemo: false, paper: fileFor("paper", m[0] === "scan" ? "FM N6 Nov 2022 (scan).pdf" : "FM N6 Nov 2022 question paper.pdf", 1320000),
-              memo: m[0] === "nomemo" ? null : fileFor("memo", m[0] === "pair" ? "FM N6 memo 8190217.pdf" : "FM N6 Nov 2022 memo.pdf", 640000) } }) }; }),
+            pick: () => this.setState({ upForm: { mode: m[0], err: "", noMemo: false, paper: fileFor("paper", m[0] === "scan" ? "Life Sciences P1 May-June 2026 (scan).pdf" : "Life Sciences P1 May-June 2026 Eng.pdf", 2400000),
+              memo: m[0] === "nomemo" ? null : fileFor("memo", m[0] === "pair" ? "Life Sciences P1 memo mismatch.pdf" : "Life Sciences P1 May-June 2026 MG Eng.pdf", 900000) } }) }; }),
         zoneCols: phone ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))",
         zones: [["paper", "Question paper", f.paper], ["memo", "Memo", f.memo]].map(z => { const dis = z[0] === "memo" && f.noMemo, file = z[2];
           const take = fl => { if (!fl) return; this.setState({ upForm: Object.assign({}, this.state.upForm, { [z[0]]: { name: fl.name, size: fl.size }, err: "" }) }); };
@@ -1105,7 +1114,7 @@ class Component extends DCLogic {
     const go = v => () => this.setState({ view: v });
     const STATE = { awaiting_moderation: ["Waiting for an institution admin", "rgba(224,161,15,0.16)", "#f3c14f"], scheduled: ["Scheduled", "rgba(129,177,255,0.14)", "#81b1ff"],
       open: ["Open", "rgba(0,104,248,0.2)", "#cfe0ff"], closed: ["Closed · moderation", "rgba(224,161,15,0.16)", "#f3c14f"], released: ["Marks released", "rgba(61,220,151,0.14)", "#5fe6ab"], published: ["Published · practice", "rgba(129,177,255,0.14)", "#81b1ff"] };
-    const audWord = a => a === "college" ? "Everyone at " + COLLEGE.name : a + " campus";
+    const audWord = a => a === "college" ? "Everyone at " + COLLEGE.name : a === "class" ? "Grade 12 · Life Sciences (demo class)" : a + " campus";
     const vals = {
       pad: phone ? "16px" : "24px", collegeLine: COLLEGE.name + " · " + me.name + (isAdmin ? " · institution admin" : " · teacher"),
       live: s.live,
@@ -1145,19 +1154,22 @@ class Component extends DCLogic {
       const p = d.paperId ? P(d.paperId) : null, set = patch => this.setState({ draft: Object.assign({}, this.state.draft, patch) });
       const radioSty = (on, dis) => ({ border: on ? "1.5px solid rgba(129,177,255,0.8)" : "1px solid var(--line2)", bg: on ? "rgba(0,104,248,0.12)" : "var(--panel2)", cursor: dis ? "not-allowed" : "pointer", opacity: dis ? "0.5" : "1" });
       const winOk = d.closesAt > d.opensAt, winShort = p && d.closesAt - d.opensAt < p.minutes * 60000;
-      const canNext = d.step === 1 ? !!d.paperId : d.step === 2 ? !!d.mode : d.step === 3 ? !!d.audience && winOk : true;
+      const canNext = d.step === 1 ? !!(p && p.playable) : d.step === 2 ? !!d.mode : d.step === 3 ? !!d.audience && winOk : true;
       const isTest = d.mode === "class_test";
       Object.assign(vals, {
         steps: ["Paper", "Mode", "Audience and window", "Check and send"].map((l, i) => ({ label: (i + 1) + " · " + l, current: d.step === i + 1 ? "step" : "false",
           fill: d.step > i ? "var(--grad)" : "rgba(255,255,255,0.08)", color: d.step === i + 1 ? "#ffffff" : d.step > i + 1 ? "var(--text2)" : "var(--text3)" })),
         stepN: String(d.step), stepTitle: ["Which paper?", "Practice or a mock / class test?", "Who and when?", "Check and send"][d.step - 1],
         step1: d.step === 1, step2: d.step === 2, step3: d.step === 3, step4: d.step === 4, modeCols: phone ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))",
-        paperOpts: this.bank().map(b => { const on = d.paperId === b.id, st = radioSty(on, false);
-          const note = b.version === "disclosed" ? "This version can't be used for a test because its questions were shared as flashcards. Practice only."
+        paperOpts: this.bank().map(b => { const on = d.paperId === b.id, st = radioSty(on, !b.playable);
+          const note = !b.playable ? "Approved, but its questions are not transcribed for the learner practice flow yet."
+            : b.version === "disclosed" ? "This version can't be used for a test because its questions were shared as flashcards. Practice only."
             : b.practised ? b.practised + " of your learners have practised this paper, so it isn't an unseen test." : "";
-          return Object.assign({ id: b.id, title: b.title, badge: b.badge, badgeBg: b.badge === "Checked by Nexera" ? "rgba(61,220,151,0.14)" : "rgba(255,255,255,0.06)", badgeColor: b.badge === "Checked by Nexera" ? "#5fe6ab" : "var(--text2)",
-            facts: b.marks + " marks · " + b.minutes + " minutes", on: on ? "true" : "false", hasNote: !!note, note: note, noteColor: b.version === "disclosed" ? "#f3c14f" : "var(--text2)",
-            pick: () => set({ paperId: b.id, mode: b.version === "disclosed" && this.state.draft.mode === "class_test" ? null : this.state.draft.mode }) }, st); }),
+          return Object.assign({ id: b.id, title: b.title, badge: b.badge, badgeBg: b.playable ? "rgba(61,220,151,0.14)" : "rgba(255,255,255,0.06)", badgeColor: b.playable ? "#5fe6ab" : "var(--text2)",
+            facts: b.marks ? b.marks + " marks · " + b.minutes + " minutes" : "Question text not linked", on: on ? "true" : "false", hasNote: !!note, note: note, noteColor: b.playable ? "var(--text2)" : "#f3c14f",
+            disabled: !b.playable, cursor: b.playable ? "pointer" : "not-allowed", opacity: b.playable ? "1" : "0.6",
+            pick: () => { if (b.playable) set({ paperId: b.id, mode: b.version === "disclosed" && this.state.draft.mode === "class_test" ? null : this.state.draft.mode }); } }, st); }),
+        paperBankEmpty: !this.bank().some(b => b.playable),
         modeOpts: [["practice", "Practice (a challenge)", "Learners get three tries, hints and the memo after three tries. It doesn't earn tokens.", false],
           ["class_test", "Mock / class test · not an ICASS task", "One attempt, no hints. Marks come back after the window closes and an institution admin moderates a sample.", !!p && (p.version === "disclosed" || p.origin === "generated")]]
           .map(m => { const on = d.mode === m[0], st = radioSty(on, m[3]);
@@ -1165,7 +1177,7 @@ class Component extends DCLogic {
               hasNote: m[0] === "class_test" && !!p && (p.version === "disclosed" || p.origin === "faithful_past_paper" || p.origin === "generated"),
               note: p && p.origin === "generated" ? "Generated papers are for practice until our quality check of generation is complete." : p && p.version === "disclosed" ? "This version can't be used for a test: its questions were shared as flashcards." : "DHET says old exam papers aren't authentic ICASS tasks, so use this as a mock.",
               pick: () => { if (!m[3]) set({ mode: m[0] }); } }, st); }),
-        audOpts: [["college", "Everyone at " + COLLEGE.name, "40 learners", false], ["North", "North campus", "37 learners", false], ["South", "South campus", "3 learners", false], ["class", "A class", "Classes aren't on the platform yet", true]]
+        audOpts: [["college", "Everyone at " + COLLEGE.name, "40 learners", false], ["North", "North campus", "37 learners", false], ["South", "South campus", "3 learners", false], ["class", "Grade 12 · Life Sciences", "28 learners · presentation demo", false]]
           .map(o => { const on = d.audience === o[0], st = radioSty(on, o[3]); return Object.assign({ id: o[0], label: o[1], note: o[2], on: on ? "true" : "false", disabled: o[3], pick: () => { if (!o[3]) set({ audience: o[0] }); } }, st); }),
         opensVal: toLocalInput(d.opensAt), closesVal: toLocalInput(d.closesAt),
         onOpens: e => { const t = new Date(e.target.value).getTime(); if (!isNaN(t)) set({ opensAt: t }); }, onCloses: e => { const t = new Date(e.target.value).getTime(); if (!isNaN(t)) set({ closesAt: t }); },
@@ -1184,9 +1196,11 @@ class Component extends DCLogic {
         nextBg: canNext ? "var(--grad)" : "var(--panel2)", nextColor: canNext ? "#ffffff" : "var(--text4)", nextCursor: canNext ? "pointer" : "not-allowed",
         stepNext: () => { if (!canNext) return; if (d.step < 4) { set({ step: d.step + 1 }); return; }
           const r = this.api.create(d, me); if (r.status !== 201) { this.setState({ live: "This version can't be used for a test." }); return; }
-          // MOCK service write: only an FM class test (the learner prototype holds FM's content).
-          if (r.body.kind === "class_test" && r.body.paperId === "fm-n6-2022-11") { const d = busRead();
-            d.assignments.push({ ref: r.body.ref, paperId: r.body.paperId, kind: "class_test", opensAt: r.body.opensAt, closesAt: r.body.closesAt, minutes: 180, setterName: me.name, state: "awaiting_moderation", releasedAt: null });
+          // The shared demo bus carries the Life Sciences assignment into the learner prototype.
+          if (r.body.paperId === "ls-p1-2026") { const d = busRead();
+            d.assignments = d.assignments.filter(a => a.ref !== r.body.ref);
+            d.assignments.push({ ref: r.body.ref, paperId: r.body.paperId, kind: r.body.kind, audience: r.body.audience, classId: r.body.classId, opensAt: r.body.opensAt, closesAt: r.body.closesAt, minutes: 150, setterName: me.name,
+              state: r.body.kind === "practice" ? "open" : "awaiting_moderation", releasedAt: null });
             busWrite(d); this.setState({ bus: d }); }
           this.setState({ asgs: this.state.asgs.concat([r.body]), draft: null, view: "home", live: isTest ? "Sent for moderation. An institution admin must approve it before learners see it." : "Published to learners." }); },
       });

@@ -1,3 +1,7 @@
 *.glb
-uploads/
+# uploads/ holds working files (screenshots, recordings, models, memos). The ORIGINAL QUESTION PAPERS the prototype shows
+# are tracked (Murci, 2026-10-01: "they really need to be on uploads/"; R2/S3 later). Memos stay out (answers), and so do
+# papers not cleared for reuse (DHET originals).
+uploads/*
+!uploads/Life Sciences P1 May-June 2026 Eng.pdf
 screenshots/
