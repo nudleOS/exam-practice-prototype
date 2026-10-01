@@ -753,7 +753,7 @@ body.nx-play main:not(#mq-stage) [data-tries] .tp.won { opacity:1; box-shadow:0 
 body.nx-play main:not(#mq-stage) [data-tries] .tp.lost { opacity:0.85; --tp:linear-gradient(128deg, transparent 43%, #0b1220 43% 55%, transparent 55%), linear-gradient(28deg, transparent 58%, #0b1220 58% 66%, transparent 66%), #4a5468; box-shadow:none; }
 body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] { position:relative; }
 body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > input { height:56px !important; padding:0 16px !important; border-radius:14px !important; font-size:18px !important; font-weight:500 !important; letter-spacing:0.01em; }
-body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > :not(input):not([data-termmedal]):not([data-termsocket]):not([data-submit]) { display:none !important; }   /* the old stamp (x0 / check 1): the field says it */
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate] > :not(input):not([data-termmedal]):not([data-termsocket]):not([data-submit]):not([data-termtier]) { display:none !important; }   /* the old stamp (x0 / check 1): the field says it */
 /* broken: the field is hidden (its pieces are falling); the socket it leaves holds the row's height */
 body.nx-play main:not(#mq-stage) [data-termstate~="broken"] > input, body.nx-play main:not(#mq-stage) [data-termstate~="out"] > input { visibility:hidden; }
 body.nx-play main:not(#mq-stage) [data-termsocket] { position:absolute; inset:0; box-sizing:border-box; border-radius:14px; border:1.5px dashed rgba(160,185,230,0.28); display:grid; place-items:center;
@@ -1329,3 +1329,24 @@ body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-
   body.nx-play .mcqp .stage { margin-top:4px; --cap-off:78px; }
   body.nx-play .mcqp:is(.fit-2, .fit-3, .fit-4, .fit-5) .tiles { gap:5px; }
 }
+
+/* ==== the term card turns over (Murci, 2026-10-01, "build 1": as the MCQ cards flip) ====
+   Right: the field as typed turns edge-on (Exam Practice termFlip, 230 ms), then the sealed card turns in from the other side,
+   taller, the term centred in the medal's colour with its tier inside ("Gold · First try"); the shine and the medal come after. */
+[data-termflip] { position:fixed; z-index:23; box-sizing:border-box; display:flex; align-items:center; white-space:nowrap; overflow:hidden; pointer-events:none; }
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] { transform-origin:50% 50%; animation:nxFlipIn 360ms cubic-bezier(.2,.75,.3,1.15) 230ms both; }
+@keyframes nxFlipIn { from { transform:perspective(700px) rotateY(-90deg); } to { transform:perspective(700px) rotateY(0deg); } }
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] > input { box-sizing:border-box !important; height:74px !important; padding:0 60px 18px !important; text-align:center; animation:none !important; }   /* [data-termrow]: the 56 px rule above has it too */
+body.nx-play main:not(#mq-stage) [data-termstate~="ok"]::after { animation-delay:600ms; }
+body.nx-play main:not(#mq-stage) [data-termstate~="ok"] [data-termmedal] { animation-delay:560ms; }
+body.nx-play main:not(#mq-stage) [data-termtier] { position:absolute; left:60px; right:60px; bottom:13px; text-align:center; font-size:11px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--seal-ink); opacity:0.78; pointer-events:none; white-space:nowrap; }
+/* the line under it keeps what it paid; its "Gold / First try" is in the card now (still read out: hidden from sight only) */
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] { justify-content:center !important; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] :is(.fd-head, .fd-sub) { position:absolute !important; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips { margin:0 !important; }
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] > input { height:66px !important; padding:0 52px 16px !important; }
+  body.nx-play main:not(#mq-stage) [data-termtier] { left:52px; right:52px; bottom:11px; font-size:10.5px; }
+}
+@media (prefers-reduced-motion:reduce) { body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] { animation:none !important; } }
