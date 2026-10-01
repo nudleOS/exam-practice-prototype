@@ -1350,6 +1350,39 @@ body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips 
   body.nx-play main:not(#mq-stage) [data-termtier] { left:52px; right:52px; bottom:11px; font-size:10.5px; }
 }
 @media (prefers-reduced-motion:reduce) { body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] { animation:none !important; } }
+
+/* ==== a figure to read: it fills the frame, folds away, enlarges (Murci, 2026-10-01, Question 1.4) ====
+   The block no longer shrinks (as a flex item in the capped panel it was cut to 121 of its ~300 px). A figure with no letters to tap
+   fills the frame's width ("i like how the image kind of filled the frame"); its caption line goes (it repeated the lead, "The
+   diagrams below ...", and said "below" under the figure); Hide and Enlarge are a slim row under it (on its corner they covered
+   "Diagram B" and the label S, measured at 375 px). "Hide" folds it to a bar
+   ("Show figure"). A figure whose letters are the answer (data-fighot) keeps its hint row and never folds. */
+body.nx-play main:not(#mq-stage) [data-figure] { flex:none; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:last-child { justify-content:flex-end; padding:0 8px 8px !important; gap:6px !important; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:last-child > span:first-child { display:none; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:last-child > button { min-height:28px !important; padding:0 10px !important; border-radius:9px !important; font-size:11.5px !important;
+  border:1px solid var(--nx-pill-line) !important; background:var(--nx-pill) !important; color:var(--nx-text) !important; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { cursor:zoom-in; }
+/* folded: the figure goes, the two buttons are the bar */
+body.nx-play main:not(#mq-stage) [data-figure][data-fighidden="true"] div:has(> [data-figbox]) { display:none; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighidden="true"] > div:last-child { padding:8px !important; justify-content:flex-start; }
+body.nx-play main:not(#mq-stage) [data-figtoggle]:focus-visible, body.nx-play main:not(#mq-stage) [data-figure] [data-enlarge]:focus-visible { outline:2px solid var(--nx-accent); outline-offset:2px; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:last-child > button { font:inherit; font-weight:700; cursor:pointer; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] > div:has(> [data-figbox]) { padding:8px 8px 6px !important; }
+/* the lead that only introduces the figure above it (Exam Practice figSaysLead): not shown */
+body.nx-play main:not(#mq-stage) [data-lead][data-figlead="true"] { display:none !important; }
+/* a short desktop or tablet (under 760 px tall): the figure as large as fits beside the question, at its own ratio, centred, and the
+   panel's padding a step less (measured at 808x648: the panel is capped at 433 px above the docked row; with its 30 px padding, the
+   question (172) and the figure's frame + buttons (52) the image had 131 px; with 18 px padding 155: 100svh - 493 px) */
+@media (min-width:601px) and (max-height:760px) {
+  body.nx-play main:not(#mq-stage) [data-question]:has([data-figure][data-fighot="false"]) { padding-top:18px !important; padding-bottom:18px !important; }
+  body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { width:min(100%, calc((100svh - 493px) * var(--fig-ar))) !important; margin:0 auto; }
+}
+/* a short phone (up to 740 px tall): the same, the figure as large as fits (measured at 360x640: full width, 171 px tall, ran 64 px
+   over; 100svh - 533 px leaves it 107). A tap on it enlarges it. A taller phone fills the frame. */
+@media (max-width:600px) and (max-height:740px) {
+  body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { width:min(100%, calc((100svh - 533px) * var(--fig-ar))) !important; margin:0 auto; }
+}
 /* letter options as one row of chips (Exam Practice tilesChips: every option a single letter, e.g. the labels on a figure): the letter
    alone, no A/B badge beside a P/Q label; the counter keeps its own line; still 44 px tap targets */
 body.nx-play main:not(#mq-stage) [data-chips="true"] { flex-direction:row !important; flex-wrap:wrap; gap:8px !important; }
@@ -1357,3 +1390,21 @@ body.nx-play main:not(#mq-stage) [data-chips="true"] > [role="status"], body.nx-
 body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] { flex:0 0 auto; min-width:54px; min-height:44px !important; padding:0 14px !important; gap:6px !important; justify-content:center; border-radius:12px !important; }
 body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] > span:first-child { display:none !important; }
 body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] > span:nth-child(2) { flex:none !important; font-size:16px !important; font-weight:700 !important; }
+/* Hide / Show figure on a figure with letters (its hint row): the Enlarge button's look */
+body.nx-play main:not(#mq-stage) [data-figtoggle] { min-height:36px; padding:0 12px; border-radius:11px; border:1px solid var(--nx-pill-line); background:var(--nx-pill); color:var(--nx-text);
+  font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; }
+/* a figure with letters: its hint row slim like the other figures' (28 px buttons), and on a phone up to 860 px tall the figure at 88%, its chips 6 px under their counter
+   (its spots are placed in % of it, so they stay on their letters). Measured: 1.4.2 at 375x812 was 38 px over. */
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="true"] > div:last-child { padding:6px 10px 8px !important; gap:6px !important; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="true"] > div:last-child > button { min-height:28px !important; padding:0 10px !important; border-radius:9px !important; font-size:11.5px !important; }
+body.nx-play main:not(#mq-stage) [data-figure][data-fighot="true"] > div:last-child > span:first-child { font-size:11.5px !important; }
+@media (max-width:600px) and (max-height:860px) {
+  body.nx-play main:not(#mq-stage) [data-figure][data-fighot="true"] [data-figbox] { width:88% !important; margin:0 auto; }
+  body.nx-play main:not(#mq-stage) [data-chips="true"] { gap:6px 8px !important; }
+  body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] { min-height:42px !important; }
+}
+/* (a figure to read on a phone 741-860 px tall, the common size: 86% (a figure with letters 88%); measured: 1.4.3's two-answer field
+   went half under the docked row at 375x812 with the figure at full width. Up to 740 px the fit above sizes it.) */
+@media (max-width:600px) and (min-height:741px) and (max-height:860px) {
+  body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { width:86% !important; margin:0 auto; }
+}

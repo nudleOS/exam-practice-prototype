@@ -870,10 +870,10 @@
         </sc-if>
 
         <sc-if value="{{ hasFigure }}" hint-placeholder-val="{{ false }}">
-          <div data-scene="true" data-figure="true" style="border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
+          <div data-scene="true" data-figure="true" data-fighot="{{ figHot }}" data-fighidden="{{ figHiddenAttr }}" style="--fig-ar:{{ figAr }}; border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
             <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ figAlt }}</span>
             <div style="padding:10px 10px 0">
-              <div data-figbox="true" style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
+              <div data-figbox="true" onClick="{{ figBoxTap }}" style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
                 <img src="{{ figSrc }}" alt="" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; user-select:none" />
                 <sc-for list="{{ figSpots }}" as="fs" hint-placeholder-count="5">
                   <button data-hotspot="{{ fs.letter }}" onClick="{{ fs.tap }}" aria-label="{{ fs.aria }}" aria-pressed="{{ fs.pressed }}" disabled="{{ fs.disabled }}" style="position:absolute; left:{{ fs.x }}; top:{{ fs.y }}; transform:translate(-50%, -50%); width:{{ figSpotSize }}; height:{{ figSpotSize }}; padding:0; border-radius:50%; border:{{ fs.border }}; background:{{ fs.bg }}; box-shadow:{{ fs.shadow }}; cursor:pointer">
@@ -886,6 +886,7 @@
             </div>
             <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:9px 12px 11px">
               <span style="flex:1; min-width:0; font-size:12px; font-weight:600; color:{{ figHintColor }}">{{ figHint }}</span>
+              <sc-if value="{{ figCanHide }}" hint-placeholder-val="{{ false }}"><button data-figtoggle="true" onClick="{{ toggleFig }}" aria-expanded="{{ figExpanded }}">{{ figToggleLabel }}</button></sc-if>
               <button data-enlarge="true" onClick="{{ openFigBig }}" aria-haspopup="dialog" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Enlarge</button>
             </div>
           </div>
@@ -904,7 +905,7 @@
             <span style="flex:1"></span>
             <span data-try="true" style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
           </div>
-          <sc-if value="{{ nxHasLead }}" hint-placeholder-val="{{ false }}"><p data-lead="true"><b>{{ nxLeadNum }}</b> {{ nxLead }}</p></sc-if>
+          <sc-if value="{{ nxHasLead }}" hint-placeholder-val="{{ false }}"><p data-lead="true" data-figlead="{{ figSaysLead }}"><b>{{ nxLeadNum }}</b> {{ nxLead }}</p></sc-if>
           <h2 data-stem="true" tabIndex="-1" style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty; outline:none"><sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-stemnum="true">{{ partNumber }}</span></sc-if>{{ stem }}</h2>
 
           <sc-if value="{{ showRules }}" hint-placeholder-val="{{ false }}">
@@ -2809,7 +2810,7 @@ class Component extends DCLogic {
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
-  openMission(i, pi = 0) { if (this.hallLiveFor(this.state.paperId)) { this.resumeHall(); return; } if (this.classLock(this.state.paperId)) { this.openClassNotice(); return; } this.resetInputs({ screen: "play", mi: i, pi: pi, runLog: [], revisit: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
+  openMission(i, pi = 0) { if (this.hallLiveFor(this.state.paperId)) { this.resumeHall(); return; } if (this.classLock(this.state.paperId)) { this.openClassNotice(); return; } this.resetInputs({ screen: "play", mi: i, pi: pi, runLog: [], revisit: false, figHidden: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
   mark(part, answer) {
@@ -3658,7 +3659,7 @@ class Component extends DCLogic {
     const sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + (part._mid || mission.id)];
     if (sc && sc.template === "figure") return this.figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall);
     const binds = sc && sc.tags[part.number];
-    const off = { hasScene: false, hasFigure: false, figBigOpen: false };
+    const off = { hasScene: false, hasFigure: false, figBigOpen: false, figSaysLead: "false" };
     if (!sc || !binds || part.response_mode !== "steps" || hall) return off;
     const G = {}; (part.givens || []).forEach(g => { G[g.symbol] = g.value; });
     const f1 = v => fmtNum(Math.round(v * 1000) / 1000);
@@ -3769,7 +3770,7 @@ class Component extends DCLogic {
       this.setState({ orderSeq: pos === -1 ? s.orderSeq.concat([i]) : s.orderSeq.slice(0, pos), edited: Object.assign({}, s.edited, { order: true }) }); }
   }
   figureVals(sc, s, phone, part, reply, res, closed, stampOf, hall) {
-    const F = FIGS[sc.fig]; if (!F) return { hasScene: false, hasFigure: false };
+    const F = FIGS[sc.fig]; if (!F) return { hasScene: false, hasFigure: false, figSaysLead: "false" };
     const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim());
     const letterSet = mode === "lettername" ? (part.letters || []) : (["pickn", "order", "mcq"].indexOf(mode) !== -1 && opts.length && opts.every(o => /^[A-Z]$/.test(o))) ? opts : [];
     const locked = closed || s.marking || (s.barOpen && !!reply);
@@ -3800,7 +3801,20 @@ class Component extends DCLogic {
     const spot = Math.max(24, Math.min(phone ? 36 : 40, Math.floor(minD - 3)));
     const hint = !letterSet.length ? F.caption : locked ? (closed ? "Closed · the figure shows your answer" : "Your answer is being checked") : mode === "order" ? "Tap the letters on the figure in order"
       : mode === "pickn" ? "Tap " + (part.count || 1) + " letters on the figure" : "Tap a letter on the figure";
+    // A figure to read (no letters to tap) shows whole, zoomed out to the room it has (nx-play: --fig-h), and folds away to a bar
+    // and back (Murci, 2026-10-01: 1.4's diagrams were "cut/hidden in half from the frame": the panel's cap shrank the block to
+    // 121 of its ~300 px). A figure whose letters ARE the answer never folds and keeps its size (its spots are sized to it).
+    // (a figure with letters folds too when the letters are also a row of chips to tap, pickn / order / mcq: then it is not the only
+    // way to answer; a letter-and-name part answers on the figure alone, so it never folds)
+    const canHide = !letterSet.length || mode !== "lettername", hidden = canHide && !!s.figHidden;
     return { hasScene: false, hasFigure: true, figSrc: F.src, figAspect: F.w + " / " + F.h, figSpots: spots, figSpotSize: spot + "px",
+      // the group's lead IS this figure's caption ("The diagrams below represent ...") and the figure is right there above it: the
+      // line goes (Murci, 2026-10-01: "eats space and is wrong because it says below"); the figure's description still reads it out
+      figSaysLead: F.caption === String((this.mission() || {}).lead || "") ? "true" : "false",   // (a figure to tap too: its row shows the tap hint, not the caption)
+      figAr: (F.w / F.h).toFixed(4), figHot: letterSet.length ? "true" : "false", figCanHide: canHide, figHiddenAttr: hidden ? "true" : "false",
+      figExpanded: hidden ? "false" : "true",
+      // (a figure to read, as a thumbnail on a short screen: a tap on it enlarges it; the Enlarge button is the keyboard's way)
+      figBoxTap: !letterSet.length ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, figToggleLabel: hidden ? "Show figure" : "Hide", toggleFig: () => this.setState({ figHidden: !s.figHidden }),
       figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint, figHintColor: letterSet.length && !locked ? "var(--tint)" : "var(--text3)",
       figBigOpen: s.figBig, openFigBig: () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }),
       closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: Math.min(2 * 640, Math.round(F.w * 0.9)) + "px",
