@@ -2286,7 +2286,7 @@ class Component extends DCLogic {
     const m = this.mission(), ms = this.missions(), on = nx && !!m && !s.fix && !s.drill, q = m ? String(m.id).split(".")[0] : "";
     const close = () => this.setState({ qmap: false }, () => { const w = document.querySelector("[data-where]"); if (w) w.focus(); });
     const go = (gi, k) => { this.setState({ qmap: false }); if (gi === s.mi) { if (k !== s.pi) this.resetInputs({ pi: k }); return; }
-      this.openMission(gi); setTimeout(() => this.resetInputs({ pi: k }), 0); };
+      this.openMission(gi, k); };   // one move: two (open, then the part) let the sweep's "last tap wins" drop the open (2026-10-01)
     const groups = on ? ms.map((g, gi) => ({ g, gi })).filter(x => String(x.g.id).split(".")[0] === q).map(({ g, gi }) => {
       const done = g.parts.filter(pt => this.pg(pt.key).closed).length;
       return { id: g.id, kind: g.kind || g.title || "", cur: gi === s.mi ? "true" : "false", count: done + " of " + g.parts.length,
@@ -2796,7 +2796,7 @@ class Component extends DCLogic {
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
-  openMission(i) { if (this.hallLiveFor(this.state.paperId)) { this.resumeHall(); return; } if (this.classLock(this.state.paperId)) { this.openClassNotice(); return; } this.resetInputs({ screen: "play", mi: i, pi: 0, runLog: [], revisit: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
+  openMission(i, pi = 0) { if (this.hallLiveFor(this.state.paperId)) { this.resumeHall(); return; } if (this.classLock(this.state.paperId)) { this.openClassNotice(); return; } this.resetInputs({ screen: "play", mi: i, pi: pi, runLog: [], revisit: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
   mark(part, answer) {
