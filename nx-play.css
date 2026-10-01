@@ -1058,10 +1058,22 @@ html[data-nx="light"] [data-qmap] { background:rgba(20,40,80,0.18); }
 [data-qmap] .qm-parts { display:flex; flex-wrap:wrap; gap:7px; }
 [data-qmap] .qp { min-width:62px; height:36px; padding:0 10px; border-radius:10px; border:1px solid var(--nx-pill-line); background:transparent; color:var(--nx-text); font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
 [data-qmap] .qp:hover { border-color:var(--nx-accent); }
-[data-qmap] .qp.ok { background:rgba(61,220,151,0.14); border-color:rgba(61,220,151,0.45); }
-[data-qmap] .qp.miss { background:rgba(224,161,15,0.12); border-color:rgba(224,161,15,0.45); }
+/* each chip in the medal it earned (2026-10-01): the medal's colour, a medal dot before the number; red for none */
+[data-qmap] .qp.gold { --qm:#e3b341; --qm-dot:radial-gradient(circle at 35% 30%, #fbe39a, #dca834 55%, #8a6414); }
+[data-qmap] .qp.silver { --qm:#cfd4db; --qm-dot:radial-gradient(circle at 35% 30%, #ffffff, #cfd4db 55%, #7b818a); }
+[data-qmap] .qp.bronze { --qm:#c98a5c; --qm-dot:radial-gradient(circle at 35% 30%, #f3bf98, #bb7a4c 55%, #683b1d); }
+[data-qmap] .qp:is(.gold, .silver, .bronze) { display:inline-flex; align-items:center; justify-content:center; gap:6px; border-color:var(--qm);
+  background:color-mix(in srgb, var(--qm) 16%, transparent); color:var(--nx-text); }
+[data-qmap] .qp:is(.gold, .silver, .bronze)::before { content:""; flex:none; width:10px; height:10px; border-radius:50%; background:var(--qm-dot); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.3); }
+[data-qmap] .qp.none { --qm:#f2777a; border-color:rgba(242,119,122,0.7); background:rgba(242,119,122,0.16); color:#ffc9ca; }
+[data-qmap] .qp.done { --qm:#8fa6cc; background:rgba(255,255,255,0.06); }
 [data-qmap] .qp.tried { border-style:dashed; }
+/* where you are: the accent fill on a chip not yet answered; a finished one keeps its medal and gets the accent ring */
 [data-qmap] .qp.cur { background:var(--nx-accent); border-color:var(--nx-accent); color:#fff; }
+[data-qmap] .qp.cur:is(.gold, .silver, .bronze, .none, .done) { background:color-mix(in srgb, var(--qm) 16%, transparent); border-color:var(--qm);
+  color:var(--nx-text); box-shadow:0 0 0 2px var(--nx-panel-solid, #0d1a33), 0 0 0 4px var(--nx-accent); }
+html[data-nx="light"] [data-qmap] .qp.none { color:#8a1c22; }
+[data-qmap] .qp.cur.none { color:#ffc9ca; }
 [data-qmap] .qm-map { margin-top:10px; width:100%; height:46px; display:flex; align-items:center; justify-content:center; gap:9px; border-radius:999px; cursor:pointer; font:inherit; font-size:14.5px; font-weight:700;
   background:var(--nx-tone); border:1px solid var(--nx-tone-line); color:var(--nx-text); }
 

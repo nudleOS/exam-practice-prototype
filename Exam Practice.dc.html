@@ -2290,10 +2290,13 @@ class Component extends DCLogic {
     const groups = on ? ms.map((g, gi) => ({ g, gi })).filter(x => String(x.g.id).split(".")[0] === q).map(({ g, gi }) => {
       const done = g.parts.filter(pt => this.pg(pt.key).closed).length;
       return { id: g.id, kind: g.kind || g.title || "", cur: gi === s.mi ? "true" : "false", count: done + " of " + g.parts.length,
-        parts: g.parts.map((pt, k) => { const pr = this.pg(pt.key), here = gi === s.mi && k === s.pi, got = pr.closed && (pr.best || 0) >= (pt.marks || 0) && pt.marks;
-          const st = pr.closed ? (got ? "ok" : "miss") : pr.tries ? "tried" : "";
+        // each chip in the medal it earned, red when it closed with none (Murci, 2026-10-01: "highlight the medal the learner got from
+        // the question and red if they did not get any"); a drawing is not marked here, so it is only "done"; dashed = started
+        parts: g.parts.map((pt, k) => { const pr = this.pg(pt.key), here = gi === s.mi && k === s.pi;
+          const st = pr.medal ? pr.medal : pr.closed ? (pr.draw || pr.waiting ? "done" : "none") : pr.tries ? "tried" : "";
+          const say = { gold: ", gold medal", silver: ", silver medal", bronze: ", bronze medal", none: ", no medal", done: ", done", tried: ", started" }[st] || "";
           return { label: pt.number, cls: "qp" + (here ? " cur" : "") + (st ? " " + st : ""), current: here ? "true" : "false",
-            aria: pt.number + (here ? ", you are here" : st === "ok" ? ", full marks" : st === "miss" ? ", finished" : st === "tried" ? ", started" : ""), go: () => go(gi, k) }; }) }; }) : [];
+            aria: pt.number + say + (here ? ", you are here" : ""), go: () => go(gi, k) }; }) }; }) : [];
     const sec = m ? (m.section || "") : "";
     return { nxWhereOff: !on, nxWhereAria: on ? "Where you are: " + (m.title || "") + ". Open the question map" : (m ? m.title || "" : ""),
       qmapOpen: on && !!s.qmap, qmapExpanded: s.qmap ? "true" : "false", openQmap: () => { if (on) this.setState({ qmap: true }, () => { const c = document.querySelector("[data-qmap] .qp.cur") || document.querySelector("[data-qmap-panel]"); if (c) c.focus(); }); },
@@ -2937,6 +2940,8 @@ class Component extends DCLogic {
         runLog: s.runLog.concat([{ key: part.key, try: tryNo, full: !!result.full, xp: xp, mult: mult, revealed: revealed, replay: replay }]),
         prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
           firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay,
+          // the medal the question earned (the question map shows it): the try it was right on; a practice replay keeps the first one's
+          medal: pr.medal || (result.full && !replay && !draw && !s.fix ? ["gold", "silver", "bronze"][Math.min(2, tryNo - 1)] : ""),
           obs: tryNo === 1 && !draw ? (pr.obs || []).concat([this.obsOf(part, pr, result)]) : pr.obs } }) });
       // Reactions come from the marks: full dances, partial encourages, zero is defeated (the robot slumps down), the memo greets.
       const got = result.marks_awarded || 0;
