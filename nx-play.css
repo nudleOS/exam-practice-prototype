@@ -1411,3 +1411,13 @@ body.nx-play main:not(#mq-stage) [data-figure][data-fighot="true"] > div:last-ch
 @media (max-width:600px) and (min-height:741px) and (max-height:860px) {
   body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { width:86% !important; margin:0 auto; }
 }
+
+/* ==== no footer Check (Murci, 2026-10-01: "Check needs to be out") ====
+   Each question answers from its own control: an MCQ card's tap, the term field's arrow, and for every other mode the same round
+   arrow in a row under its answer (a drawing: a worded button). The footer keeps Back / Skip / Next. Practice only: nx-play. */
+body.nx-play [data-footer] [data-check] { display:none !important; }
+body.nx-play main:not(#mq-stage) [data-answerrow] { display:flex; justify-content:flex-end; margin-top:-2px; }
+body.nx-play main:not(#mq-stage) [data-answerrow] [data-submit] { position:static; margin:0; width:46px; height:46px; }
+body.nx-play main:not(#mq-stage) [data-answerword] { min-height:44px; padding:0 18px; border:0; border-radius:999px; background:linear-gradient(135deg, #1f7bff, #5b3bff); color:#fff;
+  font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+body.nx-play main:not(#mq-stage) [data-answerword]:disabled { background:var(--nx-tone); color:var(--nx-text2); cursor:default; }

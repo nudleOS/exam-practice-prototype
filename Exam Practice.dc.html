@@ -1039,10 +1039,11 @@
                 <sc-if value="{{ termHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ termStampBg }}; font-size:12px; font-weight:800; color:{{ termStampColor }}">{{ termStamp }}</span>
                 </sc-if>
+                <sc-if value="{{ nxInlineSubmit }}" hint-placeholder-val="{{ false }}"><button data-submit="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if>
                 <sc-if value="{{ nxTermMedal }}" hint-placeholder-val="{{ false }}"><span data-termmedal="true" aria-hidden="true"></span><span data-termtier="true">{{ termTierText }}</span></sc-if>
                 <sc-if value="{{ nxTermSocket }}" hint-placeholder-val="{{ false }}"><span data-termsocket="{{ termSocketKind }}" aria-hidden="{{ termSocketHidden }}">{{ termSocketText }}<sc-if value="{{ termSocketIsAnswer }}" hint-placeholder-val="{{ false }}"><span data-anstag="true">The answer</span></sc-if></span></sc-if>
               </span>
-              <sc-if value="{{ nxInlineSubmit }}" hint-placeholder-val="{{ false }}"><span data-enterhint="true">Press Enter or choose Check to submit</span></sc-if>
+              <sc-if value="{{ nxInlineSubmit }}" hint-placeholder-val="{{ false }}"><span data-enterhint="true">Press Enter or the arrow to answer</span></sc-if>
             </div>
           </sc-if>
 
@@ -1130,6 +1131,9 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ nxAnswerRow }}" hint-placeholder-val="{{ false }}">
+            <div data-answerrow="true"><sc-if value="{{ nxAnswerIcon }}" hint-placeholder-val="{{ true }}"><button data-submit="true" data-inrow="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if><sc-if value="{{ nxAnswerWord }}" hint-placeholder-val="{{ false }}"><button data-answerword="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}">{{ primaryLabel }}</button></sc-if></div>
+          </sc-if>
           <sc-if value="{{ nxFeedOn }}" hint-placeholder-val="{{ false }}">
             <div data-feed="{{ nxFeedTone }}" role="status" aria-live="polite">
               <sc-if value="{{ nxFeedMedal }}" hint-placeholder-val="{{ false }}"><span class="fd-medal" aria-hidden="true"></span></sc-if>
@@ -1312,7 +1316,7 @@
               </sc-if>
               <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span data-backword="true">Back</span></button></sc-if>
               <sc-if value="{{ nxCanSkip }}" hint-placeholder-val="{{ false }}"><button data-skip="true" onClick="{{ skipPart }}" aria-label="Skip this question for now">Skip</button></sc-if>
-              <button data-check="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-width:0; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
+              <button data-check="true" data-iconbtn="{{ checkIsIcon }}" aria-label="{{ checkAria }}" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" style="flex:1; min-width:0; min-height:54px; border:none; border-radius:16px; background:{{ primaryBg }}; color:{{ primaryColor }}; font-size:16px; font-weight:800; cursor:{{ primaryCursor }}; box-shadow:{{ primaryShadow }}">{{ primaryLabel }}</button>
               </div>
             </div>
           </sc-if>
@@ -4169,6 +4173,11 @@ class Component extends DCLogic {
       barPrimaryShadow: primaryIsSuccess ? "0 10px 26px rgba(61,220,151,0.3)" : bar && bar.primary[1] ? "0 10px 26px rgba(30,70,255,0.32)" : "none",
       primary: () => { if (closed || (reply && reply.waiting)) this.advance(); else this.check(); },
       primaryLabel: draw ? "I've drawn it" : "Check", primaryDisabled: primaryDisabled,
+      // No footer Check (Murci, 2026-10-01: "Check needs to be out"; the same on every size): each question answers from its own
+      // control, an MCQ on a card's tap, a term on the arrow in its field, every other mode on the same arrow in a row under its
+      // answer (a drawing on a worded button: an arrow alone would not say "I've drawn it"). The footer keeps Back / Skip / Next.
+      checkIsIcon: "false", checkAria: draw ? "I've drawn it" : "Check your answer",
+      nxAnswerRow: !hall && !locked && mode !== "term" && mode !== "mcq" && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
       primaryBg: primaryDisabled ? "var(--panel)" : "var(--grad)", primaryColor: primaryDisabled ? "var(--text4)" : "#ffffff",
       primaryCursor: primaryDisabled ? "not-allowed" : "pointer", primaryShadow: primaryDisabled ? "none" : "0 10px 26px rgba(30,70,255,0.3)",
       ...this.hallPlayVals(s, wide, part, mode),
@@ -4251,7 +4260,7 @@ class Component extends DCLogic {
       tryLabel: liveAns ? (saved ? "Saved" : "Saving…") : "Not answered", tryColor: liveAns ? "var(--text2)" : "var(--text3)",
       hasStreak: false, hasHint: false, hasReveal: false, hasPoints: false,
       primary: () => this.hallSaveNext(), primaryDisabled: false,
-      primaryLabel: draw ? (last ? "I've drawn it · review" : "I've drawn it · next") : last ? (liveAns ? "Save and review" : "Review and hand in") : liveAns ? "Save and next" : "Next question",
+      ...(L => ({ primaryLabel: L, checkAria: L, checkIsIcon: "false" }))(draw ? (last ? "I've drawn it · review" : "I've drawn it · next") : last ? (liveAns ? "Save and review" : "Review and hand in") : liveAns ? "Save and next" : "Next question"),   // the Hall's button keeps its words
       primaryBg: "var(--grad)", primaryColor: "#ffffff", primaryCursor: "pointer", primaryShadow: "0 10px 26px rgba(30,70,255,0.3)",
     });
   }
