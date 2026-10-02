@@ -395,3 +395,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .pm-start { position: absolute; z-index: 1; display: flex; align-items: center; gap: 7px; transform: translate(-7px, -7px); pointer-events: none; }
 .pm-start i { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid rgba(var(--sc-rgb), 0.85); background: #06132f; }
 .pm-start b { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #7f8fc2; }
+/* the line's head is the robot's face (Murci, 2026-10-02: his idle image, the face alone), the same 28 px circle as the cup it chases */
+.pm-tip { width: 28px; height: 28px; margin: -14px 0 0 -14px; box-sizing: border-box; border-radius: 50%; rotate: none;
+  border: 2px solid #6f9bff; background: #0f1d47 url("assets/robot-face.webp") center / 112% no-repeat; z-index: 2; }
+.pm-pcup[data-state="chase"] { transform: none; }

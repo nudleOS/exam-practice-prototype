@@ -1425,7 +1425,7 @@ body.nx-play.nx-typing [data-footer] { bottom:calc(var(--kb, 0px) + 8px) !import
 .nx-typestrip { display:none; }
 body.nx-play.nx-typing .nx-typestrip { display:flex; position:fixed; z-index:24; left:12px; right:var(--typ-r, 12px); bottom:calc(var(--kb, 0px) + 8px);
   align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
-.nx-typehead { flex:none; width:40px; height:40px; border-radius:50%; background:#1e46ff url("assets/companion-head.webp") center / cover no-repeat;
+.nx-typehead { flex:none; width:40px; height:40px; border-radius:50%; background:#0f1d47 url("assets/robot-face.webp") center / 112% no-repeat;   /* Murci's idle face (2026-10-02) */
   box-shadow:0 0 0 2px rgba(129, 177, 255, 0.35); }
 .nx-typestrip > p { margin:0; flex:1; min-width:0; padding:8px 12px; border-radius:14px 14px 14px 4px; background:#eef2ff; color:#0d2666;
   font-size:13px; font-weight:500; line-height:1.35; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; pointer-events:auto; }

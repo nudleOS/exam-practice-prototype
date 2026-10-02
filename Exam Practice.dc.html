@@ -80,8 +80,8 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=140">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=34">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-play.css?v=141">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-map.css?v=35">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -2255,7 +2255,7 @@ class Component extends DCLogic {
       // then into the circle). Its progress fills that trail; its cup rides LEAD px ahead, never closer than 22 px to the circle; when
       // the paper is finished the line reaches the circle, which becomes its cup. The last stretch (newest paper -> finish cup) lights
       // only when every paper is done.
-      const seenNow = {}, EDGE = NODE / 2, LEAD = 32, ROCK = 6;   // ROCK: the chase's rock, px each way (Murci: 3 px read as standing still)
+      const seenNow = {}, EDGE = NODE / 2, LEAD = 44, ROCK = 6;   // LEAD 44: the face (28 px) and the cup (28 px) rock 6 px; they never touch   // ROCK: the chase's rock, px each way (Murci: 3 px read as standing still)
       const first = order[0], sx = first ? Math.round(phone ? Math.max(14, first.cx - 56) : first.cx - 90) : 0, sy = first ? first.cy + 120 : 0;
       let dAll = "", dDone = "", dNew = ""; const cups = [], tips = [], wonAnim = {};
       const legs = order.map((A, k) => { const P0 = k ? order[k - 1] : null, a = P0 ? { x: P0.cx, y: P0.cy } : { x: sx, y: sy }, z = { x: A.cx, y: A.cy };
@@ -2274,7 +2274,7 @@ class Component extends DCLogic {
         // finished: the circle at the end of this trail becomes the paper's glowing cup ("win" pops it once the line has drawn on)
         if (!going) { wonAnim[id] = p0 < 1 - 0.001 ? "win" : "won"; return; }
         const tan = len => { const u = pointAt(D, len - 2), v = pointAt(D, len + 2), l = Math.hypot(v.x - u.x, v.y - u.y) || 1; return { x: (v.x - u.x) / l, y: (v.y - u.y) / l }; };
-        const tl = fill(p) - 4, tp = pointAt(D, tl), tt = tan(tl), tc = tan(cupAt(p));   // (the tip, 20 px, covers fill-14..fill+6 at rest)
+        const tl = fill(p), tp = pointAt(D, tl), tt = tan(tl), tc = tan(cupAt(p));   // the line's head: the robot's face (28 px), centred on the fill's end
         tips.push({ x: f(tp.x) + "px", y: f(tp.y) + "px", ang: f(Math.atan2(tt.y, tt.x) * 180 / Math.PI) + "deg", tx: f(tt.x * ROCK) + "px", ty: f(tt.y * ROCK) + "px",
           anim: p0 < p - 0.001 ? "in" : "none" });
         const at = pointAt(D, cupAt(p)), from = pointAt(D, cupAt(p0));
