@@ -358,3 +358,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the finish line: bigger as well as gold once every paper is done */
 .pm-cup[data-done="true"] { transform: translateX(-50%) scale(1.2); }
 @media (prefers-reduced-motion: reduce) { .pm-road-new { animation: none; stroke-dashoffset: 0; } .pm-pcup { animation: none !important; } }
+/* a finished paper (Murci, 2026-10-02, "A, the tick"): a navy circle with the road's blue ring and a tick; the won cup beside it is the
+   only gold (the solid medal-coloured disc said the result twice, and was the loudest thing on the map) */
+.pm-node[data-state="done"], .pm-node[data-state="done"]:is([data-tier="top"], [data-tier="solid"], [data-tier="finished"]) {
+  border: 2.5px solid #6f9bff; background: #0f1d47; color: #9fbcff; }
