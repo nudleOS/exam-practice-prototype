@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=141">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=35">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=36">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -407,7 +407,7 @@
                 <span class="pm-row-lbl" style="top:{{ r.top }}">{{ r.label }}</span>
               </sc-for>
               <span class="pm-cup" data-done="{{ g.finDone }}" role="img" aria-label="{{ g.finAria }}">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.35"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg>
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.35"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg>
               </span>
               <ol class="pm-stops">
                 <sc-for list="{{ g.stops }}" as="p" hint-placeholder-count="4">
@@ -2164,7 +2164,7 @@ class Component extends DCLogic {
     this.setState({ pmOpen: null }, () => { const n = back && document.body.contains(back) ? back : document.querySelector('[data-paper="' + id + '"]'); if (n) n.focus(); }); }
   // design preview: Business Studies with Nov 2024 P1 done (gold) and P2 racing at 40%; replays each time it is picked
   pmRaceDemo() { try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {};
-      this.pmAllPapers().filter(p => p.subject === "Business Studies").forEach(p => { delete all[p.id]; });   /* the map's own list: HOME.papers has no catalogue papers, so the demo replayed only once */ localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
+      this.pmAllPapers().filter(p => p.subject === "Business Studies" || p.subject === "Geography").forEach(p => { delete all[p.id]; });   /* the map's own list: HOME.papers has no catalogue papers, so the demo replayed only once */ localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
     this._mapSeen = null; this.setState({ pmRace: true, pmSubj: "Business Studies", pvOpen: false, pmRaceSeq: (this.state.pmRaceSeq || 0) + 1 }, () => window.scrollTo(0, 0)); }
   // a subject picked (a chip or the sheet): remembered on this device, the map back at its top
   pmPickSubj(n) { try { localStorage.setItem("nx-map-subject", n); } catch (e) { /* storage off */ }
@@ -2211,8 +2211,13 @@ class Component extends DCLogic {
         : state === "new" ? p.total_marks + " marks · " + hrs(p.duration_minutes) : "Coming soon";
       // the race on the road runs on questions finished (Murci, 2026-10-02), not marks: finishing a paper wins its cup
       const comp = !g ? 0 : g.done ? 1 : g.missions.length ? g.closedN / g.missions.length : 0, pct = Math.round(100 * comp);   // the ring = questions (Murci, 2026-10-02)
-      const demo = s.pmRace && p.subject === "Business Studies" ? (p.year === 2024 && pno(p) === 1 ? { state: "done", pct: 88, tier: "top", meta: "Done · 132 / 150", comp: 1 }
-        : p.year === 2024 && pno(p) === 2 ? { state: "going", pct: 40, tier: "", meta: "Continue at Q 3", comp: 0.4 } : { state: "new", pct: 0, tier: "", meta: p.total_marks + " marks · " + hrs(p.duration_minutes), comp: 0 }) : null;
+      // design preview, "Cup race (demo)": Business Studies, the first three papers from Start done (gold, silver, bronze) and the
+      // fourth racing; Geography a finished track (mixed cups, the finish glowing). In the road's order: Nov 2024 P1, P2, Nov 2025 P2, P1.
+      const DEMO = { "Business Studies": { "2024-1": ["top", 132], "2024-2": ["solid", 98], "2025-2": ["finished", 71], "2025-1": [null, 0.35] },
+        "Geography": { "2024-1": ["top", 139], "2024-2": ["finished", 64], "2025-2": ["solid", 104], "2025-1": ["top", 127] } };
+      const dm = s.pmRace && DEMO[p.subject] && DEMO[p.subject][p.year + "-" + pno(p)];
+      const demo = !dm ? null : dm[0] ? { state: "done", pct: 100, tier: dm[0], meta: "Done · " + dm[1] + " / 150", comp: 1 }
+        : { state: "going", pct: Math.round(dm[1] * 100), tier: "", meta: "Continue at Q 3", comp: dm[1] };
       if (demo) return { p: p, g: g, state: demo.state, pct: demo.pct, tier: demo.tier, name: name, meta: demo.meta, nextId: "3", comp: demo.comp };
       return { p: p, g: g, state: state, pct: pct, tier: tier, name: name, meta: meta, nextId: nextId, comp: comp }; };
     // The road: one row per sitting (newest at the top, under the cup), Paper 1 left / Paper 2 right; one path through the papers
@@ -2285,7 +2290,7 @@ class Component extends DCLogic {
       if (last) { const fpts = last.cx === cup.x ? [{ x: last.cx, y: last.cy }, cup] : [{ x: last.cx, y: last.cy }, { x: last.cx, y: cup.y }, cup], FD = dense(fpts);
         dAll += round(fpts) + " ";
         if (order.every(A => A.x.state === "done")) { const fresh = order.some(A => (+this._mapSeen[A.x.p.id] || 0) < 1);
-          if (fresh) dNew += cut(FD, EDGE, FD.T - 28); else dDone += cut(FD, EDGE, FD.T - 28); } }
+          if (fresh) dNew += cut(FD, EDGE, FD.T - 36); else dDone += cut(FD, EDGE, FD.T - 36); } }
       try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; let ch = false;
         Object.keys(seenNow).forEach(k => { if (all[k] !== seenNow[k]) { all[k] = seenNow[k]; ch = true; } }); if (ch) localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
       const allDone = dn === ps.length && ps.length > 0;
