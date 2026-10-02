@@ -69,6 +69,8 @@ class ModelFloor extends HTMLElement {
     controls.maxDistance = 40;
     // Never let the camera drop under the floor the model is standing on.
     controls.maxPolarAngle = Math.PI * 0.495;
+    // still: a pose, not a toy: no drag-rotate, no zoom (and the page scrolls through it; see playClip for the pose)
+    if (this.hasAttribute("still")) controls.enabled = false;
     this._controls = controls;
 
     const pivot = new THREE.Group();
@@ -396,10 +398,12 @@ class ModelFloor extends HTMLElement {
     // with reduced motion the figure starts already in that pose rather than playing into it.
     const hold = once ? parseFloat(this.getAttribute("hold")) : NaN;
     this._holdAt = isFinite(hold) ? Math.min(hold, hit.duration) : null;
-    next.timeScale = this._rate(); const fade = parseFloat(this.getAttribute("fade")) || 0.3;
+    // still (with loop="once" and hold): the figure appears already in the held pose and never moves; no blend in from the bind pose
+    const still = this.hasAttribute("still");
+    next.timeScale = this._rate(); const fade = still ? 0 : parseFloat(this.getAttribute("fade")) || 0.3;
     next.fadeIn(fade).play();
     if (this.hasAttribute("paused")) next.paused = true;
-    if (this._holdAt != null && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (this._holdAt != null && (still || window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
       next.time = this._holdAt; next.paused = true; next.setEffectiveWeight(1); }
     if (this._action) this._action.crossFadeTo(next, fade, false);
     this._action = next;
