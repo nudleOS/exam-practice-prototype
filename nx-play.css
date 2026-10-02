@@ -1498,3 +1498,15 @@ body.nx-play.nx-compact.nx-compact main:not(#mq-stage):not([data-done]) { paddin
   body.nx-play main:not(#mq-stage) :is(div, span):has(> #f-num) { max-width:200px; }
   body.nx-play main:not(#mq-stage) [data-feed~="term"] { max-width:272px; }   /* the "+XP / +mark" chips centre under the sealed term */
 }
+/* the phone strip's face reacts (Murci's images, 2026-10-02): celebrating, thinking, zapped (then thinking, 1.6 s later) */
+.nx-typehead { position:relative; overflow:hidden; box-shadow:0 0 0 2px rgba(129, 177, 255, 0.35); }
+.nx-typehead[data-face="happy"] { background-image:url("assets/robot-face-happy.webp"); animation:nx-facepop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.nx-typehead[data-face="think"] { background-image:url("assets/robot-face-think.webp"); }
+.nx-typehead[data-face="zap"] { background-image:url("assets/robot-face-zap.webp"); }
+.nx-typehead[data-face="zap"]::after { content:""; position:absolute; inset:0; background:#0f1d47 url("assets/robot-face-think.webp") center / 112% no-repeat;
+  animation:nx-thinkin 0.3s ease 1.6s both; }
+.nx-typehead[data-face="zap"][data-zk="1"]::after { animation-name:nx-thinkin1; }
+@keyframes nx-thinkin { from { opacity:0; } }
+@keyframes nx-thinkin1 { from { opacity:0; } }
+@keyframes nx-facepop { from { transform:scale(0.7); } }
+@media (prefers-reduced-motion: reduce) { .nx-typehead, .nx-typehead::after { animation:none !important; } }

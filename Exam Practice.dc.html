@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=141">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=142">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=36">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -986,7 +986,7 @@
         </div>
       </div>
     </sc-if>
-    <div class="nx-typestrip" aria-hidden="true" style="--kb:{{ kbOff }}"><span class="nx-typehead"></span><p>{{ coachBubble }}</p></div>
+    <div class="nx-typestrip" aria-hidden="true" style="--kb:{{ kbOff }}"><span class="nx-typehead" data-face="{{ stripFace }}" data-zk="{{ stripZk }}"></span><p>{{ coachBubble }}</p></div>
     <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; --kb:{{ kbOff }}; z-index:24; pointer-events:none; display:{{ footShow }}">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; padding:0 {{ footPadX }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
         <span style="display:{{ footSpacer }}"></span>
@@ -3536,6 +3536,9 @@ class Component extends DCLogic {
       coachShadowH: wide ? "20px" : "10px", coachShadowTint: shadowTint,
       coachModelOn: !s.reduced && !s.saveData, coachPoster: true, playClip: s.playClip, playLoop: s.playLoop == null ? "once" : s.playLoop, playFrom: s.playFrom || (s.playClip === "greet" ? String(NX_GREET.from) : ""), playHold: s.playHold || (s.playClip === "greet" ? String(NX_GREET.hold) : ""),   /* practice: the silhouette until the model has loaded (nx-play hides it then) */
       // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
+      // the phone strip's face (Murci's images, 2026-10-02): celebrating on full marks, zapped on a miss (then thinking while its hint
+      // shows), thinking while an answer is read; idle otherwise. stripZk alternates per try, so a second miss zaps again.
+      stripFace: { full: "happy", zero: "zap", partial: "zap", out: "zap", marking: "think", waiting: "think" }[outcome] || "idle", stripZk: String((reply ? reply.try : 0) % 2),
       coachBubble: hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? hintLine : waitHint ? words.zero : retryNow ? "Your turn. Try again." : words[outcome] || framing,
       coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : waitHint ? "wait" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
