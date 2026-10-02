@@ -752,6 +752,8 @@
           cells.push({ poly: [...slice(A, A.ring[0], A.ring[1]), ...slice(B, B.ring[0], B.ring[1]).reverse()], ring: 1 });
           cells.push({ poly: [...slice(A, A.ring[1], A.len), ...between, ...slice(B, B.ring[1], B.len).reverse()], ring: 2 }); }
         const layer = $("shards"), G = 0.0026, maxD = Math.hypot(w, h) / 2, landings = [], pieces = [], hits = [];
+        // the floor the glass lands on: the screen's bottom, or the top of the host's bottom bar when the host marks its row --floor-on: 1
+        const AF = $("after"), GROUND = AF && getComputedStyle(AF).getPropertyValue("--floor-on").trim() === "1" ? Math.round(AF.getBoundingClientRect().top) : innerHeight;
         const make = ({ poly, ring }) => {
           // A window the size of the piece, clipped to its shape, holding a full-size copy of the card offset into place.
           const bx = Math.max(0, Math.floor(Math.min(...poly.map(q => q.x))) - 2), by = Math.max(0, Math.floor(Math.min(...poly.map(q => q.y))) - 2);
@@ -775,12 +777,12 @@
           const spin = small ? 1.8 : 0.8; let rx = 0, rz = 0, wx = rnd(0.25, 0.9) * spin * (Math.random() < 0.5 ? -1 : 1), wz = rnd(-0.4, 0.4) * spin;
           let aimX = null;
           if (rb && rb.rain) {   // glassRain: tossed up, then over the whole screen; about 30% aimed at the robot's head (it is hit every time)
-            const sx = r.left + c.x * k, fl = innerHeight - 6 - (r.top + c.y * k);
+            const sx = r.left + c.x * k, fl = GROUND - 6 - (r.top + c.y * k);
             aimX = Math.random() < 0.3 ? rb.cx + rnd(-0.6, 0.6) * rb.halfW : rnd(10, innerWidth - 10);
             vy = -rnd(0.12, 0.34); vx = (aimX - sx) / ((-vy + Math.sqrt(vy * vy + 2 * G * fl)) / G);   // x covered by the time it falls to the floor
           }
           const bin = Math.round((aimX != null ? aimX : r.left + c.x * k + dx / dd * 60) / 34), level = PILE[bin] = Math.min(28, (PILE[bin] || 0) + Math.min(3.2, size * 0.05 + rnd(0.6, 1.4)));
-          const floor = innerHeight - 6 - level - (r.top + c.y * k), e = small ? 0.34 : 0.16;
+          const floor = GROUND - 6 - level - (r.top + c.y * k), e = small ? 0.34 : 0.16;
           // 2D on purpose: a true rotateX on a clip-path piece is re-rasterised every frame (measured: 17-26 fps vs 57 without the
           // clip). Squashing along its own axis by cos(rx) reads as the same tumble, and lying flat is cos(80°): a flat sliver.
           // Order matters: spin (rotate) first, THEN squash along the screen's vertical, so a resting piece is a flat horizontal

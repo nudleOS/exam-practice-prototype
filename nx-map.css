@@ -286,3 +286,4 @@ body:has(.pv-drag[data-dragging]) { user-select: none; -webkit-user-select: none
 body.nx-play.pv-bottom.pv-tall [data-footer], body.nx-play.pv-bottom.pv-tall .mcqp .stage > .after { visibility: hidden; }
 /* F4 typing on a phone: the bottom paper steps aside (kept as it was) and comes back when the keyboard closes */
 body.pv-tucked .pv[data-layout="bottom"] { visibility: hidden; pointer-events: none; }
+@media (max-width: 600px) { body.nx-play.pv-bottom [data-footer]:not(:has([data-keypad])), body.nx-play.pv-bottom .mcqp .stage > .after { bottom: var(--pv-h) !important; } }

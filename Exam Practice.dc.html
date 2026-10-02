@@ -17,7 +17,7 @@
   <script src="paper-ls-p1-2026.js?v=2"></script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
-  <script src="mcq-play.js?v=43"></script>
+  <script src="mcq-play.js?v=44"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -80,8 +80,8 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=134">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=21">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-play.css?v=136">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-map.css?v=22">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -1803,12 +1803,16 @@ class Component extends DCLogic {
     // to be just under the cards like on desktop"; it was at the screen's bottom since 09-30). The place goes in custom properties
     // (nx-play reads them) so the page's own inline style for the footer never fights it. Not with the keypad.
     const typing = document.body.classList.contains("nx-typing");
-    const dock = !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
+    // a phone: the row is a fixed bar at the screen's bottom (Murci, 2026-10-02: "Fixed bottom bar"; docked under the card it moved
+    // with every question), never docked. Its height lifts the robot and its rocks onto it (nx-play reads --nx-bar).
+    const phone = innerWidth <= 600;
+    if (phone && fe && !typing) { const bh = Math.round(fe.getBoundingClientRect().height) + "px"; if (fe.offsetHeight && document.body.style.getPropertyValue("--nx-bar") !== bh) document.body.style.setProperty("--nx-bar", bh); }
+    const dock = !phone && !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
     // typing: the strip takes the room left of the row (its leftmost button), and the panel stops 12 px above the strip
     if (typing) { const ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
-      const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, stack = left < innerWidth / 2,
+      const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, stack = phone || left < innerWidth / 2,
         rh = bs.length ? Math.round(Math.max(...bs.map(b => b.getBoundingClientRect().height))) : 0,
-        r = stack ? "12px" : Math.max(12, Math.round(innerWidth - left + 8)) + "px", up = (stack ? rh + 8 : 0) + "px";
+        r = stack ? "12px" : Math.max(12, Math.round(innerWidth - left + 8)) + "px", up = (phone && fe ? Math.round(fe.getBoundingClientRect().height) : stack ? rh + 8 : 0) + "px";
       if (ts && ts.style.getPropertyValue("--typ-r") !== r) ts.style.setProperty("--typ-r", r);
       if (ts && ts.style.getPropertyValue("--typ-up") !== up) ts.style.setProperty("--typ-up", up);
       // a long hint must not climb over the field (measured at 360x640: a 5-line hint ran 54 px over it): it gets the room between
@@ -2370,7 +2374,8 @@ class Component extends DCLogic {
     // where a ray from the crack point meets the field's edge
     const edge = a => { const dx = Math.cos(a), dy = Math.sin(a), tx = dx > 0 ? (W - cx) / dx : dx < 0 ? -cx / dx : Infinity, ty = dy > 0 ? (H - cy) / dy : dy < 0 ? -cy / dy : Infinity, t = Math.min(tx, ty); return [cx + dx * t, cy + dy * t]; };
     const corners = [[0, 0], [W, 0], [W, H], [0, H]].map(p => ({ p, a: Math.atan2(p[1] - cy, p[0] - cx) }));
-    const ground = innerHeight - 26, G = 2600, all = [];
+    // the ground: the screen's bottom, or (a phone, keyboard down) the top of the action bar the robot's rock now stands on
+    const fbar = innerWidth <= 600 && !document.body.classList.contains("nx-typing") && document.querySelector("[data-footer]"), ground = (fbar ? Math.round(fbar.getBoundingClientRect().top) : innerHeight) - 26, G = 2600, all = [];
     // 1 · it is WRONG, unmistakably (Murci, 2026-09-30: "users really perceive that as being the wrong answer and not guess what
     // happened"): the whole field turns red with a cross, the phone buzzes (Android: iOS gives the web no vibration), it shakes
     // three times, then cracks run out from one point; only then does it break (below, at CRACK_AT)

@@ -1459,3 +1459,19 @@ body.nx-play [data-playclose]:focus-visible { outline:3px solid #81b1ff; outline
   body.nx-play [data-playhead] > div:first-child { grid-template-columns:auto auto minmax(0, 1fr) auto auto !important; grid-template-areas:"map brand prog stats av" !important; }
   body.nx-play [data-playclose] { grid-area:map !important; justify-self:start; }
 }
+
+/* ==== a phone's action bar (Murci, 2026-10-02: "Fixed bottom bar") ====
+   Back / Skip / Next / Try again in one bar at the screen's bottom on every question, the multiple-choice row too (its dock is off on
+   a phone). The robot, its rocks and plants stand on the bar (margin-bottom: absolutely placed boxes move up by it). The keyboard:
+   the bar sits on the keys; the paper: on the paper's edge (nx-map). --nx-bar: the bar's height (measured by the host; this is the
+   multiple choice's, which has no host measure). */
+@media (max-width:600px) {
+  body.nx-play { --nx-bar:calc(66px + env(safe-area-inset-bottom, 0px)); }
+  body.nx-play [data-footer]:not(:has([data-keypad])), body.nx-play .mcqp .stage > .after { left:0 !important; right:0 !important; top:auto !important; bottom:0 !important;
+    box-sizing:border-box; min-height:calc(66px + env(safe-area-inset-bottom, 0px)); padding:10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) !important; margin:0 !important;
+    background:rgba(var(--nx-c, 25,27,30), 0.97); border-top:1px solid var(--nx-pill-line); pointer-events:auto; }
+  body.nx-play .mcqp .stage > .after { --after-dock:0 !important; display:flex; align-items:center; justify-content:space-between !important; z-index:24; }
+  body.nx-play.nx-typing [data-footer]:not(:has([data-keypad])) { bottom:var(--kb, 0px) !important; }
+  body.nx-play .nx-bg .nx-rocks, body.nx-play .nx-bg .nx-fill, body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"], body.nx-play .mcqp .pal { margin-bottom:var(--nx-bar) !important; }
+}
+@media (max-width:600px) { body.nx-play .mcqp .stage > .after { --floor-on:1; } }   /* the MCQ's glass lands on the bar, not under it */
