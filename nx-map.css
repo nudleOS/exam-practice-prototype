@@ -5,7 +5,10 @@
 .pm-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(120% 55% at 50% -12%, rgba(30, 70, 255, 0.16), transparent 62%), #03122c; }
 .pm { position: relative; z-index: 1; box-sizing: border-box; transition: padding-right 300ms ease; }
-.pm-col { box-sizing: border-box; width: min(520px, 100%); margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
+.pm-col { box-sizing: border-box; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
+@media (min-width: 600px) { .pm-col { padding-left: 32px; padding-right: 32px; } }
+/* the subjects: one column on a phone; side by side wherever two paths fit (the page's width is used, edge to edge) */
+@media (min-width: 720px) { .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); column-gap: 48px; align-items: start; } }
 .pm-sr { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* design preview switches (⋯ → Design preview) */
@@ -14,17 +17,15 @@
   color: #8fa0d6; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .pm-pv[aria-pressed="true"] { background: rgba(0, 104, 248, 0.2); color: #fff; }
 
-/* subject chips: they WRAP (2026-10-02: no chip is ever cut); each carries its subject's colour */
-.pm-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 6px; }
-.pm-chip { box-sizing: border-box; min-height: 44px; display: inline-flex; align-items: center; gap: 7px; padding: 0 12px; border-radius: 999px;
-  border: 1px solid rgba(129, 177, 255, 0.28); background: transparent; color: #c9d2f0; font: inherit; font-size: 13.5px; font-weight: 600;
+/* subject chips: they wrap (never cut), start at the page's left edge, and stay small and sleek */
+.pm-chips { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 6px; padding: 14px 0 4px; }
+.pm-chip { box-sizing: border-box; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 11px; border-radius: 999px;
+  border: 1px solid rgba(129, 177, 255, 0.24); background: transparent; color: #c9d2f0; font: inherit; font-size: 12.5px; font-weight: 600;
   white-space: nowrap; cursor: pointer; }
-.pm-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--sc); }
+.pm-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--sc); }
 .pm-chip[aria-pressed="true"] { background: var(--sc); border-color: var(--sc); color: #04122c; }
 .pm-chip[aria-pressed="true"] .pm-dot { background: #04122c; }
 .pm-chip:focus-visible, .pm-node:focus-visible, .pm-go:focus-visible, .pm-src:focus-visible, .pm-x:focus-visible { outline: 3px solid #81b1ff; outline-offset: 3px; }
-.pm-note { margin: 4px 0 8px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(224, 161, 15, 0.35);
-  background: rgba(224, 161, 15, 0.08); font-size: 13px; line-height: 1.5; color: #f0c25e; }
 
 /* a subject and its path */
 .pm-group { margin: 22px 0 18px; --sc: #93a4d6; --sc-rgb: 147, 164, 214; }
@@ -41,9 +42,8 @@
 .pm-link { position: absolute; left: 28%; width: 44%; box-sizing: border-box; border: 0 dotted rgba(var(--sc-rgb), 0.5); border-top-width: 3px; }
 .pm-link[data-dir="lr"] { border-right-width: 3px; border-top-right-radius: 40px; }
 .pm-link[data-dir="rl"] { border-left-width: 3px; border-top-left-radius: 40px; }
-/* the last link runs in to the finish, at the centre */
-.pm-link[data-dir="lc"] { width: 22%; border-right-width: 3px; border-top-right-radius: 32px; }
-.pm-link[data-dir="rc"] { left: 50%; width: 22%; border-left-width: 3px; border-top-left-radius: 32px; }
+/* the first link runs from the cup (centre, top) across and down to the newest paper: the path climbs to the cup */
+.pm-link[data-dir="cl"] { width: 22%; border-left-width: 3px; border-top-left-radius: 32px; }
 
 /* a stop: the node, its name and one line of state under it */
 .pm-stop { position: absolute; width: 50%; display: flex; flex-direction: column; align-items: center; gap: 7px; transform: translateX(-50%); }
@@ -118,32 +118,15 @@
 .pm-home:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .pm-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* the finish (the old map's cup, redrawn flat): a checkered banner over a plinth with the cup; gold when the subject is done */
-.pm-finish { position: absolute; left: 50%; width: 60%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-.pm-flag { display: grid; place-items: center; width: 92px; height: 20px; border-radius: 4px 4px 0 0;
-  background: repeating-conic-gradient(#e8edff 0 25%, #0b1430 0 50%) 0 0 / 10px 10px; }
-.pm-flag span { padding: 1px 7px; border-radius: 4px; background: #03122c; font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
-  text-transform: uppercase; color: #e8edff; }
-.pm-cup { box-sizing: border-box; width: 84px; height: 58px; display: grid; place-items: center; border-radius: 0 0 18px 18px;
-  background: #0b1d47; border: 2px solid rgba(var(--sc-rgb), 0.55); border-top: none; color: #f5c443;
-  box-shadow: 0 0 0 6px #03122c; }
-.pm-finish[data-done="true"] .pm-cup { background: #3a2c05; border-color: #f5c443; box-shadow: 0 0 0 6px #03122c, 0 0 26px rgba(245, 196, 67, 0.45); }
-.pm-fin-name { margin-top: 8px; font-size: 14px; font-weight: 700; color: #eef2ff; }
-.pm-fin-meta { font-size: 12.5px; color: #8fa0d6; }
-.pm-finish[data-done="true"] .pm-fin-name { color: #f5c443; }
+/* the cup alone at the top of a subject's path (the goal the path climbs to); gold and glowing once every paper is done */
+.pm-cup { position: absolute; left: 50%; top: 0; width: 56px; height: 56px; transform: translateX(-50%); display: grid; place-items: center;
+  border-radius: 50%; background: #03122c; color: rgba(245, 196, 67, 0.55); }
+.pm-cup[data-done="true"] { color: #f5c443; filter: drop-shadow(0 0 10px rgba(245, 196, 67, 0.55)); }
 
-/* home: the level row (the way to the map) */
-.hm-level { box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 18px;
-  border: 1px solid rgba(129, 177, 255, 0.25); background: rgba(13, 26, 63, 0.7); }
-.hm-level-go { flex: 1; min-width: 0; min-height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border: none;
-  border-radius: 13px; background: transparent; color: #9fbcff; text-align: left; cursor: pointer; font: inherit; }
-.hm-level-go svg { flex: none; }
-.hm-level-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.hm-level-txt b { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hm-level-txt span { font-size: 12.5px; color: #8fa0d6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hm-level-change { flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.45);
-  background: transparent; color: #9fbcff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-.hm-level-go:focus-visible, .hm-level-change:focus-visible, .lv-opt:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+/* home: the level, one line of text (it opens the study-level sheet) */
+.hm-level-link { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border: none; border-radius: 12px;
+  background: transparent; color: #b9cdf0; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.hm-level-link:focus-visible, .lv-opt:focus-visible, .lv-select:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 
 /* the level sheet */
 .lv-group { display: flex; flex-direction: column; gap: 8px; }
@@ -154,3 +137,12 @@
 .lv-opt b { font-size: 15px; font-weight: 800; }
 .lv-opt span { font-size: 12px; color: #8fa0d6; }
 .lv-opt[aria-checked="true"] { border: 2px solid #5b8cff; background: rgba(30, 70, 255, 0.18); }
+
+/* the study-level sheet: the qualification dropdown (native: the phone's own picker), then the levels */
+.lv-field { display: flex; flex-direction: column; gap: 8px; }
+.lv-select-wrap { position: relative; display: block; }
+.lv-select { box-sizing: border-box; width: 100%; min-height: 50px; padding: 0 44px 0 14px; border-radius: 14px; border: 1px solid rgba(129, 177, 255, 0.35);
+  background: #0a1534; color: #fff; font: inherit; font-size: 15px; font-weight: 700; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.lv-select option { background: #0d1a3f; color: #fff; }
+.lv-select-wrap svg { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #9fbcff; pointer-events: none; }
+.lv-err { margin: 0; font-size: 13px; color: #ff9b9b; }
