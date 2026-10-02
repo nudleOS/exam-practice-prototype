@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=133">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=134">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=21">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -3460,7 +3460,7 @@ class Component extends DCLogic {
       playMarksAria: Math.max(0, this.earnedNow() - (this._mcqPending || 0)) + " of " + ((this.paper() || {}).total || 0) + " marks",
       footShow: mcq ? "none" : "block",
       playClose: () => s.drill ? this.endDrill(false) : this.setState({ screen: "map" }),
-      playCloseAria: s.drill ? "End the drill" : "Map", playCloseHasPopup: "false",
+      playCloseAria: s.drill ? "End the drill" : "Back to past papers", playCloseHasPopup: "false",
       hasDrillChip: !!s.drill, drillChip: s.drill ? s.drill.label + " drill · " + (s.pi + 1) + " of " + s.drill.mission.parts.length : "",
       // What a part is, in a drill: new numbers from a recipe, or a repeat that pays no XP.
       hasPartTag: !!(part.recipe || part._repeat), partTag: part.recipe ? "New numbers · Nexera recipe" : "Practised · no XP",

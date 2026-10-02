@@ -1449,3 +1449,13 @@ body.nx-play.nx-typing .nx-typestrip { bottom:calc(var(--kb, 0px) + 8px + var(--
 }
 /* F6 the medal line under a sealed term was 10.5 px on a phone */
 @media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-termtier] { font-size:11px; } }
+/* F7 back to the papers: the header's Map button as an arrow alone (no box, no word), first in the header */
+body.nx-play [data-playclose], body.nx-play [data-playclose]:has(.pc-lbl) { display:grid !important; place-items:center; width:40px !important; height:40px !important;
+  padding:0 !important; margin-left:-6px; border:none !important; background:transparent !important; box-shadow:none !important; color:#9fbcff !important; }
+body.nx-play [data-playclose] :is(.pc-lbl, .pc-map) { display:none !important; }
+body.nx-play [data-playclose] .pc-chev { display:block !important; width:20px; height:20px; }
+body.nx-play [data-playclose]:focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+@media (max-width:600px) {
+  body.nx-play [data-playhead] > div:first-child { grid-template-columns:auto auto minmax(0, 1fr) auto auto !important; grid-template-areas:"map brand prog stats av" !important; }
+  body.nx-play [data-playclose] { grid-area:map !important; justify-self:start; }
+}
