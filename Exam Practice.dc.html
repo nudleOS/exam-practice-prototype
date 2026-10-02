@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=127">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=14">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=15">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -143,8 +143,8 @@
     <div data-screen-label="01 Home" style="position:relative; min-height:100vh; min-height:max(100dvh, {{ homeMinH }}); display:{{ homeDisplay }}; flex-direction:column; grid-template-columns:55% 45%; grid-template-rows:auto auto 1fr auto auto 1fr; grid-template-areas:'top top' 'modes modes' 'stage .' 'stage head' 'stage act' 'stage .'; overflow-x:clip">
 
       <div style="grid-area:top; position:relative; z-index:8; flex:none; display:flex; align-items:center; gap:8px; padding:{{ topPad }}">
-        <img src="assets/nexera-mark.png" alt="Nexera" style="width:24px; height:24px; display:block; flex:none" />
-        <span style="font-size:14px; font-weight:700; color:var(--text); white-space:nowrap">Exam practice</span>
+        <span class="nx-brand hm-brand"><span class="nx-nudle">Nudle</span><span class="nx-sep" aria-hidden="true"></span><img class="nx-nexera" src="assets/nexera-wordmark.webp" alt="Nexera"></span>
+        <span class="hm-title">Exam practice</span>
         <button data-trigger="preview" onClick="{{ togglePreview }}" aria-expanded="{{ pvOpen }}" aria-controls="design-preview" aria-label="Design preview controls" style="box-sizing:border-box; min-height:36px; margin-left:4px; padding:0 10px; border:1px dashed var(--line2); border-radius:18px; background:transparent; color:var(--text3); display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg><span style="display:{{ brandTextDisplay }}">Preview</span>
         </button>
@@ -162,9 +162,6 @@
           <sc-for list="{{ homeModes }}" as="hm" hint-placeholder-count="4">
             <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
           </sc-for>
-        </div>
-        <div role="group" aria-label="Design preview" style="display:flex; flex-wrap:wrap; justify-content:flex-start; align-items:center; gap:2px; padding:3px; border-radius:12px">
-          <button data-studyreset="true" onClick="{{ studyResetGo }}" style="min-height:32px; padding:0 8px; border:1px dashed var(--line2); border-radius:9px; background:transparent; color:var(--text3); font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">Ask "Your studies" again</button>
         </div>
       </div>
       </sc-if>
@@ -195,6 +192,7 @@
       </div>
 
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
+        <button type="button" class="hm-level-link" data-trigger="level" onClick="{{ lvOpenGo }}" aria-haspopup="dialog" aria-label="{{ hmLevelAria }}">{{ hmLevelTitle }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
         <sc-if value="{{ showContinueCard }}" hint-placeholder-val="{{ false }}">
           <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
             <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:13px; font-weight:600; color:#b9bec4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
@@ -202,7 +200,6 @@
             <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ continueLabel }}</button>
           </div>
         </sc-if>
-        <button type="button" class="hm-level-link" data-trigger="level" onClick="{{ lvOpenGo }}" aria-haspopup="dialog" aria-label="{{ hmLevelAria }}">{{ hmLevelTitle }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
         <sc-if value="{{ showStartBlock }}" hint-placeholder-val="{{ true }}">
           <button data-homestart="true" onClick="{{ hmMapGo }}" style="box-sizing:border-box; width:{{ startW }}; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
         </sc-if>

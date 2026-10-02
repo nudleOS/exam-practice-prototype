@@ -251,3 +251,8 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 .rv-another { margin-top: 10px; min-height: 50px; border-radius: 14px; border: 1px solid rgba(129, 177, 255, 0.3); background: transparent; color: #c9d2ff;
   font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; }
 .rv-go:focus-visible, .rv-another:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+
+/* the home's brand: Nudle | nexera, as the question pages had it; "Exam practice" beside it where there is room */
+.hm-brand { margin-right: 2px; }
+.hm-title { font-size: 14px; font-weight: 700; color: #eef2ff; white-space: nowrap; }
+@media (max-width: 599px) { .hm-brand .nx-nudle { font-size: 22px; } .hm-brand .nx-nexera { height: 20px; } .hm-brand .nx-sep { height: 20px; } .hm-title { display: none; } }
