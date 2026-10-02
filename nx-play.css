@@ -531,9 +531,6 @@ html[data-nx="dark"].nx-app, html[data-nx="dark"] body.nx-app {
 /* the page: the play screen's gradient, fixed, so every screen reads as the same place */
 html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)) fixed !important; min-height:100vh; }
 html[data-nx="dark"].nx-app { background:var(--nx-top); }
-/* the map (vortex-map.js) on the navy look: its plates, caption card and road in navy, not the module's charcoal (--surface #1f2226) */
-html[data-nx="dark"] body.nx-app .vm { --surface:#0c1c36; --surface2:#13294f; --road-top:#1a2e54; --road-edge:#06102a; --hair:rgba(120,160,230,0.16); }
-
 /* the border shine back on the waiting cards (Murci, 2026-09-30): the component's running light (a bright arc around the 1 px ring),
    over the navy card's hairline. The earlier navy rule had switched it off (animation:none). */
 body.nx-play .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {

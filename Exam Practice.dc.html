@@ -79,7 +79,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=125">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=126">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=5">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1248,9 +1248,6 @@ const HOME = {
 // model). Set to "assets/companion-greet.webp" once it exists; until then the silhouette holds
 // its place so nothing jumps and no request 404s.
 const POSTER_SRC = null;
-// The companion's walk loop, once it exists (Murci is generating it on Tripo, same rig).
-// Until then the companion glides along the road and greets on arrival.
-const WALK_CLIP = null;
 // ── Topic drills (brief 10). Topics per part come from the service's approved paper
 // (nexera-exam-service/data/papers/fm-n6-2022-11/paper.json); weights from the N6 syllabus (LOOP §5.4).
 const FM_TOPIC_OF = {"1.1.1": "Flow in pipes and hydraulic gradient", "1.1.2": "Flow in pipes and hydraulic gradient", "1.2": "Flow in pipes and hydraulic gradient", "1.3": "Flow in pipes and hydraulic gradient", "1.4.1": "Flow in pipes and hydraulic gradient", "1.4.2": "Flow in pipes and hydraulic gradient", "1.4.3": "Flow of water in open channels, notches and weirs", "1.4.4": "Flow in pipes and hydraulic gradient", "1.4.5": "Flow in pipes and hydraulic gradient", "2.1": "Flow of water in open channels, notches and weirs", "2.2.1": "Flow of water through orifices", "2.2.2": "Flow of water through orifices", "2.2.3": "Flow of water through orifices", "2.3": "Ventilation", "3.1.1": "Pumps", "3.1.2": "Pumps", "3.1.3": "Pumps", "3.1.4": "Pumps", "3.1.5": "Pumps", "3.1.6": "Pumps", "3.2.1": "Pumps", "3.2.2": "Pumps", "3.3.1": "Pumps", "3.3.2": "Pumps", "3.3.3": "Pumps", "4.1.1": "Pelton wheel", "4.1.2": "Pelton wheel", "4.1.3": "Pelton wheel", "4.1.4": "Pelton wheel", "4.2": "Water turbines", "4.3.1": "Water turbines", "4.3.2": "Water turbines"};
@@ -1610,17 +1607,10 @@ class Component extends DCLogic {
       if (e.key !== "Escape") return;
       if (this.state.finishCard) { e.preventDefault(); this.closeFinish(); return; }
       if (this.state.figBig) { e.preventDefault(); this.closeFigBig(); return; }
-      if (this.state.card != null) { e.preventDefault(); this.closeCard(); return; }
       if (this.state.sheet || this.state.pop) { e.preventDefault(); this.closeLayer(); return; }
       if (this.state.pvOpen) { e.preventDefault(); this.closePreview(); }
     };
     document.addEventListener("keydown", this._esc);
-    // The tracker follows the scroll (one check per frame at most).
-    this._tsc = () => { cancelAnimationFrame(this._tscR); this._tscR = requestAnimationFrame(() => this.trackerCheck()); };
-    window.addEventListener("scroll", this._tsc, { passive: true });
-    // Brief 22: the vortex map says when a medal is tapped and where the next mission is drawn.
-    this._vopen = e => this.openCard(e.detail.index); window.addEventListener("vortex-open", this._vopen);
-    this._vdir = () => this.trackerCheck(); window.addEventListener("vortex-dir", this._vdir);
     // The teacher tool's writes arrive as a storage event (a tab never hears its own writes).
     this._st = e => { if (e.key === BUS_KEY || e.key === null) this.onBus(busRead()); };
     window.addEventListener("storage", this._st);
@@ -1659,28 +1649,14 @@ class Component extends DCLogic {
     if (sheet === "studies" && this.state.studyStep !== this._lastStudyStep) { const f = document.querySelector("[data-studies] button"); if (f && this._lastStudyStep != null) f.focus(); }
     this._lastStudyStep = sheet === "studies" ? this.state.studyStep : null;
     const pop = this.state.pop;
-    if (pop !== this._lastPop && ["mapview", "more", "ctinfo"].indexOf(pop) !== -1) {
+    if (pop !== this._lastPop && ["more", "ctinfo"].indexOf(pop) !== -1) {
       const m = document.querySelector('[data-menu="' + pop + '"]'), f = m && (m.querySelector('[role^="menuitem"][aria-checked="true"]') || m.querySelector('[role^="menuitem"], button'));
       if (f) f.focus(); }
     this._lastPop = pop;
     const scr = this.state.screen;
-    if (scr === "map" && this._lastScreen !== "map") {
-      if (this._lastScreen === "done") {
-        const m = this.missions()[this.state.mi];
-        const got = m ? m.parts.reduce((a, p) => a + (this.pg(p.key).best || 0), 0) : 0;
-        this.celebrate(this.state.mi, Math.max(0, this.earnedNow() - got));
-      }
-      this.scrollToNode(this.state.cel ? this.state.cel.at : this.suggested(), false);
-    }
     this._lastScreen = scr;
-    if (scr === "map") this.trackerCheck();
-    if (scr !== "map" && (this.state.finishCard || this.state.finishRun || this.state.mapClipOpts)) { this.finishClear(); this.setState({ finishCard: null, finishRun: false, mapClipOpts: null }); }
-    if (scr === "map") { const lp = document.querySelector("[data-lit]");
-      const L = lp ? Math.round(lp.getTotalLength()) : 0; if (L && L !== this.state.roadPx) this.setState({ roadPx: L }); }
-    if (this.state.card != null && this.state.card !== this._lastCard) {
-      const b = document.querySelector("[data-card-play]"); if (b) b.focus();
-    }
-    this._lastCard = this.state.card;
+    // the finish card belongs to the paper map: leaving the map closes it
+    if (scr !== "map" && this.state.finishCard) { this.finishClear(); this.setState({ finishCard: null }); }
     if (this._focusStem && scr === "play") { this._focusStem = false; const h2 = document.querySelector("[data-stem]"); if (h2) h2.focus({ preventScroll: true }); }
     if (scr === "done" && this._lastScreenD !== "done") this.doneArrive();
     this._lastScreenD = scr;
@@ -1826,7 +1802,6 @@ class Component extends DCLogic {
     const brand = n.parentElement, m = document.createElement("span"); m.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline";
     brand.style.setProperty("--nx-logo-nudge", "0px"); n.appendChild(m); const base = m.getBoundingClientRect().top; m.remove();
     const r = img.getBoundingClientRect(); if (!r.height) return; brand.style.setProperty("--nx-logo-nudge", (base - (r.top + r.height * NX_LOGO_BASE)).toFixed(1) + "px"); }
-  suggested() { return this.missions().findIndex(m => !m.parts.every(p => this.pg(p.key).closed)); }
   // ── Brief 23: the picker opens on "Your studies" until the learner has answered (or chosen every paper).
   openPicker(extra) {
     this.setState(Object.assign({ sheet: this.state.studiesAsked ? "subj" : "studies", studyStep: 1, studyDraft: this.studyDraftFrom(this.state.studies),
@@ -1888,30 +1863,7 @@ class Component extends DCLogic {
       editStudies: () => this.editStudies(),
       studyResetGo: () => { STUDIES_API.reset(); this.setState({ studies: null, studiesAsked: false, srLive: "Your studies will be asked again." }); } } };
   }
-  // The vortex map (brief 22), once it has laid out its road; null on the classic map.
-  vm() { const v = document.querySelector("vortex-map"); return v && v.ready ? v : null; }
-  // The pinned tracker's arrow: is the next mission above, below, or on screen?
-  trackerCheck() { if (this.state.screen !== "map") return; const i = this.suggested(), vm = this.vm(), n = !vm && i >= 0 && document.querySelector('[data-node="' + i + '"]');
-    // On the vortex map the arrow settles once the view does: a re-render of this page is a long task on a modest
-    // phone (30-50 ms measured on a 3.4 GB laptop), so it must not land mid-scroll.
-    if (vm) { clearTimeout(this._tdT); this._tdT = setTimeout(() => { const w = vm.where || "here"; if (this.state.screen === "map" && w !== (this.state.trackDir || "here")) this.setState({ trackDir: w }); }, 180); return; }
-    let d = "here"; if (n) { const r = n.getBoundingClientRect(), hdr = document.querySelector("header"), top = hdr ? hdr.getBoundingClientRect().bottom : 64;
-      if (r.bottom < top) d = "up"; else if (r.top > window.innerHeight - 90) d = "down"; }
-    if (d !== (this.state.trackDir || "here")) this.setState({ trackDir: d }); }
   earnedNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => b + (this.pg(p.key).best || 0), 0), 0); }
-  scrollToNode(i, smooth) {
-    const vm = this.vm(); if (vm && vm.scrollToMission(i, smooth)) return;              // a fixed medal can't scroll the page: the map does
-    const n = document.querySelector('[data-node="' + i + '"]');
-    if (n) n.scrollIntoView({ block: "center", behavior: smooth && !this.state.reduced ? "smooth" : "auto" });
-  }
-  // Focus returns to whatever opened the card (a sphere or the start button).
-  openCard(i) { this._cardOpener = document.activeElement; this.setState({ card: i }); }
-  closeCard() {
-    const i = this.state.card, back = this._cardOpener;
-    this.setState({ card: null }, () => {
-      const n = back && document.body.contains(back) && back !== document.body ? back : document.querySelector('[data-node="' + i + '"]');
-      if (n) n.focus(); });
-  }
   // Map preview seeds. "progress" is the home page's returning learner: 21 of 100, next up 1.4.
   seedMap(kind, after) {
     const paper = this.paper() || (this.papers || []).filter(x => x.id === HOME_TO_LOCAL[HOME.resume.paper_id])[0]; if (!paper) return;
@@ -1941,76 +1893,15 @@ class Component extends DCLogic {
       if (after) after();
     });
   }
-  // The finish moment on the map: the light runs up, the ring stamps on, the companion moves on.
-  celebrate(i, fromEarned) {
-    if (i < 0) return;
-    [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
-    if (this.state.reduced) { if (this._finishSeq) { this._finishSeq = false; this.setState({ cel: null, litHold: null }, () => this.showFinishCard()); return; }
-      this.setState({ cel: null, litHold: null }, () => this.openPending()); return; }
-    this.setState({ cel: { at: i, stamp: null }, litHold: fromEarned, mapClip: "greet", mapClipOpts: null },
-      () => this.scrollToNode(i, false));
-    this._cel1 = setTimeout(() => this.setState({ litHold: null }), 450);
-    this._cel2 = setTimeout(() => { this.setState({ cel: { at: i, stamp: i } }); if (!this._finishSeq) this.sectionBurst(i); }, 1550);
-    this._cel3 = setTimeout(() => {
-      if (this._finishSeq) { this._finishSeq = false; this.finishBeats(); return; }
-      this.setState({ cel: null, mapClip: WALK_CLIP || "" }, () => this.scrollToNode(this.suggested(), true));
-      this._cel4 = setTimeout(() => this.setState({ mapClip: "greet" }, () => this.openPending()), WALK_CLIP ? 1100 : 60);
-    }, 2700);
-  }
-  // ── Brief 20: the finish line ─────────────────────────────────────────────────────
-  canBurst() { return !this.state.reduced && !this.state.saveData && typeof window.confetti === "function"; }
-  // Particles only (WCAG 2.3.1: no flashes); every burst ends by ~2.5 s.
-  burstAt(el, kind) {
-    if (!this.canBurst() || !el) return;
-    const r = el.getBoundingClientRect(), x = (r.left + r.width / 2) / window.innerWidth, y = (r.top + r.height / 2) / window.innerHeight;
-    const base = { disableForReducedMotion: true, zIndex: 85, colors: ["#0068f8", "#4d9bff", "#81b1ff", "#671dff", "#3ddc97", "#ffd479"] };
-    if (kind === "section") { window.confetti(Object.assign({}, base, { particleCount: 36, spread: 70, startVelocity: 26, ticks: 90, scalar: 0.8, origin: { x: x, y: y } })); return; }
-    if (kind === "cannons") { [[60, 0.02], [120, 0.98]].forEach(a => window.confetti(Object.assign({}, base, { particleCount: 70, angle: a[0], spread: 55, startVelocity: 55, origin: { x: a[1], y: 0.75 } })));
-      return; }
-    // Fireworks: bursts around the anchor for 2.4 s, thinning as they go (the canvas-confetti README pattern).
-    const D = 2400, end = Date.now() + D; clearInterval(this._fw);
-    const shoot = () => { const left = end - Date.now(); if (left <= 0) { clearInterval(this._fw); return; }
-      window.confetti(Object.assign({}, base, { particleCount: Math.round(46 * left / D), startVelocity: 30, spread: 360, ticks: 60,
-        origin: { x: Math.min(0.9, Math.max(0.1, x + (Math.random() - 0.5) * 0.4)), y: Math.max(0.12, y - Math.random() * 0.25) } })); };
-    shoot(); this._fw = setInterval(shoot, 250);
-  }
-  // A section's last mission closing: a small burst from the medal that completed it (never during the paper finish).
-  sectionBurst(i) {
-    const P = (this.papers || []).find(p => p.id === this.state.paperId), m = this.missions()[i]; if (!P || !m) return;
-    const j = P.sections.findIndex(sec => sec.missions.some(x => x.id === m.id && x.title === m.title)); if (j < 0) return;
-    if (!P.sections[j].missions.every(x => x.parts.every(q => this.pg(q.key).closed))) return;
-    this.burstAt(document.querySelector('[data-node="' + i + '"]'), "section");
-  }
   finishData() { const ms = this.missions(), total = ms.reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0), earned = this.earnedNow();
     const pct = total ? Math.round(100 * earned / total) : 0, pm = PASS_MARKS[this.state.paperId];
     return { earned: earned, total: total, pct: pct, pass: pm ? pm.pct : null, tier: finishTier(pct, pm && pm.pct) }; }
   finishClear() { [this._fb1, this._fb2, this._fb3].forEach(clearTimeout); clearInterval(this._fw); cancelAnimationFrame(this._fcu);
     if (window.confetti && window.confetti.reset) window.confetti.reset(); }
-  // Beats (about 6 s): the companion reaches the flag → fireworks + dance → the reveal → the card.
-  finishBeats() {
-    const F = this.finishData(); this.finishClear();
-    this.setState({ finishRun: true, finishCard: null, cel: null, mapClip: "", mapClipOpts: null, mapLive: "You reached the finish line." }, () => {
-      const vm = this.vm(), b = document.querySelector("[data-finishbadge]"); if (vm) vm.scrollToFinish(true); else if (b) b.scrollIntoView({ block: "center", behavior: "smooth" }); });
-    this._fb1 = setTimeout(() => {
-      // Finished (below the line): the raised-hand wave; otherwise the dance, held on its arms-wide "yes".
-      if (F.tier === "finished") this.setState({ mapClip: "greet", mapClipOpts: { hold: 1.95 } });
-      else this.setState({ mapClip: "dance", mapClipOpts: { from: 4.5, hold: 7.0 } });
-      const b = document.querySelector("[data-finishbadge]");
-      if (F.tier === "top") { this.burstAt(b, "fireworks"); } else if (F.tier === "solid") { this.burstAt(b, "cannons"); }
-    }, 1150);
-    this._fb3 = setTimeout(() => this.showFinishCard(), 3900);
-  }
-  skipFinish() { this.finishClear(); const F = this.finishData();
-    this.setState({ mapClip: "" }, () => this.setState({ mapClip: F.tier === "finished" ? "greet" : "dance", mapClipOpts: F.tier === "finished" ? { from: 1.95, hold: 1.95 } : { from: 7.0, hold: 7.0 } }));
-    this.showFinishCard(); }
   showFinishCard() {
     const F = this.finishData(); [this._fb1, this._fb2, this._fb3].forEach(clearTimeout);
     this.setState({ finishRun: false, finishCard: F, finishShown: this.state.reduced ? F.earned : 0, mapLive: "Paper finished. " + F.earned + " of " + F.total + "." }, () => {
       const h = document.getElementById("finish-title"); if (h) h.focus({ preventScroll: true });
-      // A bottom-sheet card (phones): bring the flag and the dancing companion into the space above it.
-      const b = document.querySelector("[data-finishbadge]"), cd = document.querySelector("[data-finishcard] [role=dialog]"), hd = document.querySelector("header");
-      if (b && cd && !this.vm() && cd.getBoundingClientRect().left < window.innerWidth * 0.4) { const br = b.getBoundingClientRect(), top = hd ? hd.getBoundingClientRect().bottom : 64;
-        window.scrollBy({ top: br.top + br.height / 2 - (top + cd.getBoundingClientRect().top) / 2 - 40, behavior: this.state.reduced ? "auto" : "smooth" }); }
       if (this.state.reduced) return; const t0 = performance.now();
       const step = now => { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); this.setState({ finishShown: Math.round(F.earned * e) }); if (k < 1) this._fcu = requestAnimationFrame(step); };
       this._fcu = requestAnimationFrame(step); });
@@ -2785,37 +2676,6 @@ class Component extends DCLogic {
       prog[k] = merged; });
     this.setState({ drill: null, prog: prog, screen: "map", mapView: "topics" }, () => { window.scrollTo(0, 0); if (again) this.startDrill(d.slug, d.round + 1); });
   }
-  topicsVals(s, paper) {
-    const pid = paper ? paper.id : null, metas = TOPIC_META[pid];
-    if (!metas) return { topicRows: [], topicsFoot: "",
-      topicsIntro: pid === "aet" ? "Topics arrive when this paper's text is transcribed." : "This sample paper isn't tagged by topic." };
-    const maxW = Math.max.apply(null, metas.map(t => t.weight));
-    const rows = metas.map(t => {
-      const own = []; this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === t.slug) own.push(q); }));
-      const unseen = own.filter(q => { const g = this.pg(q.key); return !(g.tries > 0 || g.closed || g.waiting || g.memoSeen); }).length;
-      const ev = this.topicEvidence(pid, t.slug), canDrill = own.length > 0 || !!t.recipe;
-      const serve = t.recipe ? "Fresh numbers every time · sample recipe" + (unseen ? " · " + unseen + " new to you on the paper" : "")
-        : unseen ? unseen + (unseen === 1 ? " part" : " parts") + " new to you · " + own.length + " on this paper"
-        : own.length ? "Only repeats left · practice, no XP" : "No questions in our bank yet";
-      return { t: t, ev: ev, canDrill: canDrill, unseen: unseen, serve: serve, own: own.length };
-    });
-    // Suggested: the heaviest topic where the evidence is weakest, among topics with something new to serve.
-    const cand = rows.filter(r => r.canDrill && (r.t.recipe || r.unseen));
-    const best = cand.reduce((a, r) => { const v = r.t.weight * (1 - (r.ev.n ? r.ev.share : 0)); return !a || v > a.v ? { r: r, v: v } : a; }, null);
-    const COL = { none: "var(--text3)", building: "#81b1ff", ontrack: "#5fe6ab", strong: "#e3b341" };
-    return {
-      topicsIntro: "Ordered by how much of the syllabus each topic carries. Drill one topic at a time; nothing is locked.",
-      topicsFoot: "Topics come from the approved paper. Weights are from the N6 Fluid Mechanics syllabus. Recipes are samples awaiting curriculum approval.",
-      topicRows: rows.map(r => { const sug = !!best && best.r === r;
-        return { slug: r.t.slug, label: r.t.label, weight: r.t.weight + "% of the syllabus", weightPct: Math.round(100 * r.t.weight / maxW) + "%",
-          band: r.canDrill ? r.ev.text : "Not in the question bank", bandColor: COL[r.ev.band], serve: r.serve, serveColor: r.t.recipe ? "#5fe6ab" : r.unseen ? "#81b1ff" : "var(--text3)",
-          suggested: sug, canDrill: r.canDrill, disabled: !r.canDrill, cursor: r.canDrill ? "pointer" : "default",
-          border: sug ? "1.5px solid rgba(129,177,255,0.7)" : r.canDrill ? "1px solid var(--line2)" : "1px dashed var(--line2)",
-          bg: sug ? "rgba(0,104,248,0.10)" : r.canDrill ? "rgba(29,32,35,0.86)" : "transparent",
-          aria: r.t.label + ", " + r.t.weight + "% of the syllabus, " + (r.canDrill ? r.ev.text + ", " : "") + r.serve + (sug ? ", suggested" : "") + (r.canDrill ? ". Start a drill" : ""),
-          go: () => { if (r.canDrill) this.startDrill(r.t.slug, 0); } }; }),
-    };
-  }
   drillVals(s) {
     const d = s.drill; if (!d || s.screen !== "drillout") return {};
     const run = s.runLog || [], parts = d.mission.parts, n = parts.length;
@@ -2855,12 +2715,6 @@ class Component extends DCLogic {
     for (let i = mi + 1; i < ms.length; i++) if (!done(ms[i])) return i;
     for (let i = 0; i < mi; i++) if (!done(ms[i])) return i;
     return -1;
-  }
-  // Continue from page 4 leaves a card to open once the map's finish moment has played.
-  openPending() {
-    const n = this._openAfterCel; this._openAfterCel = null;
-    if (n == null || n < 0 || this.state.screen !== "map") return;
-    this.scrollToNode(n, !this.state.reduced); this.openCard(n);
   }
   doneArrive() {
     const s = this.state, m = this.mission(); if (!m) return;
@@ -3456,263 +3310,6 @@ class Component extends DCLogic {
       partTagColor: part.recipe ? "#5fe6ab" : "var(--text2)", partTagBg: part.recipe ? "rgba(61,220,151,0.10)" : "rgba(255,255,255,0.04)", partTagBorder: part.recipe ? "rgba(61,220,151,0.4)" : "var(--line2)" };
   }
 
-  // ── The map: one road, bottom to top, through question capsules and mission spheres.
-  mapVals(paper, missions, suggestedIdx, missionState, earned, total, phone, tablet, desk, vw) {
-    const s = this.state;
-    const VM = !s.classicMap;                                     // brief 22: the road runs across the wave into the vortex
-    const roadW = Math.max(280, Math.min(desk ? 560 : tablet ? 520 : 360, vw - 32));
-    // On the vortex map the bends swing wider (labels are placed around the medals, not under a fixed slot).
-    const cx = roadW / 2, amp = VM ? Math.min(phone ? 124 : 172, roadW * 0.41) : phone ? Math.min(64, roadW * 0.19) : tablet ? 104 : 124;
-    const nodeR = phone ? 31 : 35, STEP = phone ? 158 : 168, CAPH = 124;
-    // Spheres sit high in their slot so the two-line label below them has room.
-    const LIFT = phone ? 26 : 28, CLEAR = phone ? 90 : 100;
-    // The zig-zag the road follows. On the vortex map it turns twice as often (a full swing every 4 missions, not 8),
-    // so the track reads as a winding road even far back in perspective (Murci: "turns more that show the track").
-    const ZIG = VM ? [0, 1, 0, -1] : [0, 0.6, 1, 0.6, 0, -0.6, -1, -0.6];
-    // On the vortex map the bends are irregular, not a mirror-image zig-zag down the page's centre (Murci: "symmetrical,
-    // looks straight at the centre instead of random"). A seeded random (mulberry32, seeded from the paper's id) picks
-    // them: the same paper always winds the same way, so the geometry is stable across renders and visits.
-    let st = [...String(paper ? paper.id : "")].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
-    const rnd = () => { st = (st + 0x6D2B79F5) >>> 0; let t = st; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-    // One mission's sideways place, as a share of the bend's full swing: -1 = far left, 0 = the road's centre, 1 = far right.
-    // k: the mission's number along the road (0 = the first, on the vortex); prev: the previous mission's value (0 for the
-    // first); rnd(): a seeded random in [0, 1). Returning nothing keeps the old zig-zag for that mission.
-    const bendX = (k, prev, rnd) => {
-      if (k === 0) return 0;                                                   // the first mission sits on the vortex
-      const mag = 0.4 + 0.6 * rnd();                                           // how far out: never a timid 0.1 wiggle
-      // Mostly the road crosses to the other side; one time in four it winds on along the same side, further out.
-      // Either way it moves at least 0.4 of a swing, so every bend reads.
-      if (prev !== 0 && rnd() < 0.25) { const v = Math.sign(prev) * Math.min(1, Math.abs(prev) + 0.4 + 0.3 * rnd()); if (Math.abs(v - prev) >= 0.4) return v; }
-      return (prev === 0 ? (rnd() < 0.5 ? -1 : 1) : -Math.sign(prev)) * mag;
-    };
-    const nM = (paper ? paper.sections : []).reduce((a, sec) => a + sec.missions.length, 0), ZX = [];
-    for (let j = 0; j < nM; j++) { const v = VM ? bendX(j, j ? ZX[j - 1] : 0, rnd) : null; ZX.push(v == null ? ZIG[j % ZIG.length] : Math.max(-1, Math.min(1, v))); }
-    // The vortex map has no launch pad: the first mission sits right on the vortex, over the start card.
-    const items = [VM ? { kind: "start", h: 0 } : { kind: "start", h: 244, anchor: 120 }];
-    let k = 0;
-    // The road's plaques are LEVELS, one per question of the paper (Murci, 2026-09-30: "Question 1 and its sub questions is
-    // the first level"), not the paper's sections: LS's Section B holds Questions 2 and 3. A level that opens a new section
-    // names it (LS: "Section A"); FM's sections ARE its questions, so they say nothing twice. No level is locked (Murci).
-    const levels = [];
-    (paper ? paper.sections : []).forEach(sec => sec.missions.forEach(m => {
-      const lv = this.levelOf(m), last = levels[levels.length - 1];
-      if (!last || last.lv !== lv) levels.push({ lv: lv, sec: sec, section: !last || last.sec !== sec ? sec.title : "", missions: [] });
-      levels[levels.length - 1].missions.push(m); }));
-    levels.forEach(L => {
-      const one = L.sec.missions.every(m => this.levelOf(m) === L.lv);   // the section is this one question: its printed total is the question's
-      L.title = "Question " + L.lv; L.total = one && L.sec.total ? L.sec.total : L.missions.reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0);
-      if (/^question\b/i.test(L.section)) L.section = "";
-      // Every plaque after the first leaves headroom below it, so the companion can stand at the
-      // previous question's last mission without touching the plaque.
-      items.push({ kind: "cap", h: CAPH + (items.length > 1 ? CLEAR : 0), anchor: CAPH, sec: L });
-      L.missions.forEach(m => { items.push({ kind: "m", h: STEP, m: m, k: k++, i: missions.findIndex(x => x.id === m.id && x.title === m.title) }); });
-    });
-    items.push({ kind: "finish", h: 90 + CLEAR, anchor: 90 });
-    const roadH = items.reduce((a, it) => a + it.h, 0) + 40;
-    let acc = 20;
-    items.forEach(it => { it.y = it.anchor ? roadH - (acc + it.h) + it.anchor / 2 : roadH - (acc + it.h / 2) - (it.kind === "m" ? LIFT : 0); it.x = it.kind === "m" ? cx + amp * ZX[it.k] : cx; acc += it.h; });
-    // A smooth curve through every centre (Catmull-Rom as cubic Beziers), drawn bottom-up so the
-    // lit dash starts at Start.
-    const f = n => Math.round(n * 10) / 10, pts = items.map(it => [it.x, it.y]);
-    // The road starts just above the launch pad's back rim (its shadow layers included), so it
-    // rises out of the pad's beam instead of standing on the disc; the pad keeps its own centre.
-    const PAD_RAISE = 56;
-    pts[0] = [pts[0][0], pts[0][1] - PAD_RAISE];
-    let d = "M" + f(pts[0][0]) + " " + f(pts[0][1]);
-    for (let j = 0; j < pts.length - 1; j++) {
-      const p0 = pts[j - 1] || pts[j], p1 = pts[j], p2 = pts[j + 1], p3 = pts[j + 2] || p2;
-      d += " C" + f(p1[0] + (p2[0] - p0[0]) / 6) + " " + f(p1[1] + (p2[1] - p0[1]) / 6) + " " + f(p2[0] - (p3[0] - p1[0]) / 6) + " " + f(p2[1] - (p3[1] - p1[1]) / 6) + " " + f(p2[0]) + " " + f(p2[1]);
-    }
-    const lit = s.litHold != null ? s.litHold : earned;
-    const cel = s.cel;
-    const got = m => m.parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
-    const worth = m => m.parts.reduce((a, q) => a + (q.marks || 0), 0);
-    const nextIdx = cel ? -1 : suggestedIdx;
-    const ORB = {
-      "Clean run": { fill: "radial-gradient(circle at 35% 28%, #fbe39a, #dca834 46%, #8a6414 100%)", rim: "#ffe7a0", lip: "#6a4c0c", num: "#241903" },
-      "With hints": { fill: "radial-gradient(circle at 35% 28%, #ffffff, #cfd4db 46%, #7b818a 100%)", rim: "#f4f6f9", lip: "#565c64", num: "#1b1e23" },
-      "Memo shown": { fill: "radial-gradient(circle at 35% 28%, #f3bf98, #bb7a4c 46%, #683b1d 100%)", rim: "#eab089", lip: "#4a2911", num: "#211108" },
-      "In progress": { fill: "radial-gradient(circle at 35% 28%, #4a6ea8, #25365a 56%, #151d2e 100%)", rim: "#81b1ff", lip: "#17243d", num: "#ffffff" },
-      "1 waiting for a marker": { fill: "radial-gradient(circle at 35% 28%, #f8cc63, #d69711 46%, #7a5405 100%)", rim: "#ffd479", lip: "#5a3d03", num: "#211600" },
-      "Not started": { fill: "radial-gradient(circle at 35% 28%, #4d5563, #272b33 56%, #15171b 100%)", rim: "#3b414a", lip: "#0e1013", num: "#ffffff" },
-      next: { fill: "radial-gradient(circle at 34% 24%, rgba(255,255,255,0.38), rgba(255,255,255,0) 46%), linear-gradient(135deg, #0068f8 0%, #1e46ff 50%, #671dff 100%)", rim: "#a9c8ff", lip: "#261578", num: "#ffffff" } };
-    // the navy look: "Not started" as a navy-slate orb (was charcoal), still duller than "In progress" and "next"
-    if (this.nxApp()) ORB["Not started"] = { fill: "radial-gradient(circle at 35% 28%, #46618f, #1d3052 56%, #0b1529 100%)", rim: "#2f4a78", lip: "#07101f", num: "#ffffff" };
-    const roadNodes = items.filter(it => it.kind === "m").map(it => {
-      const m = it.m, i = it.i, st = missionState(m), mm = worth(m), g = got(m);
-      const closed = m.parts.every(q => this.pg(q.key).closed);
-      const next = i === nextIdx;
-      const label = next ? (st.label === "Not started" ? "Next up" : st.label) : closed && mm ? st.label + " · " + g + "/" + mm : st.label;
-      return { idx: String(i), number: m.id, title: m.title, tags: m.tags, state: label, vmBig: next,
-        stateBg: next ? "rgba(0,104,248,0.18)" : st.bg, stateColor: next ? "#ffffff" : st.color,
-        left: f(it.x - 75) + "px", top: f(it.y - nodeR) + "px", size: nodeR * 2 + "px", numSize: phone ? "15px" : "16px",
-        ring: (next ? ORB.next : ORB[st.label] || ORB["Not started"]).rim,
-        fill: (next ? ORB.next : ORB[st.label] || ORB["Not started"]).fill,
-        lip: (next ? ORB.next : ORB[st.label] || ORB["Not started"]).lip,
-        numColor: (next ? ORB.next : ORB[st.label] || ORB["Not started"]).num,
-        halo: next && !s.reduced,
-        numShadow: (next ? ORB.next : ORB[st.label] || ORB["Not started"]).num === "#ffffff" ? "0 1px 2px rgba(0,0,0,0.55)" : "0 1px 0 rgba(255,255,255,0.35)",
-        shadowW: Math.round(nodeR * 1.9) + "px", shadowHalf: Math.round(nodeR * 0.95) + "px", shadowTop: (nodeR * 2 + 2) + "px",
-        anim: cel && cel.stamp === i ? "stamp 700ms cubic-bezier(0.34,1.56,0.64,1) both" : "none",
-        hasBadge: closed && st.label !== "Not started", badgePath: "M5 12.5l4.5 4.5L19 7.5",
-        titleColor: closed || next ? "var(--text)" : "var(--text2)",
-        aria: "Question " + m.id + ", " + m.title + ". " + label + ". " + (mm ? mm + " marks." : "Not marked online."),
-        open: () => this.openCard(i) };
-    });
-    // A faint tinted zone behind each question, alternating azure and violet, for depth.
-    const roadZones = [];
-    items.forEach((it, j) => { if (it.kind !== "cap") return;
-      let end = j + 1; while (end < items.length && items[end].kind === "m") end++;
-      const top = items[end - 1].y - STEP / 2, bottom = it.y + CAPH / 2;
-      roadZones.push({ top: f(top) + "px", h: f(bottom - top) + "px", tint: roadZones.length % 2 ? "rgba(103,29,255,0.08)" : "rgba(0,104,248,0.08)" }); });
-    const roadCaps = items.filter(it => it.kind === "cap").map((it, capJ) => {
-      const sec = it.sec, t = sec.total || sec.missions.reduce((a, m) => a + worth(m), 0), e = sec.missions.reduce((a, m) => a + got(m), 0);
-      return { idx: String(capJ), top: f(it.y - 38) + "px", label: "Lv " + sec.lv + " · " + sec.title + (sec.total ? " · " + sec.total + " marks" : ""), earned: e, total: t || "—",
-        pct: (t ? Math.round(100 * e / t) : 0) + "%" };
-    });
-    // The companion stands beside the next mission (on the finish when all is done). Its side and
-    // its bubble's spot are chosen by least overlap with the road's plaques, spheres and labels,
-    // computed from the same geometry that places them. It is never taller than one road step.
-    const compH0 = Math.min(Math.round((phone ? 100 : tablet ? 120 : 136) * 1.7), STEP - 6);
-    const at = cel ? cel.at : suggestedIdx;
-    const tIt = items.filter(it => it.kind === "m" && it.i === at)[0] || items[items.length - 1];
-    const blockers = [];
-    items.forEach(it => {
-      if (it.kind === "cap") blockers.push([cx - 120, it.y - 44, cx + 120, it.y + 44]);
-      if (it.kind === "finish") blockers.push([cx - 110, it.y - 28, cx + 110, it.y + 28]);
-      if (it.kind === "start") blockers.push([cx - 130, it.y - 70, cx + 130, it.y + 160]);
-      if (it.kind === "m" && it !== tIt) blockers.push([it.x - 75, it.y - nodeR - 10, it.x + 75, it.y + nodeR + 76]);
-    });
-    if (tIt.kind === "m") {
-      blockers.push([tIt.x - nodeR - 8, tIt.y - nodeR - 8, tIt.x + nodeR + 8, tIt.y + nodeR + 8]);
-      blockers.push([tIt.x - 75, tIt.y + nodeR + 10, tIt.x + 75, tIt.y + nodeR + 76]);
-    }
-    const area = (L, T, W, H) => blockers.reduce((a, r) => a + Math.max(0, Math.min(L + W, r[2]) - Math.max(L, r[0])) * Math.max(0, Math.min(T + H, r[3]) - Math.max(T, r[1])), 0);
-    const clampX = (x, w) => Math.max(0, Math.min(roadW - w, x));
-    // Candidates: each side, standing level with the sphere or a little lower, full size or 85 %.
-    // The small penalty keeps the preferred pose when several are equally clear.
-    const flipSide = tIt.kind === "m" && ZX[tIt.k] < 0;
-    const cands = [];
-    [1, 0.85].forEach((sc, si) => [0, 30, 60].forEach((dy, di) => [0, 1].forEach(sideIdx => {
-      const h = Math.round(compH0 * sc), w = Math.round(h / 1.7), side = flipSide ? 1 - sideIdx : sideIdx;
-      const x = tIt.kind === "m" ? clampX(side === 0 ? tIt.x - nodeR - 12 - w : tIt.x + nodeR + 12, w) : clampX(side === 0 ? cx + 70 : cx - 70 - w, w);
-      const t = tIt.y + nodeR + 8 - h + dy;
-      cands.push({ x: x, t: t, w: w, h: h, a: area(x, t, w, h) * 10 + sideIdx + di * 2 + si * 3 });
-    })));
-    const pose = cands.sort((p1, p2) => p1.a - p2.a)[0];
-    const cL = pose.x, cT = pose.t, compW = pose.w, compH = pose.h;
-    blockers.push([cL, cT, cL + compW, cT + compH]);
-    const bubW = phone ? 172 : 214, bubH = 62, mid = cL + compW / 2;
-    const bub = [
-      { x: clampX(mid - bubW / 2, bubW), top: cT - bubH - 4, anchor: cT - 4, shift: "translateY(-100%)" },
-      { x: clampX(mid - bubW / 2, bubW), top: cT + compH + 6, anchor: cT + compH + 6, shift: "none" },
-      { x: clampX(cL + compW + 8, bubW), top: cT + 12, anchor: cT + 12, shift: "none" },
-      { x: clampX(cL - bubW - 8, bubW), top: cT + 12, anchor: cT + 12, shift: "none" },
-    ].map((c, j) => Object.assign({ a: area(c.x, c.top, bubW, bubH) + j }, c)).sort((p1, p2) => p1.a - p2.a)[0];
-    const atM = tIt.kind === "m" ? tIt.m : null;
-    const fresh = !missions.some(m => m.parts.some(q => this.pg(q.key).tries > 0));
-    const bubble = cel && atM ? "Nice. " + atM.id + " banked, " + got(atM) + " of " + worth(atM) + "."
-      : !atM ? "Paper done. You banked " + earned + " of " + total + "."
-      : fresh ? "Start anywhere. I'd begin with " + atM.id + "."
-      : atM.id + " next · " + worth(atM) + " marks. Let's go.";
-    // The mission card.
-    const cm = s.card != null ? missions[s.card] : null;
-    const cmSt = cm ? missionState(cm) : null, cmW = cm ? worth(cm) : 0, cmG = cm ? got(cm) : 0;
-    const cmClosed = cm ? cm.parts.filter(q => this.pg(q.key).closed).length : 0;
-    const cmAll = cm ? cmClosed === cm.parts.length : false, cmStarted = cm ? cm.parts.some(q => this.pg(q.key).tries > 0) : false;
-    const cmPaid = cm ? cm.parts.every(q => s.paid[q.key] || !q.marks) : false;
-    const cmNext = cm && s.card === suggestedIdx;
-    const cmWaiting = cm ? cm.parts.some(q => this.pg(q.key).waiting) : false;
-    const cmDraw = cm ? cm.parts.every(q => q.response_mode === "draw") : false;
-    const note = !cm ? "" : cmWaiting ? "An answer here is waiting for a marker. It is saved."
-      : cmDraw ? "You draw this one on paper. It isn't marked online."
-      : cmAll && cmPaid ? "You've banked this one. A replay is for practice and pays no XP." : "";
-    const finishVals = this.finishCardVals(s, vw);
-    // The vortex map's inputs: the same geometry and paint as the classic road, as data (see vortex-map.js).
-    const finIt = items[items.length - 1], done = earned >= total && total;
-    const vmVals = {
-      vmBg: "radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), " + (this.nxApp() ? NX_GROUND : MAP_GROUND).hex, vmFade: (this.nxApp() ? NX_GROUND : MAP_GROUND).hex,
-      vmOn: VM, vmOff: !VM, trackLux: VM ? "vm-lux" : "", mapPadB: VM ? "0px" : "120px",
-      mainZ: VM && s.mapView !== "topics" ? "5" : "1", mainPE: VM && s.mapView !== "topics" ? "none" : "auto",
-      vmActive: s.mapView !== "topics" ? "true" : "false", vmNext: String(suggestedIdx),
-      vmLit: String(Math.round(1000 * lit / Math.max(1, total || 100)) / 1000),
-      vmGeom: JSON.stringify({ nodes: items.filter(it => it.kind === "m").map(it => ({ i: it.i, x: f(it.x), y: f(it.y) })), fin: { x: f(finIt.x), y: f(finIt.y) },
-        caps: items.filter(it => it.kind === "cap").map(it => { const L = it.sec, e = L.missions.reduce((a, m) => a + got(m), 0);
-          return { y: f(it.y), lv: L.lv, q: L.title, label: L.title + (L.total ? " · " + L.total + " marks" : ""), sub: L.section,
-            pct: L.total ? Math.min(100, Math.round(100 * e / L.total)) : 0 }; }) }),
-      vmPaint: JSON.stringify(roadNodes.map(n => ({ i: +n.idx, id: n.number, title: n.title, chip: n.state, chipBg: n.stateBg, chipColor: n.stateColor, tags: n.tags,
-        titleColor: n.titleColor, fill: n.fill, ring: n.ring, lip: n.lip, num: n.numColor, big: n.vmBig, halo: n.halo, badge: n.hasBadge, anim: n.anim, aria: n.aria }))),
-      // The finish shows the learner's mark against the paper's total as well as the XP (Murci: they should know the marks
-      // they got as per the paper total, not only the XP). The percentage is the paper's own arithmetic, not a pass/fail.
-      vmFinish: JSON.stringify({ title: (done ? "Paper done · " : "Finish · ") + earned + " / " + (total || 0) + " marks",
-        sub: Math.round(100 * earned / Math.max(1, total || 0)) + "% · " + (s.xp || 0) + " XP earned",
-        aria: "Finish line. You have " + earned + " of " + (total || 0) + " marks on this paper" + (done ? ", all banked" : "") + ", "
-          + Math.round(100 * earned / Math.max(1, total || 0)) + " percent. " + (s.xp || 0) + " XP earned." }) };
-    return {
-      ...finishVals, ...vmVals,
-      roadW: roadW, roadH: roadH, roadWpx: roadW + "px", roadHpx: roadH + "px", roadViewBox: "0 0 " + roadW + " " + roadH,
-      roadD: d, roadStroke: phone ? "18" : "22", roadEdgeW: phone ? "24" : "28", roadShadowW: phone ? "30" : "36",
-      roadBevelW: phone ? "8" : "10", roadGlowW: phone ? "34" : "40", roadZones: roadZones, subTop: "64px",
-      // The lit length IS the score: marks banked over the paper's total, in measured pixels.
-      litDash: Math.round((s.roadPx || 0) * lit / Math.max(1, total || 100)) + " " + ((s.roadPx || 0) + 40), // Hidden until measured: a zero dash with round caps would draw a dotted line.
-      litOpacity: lit > 0 && s.roadPx ? "1" : "0", litGlowOpacity: lit > 0 && s.roadPx ? "0.22" : "0",
-      finishGlow: earned >= total && total ? "38px" : "0px", litDur: s.reduced ? "0ms" : "1300ms",
-      roadNodes: roadNodes, roadCaps: roadCaps,
-      finishTop: f(items[items.length - 1].y - 18) + "px",
-      // The pad's centre is the road's first point; the ticket hangs below the pad.
-      padTop: f(items[0].y - 60) + "px", startTicketTop: f(items[0].y + 58) + "px",
-      startPaperName: paper ? paper.title + " · " + paper.sitting : "", startProv: paper ? paper.prov || PROVENANCE : "",
-      startLabel: suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id,
-      startHasPopup: suggestedIdx < 0 ? "false" : "dialog",
-      startAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ", level " + this.levelOf(missions[suggestedIdx]) + ": " + missions[suggestedIdx].title)
-        + ". " + (paper ? paper.title + ", " + paper.sitting : ""),
-      startGo: () => { if (suggestedIdx < 0) { this.setState({ screen: "summary" }); return; }
-        this.scrollToNode(suggestedIdx, true); this.openCard(suggestedIdx); },
-      startPaperFacts: paper ? paper.total + " marks · " + paper.time + " · " + missions.length + " missions" : "",
-      // Ripples invite on a fresh paper and calm down once practice has started.
-      padRipple: s.reduced ? "none" : "ripple 3.6s cubic-bezier(0.2,0.6,0.3,1) infinite",
-      padRipple2: s.reduced ? "none" : "ripple 3.6s cubic-bezier(0.2,0.6,0.3,1) 1.2s infinite",
-      padRipple3: s.reduced ? "none" : "ripple 3.6s cubic-bezier(0.2,0.6,0.3,1) 2.4s infinite",
-      padSpin: s.reduced ? "none" : "padspin 22s linear infinite", padCore: s.reduced ? "none" : "padcore 2.6s ease-in-out infinite",
-      padRippleOpacity: fresh ? "1" : "0.5",
-      finishBorder: earned >= total && total ? "rgba(61,220,151,0.8)" : "rgba(61,220,151,0.35)",
-      finishBg: earned >= total && total ? "rgba(61,220,151,0.16)" : "rgba(61,220,151,0.07)", finishColor: "var(--ok)",
-      compLeft: f(cL) + "px", compTop: f(cT) + "px", compWpx: compW + "px", compHpx: compH + "px",
-      glideDur: s.reduced ? "0ms" : "1100ms", mapClip: s.mapClip,
-      mapModelOn: !s.reduced && !s.saveData, mapPoster: !!(s.reduced || s.saveData),
-      bubLeft: f(bub.x) + "px", bubTop: f(bub.anchor) + "px", bubShift: bub.shift, bubWpx: bubW + "px", mapBubble: bubble, mapBubbleKey: bubble,
-      // The road makes room for a side panel: the mission card (desktop) or the finish card (wide screens).
-      mapPadR: desk && cm ? "392px" : s.finishCard && vw >= 900 ? "408px" : "16px", dockRight: desk && cm ? "392px" : "0px",
-      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress · 21"], ["finished14", "Just finished 1.4"], ["fin85", "Finish · 85"], ["fin55", "Finish · 55"], ["fin25", "Finish · 25"]].map(x => {
-        const on = s.mapMode ? s.mapMode === x[0] : x[0] === (fresh ? "fresh" : "progress");
-        return { label: x[1], on: on, pick: () => this.seedMap(x[0]), bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
-      cardOpen: !!cm && s.screen === "map", cardDim: !desk, cardModal: desk ? "false" : "true",
-      cOvAlign: phone ? "end" : desk ? "stretch" : "center", cOvJustify: phone ? "stretch" : desk ? "end" : "center",
-      cOvPad: phone ? "0" : desk ? "76px 16px 16px" : "24px", cOvEvents: desk ? "none" : "auto",
-      cardPos: phone ? "width:100%; max-height:calc(100dvh - 24px); border-radius:24px 24px 0 0; padding-bottom:max(16px, env(safe-area-inset-bottom))"
-        : desk ? "width:360px; border-radius:22px" : "width:min(480px, 100%); max-height:min(640px, calc(100dvh - 48px)); border-radius:22px",
-      cardAnim: s.reduced ? "none" : phone ? "rise 360ms cubic-bezier(0.34,1.4,0.64,1) both" : "pop 300ms cubic-bezier(0.22,0.61,0.36,1) both",
-      cardAria: cm ? "Question " + cm.id + ": " + cm.title : "",
-      cardKicker: cm ? "Question " + cm.id + " · " + cm.parts.length + (cm.parts.length === 1 ? " part" : " parts") + (cmW ? " · " + cmW + " marks" : "") : "",
-      cardTitle: cm ? cm.title : "",
-      cardState: cm ? (cmNext && cmSt.label === "Not started" ? "Next up" : cmSt.label) : "",
-      cardStateBg: cm ? (cmNext ? "rgba(0,104,248,0.18)" : cmSt.bg) : "transparent", cardStateColor: cm ? (cmNext ? "#ffffff" : cmSt.color) : "",
-      cardTags: cm ? cm.tags.concat(paper && paper.id === "fm" ? ["Formula sheet"] : []) : [],
-      cardStats: cm ? [
-        cmAll && cmPaid ? { label: "XP", value: "None on replay" } : { label: "First-try XP", value: "100 a part" },
-        { label: "Parts done", value: cmClosed + " of " + cm.parts.length },
-        { label: "Best", value: cmW ? (cmStarted ? cmG + " of " + cmW : "—") : "Not marked" }] : [],
-      cardHasNote: !!note, cardNote: note,
-      cardPlayLabel: cm ? (cmAll ? "Replay " : cmStarted ? "Continue " : "Play ") + cm.id : "",
-      cardPlay: () => { const i = s.card; this.setState({ card: null }, () => this.openMission(i)); },
-      closeCard: () => this.closeCard(),
-      cardKeys: e => { if (e.key !== "Tab" || desk) return;
-        const fs = [].slice.call(document.querySelectorAll("[data-card] button")); if (!fs.length) return;
-        const first = fs[0], last = fs[fs.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } },
-    };
-  }
 
   renderVals() {
     const s = this.state, vw = s.vw, phone = vw < 600, desk = vw >= 1100;
@@ -4010,19 +3607,16 @@ class Component extends DCLogic {
       paperNote: !!(paper && paper.note), paperNoteText: paper ? paper.note : "",
       ...this.paperMapVals(s, phone, desk),
       srLive: s.srLive,
-      onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
+      onDrillOut: s.screen === "drillout" && !!s.drill,
       // Brief 21: the map's controls live in the top bar; the map itself is never covered.
       headBg: s.screen === "map" && !!paper && !s.classicMap ? "rgba(" + (this.nxApp() ? NX_GROUND : MAP_GROUND).rgb + ",0.97)" : "rgba(var(--nx-c, 25,27,30),0.97)",
       mapHead: s.screen === "map", notMapHead: s.screen !== "map",
       mapHeadSub: ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + " · " + earned + " of " + total + " marks",
-      mapViewOpen: s.pop === "mapview", mapViewAria: "View: " + ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + ". Change view",
-      mapViewBtnBg: s.pop === "mapview" ? "rgba(255,255,255,0.07)" : "transparent",
-      toggleMapView: () => s.pop === "mapview" ? this.closeLayer() : this.setState({ pop: "mapview" }),
       ctInfoOpen: s.pop === "ctinfo", ctInfoBg: s.pop === "ctinfo" ? "rgba(255,255,255,0.07)" : "transparent",
       toggleCtInfo: () => s.pop === "ctinfo" ? this.closeLayer() : this.setState({ pop: "ctinfo" }),
       moreOpen: s.pop === "more", moreBg: s.pop === "more" ? "rgba(255,255,255,0.07)" : "transparent",
       toggleMore: () => s.pop === "more" ? this.closeLayer() : this.setState({ pop: "more" }),
-      mapPopOn: s.screen === "map" && ["mapview", "ctinfo", "more"].indexOf(s.pop) !== -1,
+      mapPopOn: s.screen === "map" && ["ctinfo", "more"].indexOf(s.pop) !== -1,
       // Popovers start clear of the 67px bar; on the phone map the bar drops XP (it moves into ⋯) so the title can breathe.
       popTop: "74px", headGap: phone && s.screen === "map" ? "6px" : "10px",
       // the map keeps its title whole on a phone: the ⋯ menu holds only the design preview, a tool for us, so phones go without it
@@ -4035,15 +3629,6 @@ class Component extends DCLogic {
         if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); const n = items.length; if (n) items[(k + (e.key === "ArrowDown" ? 1 : -1) + n) % n].focus(); }
         else if (e.key === "Home" && items.length) { e.preventDefault(); items[0].focus(); } else if (e.key === "End" && items.length) { e.preventDefault(); items[items.length - 1].focus(); }
         else if (e.key === "Tab") this.setState({ pop: null }); },
-      subPad: s.pvOpen ? "10px 0 14px" : "0", subBg: !s.pvOpen ? "none" : s.classicMap ? "linear-gradient(180deg, #191b1e 0%, #191b1e 78%, rgba(25,27,30,0) 100%)"
-        : (G => "linear-gradient(180deg, " + G.hex + " 0%, " + G.hex + " 78%, rgba(" + G.rgb + ",0) 100%)")(this.nxApp() ? NX_GROUND : MAP_GROUND),
-      mapViews: [["paper", "Paper"], ["topics", "Topics"]].map(x => { const on = (s.mapView || "paper") === x[0];
-        return { id: x[0], label: x[1], on: on ? "true" : "false", bg: on ? "#2c3038" : "transparent", color: on ? "#ffffff" : "#9aa0a6",
-          shadow: on ? "0 1px 2px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", weight: on ? "600" : "500",
-          isOn: on, hint: x[0] === "paper" ? "The road through every question" : "Practise one topic at a time",
-          pickClose: () => { this.setState({ pop: null }); this.setState({ mapView: x[0], card: null }, () => { if (x[0] === "paper") this.scrollToNode(this.suggested(), false); else window.scrollTo(0, 0); }); },
-          pick: () => this.setState({ mapView: x[0], card: null }, () => { if (x[0] === "paper") this.scrollToNode(this.suggested(), false); else window.scrollTo(0, 0); }) }; }),
-      ...(s.screen === "map" && s.mapView === "topics" ? this.topicsVals(s, paper) : {}),
       ...this.drillVals(s),
 
       ...(s.screen === "done" ? this.doneVals(s, phone, mission, missions, mSt, mEarned, mTotal, earned, total) : {}),
