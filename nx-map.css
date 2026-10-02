@@ -11,12 +11,6 @@
 @media (min-width: 720px) { .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); column-gap: 48px; align-items: start; } }
 .pm-sr { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* design preview switches (⋯ → Design preview) */
-.pm-preview { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 10px 0 0; }
-.pm-pv { min-height: 36px; padding: 0 11px; border-radius: 11px; border: 1px solid rgba(129, 177, 255, 0.22); background: transparent;
-  color: #8fa0d6; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
-.pm-pv[aria-pressed="true"] { background: rgba(0, 104, 248, 0.2); color: #fff; }
-
 /* subject chips: they wrap (never cut), start at the page's left edge, and stay small and sleek */
 .pm-chips { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 6px; padding: 14px 0 4px; }
 .pm-chip { box-sizing: border-box; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 11px; border-radius: 999px;
@@ -93,7 +87,7 @@
   color: #9aa7cf; font-size: 22px; cursor: pointer; }
 .pm-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .pm-stat { display: flex; flex-direction: column; gap: 3px; padding: 10px 11px; border-radius: 12px; background: #0a1534; }
-.pm-stat span { font-size: 12px; font-weight: 600; color: #8fa0d6; }
+.pm-stat > span { font-size: 12px; font-weight: 600; color: #8fa0d6; }
 .pm-stat b { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; }
 .pm-bar { display: block; height: 6px; border-radius: 3px; background: #0a1534; overflow: hidden; }
 .pm-bar span { display: block; height: 100%; border-radius: 3px; background: #5b8cff; }
@@ -136,7 +130,7 @@
   padding: 8px 12px; border-radius: 14px; border: 1px solid rgba(129, 177, 255, 0.25); background: transparent; color: #fff; font: inherit;
   text-align: left; cursor: pointer; }
 .lv-opt b { font-size: 15px; font-weight: 800; }
-.lv-opt span { font-size: 12px; color: #8fa0d6; }
+.lv-opt > span { font-size: 12px; color: #8fa0d6; }
 .lv-opt[aria-checked="true"] { border: 2px solid #5b8cff; background: rgba(30, 70, 255, 0.18); }
 
 /* the study-level sheet: the qualification dropdown (native: the phone's own picker), then the levels */
@@ -147,3 +141,33 @@
 .lv-select option { background: #0d1a3f; color: #fff; }
 .lv-select-wrap svg { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #9fbcff; pointer-events: none; }
 .lv-err { margin: 0; font-size: 13px; color: #ff9b9b; }
+
+/* the design preview (NOT in the product): an icon-only dashed button at the end of the chip row; the paper states open in a
+   popover under the row, so they never take a row of the map or cover it */
+.pm-chips { position: relative; }
+.pm-pv-toggle { box-sizing: border-box; width: 34px; height: 34px; flex: none; display: inline-grid; place-items: center; padding: 0; border-radius: 50%;
+  border: 1px dashed rgba(129, 177, 255, 0.45); background: transparent; color: #8fa0d6; cursor: pointer; }
+.pm-pv-toggle[aria-expanded="true"] { color: #fff; border-color: #5b8cff; background: rgba(30, 70, 255, 0.18); }
+.pm-pv-pop { position: absolute; left: 0; top: calc(100% + 4px); z-index: 30; box-sizing: border-box; min-width: 210px; display: flex; flex-direction: column;
+  gap: 4px; padding: 10px; border-radius: 14px; background: #0d1a3f; border: 1px solid rgba(129, 177, 255, 0.25); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45); }
+.pm-pv-head { padding: 0 4px 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; color: #7f8fc2; }
+.pm-pv { min-height: 36px; padding: 0 10px; border-radius: 10px; border: none; background: transparent; color: #c9d2f0; font: inherit;
+  font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; }
+.pm-pv[aria-pressed="true"] { background: rgba(30, 70, 255, 0.22); color: #fff; }
+.pm-pv-toggle:focus-visible, .pm-pv:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+
+/* the finish card (a learner's last question on a paper): the score row; its medal takes the finish's tier */
+.pm-fin-score { display: flex; align-items: center; gap: 14px; }
+.pm-fin-medal { width: 56px; height: 56px; flex: none; display: grid; place-items: center; border-radius: 50%; background: rgba(245, 196, 67, 0.14); color: #f5c443; }
+.pm-fin[data-tone="solid"] .pm-fin-medal { background: rgba(207, 216, 234, 0.14); color: #cfd8ea; }
+.pm-fin[data-tone="finished"] .pm-fin-medal { background: rgba(91, 140, 255, 0.16); color: #9fbcff; }
+.pm-fin-num b { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; color: #fff; }
+/* direct child only: the template engine wraps every value in its own span, so a descendant rule shrank the number too */
+.pm-fin-num > span { font-size: 14px; font-weight: 600; color: #8fa0d6; }
+.pm-fin-fine { margin: -6px 0 0; font-size: 12px; color: #6f80b3; }
+
+/* the XP total: a small soft chip, not a box (2026-10-02) */
+.xp-chip { flex: none; height: 30px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; border: none; border-radius: 999px;
+  background: rgba(129, 177, 255, 0.10); color: #fff; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.xp-chip svg { width: 13px; height: 13px; }
+.xp-chip > span:last-child { display: inline !important; font-size: 11px !important; font-weight: 700 !important; color: #8fa0d6 !important; }
