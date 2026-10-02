@@ -3440,7 +3440,8 @@ class Component extends DCLogic {
       isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
-      hasHomeSub: !returning || picking,
+      // the first visit's XP rules line went (Murci, 2026-10-02): the title alone
+      hasHomeSub: false,
       homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. Three first tries in a row triple the third." : resumeName + " · " + rs.next_mission.title,
       homeH1: phone ? "30px" : "clamp(32px, 3.6vw, 44px)", homeSubSize: phone ? "13px" : "14px",
       homeMinH: phone ? "560px" : tabletLand ? "560px" : "640px",
@@ -3485,11 +3486,11 @@ class Component extends DCLogic {
         { label: "Marks banked · " + resumeName, value: rs.marks_earned + " of " + rs.total_marks },
         { label: "Days practised this week", value: String(HOME.me.days_practised_this_week) }],
       closePops: () => this.closeLayer(),
-      homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"], ["picker", "Picker open"]].map(m => {
-        const on = m[0] === "picker" ? s.sheet === "subj" && home === "first" : home === m[0] && !(s.sheet === "subj" && home === "first");
+      // design preview states ("Picker open" went 2026-10-02: the paper map is the picker now)
+      homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"]].map(m => {
+        const on = home === m[0];
         return { label: m[1], on: on,
-          pick: () => { if (m[0] === "picker") { this.openPicker({ home: "first", picking: false, bubbleMsg: "" }); return; }
-            this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }); },
+          pick: () => this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }),
           bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
       continueTitle: finished ? "Every mission done · " + rs.marks_earned + " of " + rs.total_marks : rs.next_mission.title,
