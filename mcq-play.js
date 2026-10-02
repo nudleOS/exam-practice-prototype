@@ -527,17 +527,25 @@
     function raise(t) { if (reduced) return 0; const g = $("tiles").getBoundingClientRect(), r = t.getBoundingClientRect();
       const leftSide = r.left + r.width / 2 < g.left + g.width / 2, topRow = r.top + r.height / 2 < g.top + g.height / 2, oneCol = r.width > g.width * 0.7;
       const h = oneCol ? [10, 10] : leftSide ? [PANE.out, PANE.in] : [PANE.in, PANE.out];          // [grow left, grow right]
-      const v = oneCol ? [16, 16] : topRow ? [PANE.vout, PANE.vin] : [PANE.vin, PANE.vout];        // [grow up, grow down]
+      // [grow up, grow down]. One column: the first card grows up only into the gap above the cards (it covered the question's
+      // last line, measured 2026-10-02); the rest of its 32 px goes down, over the card below.
+      const above = $("tiles").previousElementSibling, roomU = above ? Math.max(0, r.top - above.getBoundingClientRect().bottom - 2) : 16, oU = Math.min(16, roomU);
+      const v = oneCol ? [oU, 32 - oU] : topRow ? [PANE.vout, PANE.vin] : [PANE.vin, PANE.vout];
       // Inset values are negative to grow. Two columns: clamped to the grid's edges. One column (a phone): it may reach
       // 10 px into the page's side margin, and grows 16 px up and down, over its neighbours (8 px gaps).
-      const L = oneCol ? h[0] : Math.min(h[0], r.left - g.left), R = oneCol ? h[1] : Math.min(h[1], g.right - r.right);
+      // One column: it stays inside the stage, which scrolls and so CLIPS (Murci, 2026-10-02: on a phone the raised card was cut
+      // at the screen's edge; the stage starts 4 px left of the card, the 10 px grow went 6 px past it). A side without room gives
+      // its share to the other, so the card still grows by the same amount, only shifted.
+      const sr = $("stage").getBoundingClientRect(), roomL = Math.max(0, r.left - sr.left - 2), roomR = Math.max(0, sr.right - r.right - 2);
+      const oL = Math.min(h[0], roomL), oR = Math.min(h[1] + h[0] - oL, roomR);
+      const L = oneCol ? oL : Math.min(h[0], r.left - g.left), R = oneCol ? oR : Math.min(h[1], g.right - r.right);
       [["--rl", -L], ["--rr", -R], ["--rt", -v[0]], ["--rb", -v[1]]].forEach(([k, px]) => t.style.setProperty(k, px + "px"));
       t.classList.add("raised"); return RAISE_MS; }
     const VERDICT_MS = 440;                 // the green light shows this long before the right card moves
     // The right answer: a green hairline runs round the rim from the fingertip, both ways, meeting opposite, while green
     // light fills the glass from that point. (Perimeter position from the straight edges; the corners are small.)
     function verdictLight(t, hit, ok) { const face = t.querySelector(".face"), w = face.offsetWidth, h = face.offsetHeight, NS = "http://www.w3.org/2000/svg";
-      const fr = face.getBoundingClientRect(), p = hit && hit.cx != null ? { x: hit.cx - fr.left, y: hit.cy - fr.top } : hit && hit.x > 0 ? hit : { x: w / 2, y: h / 2 }, R = 17, P = 2 * (w + h - 4 * R);
+      const fr = face.getBoundingClientRect(), p = hit && hit.cx != null ? { x: hit.cx - fr.left, y: hit.cy - fr.top } : hit && hit.x > 0 ? hit : { x: w / 2, y: h / 2 }, R = Math.min(parseFloat(getComputedStyle(face).borderTopLeftRadius) || 17, h / 2, w / 2) - 1, P = 2 * (w + h - 4 * R);   // the rim follows the glass's own corner
       const d = [p.y, w - p.x, h - p.y, p.x], edge = d.indexOf(Math.min(...d));                                   // nearest edge: top, right, bottom, left
       const along = [Math.max(0, p.x - R), (w - 2 * R) + Math.max(0, p.y - R), (w - 2 * R) + (h - 2 * R) + Math.max(0, w - R - p.x), 2 * (w - 2 * R) + (h - 2 * R) + Math.max(0, h - R - p.y)][edge];
       const f = along / P * 1000;
