@@ -176,9 +176,9 @@
       </div>
 
       <div data-stage="true" style="grid-area:stage; position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}">
-        <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:{{ posterH }}; aspect-ratio:1 / 2.25; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
+        <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:{{ posterH }}; aspect-ratio:527 / 960; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
           <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
-            <img src="{{ posterSrc }}" alt="" onError="{{ posterFailed }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:50% 100%" />
+            <img src="assets/home-robot.webp" alt="" onError="{{ posterFailed }}" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:50% 100%" />
           </sc-if>
           <sc-if value="{{ posterSilhouette }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -1261,7 +1261,8 @@ const HOME = {
 // The companion's greet still (≤60 KB, rendered from companion-robot.glb, same framing as the 3D
 // model). Set to "assets/companion-greet.webp" once it exists; until then the silhouette holds
 // its place so nothing jumps and no request 404s.
-const POSTER_SRC = null;
+// the home's robot: Murci's image (2026-10-02, white background cut away: assets/home-robot.png, phone-sized home-robot.webp)
+const POSTER_SRC = "assets/home-robot.webp";
 // ── Topic drills (brief 10). Topics per part come from the service's approved paper
 // (nexera-exam-service/data/papers/fm-n6-2022-11/paper.json); weights from the N6 syllabus (LOOP §5.4).
 const FM_TOPIC_OF = {"1.1.1": "Flow in pipes and hydraulic gradient", "1.1.2": "Flow in pipes and hydraulic gradient", "1.2": "Flow in pipes and hydraulic gradient", "1.3": "Flow in pipes and hydraulic gradient", "1.4.1": "Flow in pipes and hydraulic gradient", "1.4.2": "Flow in pipes and hydraulic gradient", "1.4.3": "Flow of water in open channels, notches and weirs", "1.4.4": "Flow in pipes and hydraulic gradient", "1.4.5": "Flow in pipes and hydraulic gradient", "2.1": "Flow of water in open channels, notches and weirs", "2.2.1": "Flow of water through orifices", "2.2.2": "Flow of water through orifices", "2.2.3": "Flow of water through orifices", "2.3": "Ventilation", "3.1.1": "Pumps", "3.1.2": "Pumps", "3.1.3": "Pumps", "3.1.4": "Pumps", "3.1.5": "Pumps", "3.1.6": "Pumps", "3.2.1": "Pumps", "3.2.2": "Pumps", "3.3.1": "Pumps", "3.3.2": "Pumps", "3.3.3": "Pumps", "4.1.1": "Pelton wheel", "4.1.2": "Pelton wheel", "4.1.3": "Pelton wheel", "4.1.4": "Pelton wheel", "4.2": "Water turbines", "4.3.1": "Water turbines", "4.3.2": "Water turbines"};
@@ -3711,9 +3712,9 @@ class Component extends DCLogic {
       bubbleRadius: phone ? "18px" : "18px 18px 18px 6px",
       ringW: phone ? "min(340px, 92vw)" : "min(560px, 60vw)", ringH: phone ? "64px" : "110px", ringHalf: phone ? "32px" : "55px",
       glowA: (0.16 + (returning ? glow * 0.025 : 0)).toFixed(3), glowB: (0.07 + (returning ? glow * 0.012 : 0)).toFixed(3),
-      mountModel: modelOn, homeClip: s.homeClip, modelOpacity: s.modelReady ? "1" : "0",
-      // The still shows at once and yields to the 3D model only when it has loaded.
-      posterOpacity: modelOn && s.modelReady ? "0" : "1",
+      // the home shows Murci's robot image (2026-10-02), not the 3D model: no 3D download on the home of a low-end phone
+      mountModel: false, homeClip: s.homeClip, modelOpacity: "0",
+      posterOpacity: "1",
       posterSrc: POSTER_SRC || "", posterImgOn: !!POSTER_SRC && !s.posterMissing, posterSilhouette: !POSTER_SRC || s.posterMissing,
       posterFailed: () => this.setState({ posterMissing: true }),
       actionPad: phone ? "10px 16px max(18px, env(safe-area-inset-bottom))" : tabletLand ? "6px 32px 0 8px" : "8px 20px clamp(20px, 4vh, 40px)",
