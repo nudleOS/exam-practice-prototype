@@ -336,3 +336,25 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .pm-subj-opt:focus-visible { outline: 3px solid #81b1ff; outline-offset: -3px; }
 /* the map's picker lines up with the road (it started at the column's edge, 128 px left of the road at 1366) */
 .pm-chips { max-width: var(--pm-w, none); margin-left: auto; margin-right: auto; }
+
+/* ==== the cup race (Murci, 2026-10-02) ====
+   Each paper's stretch fills with its questions finished, a small cup riding ahead; a finished paper's cup is won (bigger, glowing,
+   in its medal). New progress since the last visit draws on (.pm-road-new, pathLength 1) while its cup slides from where it was
+   (--dx / --dy); a just-won cup pops when the line reaches it. */
+.pm-road-new { stroke: #6f9bff; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: pm-draw 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s forwards; }
+@keyframes pm-draw { to { stroke-dashoffset: 0; } }
+.pm-pcup { position: absolute; z-index: 1; box-sizing: border-box; width: 28px; height: 28px; margin: -14px 0 0 -14px; display: grid; place-items: center;
+  border-radius: 50%; border: 1.5px solid rgba(245, 196, 67, 0.7); background: #06132f; color: rgba(245, 196, 67, 0.85); transform: scale(0.85); pointer-events: none; }
+.pm-pcup[data-state="won"] { transform: scale(1.35); border-color: #f5c443; background: #3d2a00; color: #f5c443;
+  box-shadow: 0 0 0 4px rgba(245, 196, 67, 0.16), 0 0 18px rgba(245, 196, 67, 0.45); }
+.pm-pcup[data-tier="solid"] { border-color: #cfd8ea; background: #2a3142; color: #cfd8ea; box-shadow: 0 0 0 4px rgba(207, 216, 234, 0.14), 0 0 18px rgba(207, 216, 234, 0.35); }
+.pm-pcup[data-tier="finished"] { border-color: #d9955a; background: #3a1d05; color: #d9955a; box-shadow: 0 0 0 4px rgba(217, 149, 90, 0.14), 0 0 18px rgba(217, 149, 90, 0.35); }
+.pm-pcup[data-anim="move"] { animation: pm-cupmove 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both; }
+.pm-pcup[data-anim="win"] { animation: pm-cupmove 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both, pm-cupwin 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 1.65s both; }
+.pm-pcup[data-state="won"]:not([data-anim="win"]) { animation: pm-glow 2.4s ease-in-out infinite; }
+@keyframes pm-cupmove { from { translate: var(--dx) var(--dy); } }
+@keyframes pm-cupwin { from { transform: scale(0.85); box-shadow: none; } }
+@keyframes pm-glow { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, currentColor 10%, transparent), 0 0 26px color-mix(in srgb, currentColor 55%, transparent); } }
+/* the finish line: bigger as well as gold once every paper is done */
+.pm-cup[data-done="true"] { transform: translateX(-50%) scale(1.2); }
+@media (prefers-reduced-motion: reduce) { .pm-road-new { animation: none; stroke-dashoffset: 0; } .pm-pcup { animation: none !important; } }
