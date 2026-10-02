@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
-  <script type="module" src="model-floor.js?v=20"></script>
+  <script type="module" src="model-floor.js?v=21"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=2"></script>
 <script src="papers-catalogue.js?v=2"></script>
@@ -80,7 +80,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=125">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=1">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=4">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -96,13 +96,17 @@
         <span style="display:{{ backTextDisplay }}">{{ backLabel }}</span>
       </button>
     </sc-if>
-    <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
+    <sc-if value="{{ logoHome }}" hint-placeholder-val="{{ false }}">
+      <button type="button" class="pm-home" data-home="true" onClick="{{ goHome }}" aria-label="Home"><img src="assets/nexera-mark.png" alt="" width="28" height="28" /></button>
+    </sc-if>
+    <sc-if value="{{ logoPlain }}" hint-placeholder-val="{{ true }}">
+      <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
+    </sc-if>
     <sc-if value="{{ mapHead }}" hint-placeholder-val="{{ false }}">
       <span class="pm-head" style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; min-height:44px">
-        <span style="font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ pmHeadTitle }}</span>
-        <span style="font-size:12px; color:#9aa0a6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ pmHeadSub }}</span>
+        <h1 class="pm-title">{{ pmHeadTitle }}</h1>
       </span>
-      <button data-trigger="more" onClick="{{ toggleMore }}" aria-haspopup="menu" aria-expanded="{{ moreOpen }}" aria-label="More" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ moreBg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"></circle><circle cx="12" cy="12" r="1.9"></circle><circle cx="19" cy="12" r="1.9"></circle></svg></button>
+      <button data-trigger="more" onClick="{{ toggleMore }}" aria-haspopup="menu" aria-expanded="{{ moreOpen }}" aria-label="More" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:{{ moreDisplay }}; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ moreBg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"></circle><circle cx="12" cy="12" r="1.9"></circle><circle cx="19" cy="12" r="1.9"></circle></svg></button>
       <sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
         <div role="menu" aria-label="More" data-menu="more" onKeyDown="{{ menuKeys }}" class="glass-card" data-float="true" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; right:12px; width:min(270px, calc(100vw - 24px))">
           <sc-if value="{{ moreXpOn }}" hint-placeholder-val="{{ false }}">
@@ -150,7 +154,7 @@
 
       <div style="grid-area:top; position:relative; z-index:8; flex:none; display:flex; align-items:center; gap:8px; padding:{{ topPad }}">
         <img src="assets/nexera-mark.png" alt="Nexera" style="width:24px; height:24px; display:block; flex:none" />
-        <span style="font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text2); white-space:nowrap; display:{{ brandTextDisplay }}">Nexera · Exam practice</span>
+        <span style="font-size:14px; font-weight:700; color:var(--text); white-space:nowrap">Exam practice</span>
         <button data-trigger="preview" onClick="{{ togglePreview }}" aria-expanded="{{ pvOpen }}" aria-controls="design-preview" aria-label="Design preview controls" style="box-sizing:border-box; min-height:36px; margin-left:4px; padding:0 10px; border:1px dashed var(--line2); border-radius:18px; background:transparent; color:var(--text3); display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg><span style="display:{{ brandTextDisplay }}">Preview</span>
         </button>
@@ -159,26 +163,6 @@
           <a href="./Teach%20Exams.dc.html" style="min-height:30px; display:flex; align-items:center; padding:0 8px; border-radius:9px; color:var(--text3); font-size:11.5px; font-weight:700; text-decoration:none">Educator</a>
         </div>
         <span style="flex:1; min-width:0"></span>
-        <sc-if value="{{ isReturning }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex; gap:6px; flex-wrap:nowrap; flex:none; animation:rise 480ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">
-            <span style="position:relative; display:flex">
-              <button data-trigger="progress" onClick="{{ toggleProgress }}" aria-expanded="{{ progressOpen }}" aria-haspopup="dialog" aria-label="{{ xpAria }}" style="box-sizing:border-box; min-height:44px; margin:-4px 0; padding:0 12px; border-radius:22px; display:flex; align-items:center; gap:5px; white-space:nowrap; background:rgba(var(--nx-c, 32,35,39), 0.72); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); color:var(--text); font-size:13px; font-weight:800; cursor:pointer">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ dispXp }}<span style="font-size:12px; font-weight:600; color:var(--tint)">XP</span>
-              </button>
-              <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
-                <div role="dialog" aria-label="Your progress" class="glass-card" data-float="true" style="position:absolute; right:0; top:calc(100% + 10px); z-index:62; width:min(290px, 86vw); padding:15px 16px; border-radius:20px; animation:pop 260ms cubic-bezier(0.22,0.61,0.36,1) both">
-                  <p style="margin:0 0 6px; font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:var(--tint)">Your progress</p>
-                  <sc-for list="{{ progRows }}" as="pr" hint-placeholder-count="3">
-                    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:7px 0; border-top:1px solid rgba(255,255,255,0.06)">
-                      <span style="font-size:13px; color:var(--text2)">{{ pr.label }}</span><span style="font-size:14px; font-weight:800; white-space:nowrap">{{ pr.value }}</span>
-                    </div>
-                  </sc-for>
-                  <p style="margin:6px 0 0; font-size:12px; line-height:1.5; color:var(--text3); text-wrap:pretty">Days reset gently each Monday and never take XP away.</p>
-                </div>
-              </sc-if>
-            </span>
-          </div>
-        </sc-if>
       </div>
 
       <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
@@ -216,33 +200,11 @@
           </sc-if>
         </span>
         <sc-if value="{{ mountModel }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/companion-robot.glb" clip="{{ homeClip }}" loop="once" hold="1.95" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease"></model-floor>
+          <model-floor still="" src="assets/companion-robot.glb" clip="{{ homeClip }}" loop="once" from="0.45" hold="0.45" autorotate="off" face="user" floor="none" fit="0.62" style="position:absolute; inset:{{ modelInset }}; opacity:{{ modelOpacity }}; transition:opacity 600ms ease; pointer-events:none"></model-floor>
         </sc-if>
-        <p data-key="{{ bubbleKey }}" aria-live="polite" style="position:absolute; z-index:2; box-sizing:border-box; margin:0; {{ bubblePos }}; max-width:{{ bubbleMax }}; padding:11px 14px; border-radius:{{ bubbleRadius }}; background:rgba(var(--nx-c, 30,33,40), 0.90); border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); box-shadow:0 8px 24px rgba(0,0,0,0.3); font-size:14px; font-weight:600; line-height:1.5; color:var(--text); text-wrap:pretty; animation:pop 420ms 420ms cubic-bezier(0.22,0.61,0.36,1) both">{{ bubble }}<span aria-hidden="true" style="display:{{ tailDisplay }}; position:absolute; left:calc(50% - 7px); bottom:-7px; width:12px; height:12px; transform:rotate(45deg); background:rgba(var(--nx-c, 34,37,42), 1); border-right:1px solid rgba(129,177,255,0.28); border-bottom:1px solid rgba(129,177,255,0.28)"></span></p>
       </div>
 
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
-        <sc-if value="{{ showStartBlock }}" hint-placeholder-val="{{ true }}">
-          <button data-ticket="true" data-trigger="ticket" onClick="{{ openTicket }}" aria-haspopup="dialog" aria-label="{{ ticketAria }}" class="glass-card" style="width:{{ startW }}; min-height:68px; display:flex; align-items:center; gap:12px; padding:12px 12px 12px 16px; border-radius:20px; color:var(--text); text-align:left; cursor:pointer; animation:{{ ticketAnim }}">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8M8 17h5"></path></svg>
-            <span data-key="{{ ticketKey }}" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; animation:{{ swapAnim }}">
-              <span style="font-size:15.5px; font-weight:800; line-height:1.25; color:#ffffff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">{{ ticketSubj }}</span>
-              <span style="font-size:12.5px; font-weight:600; line-height:1.35; color:{{ ticketLineColor }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ ticketLine }}</span>
-            </span>
-            <span aria-hidden="true" style="flex:none; display:flex; align-items:center; gap:4px; height:32px; padding:0 10px; border-radius:16px; border:1px solid rgba(129,177,255,0.45); font-size:12.5px; font-weight:700; color:#81b1ff">Change<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span>
-          </button>
-          <div style="display:flex; align-items:center; gap:10px; width:{{ startW }}">
-            <sc-if value="{{ picking }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ backToContinue }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:14px; font-weight:600; cursor:pointer">Back</button>
-            </sc-if>
-            <button data-homestart="true" onClick="{{ startPaper }}" style="flex:1; min-height:56px; padding:0 22px; box-sizing:border-box; border:{{ homeCtaBorder }}; border-radius:18px; background:{{ homeCtaBg }}; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:{{ homeStartShadow }}">Start</button>
-          </div>
-          <sc-if value="{{ hasTicketPaper }}" hint-placeholder-val="{{ true }}">
-            <span style="font-size:12px; color:var(--text3); text-align:center">{{ ticketProv }}</span>
-          </sc-if>
-          <div style="box-sizing:border-box; width:{{ startW }}">
-          </div>
-        </sc-if>
         <sc-if value="{{ showContinueCard }}" hint-placeholder-val="{{ false }}">
           <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
             <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:13px; font-weight:600; color:#b9bec4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
@@ -250,13 +212,44 @@
             <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ continueLabel }}</button>
           </div>
         </sc-if>
-        <sc-if value="{{ showPracticeLink }}" hint-placeholder-val="{{ false }}">
-          <button data-trigger="ticket" data-practiselink="true" onClick="{{ practiseGo }}" aria-haspopup="dialog" style="min-height:44px; display:flex; align-items:center; gap:6px; padding:0 14px; border:none; border-radius:12px; background:transparent; color:#b9cdf0; font-size:13.5px; font-weight:700; cursor:pointer">{{ practiseLabel }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+        <div class="hm-level" style="width:{{ startW }}">
+          <button type="button" class="hm-level-go" data-homemap="true" onClick="{{ hmMapGo }}" aria-label="{{ hmMapAria }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 6-3 6 3 6-3v13l-6 3-6-3-6 3z"></path><path d="M9 4v13M15 7v13"></path></svg>
+            <span class="hm-level-txt"><b>{{ hmLevelTitle }}</b><span>{{ hmLevelSub }}</span></span>
+          </button>
+          <button type="button" class="hm-level-change" data-trigger="level" onClick="{{ lvOpenGo }}" aria-haspopup="dialog">Change level</button>
+        </div>
+        <sc-if value="{{ showStartBlock }}" hint-placeholder-val="{{ true }}">
+          <button data-homestart="true" onClick="{{ hmMapGo }}" style="box-sizing:border-box; width:{{ startW }}; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
         </sc-if>
       </div>
 
       <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
         <span onClick="{{ closePops }}" style="position:fixed; inset:0; z-index:2"></span>
+      </sc-if>
+
+      <sc-if value="{{ lvOpen }}" hint-placeholder-val="{{ false }}">
+        <div class="pm-sheet-wrap" data-layout="{{ lvLayout }}">
+          <div class="pm-dim" onClick="{{ lvClose }}" aria-hidden="true"></div>
+          <div class="pm-sheet" data-lvsheet="true" role="dialog" aria-modal="true" aria-labelledby="lv-title" onKeyDown="{{ lvKeys }}">
+            <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}"><span class="pm-grab" aria-hidden="true"></span></sc-if>
+            <div class="pm-sheet-head">
+              <span class="pm-sheet-titles"><h2 id="lv-title" tabIndex="-1">Your level</h2></span>
+              <button type="button" class="pm-x" onClick="{{ lvClose }}" aria-label="Close">×</button>
+            </div>
+            <p class="pm-sheet-note">The map shows past papers for this level only.</p>
+            <sc-for list="{{ lvGroups }}" as="lg" hint-placeholder-count="2">
+              <div class="lv-group" role="radiogroup" aria-label="{{ lg.label }}">
+                <span class="pm-kicker">{{ lg.label }}</span>
+                <div class="lv-opts">
+                  <sc-for list="{{ lg.opts }}" as="lo" hint-placeholder-count="3">
+                    <button type="button" role="radio" class="lv-opt" aria-checked="{{ lo.on }}" onClick="{{ lo.pick }}"><b>{{ lo.label }}</b><span>{{ lo.count }}</span></button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
       </sc-if>
 
       <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
@@ -392,18 +385,22 @@
         </sc-if>
         <div class="pm-chips" role="group" aria-label="Show papers for">
           <sc-for list="{{ pmChips }}" as="c" hint-placeholder-count="4">
-            <button type="button" class="pm-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}">{{ c.label }}</button>
+            <button type="button" class="pm-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="--sc:{{ c.c }}"><span class="pm-dot" aria-hidden="true"></span>{{ c.label }}</button>
           </sc-for>
         </div>
-        <sc-if value="{{ pmHasNote }}" hint-placeholder-val="{{ false }}"><p class="pm-note">{{ pmNote }}</p></sc-if>
+        <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}"><p class="pm-note">{{ pmEmptyText }}</p></sc-if>
         <sc-for list="{{ pmGroups }}" as="g" hint-placeholder-count="2">
-          <section class="pm-group" aria-label="{{ g.aria }}">
-            <h2 class="pm-subj">{{ g.name }} <span>{{ g.level }}</span></h2>
+          <section class="pm-group" aria-label="{{ g.aria }}" style="--sc:{{ g.c }}; --sc-rgb:{{ g.rgb }}">
+            <div class="pm-subj">
+              <span class="pm-ico" data-icon="{{ g.icon }}" aria-hidden="true"></span>
+              <span class="pm-subj-txt"><h2>{{ g.name }}</h2><span>{{ g.sub }}</span></span>
+            </div>
             <div class="pm-path" style="height:{{ g.h }}">
               <div aria-hidden="true">
                 <sc-for list="{{ g.links }}" as="k" hint-placeholder-count="3">
                   <span class="pm-link" data-dir="{{ k.dir }}" style="top:{{ k.top }}; height:{{ k.h }}"></span>
                 </sc-for>
+                <span class="pm-link" data-dir="{{ g.finDir }}" style="top:{{ g.finLinkTop }}; height:{{ g.finLinkH }}"></span>
               </div>
               <ol class="pm-stops">
                 <sc-for list="{{ g.stops }}" as="p" hint-placeholder-count="4">
@@ -418,6 +415,11 @@
                   </li>
                 </sc-for>
               </ol>
+              <div class="pm-finish" data-done="{{ g.finDone }}" style="top:{{ g.finTop }}" aria-label="{{ g.finAria }}" role="img">
+                <span class="pm-flag" aria-hidden="true"><span>Finish</span></span>
+                <span class="pm-cup" aria-hidden="true"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.35"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg></span>
+                <span class="pm-fin-name" aria-hidden="true">{{ g.finLabel }}</span><span class="pm-fin-meta" aria-hidden="true">{{ g.finSub }}</span>
+              </div>
             </div>
           </section>
         </sc-for>
@@ -1344,6 +1346,13 @@ const NX_GROUND = { hex: "#03122c", rgb: "3,18,44" };
 const PASS_MARKS = { aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
 // Top form at 80%+; solid at the paper's pass mark (else 50%).
 function finishTier(pct, pass) { return pct >= 80 ? "top" : pct >= (pass != null ? pass : 50) ? "solid" : "finished"; }
+// A subject's colour and icon on the paper map (2026-10-02). Light hues that read on the navy ground; none is the blue of
+// "in progress" or the gold of "done", which stay the paper's state.
+const SUBJECT_LOOK = {
+  "Life Sciences": { c: "#4ade80", rgb: "74,222,128", icon: "leaf" }, "Geography": { c: "#38bdf8", rgb: "56,189,248", icon: "globe" },
+  "Physical Sciences": { c: "#c084fc", rgb: "192,132,252", icon: "atom" }, "Mathematics": { c: "#f472b6", rgb: "244,114,182", icon: "sigma" },
+  "Mathematical Literacy": { c: "#fb923c", rgb: "251,146,60", icon: "calc" }, "Business Studies": { c: "#2dd4bf", rgb: "45,212,191", icon: "chart" },
+  _: { c: "#93a4d6", rgb: "147,164,214", icon: "book" } };
 const PAPER_UNITS = { "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
 const PROG_SHORT = { ncv: "NC(V)", high_school: "High school" };
 const HOME_TO_LOCAL = { "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
@@ -2030,12 +2039,29 @@ class Component extends DCLogic {
   // ── The paper map (Murci, 2026-10-02): the papers only. No questions, no companion, no vortex: a calm path of the papers
   // a learner can practise, grouped by subject, newest sitting first. A paper opens a sheet; play starts from there.
   // Which papers: the learner's studies decide (the picker's rule, brief 23); studies that match nothing show everything.
-  pmList(s) {
-    const st = s.studies, cat = (window.NX_CATALOGUE || { papers: [] }).papers;
-    const all = HOME.papers.concat(cat.filter(c => !HOME.papers.some(h => h.id === c.id)));
-    const mine = all.filter(p => !st || (p.qualification === st.qualification && p.level === st.level
-      && (!(st.subjects || []).length || st.subjects.indexOf(p.subject) !== -1)));
-    return { papers: mine.length ? mine : all, fellBack: !!st && !mine.length };
+  // The learner's level (2026-10-02: picked on home; the map shows that level's past papers only). Saved studies win;
+  // otherwise the level of the paper being resumed (the demo learner is Grade 12).
+  pmLevel(s) { const st = s.studies; if (st && st.level) return { qualification: st.qualification, level: st.level };
+    const rp = HOME.papers.filter(p => p.id === HOME.resume.paper_id)[0];
+    return rp ? { qualification: rp.qualification, level: rp.level } : { qualification: "high_school", level: "G12" }; }
+  pmAllPapers() { const cat = (window.NX_CATALOGUE || { papers: [] }).papers;
+    return HOME.papers.concat(cat.filter(c => !HOME.papers.some(h => h.id === c.id))); }
+  levelName(lv) { return (lv.qualification === "ncv" ? "NC(V) " : "") + LEVEL_LABEL(lv.level); }
+  pmList(s) { const lv = this.pmLevel(s);
+    return { level: lv, papers: this.pmAllPapers().filter(p => p.qualification === lv.qualification && p.level === lv.level) }; }
+  // The level sheet: School (Grade 12) and TVET college (NC(V) Levels 2 to 4); each says how many papers it has.
+  lvVals(s, phone) { const lv = this.pmLevel(s), all = this.pmAllPapers();
+    const count = (q, l) => { const n = all.filter(p => p.qualification === q && p.level === l).length; return n ? n + (n === 1 ? " paper" : " papers") : "No papers yet"; };
+    const opt = (q, l, label) => ({ label: label, count: count(q, l), on: lv.qualification === q && lv.level === l ? "true" : "false",
+      pick: () => { let row = null; try { row = STUDIES_API.put({ qualification: q, level: l, subjects: [] }); } catch (e) { return; }
+        this.setState({ studies: row, studiesAsked: true, lvOpen: false, pmSubj: "All", srLive: "Level set: " + this.levelName({ qualification: q, level: l }) + "." },
+          () => { const t = document.querySelector('[data-trigger="level"]'); if (t) t.focus(); }); } });
+    const close = () => this.setState({ lvOpen: false }, () => { const t = document.querySelector('[data-trigger="level"]'); if (t) t.focus(); });
+    return { lvOpen: !!s.lvOpen, lvLayout: phone ? "phone" : "tab", lvClose: close,
+      lvKeys: e => { if (e.key === "Escape") { e.preventDefault(); close(); } },
+      lvOpenGo: () => this.setState({ lvOpen: true }, () => { const h = document.getElementById("lv-title"); if (h) h.focus({ preventScroll: true }); }),
+      lvGroups: [{ label: "School", opts: [opt("high_school", "G12", "Grade 12")] },
+        { label: "TVET college · NC(V)", opts: SERVICE_LEVELS.ncv.map(l => opt("ncv", l, LEVEL_LABEL(l))) }] };
   }
   // A paper's live state from this device's progress; null for a paper Nexera is still preparing (no content here yet).
   pmProgress(p) {
@@ -2063,7 +2089,7 @@ class Component extends DCLogic {
     const pick = subjects.indexOf(s.pmSubj) !== -1 ? s.pmSubj : "All";
     // newest sitting first, then P1 before P2 (May/June 2026 before November 2025: the sitting's own month and year)
     const when = p => (p.year || +(String(p.sitting).match(/\d{4}/) || [0])[0]) * 100 + (p.month || (/May|June/.test(p.sitting) ? 6 : /Feb/.test(p.sitting) ? 2 : 11));
-    const ROW = phone ? 118 : 124, NODE = 56;
+    const ROW = phone ? 118 : 124, NODE = 56, FIN = 122;
     const info = p => { const g = this.pmProgress(p);
       const state = !g ? "soon" : g.done ? "done" : g.started ? "going" : "new";
       const pct = g && g.total ? Math.round(100 * g.earned / g.total) : 0, tier = g && g.done ? finishTier(pct, (PASS_MARKS[g.local.id] || {}).pct) : "";
@@ -2074,17 +2100,22 @@ class Component extends DCLogic {
       return { p: p, g: g, state: state, pct: pct, tier: tier, name: name, meta: meta, nextId: nextId }; };
     const groups = subjects.filter(n => pick === "All" || n === pick).map((n, gi) => {
       const ps = L.papers.filter(p => p.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
-      const lvl = ps[0] ? (ps[0].p.qualification === "ncv" ? "NC(V) " : "") + (ps[0].p.level_detail || "") : "";
-      return { name: n, level: lvl, aria: n + ", " + lvl + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"),
-        h: ((ps.length - 1) * ROW + NODE + 44) + "px",
+      const look = SUBJECT_LOOK[n] || SUBJECT_LOOK._, dn = ps.filter(x => x.state === "done").length, last = ps.length - 1;
+      // the finish: a link from the last paper in to the centre, then the cup (gold once every paper is done)
+      const finLinkTop = last * ROW + NODE / 2, finTop = finLinkTop + ROW - 12, allDone = dn === ps.length && ps.length > 0;
+      return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, sub: ps.length + (ps.length === 1 ? " paper" : " papers") + (dn ? " · " + dn + " done" : ""),
+        aria: n + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"),
+        h: (finTop + FIN) + "px",
+        finDir: last % 2 ? "rc" : "lc", finLinkTop: finLinkTop + "px", finLinkH: (ROW - 12) + "px", finTop: finTop + "px",
+        finDone: allDone ? "true" : "false", finLabel: allDone ? "Subject complete" : "Finish line", finSub: dn + " of " + ps.length + (ps.length === 1 ? " paper" : " papers"),
+        finAria: "Finish line: " + dn + " of " + ps.length + " " + n + " papers done",
         links: ps.slice(1).map((x, i) => ({ dir: i % 2 ? "rl" : "lr", top: (i * ROW + NODE / 2) + "px", h: ROW + "px" })),
         stops: ps.map((x, i) => ({ id: x.p.id, side: i % 2 ? "r" : "l", top: (i * ROW) + "px", state: x.state, tier: x.tier || "none",
           isDone: x.state === "done", isGoing: x.state === "going", isNew: x.state === "new", isSoon: x.state === "soon",
           pct: x.pct + "%", deg: Math.round(3.6 * x.pct) + "deg", name: x.name, meta: x.meta,
           aria: n + ", " + x.name.replace(" · ", ", ") + ". " + x.meta + ". Open paper details",
           open: () => this.pmOpenSheet(x.p.id) })) }; });
-    const all = L.papers.map(info), doneN = all.filter(x => x.state === "done").length;
-    const lv = L.papers.length && L.papers.every(p => p.level === L.papers[0].level) ? (L.papers[0].qualification === "ncv" ? "NC(V) " : "") + L.papers[0].level_detail : "All levels";
+    const all = L.papers.map(info);
     // the sheet
     const sel = all.filter(x => x.p.id === s.pmOpen)[0] || null, g = sel && sel.g, p = sel && sel.p;
     const go = sel && g ? (sel.state === "done" ? { label: "Review my paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id, screen: "summary" }, () => window.scrollTo(0, 0)) }
@@ -2092,9 +2123,11 @@ class Component extends DCLogic {
     const layout = phone ? "phone" : desk ? "desk" : "tab";
     return {
       ...this.finishCardVals(s, s.vw),
-      pmHeadTitle: "Your papers", pmHeadSub: lv + " · " + doneN + " of " + all.length + " done",
-      pmChips: ["All"].concat(subjects).map(n => ({ label: n, on: n === pick ? "true" : "false", pick: () => this.setState({ pmSubj: n }, () => window.scrollTo(0, 0)) })),
-      pmGroups: groups, pmHasNote: L.fellBack, pmNote: "No paper matches your studies yet, so here is every paper on Nexera.",
+      // the level's own words: "Grade 12 past papers"; NC(V) learners say "Level 4" (the full name ran past a 360 px header)
+      pmHeadTitle: LEVEL_LABEL(L.level.level) + " past papers",
+      pmChips: (subjects.length > 1 ? ["All"] : []).concat(subjects).map(n => ({ label: n, on: n === pick ? "true" : "false", c: n === "All" ? "#5b8cff" : (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c,
+        pick: () => this.setState({ pmSubj: n }, () => window.scrollTo(0, 0)) })),
+      pmGroups: groups, pmEmpty: !L.papers.length, pmEmptyText: "No past papers for " + this.levelName(L.level) + " yet. Nexera is adding them; change your level on the home page.",
       pmSheetOn: !!sel && !s.finishCard, pmLayout: layout, pmDim: layout !== "desk", pmModal: layout !== "desk" ? "true" : "false",
       pmPadR: desk && sel && !s.finishCard ? "392px" : s.finishCard && s.vw >= 900 ? "408px" : "0px",
       // design preview: seed the Life Sciences paper's progress ("Just finished 1.4" was a road moment, gone with the road)
@@ -2654,7 +2687,15 @@ class Component extends DCLogic {
     const returning = s.home !== "first" && s.screen === "pick", picking = returning && s.picking, showPicker = !returning || picking;
     return { homeCtaBg: "var(--grad)", homeCtaBorder: "none", homeStartShadow: "0 12px 30px rgba(30,70,255,0.36)", homeContinueShadow: "0 14px 36px rgba(30,70,255,0.38)",
       homeContinueAnim: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite",
-      showContinueCard: returning && !picking, showStartBlock: showPicker, showPracticeLink: returning && !picking };
+      showContinueCard: returning && !picking, showStartBlock: showPicker,
+      // the level row (2026-10-02): the way to the map, and the level it shows
+      ...(L => ({ hmLevelTitle: this.levelName(L.level) + " past papers",
+        hmLevelSub: L.papers.length ? L.papers.length + " papers · " + new Set(L.papers.map(p => p.subject)).size + " subjects" : "No papers yet",
+        hmMapAria: "Open the map of " + this.levelName(L.level) + " past papers" }))(this.pmList(s)),
+      // a returning learner's progress (the 21 of 150 the home describes) is on the map too, as Continue already does
+      hmMapGo: () => { const go = () => this.setState({ screen: "map", pmOpen: null, sheet: null, pop: null }, () => window.scrollTo(0, 0));
+        if (s.home !== "first" && !Object.keys(s.prog || {}).length) this.seedMap("progress", go); else go(); },
+      ...this.lvVals(s, (s.vw || 800) < 600) };
   }
 
   // ── Topic drills (brief 10): one topic, six parts, recipes and unseen parts before repeats.
@@ -3718,7 +3759,7 @@ class Component extends DCLogic {
 
     const headTitle = s.screen === "drillout" ? "Topic drill" : s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
     const headSub = s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
-    const backMap = { map: ["Home", () => this.setState({ screen: "pick", pmOpen: null })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
+    const backMap = { play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
       drillout: ["Topics", () => this.endDrill(false)] };
     const bk = backMap[s.screen];
 
@@ -3846,7 +3887,7 @@ class Component extends DCLogic {
       continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
       continueTitle: finished ? "Every mission done · " + rs.marks_earned + " of " + rs.total_marks : rs.next_mission.title,
       resumeKicker: resumeName + (resumePaper ? " · " + resumePaper.sitting : ""),
-      showContinueCard: returning && !picking, showStartBlock: showPicker, showPracticeLink: returning && !picking, homeMoreOn: false,
+      homeMoreOn: false,
       practiseLabel: returning ? "Practise another paper" : "Practise a paper instead",
       hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + rs.next_mission.title,
       continueGo: () => { const go = () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
@@ -3926,6 +3967,7 @@ class Component extends DCLogic {
       pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
+      logoHome: s.screen === "map", logoPlain: s.screen !== "map", goHome: () => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => window.scrollTo(0, 0)),
       headTitle: headTitle, headSub: headSub,
       showMeter: !!paper && s.screen !== "pick" && s.screen !== "map", meterLabel: earned + " of " + total + " marks",
       ringDisplay: phone ? "flex" : "none", kitHeadDisplay: phone && s.screen === "map" ? "none" : "flex",
@@ -3933,7 +3975,8 @@ class Component extends DCLogic {
       showKitBtn: !!paper && s.screen === "play", openKit: () => this.setState({ kit: true }),
       // the nx pill's number: from 10 000 it reads "+26k" (a whole paper can earn 5 digits; measured at 360 px, "+25500" ran 16 px
       // onto the wordmark); the pill's aria-label keeps the exact number
-      xp: s.xp, xpShort: s.xp >= 10000 ? Math.round(s.xp / 1000) + "k" : String(s.xp), pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
+      // the learner's total (2026-10-02: XP shows on the map, not home): the session's count once play has set it, else the platform's
+      xp: s.xp || HOME.me.xp_total, xpShort: s.xp >= 10000 ? Math.round(s.xp / 1000) + "k" : String(s.xp), pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
 
       onPick: s.screen === "pick", onMap: s.screen === "map", onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
       programmes: ["All", "NC(V)", "High school"].map(l => ({ label: l, on: s.programme === l, pick: () => this.setState({ programme: l }),
@@ -3966,7 +4009,8 @@ class Component extends DCLogic {
       mapPopOn: s.screen === "map" && ["mapview", "ctinfo", "more"].indexOf(s.pop) !== -1,
       // Popovers start clear of the 67px bar; on the phone map the bar drops XP (it moves into ⋯) so the title can breathe.
       popTop: "74px", headGap: phone && s.screen === "map" ? "6px" : "10px",
-      xpPillDisplay: phone && s.screen === "map" ? "none" : "flex", moreXpOn: phone,
+      // the map keeps its title whole on a phone: the ⋯ menu holds only the design preview, a tool for us, so phones go without it
+      xpPillDisplay: "flex", moreXpOn: false, moreDisplay: phone ? "none" : "flex",
       moreKit: () => { this.setState({ pop: null }); this.setState({ kit: true }); },
       moreReview: () => { this.setState({ pop: null }); this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); },
       morePreview: () => this.setState({ pop: null, pvOpen: !s.pvOpen }),
