@@ -174,8 +174,9 @@
 .xp-chip > span:last-child { display: inline !important; font-size: 11px !important; font-weight: 700 !important; color: #8fa0d6 !important; }
 
 /* progress on the road: a paper lights the stretch above it, toward the cup */
-.pm-link[data-lit="true"] { border-style: solid; border-color: var(--sc); }
-.pm-link[data-lit="part"] { border-style: solid; border-color: rgba(var(--sc-rgb), 0.45); }
+/* in the blue of the in-progress paper's ring (#6f9bff, Murci 2026-10-02), not the subject's colour */
+.pm-link[data-lit="true"] { border-style: solid; border-color: #6f9bff; }
+.pm-link[data-lit="part"] { border-style: solid; border-color: rgba(111, 155, 255, 0.5); }
 
 /* the subject chips on a phone: one toggle naming the current pick; the chips fold away under it (desktop: always open) */
 .pm-chips-toggle { display: none; }
