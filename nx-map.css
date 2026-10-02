@@ -307,3 +307,32 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    and 14 (a desktop: 27 / 25 and 14). */
 @media (max-width: 380px) { body .hm-brand .nx-nudle { font-size: 18px !important; } body .hm-brand :is(.nx-nexera, .nx-sep) { height: 14px !important; } .hm-title { font-size: 12px; } }
 @media (min-width: 381px) and (max-width: 439px) { body .hm-brand .nx-nudle { font-size: 20px !important; } body .hm-brand :is(.nx-nexera, .nx-sep) { height: 16px !important; } .hm-title { font-size: 13px; } }
+
+/* ==== one subject's map (Murci, 2026-10-02): a switchback road, one row per sitting ====
+   The road is one SVG path (the host computes it in px for the screen): dotted in the subject's colour; a done paper lights its
+   stretch toward the cup in the in-progress blue (#6f9bff), a paper under way half of it. Paper 1 left, Paper 2 right; the
+   sitting labels the row (above it on a phone, at its left on wider screens). */
+.pm-grid { display: block !important; }
+.pm-group { margin-left: auto !important; margin-right: auto !important; }
+.pm-path { margin: 0 auto; }
+.pm-road { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.pm-road path { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.pm-road-base { stroke: rgba(var(--sc-rgb), 0.5); stroke-dasharray: 0.1 9; }
+.pm-road-part { stroke: rgba(111, 155, 255, 0.5); }
+.pm-road-done { stroke: #6f9bff; }
+.pm-stop[data-side="x"] { width: 150px; }
+.pm-row-lbl { position: absolute; left: 0; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #7f8fc2; white-space: nowrap; }
+/* the subject sheet ("More subjects") */
+.pm-subj-q { box-sizing: border-box; width: 100%; min-height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(129, 177, 255, 0.3);
+  background: #0a1534; color: #fff; font: inherit; font-size: 16px; outline: none; }
+.pm-subj-q:focus-visible { border-color: #5b8cff; box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.35); }
+.pm-subj-list { display: flex; flex-direction: column; gap: 4px; max-height: min(52svh, 420px); overflow-y: auto; overscroll-behavior: contain; }
+.pm-subj-sec { padding: 8px 4px 4px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #7f8fc2; }
+.pm-subj-opt { min-height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border: none; border-radius: 12px; background: transparent;
+  color: #eef2ff; font: inherit; text-align: left; cursor: pointer; }
+.pm-subj-opt b { flex: 1; min-width: 0; font-size: 15px; font-weight: 700; }
+.pm-subj-opt > span:last-child { font-size: 12.5px; color: #8fa0d6; }
+.pm-subj-opt[aria-pressed="true"] { background: rgba(30, 70, 255, 0.18); }
+.pm-subj-opt:focus-visible { outline: 3px solid #81b1ff; outline-offset: -3px; }
+/* the map's picker lines up with the road (it started at the column's edge, 128 px left of the road at 1366) */
+.pm-chips { max-width: var(--pm-w, none); margin-left: auto; margin-right: auto; }
