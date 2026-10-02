@@ -302,5 +302,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-role .hm-rw { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .hm-role > :is(button, a) { position: relative; width: 36px; justify-content: center; padding: 0 !important; display: grid !important; place-items: center; }
 }
-/* 381-439 px: the logos a step smaller so the centred title clears them (at 22 px they ended at 152: 8 px INTO the title at 390) */
-@media (min-width: 381px) and (max-width: 439px) { .hm-brand .nx-nudle { font-size: 18px !important; } .hm-brand :is(.nx-nexera, .nx-sep) { height: 16px !important; } }
+/* the logos bigger than the title on a phone (Murci, 2026-10-02: they read smaller, 16 px against the title's 14 at 360), and the
+   centred title still clear of them: <=380 px logos 18 / 14 px, title 12 px; 381-439 px logos 20 / 16, title 13; 440-599 px 22 / 20
+   and 14 (a desktop: 27 / 25 and 14). */
+@media (max-width: 380px) { body .hm-brand .nx-nudle { font-size: 18px !important; } body .hm-brand :is(.nx-nexera, .nx-sep) { height: 14px !important; } .hm-title { font-size: 12px; } }
+@media (min-width: 381px) and (max-width: 439px) { body .hm-brand .nx-nudle { font-size: 20px !important; } body .hm-brand :is(.nx-nexera, .nx-sep) { height: 16px !important; } .hm-title { font-size: 13px; } }
