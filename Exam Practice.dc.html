@@ -2229,10 +2229,11 @@ class Component extends DCLogic {
       ...this.finishCardVals(s, s.vw),
       // the level's own words: "Grade 12 past papers"; NC(V) learners say "Level 4" (the full name ran past a 360 px header)
       pmHeadTitle: LEVEL_LABEL(L.level.level) + " past papers",
-      // the learner's subjects; then "More subjects" (the rest, searchable) when the level has more
-      pmChips: mine.map(n => ({ label: n, on: n === pick ? "true" : "false", c: (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c,
+      // "More subjects" (the rest, searchable) FIRST when the level has more (Murci, 2026-10-02: at the start, not the end), then the
+      // learner's subjects
+      pmChips: (more.length ? [{ label: "More subjects", on: "false", c: "#8fa0d6", pick: () => this.pmOpenSubj() }] : []).concat(mine.map(n => ({ label: n, on: n === pick ? "true" : "false", c: (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c,
         // on a phone a pick folds the chips away again (they are hidden to save space)
-        pick: () => this.pmPickSubj(n) })).concat(more.length ? [{ label: "More subjects", on: "false", c: "#8fa0d6", pick: () => this.pmOpenSubj() }] : []),
+        pick: () => this.pmPickSubj(n) }))),
       ...this.pmSubjVals(s, subjects, mine, more, pick, L, phone),
       // a phone shows one "Subjects" toggle naming the current pick; the chips open under it
       pmChipsCollapsed: phone && !s.pmChipsOpen ? "true" : "false", pmChipsOpenAttr: phone && s.pmChipsOpen ? "true" : "false",
