@@ -1532,3 +1532,32 @@ body.nx-play .mcqp .shard-in { border-radius:23px; }   /* the shards are cut fro
 @media (max-width:600px) { body.nx-play .mcqp .stage { padding-top:18px !important; } }
 /* the typed questions start at the same height as the multiple-choice ones (row at 83: their own question block was 4 px higher) */
 @media (max-width:600px) { body.nx-play [data-question] { padding-top:8px !important; } }
+/* ==== the action bar's buttons, redesigned (Murci, 2026-10-02: "they look ugly") ====
+   ONE filled action per state (Next / Continue, or Try again after a miss): the brand blue, a light rim, its icon. Back and the
+   other secondary buttons: glass, the cards' own rim. Skip: quiet words, no box. On a phone the solid strip is gone: the scene
+   fades into the bar, and the rocks sit 22 px lower, their foot behind the fade (not cut by an edge). */
+body.nx-play { --nx-glass:rgba(255,255,255,0.08); --nx-glass-h:rgba(255,255,255,0.14); --nx-glass-line:rgba(190,210,255,0.36); }
+html[data-nx="light"] body.nx-play { --nx-glass:rgba(255,255,255,0.72); --nx-glass-h:#ffffff; --nx-glass-line:rgba(16,60,140,0.22); }
+body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-bar] button:not([data-bar-primary])), body.nx-play.nx-play .mcqp :is(.prevq, .retry) {
+  background:var(--nx-glass) !important; border:1px solid var(--nx-glass-line) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:var(--nx-text) !important; }
+body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-bar] button:not([data-bar-primary])):hover, body.nx-play.nx-play .mcqp :is(.prevq, .retry):hover { background:var(--nx-glass-h) !important; }
+/* ([data-skip] twice: the tonal rule's :is() counts as its most specific argument, (0,4,2), and outranked a plain (0,4,1)) */
+body.nx-play.nx-play [data-footer] [data-skip][data-skip], body.nx-play.nx-play .mcqp .next.skip {
+  background:none !important; border:1px solid transparent !important; box-shadow:none !important; -webkit-backdrop-filter:none; backdrop-filter:none;
+  color:var(--nx-text2) !important; padding:0 12px !important; font-weight:700 !important; }
+body.nx-play.nx-play [data-footer] [data-skip][data-skip]:hover, body.nx-play.nx-play .mcqp .next.skip:hover { background:none !important; color:var(--nx-text) !important; text-decoration:none !important; }
+body.nx-play.nx-play [data-footer] [data-bar-primary], body.nx-play.nx-play .mcqp .next:not(.skip) {
+  border:1px solid rgba(160,185,255,0.55) !important; font-weight:700 !important; padding:0 20px !important; }
+body.nx-play.nx-play [data-footer] [data-bar-primary]:not(:disabled) { background:var(--grad, #2f5bff) !important; color:#ffffff !important; box-shadow:0 12px 26px -14px rgba(30,70,255,0.8) !important; }
+body.nx-play [data-footer] [data-bar-primary]::after, body.nx-play [data-footer] [data-bar-primary]::before { content:none; flex:none; width:17px; height:17px; background:currentColor; -webkit-mask:var(--ic) center / contain no-repeat; mask:var(--ic) center / contain no-repeat; }
+body.nx-play [data-footer] [data-bar-primary][data-kind="go"]:not(:disabled)::after { content:""; --ic:var(--ic-arrow); }
+body.nx-play [data-footer] [data-bar-primary][data-kind="retry"]::before { content:""; --ic:var(--ic-retry); width:16px; height:16px; }
+body.nx-play.nx-play [data-footer] [data-bar-primary] { flex:none !important; }
+@media (max-width:600px) {
+  body.nx-play.nx-play [data-footer]:not(:has([data-keypad])), body.nx-play.nx-play .mcqp .stage > .after { border-top:0 !important;
+    background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.7) 38%, rgba(var(--nx-c, 25,27,30), 0.94)) !important; }
+  body.nx-play.nx-play .nx-bg .nx-rocks, body.nx-play.nx-play .nx-bg .nx-fill, body.nx-play.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"], body.nx-play.nx-play .mcqp .pal { margin-bottom:calc(var(--nx-bar) - 22px) !important; }
+  body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-skip], [data-bar] button), body.nx-play.nx-play .mcqp :is(.prevq, .retry, .next) { height:46px !important; min-height:46px !important; }
+}
+@media (prefers-reduced-transparency: reduce) { body.nx-play.nx-play [data-footer] :is([data-back], [data-retry]), body.nx-play.nx-play .mcqp :is(.prevq, .retry) { background:var(--nx-tone) !important; -webkit-backdrop-filter:none; backdrop-filter:none; } }

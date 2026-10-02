@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=148">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=151">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1021,7 +1021,7 @@
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
                   <button onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
-                <button data-bar-primary="true" onClick="{{ barPrimary }}" disabled="{{ barPrimaryDisabled }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:{{ barPrimaryBg }}; color:{{ barPrimaryColor }}; font-size:15.5px; font-weight:800; cursor:pointer; box-shadow:{{ barPrimaryShadow }}">{{ barPrimaryLabel }}</button>
+                <button data-bar-primary="true" data-kind="{{ barPrimaryKind }}" onClick="{{ barPrimary }}" disabled="{{ barPrimaryDisabled }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:{{ barPrimaryBg }}; color:{{ barPrimaryColor }}; font-size:15.5px; font-weight:800; cursor:pointer; box-shadow:{{ barPrimaryShadow }}">{{ barPrimaryLabel }}</button>
               </span>
             </div>
           </sc-if>
@@ -3616,6 +3616,8 @@ class Component extends DCLogic {
       barIcon: bar ? bar.icon : "", barTitle: bar ? bar.title : "", barHasXp: !!(bar && bar.xp), barXp: bar ? bar.xp || "" : "",
       barMarking: outcome === "marking", barHasBody: !!(bar && bar.body), barBody: bar ? bar.body || "" : "",
       barHasSecondary: !!(bar && bar.secondary), barSecondaryLabel: bar && bar.secondary ? (phone && s.vw <= 400 && bar.secondary[0] === "Show the memo" ? "Memo" : bar.secondary[0]) : "", barSecondaryAria: bar && bar.secondary ? bar.secondary[0] : "",   /* a small phone: "Memo", so the row clears the robot (measured at 360x640: it covered its rock) */ barSecondary: bar && bar.secondary ? bar.secondary[1] : () => {},
+      // the bar button's icon (Murci, 2026-10-02): an arrow after "go on" labels, the circular arrow before Try again
+      barPrimaryKind: bar && /^Try again/.test(bar.primary[0]) ? "retry" : "go",
       barPrimaryLabel: bar ? bar.primary[0] : "", barPrimary: bar && bar.primary[1] ? bar.primary[1] : () => {}, barPrimaryDisabled: !(bar && bar.primary[1]),
       barPrimaryBg: primaryIsSuccess ? "#3ddc97" : bar && bar.primary[1] ? "var(--grad)" : "var(--panel)",
       barPrimaryColor: primaryIsSuccess ? "#0d2419" : bar && bar.primary[1] ? "#ffffff" : "var(--text4)",
