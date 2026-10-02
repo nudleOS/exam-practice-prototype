@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=140">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=30">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=31">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -460,6 +460,7 @@
             <span class="pm-fin-medal" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg></span>
             <span class="pm-fin-num"><b data-finishmark="true">{{ finishShown }}</b><span> / {{ finishTotal }} marks · {{ finishPct }}%</span></span>
           </div>
+          <sc-if value="{{ finishHasMedals }}" hint-placeholder-val="{{ false }}"><p class="pm-fin-medals">{{ finishMedals }}</p></sc-if>
           <p class="pm-sheet-note">{{ finishLine }}</p>
           <p class="pm-fin-fine">Practice mark · not an exam result</p>
           <button type="button" class="pm-go" data-finishprimary="true" onClick="{{ finishPrimaryGo }}">{{ finishPrimary }}</button>
@@ -1365,8 +1366,20 @@ const MAP_GROUND = { hex: "#23262b", rgb: "35,38,43" };
 // the map's ground on the navy look: the page's navy (its dots dissolve into it, so backdrop and fade must be the same colour)
 const NX_GROUND = { hex: "#03122c", rgb: "3,18,44" };
 const PASS_MARKS = { aet: { pct: 50, source: "Umalusi, Directives for Certification NC(V) L2-4 (Aug 2013) s2.7: vocational subjects 50%" } };
-// Top form at 80%+; solid at the paper's pass mark (else 50%).
+// Top form at 80%+; solid at the paper's pass mark (else 50%). (Marks; a paper's MEDAL now comes from medalPoints, below.)
 function finishTier(pct, pass) { return pct >= 80 ? "top" : pct >= (pass != null ? pass : 50) ? "solid" : "finished"; }
+// A paper's medal from its questions' medals (Murci, 2026-10-02): gold 3, silver 2, bronze 1, none 0 points per question; drawings
+// (not marked online) left out; score = points / (3 x the questions counted), so papers with more or fewer questions compare;
+// 80%+ gold ("top"), 50%+ silver ("solid"), else bronze ("finished"). A question's medal is the try it was right on (prog.medal);
+// a first-try full mark counts gold where no medal was stored (the design preview's seeded papers).
+function medalPoints(paper, pg) {
+  const c = { gold: 0, silver: 0, bronze: 0, none: 0, n: 0 };
+  paper.sections.forEach(sec => sec.missions.forEach(m => m.parts.forEach(q => { if (q.response_mode === "draw") return;
+    const pr = pg(q.key), md = pr.medal || (pr.firstTryFull ? "gold" : ""); c.n++; c[md || "none"]++; })));
+  c.score = c.n ? Math.round(100 * (3 * c.gold + 2 * c.silver + c.bronze) / (3 * c.n)) : 0;
+  c.tier = c.score >= 80 ? "top" : c.score >= 50 ? "solid" : "finished";
+  c.line = [c.gold + " gold", c.silver + " silver", c.bronze + " bronze"].join(" · ") + " · of " + c.n + " questions";
+  return c; }
 // A subject's colour and icon on the paper map (2026-10-02). Light hues that read on the navy ground; none is the blue of
 // "in progress" or the gold of "done", which stay the paper's state.
 const SUBJECT_LOOK = {
@@ -2061,7 +2074,8 @@ class Component extends DCLogic {
   }
   finishData() { const ms = this.missions(), total = ms.reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0), earned = this.earnedNow();
     const pct = total ? Math.round(100 * earned / total) : 0, pm = PASS_MARKS[this.state.paperId];
-    return { earned: earned, total: total, pct: pct, pass: pm ? pm.pct : null, tier: finishTier(pct, pm && pm.pct) }; }
+    const paper = this.paper(), md = paper ? medalPoints(paper, k => this.pg(k)) : null;
+    return { earned: earned, total: total, pct: pct, pass: pm ? pm.pct : null, tier: md ? md.tier : finishTier(pct, pm && pm.pct), medals: md ? md.line : "" }; }
   finishClear() { [this._fb1, this._fb2, this._fb3].forEach(clearTimeout); clearInterval(this._fw); cancelAnimationFrame(this._fcu);
     if (window.confetti && window.confetti.reset) window.confetti.reset(); }
   showFinishCard() {
@@ -2082,7 +2096,8 @@ class Component extends DCLogic {
         finishTitle: FC.tier === "top" ? "Top form" : FC.tier === "solid" ? "A solid finish" : "Paper complete",
         finishShown: String(s.finishShown != null ? s.finishShown : FC.earned), finishTotal: String(FC.total), finishPct: String(FC.pct),
         finishLine: low ? "Next: go through what cost you marks, then try the paper again."
-          : FC.pass != null ? (FC.tier === "top" ? "Well above" : "Above") + " this subject's " + FC.pass + "% pass mark." : "Every question on the paper, done.",
+          : FC.pass != null ? (FC.pct >= 80 ? "Well above" : FC.pct >= FC.pass ? "Above" : "Below") + " this subject's " + FC.pass + "% pass mark." : "Every question on the paper, done.",
+        finishMedals: FC.medals || "", finishHasMedals: !!FC.medals,
         // a low finish leads with the review; a good one with the next paper (the Hall is gone, 2026-10-01)
         finishPrimary: low ? "See what cost you marks" : "Choose another paper",
         finishSecondary: low ? "Choose another paper" : "See what cost you marks" } : {}),
@@ -2185,13 +2200,13 @@ class Component extends DCLogic {
     const ROW = phone ? 118 : 124, NODE = 56;
     const info = p => { const g = this.pmProgress(p);
       const state = !g ? "soon" : g.done ? "done" : g.started ? "going" : "new";
-      const pct = g && g.total ? Math.round(100 * g.earned / g.total) : 0, tier = g && g.done ? finishTier(pct, (PASS_MARKS[g.local.id] || {}).pct) : "";
+      const tier = g && g.done ? medalPoints(g.local, k => this.pg(k)).tier : "";
       const name = (pno(p) ? "Paper " + pno(p) + " · " : "") + short(p.sitting);
       const nextId = g && g.next >= 0 ? g.missions[g.next].id : "";
       const meta = state === "done" ? "Done · " + g.earned + " / " + g.total : state === "going" ? "Continue at Q " + nextId
         : state === "new" ? p.total_marks + " marks · " + hrs(p.duration_minutes) : "Coming soon";
       // the race on the road runs on questions finished (Murci, 2026-10-02), not marks: finishing a paper wins its cup
-      const comp = !g ? 0 : g.done ? 1 : g.missions.length ? g.closedN / g.missions.length : 0;
+      const comp = !g ? 0 : g.done ? 1 : g.missions.length ? g.closedN / g.missions.length : 0, pct = Math.round(100 * comp);   // the ring = questions (Murci, 2026-10-02)
       const demo = s.pmRace && p.subject === "Business Studies" ? (p.year === 2024 && pno(p) === 1 ? { state: "done", pct: 88, tier: "top", meta: "Done · 132 / 150", comp: 1 }
         : p.year === 2024 && pno(p) === 2 ? { state: "going", pct: 40, tier: "", meta: "Continue at Q 3", comp: 0.4 } : { state: "new", pct: 0, tier: "", meta: p.total_marks + " marks · " + hrs(p.duration_minutes), comp: 0 }) : null;
       if (demo) return { p: p, g: g, state: demo.state, pct: demo.pct, tier: demo.tier, name: name, meta: demo.meta, nextId: "3", comp: demo.comp };

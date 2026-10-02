@@ -362,3 +362,5 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    only gold (the solid medal-coloured disc said the result twice, and was the loudest thing on the map) */
 .pm-node[data-state="done"], .pm-node[data-state="done"]:is([data-tier="top"], [data-tier="solid"], [data-tier="finished"]) {
   border: 2.5px solid #6f9bff; background: #0f1d47; color: #9fbcff; }
+/* the finish card's medal count: "12 gold · 5 silver · 3 bronze" */
+.pm-fin-medals { margin: -4px 0 0; font-size: 13px; font-weight: 700; color: #c9d2f0; }
