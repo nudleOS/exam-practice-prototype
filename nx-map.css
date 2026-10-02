@@ -402,3 +402,13 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the finish cup bigger even before it glows (Murci, 2026-10-02): 72 px, centred where the road meets it (y 28) */
 .pm-cup { width: 72px; height: 72px; top: -8px; box-sizing: border-box; border: 2px solid rgba(245, 196, 67, 0.22); }
 .pm-cup[data-done="true"] { border-color: #f5c443; background: #3d2a00; }
+/* a paper's label sits on a backing, so a trail running up behind it never cuts its words */
+.pm-label { position: relative; z-index: 1; padding: 2px 8px 3px; border-radius: 8px; background: rgba(6, 19, 47, 0.92); }
+/* the "Demo progress" switch, first in the map's design preview menu (prototype only, for presentations, not product behaviour) */
+.pm-pv-switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pm-pv-switch[aria-checked] { background: transparent; }
+.pm-demo-track { position: relative; flex: none; width: 30px; height: 18px; border-radius: 999px; background: #1b2c5c; transition: background 160ms ease; }
+.pm-demo-track i { position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: #8fa0d6; transition: transform 160ms ease, background 160ms ease; }
+.pm-pv-switch[aria-checked="true"] { color: #fff; }
+.pm-pv-switch[aria-checked="true"] .pm-demo-track { background: #1e46ff; }
+.pm-pv-switch[aria-checked="true"] .pm-demo-track i { transform: translateX(12px); background: #fff; }

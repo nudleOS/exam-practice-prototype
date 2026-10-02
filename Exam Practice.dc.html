@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=142">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=36">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -381,6 +381,7 @@
           <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
             <div class="pm-pv-pop" id="pm-pv-pop" role="group" aria-label="Design preview: paper states">
               <span class="pm-pv-head">Design preview · not in the product</span>
+              <button type="button" class="pm-pv pm-pv-switch" role="switch" aria-checked="{{ pmRaceOn }}" onClick="{{ pmRaceToggle }}">Demo progress<span class="pm-demo-track" aria-hidden="true"><i></i></span></button>
               <sc-for list="{{ mapModes }}" as="mm" hint-placeholder-count="5">
                 <button type="button" class="pm-pv" aria-pressed="{{ mm.on }}" onClick="{{ mm.pick }}">{{ mm.label }}</button>
               </sc-for>
@@ -1384,6 +1385,13 @@ function medalPoints(paper, pg) {
   c.tier = c.score >= 80 ? "top" : c.score >= 50 ? "solid" : "finished";
   c.line = [c.gold + " gold", c.silver + " silver", c.bronze + " bronze"].join(" · ") + " · of " + c.n + " questions";
   return c; }
+// The map's "Demo progress" (design preview, on by default for presentations; prototype only, not product behaviour): per subject,
+// per sitting-year and paper number, [medal tier, marks of 150] for a finished paper or [null, share of questions] for one racing.
+// Life Sciences' May/June 2026 paper is NOT in it: it is the real mock paper and keeps its own progress (Murci, 2026-10-02).
+const NX_DEMO = {
+  "Business Studies": { "2024-1": ["top", 132], "2024-2": ["solid", 98], "2025-2": ["finished", 71], "2025-1": [null, 0.35] },
+  "Geography": { "2024-1": ["top", 139], "2024-2": ["finished", 64], "2025-2": ["solid", 104], "2025-1": ["top", 127] },
+  "Life Sciences": { "2024-1": ["top", 141], "2024-2": ["finished", 68], "2025-2": ["solid", 101], "2025-1": [null, 0.6] } };
 // A subject's colour and icon on the paper map (2026-10-02). Light hues that read on the navy ground; none is the blue of
 // "in progress" or the gold of "done", which stay the paper's state.
 const SUBJECT_LOOK = {
@@ -1589,7 +1597,10 @@ function buildPapers() {
 }
 
 class Component extends DCLogic {
-  state = { screen: "pick", programme: "All", paperId: null, mi: 0, pi: 0, vw: 1280,
+  // pmRace on from the start (Murci, 2026-10-02: the cups must show for a presentation, not hide behind the design preview):
+  // Business Studies three papers done + the fourth racing, Geography a finished track; the map opens on Business Studies
+  // unless the learner picked a subject on this device. "Fresh paper" etc. in the design preview switch it off.
+  state = { pmRace: true, pmSubj: "Business Studies", screen: "pick", programme: "All", paperId: null, mi: 0, pi: 0, vw: 1280,
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false,
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
@@ -2143,7 +2154,7 @@ class Component extends DCLogic {
       lvSave: () => { if (!d.qualification || !d.level) { this.setState({ lvErr: d.qualification ? "Select a level first." : "Select a qualification first." }); return; }
         let row = null; try { row = STUDIES_API.put({ qualification: d.qualification, level: d.level, subjects: [] }); }
         catch (e) { this.setState({ lvErr: e && e.message ? e.message : "That didn't save. Try again." }); return; }
-        this.setState({ studies: row, studiesAsked: true, lvOpen: false, lvDraft: null, lvErr: "", pmSubj: null }, () => this.pmGoMap()); } };
+        this.setState({ studies: row, studiesAsked: true, lvOpen: false, lvDraft: null, lvErr: "" }, () => this.pmGoMap());   /* the subject stays (a new level falls back to its first) */ } };
   }
   // Open the paper map; a returning learner's progress (the 21 of 150 the home describes) comes too, as Continue does.
   pmGoMap() { const s = this.state, go = () => this.setState({ screen: "map", pmOpen: null, sheet: null, pop: null }, () => window.scrollTo(0, 0));
@@ -2163,9 +2174,9 @@ class Component extends DCLogic {
   pmCloseSheet() { const id = this.state.pmOpen, back = this._pmOpener;
     this.setState({ pmOpen: null }, () => { const n = back && document.body.contains(back) ? back : document.querySelector('[data-paper="' + id + '"]'); if (n) n.focus(); }); }
   // design preview: Business Studies with Nov 2024 P1 done (gold) and P2 racing at 40%; replays each time it is picked
-  pmRaceDemo() { try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {};
-      this.pmAllPapers().filter(p => p.subject === "Business Studies" || p.subject === "Geography").forEach(p => { delete all[p.id]; });   /* the map's own list: HOME.papers has no catalogue papers, so the demo replayed only once */ localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
-    this._mapSeen = null; this.setState({ pmRace: true, pmSubj: "Business Studies", pvOpen: false, pmRaceSeq: (this.state.pmRaceSeq || 0) + 1 }, () => window.scrollTo(0, 0)); }
+  pmRaceDemo(keepSubject) { try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {};
+      this.pmAllPapers().filter(p => NX_DEMO[p.subject] && NX_DEMO[p.subject][p.year + "-" + (p.paper_no || 0)]).forEach(p => { delete all[p.id]; });   /* the map's own list: HOME.papers has no catalogue papers, so the demo replayed only once */ localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
+    this._mapSeen = null; this.setState({ pmRace: true, ...(keepSubject ? {} : { pmSubj: "Business Studies" }), pvOpen: false, pmRaceSeq: (this.state.pmRaceSeq || 0) + 1 }, () => window.scrollTo(0, 0)); }
   // a subject picked (a chip or the sheet): remembered on this device, the map back at its top
   pmPickSubj(n) { try { localStorage.setItem("nx-map-subject", n); } catch (e) { /* storage off */ }
     this.setState({ pmSubj: n, pmChipsOpen: false, pmSubjOpen: false, pmSubjQ: "" }, () => window.scrollTo(0, 0)); }
@@ -2213,9 +2224,7 @@ class Component extends DCLogic {
       const comp = !g ? 0 : g.done ? 1 : g.missions.length ? g.closedN / g.missions.length : 0, pct = Math.round(100 * comp);   // the ring = questions (Murci, 2026-10-02)
       // design preview, "Cup race (demo)": Business Studies, the first three papers from Start done (gold, silver, bronze) and the
       // fourth racing; Geography a finished track (mixed cups, the finish glowing). In the road's order: Nov 2024 P1, P2, Nov 2025 P2, P1.
-      const DEMO = { "Business Studies": { "2024-1": ["top", 132], "2024-2": ["solid", 98], "2025-2": ["finished", 71], "2025-1": [null, 0.35] },
-        "Geography": { "2024-1": ["top", 139], "2024-2": ["finished", 64], "2025-2": ["solid", 104], "2025-1": ["top", 127] } };
-      const dm = s.pmRace && DEMO[p.subject] && DEMO[p.subject][p.year + "-" + pno(p)];
+      const dm = s.pmRace && NX_DEMO[p.subject] && NX_DEMO[p.subject][p.year + "-" + pno(p)];
       const demo = !dm ? null : dm[0] ? { state: "done", pct: 100, tier: dm[0], meta: "Done · " + dm[1] + " / 150", comp: 1 }
         : { state: "going", pct: Math.round(dm[1] * 100), tier: "", meta: "Continue at Q 3", comp: dm[1] };
       if (demo) return { p: p, g: g, state: demo.state, pct: demo.pct, tier: demo.tier, name: name, meta: demo.meta, nextId: "3", comp: demo.comp };
@@ -2232,7 +2241,9 @@ class Component extends DCLogic {
       const C = Math.max(2, ...rows.map(r => r.ps.length)), R = rows.length, NODE = 56, CUP = 56, OFF = CUP + 60;
       const colX = j => Math.round(phone ? (C === 2 ? [72, W - 72] : [56, W / 2, W - 56])[j] : W * (C === 2 ? [0.3, 0.7] : [0.22, 0.5, 0.78])[j]);
       const avail = (s.vh || 800) - 264, base = OFF + NODE + 50 + 70;   // (+70: the first paper's lead-in trail and its Start, under the bottom row)   // above the road: the header, the picker and the subject's title
-      const rowH = R > 1 ? Math.max(150, Math.min(260, Math.floor((avail - base) / (R - 1)))) : 0, H = base + (R - 1) * rowH, rowY = i => OFF + i * rowH;
+      // rows at least 200 px apart: a race up into a paper from below needs its circle (56) + label (54) + the face (28) + the cup (28)
+      // and their gaps (at 150 px the face and the cup piled up on Life Sciences' 2026 paper)
+      const rowH = R > 1 ? Math.max(200, Math.min(260, Math.floor((avail - base) / (R - 1)))) : 0, H = base + (R - 1) * rowH, rowY = i => OFF + i * rowH;
       const at = []; rows.forEach((r, i) => r.ps.forEach((x, j) => { const col = Math.min(C - 1, Math.max(0, (pno(x.p) || j + 1) - 1)); at.push({ x: x, i: i, cx: colX(col), cy: rowY(i) + NODE / 2 }); }));
       // the visit order: the bottom row first, then up; even rows from the bottom left to right, odd rows right to left
       const order = []; for (let i = R - 1; i >= 0; i--) { const b = R - 1 - i; order.push(...at.filter(a => a.i === i).sort((u, v) => b % 2 ? v.cx - u.cx : u.cx - v.cx)); }
@@ -2265,8 +2276,10 @@ class Component extends DCLogic {
       let dAll = "", dDone = "", dNew = ""; const cups = [], tips = [], wonAnim = {};
       const legs = order.map((A, k) => { const P0 = k ? order[k - 1] : null, a = P0 ? { x: P0.cx, y: P0.cy } : { x: sx, y: sy }, z = { x: A.cx, y: A.cy };
         const pts = !P0 ? [a, { x: sx, y: z.y }, z] : P0.i === A.i || P0.cx === A.cx ? [a, z] : [a, { x: a.x, y: (a.y + z.y) / 2 }, { x: z.x, y: (a.y + z.y) / 2 }, z];
-        return { A: A, pts: pts, s0: P0 ? EDGE : 0 }; });
-      legs.forEach(L => { const D = dense(L.pts), x = L.A.x, id = x.p.id, end = Math.max(L.s0 + 1, D.T - EDGE), rest = Math.max(L.s0 + 1, end - 22);
+        // a trail into a paper from BELOW passes through that paper's label (under its circle): its race stops short of the label
+        const below = pts[pts.length - 2].y > z.y + 1;
+        return { A: A, pts: pts, s0: P0 ? EDGE : 0, lab: below ? 54 : 0 }; });
+      legs.forEach(L => { const D = dense(L.pts), x = L.A.x, id = x.p.id, full = Math.max(L.s0 + 1, D.T - EDGE), end = Math.max(L.s0 + 1, full - L.lab), rest = Math.max(L.s0 + 1, end - 22);
         dAll += round(L.pts) + " ";
         const p = x.state === "done" ? 1 : x.state === "going" ? Math.max(0.04, x.comp || 0) : 0, p0 = Math.min(p, +this._mapSeen[id] || 0);
         const fill = q => q <= 0 ? L.s0 : L.s0 + q * (end - L.s0), cupAt = q => Math.min(fill(q) + LEAD, rest);
@@ -2274,7 +2287,7 @@ class Component extends DCLogic {
         if (p <= 0) return;
         // lit up to the fill: what was seen stays drawn, the new part draws on (one combined path, pathLength 1). Under way, the line
         // stops 6 px short: its tip (a 20 px piece of line, HTML) rocks there, so the line seems to breathe forward and back.
-        const going = p < 1, endL = going ? Math.max(L.s0, fill(p) - 6) : end;
+        const going = p < 1, endL = going ? Math.max(L.s0, fill(p) - 6) : full;
         if (p0 < p - 0.001) { dDone += cut(D, 0, fill(p0)); dNew += cut(D, p0 > 0 ? fill(p0) : 0, endL); } else dDone += cut(D, 0, endL);
         // finished: the circle at the end of this trail becomes the paper's glowing cup ("win" pops it once the line has drawn on)
         if (!going) { wonAnim[id] = p0 < 1 - 0.001 ? "win" : "won"; return; }
@@ -2325,13 +2338,16 @@ class Component extends DCLogic {
       pmChipsToggle: () => this.setState({ pmChipsOpen: !s.pmChipsOpen }),
       pmPickLabel: pick || "Subjects", pmPickC: (SUBJECT_LOOK[pick] || SUBJECT_LOOK._).c,
       pmChipsChevron: s.pmChipsOpen ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6",
+      // the "Demo progress" switch in the design preview menu (Murci, 2026-10-02: the preview button is for this): prototype only,
+      // for presentations, not product behaviour
+      pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       pmSheetOn: !!sel && !s.finishCard, pmLayout: layout, pmDim: layout !== "desk", pmModal: layout !== "desk" ? "true" : "false",
       pmPadR: desk && sel && !s.finishCard ? "392px" : "0px",
       // design preview: seed the Life Sciences paper's progress ("Just finished 1.4" was a road moment, gone with the road)
-      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress"], ["fin85", "Finished · 85%"], ["fin55", "Finished · 55%"], ["fin25", "Finished · 25%"], ["race", "Cup race (demo)"]].map(x => {
-        const on = x[0] === "race" ? !!s.pmRace : !s.pmRace && (s.mapMode || (Object.keys(s.prog || {}).length ? "progress" : "fresh")) === x[0];
-        return { label: x[1], on: on ? "true" : "false", pick: () => x[0] === "race" ? this.pmRaceDemo() : this.setState({ pmRace: false }, () => this.seedMap(x[0])) }; }),
+      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress"], ["fin85", "Finished · 85%"], ["fin55", "Finished · 55%"], ["fin25", "Finished · 25%"]].map(x => {
+        const on = !s.pmRace && (s.mapMode || (Object.keys(s.prog || {}).length ? "progress" : "fresh")) === x[0];
+        return { label: x[1], on: on ? "true" : "false", pick: () => this.setState({ pmRace: false }, () => this.seedMap(x[0])) }; }),
       pmClose: () => this.pmCloseSheet(), pmKeys: e => { if (e.key === "Escape") { e.preventDefault(); this.pmCloseSheet(); } },
       ...(sel ? {
         pmKicker: p.subject + " · " + (p.qualification === "ncv" ? "NC(V) " : "") + p.level_detail,
