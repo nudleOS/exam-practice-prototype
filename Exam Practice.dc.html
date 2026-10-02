@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=127">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=13">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=14">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -92,9 +92,8 @@
   </sc-if>
   <header style="position:sticky; top:0; z-index:20; display:{{ headerDisplay }}; align-items:center; gap:{{ headGap }}; padding:10px {{ pad }}; background:{{ headBg }}; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
     <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
-      <button onClick="{{ goBack }}" aria-label="{{ backLabel }}" style="height:44px; min-width:44px; padding:0 12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:600">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
-        <span style="display:{{ backTextDisplay }}">{{ backLabel }}</span>
+      <button type="button" class="hd-back" onClick="{{ goBack }}" aria-label="{{ backLabel }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
       </button>
     </sc-if>
     <sc-if value="{{ logoHome }}" hint-placeholder-val="{{ false }}">
@@ -673,7 +672,7 @@
         <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
           <div data-parthead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-qlabel="true">Question {{ nxQNum }}</span></sc-if>
-            <sc-if value="{{ nxReplay }}" hint-placeholder-val="{{ false }}"><span data-replay="true">Practice round · no marks or XP</span></sc-if>
+            <sc-if value="{{ nxReplay }}" hint-placeholder-val="{{ false }}"><span data-replay="true">{{ replayLabel }}</span></sc-if>
             <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
             <sc-if value="{{ nxTriesOn }}" hint-placeholder-val="{{ false }}"><span data-tries="true" role="img" aria-label="{{ nxTriesAria }}"><sc-for list="{{ nxTries }}" as="td" hint-placeholder-count="3"><i class="{{ td.cls }}"></i></sc-for></span></sc-if>
             <span data-partmarks="true" data-hasn="{{ partMarksHasN }}" data-earned="{{ partMarksEarned }}" aria-label="{{ partMarks }}" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarksN }}<span data-mw="true">{{ partMarksW }}</span></span>
@@ -1086,7 +1085,7 @@
         </div>
         <sc-if value="{{ doneHasRevisit }}" hint-placeholder-val="{{ false }}">
           <section data-donerevisit="true" aria-labelledby="done-revisit" style="display:flex; flex-direction:column; gap:8px">
-            <span style="display:flex; align-items:baseline; gap:8px"><h2 id="done-revisit" style="flex:1; margin:0; font-size:14px; font-weight:800">To revisit</h2><span style="font-size:12px; color:var(--text3)">Replays are practice · no XP</span></span>
+            <span style="display:flex; align-items:baseline; gap:8px"><h2 id="done-revisit" style="flex:1; margin:0; font-size:14px; font-weight:800">To revisit</h2><span style="font-size:12px; color:var(--text3)">Retakes win marks back · no XP</span></span>
             <sc-for list="{{ doneRevisit }}" as="dr" hint-placeholder-count="2">
               <button data-revisit="{{ dr.number }}" onClick="{{ dr.open }}" aria-label="{{ dr.aria }}" style="min-height:48px; padding:9px 12px; border-radius:14px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.07); color:var(--text); display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left">
                 <span style="flex:none; font-size:13px; font-weight:800; color:#f3c14f">{{ dr.number }}</span>
@@ -1136,32 +1135,24 @@
   </sc-if>
 
   <sc-if value="{{ onSummary }}" hint-placeholder-val="{{ false }}">
-    <main style="max-width:720px; margin:0 auto; padding:24px {{ pad }} 60px; display:flex; flex-direction:column; gap:18px; animation:rise 420ms ease both">
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px">
-        <sc-for list="{{ sumStats }}" as="ss" hint-placeholder-count="4">
-          <span style="display:flex; flex-direction:column; gap:4px; padding:16px; border-radius:16px; border:1px solid var(--line); background:rgba(var(--nx-c, 32,35,39), 0.6)"><span style="font-size:22px; font-weight:800">{{ ss.value }}</span><span style="font-size:12px; color:var(--text3)">{{ ss.label }}</span></span>
+    <main class="rv" data-review="true">
+      <div class="rv-score"><b>{{ rvEarned }}</b><span> / {{ rvTotal }} marks · {{ rvPct }}%</span></div>
+      <sc-if value="{{ rvHasFirst }}" hint-placeholder-val="{{ false }}"><p class="rv-first">First try: {{ rvFirst }} / {{ rvTotal }}</p></sc-if>
+      <p class="rv-line">{{ rvLine }}</p>
+      <sc-if value="{{ rvHasLost }}" hint-placeholder-val="{{ true }}"><p class="rv-rule"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>Retakes win marks back. They don't earn XP.</p></sc-if>
+      <ol class="rv-list" aria-label="Where you lost marks">
+        <sc-for list="{{ rvRows }}" as="r" hint-placeholder-count="3">
+          <li class="rv-row" data-kind="{{ r.kind }}">
+            <span class="rv-main">
+              <span class="rv-top"><b class="rv-num">{{ r.number }}</b><span class="rv-delta" data-kind="{{ r.kind }}">{{ r.delta }}</span></span>
+              <span class="rv-why">{{ r.why }}</span>
+            </span>
+            <sc-if value="{{ r.canGo }}" hint-placeholder-val="{{ true }}"><button type="button" class="rv-go" data-retake="{{ r.number }}" onClick="{{ r.go }}" aria-label="{{ r.aria }}">{{ r.goLabel }}</button></sc-if>
+            <sc-if value="{{ r.won }}" hint-placeholder-val="{{ false }}"><span class="rv-won" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></sc-if>
+          </li>
         </sc-for>
-      </div>
-      <section style="display:flex; flex-direction:column; gap:10px">
-        <h2 style="margin:0; font-size:15px; font-weight:800">Marks by section</h2>
-        <sc-for list="{{ sumSections }}" as="sx" hint-placeholder-count="4">
-          <div style="display:flex; flex-direction:column; gap:6px">
-            <span style="display:flex; font-size:13.5px"><span style="flex:1; font-weight:600">{{ sx.title }}</span><span style="font-weight:700; color:var(--text2)">{{ sx.label }}</span></span>
-            <span style="height:8px; border-radius:4px; background:rgba(255,255,255,0.07); overflow:hidden"><span style="display:block; height:100%; width:{{ sx.pct }}; background:var(--tint)"></span></span>
-          </div>
-        </sc-for>
-      </section>
-      <section style="display:flex; flex-direction:column; gap:8px">
-        <h2 style="margin:0; font-size:15px; font-weight:800">Below full marks</h2>
-        <sc-for list="{{ sumBelow }}" as="sb" hint-placeholder-count="3">
-          <button onClick="{{ sb.open }}" style="min-height:48px; padding:10px 14px; border-radius:14px; border:1px solid var(--line); background:rgba(var(--nx-c, 32,35,39), 0.6); color:var(--text); display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left">
-            <span style="font-size:13px; font-weight:800; color:var(--tint)">{{ sb.number }}</span>
-            <span style="flex:1; font-size:13px; color:var(--text2)">{{ sb.status }}</span>
-            <span style="font-size:13px; font-weight:700">{{ sb.marks }}</span>
-          </button>
-        </sc-for>
-        <sc-if value="{{ sumNoBelow }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px; color:var(--text3)">{{ sumNoBelowText }}</span></sc-if>
-      </section>
+      </ol>
+      <button type="button" class="rv-another" onClick="{{ rvAnother }}">Choose another paper</button>
     </main>
   </sc-if>
 
@@ -2234,7 +2225,7 @@ class Component extends DCLogic {
     // what it paid, and the x3 when the streak paid it (measured: "+300 XP" never said why)
     // a practice round (Try it again) pays nothing: one chip says so (measured: it showed "+1 mark", the marks the answer is worth, while
     // none were banked)
-    const chips = full ? (reply.replay ? [{ t: "Practice · no marks or XP" }] : [{ t: "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 ? [{ t: "×" + reply.multiplier + " streak" }] : [],
+    const chips = full ? (reply.replay ? [{ t: reply.retake ? "Retake · marks back, no XP" : "Practice · no marks or XP" }] : [{ t: "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 ? [{ t: "×" + reply.multiplier + " streak" }] : [],
       [{ t: reply.try > 1 ? "Marks are for the first try" : got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }])) : [];
     const hintBody = !!(bar && reply && reply.clue && bar.body === "Hint: " + reply.clue);
     const body = full ? (spelled ? "Accepted: it is spelled “" + spelled + "”" + (s.term && String(s.term).trim().toLowerCase() !== spelled.toLowerCase() ? " (you typed “" + String(s.term).trim() + "”)." : ".") : "") : bar && bar.body && !hintBody ? bar.body : "";
@@ -2411,6 +2402,41 @@ class Component extends DCLogic {
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
+  // "What cost you marks" (2026-10-02): the paper's mark (and its first-try mark once a retake changed it), one plain line, then
+  // every part below full marks, the most marks lost first, each with why and a Retake; parts won back show it.
+  rvVals(s) {
+    const P = this.paper(); if (!P) return { rvRows: [], rvHasLost: false, rvHasFirst: false };
+    const short = t => { const x = String(t || "").replace(/\s+/g, " ").trim(); return x.length > 52 ? x.slice(0, 50).trim() + "…" : x; };
+    const rows = [];
+    this.missions().forEach((m, mi) => m.parts.forEach((q, pi) => { if (!q.marks) return;
+      const g = this.pg(q.key), best = g.best || 0, lost = q.marks - best, back = g.first != null ? best - g.first : 0, answered = g.tries > 0 || g.closed;
+      if (lost <= 0 && back <= 0) return;
+      const why = !answered ? "Not answered yet" : g.revealed ? "Memo shown" : g.tries >= 3 && !g.closed ? "3 tries used" : best > 0 ? "Partly right" : "Not right yet";
+      rows.push({ lost: lost, number: q.number, kind: lost > 0 ? (answered ? "lost" : "open") : "won",
+        delta: lost > 0 ? (answered ? "−" + lost + " of " + q.marks : q.marks + (q.marks === 1 ? " mark" : " marks")) : "+" + back + " won back",
+        // the reason first: it is what the learner needs (a long question line would cut it off at the end)
+        why: (lost > 0 ? why : "Retaken") + (lost > 0 && back > 0 ? " · +" + back + " won back" : "") + " · " + short(q.stem),
+        canGo: lost > 0, won: lost <= 0, goLabel: answered ? "Retake" : "Answer",
+        aria: (answered ? "Retake " : "Answer ") + q.number + ", " + lost + " of " + q.marks + " marks to win" + (answered ? ", no XP" : ""),
+        go: () => answered ? this.retakePart(mi, pi, "summary") : this.resetInputs({ screen: "play", mi: mi, pi: pi, revisit: true, revisitTo: "summary" }) }); }));
+    rows.sort((a, b) => (b.lost > 0) - (a.lost > 0) || b.lost - a.lost);
+    const total = P.total || this.missions().reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0), earned = this.earnedNow(), first = this.firstNow();
+    const lostRows = rows.filter(r => r.kind === "lost"), open = rows.filter(r => r.kind === "open"), lostSum = lostRows.reduce((a, r) => a + r.lost, 0);
+    const parts = [lostRows.length ? "You lost " + lostSum + (lostSum === 1 ? " mark" : " marks") + " in " + lostRows.length + (lostRows.length === 1 ? " question" : " questions") + "." : "",
+      open.length ? open.length + (open.length === 1 ? " question is" : " questions are") + " not answered yet." : ""].filter(Boolean);
+    return { rvEarned: String(earned), rvTotal: String(total), rvPct: String(total ? Math.round(100 * earned / total) : 0),
+      rvHasFirst: first !== earned, rvFirst: String(first),
+      rvLine: parts.length ? parts.join(" ") : "No marks lost. Every question is at full marks.",
+      rvHasLost: lostRows.length > 0, rvRows: rows.map(r => Object.assign({}, r, { lost: undefined })),
+      rvAnother: () => this.setState({ screen: "map", pmOpen: null }, () => window.scrollTo(0, 0)) };
+  }
+  // A retake (2026-10-02): the part again, three fresh tries; its first try's marks replace a lower mark (no XP). `back` is the
+  // screen "Back to the results" returns to (the done screen, or the review page).
+  retakePart(mi, pi, back) { const m = this.missions()[mi], q = m && m.parts[pi]; if (!q) return;
+    const g = this.pg(q.key), pp = Object.assign({}, this.state.prog);
+    pp[q.key] = Object.assign({}, g, { tries: 0, closed: false, replay: true, retake: true, first: g.first != null ? g.first : (g.best || 0) });
+    this.resetInputs({ screen: "play", mi: mi, pi: pi, prog: pp, revisit: true, revisitTo: back || "done" }); }
+  firstNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => { const g = this.pg(p.key); return b + (g.first != null ? g.first : (g.best || 0)); }, 0), 0); }
   openMission(i, pi = 0) { this.resetInputs({ screen: "play", mi: i, pi: pi, runLog: [], revisit: false, figHidden: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
@@ -2541,9 +2567,10 @@ class Component extends DCLogic {
       if (result.full && !replay) xp = XP_LADDER[tryNo - 1] * mult;
       const clues = SERVER.clues[part.key] || [];
       const reply = { part: part.number, try: tryNo, tries_left: 3 - tryNo, closed: closed, revealed: revealed,
-        best_marks: Math.max(pr.best, tryNo === 1 && !replay ? (result.marks_awarded || 0) : 0), result: result,   // marks only for the first try (Murci), never on a replay
+        // marks only for a first try (Murci): an attempt's first, or a RETAKE's first (2026-10-02: retakes win marks back, no XP)
+        best_marks: Math.max(pr.best, tryNo === 1 && (!replay || pr.retake) ? (result.marks_awarded || 0) : 0), result: result,
         clue: !closed ? (clues[tryNo - 1] || clues[clues.length - 1] || null) : null,
-        reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay };
+        reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay, retake: !!pr.retake };
       this.setState({ marking: false, reply: reply, barOpen: !quiet, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
@@ -2552,6 +2579,7 @@ class Component extends DCLogic {
         runLog: s.runLog.concat([{ key: part.key, try: tryNo, full: !!result.full, xp: xp, mult: mult, revealed: revealed, replay: replay }]),
         prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
           firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay,
+          retake: pr.retake, first: pr.first,   // a retake's flag, and the mark before any retake (the paper's first-try mark)
           // the medal the question earned (the question map shows it): the try it was right on; a practice replay keeps the first one's
           medal: pr.medal || (result.full && !replay && !draw ? ["gold", "silver", "bronze"][Math.min(2, tryNo - 1)] : ""),
           obs: tryNo === 1 && !draw ? (pr.obs || []).concat([this.obsOf(part, pr, result)]) : pr.obs } }) });
@@ -2632,7 +2660,7 @@ class Component extends DCLogic {
   advance() {
     const dr = this.state.drill;
     if (dr) { if (this.state.pi < dr.mission.parts.length - 1) this.resetInputs({ pi: this.state.pi + 1 }); else this.setState({ screen: "drillout" }, () => window.scrollTo(0, 0)); return; }
-    if (this.state.revisit) { this.setState({ screen: "done", revisit: false }, () => window.scrollTo(0, 0)); return; }
+    if (this.state.revisit) { this.setState({ screen: this.state.revisitTo || "done", revisit: false, revisitTo: null }, () => window.scrollTo(0, 0)); return; }
     const m = this.mission(); if (!m) return;
     // Next / Skip goes to the next part still OPEN, round from the start, so a skipped part comes back after the last (Murci,
     // 2026-09-30); the done screen comes once none is open (measured: answering the skipped part, Next went on to the closed 1.1.4).
@@ -2838,9 +2866,8 @@ class Component extends DCLogic {
       doneBeforePct: pct(before), doneGainPct: s.doneGrow ? pct(earned - before) : "0%", doneGainDur: s.reduced ? "0ms" : "900ms",
       doneHasRevisit: revisit.length > 0,
       doneRevisit: revisit.map(x => { const lost = x.p.marks - (x.g.best || 0);
-        return { number: x.p.number, lost: word(lost) + " missed", label: short(x.p.stem), aria: "Replay " + x.p.number + ", " + word(lost) + " missed on the first try, practice only, no XP or marks",   // marks are first-try only: a replay cannot find them
-          open: () => { const pp = Object.assign({}, this.state.prog); pp[x.p.key] = Object.assign({}, this.pg(x.p.key), { tries: 0, closed: false, replay: true });
-            this.resetInputs({ screen: "play", mi: s.mi, pi: x.pi, prog: pp, revisit: true }); } }; }),
+        return { number: x.p.number, lost: word(lost) + " missed", label: short(x.p.stem), aria: "Retake " + x.p.number + ", " + word(lost) + " missed. A first try on the retake wins marks back, no XP",   // marks are first-try only: a replay cannot find them
+          open: () => this.retakePart(s.mi, x.pi, "done") }; }),
       doneNextTitle: nm ? nm.id + " · " + nm.title : "Review my paper",
       doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. The finish line is next.",
       doneContinueLabel: nm ? "Continue" : "Cross the finish line",
@@ -3189,7 +3216,7 @@ class Component extends DCLogic {
       marking: "Reading your answer…",
       waiting: "Saved. A marker will look at it.",
       // (practice: short, as the MCQ robot's; the "XP only" rule is on the result card's chip. The Hall never sees these.)
-      full: reply && reply.replay ? "Nailed it! That one was practice." : reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
+      full: reply && reply.replay ? (reply.retake ? "Marks won back." : "Nailed it! That one was practice.") : reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
       partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
       zero: "Not quite. Try again.",
       out: "Here's how the examiner marks it.",
@@ -3211,7 +3238,7 @@ class Component extends DCLogic {
       warn: { border: "rgba(224,161,15,0.5)", bg: "linear-gradient(180deg, rgba(52,40,14,0.97), rgba(31,26,16,0.98))", color: "#f3c14f", icon: "#e0a10f" },
       bad: { border: "rgba(242,119,122,0.5)", bg: "linear-gradient(180deg, rgba(56,26,28,0.97), rgba(33,22,24,0.98))", color: "#ff9a9c", icon: "#f2777a" },
       neutral: { border: "var(--line2)", bg: "rgba(32,35,39,0.97)", color: "#ffffff", icon: "#81b1ff" } }[tone];
-    const xpText = reply && res && res.full ? (reply.replay ? "Replay — no XP" : "+" + reply.xp_awarded + " XP · " + (reply.try === 1 ? "first try" : "try " + reply.try) + (reply.multiplier > 1 ? " · ×" + reply.multiplier + " streak" : "")) : "";
+    const xpText = reply && res && res.full ? (reply.replay ? (reply.retake ? "Retake — no XP" : "Replay — no XP") : "+" + reply.xp_awarded + " XP · " + (reply.try === 1 ? "first try" : "try " + reply.try) + (reply.multiplier > 1 ? " · ×" + reply.multiplier + " streak" : "")) : "";
     const bar = {
       marking: { icon: "…", title: "Being marked…", body: "This can take up to 20 seconds.", primary: ["Being marked…", null] },
       waiting: { icon: "•", title: "Saved · waiting for a marker", body: "Your answer is saved. Its marks appear on the map when it is marked.", primary: [nextLabel, next] },
@@ -3288,7 +3315,8 @@ class Component extends DCLogic {
       // Try it again (Murci, 2026-09-30): any finished question, as practice: 3 fresh chances, the medal as a badge, no marks or XP
       // (check() pays neither on a replay: best_marks only counts a first try that is not one)
       nxCanRetry: closed && !s.drill && !s.marking && mode !== "draw", retryPart: () => this.retryPart(),
-      nxReplay: !!pr.replay && !closed,
+      nxReplay: !!pr.replay && !closed, // short: the chip has a fixed width (a long label ran down over the question); the review page explains the rule
+      replayLabel: pr.retake ? "Retake · no XP" : "Practice round · no marks or XP",
       ...this.nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed),
       ...this.termVals(s, part, reply, res, locked, mode),
       ...this.nxTriesVals(s, part, res, mode),
@@ -3393,7 +3421,7 @@ class Component extends DCLogic {
       const draw = part.response_mode === "draw";
       if (draw) fb = { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for below.", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
       else if (res.full) fb = { icon: "✓", title: "Correct · " + res.marks + (res.marks === 1 ? " mark" : " marks"), color: "#3ddc97", border: "rgba(61,220,151,0.4)", bg: "rgba(61,220,151,0.08)",
-        xp: reply.replay ? "Replay — no XP" : "+" + reply.xp_awarded + " XP" + (reply.multiplier > 1 ? " · ×" + reply.multiplier : "") };
+        xp: reply.replay ? (reply.retake ? "Retake — no XP" : "Replay — no XP") : "+" + reply.xp_awarded + " XP" + (reply.multiplier > 1 ? " · ×" + reply.multiplier : "") };
       else if (res.marks_awarded > 0) fb = { icon: "◐", title: res.marks_awarded + " of " + res.marks + " marks so far", color: "#81b1ff", border: "rgba(129,177,255,0.35)", bg: "rgba(129,177,255,0.07)" };
       else fb = { icon: "✕", title: reply.revealed ? "Out of tries · 0 marks" : "Not yet · 0 of " + res.marks + " marks", color: "#f2777a", border: "rgba(242,119,122,0.4)", bg: "rgba(242,119,122,0.07)" };
     } else if (reply && reply.revealed && !res) fb = { icon: "•", title: "Memo shown · no XP for this part", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
@@ -3425,11 +3453,10 @@ class Component extends DCLogic {
 
     const progFor = pp => { const ps = pp.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts)), []); const n = ps.filter(p => this.pg(p.key).tries > 0 || this.pg(p.key).closed).length; return { n: n, of: ps.length }; };
     const shown = papers.filter(p => s.programme === "All" || (s.programme === "NC(V)" ? p.id === "aet" : s.programme === "High school" ? p.id === "ls" : false));
-    const allParts = paper ? paper.sections.reduce((a, sec) => a.concat(...sec.missions.map(m => m.parts.map(p => Object.assign({ mi: missions.indexOf(m) }, p)))), []) : [];
 
-    const headTitle = s.screen === "drillout" ? "Topic drill" : s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
-    const headSub = s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
-    const backMap = { play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
+    const headTitle = s.screen === "drillout" ? "Topic drill" : s.screen === "pick" ? "Nexera" : s.screen === "summary" ? "What cost you marks" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
+    const headSub = s.screen === "pick" ? "Exam practice" : paper ? paper.title + " · " + paper.sitting : "";
+    const backMap = { play: ["Back to past papers", () => this.setState({ screen: "map" })], done: ["Back to past papers", () => this.setState({ screen: "map" })], summary: ["Back to past papers", () => this.setState({ screen: "map" })],
       drillout: ["Topics", () => this.endDrill(false)] };
     const bk = backMap[s.screen];
 
@@ -3633,7 +3660,8 @@ class Component extends DCLogic {
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
       logoHome: s.screen === "map", logoPlain: s.screen !== "map", goHome: () => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => window.scrollTo(0, 0)),
       headTitle: headTitle, headSub: headSub,
-      showMeter: !!paper && s.screen !== "pick" && s.screen !== "map", meterLabel: earned + " of " + total + " marks",
+      // (the review page shows the mark in large type itself, and needs the room for its title)
+      showMeter: !!paper && s.screen !== "pick" && s.screen !== "map" && s.screen !== "summary", meterLabel: earned + " of " + total + " marks",
       ringDisplay: phone ? "flex" : "none", kitHeadDisplay: phone && s.screen === "map" ? "none" : "flex",
       xpPad: phone ? "10px" : "13px", xpWordDisplay: phone ? "none" : "inline", ringDeg: Math.round(360 * earned / Math.max(1, total)) + "deg", earnedNum: earned, meterPct: (total ? Math.round(100 * earned / total) : 0) + "%",
       showKitBtn: !!paper && s.screen === "play", openKit: () => this.setState({ kit: true }),
@@ -3685,15 +3713,7 @@ class Component extends DCLogic {
       ...(s.screen === "done" ? this.doneVals(s, phone, mission, missions, mSt, mEarned, mTotal, earned, total) : {}),
       toMap: () => this.setState({ screen: "map" }),
 
-      sumStats: [{ value: earned + " / " + total, label: "marks · " + (total ? Math.round(100 * earned / total) : 0) + "%" }, { value: String(s.xp), label: "XP earned" },
-        { value: allParts.filter(p => this.pg(p.key).closed).length + " / " + allParts.length, label: "parts closed" }, { value: String(s.bestStreak), label: "best first-try streak" }],
-      sumSections: paper ? paper.sections.map(sec => { const e = sec.missions.reduce((a, m) => a + m.parts.reduce((b, p) => b + (this.pg(p.key).best || 0), 0), 0); const t = sec.total || sec.missions.reduce((a, m) => a + m.parts.reduce((b, p) => b + (p.marks || 0), 0), 0);
-        return { title: sec.title, label: e + " of " + t, pct: (t ? Math.round(100 * e / t) : 0) + "%" }; }) : [],
-      sumBelow: allParts.filter(p => p.marks && this.pg(p.key).tries > 0 && this.pg(p.key).best < p.marks).map(p => { const g = this.pg(p.key);
-        return { number: p.number, status: g.waiting ? "Waiting for a marker" : g.revealed ? "Memo shown" : g.closed ? "Closed" : g.tries + " of 3 tries used", marks: g.best + " / " + p.marks,
-          open: () => { const m = missions[p.mi]; this.resetInputs({ screen: "play", mi: p.mi, pi: m.parts.findIndex(x => x.key === p.key) }); } }; }),
-      sumNoBelow: !allParts.some(p => p.marks && this.pg(p.key).tries > 0 && this.pg(p.key).best < p.marks),
-      sumNoBelowText: allParts.some(p => this.pg(p.key).tries > 0) ? "Every part you have tried is at full marks." : "You have not tried any part yet.",
+      ...this.rvVals(s),
 
       kitOpen: s.kit, closeKit: () => this.setState({ kit: false }),
       kitTabs: [["rules", "Instructions"], ["formulas", "Formula sheet"], ["figures", "Figures"]].map(t => ({ label: t[1], on: s.kitTab === t[0], pick: () => this.setState({ kitTab: t[0] }),
