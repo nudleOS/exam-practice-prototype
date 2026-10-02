@@ -3486,8 +3486,9 @@ class Component extends DCLogic {
         { label: "Marks banked · " + resumeName, value: rs.marks_earned + " of " + rs.total_marks },
         { label: "Days practised this week", value: String(HOME.me.days_practised_this_week) }],
       closePops: () => this.closeLayer(),
-      // design preview states ("Picker open" went 2026-10-02: the paper map is the picker now)
-      homeModes: [["first", "First visit"], ["returning", "Returning"], ["finished", "Finished"]].map(m => {
+      // design preview states ("Picker open" went 2026-10-02: the paper map is the picker now; "Finished" went too, Murci found
+      // it unclear: the home of a learner whose paper is done stays in the product, only its preview shortcut is gone)
+      homeModes: [["first", "First visit"], ["returning", "Returning"]].map(m => {
         const on = home === m[0];
         return { label: m[1], on: on,
           pick: () => this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }),
