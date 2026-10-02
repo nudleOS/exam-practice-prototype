@@ -1510,3 +1510,10 @@ body.nx-play.nx-compact.nx-compact main:not(#mq-stage):not([data-done]) { paddin
 @keyframes nx-thinkin1 { from { opacity:0; } }
 @keyframes nx-facepop { from { transform:scale(0.7); } }
 @media (prefers-reduced-motion: reduce) { .nx-typehead, .nx-typehead::after { animation:none !important; } }
+
+/* the multiple-choice glass cards (Murci, 2026-10-02): not the screen's full width, and a little smaller. Desktop: the 2 x 2 grid to
+   600 px (was 818); a phone: one column to 280 px (was 328), 46 px tall (was 52); left-aligned with the question. */
+body.nx-play .mcqp .tiles { max-width:600px; margin-right:auto; }
+body.nx-play .mcqp .tile { min-height:44px !important; }
+@media (max-width:600px) { body.nx-play .mcqp .tiles { max-width:280px; } body.nx-play .mcqp .tile { min-height:46px !important; }
+  body.nx-play .mcqp .tile .face > .ico { display:none !important; } }   /* the decorative icon: at 280 px it wrapped every answer onto two lines */
