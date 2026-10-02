@@ -391,3 +391,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (prefers-reduced-motion: reduce) { .pm-tip { animation: none !important; } }
 /* the finish card's medal count: "12 gold · 5 silver · 3 bronze" */
 .pm-fin-medals { margin: -4px 0 0; font-size: 13px; font-weight: 700; color: #c9d2f0; }
+/* the road's start (Murci, 2026-10-02): the first paper's own trail begins here, under the bottom row */
+.pm-start { position: absolute; z-index: 1; display: flex; align-items: center; gap: 7px; transform: translate(-7px, -7px); pointer-events: none; }
+.pm-start i { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2.5px solid rgba(var(--sc-rgb), 0.85); background: #06132f; }
+.pm-start b { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #7f8fc2; }

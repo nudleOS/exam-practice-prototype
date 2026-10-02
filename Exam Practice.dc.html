@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=140">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=33">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=34">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -396,6 +396,7 @@
             </div>
             <div class="pm-path" style="height:{{ g.h }}; width:{{ g.w }}">
               <svg class="pm-road" aria-hidden="true" style="width:{{ g.w }}; height:{{ g.h }}"><path class="pm-road-base" d="{{ g.dAll }}"></path><path class="pm-road-part" d="{{ g.dPart }}"></path><path class="pm-road-done" d="{{ g.dDone }}"></path><path class="pm-road-new" data-run="{{ g.run }}" pathLength="1" d="{{ g.dNew }}"></path></svg>
+              <sc-if value="{{ g.startOn }}" hint-placeholder-val="{{ true }}"><span class="pm-start" style="left:{{ g.sx }}; top:{{ g.sy }}" aria-hidden="true"><i></i><b>Start</b></span></sc-if>
               <sc-for list="{{ g.tips }}" as="tp" hint-placeholder-count="1">
                 <span class="pm-tip" data-run="{{ g.run }}" data-anim="{{ tp.anim }}" style="left:{{ tp.x }}; top:{{ tp.y }}; --ang:{{ tp.ang }}; --tx:{{ tp.tx }}; --ty:{{ tp.ty }}" aria-hidden="true"></span>
               </sc-for>
@@ -2225,7 +2226,7 @@ class Component extends DCLogic {
       const rows = []; ps.forEach(x => { const k = when(x.p); const r = rows.filter(r => r.k === k)[0]; if (r) r.ps.push(x); else rows.push({ k: k, sitting: x.p.sitting, ps: [x] }); });
       const C = Math.max(2, ...rows.map(r => r.ps.length)), R = rows.length, NODE = 56, CUP = 56, OFF = CUP + 60;
       const colX = j => Math.round(phone ? (C === 2 ? [72, W - 72] : [56, W / 2, W - 56])[j] : W * (C === 2 ? [0.3, 0.7] : [0.22, 0.5, 0.78])[j]);
-      const avail = (s.vh || 800) - 264, base = OFF + NODE + 50;   // above the road: the header, the picker and the subject's title
+      const avail = (s.vh || 800) - 264, base = OFF + NODE + 50 + 70;   // (+70: the first paper's lead-in trail and its Start, under the bottom row)   // above the road: the header, the picker and the subject's title
       const rowH = R > 1 ? Math.max(150, Math.min(260, Math.floor((avail - base) / (R - 1)))) : 0, H = base + (R - 1) * rowH, rowY = i => OFF + i * rowH;
       const at = []; rows.forEach((r, i) => r.ps.forEach((x, j) => { const col = Math.min(C - 1, Math.max(0, (pno(x.p) || j + 1) - 1)); at.push({ x: x, i: i, cx: colX(col), cy: rowY(i) + NODE / 2 }); }));
       // the visit order: the bottom row first, then up; even rows from the bottom left to right, odd rows right to left
@@ -2249,38 +2250,48 @@ class Component extends DCLogic {
       // what the learner saw last time on this device (a snapshot per visit to the map): new progress replays from there
       if (!this._mapSeen) { try { this._mapSeen = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; } catch (e) { this._mapSeen = {}; } this._mapRun = (this._mapRun || 0) + 1; }
       const run = String(this._mapRun % 2);
-      const seenNow = {}, START = NODE / 2, GAP = NODE / 2 + 32, LEAD = 32;   // GAP: a won cup (38 px) 13 px clear of the next paper's ring (measured: +22 left 3 px)
+      // Each paper owns the trail INTO it (Murci, 2026-10-02: the line and its cup were leaving the paper, not chasing toward it):
+      // from the paper before it in the visit order, or, for the first paper, from a Start marker under the bottom row (up the left,
+      // then into the circle). Its progress fills that trail; its cup rides LEAD px ahead, never closer than 22 px to the circle; when
+      // the paper is finished the line reaches the circle, which becomes its cup. The last stretch (newest paper -> finish cup) lights
+      // only when every paper is done.
+      const seenNow = {}, EDGE = NODE / 2, LEAD = 32, ROCK = 6;   // ROCK: the chase's rock, px each way (Murci: 3 px read as standing still)
+      const first = order[0], sx = first ? Math.round(phone ? Math.max(14, first.cx - 56) : first.cx - 90) : 0, sy = first ? first.cy + 120 : 0;
       let dAll = "", dDone = "", dNew = ""; const cups = [], tips = [], wonAnim = {};
-      order.forEach((A, k) => { const B = order[k + 1], a = { x: A.cx, y: A.cy };
-        const pts = !B ? (a.x === cup.x ? [a, cup] : [a, { x: a.x, y: cup.y }, cup])
-          : A.i === B.i || A.cx === B.cx ? [a, { x: B.cx, y: B.cy }] : [a, { x: a.x, y: (A.cy + B.cy) / 2 }, { x: B.cx, y: (A.cy + B.cy) / 2 }, { x: B.cx, y: B.cy }];
-        dAll += round(pts) + " ";
-        const D = dense(pts), rest = Math.max(START + 1, D.T - GAP), x = A.x, id = x.p.id;
+      const legs = order.map((A, k) => { const P0 = k ? order[k - 1] : null, a = P0 ? { x: P0.cx, y: P0.cy } : { x: sx, y: sy }, z = { x: A.cx, y: A.cy };
+        const pts = !P0 ? [a, { x: sx, y: z.y }, z] : P0.i === A.i || P0.cx === A.cx ? [a, z] : [a, { x: a.x, y: (a.y + z.y) / 2 }, { x: z.x, y: (a.y + z.y) / 2 }, z];
+        return { A: A, pts: pts, s0: P0 ? EDGE : 0 }; });
+      legs.forEach(L => { const D = dense(L.pts), x = L.A.x, id = x.p.id, end = Math.max(L.s0 + 1, D.T - EDGE), rest = Math.max(L.s0 + 1, end - 22);
+        dAll += round(L.pts) + " ";
         const p = x.state === "done" ? 1 : x.state === "going" ? Math.max(0.04, x.comp || 0) : 0, p0 = Math.min(p, +this._mapSeen[id] || 0);
-        const fill = q => q <= 0 ? 0 : START + q * (rest - START), cupAt = q => q >= 1 ? rest : Math.min(fill(q) + LEAD, rest);
+        const fill = q => q <= 0 ? L.s0 : L.s0 + q * (end - L.s0), cupAt = q => Math.min(fill(q) + LEAD, rest);
         seenNow[id] = p;
         if (p <= 0) return;
-        // the stretch lit up to the fill: what was seen stays drawn; the new part draws on (one combined path, pathLength 1). A paper
-        // under way stops 6 px short: its tip (a 16 px piece of line, HTML) rocks there, so the line seems to breathe forward and back.
-        // a finished paper lights its whole stretch, to the next paper's edge (its cup is now its own circle, Murci 2026-10-02)
-        const going = p < 1, endL = going ? Math.max(START, fill(p) - 6) : Math.max(START, D.T - NODE / 2);
-        if (p0 < p - 0.001) { dDone += cut(D, 0, fill(p0)); dNew += cut(D, fill(p0), endL); } else dDone += cut(D, 0, endL);
-        const tan = len => { const u = pointAt(D, len - 2), v = pointAt(D, len + 2), l = Math.hypot(v.x - u.x, v.y - u.y) || 1; return { x: (v.x - u.x) / l, y: (v.y - u.y) / l }; };
-        const ROCK = 6, tc = tan(cupAt(p));   // Murci: 3 px read as standing still
-        if (going) { const tl = fill(p) - 4, tp = pointAt(D, tl), tt = tan(tl);   // (the tip, 20 px, covers fill-14..fill+6 at rest)
-          tips.push({ x: f(tp.x) + "px", y: f(tp.y) + "px", ang: f(Math.atan2(tt.y, tt.x) * 180 / Math.PI) + "deg", tx: f(tt.x * ROCK) + "px", ty: f(tt.y * ROCK) + "px",
-            anim: p0 < p - 0.001 ? "in" : "none" }); }
-        const at = pointAt(D, cupAt(p)), from = p0 > 0 ? pointAt(D, cupAt(p0)) : pointAt(D, Math.min(START + LEAD, rest));
-        // won: the paper's own circle becomes its glowing cup ("win" pops it once the line has drawn on); under way: the chasing cup
+        // lit up to the fill: what was seen stays drawn, the new part draws on (one combined path, pathLength 1). Under way, the line
+        // stops 6 px short: its tip (a 20 px piece of line, HTML) rocks there, so the line seems to breathe forward and back.
+        const going = p < 1, endL = going ? Math.max(L.s0, fill(p) - 6) : end;
+        if (p0 < p - 0.001) { dDone += cut(D, 0, fill(p0)); dNew += cut(D, p0 > 0 ? fill(p0) : 0, endL); } else dDone += cut(D, 0, endL);
+        // finished: the circle at the end of this trail becomes the paper's glowing cup ("win" pops it once the line has drawn on)
         if (!going) { wonAnim[id] = p0 < 1 - 0.001 ? "win" : "won"; return; }
+        const tan = len => { const u = pointAt(D, len - 2), v = pointAt(D, len + 2), l = Math.hypot(v.x - u.x, v.y - u.y) || 1; return { x: (v.x - u.x) / l, y: (v.y - u.y) / l }; };
+        const tl = fill(p) - 4, tp = pointAt(D, tl), tt = tan(tl), tc = tan(cupAt(p));   // (the tip, 20 px, covers fill-14..fill+6 at rest)
+        tips.push({ x: f(tp.x) + "px", y: f(tp.y) + "px", ang: f(Math.atan2(tt.y, tt.x) * 180 / Math.PI) + "deg", tx: f(tt.x * ROCK) + "px", ty: f(tt.y * ROCK) + "px",
+          anim: p0 < p - 0.001 ? "in" : "none" });
+        const at = pointAt(D, cupAt(p)), from = pointAt(D, cupAt(p0));
         cups.push({ state: "chase", tier: "none", anim: p0 < p - 0.001 ? "move" : "none", x: f(at.x) + "px", y: f(at.y) + "px",
           dx: f(from.x - at.x) + "px", dy: f(from.y - at.y) + "px", tx: f(tc.x * ROCK) + "px", ty: f(tc.y * ROCK) + "px" }); });
+      // the finish stretch: the newest paper into the finish cup, lit once every paper is done (drawn on if that happened since)
+      const last = order[order.length - 1];
+      if (last) { const fpts = last.cx === cup.x ? [{ x: last.cx, y: last.cy }, cup] : [{ x: last.cx, y: last.cy }, { x: last.cx, y: cup.y }, cup], FD = dense(fpts);
+        dAll += round(fpts) + " ";
+        if (order.every(A => A.x.state === "done")) { const fresh = order.some(A => (+this._mapSeen[A.x.p.id] || 0) < 1);
+          if (fresh) dNew += cut(FD, EDGE, FD.T - 28); else dDone += cut(FD, EDGE, FD.T - 28); } }
       try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; let ch = false;
         Object.keys(seenNow).forEach(k => { if (all[k] !== seenNow[k]) { all[k] = seenNow[k]; ch = true; } }); if (ch) localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
       const allDone = dn === ps.length && ps.length > 0;
       return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, sub: ps.length + (ps.length === 1 ? " paper" : " papers") + (dn ? " · " + dn + " done" : ""),
         aria: n + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"), w: W + "px", h: H + "px",
-        dAll: dAll.trim() || "M0 0", dDone: dDone.trim() || "M0 0", dPart: "M0 0", dNew: dNew.trim() || "M0 0", cups: cups, tips: tips, run: run,
+        dAll: dAll.trim() || "M0 0", dDone: dDone.trim() || "M0 0", dPart: "M0 0", dNew: dNew.trim() || "M0 0", cups: cups, tips: tips, run: run, startOn: !!first, sx: sx + "px", sy: sy + "px",
         rows: rows.map((r, i) => ({ label: short(r.sitting), top: (phone ? rowY(i) - 30 : rowY(i) + 17) + "px" })),
         finDone: allDone ? "true" : "false", finAria: "Finish line: " + dn + " of " + ps.length + " " + n + " papers done",
         stops: at.map(a => { const x = a.x, nm = pno(x.p) ? "Paper " + pno(x.p) : x.p.title;
