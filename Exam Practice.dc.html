@@ -80,8 +80,8 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=132">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=20">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-play.css?v=133">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-map.css?v=21">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -764,7 +764,7 @@
                 </sc-for>
               </div>
               <span style="display:flex; align-items:center; gap:8px">
-                <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:15.5px; outline:none" />
+                <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:16px; outline:none" />
                 <sc-if value="{{ lnNameHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnNameStampBg }}; font-size:12px; font-weight:800; color:{{ lnNameStampColor }}">{{ lnNameStamp }}</span>
                 </sc-if>
@@ -821,7 +821,7 @@
               </div>
               <sc-if value="{{ showChipInput }}" hint-placeholder-val="{{ true }}">
                 <span style="display:flex; gap:8px">
-                  <input data-chipinput="true" value="{{ chipDraft }}" onChange="{{ onChipDraft }}" onKeyDown="{{ chipKeys }}" aria-label="{{ chipAria }}" placeholder="Type an answer, then Enter" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="enter" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15.5px; outline:none" />
+                  <input data-chipinput="true" value="{{ chipDraft }}" onChange="{{ onChipDraft }}" onKeyDown="{{ chipKeys }}" aria-label="{{ chipAria }}" placeholder="Type an answer, then Enter" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="enter" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
                   <button onClick="{{ addChip }}" disabled="{{ locked }}" style="flex:none; min-width:64px; height:50px; padding:0 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:var(--tint); font-size:14px; font-weight:800; cursor:pointer">Add</button>
                 </span>
               </sc-if>
@@ -836,7 +836,7 @@
                   <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:700">{{ coachShape }}</span><span style="font-size:12.5px; color:var(--text2)">{{ coachAim }}</span></span>
                 </div>
               </sc-if>
-              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:15px; line-height:1.6; resize:vertical; outline:none"></textarea>
+              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; line-height:1.6; resize:vertical; outline:none"></textarea>
               <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
             </div>
           </sc-if>
@@ -1741,9 +1741,10 @@ class Component extends DCLogic {
     const scr = this.state.screen;
     this._lastScreen = scr;
     // the paper viewer: the page makes room (a phone: above the panel; wider: beside it, under the header), so nothing is covered
-    const pvOn = !!st.paperSourceOpen, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
+    const pvTuck = !!st.paperSourceOpen && this.pvAtBottom() && st.screen === "play" && st.kbOff > 80;   // typing: the bottom paper steps aside
+    const pvOn = !!st.paperSourceOpen && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
     if (pvOn) document.querySelectorAll("[data-pvdrag]").forEach(el => this.pvBindDrag(el));
-    if (pvKey !== this._pvKey) { this._pvKey = pvKey;
+    if (pvKey !== this._pvKey) { this._pvKey = pvKey; document.body.classList.toggle("pv-tucked", pvTuck);
       document.body.classList.toggle("pv-bottom", pvOn && pvPhone); document.body.classList.toggle("pv-full", pvOn && pvPhone && !!st.pvFull);
       document.body.classList.toggle("pv-side", pvOn && !pvPhone);
       // the size dragged earlier this session (none: the CSS default)
@@ -1805,12 +1806,15 @@ class Component extends DCLogic {
     const dock = !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
     // typing: the strip takes the room left of the row (its leftmost button), and the panel stops 12 px above the strip
     if (typing) { const ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
-      const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, r = Math.max(12, Math.round(innerWidth - left + 8)) + "px";
+      const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, stack = left < innerWidth / 2,
+        rh = bs.length ? Math.round(Math.max(...bs.map(b => b.getBoundingClientRect().height))) : 0,
+        r = stack ? "12px" : Math.max(12, Math.round(innerWidth - left + 8)) + "px", up = (stack ? rh + 8 : 0) + "px";
       if (ts && ts.style.getPropertyValue("--typ-r") !== r) ts.style.setProperty("--typ-r", r);
+      if (ts && ts.style.getPropertyValue("--typ-up") !== up) ts.style.setProperty("--typ-up", up);
       // a long hint must not climb over the field (measured at 360x640: a 5-line hint ran 54 px over it): it gets the room between
       // the panel's lowest bottom (its content, or its 220 px floor) and the keys, and scrolls inside past that, faded at the cut
       const tp = ts && ts.querySelector(":scope > p");
-      if (tp) { const room = Math.max(40, Math.round(innerHeight - this.state.kbOff - 8 - (qr.top + Math.min(q.scrollHeight + 2, 220)) - 20)) + "px";
+      if (tp) { const room = Math.max(40, Math.round(innerHeight - this.state.kbOff - 8 - (parseFloat(up) || 0) - (qr.top + Math.min(q.scrollHeight + 2, 220)) - 20)) + "px";
         if (tp.style.maxHeight !== room) tp.style.maxHeight = room;
         const more = tp.scrollHeight > tp.clientHeight + 1 ? "true" : "false"; if (tp.dataset.more !== more) tp.dataset.more = more; }
       const t = ts && ts.getBoundingClientRect(); if (t && t.height) bottom = Math.min(bottom, t.top - 12); }

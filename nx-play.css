@@ -1434,3 +1434,18 @@ body.nx-play.nx-typing .nx-typestrip { display:flex; position:fixed; z-index:24;
 @media (prefers-reduced-motion: reduce) { .nx-typestrip { animation:none !important; } .nx-bg .nx-rocks, .nx-bg .nx-fill { transition:none; } }
 /* the design preview's stand-in keyboard (&kb=N) */
 .nx-kbsim { position:fixed; left:0; right:0; bottom:0; z-index:9999; background:#2b2f3a; pointer-events:none; }
+
+/* ==== the mobile audit (2026-10-02) ==== */
+/* F5 Check stays out: the hide above lost to the :is() rule at "[data-footer] :is([data-check], ... [data-bar] button)" (an :is()
+   takes its MOST specific argument: 0,3,2 beat 0,3,1), so a drawing showed a footer "I've drawn it" 48 px wide, its words over Skip,
+   beside the card's own. Doubled class: 0,4,1. */
+body.nx-play.nx-play [data-footer] [data-check] { display:none !important; }
+/* F1 typing mode: the strip above the row when the row has Back at its left (--typ-up = the row's height + 8) */
+body.nx-play.nx-typing .nx-typestrip { bottom:calc(var(--kb, 0px) + 8px + var(--typ-up, 0px)); }
+/* F2 the paper button (fixed under the profile picture) covered "2 marks" on a multiple-choice question and the figure's eye */
+@media (max-width:599px) {
+  body.nx-play .mcqp .qhead { padding-right:46px; box-sizing:border-box; }
+  body.nx-play main:not(#mq-stage) [data-figtoggle] { right:auto; left:8px; }
+}
+/* F6 the medal line under a sealed term was 10.5 px on a phone */
+@media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-termtier] { font-size:11px; } }

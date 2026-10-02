@@ -284,3 +284,5 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 /* while dragging, the pages follow without easing and nothing below is selected */
 body:has(.pv-drag[data-dragging]) { user-select: none; -webkit-user-select: none; }
 body.nx-play.pv-bottom.pv-tall [data-footer], body.nx-play.pv-bottom.pv-tall .mcqp .stage > .after { visibility: hidden; }
+/* F4 typing on a phone: the bottom paper steps aside (kept as it was) and comes back when the keyboard closes */
+body.pv-tucked .pv[data-layout="bottom"] { visibility: hidden; pointer-events: none; }
