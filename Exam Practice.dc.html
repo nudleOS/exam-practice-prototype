@@ -2368,6 +2368,9 @@ class Component extends DCLogic {
     // the pieces STAY on the ground (Murci, 2026-10-01: "they have to get wiped by our robot"): the robot sweeps them off when the
     // learner moves on (nxLeave), as the MCQ robot does its glass
     (this._shards = this._shards || []).push(layer);
+    // landed, they lie BEHIND the robot and its hint (in front of the rocks: the scenery is z 0 and earlier in the page, the play
+    // layout z 1): measured at 360x640, lying in front they covered the hint's last two lines. They still fly in front of the panel.
+    Promise.all(all).then(() => { layer.style.zIndex = "0"; }, () => {});
     return new Promise(res => setTimeout(res, CRACK_AT + 560));   // the new field comes while the pieces are still falling (~1.26 s)
   }
   // Moving on with glass on the floor, the robot wipes it FIRST (Murci, 2026-10-01: "after clicking next then that's when the robot
