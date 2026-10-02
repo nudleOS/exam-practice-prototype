@@ -1487,3 +1487,14 @@ body.nx-play.nx-compact .nx-typestrip { display:flex; position:fixed; z-index:24
 body.nx-play.nx-compact main:not(#mq-stage) [data-question] { overflow:visible !important; }
 body.pv-bottom .nx-typestrip { display:none !important; }   /* the paper open: the paper is what's read, the robot waits */
 body.nx-play.nx-compact.nx-compact main:not(#mq-stage):not([data-done]) { padding-bottom:var(--nx-dockH, 150px) !important; }   /* a phone rule zeroed main's padding */
+
+/* ==== answer boxes sized by the question's TYPE on a phone (Murci, 2026-10-02: "Size by type, keep text") ====
+   A box's width tells the learner how long an answer is expected (Baymard: mismatched widths make people re-read the label). Sized by
+   type, never by the answer itself (that would give away its length): a term or a part's name 272 px, a number 200 px; a list item
+   and a written answer keep the full width. Fields stay 16 px (iOS zooms into a smaller one); left-aligned with the text. */
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-termrow] { max-width:272px; }
+  body.nx-play main:not(#mq-stage) :is(div, span):has(> input[aria-label="Name of the part"]) { max-width:272px; }
+  body.nx-play main:not(#mq-stage) :is(div, span):has(> #f-num) { max-width:200px; }
+  body.nx-play main:not(#mq-stage) [data-feed~="term"] { max-width:272px; }   /* the "+XP / +mark" chips centre under the sealed term */
+}
