@@ -256,3 +256,6 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 .hm-brand { margin-right: 2px; }
 .hm-title { font-size: 14px; font-weight: 700; color: #eef2ff; white-space: nowrap; }
 @media (max-width: 599px) { .hm-brand .nx-nudle { font-size: 22px; } .hm-brand .nx-nexera { height: 20px; } .hm-brand .nx-sep { height: 20px; } .hm-title { display: none; } }
+
+/* the paper chip on a narrow phone: the icon and the page (the word pushed the question's marks off the row at 360 px) */
+@media (max-width: 420px) { .pv-chip-w { display: none; } }

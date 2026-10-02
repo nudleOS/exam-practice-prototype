@@ -1354,7 +1354,11 @@ body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="term"] .fd-chips 
    type scrolls for it. Hide sits in a slim band at the top of the frame, above the image (on the image it covered 1.4's label S);
    folded, the figure is one "Show figure" button. */
 body.nx-play main:not(#mq-stage) [data-figure] { flex:none; }
-body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] { width:100% !important; margin:0 !important; height:var(--fig-h, auto); }
+/* (2026-10-02, Murci: on a desktop the frame was wider than the image and the image "appears stretched") The frame hugs the image
+   at the image's own shape: its width is the height the question leaves it (--fig-h) times the image's ratio (--fig-ar), never
+   wider than the panel; the box keeps the image's aspect ratio, so the letter spots (placed in % of the box) stay on their labels. */
+body.nx-play main:not(#mq-stage) [data-figure] { box-sizing:border-box; width:min(100%, calc(var(--fig-h, 4000px) * var(--fig-ar, 1.6) + 18px)); margin-inline:auto; align-self:center; }
+body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] { width:100% !important; margin:0 !important; height:auto !important; }
 body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] img { object-fit:fill !important; }
 body.nx-play main:not(#mq-stage) [data-figpad]:has(> [data-figtoggle]) { padding:36px 8px 8px !important; }
 body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { cursor:zoom-in; }
@@ -1398,3 +1402,14 @@ body.nx-play main:not(#mq-stage) [data-answerword]:disabled { background:var(--n
 /* the page's robot a step back on a phone when the question needs the room (Exam Practice nxPanelCap: nx-robot-back), the size the
    MCQ's robot takes at fit-4 */
 @media (max-width:600px) { body.nx-play.nx-robot-back { --ph:min(230px, 20svh); } }
+
+/* ==== 2026-10-02 (Murci) ====
+   No logos on the question pages: the question toggle ("Question 1.4 · 1 of 3") takes their place, at the left, at every width. */
+body.nx-play [data-playhead] .nx-brand { display:none !important; }
+body.nx-play [data-playhead] .nx-where { grid-area:brand !important; justify-self:start !important; margin:0 !important;
+  position:static !important; left:auto !important; top:auto !important; transform:none !important; translate:none !important; }   /* a desktop centred it absolutely */
+/* the doodles were distracting: quieter */
+.nx-doodles { opacity:0.32 !important; }
+@media (max-width:600px) { .nx-doodles { opacity:0.28 !important; } }
+/* a phone's stats pill: the marks lead it (the streak before them is hidden), so no separator line on their left (Murci, 2026-10-02) */
+@media (max-width:600px) { body.nx-play [data-playhead] .nx-stats > .nx-marks { border-left:0 !important; } }
