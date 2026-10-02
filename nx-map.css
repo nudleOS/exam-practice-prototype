@@ -194,8 +194,8 @@ body.pv-full { --pv-h: calc(100svh - 8px); }
 .pv { position: fixed; z-index: 80; box-sizing: border-box; display: flex; flex-direction: column; background: #0d1a3f; color: #eef2ff; }
 .pv[data-layout="bottom"] { left: 0; right: 0; bottom: 0; height: var(--pv-h); border-top: 1px solid rgba(129, 177, 255, 0.22);
   border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45); animation: pv-up 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
-.pv[data-layout="side"] { top: var(--pv-top, 0px); right: 0; bottom: 0; width: var(--pv-w); border-left: 1px solid rgba(129, 177, 255, 0.22);
-  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.35); animation: pv-in 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.pv[data-layout="side"] { top: calc(var(--pv-top, 0px) + 8px); right: 12px; bottom: 12px; width: calc(var(--pv-w) - 24px);
+  border: 1px solid rgba(129, 177, 255, 0.22); border-radius: 18px; overflow: hidden; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); animation: pv-in 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
 @keyframes pv-up { from { transform: translateY(40px); opacity: 0; } }
 @keyframes pv-in { from { transform: translateX(40px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .pv { animation: none !important; } }

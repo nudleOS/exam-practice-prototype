@@ -1567,9 +1567,9 @@ class Component extends DCLogic {
     const t = tab === "mg" && this.pvPaperDone(paper.id) ? "mg" : "qp", D = this.pvDocs(paper.id), m = this.mission();
     const pageNo = Math.max(1, Number(page != null ? page : D && m && D[t].find[String(m.id)]) || 1);
     if (!this.state.paperSourceOpen) this._paperSourceOpener = document.activeElement;
-    // a phone: the paper shows the question's figure, so the figure frame folds while the paper is open (the question, its
+    // a phone or tablet: the paper shows the question's figure, so the figure frame folds while the paper is open (the question, its
     // answer and Skip then fit above the panel); it unfolds on close, only if the viewer folded it
-    const fold = (this.state.vw || 800) < 600 && this.state.screen === "play" && !this.state.figHidden;
+    const fold = this.pvAtBottom() && this.state.screen === "play" && !this.state.figHidden;
     if (fold) this._pvFolded = true;
     this.setState({ paperSourceOpen: true, paperSourceId: paper.id, paperSourcePage: pageNo, pvTab: t, pvNote: false, ...(fold ? { figHidden: true } : {}) }, () => this.pvScroll(true));
   }
@@ -1579,6 +1579,8 @@ class Component extends DCLogic {
     if (pg) box.scrollTop = pg.offsetTop - box.offsetTop - 8;
     if (focus) { const f = document.querySelector(".pv .pv-tab[aria-pressed=\"true\"]"); if (f) f.focus({ preventScroll: true }); }
   }
+  // the paper rises from the bottom below 1200 px: beside the question it needs the window's width (the robot keeps its column)
+  pvAtBottom() { return (this.state.vw || 800) < 1200; }
   closePaperSource() {
     const unfold = !!this._pvFolded; this._pvFolded = false;
     this.setState({ paperSourceOpen: false, pvFull: false, pvNote: false, ...(unfold ? { figHidden: false } : {}) }, () => {
@@ -1694,7 +1696,7 @@ class Component extends DCLogic {
     const scr = this.state.screen;
     this._lastScreen = scr;
     // the paper viewer: the page makes room (a phone: above the panel; wider: beside it, under the header), so nothing is covered
-    const pvOn = !!st.paperSourceOpen, pvPhone = (st.vw || 800) < 600, pvKey = pvOn + "|" + pvPhone + "|" + !!st.pvFull;
+    const pvOn = !!st.paperSourceOpen, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvPhone + "|" + !!st.pvFull;
     if (pvKey !== this._pvKey) { this._pvKey = pvKey;
       document.body.classList.toggle("pv-bottom", pvOn && pvPhone); document.body.classList.toggle("pv-full", pvOn && pvPhone && !!st.pvFull);
       document.body.classList.toggle("pv-side", pvOn && !pvPhone);
@@ -3616,7 +3618,7 @@ class Component extends DCLogic {
       paperSourceButtonOn: !!(activePaperSource && activePaperSource.source_pdf),
       // the question list's button opens the paper where the current question starts
       openSourceFromMap: () => this.setState({ qmap: false }, () => { if (activePaperSource) this.openPaperSource(activePaperSource.id, null); }),
-      ...this.pvVals(s, phone),
+      ...this.pvVals(s, this.pvAtBottom()),
       sheetBack: (s.sheet === "paper" || s.sheet === "papers") && s.sheetBack || s.sheet === "studies" && !!s.studyFolder,
       sheetBackAria: "Back to subjects",
       sheetGoBack: () => s.sheet === "studies" && s.studyFolder ? this.setState({ studyFolder: null, studyErr: "" }) : this.setState({ sheet: "subj", sheetBack: false, optIdx: 0 }),
