@@ -80,7 +80,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=126">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=10">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=11">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -373,7 +373,8 @@
     <main data-pmap="true" class="pm" style="padding-right:{{ pmPadR }}">
       <div class="pm-col">
         <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
-        <div class="pm-chips" role="group" aria-label="Show papers for">
+        <div class="pm-chips" role="group" aria-label="Show papers for" data-collapsed="{{ pmChipsCollapsed }}">
+          <button type="button" class="pm-chips-toggle" aria-expanded="{{ pmChipsOpenAttr }}" onClick="{{ pmChipsToggle }}" style="--sc:{{ pmPickC }}"><span class="pm-dot" aria-hidden="true"></span>{{ pmPickLabel }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pmChipsChevron }}"></path></svg></button>
           <sc-for list="{{ pmChips }}" as="c" hint-placeholder-count="4">
             <button type="button" class="pm-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="--sc:{{ c.c }}"><span class="pm-dot" aria-hidden="true"></span>{{ c.label }}</button>
           </sc-for>
@@ -397,9 +398,9 @@
             <div class="pm-path" style="height:{{ g.h }}">
               <div aria-hidden="true">
                 <sc-for list="{{ g.links }}" as="k" hint-placeholder-count="3">
-                  <span class="pm-link" data-dir="{{ k.dir }}" style="top:{{ k.top }}; height:{{ k.h }}"></span>
+                  <span class="pm-link" data-dir="{{ k.dir }}" data-lit="{{ k.lit }}" style="top:{{ k.top }}; height:{{ k.h }}"></span>
                 </sc-for>
-                <span class="pm-link" data-dir="{{ g.finDir }}" style="top:{{ g.finLinkTop }}; height:{{ g.finLinkH }}"></span>
+                <span class="pm-link" data-dir="{{ g.finDir }}" data-lit="{{ g.finLit }}" style="top:{{ g.finLinkTop }}; height:{{ g.finLinkH }}"></span>
               </div>
               <span class="pm-cup" data-done="{{ g.finDone }}" role="img" aria-label="{{ g.finAria }}">
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.35"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg>
@@ -1997,14 +1998,16 @@ class Component extends DCLogic {
       const look = SUBJECT_LOOK[n] || SUBJECT_LOOK._, dn = ps.filter(x => x.state === "done").length, last = ps.length - 1;
       // the finish: a link from the last paper in to the centre, then the cup (gold once every paper is done)
       // the cup sits at the top (56 px tall, centred); the path climbs from the oldest paper up to it
-      const CUP = 56, OFF = CUP + 40, allDone = dn === ps.length && ps.length > 0;
+      const CUP = 56, OFF = CUP + 40, allDone = dn === ps.length && ps.length > 0, litOf = st => st === "done" ? "true" : st === "going" ? "part" : "false";
       return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, sub: ps.length + (ps.length === 1 ? " paper" : " papers") + (dn ? " · " + dn + " done" : ""),
         aria: n + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"),
         h: (OFF + last * ROW + NODE + 44) + "px",
         finDir: "cl", finLinkTop: (CUP / 2) + "px", finLinkH: (OFF + NODE / 2 - CUP / 2) + "px",
         finDone: allDone ? "true" : "false", finLabel: allDone ? "Subject complete" : "Finish line", finSub: dn + " of " + ps.length + (ps.length === 1 ? " paper" : " papers"),
         finAria: "Finish line: " + dn + " of " + ps.length + " " + n + " papers done",
-        links: ps.slice(1).map((x, i) => ({ dir: i % 2 ? "rl" : "lr", top: (OFF + i * ROW + NODE / 2) + "px", h: ROW + "px" })),
+        // progress on the road: each paper lights the stretch above it (toward the cup): solid when done, half while going
+        links: ps.slice(1).map((x, i) => ({ dir: i % 2 ? "rl" : "lr", top: (OFF + i * ROW + NODE / 2) + "px", h: ROW + "px", lit: litOf(x.state) })),
+        finLit: ps[0] ? litOf(ps[0].state) : "false",
         stops: ps.map((x, i) => ({ id: x.p.id, side: i % 2 ? "r" : "l", top: (OFF + i * ROW) + "px", state: x.state, tier: x.tier || "none",
           isDone: x.state === "done", isGoing: x.state === "going", isNew: x.state === "new", isSoon: x.state === "soon",
           pct: x.pct + "%", deg: Math.round(3.6 * x.pct) + "deg", name: x.name, meta: x.meta,
@@ -2021,7 +2024,13 @@ class Component extends DCLogic {
       // the level's own words: "Grade 12 past papers"; NC(V) learners say "Level 4" (the full name ran past a 360 px header)
       pmHeadTitle: LEVEL_LABEL(L.level.level) + " past papers",
       pmChips: (subjects.length > 1 ? ["All"] : []).concat(subjects).map(n => ({ label: n, on: n === pick ? "true" : "false", c: n === "All" ? "#5b8cff" : (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c,
-        pick: () => this.setState({ pmSubj: n }, () => window.scrollTo(0, 0)) })),
+        // on a phone a pick folds the chips away again (they are hidden to save space)
+        pick: () => this.setState({ pmSubj: n, pmChipsOpen: false }, () => window.scrollTo(0, 0)) })),
+      // a phone shows one "Subjects" toggle naming the current pick; the chips open under it
+      pmChipsCollapsed: phone && !s.pmChipsOpen ? "true" : "false", pmChipsOpenAttr: phone && s.pmChipsOpen ? "true" : "false",
+      pmChipsToggle: () => this.setState({ pmChipsOpen: !s.pmChipsOpen }),
+      pmPickLabel: pick === "All" ? "All subjects" : pick, pmPickC: pick === "All" ? "#5b8cff" : (SUBJECT_LOOK[pick] || SUBJECT_LOOK._).c,
+      pmChipsChevron: s.pmChipsOpen ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6",
       pmGroups: groups,
       pmSheetOn: !!sel && !s.finishCard, pmLayout: layout, pmDim: layout !== "desk", pmModal: layout !== "desk" ? "true" : "false",
       pmPadR: desk && sel && !s.finishCard ? "392px" : "0px",

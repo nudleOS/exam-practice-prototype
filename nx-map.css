@@ -8,7 +8,8 @@
 .pm-col { box-sizing: border-box; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
 @media (min-width: 600px) { .pm-col { padding-left: 32px; padding-right: 32px; } }
 /* the subjects: one column on a phone; side by side wherever two paths fit (the page's width is used, edge to edge) */
-@media (min-width: 720px) { .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); column-gap: 48px; align-items: start; } }
+/* auto-fit + centred tracks: one subject (a chip picked) sits in the middle, not in the first of three columns */
+@media (min-width: 720px) { .pm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 420px)); justify-content: center; column-gap: 48px; align-items: start; } }
 .pm-sr { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* subject chips: they wrap (never cut), start at the page's left edge, and stay small and sleek */
@@ -171,3 +172,17 @@
   background: rgba(129, 177, 255, 0.10); color: #fff; font-size: 13px; font-weight: 800; white-space: nowrap; }
 .xp-chip svg { width: 13px; height: 13px; }
 .xp-chip > span:last-child { display: inline !important; font-size: 11px !important; font-weight: 700 !important; color: #8fa0d6 !important; }
+
+/* progress on the road: a paper lights the stretch above it, toward the cup */
+.pm-link[data-lit="true"] { border-style: solid; border-color: var(--sc); }
+.pm-link[data-lit="part"] { border-style: solid; border-color: rgba(var(--sc-rgb), 0.45); }
+
+/* the subject chips on a phone: one toggle naming the current pick; the chips fold away under it (desktop: always open) */
+.pm-chips-toggle { display: none; }
+@media (max-width: 599px) {
+  .pm-chips-toggle { box-sizing: border-box; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: 999px;
+    border: 1px solid rgba(129, 177, 255, 0.3); background: rgba(var(--sc-rgb, 91, 140, 255), 0.06); color: #eef2ff; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+  .pm-chips-toggle .pm-dot { background: var(--sc); }
+  .pm-chips[data-collapsed="true"] .pm-chip { display: none; }
+  .pm-chips-toggle:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+}
