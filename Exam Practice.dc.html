@@ -80,8 +80,8 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=136">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=22">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-play.css?v=138">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-map.css?v=23">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -1675,6 +1675,9 @@ class Component extends DCLogic {
     document.addEventListener("loaded", this._ld);
     this.countUp();
     this.setState({ studies: STUDIES_API.get(), studiesAsked: STUDIES_API.asked() });   // brief 23 (mock of GET /v1/me/studies)
+    // the page scrolled (a long question on a phone): the paper button, fixed under the profile picture, would sit on the answer
+    this._onScroll = () => document.body.classList.toggle("nx-scrolled", window.scrollY > 8);
+    window.addEventListener("scroll", this._onScroll, { passive: true });
     // design preview: &kb=300 plays a 300 px keyboard while a field has focus (the pane has no on-screen keyboard)
     const kbSim = parseInt(new URLSearchParams(location.search).get("kb"), 10) || 0;
     if (kbSim > 0) { const box = document.createElement("div"); box.className = "nx-kbsim"; box.style.height = kbSim + "px";
@@ -1792,7 +1795,7 @@ class Component extends DCLogic {
   // under the panel (a phone, an upright tablet), down to its head, so its words stay in view. Measured before: the memo made the
   // page 791 px tall on a 648 px screen (the header went under the top bar); on a phone the grown panel hid "Clean. Full marks.".
   // A new result or hint is scrolled into view inside it; a new part starts at its top.
-  nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock", "nx-robot-back"); this._robotBack = null; return; }
+  nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock", "nx-compact"); document.body.style.removeProperty("--nx-dockH"); this._compact = null; return; }
     this.nxCentre(q);
     const qr = q.getBoundingClientRect(), fe = document.querySelector("[data-footer]"); let bottom = innerHeight - 16;
     // the row's first visible button (Check is hidden where the field answers itself: measured, the dock then found no row)
@@ -1805,11 +1808,14 @@ class Component extends DCLogic {
     const typing = document.body.classList.contains("nx-typing");
     // a phone: the row is a fixed bar at the screen's bottom (Murci, 2026-10-02: "Fixed bottom bar"; docked under the card it moved
     // with every question), never docked. Its height lifts the robot and its rocks onto it (nx-play reads --nx-bar).
-    const phone = innerWidth <= 600;
+    const phone = innerWidth <= 600, pk = (this.part() || {}).key || "";
+    // a long question on a phone (decided below, per question): the robot is the strip, the page scrolls, the card is not capped
+    if (this._compact && (this._compact !== pk || !phone)) { this._compact = null; document.body.classList.remove("nx-compact"); document.body.style.removeProperty("--nx-dockH"); }
+    const compact = !!this._compact, strip = typing || compact;
     if (phone && fe && !typing) { const bh = Math.round(fe.getBoundingClientRect().height) + "px"; if (fe.offsetHeight && document.body.style.getPropertyValue("--nx-bar") !== bh) document.body.style.setProperty("--nx-bar", bh); }
     const dock = !phone && !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
     // typing: the strip takes the room left of the row (its leftmost button), and the panel stops 12 px above the strip
-    if (typing) { const ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
+    if (strip) { const ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
       const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, stack = phone || left < innerWidth / 2,
         rh = bs.length ? Math.round(Math.max(...bs.map(b => b.getBoundingClientRect().height))) : 0,
         r = stack ? "12px" : Math.max(12, Math.round(innerWidth - left + 8)) + "px", up = (phone && fe ? Math.round(fe.getBoundingClientRect().height) : stack ? rh + 8 : 0) + "px";
@@ -1818,12 +1824,13 @@ class Component extends DCLogic {
       // a long hint must not climb over the field (measured at 360x640: a 5-line hint ran 54 px over it): it gets the room between
       // the panel's lowest bottom (its content, or its 220 px floor) and the keys, and scrolls inside past that, faded at the cut
       const tp = ts && ts.querySelector(":scope > p");
-      if (tp) { const room = Math.max(40, Math.round(innerHeight - this.state.kbOff - 8 - (parseFloat(up) || 0) - (qr.top + Math.min(q.scrollHeight + 2, 220)) - 20)) + "px";
+      // (a compact question, the page scrolls past the card: the hint keeps to 28% of the screen, about 3 lines with the keys up)
+      if (tp) { const room = compact ? (typing ? 72 : Math.round(innerHeight * 0.28)) + "px" : Math.max(40, Math.round(innerHeight - this.state.kbOff - 8 - (parseFloat(up) || 0) - (qr.top + Math.min(q.scrollHeight + 2, 220)) - 20)) + "px";
         if (tp.style.maxHeight !== room) tp.style.maxHeight = room;
         const more = tp.scrollHeight > tp.clientHeight + 1 ? "true" : "false"; if (tp.dataset.more !== more) tp.dataset.more = more; }
       const t = ts && ts.getBoundingClientRect(); if (t && t.height) bottom = Math.min(bottom, t.top - 12); }
     if (!dock && fr && rowH) bottom = Math.min(bottom, fr.getBoundingClientRect().top - 14);
-    const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co && !typing) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
+    const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co && !strip) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
       const under = c.width && c.left < qr.right - 1 && c.right > qr.left + 1;
       // the robot under the panel on a phone: its bubble (beside its head) sits clear of the action row, bottom-anchored so a long hint
       // grows UP (measured at 360x640: a 5-line hint ran 23 px under Skip / Check); the panel stops above the bubble and the head
@@ -1832,7 +1839,10 @@ class Component extends DCLogic {
         if (under && fr && !dock) { const top = fr.getBoundingClientRect().top; if (c.top + c.height * NX_HEAD + bub.offsetHeight > top - 12) {   /* layout size: its pop-in scale would under-measure a rect */ bub.style.top = "auto"; bub.style.bottom = Math.round(c.bottom - (top - 12)) + "px"; } } }
       if (under) bottom = Math.min(bottom, c.top + c.height * NX_HEAD - 12, bub ? (bub.style.bottom ? c.bottom - parseFloat(bub.style.bottom) - bub.offsetHeight : c.top + c.height * NX_HEAD) - 12 : Infinity); }
     if (dock) bottom -= rowH + 12;
-    const cap = Math.max(220, Math.floor(bottom - qr.top)); if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
+    const free = compact, cap = free ? Math.max(220, Math.floor(bottom - Math.max(qr.top, 72))) : Math.max(220, Math.floor(bottom - qr.top));
+    if (free) { if (q._cap !== "none") { q._cap = "none"; q.style.maxHeight = "none"; }
+      const dh = Math.round(innerHeight - bottom + 4) + "px"; if (document.body.style.getPropertyValue("--nx-dockH") !== dh) document.body.style.setProperty("--nx-dockH", dh); }
+    else if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
     document.body.classList.toggle("nx-dock", dock);
     // A question's figure gets the room the question leaves it (Murci, 2026-10-01: with "Show figure" 1.4's parts scrolled on desktop,
     // measured 87-103 px at 1366x768 when the figure kept its full proportions): the panel's cap less everything but the image, up to
@@ -1846,15 +1856,22 @@ class Component extends DCLogic {
         floor = fig.dataset.fighot !== "true" ? 110 : q.querySelector('[data-chips="true"]') ? 120 : 150;   // (letters with chips to tap too: the figure is not the only input)
       const h = Math.max(floor, Math.min(full, room));
       if (Math.abs(h - cur) > 1) fig.style.setProperty("--fig-h", h + "px"); }
-    // A phone whose question still does not fit (the figure at its floor, or a long question): the robot steps back, smaller on the
-    // same rock, as the MCQ's fit-4 does, and the panel is measured again (measured at 360x780: 1.4.2 was 100 px over with the figure
-    // at its floor, the robot taking the lower half). Kept for the rest of that question (no flicker as the figure then grows);
-    // cleared when the question changes.
-    const pk = (this.part() || {}).key || "";
-    if (this._robotBack && this._robotBack !== pk) { this._robotBack = null; document.body.classList.remove("nx-robot-back"); requestAnimationFrame(() => this.nxPanelCap()); }
-    else if (!this._robotBack && innerWidth <= 600 && q.scrollHeight - q.clientHeight > 1) { this._robotBack = pk; document.body.classList.add("nx-robot-back"); requestAnimationFrame(() => this.nxPanelCap()); }
+    // A phone whose question does not fit beside the robot (the figure at its floor, or a long question): the robot steps into the
+    // strip and the page scrolls (Murci, 2026-10-02: "Robot steps into strip"; the robot stepping back smaller still left 59-221 px
+    // scrolling inside the card). Kept for the rest of that question (no flicker as the figure then grows); cleared when it changes.
+    // the decision (a phone, the robot's layout, keyboard down): the card would scroll inside itself -> compact for this question
+    // "Overflows" = the card has reached its cap AND its content is taller: scrollHeight alone was 14 px over on 1.2.1 at 360x780 (a
+    // child's glow past the edge) with the card at 239 px of a 358 px cap, which sent every question compact (and, before, sent the
+    // robot "back", smaller). Confirmed 350 ms later (the card rises in).
+    const over = el => { const m = parseFloat(el.style.maxHeight); return m > 0 && el.offsetHeight >= m - 1 && el.scrollHeight - el.clientHeight > 1; };
+    if (!compact && phone && !typing && over(q) && !this._compactT) this._compactT = setTimeout(() => { this._compactT = 0;
+      const q2 = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"), pk2 = (this.part() || {}).key || "";
+      if (q2 && pk2 === pk && !this._compact && innerWidth <= 600 && !document.body.classList.contains("nx-typing") && over(q2)) {
+        this._compact = pk; document.body.classList.add("nx-compact"); this.nxPanelCap(); } }, 350);
     // the keyboard is up (a phone): the panel just got shorter, so the field being typed in is scrolled back into its view
-    const ae = document.activeElement; if (this.state.kbOff > 80 && ae && q.contains(ae)) { const a = ae.getBoundingClientRect(), b = q.getBoundingClientRect();
+    const ae = document.activeElement; if (typing && compact && ae && q.contains(ae)) { const a = ae.getBoundingClientRect();
+      if (a.bottom > bottom - 4) window.scrollBy(0, a.bottom - bottom + 16); else if (a.top < 72) window.scrollBy(0, a.top - 88); }
+    else if (this.state.kbOff > 80 && ae && q.contains(ae)) { const a = ae.getBoundingClientRect(), b = q.getBoundingClientRect();
       if (a.bottom > b.bottom - 8 || a.top < b.top) q.scrollBy({ top: a.bottom > b.bottom - 8 ? a.bottom - b.bottom + 16 : a.top - b.top - 16 }); }
     // (a phone has no panel card: the row lines up with the text's edge, the question's padding in, not the box's)
     if (dock) { const r = q.getBoundingClientRect(), inset = innerWidth <= 600 ? parseFloat(getComputedStyle(q).paddingLeft) || 0 : 0;
@@ -2268,7 +2285,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }

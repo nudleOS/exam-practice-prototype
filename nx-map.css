@@ -287,3 +287,8 @@ body.nx-play.pv-bottom.pv-tall [data-footer], body.nx-play.pv-bottom.pv-tall .mc
 /* F4 typing on a phone: the bottom paper steps aside (kept as it was) and comes back when the keyboard closes */
 body.pv-tucked .pv[data-layout="bottom"] { visibility: hidden; pointer-events: none; }
 @media (max-width: 600px) { body.nx-play.pv-bottom [data-footer]:not(:has([data-keypad])), body.nx-play.pv-bottom .mcqp .stage > .after { bottom: var(--pv-h) !important; } }
+/* the paper button steps aside while the page is scrolled or the keyboard is up (it sat on the answer: measured on 2.1.4 at 360x640);
+   it comes back at the top. Open, it stays: it is the paper's close too. */
+.pv-fab { transition: opacity 150ms ease, transform 150ms ease; }
+body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { opacity: 0; transform: scale(0.85); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .pv-fab { transition: none; } }

@@ -1475,3 +1475,15 @@ body.nx-play [data-playclose]:focus-visible { outline:3px solid #81b1ff; outline
   body.nx-play .nx-bg .nx-rocks, body.nx-play .nx-bg .nx-fill, body.nx-play main:not(#mq-stage) > aside[aria-label="Your companion"], body.nx-play .mcqp .pal { margin-bottom:var(--nx-bar) !important; }
 }
 @media (max-width:600px) { body.nx-play .mcqp .stage > .after { --floor-on:1; } }   /* the MCQ's glass lands on the bar, not under it */
+
+/* ==== a long question on a phone (Murci, 2026-10-02: "Robot steps into strip") ====
+   The host sets nx-compact when the card would scroll inside itself beside the robot: the robot steps into the strip (as typing),
+   the scenery fades, the card is not capped and the page scrolls; main pads to clear the strip and the bar (--nx-dockH). */
+body.nx-play.nx-compact .nx-bg .nx-rocks, body.nx-play.nx-compact .nx-bg .nx-fill { opacity:0; }
+body.nx-play.nx-compact main:not(#mq-stage) > aside[aria-label="Your companion"] > div { transform:translateX(-300vw) !important; }
+body.nx-play.nx-compact main:not(#mq-stage) > aside[aria-label="Your companion"] > p { opacity:0 !important; }
+body.nx-play.nx-compact .nx-typestrip { display:flex; position:fixed; z-index:24; left:12px; right:var(--typ-r, 12px); bottom:calc(var(--kb, 0px) + 8px + var(--typ-up, 0px));
+  align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
+body.nx-play.nx-compact main:not(#mq-stage) [data-question] { overflow:visible !important; }
+body.pv-bottom .nx-typestrip { display:none !important; }   /* the paper open: the paper is what's read, the robot waits */
+body.nx-play.nx-compact.nx-compact main:not(#mq-stage):not([data-done]) { padding-bottom:var(--nx-dockH, 150px) !important; }   /* a phone rule zeroed main's padding */
