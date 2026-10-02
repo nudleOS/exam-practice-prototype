@@ -187,3 +187,39 @@
   .pm-chips[data-collapsed="true"] .pm-chip { display: none; }
   .pm-chips-toggle:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 }
+
+/* ── the question paper / memo viewer (2026-10-02): just the paper's pages; a phone: rising from the bottom; wider: at the side */
+:root { --pv-h: 56svh; --pv-w: min(560px, 44vw); }
+body.pv-full { --pv-h: calc(100svh - 8px); }
+.pv { position: fixed; z-index: 80; box-sizing: border-box; display: flex; flex-direction: column; background: #0d1a3f; color: #eef2ff; }
+.pv[data-layout="bottom"] { left: 0; right: 0; bottom: 0; height: var(--pv-h); border-top: 1px solid rgba(129, 177, 255, 0.22);
+  border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45); animation: pv-up 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.pv[data-layout="side"] { top: var(--pv-top, 0px); right: 0; bottom: 0; width: var(--pv-w); border-left: 1px solid rgba(129, 177, 255, 0.22);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.35); animation: pv-in 240ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@keyframes pv-up { from { transform: translateY(40px); opacity: 0; } }
+@keyframes pv-in { from { transform: translateX(40px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pv { animation: none !important; } }
+.pv-grab { margin-top: 8px; }
+.pv-bar { flex: none; display: flex; align-items: center; gap: 4px; padding: 8px 8px 8px 12px; }
+.pv-sp { flex: 1; }
+.pv-tabs { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #0a1534; }
+.pv-tab { min-height: 34px; display: inline-flex; align-items: center; gap: 5px; padding: 0 12px; border: none; border-radius: 9px; background: transparent;
+  color: #8fa0d6; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.pv-tab[aria-pressed="true"] { background: #1e46ff; color: #fff; }
+.pv-tab[data-locked="true"] { color: #6f80b3; }
+.pv-ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border: none; border-radius: 10px; background: transparent;
+  color: #9aa7cf; font: inherit; font-size: 22px; line-height: 1; text-decoration: none; cursor: pointer; }
+.pv-tab:focus-visible, .pv-ico:focus-visible, .pv-pages:focus-visible, .pv-chip:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.pv-note { flex: none; margin: 0 12px 8px; padding: 8px 10px; border-radius: 10px; background: #14215a; font-size: 12.5px; color: #c9d2ff; }
+.pv-pages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding: 0 10px 14px; }
+.pv-page { display: block; width: 100%; height: auto; border-radius: 4px; background: #fff; }
+/* the page makes room for it: nothing is covered */
+body.pv-side { --nx-vw: calc(100vw - var(--pv-w)); }
+body.pv-side [data-pmap], body.pv-side [data-screen-label] > main { padding-right: var(--pv-w) !important; box-sizing: border-box; }
+body.nx-play.pv-bottom main:not(#mq-stage):not([data-done]) { padding-bottom: calc(var(--nx-dockH, 150px) + var(--pv-h)) !important; }
+body.nx-play.pv-bottom [data-footer], body.nx-play.nx-dock.pv-bottom [data-footer]:not(:has([data-keypad])) { top: auto !important; bottom: var(--pv-h) !important; }
+body.nx-play.pv-bottom .mcqp .stage > .after { top: auto !important; bottom: var(--pv-h) !important; }
+body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-bottom .mcqp .pal { display: none !important; }
+/* the play screen's page chip: small, beside the question's marks */
+.pv-chip { min-height: 28px; display: inline-flex; align-items: center; gap: 4px; padding: 0 9px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.3);
+  background: transparent; color: #9fbcff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }

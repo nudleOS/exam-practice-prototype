@@ -190,7 +190,7 @@ body.nx-play .mcqp .dock { background:none; }
 /* The panel keeps clear of the robot's corner (as the mockup: the panel starts right of the robot): centred when the screen
    is wide enough, otherwise it starts past the robot's box (its right edge = rock x + half the box) and narrows. */
 body.nx-play, body.nx-play .mcqp { --nx-botR:calc(var(--nx-rh) * var(--nx-fx) + var(--ph) * 0.357 + 20px); }
-body.nx-play .mcqp .stage { max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)); margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)); margin-right:auto; }
+body.nx-play .mcqp .stage { max-width:min(900px, calc(var(--nx-vw, 100vw) - var(--nx-botR) - 24px)); margin-left:max(calc((var(--nx-vw, 100vw) - 900px) / 2), var(--nx-botR)); margin-right:auto; }
 /* a big desktop window (Murci, 2026-09-30: "increase the size of the avatar ... when the desktop window is expanded fully"):
    measured at 1920x969 the robot was capped at 360 px (37% of the height) with ~240 px of empty floor before the panel. The robot
    AND its rock grow together, so its feet stay on the rock (the floor art scales with them). The clearance still holds: --nx-botR
@@ -359,8 +359,8 @@ html[data-nx="light"] body.nx-play {
   --dock-bg:linear-gradient(180deg, rgba(231,241,253,0), rgba(231,241,253,0.96) 34%);
 }
 /* the question column: the MCQ panel's place, clear of the robot's corner (one column: the companion is fixed on its rock) */
-body.nx-play main:not(#mq-stage):not([data-done]) { display:block !important; box-sizing:border-box; max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)) !important;
-  margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)) !important; margin-right:auto !important; padding:26px 0 var(--nx-dockH, 150px) !important; }
+body.nx-play main:not(#mq-stage):not([data-done]) { display:block !important; box-sizing:border-box; max-width:min(900px, calc(var(--nx-vw, 100vw) - var(--nx-botR) - 24px)) !important;
+  margin-left:max(calc((var(--nx-vw, 100vw) - 900px) / 2), var(--nx-botR)) !important; margin-right:auto !important; padding:26px 0 var(--nx-dockH, 150px) !important; }
 body.nx-play main:not(#mq-stage) [data-question] { box-sizing:border-box; padding:30px 40px 32px; border-radius:28px; background:var(--nx-panel); border:1px solid var(--nx-panel-line); box-shadow:var(--nx-shadow); }
 body.nx-play main:not(#mq-stage) [data-question] [data-stem] { font-size:clamp(18px, 1.7vw, 23px) !important; line-height:1.35 !important; font-weight:400 !important; letter-spacing:-0.01em; color:var(--nx-h1); }
 /* the part's header as the MCQ panel's: the number chip, the marks pill */
@@ -376,8 +376,8 @@ body.nx-play main:not(#mq-stage) section[data-key] [data-partmarks] { padding:8p
 body.nx-play main:not(#mq-stage) [data-question] :is(input, textarea):not(:disabled):focus { border-color:var(--nx-accent) !important; box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-accent) 28%, transparent); }
 body.nx-play main:not(#mq-stage) [data-question] :is(input, textarea)::placeholder { color:var(--text3); opacity:1; }
 /* the dock (Check, and the result bar) under the panel's column */
-body.nx-play [data-footer] > div { display:block !important; box-sizing:border-box; max-width:min(900px, calc(100vw - var(--nx-botR) - 24px)) !important;
-  margin-left:max(calc((100vw - 900px) / 2), var(--nx-botR)) !important; margin-right:auto !important; padding:0 !important; }
+body.nx-play [data-footer] > div { display:block !important; box-sizing:border-box; max-width:min(900px, calc(var(--nx-vw, 100vw) - var(--nx-botR) - 24px)) !important;
+  margin-left:max(calc((var(--nx-vw, 100vw) - 900px) / 2), var(--nx-botR)) !important; margin-right:auto !important; padding:0 !important; }
 body.nx-play [data-footer] > div > span:first-child { display:none !important; }
 /* the page's own companion (non-MCQ parts): on its rock, as the MCQ robot, its bubble a speech bubble above its head. Every size
    (2026-09-30, Murci: the MCQ look for the other types; the phone had a small robot inline above the question). On a phone it
