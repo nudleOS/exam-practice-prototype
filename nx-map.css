@@ -199,7 +199,6 @@ body.pv-full { --pv-h: calc(100svh - 8px); }
 @keyframes pv-up { from { transform: translateY(40px); opacity: 0; } }
 @keyframes pv-in { from { transform: translateX(40px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .pv { animation: none !important; } }
-.pv-grab { margin-top: 8px; }
 .pv-bar { flex: none; display: flex; align-items: center; gap: 4px; padding: 8px 8px 8px 12px; }
 .pv-sp { flex: 1; }
 .pv-tabs { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #0a1534; }
@@ -269,3 +268,19 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
   border: 1px dashed rgba(129, 177, 255, 0.4); border-radius: 50%; background: transparent; color: #8fa0d6; cursor: pointer; }
 .hm-pv[aria-expanded="true"] { color: #fff; border-color: #5b8cff; background: rgba(30, 70, 255, 0.18); }
 .hm-pv:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+
+/* the paper panel's resize handle (2026-10-02): drag it, or focus it and use the arrow keys. Bottom panel: the bar across its top
+   (the grab pill in it); side panel: its left edge (a pill shows on hover / focus / drag). Its hit area is larger than its mark. */
+.pv-drag { flex: none; touch-action: none; display: grid; place-items: center; outline: none; }
+.pv-drag-y { height: 22px; margin-bottom: -6px; cursor: ns-resize; }
+.pv-drag-y .pm-grab { width: 44px; transition: background 150ms ease, width 150ms ease; }
+.pv-drag-y:hover .pm-grab, .pv-drag-y:focus-visible .pm-grab, .pv-drag-y[data-dragging] .pm-grab { width: 56px; background: #81b1ff; }
+.pv-drag-x { position: absolute; z-index: 2; left: 0; top: 0; bottom: 0; width: 16px; cursor: ew-resize; }
+.pv-drag-x > span { width: 4px; height: 44px; border-radius: 2px; background: rgba(255, 255, 255, 0.18); transition: background 150ms ease, height 150ms ease; }
+.pv-drag-x:hover > span, .pv-drag-x:focus-visible > span, .pv-drag-x[data-dragging] > span { height: 64px; background: #81b1ff; }
+.pv-drag:focus-visible { box-shadow: inset 0 0 0 2px #81b1ff; }
+.pv-drag-y:focus-visible { border-radius: 18px 18px 0 0; }
+.pv[data-layout="side"] .pv-bar { padding-left: 18px; }
+/* while dragging, the pages follow without easing and nothing below is selected */
+body:has(.pv-drag[data-dragging]) { user-select: none; -webkit-user-select: none; }
+body.nx-play.pv-bottom.pv-tall [data-footer], body.nx-play.pv-bottom.pv-tall .mcqp .stage > .after { visibility: hidden; }
