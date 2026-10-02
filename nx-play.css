@@ -1517,3 +1517,8 @@ body.nx-play .mcqp .tiles { max-width:600px; margin-right:auto; }
 body.nx-play .mcqp .tile { min-height:44px !important; }
 @media (max-width:600px) { body.nx-play .mcqp .tiles { max-width:280px; } body.nx-play .mcqp .tile { min-height:46px !important; }
   body.nx-play .mcqp .tile .face > .ico { display:none !important; } }   /* the decorative icon: at 280 px it wrapped every answer onto two lines */
+/* the cards' letters and words (Murci, 2026-10-02): the letter a 28 px circle (was a 38 px rounded square, 17 px), set 9 px in from the
+   card's edge as from its top and bottom, so it sits evenly in the card's rounded end (18 px corners); the answer 12.5 px (was 13.5) */
+body.nx-play .mcqp .tile .face { padding-left:9px !important; gap:10px !important; }
+body.nx-play .mcqp .tile .face > .letter { width:28px !important; height:28px !important; min-width:28px; border-radius:50% !important; font-size:12.5px !important; }
+body.nx-play .mcqp .tile .face > .txt { font-size:12.5px !important; line-height:1.35 !important; }
