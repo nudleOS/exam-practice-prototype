@@ -1,0 +1,94 @@
+/* nx-map.css: the paper map (Murci, 2026-10-02). Papers only: a calm dotted path of past papers, grouped by subject.
+   No vortex, no particles, no 3D companion, nothing animating at rest: built for a low-end phone (the P30 lite) first.
+   Values come from Exam Practice.dc.html's paperMapVals(); stop and link positions are computed there in px. */
+
+.pm-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(120% 55% at 50% -12%, rgba(30, 70, 255, 0.16), transparent 62%), #03122c; }
+.pm { position: relative; z-index: 1; box-sizing: border-box; transition: padding-right 300ms ease; }
+.pm-col { box-sizing: border-box; width: min(520px, 100%); margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
+.pm-sr { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* design preview switches (⋯ → Design preview) */
+.pm-preview { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 10px 0 0; }
+.pm-pv { min-height: 36px; padding: 0 11px; border-radius: 11px; border: 1px solid rgba(129, 177, 255, 0.22); background: transparent;
+  color: #8fa0d6; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.pm-pv[aria-pressed="true"] { background: rgba(0, 104, 248, 0.2); color: #fff; }
+
+/* subject chips: one row, scrolls sideways on a phone, stays under the header */
+.pm-chips { position: sticky; top: 64px; z-index: 5; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 -16px; padding: 10px 16px 14px; background: linear-gradient(#03122c 72%, rgba(3, 18, 44, 0)); }
+.pm-chips::-webkit-scrollbar { display: none; }
+.pm-chip { flex: none; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.28);
+  background: rgba(3, 18, 44, 0.6); color: #b8c4ea; font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.pm-chip[aria-pressed="true"] { background: #1e46ff; border-color: #1e46ff; color: #fff; }
+.pm-chip:focus-visible, .pm-node:focus-visible, .pm-go:focus-visible, .pm-src:focus-visible, .pm-x:focus-visible { outline: 3px solid #81b1ff; outline-offset: 3px; }
+.pm-note { margin: 4px 0 8px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(224, 161, 15, 0.35);
+  background: rgba(224, 161, 15, 0.08); font-size: 13px; line-height: 1.5; color: #f0c25e; }
+
+/* a subject and its path */
+.pm-group { margin: 14px 0 22px; }
+.pm-subj { display: flex; align-items: baseline; gap: 8px; margin: 0 0 16px; font-size: 15px; font-weight: 700; color: #eef2ff; }
+.pm-subj span { font-size: 12.5px; font-weight: 500; color: #7f8fc2; }
+.pm-path { position: relative; }
+.pm-stops { list-style: none; margin: 0; padding: 0; }
+
+/* the dotted path: each link runs across from one stop's centre, then turns down into the next stop */
+.pm-link { position: absolute; left: 28%; width: 44%; box-sizing: border-box; border: 0 dotted rgba(129, 177, 255, 0.38); border-top-width: 3px; }
+.pm-link[data-dir="lr"] { border-right-width: 3px; border-top-right-radius: 40px; }
+.pm-link[data-dir="rl"] { border-left-width: 3px; border-top-left-radius: 40px; }
+
+/* a stop: the node, its name and one line of state under it */
+.pm-stop { position: absolute; width: 50%; display: flex; flex-direction: column; align-items: center; gap: 7px; transform: translateX(-50%); }
+.pm-stop[data-side="l"] { left: 28%; }
+.pm-stop[data-side="r"] { left: 72%; }
+.pm-node { position: relative; box-sizing: border-box; width: 56px; height: 56px; flex: none; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; border: 2px solid #3d57a8; background: #0b1d47; color: #dfe6ff; cursor: pointer;
+  box-shadow: 0 0 0 6px #03122c; -webkit-tap-highlight-color: transparent; transition: transform 120ms ease; }
+.pm-node:active { transform: scale(0.95); }
+.pm-node > * { position: relative; }
+.pm-node[data-state="soon"] { border-style: dashed; border-color: #34477f; background: #061837; color: #6f80b3; }
+.pm-node[data-state="going"] { border: none; background: conic-gradient(#6f9bff var(--deg), #1b2c5c 0);
+  box-shadow: 0 0 0 6px #03122c, 0 0 0 8px rgba(111, 155, 255, 0.35); }
+.pm-node[data-state="going"]::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: #1e46ff; }
+.pm-pct { font-size: 13px; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+.pm-node[data-state="done"] { border: none; }
+.pm-node[data-tier="top"] { background: #f5c443; color: #3d2a00; }
+.pm-node[data-tier="solid"] { background: #cfd8ea; color: #1d2740; }
+.pm-node[data-tier="finished"] { background: #d9955a; color: #3a1d05; }
+.pm-label { display: flex; flex-direction: column; align-items: center; gap: 2px; max-width: 100%; text-align: center; }
+.pm-name { font-size: 14px; font-weight: 700; color: #eef2ff; white-space: nowrap; }
+.pm-meta { font-size: 12.5px; color: #8fa0d6; white-space: nowrap; }
+.pm-stop[data-state="going"] .pm-meta { color: #9fbcff; }
+.pm-stop[data-state="soon"] .pm-name { color: #9aa7cf; }
+.pm-stop[data-state="soon"] .pm-meta { color: #6f80b3; }
+
+/* the paper sheet: a bottom sheet on a phone, a side panel on a desktop, a dialog between */
+.pm-sheet-wrap { position: fixed; inset: 0; z-index: 70; display: grid; align-items: end; justify-items: stretch; }
+.pm-sheet-wrap[data-layout="desk"] { align-items: start; justify-items: end; padding: 76px 16px 16px; pointer-events: none; }
+.pm-sheet-wrap[data-layout="tab"] { align-items: center; justify-items: center; padding: 24px; }
+.pm-dim { position: absolute; inset: 0; background: rgba(1, 8, 22, 0.62); }
+.pm-sheet { position: relative; pointer-events: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px;
+  max-height: calc(100dvh - 24px); overflow-y: auto; padding: 10px 18px max(18px, env(safe-area-inset-bottom));
+  background: #0d1a3f; border: 1px solid rgba(129, 177, 255, 0.22); border-radius: 22px 22px 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45); animation: pm-up 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.pm-sheet-wrap[data-layout="desk"] .pm-sheet { width: 360px; padding-top: 18px; border-radius: 20px; }
+.pm-sheet-wrap[data-layout="tab"] .pm-sheet { width: min(460px, 100%); padding-top: 18px; border-radius: 20px; }
+@keyframes pm-up { from { transform: translateY(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pm-sheet { animation: none; } .pm-node { transition: none; } }
+.pm-grab { align-self: center; width: 40px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.2); }
+.pm-sheet-head { display: flex; align-items: flex-start; gap: 10px; }
+.pm-sheet-titles { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.pm-kicker { font-size: 12.5px; font-weight: 600; color: #8fa0d6; }
+.pm-sheet h2 { margin: 0; font-size: 20px; font-weight: 800; line-height: 1.25; letter-spacing: -0.01em; color: #fff; outline: none; }
+.pm-x { width: 44px; height: 44px; flex: none; margin: -6px -8px 0 0; border: none; border-radius: 12px; background: transparent;
+  color: #9aa7cf; font-size: 22px; cursor: pointer; }
+.pm-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pm-stat { display: flex; flex-direction: column; gap: 3px; padding: 10px 11px; border-radius: 12px; background: #0a1534; }
+.pm-stat span { font-size: 12px; font-weight: 600; color: #8fa0d6; }
+.pm-stat b { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; }
+.pm-bar { display: block; height: 6px; border-radius: 3px; background: #0a1534; overflow: hidden; }
+.pm-bar span { display: block; height: 100%; border-radius: 3px; background: #5b8cff; }
+.pm-sheet-note { margin: 0; font-size: 13.5px; line-height: 1.5; color: #b8c4ea; }
+.pm-go { min-height: 54px; border: none; border-radius: 16px; background: #1e46ff; color: #fff; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; }
+.pm-src { min-height: 48px; border: 1px solid rgba(129, 177, 255, 0.3); border-radius: 14px; background: transparent; color: #c9d2ff;
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }

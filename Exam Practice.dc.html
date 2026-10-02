@@ -13,9 +13,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=20"></script>
-  <script type="module" src="vortex-map.js?v=21"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=2"></script>
+<script src="papers-catalogue.js?v=2"></script>
   <script src="mcq-play.js?v=43"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
@@ -80,6 +80,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=125">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-map.css?v=1">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -97,32 +98,17 @@
     </sc-if>
     <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
     <sc-if value="{{ mapHead }}" hint-placeholder-val="{{ false }}">
-      <span style="flex:1; min-width:0; display:flex">
-        <button data-trigger="mapview" onClick="{{ toggleMapView }}" aria-haspopup="menu" aria-expanded="{{ mapViewOpen }}" aria-label="{{ mapViewAria }}" style="max-width:100%; min-width:0; min-height:44px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:2px 10px 2px 8px; margin-left:-8px; border:none; border-radius:12px; background:{{ mapViewBtnBg }}; color:var(--text); cursor:pointer; text-align:left">
-          <span style="display:flex; align-items:center; gap:4px; max-width:100%; font-size:14px; font-weight:700"><span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ headTitle }}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="m6 9 6 6 6-6"></path></svg></span>
-          <span style="max-width:100%; font-size:12px; color:#9aa0a6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ mapHeadSub }}</span>
-        </button>
+      <span class="pm-head" style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; min-height:44px">
+        <span style="font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ pmHeadTitle }}</span>
+        <span style="font-size:12px; color:#9aa0a6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ pmHeadSub }}</span>
       </span>
-      <sc-if value="{{ mapViewOpen }}" hint-placeholder-val="{{ false }}">
-        <div role="menu" aria-label="Map view" data-menu="mapview" onKeyDown="{{ menuKeys }}" class="glass-card" data-float="true" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; left:12px; width:min(260px, calc(100vw - 24px))">
-          <sc-for list="{{ mapViews }}" as="mv" hint-placeholder-count="2">
-            <button role="menuitemradio" aria-checked="{{ mv.on }}" onClick="{{ mv.pickClose }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer">
-              <span style="display:flex; flex-direction:column; gap:1px"><span>{{ mv.label }}</span><span style="font-size:12px; font-weight:500; color:#9aa0a6">{{ mv.hint }}</span></span>
-              <sc-if value="{{ mv.isOn }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none; margin-left:auto"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
-            </button>
-          </sc-for>
-        </div>
-      </sc-if>
-      <button data-trigger="more" onClick="{{ toggleMore }}" aria-haspopup="menu" aria-expanded="{{ moreOpen }}" aria-label="More: paper kit, the Hall, review" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ moreBg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"></circle><circle cx="12" cy="12" r="1.9"></circle><circle cx="19" cy="12" r="1.9"></circle></svg></button>
+      <button data-trigger="more" onClick="{{ toggleMore }}" aria-haspopup="menu" aria-expanded="{{ moreOpen }}" aria-label="More" style="width:44px; height:44px; flex:none; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); background:{{ moreBg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"></circle><circle cx="12" cy="12" r="1.9"></circle><circle cx="19" cy="12" r="1.9"></circle></svg></button>
       <sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
         <div role="menu" aria-label="More" data-menu="more" onKeyDown="{{ menuKeys }}" class="glass-card" data-float="true" style="position:fixed; top:{{ popTop }}; z-index:30; box-sizing:border-box; padding:6px; display:flex; flex-direction:column; gap:2px; border-radius:16px; right:12px; width:min(270px, calc(100vw - 24px))">
           <sc-if value="{{ moreXpOn }}" hint-placeholder-val="{{ false }}">
             <span style="display:flex; align-items:center; gap:8px; padding:8px 10px 10px; font-size:14px; font-weight:700; color:var(--text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg>{{ xp }} XP</span>
             <span aria-hidden="true" style="height:1px; margin:0 8px 4px; background:rgba(255,255,255,0.08)"></span>
           </sc-if>
-          <button role="menuitem" onClick="{{ moreKit }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>Paper kit</button>
-          <button role="menuitem" onClick="{{ moreReview }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 15l4-4 3 3 5-6"></path></svg>Review my paper</button>
-          <span aria-hidden="true" style="height:1px; margin:4px 8px; background:rgba(255,255,255,0.08)"></span>
           <button role="menuitemcheckbox" aria-checked="{{ pvOpen }}" data-trigger="preview" onClick="{{ morePreview }}" style="box-sizing:border-box; width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:8px 10px; border:none; border-radius:11px; background:transparent; color:var(--text); font-size:14px; font-weight:600; text-align:left; cursor:pointer; color:#9aa0a6; font-weight:500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Design preview</button>
         </div>
       </sc-if>
@@ -393,158 +379,51 @@
   </sc-if>
 
   <sc-if value="{{ onMap }}" hint-placeholder-val="{{ false }}">
-    <sc-if value="{{ vmOn }}" hint-placeholder-val="{{ false }}">
-      <vortex-map active="{{ vmActive }}" geom="{{ vmGeom }}" paint="{{ vmPaint }}" finish="{{ vmFinish }}" next="{{ vmNext }}" lit="{{ vmLit }}" anchor="[data-startbtn]" hdr="64" bg="{{ vmBg }}" fade="{{ vmFade }}"></vortex-map>
-    </sc-if>
-    <sc-if value="{{ vmOff }}" hint-placeholder-val="{{ true }}">
-    <div aria-hidden="true" data-map-bg="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:radial-gradient(1100px 620px at 50% 112%, rgba(30,70,255,0.20), transparent 62%), radial-gradient(900px 520px at 50% -12%, rgba(103,29,255,0.13), transparent 60%), radial-gradient(600px 600px at 8% 40%, rgba(0,104,248,0.06), transparent 70%), radial-gradient(600px 600px at 92% 60%, rgba(103,29,255,0.06), transparent 70%)">
-      <span style="position:absolute; left:-60%; right:-60%; bottom:-6%; height:62%; background-image:linear-gradient(rgba(129,177,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(129,177,255,0.10) 1px, transparent 1px); background-size:56px 56px; transform:perspective(520px) rotateX(64deg); transform-origin:50% 100%; -webkit-mask-image:linear-gradient(to top, #000 8%, transparent 78%); mask-image:linear-gradient(to top, #000 8%, transparent 78%)"></span>
-    </div>
-    </sc-if>
-    <main data-map="true" style="position:relative; z-index:{{ mainZ }}; pointer-events:{{ mainPE }}; box-sizing:border-box; padding:0 {{ mapPadR }} {{ mapPadB }} 16px; transition:padding 300ms ease; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
-      <div style="position:sticky; top:{{ subTop }}; z-index:15; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ subPad }}; margin:0 calc(-1 * {{ mapPadR }}) 0 -16px; background:{{ subBg }}; pointer-events:none">
-        <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ mapLive }}</p>
+    <div class="pm-bg" aria-hidden="true"></div>
+    <main data-pmap="true" class="pm" style="padding-right:{{ pmPadR }}">
+      <div class="pm-col">
+        <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
         <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
-        <div role="group" aria-label="Preview state" style="pointer-events:auto; display:flex; flex-wrap:wrap; justify-content:center; gap:2px; padding:3px; border-radius:14px; background:rgba(var(--nx-c, 25,27,30), 0.78); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 10px 30px rgba(0,0,0,0.35)">
+        <div role="group" aria-label="Preview state" class="pm-preview">
           <sc-for list="{{ mapModes }}" as="mm" hint-placeholder-count="3">
-            <button onClick="{{ mm.pick }}" aria-pressed="{{ mm.on }}" style="min-height:34px; padding:0 11px; border:none; border-radius:11px; background:{{ mm.bg }}; color:{{ mm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ mm.label }}</button>
+            <button onClick="{{ mm.pick }}" aria-pressed="{{ mm.on }}" class="pm-pv">{{ mm.label }}</button>
           </sc-for>
         </div>
         </sc-if>
-      </div>
-      <sc-if value="{{ onRoad }}" hint-placeholder-val="{{ true }}">
-      <sc-if value="{{ paperNote }}" hint-placeholder-val="{{ false }}">
-        <div data-mapnote="true" style="box-sizing:border-box; width:{{ roadWpx }}; max-width:100%; margin:6px auto 128px; padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.55; color:var(--warn)">{{ paperNoteText }}</div>
-      </sc-if>
-
-      <div data-road="true" style="position:relative; width:{{ roadWpx }}; height:{{ roadHpx }}; margin:0 auto">
-        <sc-if value="{{ vmOff }}" hint-placeholder-val="{{ true }}">
-        <sc-for list="{{ roadZones }}" as="z" hint-placeholder-count="4">
-          <span aria-hidden="true" style="position:absolute; left:-12%; right:-12%; top:{{ z.top }}; height:{{ z.h }}; pointer-events:none; background:radial-gradient(50% 50% at 50% 50%, {{ z.tint }}, transparent 72%)"></span>
-        </sc-for>
-
-        <span aria-hidden="true" data-pad="true" style="position:absolute; left:calc(50% - 130px); top:{{ padTop }}; width:260px; height:120px; pointer-events:none">
-          <span style="position:absolute; left:95px; top:-80px; width:70px; height:140px; border-radius:35px; background:radial-gradient(50% 100% at 50% 100%, rgba(129,177,255,0.42), rgba(30,70,255,0.12) 55%, transparent 100%)"></span>
-          <span style="position:absolute; left:20px; top:40px; width:220px; height:60px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,104,248,0.38), rgba(30,70,255,0.12) 60%, transparent)"></span>
-          <span style="position:absolute; left:42px; top:66px; width:176px; height:40px; border-radius:50%; background:linear-gradient(180deg, #1b2c50 0%, #0c1322 70%, #070a12 100%); box-shadow:0 18px 30px rgba(0,0,0,0.62)"></span>
-          <span style="position:absolute; left:40px; top:-30px; width:180px; height:180px; transform:perspective(520px) rotateX(72deg); transform-origin:50% 50%">
-            <span style="position:absolute; inset:0; border-radius:50%; box-sizing:border-box; border:2px solid rgba(129,177,255,0.7); background:radial-gradient(circle at 50% 44%, #3b62ad 0%, #1d3060 52%, #0f1830 100%); box-shadow:inset 0 0 34px rgba(0,104,248,0.55), 0 0 44px rgba(0,104,248,0.45)"></span>
-            <span style="position:absolute; inset:10px; border-radius:50%; box-sizing:border-box; border:2px dashed rgba(169,200,255,0.55); animation:{{ padSpin }}"></span>
-            <span style="position:absolute; inset:26px; border-radius:50%; box-sizing:border-box; border:1.5px solid rgba(129,177,255,0.32)"></span>
-            <span style="position:absolute; inset:50px; border-radius:50%; box-sizing:border-box; border:2px solid rgba(129,177,255,0.62); box-shadow:0 0 16px rgba(129,177,255,0.35)"></span>
-            <span style="position:absolute; inset:66px; border-radius:50%; background:radial-gradient(circle, #ffffff 0%, rgba(169,200,255,0.95) 30%, rgba(0,104,248,0.35) 58%, rgba(0,104,248,0) 72%); animation:{{ padCore }}"></span>
-            <span style="position:absolute; inset:0; opacity:{{ padRippleOpacity }}">
-              <span style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, transparent 56%, rgba(129,177,255,0.75) 64%, rgba(129,177,255,0.18) 70%, transparent 76%); opacity:0; animation:{{ padRipple }}"></span>
-              <span style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, transparent 56%, rgba(129,177,255,0.75) 64%, rgba(129,177,255,0.18) 70%, transparent 76%); opacity:0; animation:{{ padRipple2 }}"></span>
-              <span style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, transparent 56%, rgba(129,177,255,0.75) 64%, rgba(129,177,255,0.18) 70%, transparent 76%); opacity:0; animation:{{ padRipple3 }}"></span>
-            </span>
-          </span>
-        </span>
-        <svg aria-hidden="true" width="{{ roadW }}" height="{{ roadH }}" viewBox="{{ roadViewBox }}" style="position:absolute; left:0; top:0; overflow:visible">
-          <defs>
-            <linearGradient id="roadLit" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0068f8"></stop><stop offset="0.5" stop-color="#1e46ff"></stop><stop offset="1" stop-color="#671dff"></stop></linearGradient>
-            <linearGradient id="roadTop" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b3038"></stop><stop offset="0.5" stop-color="#323843"></stop><stop offset="1" stop-color="#2b3038"></stop></linearGradient>
-          </defs>
-          <g transform="translate(0,10)"><path d="{{ roadD }}" fill="none" stroke="rgba(0,0,0,0.42)" stroke-width="{{ roadShadowW }}" stroke-linecap="round" stroke-linejoin="round"></path></g>
-          <g transform="translate(0,5)"><path d="{{ roadD }}" fill="none" stroke="#121418" stroke-width="{{ roadEdgeW }}" stroke-linecap="round" stroke-linejoin="round"></path></g>
-          <path d="{{ roadD }}" fill="none" stroke="url(#roadTop)" stroke-width="{{ roadStroke }}" stroke-linecap="round" stroke-linejoin="round"></path>
-          <g transform="translate(0,-2)"><path d="{{ roadD }}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="{{ roadBevelW }}" stroke-linecap="round" stroke-linejoin="round"></path></g>
-          <path d="{{ roadD }}" fill="none" stroke="rgba(129,177,255,0.16)" stroke-width="2" stroke-dasharray="3 12" stroke-linecap="round"></path>
-          <path d="{{ roadD }}" fill="none" stroke="url(#roadLit)" stroke-width="{{ roadGlowW }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ litDash }}" opacity="{{ litGlowOpacity }}" style="transition:stroke-dasharray {{ litDur }} cubic-bezier(0.22,0.61,0.36,1)"></path>
-          <path data-lit="true" d="{{ roadD }}" fill="none" stroke="url(#roadLit)" stroke-width="{{ roadStroke }}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ litDash }}" opacity="{{ litOpacity }}" style="transition:stroke-dasharray {{ litDur }} cubic-bezier(0.22,0.61,0.36,1)"></path>
-          <g transform="translate(0,-3)"><path d="{{ roadD }}" fill="none" stroke="rgba(255,255,255,0.42)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ litDash }}" opacity="{{ litOpacity }}" style="transition:stroke-dasharray {{ litDur }} cubic-bezier(0.22,0.61,0.36,1)"></path></g>
-        </svg>
-
-        <span style="position:absolute; left:0; right:0; top:{{ finishTop }}; display:flex; justify-content:center; pointer-events:none">
-          <span data-finishbadge="true" style="display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:18px; border:1px solid transparent; background:linear-gradient(#17221d, #141a17) padding-box, linear-gradient(135deg, rgba(61,220,151,0.9), rgba(61,220,151,0.25)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 34px rgba(0,0,0,0.45), 0 0 {{ finishGlow }} rgba(61,220,151,0.35); font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--ok); white-space:nowrap">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg>
-            Finish · {{ totalMarks }} marks
-          </span>
-        </span>
-        <sc-for list="{{ roadCaps }}" as="rc" hint-placeholder-count="4">
-          <span data-cap="{{ rc.idx }}" style="position:absolute; left:0; right:0; top:{{ rc.top }}; display:flex; justify-content:center; pointer-events:none">
-            <span style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:9px 18px 10px; border-radius:18px; border:1px solid transparent; background:linear-gradient(180deg, var(--nx-g1, #23272e), var(--nx-g2, #1a1d22)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.55), rgba(103,29,255,0.30) 60%, rgba(255,255,255,0.06)) border-box; box-shadow:inset 0 1px 0 rgba(255,255,255,0.09), 0 16px 34px rgba(0,0,0,0.5); white-space:nowrap">
-              <span style="font-size:12px; font-weight:800; letter-spacing:0.13em; text-transform:uppercase; color:#dfe6f3">{{ rc.label }}</span>
-              <span aria-hidden="true" style="width:96px; height:5px; border-radius:3px; background:rgba(0,0,0,0.45); box-shadow:inset 0 1px 1px rgba(0,0,0,0.5); overflow:hidden"><span style="display:block; height:100%; width:{{ rc.pct }}; background:var(--grad); border-radius:3px"></span></span>
-              <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ rc.earned }} of {{ rc.total }} banked</span>
-            </span>
-          </span>
-        </sc-for>
-
-        <ol aria-label="Missions, from the first question up" style="list-style:none; margin:0; padding:0">
-          <sc-for list="{{ roadNodes }}" as="n" hint-placeholder-count="6">
-            <li style="position:absolute; left:{{ n.left }}; top:{{ n.top }}; width:150px; display:flex; flex-direction:column; align-items:center; gap:8px">
-              <span aria-hidden="true" style="position:absolute; left:calc(50% - {{ n.shadowHalf }}); top:{{ n.shadowTop }}; width:{{ n.shadowW }}; height:14px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,0,0,0.6), transparent); pointer-events:none"></span>
-              <button data-node="{{ n.idx }}" data-orb="true" onClick="{{ n.open }}" aria-haspopup="dialog" aria-label="{{ n.aria }}" style="--lip:{{ n.lip }}; position:relative; width:{{ n.size }}; height:{{ n.size }}; flex:none; border-radius:50%; padding:0; border:4px solid {{ n.ring }}; background:{{ n.fill }}; color:#ffffff; cursor:pointer; box-shadow:0 7px 0 var(--lip), 0 18px 26px rgba(0,0,0,0.5), inset 0 -9px 14px rgba(0,0,0,0.35), inset 0 7px 12px rgba(255,255,255,0.14); animation:{{ n.anim }}">
-                <sc-if value="{{ n.halo }}" hint-placeholder-val="{{ false }}">
-                  <span aria-hidden="true" style="position:absolute; inset:-10px; border-radius:50%; border:2px solid rgba(129,177,255,0.7); pointer-events:none; animation:halo 2.4s ease-out infinite"></span>
-                </sc-if>
-                <span aria-hidden="true" style="position:absolute; left:16%; top:9%; width:46%; height:30%; border-radius:50%; background:radial-gradient(closest-side, rgba(255,255,255,0.5), rgba(255,255,255,0)); pointer-events:none"></span>
-                <span style="position:relative; font-size:{{ n.numSize }}; font-weight:800; letter-spacing:-0.02em; color:{{ n.numColor }}; text-shadow:{{ n.numShadow }}">{{ n.number }}</span>
-                <sc-if value="{{ n.hasBadge }}" hint-placeholder-val="{{ false }}">
-                  <span aria-hidden="true" style="position:absolute; right:-7px; bottom:-7px; width:24px; height:24px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffffff55, transparent 55%), {{ n.ring }}; border:2px solid #191b1e; box-shadow:0 3px 0 var(--lip); display:flex; align-items:center; justify-content:center">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#191b1e" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.badgePath }}"></path></svg>
-                  </span>
-                </sc-if>
-              </button>
-              <span style="margin-top:4px; max-width:150px; font-size:12.5px; font-weight:700; line-height:1.3; text-align:center; color:{{ n.titleColor }}; text-shadow:0 2px 8px rgba(0,0,0,0.8); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">{{ n.title }}</span>
-              <span style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px; margin-top:-3px">
-                <span style="padding:2px 7px; border-radius:6px; background:{{ n.stateBg }}; font-size:12px; font-weight:700; color:{{ n.stateColor }}; white-space:nowrap">{{ n.state }}</span>
-                <sc-for list="{{ n.tags }}" as="tg" hint-placeholder-count="1">
-                  <span style="padding:2px 7px; border-radius:6px; background:rgba(129,177,255,0.14); font-size:12px; font-weight:700; letter-spacing:0.05em; color:var(--tint); white-space:nowrap">{{ tg }}</span>
+        <div class="pm-chips" role="group" aria-label="Show papers for">
+          <sc-for list="{{ pmChips }}" as="c" hint-placeholder-count="4">
+            <button type="button" class="pm-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}">{{ c.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ pmHasNote }}" hint-placeholder-val="{{ false }}"><p class="pm-note">{{ pmNote }}</p></sc-if>
+        <sc-for list="{{ pmGroups }}" as="g" hint-placeholder-count="2">
+          <section class="pm-group" aria-label="{{ g.aria }}">
+            <h2 class="pm-subj">{{ g.name }} <span>{{ g.level }}</span></h2>
+            <div class="pm-path" style="height:{{ g.h }}">
+              <div aria-hidden="true">
+                <sc-for list="{{ g.links }}" as="k" hint-placeholder-count="3">
+                  <span class="pm-link" data-dir="{{ k.dir }}" style="top:{{ k.top }}; height:{{ k.h }}"></span>
                 </sc-for>
-              </span>
-            </li>
-          </sc-for>
-        </ol>
-
-        <div aria-hidden="true" style="position:absolute; left:{{ compLeft }}; top:{{ compTop }}; width:{{ compWpx }}; height:{{ compHpx }}; pointer-events:none; z-index:2; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
-          <sc-if value="{{ mapModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/companion-robot.glb" from="{{ mapClipFrom }}" hold="{{ mapClipHold }}" loop="{{ mapClipLoop }}" clip="{{ mapClip }}" autorotate="off" face="user" floor="none" fit="1" style="position:absolute; inset:0 0 6px 0"></model-floor>
-          </sc-if>
-          <sc-if value="{{ mapPoster }}" hint-placeholder-val="{{ true }}">
-            <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
-              <circle cx="50" cy="26" r="19" fill="rgba(129,177,255,0.2)"></circle>
-              <path d="M24 60 Q50 48 76 60 L82 130 Q78 138 70 136 L66 100 L64 222 L54 222 L50 150 L46 222 L36 222 L34 100 L30 136 Q22 138 18 130 Z" fill="rgba(129,177,255,0.14)"></path>
-            </svg>
-          </sc-if>
-        </div>
-        <span style="visibility:{{ bubVis }}; position:absolute; left:{{ bubLeft }}; top:{{ bubTop }}; width:{{ bubWpx }}; transform:{{ bubShift }}; z-index:3; pointer-events:none; transition:left {{ glideDur }} cubic-bezier(0.45,0,0.2,1), top {{ glideDur }} cubic-bezier(0.45,0,0.2,1)">
-          <p data-key="{{ mapBubbleKey }}" aria-live="polite" style="margin:0 auto; width:fit-content; max-width:100%; padding:9px 13px; border-radius:16px; border:1px solid transparent; background:linear-gradient(rgba(var(--nx-c, 34,38,45), 0.96), rgba(var(--nx-c, 28,31,37), 0.96)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.6), rgba(103,29,255,0.3)) border-box; box-shadow:0 12px 28px rgba(0,0,0,0.45); font-size:13px; font-weight:600; line-height:1.45; color:var(--text); text-wrap:pretty; animation:pop 380ms 200ms cubic-bezier(0.22,0.61,0.36,1) both">{{ mapBubble }}</p>
-        </span>
-        </sc-if>
+              </div>
+              <ol class="pm-stops">
+                <sc-for list="{{ g.stops }}" as="p" hint-placeholder-count="4">
+                  <li class="pm-stop" data-side="{{ p.side }}" data-state="{{ p.state }}" style="top:{{ p.top }}">
+                    <button type="button" class="pm-node" data-paper="{{ p.id }}" data-state="{{ p.state }}" data-tier="{{ p.tier }}" onClick="{{ p.open }}" aria-haspopup="dialog" aria-label="{{ p.aria }}" style="--deg:{{ p.deg }}">
+                      <sc-if value="{{ p.isDone }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15" r="5"></circle><path d="M8.5 11 6 3h4l2 5M15.5 11 18 3h-4l-2 5"></path></svg></sc-if>
+                      <sc-if value="{{ p.isGoing }}" hint-placeholder-val="{{ false }}"><span class="pm-pct">{{ p.pct }}</span></sc-if>
+                      <sc-if value="{{ p.isNew }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.87l11-6.5a1 1 0 0 0 0-1.74l-11-6.5A1 1 0 0 0 8 5.5z"></path></svg></sc-if>
+                      <sc-if value="{{ p.isSoon }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></sc-if>
+                    </button>
+                    <span class="pm-label" aria-hidden="true"><span class="pm-name">{{ p.name }}</span><span class="pm-meta">{{ p.meta }}</span></span>
+                  </li>
+                </sc-for>
+              </ol>
+            </div>
+          </section>
+        </sc-for>
       </div>
-      </sc-if>
-      <sc-if value="{{ onTopics }}" hint-placeholder-val="{{ false }}">
-        <section data-topics="true" aria-label="Topics on this paper" style="box-sizing:border-box; width:min(560px, 100%); margin:8px auto 0; display:flex; flex-direction:column; gap:10px">
-          <p style="margin:0; font-size:12.5px; line-height:1.55; color:var(--text3)">{{ topicsIntro }}</p>
-          <sc-for list="{{ topicRows }}" as="tr" hint-placeholder-count="4">
-            <button data-topic="{{ tr.slug }}" onClick="{{ tr.go }}" disabled="{{ tr.disabled }}" aria-label="{{ tr.aria }}" style="box-sizing:border-box; width:100%; min-height:64px; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; border:{{ tr.border }}; background:{{ tr.bg }}; color:var(--text); text-align:left; cursor:{{ tr.cursor }}">
-              <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
-                <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
-                  <span style="font-size:14.5px; font-weight:800">{{ tr.label }}</span>
-                  <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ tr.weight }}</span>
-                  <sc-if value="{{ tr.suggested }}" hint-placeholder-val="{{ false }}">
-                    <span style="padding:2px 8px; border-radius:8px; background:rgba(0,104,248,0.18); border:1px solid rgba(129,177,255,0.5); font-size:12px; font-weight:800; letter-spacing:0.06em; color:#cfe0ff">SUGGESTED</span>
-                  </sc-if>
-                </span>
-                <span aria-hidden="true" style="display:block; height:4px; width:100%; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden"><span style="display:block; height:100%; width:{{ tr.weightPct }}; background:rgba(129,177,255,0.45)"></span></span>
-                <span style="font-size:12.5px; font-weight:700; color:{{ tr.bandColor }}">{{ tr.band }}</span>
-                <span style="font-size:12px; color:{{ tr.serveColor }}">{{ tr.serve }}</span>
-              </span>
-              <sc-if value="{{ tr.canDrill }}" hint-placeholder-val="{{ true }}">
-                <span aria-hidden="true" style="flex:none; font-size:12.5px; font-weight:800; color:var(--tint)">Drill ›</span>
-              </sc-if>
-            </button>
-          </sc-for>
-          <p style="margin:4px 0 0; font-size:12px; line-height:1.5; color:var(--text3)">{{ topicsFoot }}</p>
-        </section>
-      </sc-if>
     </main>
 
-    <sc-if value="{{ finishRunOn }}" hint-placeholder-val="{{ false }}">
-      <button data-skipfinish="true" onClick="{{ skipFinish }}" style="position:fixed; right:16px; top:76px; z-index:91; min-height:44px; padding:0 18px; border-radius:22px; border:1px solid rgba(255,255,255,0.14); background:rgba(var(--nx-c, 30,33,40), 0.98); color:#ffffff; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.4)">Skip</button>
-    </sc-if>
     <sc-if value="{{ finishCardOn }}" hint-placeholder-val="{{ false }}">
       <div data-finishcard="true" style="position:fixed; left:0; right:0; bottom:0; z-index:90; display:flex; justify-content:{{ finishJustify }}; padding:{{ finishPad }}; pointer-events:none">
         <div role="dialog" aria-labelledby="finish-title" class="glass-card" data-float="true" data-tone="{{ finishTone }}" style="pointer-events:auto; box-sizing:border-box; width:min({{ finishW }}, 100%); padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; animation:{{ finishAnim }}">
@@ -563,57 +442,32 @@
         </div>
       </div>
     </sc-if>
-    <sc-if value="{{ trackerOn }}" hint-placeholder-val="{{ true }}">
-      <div data-tracker="true" style="position:fixed; left:0; right:{{ dockRight }}; bottom:0; z-index:16; display:flex; justify-content:center; padding:0 12px max(12px, env(safe-area-inset-bottom)); pointer-events:none; transition:right 300ms ease">
-        <button data-startbtn="true" onClick="{{ startGo }}" aria-haspopup="{{ startHasPopup }}" aria-label="{{ trackerAria }}" class="glass-card {{ trackLux }}" data-float="true" style="pointer-events:auto; box-sizing:border-box; width:min(520px, 100%); min-height:64px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px; border-radius:18px; color:var(--text); text-align:left; cursor:pointer">
-          <sc-if value="{{ vmOn }}" hint-placeholder-val="{{ false }}"><img class="vm-standee" src="assets/companion-stand.webp" alt="" aria-hidden="true" width="240" height="340" decoding="async" /></sc-if>
-          <span aria-hidden="true" style="flex:none; width:44px; height:44px; border-radius:50%; background:radial-gradient(closest-side, var(--nx-ring, #22252c) 74%, transparent 77%), conic-gradient(#4d9bff {{ trackerDeg }}, rgba(255,255,255,0.12) 0); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800">{{ trackerMarks }}</span>
-          <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px">
-            <span style="font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ trackerTitle }}</span>
-            <span style="font-size:13px; color:#9aa0a6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ trackerSub }}</span>
-          </span>
-          <span aria-hidden="true" style="flex:none; width:36px; height:36px; border-radius:12px; background:rgba(255,255,255,0.07); display:flex; align-items:center; justify-content:center">
-            <sc-if value="{{ trackerUp }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></sc-if>
-            <sc-if value="{{ trackerDown }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"></path></svg></sc-if>
-            <sc-if value="{{ trackerHere }}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></sc-if>
-          </span>
-        </button>
-      </div>
-    </sc-if>
-    <sc-if value="{{ cardOpen }}" hint-placeholder-val="{{ false }}">
-      <div style="position:fixed; inset:0; z-index:70; display:grid; align-items:{{ cOvAlign }}; justify-items:{{ cOvJustify }}; padding:{{ cOvPad }}; pointer-events:{{ cOvEvents }}">
-        <sc-if value="{{ cardDim }}" hint-placeholder-val="{{ true }}">
-          <div onClick="{{ closeCard }}" aria-hidden="true" style="position:absolute; inset:0; background:rgba(var(--nx-s, 8,10,13), 0.55); backdrop-filter:blur(2px)"></div>
+    <sc-if value="{{ pmSheetOn }}" hint-placeholder-val="{{ false }}">
+      <div class="pm-sheet-wrap" data-layout="{{ pmLayout }}">
+        <sc-if value="{{ pmDim }}" hint-placeholder-val="{{ true }}">
+          <div class="pm-dim" onClick="{{ pmClose }}" aria-hidden="true"></div>
         </sc-if>
-        <div data-card="true" role="dialog" aria-modal="{{ cardModal }}" aria-label="{{ cardAria }}" onKeyDown="{{ cardKeys }}" style="position:relative; pointer-events:auto; box-sizing:border-box; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding:18px 16px 16px; background:rgba(var(--nx-c, 32,35,39), 0.97); border:1px solid rgba(129,177,255,0.22); backdrop-filter:blur(22px); box-shadow:0 -10px 50px rgba(0,0,0,0.5); {{ cardPos }}; animation:{{ cardAnim }}">
-          <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
-            <span aria-hidden="true" style="align-self:center; width:40px; height:4px; border-radius:2px; background:rgba(255,255,255,0.18)"></span>
-          </sc-if>
-          <div style="display:flex; align-items:flex-start; gap:10px">
-            <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
-              <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ cardKicker }}</span>
-              <h2 style="margin:0; font-size:19px; font-weight:800; line-height:1.25; letter-spacing:-0.01em; text-wrap:balance">{{ cardTitle }}</h2>
-            </span>
-            <button onClick="{{ closeCard }}" aria-label="Close" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
+        <div class="pm-sheet" data-pmsheet="true" role="dialog" aria-modal="{{ pmModal }}" aria-labelledby="pm-title" onKeyDown="{{ pmKeys }}">
+          <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}"><span class="pm-grab" aria-hidden="true"></span></sc-if>
+          <div class="pm-sheet-head">
+            <span class="pm-sheet-titles"><span class="pm-kicker">{{ pmKicker }}</span><h2 id="pm-title" tabIndex="-1">{{ pmTitle }}</h2></span>
+            <button type="button" class="pm-x" onClick="{{ pmClose }}" aria-label="Close">×</button>
           </div>
-          <span style="display:flex; flex-wrap:wrap; gap:6px">
-            <span style="padding:4px 9px; border-radius:8px; background:{{ cardStateBg }}; font-size:12px; font-weight:700; color:{{ cardStateColor }}">{{ cardState }}</span>
-            <sc-for list="{{ cardTags }}" as="ct" hint-placeholder-count="2">
-              <span style="padding:4px 9px; border-radius:8px; background:rgba(129,177,255,0.12); font-size:12px; font-weight:700; color:var(--tint)">{{ ct }}</span>
-            </sc-for>
-          </span>
-          <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px">
-            <sc-for list="{{ cardStats }}" as="cs" hint-placeholder-count="3">
-              <span style="display:flex; flex-direction:column; gap:3px; padding:10px 11px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)">
-                <span style="font-size:12px; font-weight:700; color:var(--text3)">{{ cs.label }}</span>
-                <span style="font-size:15px; font-weight:800; line-height:1.2">{{ cs.value }}</span>
-              </span>
+          <div class="pm-stats">
+            <sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3">
+              <span class="pm-stat"><span>{{ st.label }}</span><b>{{ st.value }}</b></span>
             </sc-for>
           </div>
-          <sc-if value="{{ cardHasNote }}" hint-placeholder-val="{{ false }}">
-            <span style="font-size:12.5px; line-height:1.5; color:var(--text2)">{{ cardNote }}</span>
+          <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}">
+            <span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span>
           </sc-if>
-          <button data-card-play="true" onClick="{{ cardPlay }}" style="min-height:54px; border:none; border-radius:16px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">{{ cardPlayLabel }}</button>
+          <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><p class="pm-sheet-note">{{ pmSheetNote }}</p></sc-if>
+          <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}">
+            <button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button>
+          </sc-if>
+          <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}">
+            <button type="button" class="pm-src" onClick="{{ pmSourceGo }}">Original paper</button>
+          </sc-if>
         </div>
       </div>
     </sc-if>
@@ -2068,10 +1922,7 @@ class Component extends DCLogic {
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
     this.setState({ paperId: paper.id, screen: "map", mapMode: kind, prog: prog, paid: paid, streak: 0, card: null, cel: null, litHold: null,
       xp: kind === "fresh" ? 0 : kind === "finished14" ? 1240 : 740 }, () => {
-      if (kind === "finished14") this.celebrate(this.missions().findIndex(m => m.id === "1.4"), 21);
-      else if (kind.indexOf("fin") === 0) { const ms = this.missions(), last = ms.length - 1, gotLast = ms[last].parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
-        this._finishSeq = true; this.celebrate(last, this.earnedNow() - gotLast); }
-      else this.scrollToNode(this.suggested(), true);
+      if (kind.indexOf("fin") === 0 && kind !== "finished14") this.showFinishCard(); else this.closeFinish();
       if (after) after();
     });
   }
@@ -2149,8 +2000,123 @@ class Component extends DCLogic {
       const step = now => { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); this.setState({ finishShown: Math.round(F.earned * e) }); if (k < 1) this._fcu = requestAnimationFrame(step); };
       this._fcu = requestAnimationFrame(step); });
   }
+  // The finish card's values (the paper map shows it when a paper is done).
+  finishCardVals(s, vw) {
+    const FC = s.finishCard;
+    return {
+      mapLive: s.mapLive || "",
+      finishCardOn: !!FC, closeFinish: () => this.closeFinish(),
+      finishAnim: s.reduced ? "none" : "rise 360ms cubic-bezier(0.22,0.61,0.36,1) both",
+      // Wide screens: the card sits right and the paper map makes room for it (pmPadR).
+      dockDisplay: FC ? "none" : "flex",
+      // Short phones: a compact card (title + mark on one line, both actions side by side) so the whole reveal fits above it.
+      finishCompact: vw < 900 && (s.vh || 800) < 720, finishFull: !(vw < 900 && (s.vh || 800) < 720),
+      finishTitleSize: vw < 900 && (s.vh || 800) < 720 ? "19px" : "24px", finishWrap: vw < 900 && (s.vh || 800) < 720 ? "nowrap" : "wrap",
+      finishBtnGap: vw < 900 && (s.vh || 800) < 720 ? "4px" : "8px", finishBtnBasis: vw < 900 && (s.vh || 800) < 720 ? "0" : "150px", finishBtnH: vw < 900 && (s.vh || 800) < 720 ? "44px" : "50px",
+      finishJustify: vw >= 900 ? "flex-end" : "center", finishPad: vw >= 900 ? "0 20px 20px" : "0 12px max(12px, env(safe-area-inset-bottom))", finishW: vw >= 900 ? "380px" : "440px",
+      ...(FC ? { finishTone: FC.tier === "top" ? "top" : FC.tier === "solid" ? "released" : "calm",
+        finishTitle: FC.tier === "top" ? "Top form" : FC.tier === "solid" ? "A solid finish" : "You finished all " + FC.total + " marks",
+        finishShown: String(s.finishShown != null ? s.finishShown : FC.earned), finishTotal: String(FC.total), finishPct: String(FC.pct),
+        finishHasLine: true,
+        finishLine: FC.tier === "finished" ? "Next: go through what cost you marks, then try the paper again."
+          : FC.pass != null ? (FC.tier === "top" ? "Well above" : "Above") + " this subject's " + FC.pass + "% pass mark." : "Every question on the paper, done.",
+        // (the next step after a good finish is another paper: the Hall is gone, 2026-10-01)
+        finishPrimary: FC.tier === "finished" ? (vw < 900 && (s.vh || 800) < 720 ? "What cost marks" : "See what cost you marks") : "Another paper",
+        finishSecondary: FC.tier === "finished" ? "Another paper" : (vw < 900 && (s.vh || 800) < 720 ? "What cost marks" : "See what cost you marks") } : {}),
+      finishPrimaryGo: () => (FC && FC.tier === "finished" ? this.finishToSummary() : this.finishToPapers()),
+      finishSecondaryGo: () => (FC && FC.tier === "finished" ? this.finishToPapers() : this.finishToSummary()),
+    };
+  }
+  // ── The paper map (Murci, 2026-10-02): the papers only. No questions, no companion, no vortex: a calm path of the papers
+  // a learner can practise, grouped by subject, newest sitting first. A paper opens a sheet; play starts from there.
+  // Which papers: the learner's studies decide (the picker's rule, brief 23); studies that match nothing show everything.
+  pmList(s) {
+    const st = s.studies, cat = (window.NX_CATALOGUE || { papers: [] }).papers;
+    const all = HOME.papers.concat(cat.filter(c => !HOME.papers.some(h => h.id === c.id)));
+    const mine = all.filter(p => !st || (p.qualification === st.qualification && p.level === st.level
+      && (!(st.subjects || []).length || st.subjects.indexOf(p.subject) !== -1)));
+    return { papers: mine.length ? mine : all, fellBack: !!st && !mine.length };
+  }
+  // A paper's live state from this device's progress; null for a paper Nexera is still preparing (no content here yet).
+  pmProgress(p) {
+    const L = (this.papers || []).filter(x => x.id === HOME_TO_LOCAL[p.id])[0]; if (!L) return null;
+    const ms = L.sections.reduce((a, sec) => a.concat(sec.missions), []), parts = ms.reduce((a, m) => a.concat(m.parts), []);
+    const shut = m => m.parts.every(q => this.pg(q.key).closed);
+    const earned = parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
+    const total = L.total || parts.reduce((a, q) => a + (q.marks || 0), 0), next = ms.findIndex(m => !shut(m));
+    return { local: L, missions: ms, earned: earned, total: total, next: next, done: next < 0 && ms.length > 0,
+      started: parts.some(q => this.pg(q.key).tries > 0), closedN: ms.filter(shut).length };
+  }
+  pmOpenSheet(id) { this._pmOpener = document.activeElement;
+    this.setState({ pmOpen: id }, () => { const h = document.getElementById("pm-title"); if (h) h.focus({ preventScroll: true }); }); }
+  pmCloseSheet() { const id = this.state.pmOpen, back = this._pmOpener;
+    this.setState({ pmOpen: null }, () => { const n = back && document.body.contains(back) ? back : document.querySelector('[data-paper="' + id + '"]'); if (n) n.focus(); }); }
+  paperMapVals(s, phone, desk) {
+    const L = this.pmList(s), hrs = m => { const h = Math.floor(m / 60), r = m % 60; return h + (r === 30 ? "½" : r ? ":" + r : "") + " h"; };
+    const short = t => String(t || "").replace(/^(January|February|March|April|May|June|July|August|September|October|November|December)\b/, w => w.slice(0, 3));
+    // subjects with a paper the learner can play first, then A to Z
+    const playable = n => L.papers.some(p => p.subject === n && HOME_TO_LOCAL[p.id]);
+    const subjects = []; L.papers.forEach(p => { if (subjects.indexOf(p.subject) === -1) subjects.push(p.subject); });
+    subjects.sort((a, b) => playable(b) - playable(a) || a.localeCompare(b));
+    // a paper's number: its own field, else its title's "P1" (the home mock's papers carry only the title)
+    const pno = p => p.paper_no || +((String(p.title).match(/\bP(\d)\b/) || [])[1] || 0) || null;
+    const pick = subjects.indexOf(s.pmSubj) !== -1 ? s.pmSubj : "All";
+    // newest sitting first, then P1 before P2 (May/June 2026 before November 2025: the sitting's own month and year)
+    const when = p => (p.year || +(String(p.sitting).match(/\d{4}/) || [0])[0]) * 100 + (p.month || (/May|June/.test(p.sitting) ? 6 : /Feb/.test(p.sitting) ? 2 : 11));
+    const ROW = phone ? 118 : 124, NODE = 56;
+    const info = p => { const g = this.pmProgress(p);
+      const state = !g ? "soon" : g.done ? "done" : g.started ? "going" : "new";
+      const pct = g && g.total ? Math.round(100 * g.earned / g.total) : 0, tier = g && g.done ? finishTier(pct, (PASS_MARKS[g.local.id] || {}).pct) : "";
+      const name = (pno(p) ? "Paper " + pno(p) + " · " : "") + short(p.sitting);
+      const nextId = g && g.next >= 0 ? g.missions[g.next].id : "";
+      const meta = state === "done" ? "Done · " + g.earned + " / " + g.total : state === "going" ? "Continue at Q " + nextId
+        : state === "new" ? p.total_marks + " marks · " + hrs(p.duration_minutes) : "Coming soon";
+      return { p: p, g: g, state: state, pct: pct, tier: tier, name: name, meta: meta, nextId: nextId }; };
+    const groups = subjects.filter(n => pick === "All" || n === pick).map((n, gi) => {
+      const ps = L.papers.filter(p => p.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
+      const lvl = ps[0] ? (ps[0].p.qualification === "ncv" ? "NC(V) " : "") + (ps[0].p.level_detail || "") : "";
+      return { name: n, level: lvl, aria: n + ", " + lvl + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"),
+        h: ((ps.length - 1) * ROW + NODE + 44) + "px",
+        links: ps.slice(1).map((x, i) => ({ dir: i % 2 ? "rl" : "lr", top: (i * ROW + NODE / 2) + "px", h: ROW + "px" })),
+        stops: ps.map((x, i) => ({ id: x.p.id, side: i % 2 ? "r" : "l", top: (i * ROW) + "px", state: x.state, tier: x.tier || "none",
+          isDone: x.state === "done", isGoing: x.state === "going", isNew: x.state === "new", isSoon: x.state === "soon",
+          pct: x.pct + "%", deg: Math.round(3.6 * x.pct) + "deg", name: x.name, meta: x.meta,
+          aria: n + ", " + x.name.replace(" · ", ", ") + ". " + x.meta + ". Open paper details",
+          open: () => this.pmOpenSheet(x.p.id) })) }; });
+    const all = L.papers.map(info), doneN = all.filter(x => x.state === "done").length;
+    const lv = L.papers.length && L.papers.every(p => p.level === L.papers[0].level) ? (L.papers[0].qualification === "ncv" ? "NC(V) " : "") + L.papers[0].level_detail : "All levels";
+    // the sheet
+    const sel = all.filter(x => x.p.id === s.pmOpen)[0] || null, g = sel && sel.g, p = sel && sel.p;
+    const go = sel && g ? (sel.state === "done" ? { label: "Review my paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id, screen: "summary" }, () => window.scrollTo(0, 0)) }
+      : { label: sel.state === "going" ? "Continue at Q " + sel.nextId : "Start paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id }, () => this.openMission(Math.max(0, g.next))) }) : null;
+    const layout = phone ? "phone" : desk ? "desk" : "tab";
+    return {
+      ...this.finishCardVals(s, s.vw),
+      pmHeadTitle: "Your papers", pmHeadSub: lv + " · " + doneN + " of " + all.length + " done",
+      pmChips: ["All"].concat(subjects).map(n => ({ label: n, on: n === pick ? "true" : "false", pick: () => this.setState({ pmSubj: n }, () => window.scrollTo(0, 0)) })),
+      pmGroups: groups, pmHasNote: L.fellBack, pmNote: "No paper matches your studies yet, so here is every paper on Nexera.",
+      pmSheetOn: !!sel && !s.finishCard, pmLayout: layout, pmDim: layout !== "desk", pmModal: layout !== "desk" ? "true" : "false",
+      pmPadR: desk && sel && !s.finishCard ? "392px" : s.finishCard && s.vw >= 900 ? "408px" : "0px",
+      // design preview: seed the Life Sciences paper's progress ("Just finished 1.4" was a road moment, gone with the road)
+      mapModes: [["fresh", "Fresh paper"], ["progress", "In progress · 21"], ["fin85", "Finish · 85"], ["fin55", "Finish · 55"], ["fin25", "Finish · 25"]].map(x => {
+        const on = (s.mapMode || (Object.keys(s.prog || {}).length ? "progress" : "fresh")) === x[0];
+        return { label: x[1], on: on ? "true" : "false", pick: () => this.seedMap(x[0]) }; }),
+      pmClose: () => this.pmCloseSheet(), pmKeys: e => { if (e.key === "Escape") { e.preventDefault(); this.pmCloseSheet(); } },
+      ...(sel ? {
+        pmKicker: p.subject + " · " + (p.qualification === "ncv" ? "NC(V) " : "") + p.level_detail,
+        pmTitle: (pno(p) ? "Paper " + pno(p) + " · " : "") + p.sitting,
+        pmStats: [{ label: "Marks", value: g && (g.started || g.done) ? g.earned + " / " + g.total : String(p.total_marks) },
+          // one unit for every paper: numbered groups (1.1, 1.2 ...), what the prototype plays as one mission
+          { label: "Questions", value: g ? (g.started || g.done ? g.closedN + " of " + g.missions.length : String(g.missions.length)) : String(p.missions || p.questions || "–") },
+          { label: "Time", value: hrs(p.duration_minutes) }],
+        pmHasBar: !!g && (g.started || g.done), pmBarPct: sel.pct + "%",
+        pmHasSheetNote: !g || !!g.local.note, pmSheetNote: !g ? "Nexera is still preparing this paper. It opens here when it's ready." : g.local.note,
+        pmHasPrimary: !!go, pmPrimary: go ? go.label : "", pmPrimaryGo: () => { if (go) go.run(); },
+        pmHasSource: !!p.source_pdf, pmSourceGo: () => this.openPaperSource(p.id, 1) } : {}),
+    };
+  }
   finishToSummary() { this.closeFinish(); this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); }
-  finishToPapers() { this.closeFinish(); this.setState({ screen: "pick" }, () => { window.scrollTo(0, 0); this.openPicker(); }); }
+  finishToPapers() { this.closeFinish(); this.setState({ screen: "map", pmOpen: null }, () => window.scrollTo(0, 0)); }
   closeFinish() { this.finishClear(); this.setState({ finishCard: null, finishRun: false }); }
   fitKpField() {
     const f = this.state.kp && document.getElementById("f-" + this.state.kp), kp = document.querySelector("[data-keypad]");
@@ -2910,8 +2876,9 @@ class Component extends DCLogic {
       doneNextTitle: nm ? nm.id + " · " + nm.title : "Review my paper",
       doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. The finish line is next.",
       doneContinueLabel: nm ? "Continue" : "Cross the finish line",
-      doneContinue: () => { if (!nm) { this._finishSeq = true; this.setState({ screen: "map", mapView: "paper", card: null }); return; }
-        this._openAfterCel = nextIdx; this.setState({ screen: "map", mapView: "paper" }); },
+      // No road to walk back to (2026-10-02): Continue opens the next question; the last one shows the finish card on the paper map.
+      doneContinue: () => { if (!nm) { this.setState({ screen: "map", pmOpen: null }, () => { window.scrollTo(0, 0); this.showFinishCard(); }); return; }
+        this.openMission(nextIdx); },
     };
   }
 
@@ -3603,43 +3570,7 @@ class Component extends DCLogic {
     const note = !cm ? "" : cmWaiting ? "An answer here is waiting for a marker. It is saved."
       : cmDraw ? "You draw this one on paper. It isn't marked online."
       : cmAll && cmPaid ? "You've banked this one. A replay is for practice and pays no XP." : "";
-    const FC = s.finishCard;
-    const finishVals = {
-      mapClipFrom: s.mapClipOpts && s.mapClipOpts.from != null ? String(s.mapClipOpts.from) : "", mapClipHold: s.mapClipOpts && s.mapClipOpts.hold != null ? String(s.mapClipOpts.hold) : "",
-      mapClipLoop: s.mapClipOpts ? "once" : "", mapLive: s.mapLive || "",
-      // The finish card says it all; the companion's bubble steps aside while it's up.
-      bubVis: FC || s.finishRun ? "hidden" : "visible",
-      // The tracker steps aside for anything that covers the map (a mission card, the paper kit, the finish).
-      trackerOn: !FC && !s.finishRun && s.mapView !== "topics" && s.card == null && !s.kit,
-      trackerTitle: suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id,
-      trackerSub: suggestedIdx < 0 ? "All " + missions.length + " missions done · " + earned + " of " + total + " marks"
-        // the level leads (Murci, 2026-09-30): Level 1's gate sits on the vortex lip, where plaques fade, so the tracker always names it
-        : "Lv " + this.levelOf(missions[suggestedIdx]) + " · " + missions[suggestedIdx].title + " · " + missions.filter(m => m.parts.every(q => this.pg(q.key).closed)).length + " of " + missions.length + " done",
-      trackerMarks: String(earned), trackerDeg: Math.round(360 * earned / Math.max(1, total)) + "deg",
-      trackerUp: s.trackDir === "up", trackerDown: s.trackDir === "down", trackerHere: !s.trackDir || s.trackDir === "here",
-      trackerAria: (suggestedIdx < 0 ? "Review my paper" : (fresh ? "Start at " : "Continue at ") + missions[suggestedIdx].id + ", level " + this.levelOf(missions[suggestedIdx]) + ": " + missions[suggestedIdx].title)
-        + ". " + earned + " of " + total + " marks" + (s.trackDir === "up" ? ". It's above you on the map" : s.trackDir === "down" ? ". It's below you on the map" : ""), finishRunOn: !!s.finishRun, finishCardOn: !!FC, skipFinish: () => this.skipFinish(), closeFinish: () => this.closeFinish(),
-      finishAnim: s.reduced ? "none" : "rise 360ms cubic-bezier(0.22,0.61,0.36,1) both",
-      // Wide screens keep the whole reveal in view: the card sits right, the road moves left (see roadLeft).
-      // The finish card carries the Hall and Review actions, so the dock steps aside while it's open.
-      dockDisplay: FC ? "none" : "flex",
-      // Short phones: a compact card (title + mark on one line, both actions side by side) so the whole reveal fits above it.
-      finishCompact: vw < 900 && (s.vh || 800) < 720, finishFull: !(vw < 900 && (s.vh || 800) < 720),
-      finishTitleSize: vw < 900 && (s.vh || 800) < 720 ? "19px" : "24px", finishWrap: vw < 900 && (s.vh || 800) < 720 ? "nowrap" : "wrap",
-      finishBtnGap: vw < 900 && (s.vh || 800) < 720 ? "4px" : "8px", finishBtnBasis: vw < 900 && (s.vh || 800) < 720 ? "0" : "150px", finishBtnH: vw < 900 && (s.vh || 800) < 720 ? "44px" : "50px",
-      finishJustify: vw >= 900 ? "flex-end" : "center", finishPad: vw >= 900 ? "0 20px 20px" : "0 12px max(12px, env(safe-area-inset-bottom))", finishW: vw >= 900 ? "380px" : "440px",
-      ...(FC ? { finishTone: FC.tier === "top" ? "top" : FC.tier === "solid" ? "released" : "calm",
-        finishTitle: FC.tier === "top" ? "Top form" : FC.tier === "solid" ? "A solid finish" : "You finished all " + FC.total + " marks",
-        finishShown: String(s.finishShown != null ? s.finishShown : FC.earned), finishTotal: String(FC.total), finishPct: String(FC.pct),
-        finishHasLine: true,
-        finishLine: FC.tier === "finished" ? "Next: go through what cost you marks, then try the paper again."
-          : FC.pass != null ? (FC.tier === "top" ? "Well above" : "Above") + " this subject's " + FC.pass + "% pass mark." : "Every question on the paper, done.",
-        // (the next step after a good finish is another paper: the Hall is gone, 2026-10-01)
-        finishPrimary: FC.tier === "finished" ? (vw < 900 && (s.vh || 800) < 720 ? "What cost marks" : "See what cost you marks") : "Another paper",
-        finishSecondary: FC.tier === "finished" ? "Another paper" : (vw < 900 && (s.vh || 800) < 720 ? "What cost marks" : "See what cost you marks") } : {}),
-      finishPrimaryGo: () => (FC && FC.tier === "finished" ? this.finishToSummary() : this.finishToPapers()),
-      finishSecondaryGo: () => (FC && FC.tier === "finished" ? this.finishToPapers() : this.finishToSummary()),
-    };
+    const finishVals = this.finishCardVals(s, vw);
     // The vortex map's inputs: the same geometry and paint as the classic road, as data (see vortex-map.js).
     const finIt = items[items.length - 1], done = earned >= total && total;
     const vmVals = {
@@ -3787,7 +3718,7 @@ class Component extends DCLogic {
 
     const headTitle = s.screen === "drillout" ? "Topic drill" : s.screen === "pick" ? "Nexera" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
     const headSub = s.screen === "pick" ? "Exam practice" : s.screen === "summary" ? "Your paper so far" : paper ? paper.programme + " · " + paper.sitting : "";
-    const backMap = { map: ["Papers", () => this.setState({ screen: "pick" })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
+    const backMap = { map: ["Home", () => this.setState({ screen: "pick", pmOpen: null })], play: ["Map", () => this.setState({ screen: "map" })], done: ["Map", () => this.setState({ screen: "map" })], summary: ["Map", () => this.setState({ screen: "map" })],
       drillout: ["Topics", () => this.endDrill(false)] };
     const bk = backMap[s.screen];
 
@@ -4004,7 +3935,7 @@ class Component extends DCLogic {
       // onto the wordmark); the pill's aria-label keeps the exact number
       xp: s.xp, xpShort: s.xp >= 10000 ? Math.round(s.xp / 1000) + "k" : String(s.xp), pillAnim: flyOn ? "land 520ms ease 1350ms both" : "none",
 
-      onPick: s.screen === "pick", onMap: s.screen === "map" && !!paper, onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
+      onPick: s.screen === "pick", onMap: s.screen === "map", onPlay: s.screen === "play" && !!part, onDone: s.screen === "done", onSummary: s.screen === "summary" && !!paper,
       programmes: ["All", "NC(V)", "High school"].map(l => ({ label: l, on: s.programme === l, pick: () => this.setState({ programme: l }),
         border: s.programme === l ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.programme === l ? "rgba(0,104,248,0.14)" : "transparent", color: s.programme === l ? "#ffffff" : "var(--text2)" })),
       // One gradient per screen: the paper already in progress, otherwise the first card.
@@ -4018,12 +3949,12 @@ class Component extends DCLogic {
 
       openSummary: () => this.setState({ screen: "summary" }), totalMarks: total,
       paperNote: !!(paper && paper.note), paperNoteText: paper ? paper.note : "",
-      ...this.mapVals(paper, missions, suggestedIdx, missionState, earned, total, phone, tablet, desk, vw),
+      ...this.paperMapVals(s, phone, desk),
       srLive: s.srLive,
       onRoad: s.mapView !== "topics", onTopics: s.mapView === "topics", onDrillOut: s.screen === "drillout" && !!s.drill,
       // Brief 21: the map's controls live in the top bar; the map itself is never covered.
       headBg: s.screen === "map" && !!paper && !s.classicMap ? "rgba(" + (this.nxApp() ? NX_GROUND : MAP_GROUND).rgb + ",0.97)" : "rgba(var(--nx-c, 25,27,30),0.97)",
-      mapHead: s.screen === "map" && !!paper, notMapHead: !(s.screen === "map" && !!paper),
+      mapHead: s.screen === "map", notMapHead: s.screen !== "map",
       mapHeadSub: ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + " · " + earned + " of " + total + " marks",
       mapViewOpen: s.pop === "mapview", mapViewAria: "View: " + ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + ". Change view",
       mapViewBtnBg: s.pop === "mapview" ? "rgba(255,255,255,0.07)" : "transparent",
