@@ -259,3 +259,10 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 
 /* the paper chip on a narrow phone: the icon and the page (the word pushed the question's marks off the row at 360 px) */
 @media (max-width: 420px) { .pv-chip-w { display: none; } }
+
+/* the home's top bar, right side: the Learner/Educator toggle, and the design preview's icon under it (out of the flow) */
+.hm-right { position: relative; flex: none; display: flex; flex-direction: column; align-items: flex-end; }
+.hm-pv { position: absolute; top: calc(100% + 6px); right: 0; width: 36px; height: 36px; display: grid; place-items: center; padding: 0;
+  border: 1px dashed rgba(129, 177, 255, 0.4); border-radius: 50%; background: transparent; color: #8fa0d6; cursor: pointer; }
+.hm-pv[aria-expanded="true"] { color: #fff; border-color: #5b8cff; background: rgba(30, 70, 255, 0.18); }
+.hm-pv:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
