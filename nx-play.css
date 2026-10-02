@@ -1276,7 +1276,7 @@ body.nx-play main:not(#mq-stage) [data-feed~="term"]:not([data-feed~="ok"]) .fd-
     column-gap:8px !important; row-gap:0 !important; padding:10px 16px !important; }
   body.nx-play [data-playhead] .nx-brand :is(.nx-nudle, .nx-sep, .nx-nexera) { display:none !important; }
   body.nx-play [data-playhead] .nx-brand { margin:0 !important; }
-  body.nx-play [data-playhead] .nx-mono { display:grid; place-items:center; width:32px; height:32px; border-radius:10px; background:rgba(67,214,196,0.12); color:#43d6c4; font-size:16px; font-weight:800; }
+  body.nx-play [data-playhead] .nx-mono { display:block; width:32px; height:32px; object-fit:contain; background:none; border-radius:0; }   /* the mark itself, never in a box (2026-10-02) */
   body.nx-play [data-playhead] .nx-where { grid-area:prog; justify-self:stretch; justify-content:center; height:36px; padding:0 10px !important; min-width:0; }
   body.nx-play [data-playhead] .nx-where .nx-plabel { font-size:13px; }
   body.nx-play [data-playhead] .nx-stats { grid-area:stats; display:flex !important; position:relative; height:36px; margin:0; padding:0 2px; }

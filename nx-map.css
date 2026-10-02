@@ -112,9 +112,10 @@
 .pm-ico[data-icon="book"] { --ico: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20%22/%3E%3C/svg%3E"); }
 
 /* the header on the map: the Nexera icon is Home; the level's title */
-.pm-home { width: 44px; height: 44px; flex: none; display: grid; place-items: center; padding: 0; border-radius: 14px;
-  border: 1px solid rgba(129, 177, 255, 0.22); background: rgba(255, 255, 255, 0.03); cursor: pointer; }
-.pm-home img { width: 26px; height: 26px; display: block; }
+/* the icon itself, no box (Murci, 2026-10-02): a bare mark with an invisible 44 px tap area */
+.pm-home { width: 44px; height: 44px; flex: none; display: grid; place-items: center; padding: 0; margin-left: -8px; border: none; border-radius: 12px;
+  background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pm-home img { width: 28px; height: 28px; display: block; }
 .pm-home:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .pm-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
