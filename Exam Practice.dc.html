@@ -474,7 +474,7 @@
             <button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button>
           </sc-if>
           <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}">
-            <button type="button" class="pm-src" onClick="{{ pmSourceGo }}">Original paper</button>
+            <button type="button" class="pm-src" onClick="{{ pmSourceGo }}">View question paper</button>
           </sc-if>
         </div>
       </div>
@@ -954,7 +954,7 @@
             </sc-for>
           </div>
           <button class="qm-map" onClick="{{ openPaperMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Open the paper map</button>
-          <sc-if value="{{ paperSourceButtonOn }}" hint-placeholder-val="{{ false }}"><button class="qm-map" data-qm-source="true" onClick="{{ openSourceFromMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>View the original paper</button></sc-if>
+          <sc-if value="{{ paperSourceButtonOn }}" hint-placeholder-val="{{ false }}"><button class="qm-map" data-qm-source="true" onClick="{{ openSourceFromMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>View question paper</button></sc-if>
         </div>
       </div>
     </sc-if>
@@ -1201,11 +1201,11 @@
   <sc-if value="{{ paperSourceOpen }}" hint-placeholder-val="{{ false }}">
     <div data-paper-source="true" style="position:fixed; inset:0; z-index:100; box-sizing:border-box; display:grid; place-items:center; padding:{{ sourceOverlayPad }}; background:rgba(0,0,0,0.5)">
       <div aria-hidden="true" onClick="{{ closePaperSource }}" style="position:absolute; inset:0; background:rgba(0,0,0,0.28); backdrop-filter:blur(2px)"></div>
-      <aside role="dialog" aria-modal="true" aria-label="{{ paperSourceTitle }} original paper" style="position:relative; box-sizing:border-box; display:flex; flex-direction:column; width:{{ sourcePanelWidth }}; max-width:100vw; height:{{ sourcePanelHeight }}; max-height:100dvh; overflow:hidden; border:1px solid var(--line2); border-radius:{{ sourcePanelRadius }}; background:var(--panel); box-shadow:0 24px 70px rgba(0,0,0,0.55)">
+      <aside role="dialog" aria-modal="true" aria-label="{{ paperSourceTitle }} question paper" style="position:relative; box-sizing:border-box; display:flex; flex-direction:column; width:{{ sourcePanelWidth }}; max-width:100vw; height:{{ sourcePanelHeight }}; max-height:100dvh; overflow:hidden; border:1px solid var(--line2); border-radius:{{ sourcePanelRadius }}; background:var(--panel); box-shadow:0 24px 70px rgba(0,0,0,0.55)">
         <div style="flex:none; display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid var(--line)">
           <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px"><strong style="font-size:14px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">{{ paperSourceTitle }}</strong><span style="font-size:12px; color:var(--text3)">{{ paperSourceMeta }}</span></span>
-          <a href="{{ paperSourceUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Open original paper in a new tab" style="min-height:40px; display:flex; align-items:center; padding:0 10px; border:1px solid var(--line2); border-radius:10px; color:var(--text2); font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap">New tab</a>
-          <button data-source-close="true" onClick="{{ closePaperSource }}" aria-label="Close original paper" style="width:40px; height:40px; flex:none; border:1px solid var(--line2); border-radius:10px; background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
+          <a href="{{ paperSourceUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Open the question paper in a new tab" style="min-height:40px; display:flex; align-items:center; padding:0 10px; border:1px solid var(--line2); border-radius:10px; color:var(--text2); font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap">New tab</a>
+          <button data-source-close="true" onClick="{{ closePaperSource }}" aria-label="Close the question paper" style="width:40px; height:40px; flex:none; border:1px solid var(--line2); border-radius:10px; background:transparent; color:var(--text2); font-size:18px; cursor:pointer">×</button>
         </div>
         <iframe title="{{ paperSourceTitle }} original question paper" src="{{ paperSourceUrl }}" style="flex:1; min-height:0; width:100%; border:0; background:#ffffff"></iframe>
       </aside>
@@ -1524,7 +1524,7 @@ function buildPapers() {
   aet.prov = PROVENANCE;
   const lsSrc = window.PAPER_LS_P1_2026;
   const ls = { id: "ls", title: "Life Sciences P1", programme: "NSC · Grade 12 · design sample", sitting: "May/June 2026", total: 150, time: "2½ hours",
-    note: "Design sample: a DBE NSC paper used to test question types. It is not a TVET paper and is not in the service.", prov: "Design sample · a DBE NSC paper, not a TVET paper", sections: [] };
+    note: "Department of Basic Education (DBE) Grade 12 question paper.", prov: "DBE question paper · May/June 2026", sections: [] };
   let lsCount = 0;
   if (lsSrc) lsSrc.sections.forEach(sec0 => {
     const sec = { title: sec0.title, total: sec0.total, missions: [] };
@@ -3527,7 +3527,7 @@ class Component extends DCLogic {
       ticketAnim: !s.reduced && home === "first" && !s.ticketSeen ? "suggest 1.6s ease-out 900ms 2" : "none",
       openTicket: () => this.openPicker(),
       paperSourceButtonOn: !!(activePaperSource && activePaperSource.source_pdf),
-      sourceButtonAria: activePaperSource ? "View original " + activePaperSource.title : "View original paper",
+      sourceButtonAria: activePaperSource ? "View the " + activePaperSource.title + " question paper" : "View question paper",
       sourceButtonTextDisplay: phone ? "none" : "inline",
       openActivePaperSource: () => { if (activePaperSource) this.openPaperSource(activePaperSource.id, 1); },
       // (a phone's one-row header has no room for the button: the question map carries it there, and closes first)
@@ -3647,9 +3647,9 @@ class Component extends DCLogic {
       kitOpen: s.kit, closeKit: () => this.setState({ kit: false }),
       kitTabs: [["rules", "Instructions"], ["formulas", "Formula sheet"], ["figures", "Figures"]].map(t => ({ label: t[1], on: s.kitTab === t[0], pick: () => this.setState({ kitTab: t[0] }),
         border: s.kitTab === t[0] ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.kitTab === t[0] ? "rgba(0,104,248,0.14)" : "transparent" })),
-      kitItems: s.kitTab === "rules" ? [{ head: "Exam instructions", body: "Follow the directions printed with each question. Open the original paper to check its diagrams and page layout." }]
+      kitItems: s.kitTab === "rules" ? [{ head: "Exam instructions", body: "Follow the directions printed with each question. Open the question paper to check its diagrams and page layout." }]
         : s.kitTab === "formulas" ? [{ head: "No formula sheet", body: "This Life Sciences paper does not include a formula sheet." }]
-        : [{ head: "Original figures", body: "Open the original paper to view each figure in its printed context." }],
+        : [{ head: "Figures", body: "Open the question paper to view each figure in its printed context." }],
 
       ...this.playVals(s, phone, tablet, tabletLand, desk, mission, part, pr, reply, res, closed, mode, tryN, primaryDisabled, itemsBy, verdictInfo),
       // Kept from the old play values: the memo lines, the AI-marked points, the XP flight.
