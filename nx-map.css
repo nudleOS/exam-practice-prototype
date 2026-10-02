@@ -209,7 +209,7 @@ body.pv-full { --pv-h: calc(100svh - 8px); }
 .pv-tab[data-locked="true"] { color: #6f80b3; }
 .pv-ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border: none; border-radius: 10px; background: transparent;
   color: #9aa7cf; font: inherit; font-size: 22px; line-height: 1; text-decoration: none; cursor: pointer; }
-.pv-tab:focus-visible, .pv-ico:focus-visible, .pv-pages:focus-visible, .pv-chip:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.pv-tab:focus-visible, .pv-ico:focus-visible, .pv-pages:focus-visible, .pv-fab:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .pv-note { flex: none; margin: 0 12px 8px; padding: 8px 10px; border-radius: 10px; background: #14215a; font-size: 12.5px; color: #c9d2ff; }
 .pv-pages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding: 0 10px 14px; }
 .pv-page { display: block; width: 100%; height: auto; border-radius: 4px; background: #fff; }
@@ -220,9 +220,13 @@ body.nx-play.pv-bottom main:not(#mq-stage):not([data-done]) { padding-bottom: ca
 body.nx-play.pv-bottom [data-footer], body.nx-play.nx-dock.pv-bottom [data-footer]:not(:has([data-keypad])) { top: auto !important; bottom: var(--pv-h) !important; }
 body.nx-play.pv-bottom .mcqp .stage > .after { top: auto !important; bottom: var(--pv-h) !important; }
 body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-bottom .mcqp .pal { display: none !important; }
-/* the play screen's page chip: small, beside the question's marks */
-.pv-chip { min-height: 28px; display: inline-flex; align-items: center; gap: 4px; padding: 0 9px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.3);
-  background: transparent; color: #9fbcff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+/* the play screen's paper button: a round icon under the profile picture, just below the header (placed by componentDidUpdate) */
+.pv-fab { position: fixed; z-index: 25; top: var(--fab-top, 64px); right: var(--fab-right, 12px); width: 40px; height: 40px; display: grid;
+  place-items: center; padding: 0; border-radius: 50%; border: 1px solid rgba(129, 177, 255, 0.3); background: rgba(13, 26, 63, 0.88);
+  color: #9fbcff; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); }
+.pv-fab[aria-expanded="true"] { color: #fff; border-color: #5b8cff; background: #1e46ff; }
+/* the question row keeps clear of it on a phone */
+@media (max-width: 599px) { body.nx-play [data-parthead] { padding-right: 46px; } }
 
 /* the header's back arrow (done and review screens): the arrow alone, no box (2026-10-02) */
 .hd-back { width: 44px; height: 44px; flex: none; display: grid; place-items: center; margin-left: -10px; padding: 0; border: none; border-radius: 12px;
@@ -258,7 +262,6 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 @media (max-width: 599px) { .hm-brand .nx-nudle { font-size: 22px; } .hm-brand .nx-nexera { height: 20px; } .hm-brand .nx-sep { height: 20px; } .hm-title { display: none; } }
 
 /* the paper chip on a narrow phone: the icon and the page (the word pushed the question's marks off the row at 360 px) */
-@media (max-width: 420px) { .pv-chip-w { display: none; } }
 
 /* the home's top bar, right side: the Learner/Educator toggle, and the design preview's icon under it (out of the flow) */
 .hm-right { position: relative; flex: none; display: flex; flex-direction: column; align-items: flex-end; }
