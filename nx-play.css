@@ -1561,3 +1561,9 @@ body.nx-play.nx-play [data-footer] [data-bar-primary] { flex:none !important; }
   body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-skip], [data-bar] button), body.nx-play.nx-play .mcqp :is(.prevq, .retry, .next) { height:46px !important; min-height:46px !important; }
 }
 @media (prefers-reduced-transparency: reduce) { body.nx-play.nx-play [data-footer] :is([data-back], [data-retry]), body.nx-play.nx-play .mcqp :is(.prevq, .retry) { background:var(--nx-tone) !important; -webkit-backdrop-filter:none; backdrop-filter:none; } }
+/* the landed right card (Murci, 2026-10-02: "fix the spacing"): on a phone every card was held to 46 px, so its two lines (40 px)
+   had 3 px above and below; and its "›" sat ON the answer: .copy is position:relative, so right:14px measured from the copy's
+   edge, not the card's. Now 62 px tall, 12 px top / bottom, 16 px in like the other cards' letters, the "›" in the 40 px gutter. */
+body.nx-play.nx-play .mcqp .tile.flipped:not(.hero) { min-height:62px !important; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .back { padding:12px 40px 12px 16px !important; gap:4px !important; }
+body.nx-play .mcqp .tile.flipped:not(.hero) .back .more { right:-28px !important; }
