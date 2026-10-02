@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=140">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=32">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=33">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -411,8 +411,8 @@
               <ol class="pm-stops">
                 <sc-for list="{{ g.stops }}" as="p" hint-placeholder-count="4">
                   <li class="pm-stop" data-side="x" data-state="{{ p.state }}" style="top:{{ p.top }}; left:{{ p.x }}">
-                    <button type="button" class="pm-node" data-paper="{{ p.id }}" data-state="{{ p.state }}" data-tier="{{ p.tier }}" onClick="{{ p.open }}" aria-haspopup="dialog" aria-label="{{ p.aria }}" style="--deg:{{ p.deg }}">
-                      <sc-if value="{{ p.isDone }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></sc-if>
+                    <button type="button" class="pm-node" data-paper="{{ p.id }}" data-state="{{ p.state }}" data-tier="{{ p.tier }}" data-won="{{ p.won }}" data-run="{{ g.run }}" onClick="{{ p.open }}" aria-haspopup="dialog" aria-label="{{ p.aria }}" style="--deg:{{ p.deg }}">
+                      <sc-if value="{{ p.isDone }}" hint-placeholder-val="{{ false }}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg></sc-if>
                       <sc-if value="{{ p.isGoing }}" hint-placeholder-val="{{ false }}"><span class="pm-pct">{{ p.pct }}</span></sc-if>
                       <sc-if value="{{ p.isNew }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.87l11-6.5a1 1 0 0 0 0-1.74l-11-6.5A1 1 0 0 0 8 5.5z"></path></svg></sc-if>
                       <sc-if value="{{ p.isSoon }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></sc-if>
@@ -2250,7 +2250,7 @@ class Component extends DCLogic {
       if (!this._mapSeen) { try { this._mapSeen = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; } catch (e) { this._mapSeen = {}; } this._mapRun = (this._mapRun || 0) + 1; }
       const run = String(this._mapRun % 2);
       const seenNow = {}, START = NODE / 2, GAP = NODE / 2 + 32, LEAD = 32;   // GAP: a won cup (38 px) 13 px clear of the next paper's ring (measured: +22 left 3 px)
-      let dAll = "", dDone = "", dNew = ""; const cups = [], tips = [];
+      let dAll = "", dDone = "", dNew = ""; const cups = [], tips = [], wonAnim = {};
       order.forEach((A, k) => { const B = order[k + 1], a = { x: A.cx, y: A.cy };
         const pts = !B ? (a.x === cup.x ? [a, cup] : [a, { x: a.x, y: cup.y }, cup])
           : A.i === B.i || A.cx === B.cx ? [a, { x: B.cx, y: B.cy }] : [a, { x: a.x, y: (A.cy + B.cy) / 2 }, { x: B.cx, y: (A.cy + B.cy) / 2 }, { x: B.cx, y: B.cy }];
@@ -2262,7 +2262,8 @@ class Component extends DCLogic {
         if (p <= 0) return;
         // the stretch lit up to the fill: what was seen stays drawn; the new part draws on (one combined path, pathLength 1). A paper
         // under way stops 6 px short: its tip (a 16 px piece of line, HTML) rocks there, so the line seems to breathe forward and back.
-        const going = p < 1, endL = going ? Math.max(START, fill(p) - 6) : fill(p);
+        // a finished paper lights its whole stretch, to the next paper's edge (its cup is now its own circle, Murci 2026-10-02)
+        const going = p < 1, endL = going ? Math.max(START, fill(p) - 6) : Math.max(START, D.T - NODE / 2);
         if (p0 < p - 0.001) { dDone += cut(D, 0, fill(p0)); dNew += cut(D, fill(p0), endL); } else dDone += cut(D, 0, endL);
         const tan = len => { const u = pointAt(D, len - 2), v = pointAt(D, len + 2), l = Math.hypot(v.x - u.x, v.y - u.y) || 1; return { x: (v.x - u.x) / l, y: (v.y - u.y) / l }; };
         const ROCK = 6, tc = tan(cupAt(p));   // Murci: 3 px read as standing still
@@ -2270,8 +2271,9 @@ class Component extends DCLogic {
           tips.push({ x: f(tp.x) + "px", y: f(tp.y) + "px", ang: f(Math.atan2(tt.y, tt.x) * 180 / Math.PI) + "deg", tx: f(tt.x * ROCK) + "px", ty: f(tt.y * ROCK) + "px",
             anim: p0 < p - 0.001 ? "in" : "none" }); }
         const at = pointAt(D, cupAt(p)), from = p0 > 0 ? pointAt(D, cupAt(p0)) : pointAt(D, Math.min(START + LEAD, rest));
-        const won = p >= 1, anim = p0 < p - 0.001 ? (won && p0 < 1 ? "win" : "move") : won ? "won" : "none";
-        cups.push({ state: won ? "won" : "chase", tier: won ? x.tier || "top" : "none", anim: anim, x: f(at.x) + "px", y: f(at.y) + "px",
+        // won: the paper's own circle becomes its glowing cup ("win" pops it once the line has drawn on); under way: the chasing cup
+        if (!going) { wonAnim[id] = p0 < 1 - 0.001 ? "win" : "won"; return; }
+        cups.push({ state: "chase", tier: "none", anim: p0 < p - 0.001 ? "move" : "none", x: f(at.x) + "px", y: f(at.y) + "px",
           dx: f(from.x - at.x) + "px", dy: f(from.y - at.y) + "px", tx: f(tc.x * ROCK) + "px", ty: f(tc.y * ROCK) + "px" }); });
       try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; let ch = false;
         Object.keys(seenNow).forEach(k => { if (all[k] !== seenNow[k]) { all[k] = seenNow[k]; ch = true; } }); if (ch) localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
@@ -2282,7 +2284,7 @@ class Component extends DCLogic {
         rows: rows.map((r, i) => ({ label: short(r.sitting), top: (phone ? rowY(i) - 30 : rowY(i) + 17) + "px" })),
         finDone: allDone ? "true" : "false", finAria: "Finish line: " + dn + " of " + ps.length + " " + n + " papers done",
         stops: at.map(a => { const x = a.x, nm = pno(x.p) ? "Paper " + pno(x.p) : x.p.title;
-          return { id: x.p.id, x: a.cx + "px", top: rowY(a.i) + "px", state: x.state, tier: x.tier || "none",
+          return { id: x.p.id, x: a.cx + "px", top: rowY(a.i) + "px", state: x.state, tier: x.tier || "none", won: wonAnim[x.p.id] || "none",
             isDone: x.state === "done", isGoing: x.state === "going", isNew: x.state === "new", isSoon: x.state === "soon",
             pct: x.pct + "%", deg: Math.round(3.6 * x.pct) + "deg", name: nm, meta: x.meta,
             aria: n + ", " + x.name.replace(" · ", ", ") + ". " + x.meta + ". Open paper details", open: () => this.pmOpenSheet(x.p.id) }; }) }; });

@@ -358,10 +358,18 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the finish line: bigger as well as gold once every paper is done */
 .pm-cup[data-done="true"] { transform: translateX(-50%) scale(1.2); }
 @media (prefers-reduced-motion: reduce) { .pm-road-new { animation: none; stroke-dashoffset: 0; } .pm-pcup { animation: none !important; } }
-/* a finished paper (Murci, 2026-10-02, "A, the tick"): a navy circle with the road's blue ring and a tick; the won cup beside it is the
-   only gold (the solid medal-coloured disc said the result twice, and was the loudest thing on the map) */
-.pm-node[data-state="done"], .pm-node[data-state="done"]:is([data-tier="top"], [data-tier="solid"], [data-tier="finished"]) {
-  border: 2.5px solid #6f9bff; background: #0f1d47; color: #9fbcff; }
+/* a finished paper (Murci, 2026-10-02): its own circle is its glowing cup, in its medal (gold / silver / bronze from the questions'
+   medal points), a little bigger; it pulses softly. Just won ("win"): it pops once the line has drawn on. (Was a tick beside a separate
+   won cup, and before that a solid medal-coloured disc.) */
+.pm-node[data-state="done"] { border: 2.5px solid #f5c443; background: #3d2a00; color: #f5c443; transform: scale(1.12);
+  box-shadow: 0 0 0 4px rgba(245, 196, 67, 0.16), 0 0 20px rgba(245, 196, 67, 0.45); animation: pm-glow 2.4s ease-in-out infinite; }
+.pm-node[data-state="done"][data-tier="solid"] { border-color: #cfd8ea; background: #2a3142; color: #cfd8ea; box-shadow: 0 0 0 4px rgba(207, 216, 234, 0.14), 0 0 20px rgba(207, 216, 234, 0.35); }
+.pm-node[data-state="done"][data-tier="finished"] { border-color: #d9955a; background: #3a1d05; color: #d9955a; box-shadow: 0 0 0 4px rgba(217, 149, 90, 0.14), 0 0 20px rgba(217, 149, 90, 0.35); }
+.pm-node[data-state="done"][data-won="win"] { animation: pm-nodewin 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 1.65s both, pm-glow 2.4s ease-in-out 2.3s infinite; }
+.pm-node[data-state="done"][data-won="win"][data-run="1"] { animation-name: pm-nodewin1, pm-glow; }
+@keyframes pm-nodewin { from { transform: scale(0.8); box-shadow: none; } }
+@keyframes pm-nodewin1 { from { transform: scale(0.8); box-shadow: none; } }
+@media (prefers-reduced-motion: reduce) { .pm-node[data-state="done"] { animation: none !important; } }
 /* the race idles (Murci, 2026-10-02): an in-progress paper's line tip and its cup chase along the road, 6 px each way (3 px "looked
    like it was standing"); the cup scoots ahead a beat after the line and eases back. --tx / --ty: the road's direction there. After a
    replay they start once the line has drawn on. data-run alternates the animation names, so a replay in the same visit restarts. */
