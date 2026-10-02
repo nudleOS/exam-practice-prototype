@@ -742,7 +742,7 @@
                     <span style="flex:none; font-size:12px; font-weight:700; color:var(--text3)">{{ st.marks }}</span>
                   </span>
                   <span style="display:flex; align-items:center; gap:8px">
-                    <input id="{{ st.inputId }}" aria-label="{{ st.aria }}" data-field="true" value="{{ st.value }}" onChange="{{ st.onChange }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" onFocus="{{ st.onFocus }}" enterKeyHint="{{ st.enterHint }}" autoComplete="off" disabled="{{ locked }}" placeholder="Your value" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                    <input id="{{ st.inputId }}" aria-label="{{ st.aria }}" data-field="true" value="{{ st.value }}" onChange="{{ st.onChange }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" onFocus="{{ st.onFocus }}" enterKeyHint="{{ st.enterHint }}" autoComplete="off" autoCorrect="off" disabled="{{ locked }}" placeholder="Your value" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
                     <sc-if value="{{ st.hasUnit }}" hint-placeholder-val="{{ true }}">
                       <span style="flex:none; min-width:36px; font-size:14px; font-weight:700; color:var(--text2)">{{ st.unit }}</span>
                     </sc-if>
@@ -793,7 +793,7 @@
                 </sc-for>
               </div>
               <span style="display:flex; align-items:center; gap:8px">
-                <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:16px; outline:none" />
+                <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:16px; outline:none" />
                 <sc-if value="{{ lnNameHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnNameStampBg }}; font-size:12px; font-weight:800; color:{{ lnNameStampColor }}">{{ lnNameStamp }}</span>
                 </sc-if>
@@ -807,7 +807,7 @@
                 <span style="flex:1; min-width:0; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">The term</span>
               </span>
               <span data-termrow="true" data-termstate="{{ termState }}" style="display:flex; align-items:center; gap:8px">
-                <input data-field="true" value="{{ termShow }}" onChange="{{ onTerm }}" onKeyDown="{{ onEnter }}" aria-label="The term" placeholder="Type the term" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:52px; padding:0 14px; border-radius:12px; border:1px solid {{ termBorder }}; background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                <input data-field="true" value="{{ termShow }}" onChange="{{ onTerm }}" onKeyDown="{{ onEnter }}" aria-label="The term" placeholder="Type the term" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:52px; padding:0 14px; border-radius:12px; border:1px solid {{ termBorder }}; background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
                 <sc-if value="{{ termHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ termStampBg }}; font-size:12px; font-weight:800; color:{{ termStampColor }}">{{ termStamp }}</span>
                 </sc-if>
@@ -823,7 +823,7 @@
             <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ numBorder }}; background:var(--card2, rgba(var(--nx-c, 32,35,39), 0.78))">
               <span style="font-size:13.5px; font-weight:600">Your answer</span>
               <span style="display:flex; align-items:center; gap:8px">
-                <input id="f-num" data-field="true" value="{{ numVal }}" onChange="{{ onNum }}" onFocus="{{ onNumFocus }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" aria-label="Your answer" placeholder="Your value" autoComplete="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                <input id="f-num" data-field="true" value="{{ numVal }}" onChange="{{ onNum }}" onFocus="{{ onNumFocus }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" aria-label="Your answer" placeholder="Your value" autoComplete="off" autoCorrect="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
                 <sc-if value="{{ numHasUnit }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-size:14px; font-weight:700; color:var(--text2)">{{ numUnit }}</span></sc-if>
                 <sc-if value="{{ numHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:30px; padding:0 9px; border-radius:15px; display:flex; align-items:center; background:{{ numStampBg }}; font-size:12px; font-weight:800; color:{{ numStampColor }}">{{ numStamp }}</span>
@@ -850,7 +850,7 @@
               </div>
               <sc-if value="{{ showChipInput }}" hint-placeholder-val="{{ true }}">
                 <span style="display:flex; gap:8px">
-                  <input data-chipinput="true" value="{{ chipDraft }}" onChange="{{ onChipDraft }}" onKeyDown="{{ chipKeys }}" aria-label="{{ chipAria }}" placeholder="Type an answer, then Enter" autoCapitalize="off" spellCheck="false" autoComplete="off" enterKeyHint="enter" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
+                  <input data-chipinput="true" value="{{ chipDraft }}" onChange="{{ onChipDraft }}" onKeyDown="{{ chipKeys }}" aria-label="{{ chipAria }}" placeholder="Type an answer, then Enter" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="enter" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
                   <button onClick="{{ addChip }}" disabled="{{ locked }}" style="flex:none; min-width:64px; height:50px; padding:0 14px; border-radius:12px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12); color:var(--tint); font-size:14px; font-weight:800; cursor:pointer">Add</button>
                 </span>
               </sc-if>
@@ -865,7 +865,7 @@
                   <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:700">{{ coachShape }}</span><span style="font-size:12.5px; color:var(--text2)">{{ coachAim }}</span></span>
                 </div>
               </sc-if>
-              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; line-height:1.6; resize:vertical; outline:none"></textarea>
+              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" autoCorrect="off" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; line-height:1.6; resize:vertical; outline:none"></textarea>
               <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
             </div>
           </sc-if>
