@@ -258,7 +258,7 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 /* the home's brand: Nudle | nexera, as the question pages had it; "Exam practice" beside it where there is room */
 .hm-brand { margin-right: 2px; }
 .hm-title { font-size: 14px; font-weight: 700; color: #eef2ff; white-space: nowrap; }
-@media (max-width: 599px) { .hm-brand .nx-nudle { font-size: 22px; } .hm-brand .nx-nexera { height: 20px; } .hm-brand .nx-sep { height: 20px; } .hm-title { display: none; } }
+@media (max-width: 599px) { .hm-brand .nx-nudle { font-size: 22px; } .hm-brand .nx-nexera { height: 20px; } .hm-brand .nx-sep { height: 20px; } }
 
 /* the paper chip on a narrow phone: the icon and the page (the word pushed the question's marks off the row at 360 px) */
 
@@ -292,3 +292,15 @@ body.pv-tucked .pv[data-layout="bottom"] { visibility: hidden; pointer-events: n
 .pv-fab { transition: opacity 150ms ease, transform 150ms ease; }
 body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { opacity: 0; transform: scale(0.85); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .pv-fab { transition: none; } }
+/* "Exam practice" at the true centre of the home's top line (Murci, 2026-10-02), at every width. Under 440 px the Learner / Educator
+   toggle shows icons (the words stay for screen readers and as a tooltip): with words it started at x 206 at 360 px, where a centred
+   title must reach 231; at 412 the title sat 1 px from the worded toggle and 3 px from the logos (22 px there, 16 px at 360). */
+.hm-title { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.hm-role .hm-ri { display: none; }
+@media (max-width: 439px) {
+  .hm-role .hm-ri { display: block; }
+  .hm-role .hm-rw { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .hm-role > :is(button, a) { position: relative; width: 36px; justify-content: center; padding: 0 !important; display: grid !important; place-items: center; }
+}
+/* 381-439 px: the logos a step smaller so the centred title clears them (at 22 px they ended at 152: 8 px INTO the title at 390) */
+@media (min-width: 381px) and (max-width: 439px) { .hm-brand .nx-nudle { font-size: 18px !important; } .hm-brand :is(.nx-nexera, .nx-sep) { height: 16px !important; } }
