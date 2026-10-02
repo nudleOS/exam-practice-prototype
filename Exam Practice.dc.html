@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=130">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=132">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=18">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -958,6 +958,7 @@
         </div>
       </div>
     </sc-if>
+    <div class="nx-typestrip" aria-hidden="true" style="--kb:{{ kbOff }}"><span class="nx-typehead"></span><p>{{ coachBubble }}</p></div>
     <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; --kb:{{ kbOff }}; z-index:24; pointer-events:none; display:{{ footShow }}">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; padding:0 {{ footPadX }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
         <span style="display:{{ footSpacer }}"></span>
@@ -1638,6 +1639,12 @@ class Component extends DCLogic {
     document.addEventListener("loaded", this._ld);
     this.countUp();
     this.setState({ studies: STUDIES_API.get(), studiesAsked: STUDIES_API.asked() });   // brief 23 (mock of GET /v1/me/studies)
+    // design preview: &kb=300 plays a 300 px keyboard while a field has focus (the pane has no on-screen keyboard)
+    const kbSim = parseInt(new URLSearchParams(location.search).get("kb"), 10) || 0;
+    if (kbSim > 0) { const box = document.createElement("div"); box.className = "nx-kbsim"; box.style.height = kbSim + "px";
+      this._kbIn = e => { if (e.target.matches && e.target.matches("input, textarea")) { document.body.appendChild(box); this.setState({ kbOff: kbSim }); } };
+      this._kbOut = e => { const to = e.relatedTarget; if (to && to.matches && to.matches("input, textarea")) return; box.remove(); this.setState({ kbOff: 0 }); };
+      document.addEventListener("focusin", this._kbIn); document.addEventListener("focusout", this._kbOut); }
     // Keep the footer above the on-screen keyboard (the visual viewport shrinks, the layout one doesn't).
     const vv = window.visualViewport;
     if (vv) { this._vv = () => { const off = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)); if (off !== this.state.kbOff) this.setState({ kbOff: off }); };
@@ -1671,6 +1678,8 @@ class Component extends DCLogic {
   nxApp() { return true; }
   componentDidUpdate() {
     const st = this.state; document.body.classList.toggle("nx-play", st.screen === "play");
+    // typing mode: the keyboard is up on the play screen (Murci, 2026-10-02: it hid the robot and all its space)
+    document.body.classList.toggle("nx-typing", st.screen === "play" && st.kbOff > 80);
     // nx-app: the navy look on every screen but the Hall (Murci, 2026-09-29: "the rest of the app the same as the dark background";
     // the Hall stays as it is until he asks). On <html> too: the page's own background reads its tokens from the root.
     const nxApp = this.nxApp(); document.body.classList.toggle("nx-app", nxApp); document.documentElement.classList.toggle("nx-app", nxApp);
@@ -1751,9 +1760,21 @@ class Component extends DCLogic {
     // bottom, flush with its right edge. A phone too, since 2026-10-01 (Murci: "the skip, next, back etc buttons on mobile also need
     // to be just under the cards like on desktop"; it was at the screen's bottom since 09-30). The place goes in custom properties
     // (nx-play reads them) so the page's own inline style for the footer never fights it. Not with the keypad.
-    const dock = !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
+    const typing = document.body.classList.contains("nx-typing");
+    const dock = !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
+    // typing: the strip takes the room left of the row (its leftmost button), and the panel stops 12 px above the strip
+    if (typing) { const ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
+      const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, r = Math.max(12, Math.round(innerWidth - left + 8)) + "px";
+      if (ts && ts.style.getPropertyValue("--typ-r") !== r) ts.style.setProperty("--typ-r", r);
+      // a long hint must not climb over the field (measured at 360x640: a 5-line hint ran 54 px over it): it gets the room between
+      // the panel's lowest bottom (its content, or its 220 px floor) and the keys, and scrolls inside past that, faded at the cut
+      const tp = ts && ts.querySelector(":scope > p");
+      if (tp) { const room = Math.max(40, Math.round(innerHeight - this.state.kbOff - 8 - (qr.top + Math.min(q.scrollHeight + 2, 220)) - 20)) + "px";
+        if (tp.style.maxHeight !== room) tp.style.maxHeight = room;
+        const more = tp.scrollHeight > tp.clientHeight + 1 ? "true" : "false"; if (tp.dataset.more !== more) tp.dataset.more = more; }
+      const t = ts && ts.getBoundingClientRect(); if (t && t.height) bottom = Math.min(bottom, t.top - 12); }
     if (!dock && fr && rowH) bottom = Math.min(bottom, fr.getBoundingClientRect().top - 14);
-    const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
+    const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co && !typing) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
       const under = c.width && c.left < qr.right - 1 && c.right > qr.left + 1;
       // the robot under the panel on a phone: its bubble (beside its head) sits clear of the action row, bottom-anchored so a long hint
       // grows UP (measured at 360x640: a 5-line hint ran 23 px under Skip / Check); the panel stops above the bubble and the head
@@ -2198,7 +2219,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }

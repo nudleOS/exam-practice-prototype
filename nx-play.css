@@ -1413,3 +1413,24 @@ body.nx-play [data-playhead] .nx-where { grid-area:brand !important; justify-sel
 @media (max-width:600px) { .nx-doodles { opacity:0.28 !important; } }
 /* a phone's stats pill: the marks lead it (the streak before them is hidden), so no separator line on their left (Murci, 2026-10-02) */
 @media (max-width:600px) { body.nx-play [data-playhead] .nx-stats > .nx-marks { border-left:0 !important; } }
+
+/* ── typing mode (2026-10-02): the keyboard is up. The scenery steps aside; the robot's head and its hint dock just above the keys,
+   beside the action row (Skip / Next). The 3D robot slides off-screen by transform (its size unchanged: no re-render), so its
+   IntersectionObserver sleeps it; its own bubble goes transparent but stays in the page (it is the live region). */
+.nx-bg .nx-rocks, .nx-bg .nx-fill, main > aside[aria-label="Your companion"] > p { transition:opacity 200ms ease; }
+body.nx-play.nx-typing .nx-bg .nx-rocks, body.nx-play.nx-typing .nx-bg .nx-fill { opacity:0; }
+body.nx-play.nx-typing main:not(#mq-stage) > aside[aria-label="Your companion"] > div { transform:translateX(-300vw) !important; }
+body.nx-play.nx-typing main:not(#mq-stage) > aside[aria-label="Your companion"] > p { opacity:0 !important; }
+body.nx-play.nx-typing [data-footer] { bottom:calc(var(--kb, 0px) + 8px) !important; }
+.nx-typestrip { display:none; }
+body.nx-play.nx-typing .nx-typestrip { display:flex; position:fixed; z-index:24; left:12px; right:var(--typ-r, 12px); bottom:calc(var(--kb, 0px) + 8px);
+  align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
+.nx-typehead { flex:none; width:40px; height:40px; border-radius:50%; background:#1e46ff url("assets/companion-head.webp") center / cover no-repeat;
+  box-shadow:0 0 0 2px rgba(129, 177, 255, 0.35); }
+.nx-typestrip > p { margin:0; flex:1; min-width:0; padding:8px 12px; border-radius:14px 14px 14px 4px; background:#eef2ff; color:#0d2666;
+  font-size:13px; font-weight:500; line-height:1.35; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; pointer-events:auto; }
+.nx-typestrip > p[data-more="true"] { -webkit-mask-image:linear-gradient(#000 calc(100% - 18px), transparent); mask-image:linear-gradient(#000 calc(100% - 18px), transparent); }
+@keyframes nx-typein { from { opacity:0; transform:translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .nx-typestrip { animation:none !important; } .nx-bg .nx-rocks, .nx-bg .nx-fill { transition:none; } }
+/* the design preview's stand-in keyboard (&kb=N) */
+.nx-kbsim { position:fixed; left:0; right:0; bottom:0; z-index:9999; background:#2b2f3a; pointer-events:none; }
