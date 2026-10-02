@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=140">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=31">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=32">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -395,9 +395,12 @@
               <span class="pm-subj-txt"><h2>{{ g.name }}</h2><span>{{ g.sub }}</span></span>
             </div>
             <div class="pm-path" style="height:{{ g.h }}; width:{{ g.w }}">
-              <svg class="pm-road" aria-hidden="true" style="width:{{ g.w }}; height:{{ g.h }}"><path class="pm-road-base" d="{{ g.dAll }}"></path><path class="pm-road-part" d="{{ g.dPart }}"></path><path class="pm-road-done" d="{{ g.dDone }}"></path><path class="pm-road-new" pathLength="1" d="{{ g.dNew }}"></path></svg>
+              <svg class="pm-road" aria-hidden="true" style="width:{{ g.w }}; height:{{ g.h }}"><path class="pm-road-base" d="{{ g.dAll }}"></path><path class="pm-road-part" d="{{ g.dPart }}"></path><path class="pm-road-done" d="{{ g.dDone }}"></path><path class="pm-road-new" data-run="{{ g.run }}" pathLength="1" d="{{ g.dNew }}"></path></svg>
+              <sc-for list="{{ g.tips }}" as="tp" hint-placeholder-count="1">
+                <span class="pm-tip" data-run="{{ g.run }}" data-anim="{{ tp.anim }}" style="left:{{ tp.x }}; top:{{ tp.y }}; --ang:{{ tp.ang }}; --tx:{{ tp.tx }}; --ty:{{ tp.ty }}" aria-hidden="true"></span>
+              </sc-for>
               <sc-for list="{{ g.cups }}" as="cp" hint-placeholder-count="2">
-                <span class="pm-pcup" data-state="{{ cp.state }}" data-tier="{{ cp.tier }}" data-anim="{{ cp.anim }}" style="left:{{ cp.x }}; top:{{ cp.y }}; --dx:{{ cp.dx }}; --dy:{{ cp.dy }}" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg></span>
+                <span class="pm-pcup" data-run="{{ g.run }}" data-state="{{ cp.state }}" data-tier="{{ cp.tier }}" data-anim="{{ cp.anim }}" style="left:{{ cp.x }}; top:{{ cp.y }}; --dx:{{ cp.dx }}; --dy:{{ cp.dy }}; --tx:{{ cp.tx }}; --ty:{{ cp.ty }}" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg></span>
               </sc-for>
               <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
                 <span class="pm-row-lbl" style="top:{{ r.top }}">{{ r.label }}</span>
@@ -2160,8 +2163,8 @@ class Component extends DCLogic {
     this.setState({ pmOpen: null }, () => { const n = back && document.body.contains(back) ? back : document.querySelector('[data-paper="' + id + '"]'); if (n) n.focus(); }); }
   // design preview: Business Studies with Nov 2024 P1 done (gold) and P2 racing at 40%; replays each time it is picked
   pmRaceDemo() { try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {};
-      HOME.papers.filter(p => p.subject === "Business Studies").forEach(p => { delete all[p.id]; }); localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
-    this._mapSeen = null; this.setState({ pmRace: true, pmSubj: "Business Studies", pvOpen: false }, () => window.scrollTo(0, 0)); }
+      this.pmAllPapers().filter(p => p.subject === "Business Studies").forEach(p => { delete all[p.id]; });   /* the map's own list: HOME.papers has no catalogue papers, so the demo replayed only once */ localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
+    this._mapSeen = null; this.setState({ pmRace: true, pmSubj: "Business Studies", pvOpen: false, pmRaceSeq: (this.state.pmRaceSeq || 0) + 1 }, () => window.scrollTo(0, 0)); }
   // a subject picked (a chip or the sheet): remembered on this device, the map back at its top
   pmPickSubj(n) { try { localStorage.setItem("nx-map-subject", n); } catch (e) { /* storage off */ }
     this.setState({ pmSubj: n, pmChipsOpen: false, pmSubjOpen: false, pmSubjQ: "" }, () => window.scrollTo(0, 0)); }
@@ -2244,9 +2247,10 @@ class Component extends DCLogic {
       const cut = (D, from, to) => { if (to - from < 0.5) return ""; const pts = [pointAt(D, from)]; D.L.forEach((l, k) => { if (l > from && l < to) pts.push(D.pts[k]); }); pts.push(pointAt(D, to));
         return "M" + pts.map(q => f(q.x) + " " + f(q.y)).join(" L") + " "; };
       // what the learner saw last time on this device (a snapshot per visit to the map): new progress replays from there
-      if (!this._mapSeen) { try { this._mapSeen = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; } catch (e) { this._mapSeen = {}; } }
-      const seenNow = {}, START = NODE / 2, GAP = NODE / 2 + 32, LEAD = 22;   // GAP: a won cup (38 px) 13 px clear of the next paper's ring (measured: +22 left 3 px)
-      let dAll = "", dDone = "", dNew = ""; const cups = [];
+      if (!this._mapSeen) { try { this._mapSeen = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; } catch (e) { this._mapSeen = {}; } this._mapRun = (this._mapRun || 0) + 1; }
+      const run = String(this._mapRun % 2);
+      const seenNow = {}, START = NODE / 2, GAP = NODE / 2 + 32, LEAD = 32;   // GAP: a won cup (38 px) 13 px clear of the next paper's ring (measured: +22 left 3 px)
+      let dAll = "", dDone = "", dNew = ""; const cups = [], tips = [];
       order.forEach((A, k) => { const B = order[k + 1], a = { x: A.cx, y: A.cy };
         const pts = !B ? (a.x === cup.x ? [a, cup] : [a, { x: a.x, y: cup.y }, cup])
           : A.i === B.i || A.cx === B.cx ? [a, { x: B.cx, y: B.cy }] : [a, { x: a.x, y: (A.cy + B.cy) / 2 }, { x: B.cx, y: (A.cy + B.cy) / 2 }, { x: B.cx, y: B.cy }];
@@ -2256,18 +2260,25 @@ class Component extends DCLogic {
         const fill = q => q <= 0 ? 0 : START + q * (rest - START), cupAt = q => q >= 1 ? rest : Math.min(fill(q) + LEAD, rest);
         seenNow[id] = p;
         if (p <= 0) return;
-        // the stretch lit up to the fill: what was seen stays drawn; the new part draws on (one combined path, pathLength 1)
-        if (p0 < p - 0.001) { dDone += cut(D, 0, fill(p0)); dNew += cut(D, fill(p0), fill(p)); } else dDone += cut(D, 0, fill(p));
+        // the stretch lit up to the fill: what was seen stays drawn; the new part draws on (one combined path, pathLength 1). A paper
+        // under way stops 6 px short: its tip (a 16 px piece of line, HTML) rocks there, so the line seems to breathe forward and back.
+        const going = p < 1, endL = going ? Math.max(START, fill(p) - 6) : fill(p);
+        if (p0 < p - 0.001) { dDone += cut(D, 0, fill(p0)); dNew += cut(D, fill(p0), endL); } else dDone += cut(D, 0, endL);
+        const tan = len => { const u = pointAt(D, len - 2), v = pointAt(D, len + 2), l = Math.hypot(v.x - u.x, v.y - u.y) || 1; return { x: (v.x - u.x) / l, y: (v.y - u.y) / l }; };
+        const ROCK = 6, tc = tan(cupAt(p));   // Murci: 3 px read as standing still
+        if (going) { const tl = fill(p) - 4, tp = pointAt(D, tl), tt = tan(tl);   // (the tip, 20 px, covers fill-14..fill+6 at rest)
+          tips.push({ x: f(tp.x) + "px", y: f(tp.y) + "px", ang: f(Math.atan2(tt.y, tt.x) * 180 / Math.PI) + "deg", tx: f(tt.x * ROCK) + "px", ty: f(tt.y * ROCK) + "px",
+            anim: p0 < p - 0.001 ? "in" : "none" }); }
         const at = pointAt(D, cupAt(p)), from = p0 > 0 ? pointAt(D, cupAt(p0)) : pointAt(D, Math.min(START + LEAD, rest));
         const won = p >= 1, anim = p0 < p - 0.001 ? (won && p0 < 1 ? "win" : "move") : won ? "won" : "none";
         cups.push({ state: won ? "won" : "chase", tier: won ? x.tier || "top" : "none", anim: anim, x: f(at.x) + "px", y: f(at.y) + "px",
-          dx: f(from.x - at.x) + "px", dy: f(from.y - at.y) + "px" }); });
+          dx: f(from.x - at.x) + "px", dy: f(from.y - at.y) + "px", tx: f(tc.x * ROCK) + "px", ty: f(tc.y * ROCK) + "px" }); });
       try { const all = JSON.parse(localStorage.getItem("nx-map-seen") || "{}") || {}; let ch = false;
         Object.keys(seenNow).forEach(k => { if (all[k] !== seenNow[k]) { all[k] = seenNow[k]; ch = true; } }); if (ch) localStorage.setItem("nx-map-seen", JSON.stringify(all)); } catch (e) { /* storage off */ }
       const allDone = dn === ps.length && ps.length > 0;
       return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, sub: ps.length + (ps.length === 1 ? " paper" : " papers") + (dn ? " · " + dn + " done" : ""),
         aria: n + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"), w: W + "px", h: H + "px",
-        dAll: dAll.trim() || "M0 0", dDone: dDone.trim() || "M0 0", dPart: "M0 0", dNew: dNew.trim() || "M0 0", cups: cups,
+        dAll: dAll.trim() || "M0 0", dDone: dDone.trim() || "M0 0", dPart: "M0 0", dNew: dNew.trim() || "M0 0", cups: cups, tips: tips, run: run,
         rows: rows.map((r, i) => ({ label: short(r.sitting), top: (phone ? rowY(i) - 30 : rowY(i) + 17) + "px" })),
         finDone: allDone ? "true" : "false", finAria: "Finish line: " + dn + " of " + ps.length + " " + n + " papers done",
         stops: at.map(a => { const x = a.x, nm = pno(x.p) ? "Paper " + pno(x.p) : x.p.title;

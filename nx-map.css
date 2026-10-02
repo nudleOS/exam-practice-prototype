@@ -362,5 +362,24 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    only gold (the solid medal-coloured disc said the result twice, and was the loudest thing on the map) */
 .pm-node[data-state="done"], .pm-node[data-state="done"]:is([data-tier="top"], [data-tier="solid"], [data-tier="finished"]) {
   border: 2.5px solid #6f9bff; background: #0f1d47; color: #9fbcff; }
+/* the race idles (Murci, 2026-10-02): an in-progress paper's line tip and its cup chase along the road, 6 px each way (3 px "looked
+   like it was standing"); the cup scoots ahead a beat after the line and eases back. --tx / --ty: the road's direction there. After a
+   replay they start once the line has drawn on. data-run alternates the animation names, so a replay in the same visit restarts. */
+.pm-tip { position: absolute; width: 20px; height: 3.5px; margin: -1.75px 0 0 -10px; border-radius: 2px; background: #6f9bff; rotate: var(--ang);
+  pointer-events: none; animation: pm-rock 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate; }
+.pm-tip[data-anim="in"] { animation: pm-tipin 0.2s ease 1.55s both, pm-rock 1.1s cubic-bezier(0.4, 0, 0.2, 1) 1.75s infinite alternate; }
+.pm-tip[data-anim="in"][data-run="1"] { animation-name: pm-tipin1, pm-rock; }
+.pm-pcup[data-state="chase"]:not([data-anim="move"]) { animation: pm-rock 1.1s cubic-bezier(0.3, 0, 0.1, 1) 0.14s infinite alternate; }
+.pm-pcup[data-state="chase"][data-anim="move"] { animation: pm-cupmove 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both, pm-rock 1.1s cubic-bezier(0.3, 0, 0.1, 1) 1.9s infinite alternate; }
+.pm-pcup[data-state="chase"][data-anim="move"][data-run="1"] { animation-name: pm-cupmove1, pm-rock; }
+.pm-pcup[data-anim="win"][data-run="1"] { animation-name: pm-cupmove1, pm-cupwin1; }
+.pm-road-new[data-run="1"] { animation-name: pm-draw1; }
+@keyframes pm-rock { from { translate: calc(var(--tx) * -1) calc(var(--ty) * -1); } to { translate: var(--tx) var(--ty); } }
+@keyframes pm-tipin { from { opacity: 0; } }
+@keyframes pm-tipin1 { from { opacity: 0; } }
+@keyframes pm-cupmove1 { from { translate: var(--dx) var(--dy); } }
+@keyframes pm-cupwin1 { from { transform: scale(0.85); box-shadow: none; } }
+@keyframes pm-draw1 { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .pm-tip { animation: none !important; } }
 /* the finish card's medal count: "12 gold · 5 silver · 3 bronze" */
 .pm-fin-medals { margin: -4px 0 0; font-size: 13px; font-weight: 700; color: #c9d2f0; }
