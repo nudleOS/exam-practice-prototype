@@ -1574,3 +1574,10 @@ body.nx-play.nx-play .mcqp .retry.retry { color:#ffffff !important; border:1px s
   box-shadow:0 14px 30px -12px rgba(30,70,255,0.75), inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -6px 14px -8px rgba(120,165,250,0.3) !important;
   -webkit-backdrop-filter:blur(16px) saturate(1.7); backdrop-filter:blur(16px) saturate(1.7); }
 body.nx-play.nx-play .mcqp .retry.retry:hover { background:radial-gradient(120% 90% at 30% -20%, rgba(255,255,255,0.28), transparent 60%), linear-gradient(rgba(42,82,255,0.42), rgba(30,70,255,0.2)) !important; }
+/* Next stands out over Try again (Murci, 2026-10-02): both blue, but Next SOLID (Try again keeps the see-through glass), a brighter
+   rim, a stronger glow, and its arrow in a white circle (a blue arrow; CSS stroke beats the svg's stroke="#fff" attribute). */
+body.nx-play.nx-play .mcqp .next.show:not(.skip) { background:linear-gradient(180deg, #3d66ff, #1e46ff) !important; border:1px solid rgba(205,220,255,0.75) !important;
+  box-shadow:0 16px 34px -10px rgba(30,70,255,0.95), inset 0 1px 1px rgba(255,255,255,0.55) !important; font-weight:800 !important; }
+body.nx-play.nx-play .mcqp .next.show:not(.skip):hover { background:linear-gradient(180deg, #4a72ff, #2a52ff) !important; }
+body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr { background:#ffffff !important; }
+body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr svg { stroke:#1e46ff; }
