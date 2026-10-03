@@ -1633,3 +1633,7 @@ body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
     background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.96) 55%, rgb(var(--nx-c, 25,27,30))); }
   body.nx-play.nx-compact .nx-typestrip { z-index:25; }
 }
+/* the figure while it downloads (Murci's P30 lite, 2026-10-03: a blank white box over the tunnel, the diagram seconds later): a quiet
+   note under the image; the image (white, opaque) covers it once it lands. The figures are palette PNGs now (852 -> 375 KB). */
+body.nx-play [data-figbox]::before { content:"Loading the diagram…"; position:absolute; inset:0; display:grid; place-items:center;
+  font-size:13px; font-weight:600; color:#7a869e; pointer-events:none; }
