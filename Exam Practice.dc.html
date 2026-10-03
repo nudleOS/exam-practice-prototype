@@ -14,7 +14,7 @@
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=21"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
-  <script src="paper-ls-p1-2026.js?v=3"></script>
+  <script src="paper-ls-p1-2026.js?v=4"></script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
   <script src="mcq-play.js?v=53"></script>
@@ -584,11 +584,38 @@
           <div style="border-radius:16px; border:1px solid var(--line); background:var(--card2, rgba(var(--nx-c, 29,32,35), 0.82))">
             <button onClick="{{ toggleCtx }}" aria-expanded="{{ ctxOpen }}" style="width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:10px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
               <span style="flex:none; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
-              <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ context }}</span>
+              <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ ctxPeek }}</span>
               <span style="flex:none; font-size:12.5px; font-weight:700; color:var(--tint)">{{ ctxAction }}</span>
             </button>
             <sc-if value="{{ ctxOpen }}" hint-placeholder-val="{{ false }}">
-              <p style="margin:0; padding:0 14px 14px; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty">{{ context }}</p>
+              <div style="padding:0 14px 14px; display:flex; flex-direction:column; gap:12px">
+                <sc-if value="{{ hasCtxText }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty; white-space:pre-line">{{ context }}</p>
+                </sc-if>
+                <!-- the paper's table, as printed (grid rows, not <table>: the parser would lift sc-for out of a tbody) -->
+                <sc-if value="{{ ctxHasTable }}" hint-placeholder-val="{{ false }}">
+                  <div role="table" aria-label="{{ ctxTableLabel }}" data-ctx-table="true" style="border-radius:12px; border:1px solid var(--line); overflow:hidden; font-size:13.5px; line-height:1.4; color:var(--text2)">
+                    <sc-if value="{{ ctxHasTableTitle }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:8px 12px; font-size:12px; font-weight:800; color:var(--text); background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line); text-wrap:pretty">{{ ctxTableTitle }}</div>
+                    </sc-if>
+                    <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line)">
+                      <sc-for list="{{ ctxTableHead }}" as="th" hint-placeholder-count="3">
+                        <span role="columnheader" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}">{{ th.t }}</span>
+                      </sc-for>
+                    </div>
+                    <sc-for list="{{ ctxTableRows }}" as="tr" hint-placeholder-count="3">
+                      <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; border-top:{{ tr.line }}">
+                        <sc-for list="{{ tr.cells }}" as="td" hint-placeholder-count="3">
+                          <span role="{{ td.role }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums">{{ td.t }}</span>
+                        </sc-for>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ ctxHasAfter }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty">{{ ctxAfter }}</p>
+                </sc-if>
+              </div>
             </sc-if>
           </div>
         </sc-if>
@@ -1536,6 +1563,18 @@ const SCENES = {
   "ls:3.2": { template: "figure", fig: "3.2" }, "ls:3.6": { template: "figure", fig: "3.6" },   // (cropped from the paper's pages 15 and 18, 2026-10-03)
   "fm:1.3": { template: "parallel", tags: { "1.3": { s1: ["ratio2", "Q₂/Q₁"], s2: ["q2", "Q₂"], s3: ["ratio3", "Q₃/Q₁"], s4: ["q3", "Q₃"] } } },
 };
+// A paper table as grid rows: number columns centred and equal, a text column takes the room; the first column is the row's name.
+const tableView = t => {
+  const num = c => /^[\d.,\s–-]+$/.test(c);
+  const numeric = t.rows.every(r => r.slice(1).every(num));
+  const n = t.head.length;
+  const cols = numeric ? "minmax(0,1.35fr)" + " minmax(0,1fr)".repeat(n - 1) : "minmax(52px,auto)" + " minmax(0,1fr)".repeat(n - 1);
+  const short = t.rows.every(r => r[0].length <= 2);
+  const al = i => i === 0 ? (short ? "center" : "left") : numeric ? "center" : "left";
+  return { cols, head: t.head.map((h, i) => ({ t: h, a: al(i) })),
+    rows: t.rows.map((r, ri) => ({ line: ri ? "1px solid var(--line)" : "none",
+      cells: r.map((c, i) => ({ t: c, a: al(i), role: i ? "cell" : "rowheader", w: i ? "500" : "700", c: i ? "var(--text2)" : "var(--text)" })) })) };
+};
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
 const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
 const lev = (a, b) => { a = a || ""; b = b || ""; const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
@@ -1607,7 +1646,7 @@ function buildPapers() {
       });
       // the paper's extract (the case text, the results table, "study the information below") is the question's shared information:
       // it was dropped here (context ""), so 2.2, 2.5, 3.1, 3.3 and 3.6 asked about text the learner never saw (found 2026-10-03)
-      sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, kind: m.kind || "", lead: m.lead || "", context: m.extract || "", tags: [], parts: parts });
+      sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, kind: m.kind || "", lead: m.lead || "", context: m.extract || "", table: m.table || null, tags: [], parts: parts });
     });
     ls.sections.push(sec);
   });
@@ -3106,7 +3145,7 @@ class Component extends DCLogic {
   buildDrill(pid, slug, round) {
     const meta = (TOPIC_META[pid] || []).filter(t => t.slug === slug)[0]; if (!meta) return null;
     const own = [];
-    this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === slug) own.push(Object.assign({}, q, { _mid: m.id, _context: m.context || "" })); }));
+    this.missions().forEach(m => m.parts.forEach(q => { if (this.topicOfKey(q.key) === slug) own.push(Object.assign({}, q, { _mid: m.id, _context: m.context || "", _table: m.table || null })); }));
     const seen = q => { const g = this.pg(q.key); return g.tries > 0 || g.closed || g.waiting || !!g.memoSeen; };
     const unseen = own.filter(q => !seen(q)), repeats = own.filter(seen);
     const out = [], base = (Date.now() % 1000003) * 13 + round * 101;
@@ -3674,6 +3713,8 @@ class Component extends DCLogic {
     };
     const ctxOpen = s.ctxOpen != null ? s.ctxOpen : (s.drill ? true : s.pi === 0);
     const ctxText = part._context != null ? part._context : mission ? mission.context : "";
+    const ctxTable = part._table !== undefined ? part._table : mission ? mission.table || null : null;
+    const ctxView = ctxTable ? tableView(ctxTable) : null;
     const locked = closed || s.marking || (s.barOpen && !!reply);
     const nFields = mode === "steps" ? part.steps.length : mode === "list" ? (part.count || 4) : 0;
     const touch = phone || tablet;
@@ -3708,7 +3749,11 @@ class Component extends DCLogic {
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
       // question
       toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }), ctxOpen: ctxOpen, ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
-      hasContext: !!ctxText, context: ctxText,
+      hasContext: !!ctxText || !!ctxTable, context: ctxText, hasCtxText: !!ctxText,
+      ctxPeek: ctxText ? ctxText.split("\n")[0] : ctxTable ? ctxTable.title || "A table of results" : "",
+      ctxHasTable: !!ctxView, ctxHasTableTitle: !!(ctxTable && ctxTable.title), ctxTableTitle: ctxTable ? ctxTable.title || "" : "",
+      ctxTableLabel: ctxTable ? ctxTable.title || ctxTable.head.join(", ") : "", ctxTableCols: ctxView ? ctxView.cols : "", ctxTableHead: ctxView ? ctxView.head : [],
+      ctxTableRows: ctxView ? ctxView.rows : [], ctxHasAfter: !!(ctxTable && ctxTable.after), ctxAfter: ctxTable ? ctxTable.after || "" : "",
       partKey: part.key + ":" + s.pi, partNumber: part.number,
       partMarks: part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") : "Not marked online",
       // the number and the word apart, so a phone can show "[icon] 1" as the MCQ header does (it reads the same everywhere else)
