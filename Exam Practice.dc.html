@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=170">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=44">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=45">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -405,7 +405,7 @@
                 <span class="pm-pcup" data-run="{{ g.run }}" data-state="{{ cp.state }}" data-tier="{{ cp.tier }}" data-anim="{{ cp.anim }}" style="left:{{ cp.x }}; top:{{ cp.y }}; --dx:{{ cp.dx }}; --dy:{{ cp.dy }}; --tx:{{ cp.tx }}; --ty:{{ cp.ty }}" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg></span>
               </sc-for>
               <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
-                <span class="pm-row-lbl" style="top:{{ r.top }}; left:{{ r.left }}">{{ r.label }}</span>
+                <span class="pm-row-lbl" data-mid="{{ r.mid }}" style="top:{{ r.top }}; left:{{ r.left }}">{{ r.label }}</span>
               </sc-for>
               <span class="pm-cup" data-done="{{ g.finDone }}" role="img" aria-label="{{ g.finAria }}">
                 <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor" fill-opacity="0.35"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3M12 14v3M8 21h8M9 17h6v4H9z"></path></svg>
@@ -2301,7 +2301,7 @@ class Component extends DCLogic {
         // the upper label's foot and the lower circle, climbs 74 px off the centre (half a label, 62, + 12) and comes in level with
         // the circle. The side: away from the row's other paper (its own trail is on that side), toward the middle when it is alone.
         const sideIn = () => { const mates = at.filter(o => o.i === A.i && o !== A), out = mates.length ? (mates.every(o => o.cx < A.cx) ? 1 : -1) : (A.cx < W / 2 ? 1 : -1);
-          const xs = Math.max(6, Math.min(W - 6, A.cx + out * 74)), yJ = Math.round((A.cy + 74 + P0.cy - NODE / 2) / 2);
+          const xs = Math.max(6, Math.min(W - 6, A.cx + out * 74)), yJ = Math.round((A.cy + 74 + P0.cy - NODE / 2 - (phone ? 40 : 0)) / 2);   /* a phone: clear of the lower row's centred heading (its top 40 px above the circle) too */
           return [a, { x: a.x, y: yJ }, { x: xs, y: yJ }, { x: xs, y: z.y }, z]; };
         const pts = !P0 ? [a, { x: sx, y: z.y }, z] : P0.i === A.i ? [a, z] : sideIn();
         // a trail into a paper from BELOW passes through that paper's label (under its circle): its race stops short of the label
@@ -2338,12 +2338,9 @@ class Component extends DCLogic {
       return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, sub: ps.length + (ps.length === 1 ? " paper" : " papers") + (dn ? " · " + dn + " done" : ""),
         aria: n + ", " + ps.length + (ps.length === 1 ? " paper" : " papers"), w: W + "px", h: H + "px",
         dAll: dAll.trim() || "M0 0", dDone: dDone.trim() || "M0 0", dPart: "M0 0", dNew: dNew.trim() || "M0 0", cups: cups, tips: tips, run: run, startOn: !!first, sx: sx + "px", sy: sy + "px",
-        // a phone: a row's heading sits over its left column, where the track can leave the row upward (to the next row or the finish
-        // cup); a wide heading ("MAY/JUNE 2026", ~99 px) ran under it (Murci's P30 lite, 2026-10-03), so that one steps to the track's
-        // right (clear of the race's face and cup). A short one ("NOV 2025", ~60 px) stays put.
-        rows: rows.map((r, i) => { const lb = short(r.sitting), k = order.findIndex((P, j) => P.i === i && (!order[j + 1] || order[j + 1].i !== i)), ex = k >= 0 ? order[k].cx : null;
-          const step = phone && ex != null && ex < W / 2 && lb.length * 7.6 > ex - 10;
-          return { label: lb, top: (phone ? rowY(i) - 30 : rowY(i) + 17) + "px", left: step ? (ex + 22) + "px" : "0px" }; }),
+        // a row's heading (Murci, 2026-10-03: "nicely visible"): a pill; on a phone it is centred over its row, between the two
+        // columns, where no track runs (the track climbs at a column or beside a circle), so every heading sits the same way
+        rows: rows.map((r, i) => ({ label: short(r.sitting), top: (phone ? rowY(i) - 34 : rowY(i) + 14) + "px", left: phone ? "50%" : "0px", mid: phone ? "true" : "false" })),
         finDone: allDone ? "true" : "false", finAria: "Finish line: " + dn + " of " + ps.length + " " + n + " papers done",
         stops: at.map(a => { const x = a.x, nm = pno(x.p) ? "Paper " + pno(x.p) : x.p.title;
           return { id: x.p.id, x: a.cx + "px", top: rowY(a.i) + "px", state: x.state, tier: x.tier || "none", won: wonAnim[x.p.id] || "none",

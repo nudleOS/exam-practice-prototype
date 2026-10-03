@@ -431,3 +431,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    centred with the road (this undoes the --pm-w alignment above); the road keeps its own width and stays centred (.pm-path) */
 .pm-chips { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
 .pm-group { max-width: none !important; }
+/* the sittings' headings, nicely visible (Murci, 2026-10-03): a pill with its own backing, brighter words; centred over the row on a
+   phone (data-mid) */
+.pm-row-lbl { z-index: 2; padding: 4px 10px; border-radius: 999px; font-size: 11.5px; letter-spacing: 0.07em; color: #d4ddff;
+  background: rgba(var(--sc-rgb, 129, 177, 255), 0.16); box-shadow: inset 0 0 0 1px rgba(var(--sc-rgb, 129, 177, 255), 0.42); line-height: 1.2; }
+.pm-row-lbl[data-mid="true"] { transform: translateX(-50%); }
