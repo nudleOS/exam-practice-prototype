@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=166">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=168">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -3755,7 +3755,7 @@ class Component extends DCLogic {
     const shown = papers.filter(p => s.programme === "All" || (s.programme === "NC(V)" ? p.id === "aet" : s.programme === "High school" ? p.id === "ls" : false));
 
     const headTitle = s.screen === "drillout" ? "Topic drill" : s.screen === "pick" ? "Nexera" : s.screen === "summary" ? "What cost you marks" : s.screen === "play" && mission ? mission.id + " · " + mission.title : paper ? paper.title : "";
-    const headSub = s.screen === "pick" ? "Exam practice" : paper ? paper.title + " · " + paper.sitting : "";
+    const headSub = s.screen === "pick" ? "Exam practice" : paper ? paper.sitting : "";   // the sitting alone: the title line above already names the paper (Murci's P30 lite, 2026-10-03: "Life Scie… / Life Scienc…")
     const backMap = { play: ["Back to past papers", () => this.setState({ screen: "map" })], done: ["Back to past papers", () => this.setState({ screen: "map" })], summary: ["Back to past papers", () => this.setState({ screen: "map" })],
       drillout: ["Topics", () => this.endDrill(false)] };
     const bk = backMap[s.screen];

@@ -1645,3 +1645,11 @@ body.nx-play [data-figbox]::before { content:"Loading the diagram…"; position:
 body.nx-play.nx-play [data-footer] [data-bar] button[data-kind="skip"][data-kind="skip"] { background:none !important; border:1px solid transparent !important; box-shadow:none !important;
   -webkit-backdrop-filter:none; backdrop-filter:none; color:var(--nx-text2) !important; padding:0 12px !important; font-weight:700 !important; gap:7px !important; }
 body.nx-play [data-footer] [data-bar] button[data-kind="skip"]::after { content:""; flex:none; width:15px; height:15px; background:currentColor; -webkit-mask:var(--ic-skip) center / contain no-repeat; mask:var(--ic-skip) center / contain no-repeat; }
+/* the paper header on a small phone (Murci's P30 lite, 2026-10-03: "Life Scie… / Life Scienc…" on the mission's done screen): the
+   title had 88 of the 113 px it needs; the marks meter's ring is decoration (the meter's label reads the marks), so it goes, and the
+   title fits. (The subtitle is the sitting alone now, not the title again.) */
+@media (max-width:400px) {
+  body.nx-app header > span[aria-label$=" marks"] > span[aria-hidden="true"]:first-child { display:none !important; }
+  body.nx-app header > span[aria-label$=" marks"] { padding-left:10px !important; }
+  body.nx-app header:has(> span[aria-label$=" marks"]) { gap:8px !important; }   /* (113 px of text in a 113 px box still ellipsed: sub-pixel) */
+}
