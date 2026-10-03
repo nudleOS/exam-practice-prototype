@@ -1783,6 +1783,8 @@ class Component extends DCLogic {
   // the navy look on every screen but the Hall (the Hall stays as it is until Murci asks)
   nxApp() { return true; }
   componentDidUpdate() {
+    if (this._lastScreen === "play" && this.state.screen !== "play" && this._retakeSaved) this.endRetake();
+    this._lastScreen = this.state.screen;
     const st = this.state; document.body.classList.toggle("nx-play", st.screen === "play");
     if (st.screen !== "map") this._mapSeen = null;   // the next visit to the map replays what is new since this one
     // the swiped subject row (a phone): when the map opens or its subject changes, the current chip slides to the middle; only
@@ -2782,7 +2784,15 @@ class Component extends DCLogic {
   retakePart(mi, pi, back) { const m = this.missions()[mi], q = m && m.parts[pi]; if (!q) return;
     const g = this.pg(q.key), pp = Object.assign({}, this.state.prog);
     pp[q.key] = Object.assign({}, g, { tries: 0, closed: false, replay: true, retake: true, first: g.first != null ? g.first : (g.best || 0) });
+    // (a multiple choice keeps its own record of finished questions, seeded from mcqBook at mount: the retake's question came up
+    // already answered and ignored every tap, 2026-10-03. Its record goes for the retake, and both come back if it is left untried.)
+    const mb = q.response_mode === "mcq" ? this.mcqBook() : null;
+    this._retakeSaved = { key: q.key, g: g, n: q.number, mb: mb ? mb[q.number] : undefined }; if (mb) delete mb[q.number];
     this.resetInputs({ screen: "play", mi: mi, pi: pi, prog: pp, revisit: true, revisitTo: back || "done" }); }
+  // A retake left without a try (Next, Skip, the map): the part goes back to the result it had (found 2026-10-03: left untried it stayed
+  // open, so the done screen said "IN PROGRESS · Mission 1.3 complete" and the part left "To revisit"). A tried retake stands.
+  endRetake() { const r = this._retakeSaved; this._retakeSaved = null; if (!r) return; const now = this.pg(r.key); if (now.tries || now.closed) return;
+    this.setState({ prog: Object.assign({}, this.state.prog, { [r.key]: r.g }) }); if (r.mb) this.mcqBook()[r.n] = r.mb; }
   firstNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => { const g = this.pg(p.key); return b + (g.first != null ? g.first : (g.best || 0)); }, 0), 0); }
   openMission(i, pi = 0) { this.resetInputs({ screen: "play", mi: i, pi: pi, runLog: [], revisit: false, figHidden: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
 
