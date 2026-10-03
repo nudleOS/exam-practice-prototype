@@ -1592,7 +1592,7 @@ function buildPapers() {
         if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
         SERVER.memo[key] = q.bullets || [];
         if (q.t === "draw") return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" });
-        SERVER.keys[key] = { rubric: q.bullets || [] };
+        SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1 };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
         return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
       });
       sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, kind: m.kind || "", lead: m.lead || "", context: "", tags: [], parts: parts });
@@ -2853,7 +2853,7 @@ class Component extends DCLogic {
         // (the stand-in marker: 2 hits, or 1 when the point HAS only one long word; found on the P30 lite, 2.5.4: "All participants were
         // 11 years old" and "A rubber ball was used" could never score, each point having a single word over 5 letters)
         const ok = kw.length > 0 && new Set(hits.map(w => w.slice(0, 5))).size >= Math.min(2, kw.length);
-        return { key: "p" + i, awarded: ok ? 1 : 0, available: 1, verdict: ok ? "correct" : answer.trim() ? "incorrect" : "missing",
+        return { key: "p" + i, awarded: ok ? key.each || 1 : 0, available: key.each || 1, verdict: ok ? "correct" : answer.trim() ? "incorrect" : "missing",
           evidence: ok ? [...new Set(hits)].join(", ") : "" };
       });
       const got = Math.min(part.marks, items.reduce((a, x) => a + x.awarded, 0));
@@ -3816,7 +3816,8 @@ class Component extends DCLogic {
     // one line"; with the memo locked the rows had no labels, so a miss read "Not yet · 0 of 1" seven times under "0 of 3"). The count
     // is set against the marks the question asks for, the "aim for N points" its own guide gives; the memo's points stay unnamed.
     const aiPts = res && res.marker === "ai" && res.items ? res.items : null, ptsFound = aiPts ? aiPts.filter(x => x.awarded > 0).length : 0;
-    const ptsAim = part ? part.marks || 0 : 0, ptsWord = n => ["no", "one", "two", "three", "four", "five", "six"][n] || String(n);
+    // (points to aim for = the marks over one point's worth: 2.5.7's single point is worth 2, so "aim for one clear point", not two)
+    const ptsAim = part && aiPts ? Math.ceil((part.marks || 0) / ((aiPts[0] && aiPts[0].available) || 1)) : 0, ptsWord = n => ["no", "one", "two", "three", "four", "five", "six"][n] || String(n);
     const ptsAimLine = ptsAim === 1 ? "Aim for one clear point." : "Aim for " + ptsWord(ptsAim) + " separate points.";
     const ptsCap = w => w[0].toUpperCase() + w.slice(1);
     const pointsLine = !aiPts ? "" : ptsFound === 0 ? "None of the marking points found yet. " + ptsAimLine
