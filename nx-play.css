@@ -1434,8 +1434,16 @@ body.nx-play.nx-typing .nx-typestrip { display:flex; position:fixed; z-index:24;
   -webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2066%2066%27%3E%3Cpath%20d%3D%27M26.60%2014.63%20C18.51%2018.58%207.60%2019.06%203.36%2018.00%20C6.40%2021.14%2011.44%2030.84%2012.06%2039.81%20A26%2026%200%201%200%2026.60%2014.63Z%27%20fill%3D%27black%27/%3E%3C/svg%3E") 0 0 / 66px 66px no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2066%2066%27%3E%3Cpath%20d%3D%27M26.60%2014.63%20C18.51%2018.58%207.60%2019.06%203.36%2018.00%20C6.40%2021.14%2011.44%2030.84%2012.06%2039.81%20A26%2026%200%201%200%2026.60%2014.63Z%27%20fill%3D%27black%27/%3E%3C/svg%3E") 0 0 / 66px 66px no-repeat; }
 .nx-typehead::before { content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2066%2066%27%3E%3Cpath%20d%3D%27M26.60%2014.63%20C18.51%2018.58%207.60%2019.06%203.36%2018.00%20C6.40%2021.14%2011.44%2030.84%2012.06%2039.81%20A26%2026%200%201%200%2026.60%2014.63Z%27%20fill%3D%27none%27%20stroke%3D%27%2381b1ff%27%20stroke-width%3D%275%27/%3E%3C/svg%3E") 0 0 / 66px 66px no-repeat; }
-.nx-typestrip > p { margin:0; flex:1; min-width:0; padding:8px 12px; border-radius:14px 14px 14px 4px; background:#eef2ff; color:#0d2666;
+/* the bubble is a THOUGHT CLOUD that rises off the head (Murci, 2026-10-03: picked option F "thought cloud", like the desktop robot's,
+   and "the speech bubble also has to be on top of the head on the side"). Its foot sits 56 px up, just above the top of the pin's face
+   (measured: at 44 it was 10 px below it, beside the head, not above); two dots climb from the head's upper right to its lower left. The dots are the STRIP's ::before / ::after (the cloud scrolls a long
+   hint, so anything it drew outside itself would be clipped). Pin: 66 px, face circle centred 38,38, r 26; cloud from x 88. */
+.nx-typestrip > p { margin:0 0 56px 14px; flex:1; min-width:0; padding:10px 15px; border-radius:22px; background:#eef2ff; color:#0d2666;
+  box-shadow:0 0 0 1.5px rgba(129, 177, 255, 0.5), 0 0 18px rgba(129, 177, 255, 0.35);
   font-size:13px; font-weight:500; line-height:1.35; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; pointer-events:auto; }
+.nx-typestrip::before, .nx-typestrip::after { content:""; position:absolute; border-radius:50%; background:#eef2ff; box-shadow:0 0 0 1.5px rgba(129, 177, 255, 0.5); pointer-events:none; }
+.nx-typestrip::after { width:5px; height:5px; left:61px; bottom:45px; }    /* small, 7 px off the face's rim (centre 64,18 of the pin) */
+.nx-typestrip::before { width:9px; height:9px; left:72px; bottom:51px; }   /* big, 6 px from the cloud's foot (centre 77,10) */
 .nx-typestrip > p[data-more="true"] { -webkit-mask-image:linear-gradient(#000 calc(100% - 18px), transparent); mask-image:linear-gradient(#000 calc(100% - 18px), transparent); }
 @keyframes nx-typein { from { opacity:0; transform:translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .nx-typestrip { animation:none !important; } .nx-bg .nx-rocks, .nx-bg .nx-fill { transition:none; } }
@@ -1765,3 +1773,9 @@ body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp.lost::after, body.nx-p
   body.nx-play.nx-play .mcqp .stage > .after > :is(.prevq, .retry) { padding:0 12px !important; }
   body.nx-play.nx-play .mcqp .stage > .after > .next:not(.skip) { padding:0 10px 0 14px !important; margin-left:0 !important; }
 }
+/* the keyboard (or our keypad) up: no room for the cloud's 56 px lift (measured at 360x702 with a 250 px keyboard: the question card,
+   at its 220 px floor, ran 11 px under the lifted cloud). While typing the cloud sits beside the head (8 px up) and the dots step
+   across from the face's right edge; it rises over the head again when the keys go. */
+body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip > p { margin-bottom:8px; }
+body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::after { left:67px; bottom:27px; }    /* small, centre 70,36 of the pin */
+body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bottom:31px; }   /* big, centre 80,30 */
