@@ -3235,7 +3235,10 @@ class Component extends DCLogic {
       doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. The finish line is next.",
       doneContinueLabel: nm ? "Continue" : "Cross the finish line",
       // No road to walk back to (2026-10-02): Continue opens the next question; the last one shows the finish card on the paper map.
-      doneContinue: () => { if (!nm) { this.setState({ screen: "map", pmOpen: null }, () => { window.scrollTo(0, 0); this.showFinishCard(); }); return; }
+      // (the finish lands on the finished paper's OWN subject: the map remembers the last subject chip, so it could celebrate a Life
+      // Sciences paper over the Physical Sciences road, 2026-10-03)
+      doneContinue: () => { if (!nm) { const hp = HOME.papers.filter(x => x.id === this.state.selPaper)[0];
+        this.setState({ screen: "map", pmOpen: null, ...(hp && hp.subject ? { pmSubj: hp.subject } : {}) }, () => { window.scrollTo(0, 0); this.showFinishCard(); }); return; }
         this.openMission(nextIdx); },
     };
   }
