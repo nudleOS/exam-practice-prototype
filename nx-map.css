@@ -412,3 +412,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .pm-pv-switch[aria-checked="true"] { color: #fff; }
 .pm-pv-switch[aria-checked="true"] .pm-demo-track { background: #1e46ff; }
 .pm-pv-switch[aria-checked="true"] .pm-demo-track i { transform: translateX(12px); background: #fff; }
+/* the paper's opening height on a short phone (Murci's P30 lite, 2026-10-03: open over a question, the card ran under the bar and Skip
+   sat on the answer box): 56% of the screen, but never more than the screen less 380 px (header 61 + the card's 220 px floor + gaps
+   + the bar), never under 30%. At 360x702 it opens 322 px tall (top at y 380). Dragging and full screen work as before. */
+:root { --pv-h: max(30svh, min(56svh, calc(100svh - 380px))); }

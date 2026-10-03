@@ -1653,3 +1653,6 @@ body.nx-play [data-footer] [data-bar] button[data-kind="skip"]::after { content:
   body.nx-app header > span[aria-label$=" marks"] { padding-left:10px !important; }
   body.nx-app header:has(> span[aria-label$=" marks"]) { gap:8px !important; }   /* (113 px of text in a 113 px box still ellipsed: sub-pixel) */
 }
+/* the paper open at the bottom: the robot waits (its strip already hides), so its words go too (Murci's P30 lite, 2026-10-03: "You got
+   this!" floated over the answer box while the paper was open) */
+body.nx-play.pv-bottom main:not(#mq-stage) > aside[aria-label="Your companion"] > p, body.nx-play.pv-bottom .mcqp .pal-say { opacity:0 !important; pointer-events:none; }

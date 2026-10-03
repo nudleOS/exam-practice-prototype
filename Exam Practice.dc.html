@@ -80,8 +80,8 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=168">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-play.css?v=169">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-map.css?v=40">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -1641,7 +1641,7 @@ class Component extends DCLogic {
   // screen to all of it less 8 px; let go within 8% of the top it snaps to full (the full / half button's state).
   pvLimits(side) { return side ? { min: 380, max: Math.max(380, innerWidth - 640) } : { min: Math.round(innerHeight * 0.3), max: innerHeight - 8 }; }
   pvSizeNow(side) { const st = this.state; if (side) return st.pvW || Math.min(560, Math.round(innerWidth * 0.44));
-    return st.pvFull ? innerHeight - 8 : st.pvH || Math.round(innerHeight * 0.56); }
+    return st.pvFull ? innerHeight - 8 : st.pvH || Math.max(Math.round(innerHeight * 0.3), Math.min(Math.round(innerHeight * 0.56), innerHeight - 380)); }   // = nx-map.css --pv-h
   // a bottom panel over 60% of the screen is for reading: the action row (it rides on the panel's edge) would sit on the question's
   // text, so it hides until the paper is made smaller (as at full size, where it was already off the top). Measured at 360x780: at
   // 76% Skip lay on the question's second line.
