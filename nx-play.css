@@ -1616,3 +1616,11 @@ body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
    items, so the column sized to its content, and a missed question's one-line label (nowrap, its ellipsis waiting for a width) made
    it 467 px on a 360 px screen, centred -53..413. Stretched to the screen, the label ellipses as meant. */
 @media (max-width:767px) { body.nx-app main[data-done] > [data-donecol] { width:100%; align-self:stretch; } }
+/* the practice-round label on a phone (Murci's P30 lite, 2026-10-03: "Practice round · no marks or XP" squeezed into four lines over
+   the medal dots): the row's 282 px (the paper button keeps the rest) cannot hold the number, the 190 px label, the dots and the
+   marks, so the label takes its own line under them, at its own width. (.qid becomes contents so the label can wrap in the row.) */
+@media (max-width:600px) {
+  body.nx-play .mcqp .qhead:has(.qpractice) { flex-wrap:wrap; row-gap:6px; }
+  body.nx-play .mcqp .qhead:has(.qpractice) > .qid { display:contents; }
+  body.nx-play .mcqp .qhead .qpractice { order:9; margin-left:0; white-space:nowrap; }
+}
