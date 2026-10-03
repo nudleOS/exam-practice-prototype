@@ -2762,6 +2762,7 @@ class Component extends DCLogic {
     this.missions().forEach((m, mi) => m.parts.forEach((q, pi) => { if (!q.marks) return;
       const g = this.pg(q.key), best = g.best || 0, lost = q.marks - best, back = g.first != null ? best - g.first : 0, answered = g.tries > 0 || g.closed;
       if (lost <= 0 && back <= 0) return;
+      if (q.response_mode === "draw" && answered) return;   // a drawn answer is not marked online: not "lost", and no retake (the open one still asks)
       const why = !answered ? "Not answered yet" : g.revealed ? "Memo shown" : g.tries >= 3 && !g.closed ? "3 tries used" : best > 0 ? "Partly right" : "Not right yet";
       rows.push({ lost: lost, number: q.number, kind: lost > 0 ? (answered ? "lost" : "open") : "won",
         delta: lost > 0 ? (answered ? "−" + lost + " of " + q.marks : q.marks + (q.marks === 1 ? " mark" : " marks")) : "+" + back + " won back",
@@ -3203,7 +3204,7 @@ class Component extends DCLogic {
     const pct = v => (total ? Math.round(1000 * v / total) / 10 : 0) + "%";
     const nextIdx = this.nextMissionIdx(s.mi), nm = nextIdx >= 0 ? missions[nextIdx] : null;
     const revisit = mission.parts.map((p, pi) => ({ p: p, pi: pi, g: this.pg(p.key) }))
-      .filter(x => x.p.marks && !x.g.waiting && x.g.tries > 0 && (x.g.best || 0) < x.p.marks).slice(0, 3);
+      .filter(x => x.p.marks && x.p.response_mode !== "draw" && !x.g.waiting && x.g.tries > 0 && (x.g.best || 0) < x.p.marks).slice(0, 3);   // (a drawing is not marked online: it never "missed" marks, and a retake cannot win them; found 2026-10-03, 3.6.4 "3 marks missed")
     const short = t => { const x = String(t || "").replace(/\s+/g, " ").trim(); return x.length > 64 ? x.slice(0, 61) + "…" : x; };
     const cnt = s.doneCount, word = n => n + (n === 1 ? " mark" : " marks");
     return {
