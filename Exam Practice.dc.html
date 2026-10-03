@@ -2842,7 +2842,9 @@ class Component extends DCLogic {
       const items = key.rubric.map((pt, i) => {
         const kw = norm(pt).split(" ").filter(w => w.length > 5);
         const hits = words.filter(w => w.length > 4 && kw.some(k => k.indexOf(w.slice(0, 5)) === 0));
-        const ok = hits.length >= 2;
+        // (the stand-in marker: 2 hits, or 1 when the point HAS only one long word; found on the P30 lite, 2.5.4: "All participants were
+        // 11 years old" and "A rubber ball was used" could never score, each point having a single word over 5 letters)
+        const ok = kw.length > 0 && new Set(hits.map(w => w.slice(0, 5))).size >= Math.min(2, kw.length);
         return { key: "p" + i, awarded: ok ? 1 : 0, available: 1, verdict: ok ? "correct" : answer.trim() ? "incorrect" : "missing",
           evidence: ok ? [...new Set(hits)].join(", ") : "" };
       });
