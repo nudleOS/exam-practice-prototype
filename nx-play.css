@@ -1939,3 +1939,28 @@ body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] { width:min(100%, c
 body.nx-play main:not(#mq-stage) [data-figure] [data-figpad] { --pt:8px; }
 body.nx-play main:not(#mq-stage) [data-figure] [data-figpad]:has(> [data-figtoggle]) { --pt:36px; }
 body.nx-play main:not(#mq-stage) [data-figure] [data-figpad]::before { content:""; position:absolute; inset:var(--pt) 8px 8px; border-radius:12px; background:#ffffff; pointer-events:none; }
+/* the fade over the bar rises to the line content must stay above (--nx-fadeH, measured): clear for 8 px, solid 20 px in, so what
+   scrolls under the robot's face and cloud is hidden behind a clean edge, never read through beside them */
+@media (max-width:600px) {
+  body.nx-play.nx-compact [data-footer]:not(:has([data-keypad]))::before { height:var(--nx-fadeH, 84px) !important;
+    background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.97) 20px, rgb(var(--nx-c, 25,27,30))) !important; }
+}
+/* a long question on a phone: what scrolls under the header fades out over 14 px below its edge, never a hard-cut half line of text
+   (the same clean edge as the bottom) */
+@media (max-width:600px) {
+  body.nx-play.nx-compact [data-playhead]::after { content:""; position:absolute; left:0; right:0; top:100%; height:14px; pointer-events:none;
+    background:linear-gradient(180deg, var(--nx-head, rgba(3,16,40,0.94)), transparent); }
+}
+/* a long question at rest: the encouraging cloud sits beside the face (as while typing), giving the question ~48 px more before the
+   strip; any hint, verdict or marking lifts it over the head again */
+body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest="true"] > p { margin-bottom:8px; }
+body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest="true"]::after { left:67px; bottom:27px; }
+body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest="true"]::before { left:75px; bottom:31px; }
+/* a docked bar (tablet / desktop) sits over the card's 32 px bottom padding, and a scrolling box shows its content through its own
+   padding: a long question (3.1.3's chart, measured at 1280x760) slid under Back and Skip. The card's last child is a sticky strip of
+   its own colour, pinned to the padding's bottom edge: 20 px of fade, then solid behind the bar. At the end of the scroll it sits after
+   the content, so the last line rests above it. (A mask would fade the card's own border.) */
+@media (min-width:601px) {
+  body.nx-play.nx-dock main:not(#mq-stage) [data-question]::after { content:""; position:sticky; bottom:-32px; z-index:2; flex:none; height:52px; margin-top:-14px; pointer-events:none;
+    background:linear-gradient(180deg, transparent, var(--nx-panel, #051c3b) 20px); }
+}

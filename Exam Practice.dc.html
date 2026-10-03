@@ -81,7 +81,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=211">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=215">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1023,7 +1023,7 @@
         </div>
       </div>
     </sc-if>
-    <div class="nx-typestrip" aria-hidden="true" style="--kb:{{ kbOff }}"><span class="nx-typehead" data-face="{{ stripFace }}" data-zk="{{ stripZk }}"></span><p>{{ coachBubble }}</p></div>
+    <div class="nx-typestrip" aria-hidden="true" data-rest="{{ stripRest }}" style="--kb:{{ kbOff }}"><span class="nx-typehead" data-face="{{ stripFace }}" data-zk="{{ stripZk }}"></span><p>{{ coachBubble }}</p></div>
     <div data-footer="true" style="position:fixed; left:0; right:0; bottom:{{ kbOff }}; --kb:{{ kbOff }}; z-index:24; pointer-events:none; display:{{ footShow }}">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; padding:0 {{ footPadX }}; display:{{ playDisplay }}; grid-template-columns:300px minmax(0, 640px); justify-content:center; gap:32px">
         <span style="display:{{ footSpacer }}"></span>
@@ -1981,7 +1981,7 @@ class Component extends DCLogic {
     // never on a multiple choice (it has its own stage; found on the P30 lite: 1.1.x / 1.3.x went compact and hid the rocks and plants
     // Murci chose to keep, from the start or after a miss)
     const mcqOn = document.body.classList.contains("mcqp-on");
-    if (this._compact && (this._compact !== pk || !phone || mcqOn)) { this._compact = null; document.body.classList.remove("nx-compact"); document.body.style.removeProperty("--nx-dockH"); }
+    if (this._compact && (this._compact !== pk || !phone || mcqOn)) { this._compact = null; document.body.classList.remove("nx-compact"); document.body.style.removeProperty("--nx-dockH"); document.body.style.removeProperty("--nx-fadeH"); }
     // our keypad open on a phone: the robot steps into the strip as it does for the phone's keyboard (Murci, 2026-10-03: standing on
     // the bar, the keypad lifted it and its plants over the question)
     const kpStrip = phone && !!this.state.kp && this.state.screen === "play"; document.body.classList.toggle("nx-kpstrip", kpStrip);
@@ -2018,7 +2018,11 @@ class Component extends DCLogic {
     if (dock) bottom -= rowH + 12;
     const free = compact, cap = free ? Math.max(220, Math.floor(bottom - Math.max(qr.top, 72))) : Math.max(220, Math.floor(bottom - qr.top));
     if (free) { if (q._cap !== "none") { q._cap = "none"; q.style.maxHeight = "none"; }
-      const dh = Math.round(innerHeight - bottom + 4) + "px"; if (document.body.style.getPropertyValue("--nx-dockH") !== dh) document.body.style.setProperty("--nx-dockH", dh); }
+      const dh = Math.round(innerHeight - bottom + 4) + "px"; if (document.body.style.getPropertyValue("--nx-dockH") !== dh) document.body.style.setProperty("--nx-dockH", dh);
+      // the fade over the bar reaches the same line (Murci, 2026-10-03: "we do not want things overlapping"): at a fixed 84 px it began at
+      // 537 while the cloud's top sat at ~489, so text read through beside the face and under the cloud; now nothing shows behind them
+      const fb = document.querySelector("[data-footer]"), fh = Math.max(84, Math.round((fb ? fb.getBoundingClientRect().top : innerHeight) - bottom + 8)) + "px";
+      if (document.body.style.getPropertyValue("--nx-fadeH") !== fh) document.body.style.setProperty("--nx-fadeH", fh); }
     else if (q._cap !== cap) { q._cap = cap; q.style.maxHeight = cap + "px"; }
     document.body.classList.toggle("nx-dock", dock);
     // A question's figure gets the room the question leaves it (Murci, 2026-10-01: with "Show figure" 1.4's parts scrolled on desktop,
@@ -3813,6 +3817,9 @@ class Component extends DCLogic {
       // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
       // the phone strip's face (Murci's images, 2026-10-02): celebrating on full marks, zapped on a miss (then thinking while its hint
       // shows), thinking while an answer is read; idle otherwise. stripZk alternates per try, so a second miss zaps again.
+      // at rest (nothing checked yet, nothing being marked) the cloud only encourages: on a long question it sits beside the face, not
+      // 56 px over it, so the question keeps that room (Murci, 2026-10-03: "we do not want things overlapping"); a hint lifts it again
+      stripRest: !reply && !s.marking ? "true" : "false",
       stripFace: { full: "happy", zero: "zap", partial: "zap", out: "zap", marking: "think", waiting: "think" }[outcome] || "idle", stripZk: String((reply ? reply.try : 0) % 2),
       coachBubble: hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? hintLine : waitHint ? words.zero : retryNow ? "Your turn. Try again." : words[outcome] || framing,
       coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : waitHint ? "wait" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
