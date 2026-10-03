@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=170">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=45">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=46">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -373,10 +373,12 @@
       <div class="pm-col">
         <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
         <div class="pm-chips" role="group" aria-label="Show papers for" data-collapsed="{{ pmChipsCollapsed }}">
-          <button type="button" class="pm-chips-toggle" aria-expanded="{{ pmChipsOpenAttr }}" onClick="{{ pmChipsToggle }}" style="--sc:{{ pmPickC }}"><span class="pm-dot" aria-hidden="true"></span>{{ pmPickLabel }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pmChipsChevron }}"></path></svg></button>
-          <sc-for list="{{ pmChips }}" as="c" hint-placeholder-count="4">
-            <button type="button" class="pm-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="--sc:{{ c.c }}"><span class="pm-dot" aria-hidden="true"></span>{{ c.label }}</button>
-          </sc-for>
+          <div class="pm-chip-row" data-chiprow="true">
+            <button type="button" class="pm-chips-toggle" aria-expanded="{{ pmChipsOpenAttr }}" onClick="{{ pmChipsToggle }}" style="--sc:{{ pmPickC }}"><span class="pm-dot" aria-hidden="true"></span>{{ pmPickLabel }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pmChipsChevron }}"></path></svg></button>
+            <sc-for list="{{ pmChips }}" as="c" hint-placeholder-count="4">
+              <button type="button" class="pm-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}" style="--sc:{{ c.c }}"><span class="pm-dot" aria-hidden="true"></span>{{ c.label }}</button>
+            </sc-for>
+          </div>
           <button type="button" class="pm-pv-toggle" data-trigger="preview" aria-label="Design preview: paper states" aria-expanded="{{ pvOpen }}" aria-controls="pm-pv-pop" onClick="{{ morePreview }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg></button>
           <sc-if value="{{ pvOpen }}" hint-placeholder-val="{{ false }}">
             <div class="pm-pv-pop" id="pm-pv-pop" role="group" aria-label="Design preview: paper states">
@@ -1783,6 +1785,12 @@ class Component extends DCLogic {
   componentDidUpdate() {
     const st = this.state; document.body.classList.toggle("nx-play", st.screen === "play");
     if (st.screen !== "map") this._mapSeen = null;   // the next visit to the map replays what is new since this one
+    // the swiped subject row (a phone): when the map opens or its subject changes, the current chip slides to the middle; only
+    // then, so it never fights the learner's own swipe
+    if (st.screen !== "map") this._chipSubj = null;
+    else if (this._chipSubj !== st.pmSubj) { this._chipSubj = st.pmSubj; requestAnimationFrame(() => { const row = document.querySelector(".pm-chip-row"), c = row && row.querySelector('.pm-chip[aria-pressed="true"]');
+      if (!row || !c || row.scrollWidth <= row.clientWidth + 1) return; const d = c.getBoundingClientRect().left - row.getBoundingClientRect().left - (row.clientWidth - c.offsetWidth) / 2;
+      row.scrollTo({ left: Math.max(0, row.scrollLeft + d), behavior: st.reduced ? "auto" : "smooth" }); }); }
     // typing mode: the keyboard is up on the play screen (Murci, 2026-10-02: it hid the robot and all its space)
     document.body.classList.toggle("nx-typing", st.screen === "play" && st.kbOff > 80);
     // nx-app: the navy look on every screen but the Hall (Murci, 2026-09-29: "the rest of the app the same as the dark background";
@@ -2364,7 +2372,7 @@ class Component extends DCLogic {
         pick: () => this.pmPickSubj(n) }))),
       ...this.pmSubjVals(s, subjects, mine, more, pick, L, phone, n => L.papers.filter(p => p.subject === n).filter(p => info(p).state === "done").length),
       // a phone shows one "Subjects" toggle naming the current pick; the chips open under it
-      pmChipsCollapsed: phone && !s.pmChipsOpen ? "true" : "false", pmChipsOpenAttr: phone && s.pmChipsOpen ? "true" : "false",
+      pmChipsCollapsed: "false",   // a phone swipes one row of chips (Murci, 2026-10-03: "slideable"), none are folded away pmChipsOpenAttr: phone && s.pmChipsOpen ? "true" : "false",
       pmChipsToggle: () => phone ? this.pmOpenSubj() : this.setState({ pmChipsOpen: !s.pmChipsOpen }),   // a phone: the subject sheet (Murci, 2026-10-03: the inline chips cluttered, 4 rows, the map pushed 120 px down)
       pmPickLabel: pick || "Subjects", pmPickC: (SUBJECT_LOOK[pick] || SUBJECT_LOOK._).c,
       pmChipsChevron: s.pmChipsOpen ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6",
