@@ -1662,10 +1662,11 @@ body.nx-play [data-figbox]::before { content:"Loading the diagram…"; position:
 /* typing on a phone: room under the field inside the capped card, so it can scroll fully clear of the card's edge (measured at
    360x702 with a 250 px keyboard and a two-line hint: the field was the card's last item, flush with its bottom, 11 px cut) */
 @media (max-width:600px) { body.nx-play.nx-typing main:not(#mq-stage) [data-question] { padding-bottom:14px !important; } }
-/* Skip in the result bar (Murci, 2026-10-03: it replaces "Show the memo"; the memo stays locked until the paper is done): the same quiet
-   words + skip icon as the other Skip buttons (the attribute twice outranks the bar's glass rule) */
-body.nx-play.nx-play [data-footer] [data-bar] button[data-kind="skip"][data-kind="skip"] { background:none !important; border:1px solid transparent !important; box-shadow:none !important;
-  -webkit-backdrop-filter:none; backdrop-filter:none; color:var(--nx-text2) !important; padding:0 12px !important; font-weight:700 !important; gap:7px !important; }
+/* Skip in the result bar (Murci, 2026-10-03: it replaces "Show the memo"; the memo stays locked until the paper is done): the same
+   GLASS pill + skip icon as every other Skip and Back (it was quiet words, left over from before Skip became glass; found on the P30
+   lite next to a glass Back). The attribute twice outranks the bar's other rules. */
+body.nx-play.nx-play [data-footer] [data-bar] button[data-kind="skip"][data-kind="skip"] { background:var(--nx-glass) !important; border:1px solid var(--nx-glass-line) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12) !important; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:var(--nx-text) !important; padding:0 14px !important; font-weight:700 !important; gap:7px !important; }
 body.nx-play [data-footer] [data-bar] button[data-kind="skip"]::after { content:""; flex:none; width:15px; height:15px; background:currentColor; -webkit-mask:var(--ic-skip) center / contain no-repeat; mask:var(--ic-skip) center / contain no-repeat; }
 /* the paper header on a small phone (Murci's P30 lite, 2026-10-03: "Life Scie… / Life Scienc…" on the mission's done screen): the
    title had 88 of the 113 px it needs; the marks meter's ring is decoration (the meter's label reads the marks), so it goes, and the
