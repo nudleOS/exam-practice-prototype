@@ -81,7 +81,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=170">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=42">   <!-- the paper map (2026-10-02): papers only, no vortex -->
+  <link rel="stylesheet" href="nx-map.css?v=43">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
 <div data-screen-label="{{ screenLabel }}" style="min-height:100vh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
@@ -438,7 +438,7 @@
             <span class="pm-sheet-titles"><span class="pm-kicker">{{ pmHeadTitle }}</span><h2 id="pm-subj-title" tabIndex="-1">Subjects</h2></span>
             <button type="button" class="pm-x" onClick="{{ pmSubjClose }}" aria-label="Close">×</button>
           </div>
-          <input class="pm-subj-q" type="search" value="{{ pmSubjQ }}" onChange="{{ pmSubjQuery }}" placeholder="Search subjects" aria-label="Search subjects" aria-controls="pm-subj-list" autoComplete="off" />
+          <sc-if value="{{ pmSubjSearchOn }}" hint-placeholder-val="{{ false }}"><input class="pm-subj-q" type="search" value="{{ pmSubjQ }}" onChange="{{ pmSubjQuery }}" placeholder="Search subjects" aria-label="Search subjects" aria-controls="pm-subj-list" autoComplete="off" /></sc-if>
           <div class="pm-subj-list" id="pm-subj-list">
             <sc-for list="{{ pmSubjSections }}" as="sec" hint-placeholder-count="2">
               <span class="pm-subj-sec">{{ sec.title }}</span>
@@ -2202,12 +2202,15 @@ class Component extends DCLogic {
     this.setState({ pmSubjOpen: true, pmSubjQ: "" }, () => { const q = document.querySelector(".pm-subj-q"); if (q && innerWidth > 600) q.focus(); else { const h = document.getElementById("pm-subj-title"); if (h) h.focus({ preventScroll: true }); } }); }
   pmCloseSubj() { const back = this._pmSubjOpener; this.setState({ pmSubjOpen: false, pmSubjQ: "" }, () => { if (back && document.body.contains(back)) back.focus(); }); }
   // "More subjects": the learner's subjects, then the rest, filtered by the search (a name's words, any order)
-  pmSubjVals(s, subjects, mine, more, pick, L, phone) {
+  pmSubjVals(s, subjects, mine, more, pick, L, phone, doneOf) {
     const q = String(s.pmSubjQ || "").trim().toLowerCase(), hit = n => !q || q.split(/\s+/).every(w => n.toLowerCase().indexOf(w) !== -1);
-    const item = n => { const k = L.papers.filter(p => p.subject === n).length; return { name: n, count: k + (k === 1 ? " paper" : " papers"), on: n === pick ? "true" : "false",
+    const item = n => { const k = L.papers.filter(p => p.subject === n).length, d = doneOf ? doneOf(n) : 0;
+      return { name: n, count: k + (k === 1 ? " paper" : " papers") + (d ? " · " + d + " done" : ""), on: n === pick ? "true" : "false",
       c: (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c, pick: () => this.pmPickSubj(n) }; };
     const secs = [{ title: "Your subjects", items: mine.filter(hit).map(item) }, { title: "More subjects", items: more.filter(hit).map(item) }].filter(x => x.items.length);
+    // search only for a long list (Murci's P30 lite, 2026-10-03: the picker is now this sheet on a phone; six subjects need no search)
     return { pmSubjSheetOn: !!s.pmSubjOpen, pmSubjLayout: phone ? "phone" : "tab", pmSubjQ: s.pmSubjQ || "", pmSubjSections: secs, pmSubjNone: secs.length === 0,
+      pmSubjSearchOn: subjects.length > 8 || !!q,
       pmSubjQuery: e => this.setState({ pmSubjQ: e.target.value }), pmSubjClose: () => this.pmCloseSubj(),
       pmSubjKeys: e => { if (e.key === "Escape") { e.preventDefault(); this.pmCloseSubj(); } } };
   }
@@ -2362,10 +2365,10 @@ class Component extends DCLogic {
       pmChips: (more.length ? [{ label: "More subjects", on: "false", c: "#8fa0d6", pick: () => this.pmOpenSubj() }] : []).concat(mine.map(n => ({ label: n, on: n === pick ? "true" : "false", c: (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c,
         // on a phone a pick folds the chips away again (they are hidden to save space)
         pick: () => this.pmPickSubj(n) }))),
-      ...this.pmSubjVals(s, subjects, mine, more, pick, L, phone),
+      ...this.pmSubjVals(s, subjects, mine, more, pick, L, phone, n => L.papers.filter(p => p.subject === n).filter(p => info(p).state === "done").length),
       // a phone shows one "Subjects" toggle naming the current pick; the chips open under it
       pmChipsCollapsed: phone && !s.pmChipsOpen ? "true" : "false", pmChipsOpenAttr: phone && s.pmChipsOpen ? "true" : "false",
-      pmChipsToggle: () => this.setState({ pmChipsOpen: !s.pmChipsOpen }),
+      pmChipsToggle: () => phone ? this.pmOpenSubj() : this.setState({ pmChipsOpen: !s.pmChipsOpen }),   // a phone: the subject sheet (Murci, 2026-10-03: the inline chips cluttered, 4 rows, the map pushed 120 px down)
       pmPickLabel: pick || "Subjects", pmPickC: (SUBJECT_LOOK[pick] || SUBJECT_LOOK._).c,
       pmChipsChevron: s.pmChipsOpen ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6",
       // the "Demo progress" switch in the design preview menu (Murci, 2026-10-02: the preview button is for this): prototype only,

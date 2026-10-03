@@ -425,3 +425,5 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (max-width: 600px) {
   body.nx-app span:has(> img[src*="home-robot"]) { top: calc(50% + 5px) !important; bottom: auto !important; transform: translate(-50%, -50%) !important; }
 }
+/* the subject sheet (on a phone the subject pill opens it, Murci 2026-10-03): the current subject carries a check */
+.pm-subj-opt[aria-pressed="true"]::after { content: "✓"; flex: none; margin-left: 2px; font-size: 15px; font-weight: 800; color: var(--sc, #81b1ff); }
