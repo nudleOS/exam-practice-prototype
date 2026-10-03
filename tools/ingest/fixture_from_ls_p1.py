@@ -33,6 +33,7 @@ def main():
                 if q.get("note"): it["note"] = q["note"]
                 for k in KEEP[t]:
                     if k in q: it[k] = q[k]
+                if t == "num" and "tol" not in it: it["tol"] = 0.001   # the app's silent default, made explicit (the catalogue requires it)
                 if t == "draw": it["criteria"] = [{"text": c[0], "marks": c[1]} for c in q.get("criteria", [])]
                 if t == "steps": it["steps"] = [{k: st[k] for k in ("id", "label", "marks", "a", "tol", "memo")} for st in q["steps"]]   # (no ft: functions are not data)
                 items.append(it)
