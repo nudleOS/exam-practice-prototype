@@ -328,7 +328,7 @@
   .mcqp .toast.no { background:rgba(242,119,122,0.14); color:var(--danger); border:1px solid rgba(242,119,122,0.4); }
   .mcqp .fly { position:fixed; font-weight:800; color:var(--gold); font-size:18px; pointer-events:none; transition:transform 900ms cubic-bezier(.3,.7,.2,1), opacity 900ms; z-index:46; }
   .mcqp canvas#mq-fx { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:38; }   /* inset alone does not stretch a canvas: without a CSS size it shows at its buffer size (innerWidth x DPR), so every burst drew DPR times too far out */
-  .mcqp .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  .mcqp .sr { position:absolute; width:1px; height:1px; margin:0; top:0; left:0; overflow:hidden; clip:rect(0 0 0 0); }   /* margin 0: a <p>'s own 16 px margin put it 17 px past the screen and the page scrolled; top 0: at its static place, the screen's foot, its 1 px still made it 703 */
   @media (prefers-reduced-motion: reduce) { .mcqp .tile, .mcqp .tile * { transition:none !important; animation:none !important; } }
   /* Phone: a question fits the screen (baseline 360x640: last card ended at 560 under the robot's head): thinner cards,
      tighter gaps, smaller question text. Only a question with a lot of information needs a scroll. */
