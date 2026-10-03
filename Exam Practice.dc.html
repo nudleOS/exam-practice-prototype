@@ -15,6 +15,9 @@
   <script type="module" src="model-floor.js?v=21"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
+  <!-- an AI-ingested paper (tools/ingest): ?ingested=<id> loads tools/ingest/out/<id>/paper.js before the app reads its papers -->
+  <script>(function () { var m = /[?&]ingested=([\w.-]+)/.exec(location.search); if (!m || m[1].indexOf("..") >= 0 || window.__ingestSrc) return;
+    var el = document.createElement("script"); el.src = window.__ingestSrc = "tools/ingest/out/" + m[1] + "/paper.js?v=" + Date.now(); document.head.appendChild(el); })();</script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
   <script src="mcq-play.js?v=54"></script>
@@ -1629,47 +1632,57 @@ function buildPapers() {
           stem: "Match each term in Column A with a description in Column B.", clues_available: 0, match: { left: left, right: right } }] } ] } ] };
   aet.partCount = 28;
   aet.prov = PROVENANCE;
-  const lsSrc = window.PAPER_LS_P1_2026;
-  const ls = { id: "ls", title: "Life Sciences P1", programme: "NSC · Grade 12 · design sample", sitting: "May/June 2026", total: 150, time: "2½ hours",
-    note: "Department of Basic Education (DBE) Grade 12 question paper.", prov: "DBE question paper · May/June 2026", sections: [] };
-  let lsCount = 0;
-  if (lsSrc) lsSrc.sections.forEach(sec0 => {
-    const sec = { title: sec0.title, total: sec0.total, missions: [] };
-    (sec0.missions || []).forEach(m => {
-      const parts = (m.parts || m.items || []).map(q => {
-        const key = "ls:" + q.n; lsCount++;
-        SERVER.clues[key] = q.clues || [];
-        const base = { key: key, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length };
-        if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]]; return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts }); }
-        if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
-        if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
-        if (q.t === "term") { const gl = SERVER.glossary[key.split(":")[0]] = SERVER.glossary[key.split(":")[0]] || {}; q.a.forEach(t => { gl[norm(t)] = true; });
-          SERVER.keys[key] = { term: q.a, reject: q.reject || [] }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
-        if (q.t === "list") { SERVER.keys[key] = { pool: q.pool.map(g => Array.isArray(g) ? g : [g]) }; return Object.assign(base, { response_mode: "list", marking_mode: "answer", count: q.count }); }
-        if (q.t === "lettername") { SERVER.keys[key] = { letter: q.a.letter, names: q.a.name }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]]; return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
-        if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft }])) };
-          SERVER.memo[key] = q.steps.map(st => st.memo);
-          return Object.assign(base, { response_mode: "steps", marking_mode: "answer", steps: q.steps.map(st => ({ id: st.id, label: st.label, marks: st.marks, unit_hint: st.unit || "" })) }); }
-        if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
-        if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
-          const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : { stems: b });
-          return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
-            stems: b.stems ? b.stems.map(st => ({ id: st.id, tip: st.tip })) : undefined }) }); }   // (the answers stay in the key, never in the part)
-        if (q.t === "draw") { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
-          SERVER.keys[key] = { draw: true, worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) };
-          return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" }); }
-        SERVER.memo[key] = q.bullets || [];
-        SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1 };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
-        return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
+  // a paper from its DATA (the shape paper-ls-p1-2026.js has): Life Sciences P1, and every paper the ingestion pipeline produced
+  // (tools/ingest, loaded as window.PAPERS_INGESTED); each keeps its own key prefix (its id), so two papers' 1.1.3 never meet
+  const fromData = (src, meta) => { const P = Object.assign({ sections: [] }, meta);
+    let count = 0;
+    if (src) src.sections.forEach(sec0 => {
+      const sec = { title: sec0.title, total: sec0.total, missions: [] };
+      (sec0.missions || []).forEach(m => {
+        const parts = (m.parts || m.items || []).map(q => {
+          const key = P.id + ":" + q.n; count++;
+          SERVER.clues[key] = q.clues || [];
+          const base = { key: key, board: true, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length };
+          if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]]; return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts }); }
+          if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
+          if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
+          if (q.t === "term") { const gl = SERVER.glossary[key.split(":")[0]] = SERVER.glossary[key.split(":")[0]] || {}; q.a.forEach(t => { gl[norm(t)] = true; });
+            SERVER.keys[key] = { term: q.a, reject: q.reject || [] }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
+          if (q.t === "list") { SERVER.keys[key] = { pool: q.pool.map(g => Array.isArray(g) ? g : [g]) }; return Object.assign(base, { response_mode: "list", marking_mode: "answer", count: q.count }); }
+          if (q.t === "lettername") { SERVER.keys[key] = { letter: q.a.letter, names: q.a.name }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]]; return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
+          if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft }])) };
+            SERVER.memo[key] = q.steps.map(st => st.memo);
+            return Object.assign(base, { response_mode: "steps", marking_mode: "answer", steps: q.steps.map(st => ({ id: st.id, label: st.label, marks: st.marks, unit_hint: st.unit || "" })) }); }
+          if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
+          if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
+            const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : { stems: b });
+            return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
+              stems: b.stems ? b.stems.map(st => ({ id: st.id, tip: st.tip })) : undefined }) }); }   // (the answers stay in the key, never in the part)
+          if (q.t === "draw") { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
+            SERVER.keys[key] = { draw: true, worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) };
+            return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" }); }
+          SERVER.memo[key] = q.bullets || [];
+          SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1 };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
+          return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
+        });
+        // the paper's extract (the case text, the results table, "study the information below") is the question's shared information:
+        // it was dropped here (context ""), so 2.2, 2.5, 3.1, 3.3 and 3.6 asked about text the learner never saw (found 2026-10-03)
+        sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, kind: m.kind || "", lead: m.lead || "", context: m.extract || "", table: m.table || null, tags: [], parts: parts });
       });
-      // the paper's extract (the case text, the results table, "study the information below") is the question's shared information:
-      // it was dropped here (context ""), so 2.2, 2.5, 3.1, 3.3 and 3.6 asked about text the learner never saw (found 2026-10-03)
-      sec.missions.push({ id: m.id, title: m.title || "Question " + m.id, kind: m.kind || "", lead: m.lead || "", context: m.extract || "", table: m.table || null, tags: [], parts: parts });
+      P.sections.push(sec);
     });
-    ls.sections.push(sec);
-  });
-  ls.partCount = lsCount;
-  return [aet, ls];
+    P.partCount = count; return P;
+  };
+  const ls = fromData(window.PAPER_LS_P1_2026, { id: "ls", title: "Life Sciences P1", programme: "NSC · Grade 12 · design sample", sitting: "May/June 2026", total: 150, time: "2½ hours",
+    note: "Department of Basic Education (DBE) Grade 12 question paper.", prov: "DBE question paper · May/June 2026", sections: [] });
+  const ingested = (window.PAPERS_INGESTED || []).map(d => {
+    HOME_TO_LOCAL[d.id] = d.id;   // the paper map's entry with the same id now opens it
+    d.sections.forEach(sec => sec.missions.forEach(m => { if (!m.figure) return; const fid = d.id + ":" + m.id;
+      FIGS[fid] = { src: m.figure.src, w: m.figure.w, h: m.figure.h, caption: m.figure.caption, hotspots: [] };
+      SCENES[fid] = { template: "figure", fig: fid }; }));
+    return fromData(d, { id: d.id, title: d.title, programme: "AI-ingested · " + d.subject, sitting: d.sitting, total: d.total, time: d.time,
+      note: "Ingested by AI from the question paper and its memo, checked by a person before it goes live.", prov: "AI ingestion · " + d.sitting }); });
+  return [aet, ls].concat(ingested);
 }
 
 class Component extends DCLogic {
@@ -1786,13 +1799,15 @@ class Component extends DCLogic {
   componentDidMount() {
     // &paper=ls picks Life Sciences. ?play=N opens mission N of the paper straight away (a design preview switch): ?paper=ls&play=0.
     document.documentElement.dataset.nx = new URLSearchParams(location.search).get("theme") === "light" ? "light" : "dark";   // the play look's theme: dark (the app's), ?theme=light to review
-    const qs = new URLSearchParams(location.search), playQ = qs.get("play"), paperQ = ["aet", "ls"].indexOf(qs.get("paper")) !== -1 ? qs.get("paper") : "ls";
+    const qs = new URLSearchParams(location.search), playQ = qs.get("play"), paperQ = qs.get("paper") || "ls";   // aet, ls, or an ingested paper's id
     const ready = () => { this.papers = buildPapers(); this.setState({ bus: busRead() });
       if (playQ != null) this.setState({ paperId: paperQ }, () => { this.openMission(Math.max(0, parseInt(playQ, 10) || 0));   // ?play=N (design preview): straight into mission N, &part=K its part K (to review every response mode)
         const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0);
         if (qs.get("done")) setTimeout(() => this.setState({ screen: "done" }), 0); });   // &done=1: the mission's done screen (design preview)
       else this.forceUpdate(); };
-    if (window.PAPER_LS_P1_2026) ready(); else { let n = 0; this._p = setInterval(() => { if (window.PAPER_LS_P1_2026 || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
+    // (an ingested paper, ?ingested=<id>, loads after the page: wait for its data too, as for Life Sciences P1's)
+    const have = () => !!window.PAPER_LS_P1_2026 && (!window.__ingestSrc || !!window.PAPERS_INGESTED);
+    if (have()) ready(); else { let n = 0; this._p = setInterval(() => { if (have() || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     window.addEventListener("resize", this._rs); this._rs();
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -3007,10 +3022,10 @@ class Component extends DCLogic {
     const note = "DHET did not publish a marking guideline for this sitting.";
     if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ id: s.id, label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "",
       expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })),
-      provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.recipe || part.key.indexOf("ls:") === 0 ? "" : note } };
+      provenance: { memo_source: part.board ? "board" : "authored", note: part.recipe || part.board ? "" : note } };
     const pts = key.pool ? key.pool.map(g => Array.isArray(g) ? g[0] : g) : (SERVER.memo[part.key] || []);
     const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.term ? key.term[0] : key.num != null ? key.num : null;
-    return { answer: answerOf, memo: { points: pts.map((t, i) => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: key.worth ? key.worth[i] : key.each || 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
+    return { answer: answerOf, memo: { points: pts.map((t, i) => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: key.worth ? key.worth[i] : key.each || 1 })) }, provenance: { memo_source: part.board ? "board" : "authored", note: part.board ? "" : note } };
   }
 
   // Exactly the answer shapes in docs/API.md. `ui` is the state, or a Hall draft of it.
@@ -3124,7 +3139,7 @@ class Component extends DCLogic {
     if (this._mcq && this._mcqRun === run) { if (this._mcqAt !== at) { this._mcqAt = at; this._mcq.go(part.number); } return; }
     if (this._mcq) this._mcq.destroy();
     this._mcqRun = run; this._mcqAt = at;
-    const items = m.parts.filter(q => q.response_mode === "mcq").map(q => ({ n: q.number, q: q.stem, opts: q.options, marks: q.marks, img: QIMGS[q.number] || null }));
+    const items = m.parts.filter(q => q.response_mode === "mcq").map(q => ({ n: q.number, q: q.stem, opts: q.options, marks: q.marks, img: ((this.paper() || {}).id === "ls" && QIMGS[q.number]) || null }));
     const paper = { sections: [{ title: m.section || "", missions: [{ id: m.id, title: m.title, items: items }] }] };
     const head = () => document.querySelector("[data-playhead]");
     this._mcq = window.McqPlay.mount({ paper: paper, order: items.map(q => q.n), start: part.number, hud: false, screen: true, back: false,
