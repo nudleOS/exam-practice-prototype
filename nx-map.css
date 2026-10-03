@@ -427,3 +427,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 }
 /* the subject sheet (on a phone the subject pill opens it, Murci 2026-10-03): the current subject carries a check */
 .pm-subj-opt[aria-pressed="true"]::after { content: "✓"; flex: none; margin-left: 2px; font-size: 15px; font-weight: 800; color: var(--sc, #81b1ff); }
+/* desktop (Murci, 2026-10-03): the picker and the subject's title start at the page column's left, level with the header, not
+   centred with the road (this undoes the --pm-w alignment above); the road keeps its own width and stays centred (.pm-path) */
+.pm-chips { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+.pm-group { max-width: none !important; }
