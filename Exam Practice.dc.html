@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=165">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=166">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1021,7 +1021,7 @@
                 <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span data-backword="true">Back</span></button></sc-if>
                 <sc-if value="{{ nxCanRetry }}" hint-placeholder-val="{{ false }}"><button data-retry="true" onClick="{{ retryPart }}" aria-label="Try this question again, practice only: no marks or XP">Try again</button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
-                  <button onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
+                  <button data-kind="{{ barSecondaryKind }}" onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
                 <button data-bar-primary="true" data-kind="{{ barPrimaryKind }}" onClick="{{ barPrimary }}" disabled="{{ barPrimaryDisabled }}" style="flex:1; min-height:52px; border:none; border-radius:16px; background:{{ barPrimaryBg }}; color:{{ barPrimaryColor }}; font-size:15.5px; font-weight:800; cursor:pointer; box-shadow:{{ barPrimaryShadow }}">{{ barPrimaryLabel }}</button>
               </span>
@@ -3502,7 +3502,7 @@ class Component extends DCLogic {
       full: reply && reply.replay ? (reply.retake ? "Marks won back." : "Nailed it! That one was practice.") : reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
       partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
       zero: "Not quite. Try again.",
-      out: "Here's how the examiner marks it.",
+      out: "That's all three tries. The memo opens when you finish the paper.",   // (the memo stays locked until then: Murci, 2026-10-02)
       memo: "Here's how the examiner marks it.",
       draw: "Compare your drawing with the examiner's list.",
       closed: pr && part.marks && best >= part.marks ? "You banked this one." : "Closed at " + best + " of " + (part.marks || 0) + ".",
@@ -3522,13 +3522,17 @@ class Component extends DCLogic {
       bad: { border: "rgba(242,119,122,0.5)", bg: "linear-gradient(180deg, rgba(56,26,28,0.97), rgba(33,22,24,0.98))", color: "#ff9a9c", icon: "#f2777a" },
       neutral: { border: "var(--line2)", bg: "rgba(32,35,39,0.97)", color: "#ffffff", icon: "#81b1ff" } }[tone];
     const xpText = reply && res && res.full ? (reply.replay ? (reply.retake ? "Retake — no XP" : "Replay — no XP") : "+" + reply.xp_awarded + " XP · " + (reply.try === 1 ? "first try" : "try " + reply.try) + (reply.multiplier > 1 ? " · ×" + reply.multiplier + " streak" : "")) : "";
+    // No memo while the paper is under way (Murci, 2026-10-02: the memo is LOCKED until the paper is done; 2026-10-03, his P30 lite:
+    // "Show the memo" beside Try again, "See the memo" when out of tries). A wrong answer offers Skip instead, out of tries offers Next;
+    // the memo opens from the paper's Memo tab once the paper is finished.
+    const skipBtn = this.canSkip() ? ["Skip", () => this.advance()] : null;
     const bar = {
       marking: { icon: "…", title: "Being marked…", body: "This can take up to 20 seconds.", primary: ["Being marked…", null] },
       waiting: { icon: "•", title: "Saved · waiting for a marker", body: "Your answer is saved. Its marks appear on the map when it is marked.", primary: [nextLabel, next] },
       full: { icon: "✓", title: reply && reply.try > 1 ? "Correct · no marks (first try only)" : "Correct · " + got + " of " + worth + (worth === 1 ? " mark" : " marks"), xp: xpText, primary: [nextLabel, next] },
-      partial: { icon: "◐", title: reply && reply.try > 1 ? got + " of " + worth + " · marks are set on the first try" : got + " of " + worth + " marks so far", body: reply && reply.clue ? "Hint: " + reply.clue : "", primary: [tryAgainLabel, () => this.tryAgain()], secondary: ["Show the memo", () => this.showMemo()] },
-      zero: { icon: "✕", title: "Not yet · 0 of " + worth, body: reply && reply.clue ? "Hint: " + reply.clue : "", primary: [tryAgainLabel, () => this.tryAgain()], secondary: ["Show the memo", () => this.showMemo()] },
-      out: { icon: "✕", title: "Out of tries · " + got + " of " + worth, body: s.memoSeen ? "The memo is below your answer." : "", primary: s.memoSeen ? [nextLabel, next] : ["See the memo", () => this.setState({ memoSeen: true }, () => this.scrollReveal())] },
+      partial: { icon: "◐", title: reply && reply.try > 1 ? got + " of " + worth + " · marks are set on the first try" : got + " of " + worth + " marks so far", body: reply && reply.clue ? "Hint: " + reply.clue : "", primary: [tryAgainLabel, () => this.tryAgain()], secondary: skipBtn },
+      zero: { icon: "✕", title: "Not yet · 0 of " + worth, body: reply && reply.clue ? "Hint: " + reply.clue : "", primary: [tryAgainLabel, () => this.tryAgain()], secondary: skipBtn },
+      out: { icon: "✕", title: "Out of tries · " + got + " of " + worth, body: "", primary: [nextLabel, next] },
       memo: { icon: "•", title: "Memo shown · no XP for this part", body: "The memo is below your answer.", primary: [nextLabel, next] },
       draw: { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for, below.", primary: [nextLabel, next] },
       // ("Try again" in the row replays it, so no second button)
@@ -3639,7 +3643,7 @@ class Component extends DCLogic {
       barAnim: s.reduced ? "none" : "barup 340ms cubic-bezier(0.22,0.61,0.36,1) both",
       barIcon: bar ? bar.icon : "", barTitle: bar ? bar.title : "", barHasXp: !!(bar && bar.xp), barXp: bar ? bar.xp || "" : "",
       barMarking: outcome === "marking", barHasBody: !!(bar && bar.body), barBody: bar ? bar.body || "" : "",
-      barHasSecondary: !!(bar && bar.secondary), barSecondaryLabel: bar && bar.secondary ? (phone && s.vw <= 400 && bar.secondary[0] === "Show the memo" ? "Memo" : bar.secondary[0]) : "", barSecondaryAria: bar && bar.secondary ? bar.secondary[0] : "",   /* a small phone: "Memo", so the row clears the robot (measured at 360x640: it covered its rock) */ barSecondary: bar && bar.secondary ? bar.secondary[1] : () => {},
+      barHasSecondary: !!(bar && bar.secondary), barSecondaryKind: bar && bar.secondary && bar.secondary[0] === "Skip" ? "skip" : "", barSecondaryLabel: bar && bar.secondary ? (phone && s.vw <= 400 && bar.secondary[0] === "Show the memo" ? "Memo" : bar.secondary[0]) : "", barSecondaryAria: bar && bar.secondary ? bar.secondary[0] : "",   /* a small phone: "Memo", so the row clears the robot (measured at 360x640: it covered its rock) */ barSecondary: bar && bar.secondary ? bar.secondary[1] : () => {},
       // the bar button's icon (Murci, 2026-10-02): an arrow after "go on" labels, the circular arrow before Try again
       barPrimaryKind: bar && /^Try again/.test(bar.primary[0]) ? "retry" : "go",
       barPrimaryLabel: bar ? bar.primary[0] : "", barPrimary: bar && bar.primary[1] ? bar.primary[1] : () => {}, barPrimaryDisabled: !(bar && bar.primary[1]),

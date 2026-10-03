@@ -1640,3 +1640,8 @@ body.nx-play [data-figbox]::before { content:"Loading the diagram…"; position:
 /* typing on a phone: room under the field inside the capped card, so it can scroll fully clear of the card's edge (measured at
    360x702 with a 250 px keyboard and a two-line hint: the field was the card's last item, flush with its bottom, 11 px cut) */
 @media (max-width:600px) { body.nx-play.nx-typing main:not(#mq-stage) [data-question] { padding-bottom:14px !important; } }
+/* Skip in the result bar (Murci, 2026-10-03: it replaces "Show the memo"; the memo stays locked until the paper is done): the same quiet
+   words + skip icon as the other Skip buttons (the attribute twice outranks the bar's glass rule) */
+body.nx-play.nx-play [data-footer] [data-bar] button[data-kind="skip"][data-kind="skip"] { background:none !important; border:1px solid transparent !important; box-shadow:none !important;
+  -webkit-backdrop-filter:none; backdrop-filter:none; color:var(--nx-text2) !important; padding:0 12px !important; font-weight:700 !important; gap:7px !important; }
+body.nx-play [data-footer] [data-bar] button[data-kind="skip"]::after { content:""; flex:none; width:15px; height:15px; background:currentColor; -webkit-mask:var(--ic-skip) center / contain no-repeat; mask:var(--ic-skip) center / contain no-repeat; }
