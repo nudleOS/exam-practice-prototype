@@ -1603,3 +1603,9 @@ body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr svg { stroke:#1e46ff; }
      scroll had nowhere to go and the strip + keys covered the field. The bar (keys included, --nx-bar) + the strip and its gaps (40 + 8 + 12 + 12: +60 left the field 8 px short). */
   body.nx-play.nx-kpstrip.nx-kpstrip main:not(#mq-stage):not([data-done]) { padding-bottom:calc(var(--nx-bar, 380px) + 72px) !important; }
 }
+/* answer boxes sized by TYPE at every width (Murci, 2026-10-03): the phone rule above, now on tablets and desktop too (a one-word term
+   sat in an 818 px box at 1366, a number in 788 px: a page-wide box reads "write a lot"). A list and a written answer keep the width. */
+body.nx-play main:not(#mq-stage) [data-termrow] { max-width:272px; }
+body.nx-play main:not(#mq-stage) :is(div, span):has(> input[aria-label="Name of the part"]) { max-width:272px; }
+body.nx-play main:not(#mq-stage) :is(div, span):has(> #f-num) { max-width:200px; }
+body.nx-play main:not(#mq-stage) [data-feed~="term"] { max-width:272px; }
