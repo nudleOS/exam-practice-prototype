@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=207">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=209">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=48">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -869,32 +869,6 @@
             </div>
           </sc-if>
 
-          <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:10px">
-              <span role="status" style="font-size:12.5px; font-weight:700; color:var(--text2)">{{ listCounter }}</span>
-              <div style="display:flex; flex-wrap:wrap; gap:8px">
-                <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="2">
-                  <span style="display:flex; align-items:center; gap:2px; padding:3px 3px 3px 4px; border-radius:22px; border:1.5px solid {{ ch.border }}; background:{{ ch.bg }}">
-                    <button onClick="{{ ch.edit }}" disabled="{{ locked }}" aria-label="{{ ch.aria }}" style="min-height:38px; padding:0 8px 0 10px; border:none; background:transparent; color:var(--text); font-size:14px; font-weight:700; cursor:pointer; text-align:left">{{ ch.n }} · {{ ch.text }}</button>
-                    <sc-if value="{{ ch.hasStamp }}" hint-placeholder-val="{{ false }}">
-                      <span style="height:26px; padding:0 8px; border-radius:13px; display:flex; align-items:center; background:{{ ch.stampBg }}; font-size:12px; font-weight:800; color:{{ ch.stampColor }}; white-space:nowrap">{{ ch.stamp }}</span>
-                    </sc-if>
-                    <sc-if value="{{ ch.canRemove }}" hint-placeholder-val="{{ true }}">
-                      <button onClick="{{ ch.remove }}" aria-label="{{ ch.removeAria }}" style="width:38px; height:38px; border:none; border-radius:19px; background:transparent; color:var(--text3); font-size:16px; cursor:pointer">×</button>
-                    </sc-if>
-                  </span>
-                </sc-for>
-              </div>
-              <sc-if value="{{ showChipInput }}" hint-placeholder-val="{{ true }}">
-                <span data-listrow="true" style="display:flex; gap:8px; position:relative">
-                  <input data-chipinput="true" value="{{ chipDraft }}" onChange="{{ onChipDraft }}" onKeyDown="{{ chipKeys }}" aria-label="{{ chipAria }}" placeholder="{{ chipPlaceholder }}" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="enter" disabled="{{ chipInputOff }}" style="flex:1; min-width:0; height:50px; padding:0 58px 0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; outline:none" />
-                  <sc-if value="{{ chipBtnAdd }}" hint-placeholder-val="{{ false }}"><button data-submit="true" data-listbtn="add" onClick="{{ addChip }}" disabled="{{ locked }}" aria-label="{{ chipAddAria }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button></sc-if>
-                  <sc-if value="{{ chipBtnGo }}" hint-placeholder-val="{{ true }}"><button data-submit="true" data-listbtn="go" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answers"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if>
-                </span>
-              </sc-if>
-            </div>
-          </sc-if>
-
           <sc-if value="{{ isRubric }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:8px">
               <sc-if value="{{ hasCoach }}" hint-placeholder-val="{{ false }}">
@@ -903,8 +877,25 @@
                   <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:700">{{ coachShape }}</span><span style="font-size:12.5px; color:var(--text2)">{{ coachAim }}</span></span>
                 </div>
               </sc-if>
-              <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" autoCorrect="off" spellCheck="false" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; line-height:1.6; resize:vertical; outline:none"></textarea>
-              <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
+              <sc-if value="{{ rubricBox }}" hint-placeholder-val="{{ true }}">
+                <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" autoCorrect="off" spellCheck="false" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; line-height:1.6; resize:vertical; outline:none"></textarea>
+                <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- numbered slots (Murci, 2026-10-03): a list, and a written answer that asks to State / Name / Give a NUMBER of things,
+               get one short line per answer, numbered; Explain / Describe keep the box above -->
+          <sc-if value="{{ isSlots }}" hint-placeholder-val="{{ false }}">
+            <div data-slots="true" role="group" aria-label="{{ slotsAria }}">
+              <sc-for list="{{ slots }}" as="sl" hint-placeholder-count="2">
+                <label data-slot="{{ sl.state }}" style="border-color:{{ sl.border }}">
+                  <span data-slotn="true" aria-hidden="true">{{ sl.n }}</span>
+                  <textarea id="{{ sl.id }}" data-field="true" data-slotfield="true" rows="{{ sl.rows }}" value="{{ sl.value }}" onChange="{{ sl.onChange }}" onKeyDown="{{ sl.onKey }}" disabled="{{ locked }}" placeholder="{{ sl.ph }}" aria-label="{{ sl.aria }}" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="{{ sl.enter }}" maxLength="300"></textarea>
+                  <sc-if value="{{ sl.hasStamp }}" hint-placeholder-val="{{ false }}"><span data-slotstamp="true" style="background:{{ sl.stampBg }}; color:{{ sl.stampColor }}">{{ sl.stamp }}</span></sc-if>
+                </label>
+              </sc-for>
+              <sc-if value="{{ slotsFootOn }}" hint-placeholder-val="{{ false }}"><span data-slotfoot="true" role="status">{{ slotsFoot }}</span></sc-if>
             </div>
           </sc-if>
 
@@ -3554,16 +3545,29 @@ class Component extends DCLogic {
     const lnN = mode === "lettername" ? (s.edited.lname ? null : stampOf(itemsBy.name)) : null;
     const termSp = mode === "term" && !s.edited.term ? stampOf(itemsBy.t) : null;
     const numSp = mode === "num" && !s.edited.num ? stampOf(itemsBy.num) : null;
-    // Chips (list)
+    // Numbered slots: a list (part.count answers), or a written answer whose stem asks to State / Name / Give / List a NUMBER of
+    // things ("State THREE ways": three lines). One line per answer: short typing on a phone, clear about how many are wanted, and
+    // the marker reads them in order. A list's answers keep their place (an empty slot is skipped when marked).
     const count = part.count || 4;
-    const chips = mode === "list" ? s.list.map((t, i) => { const it = s.edited.list ? null : itemsBy["l" + i];
+    const NUMW = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+    const lineN = mode === "rubric" ? (m => m ? NUMW[m[1]] : 0)(String(part.stem || "").match(/\b(?:State|Name|Give|List|Mention)\b[^.?]*?\b(ONE|TWO|THREE|FOUR|FIVE)\b/)) : 0;
+    const slotN = mode === "list" ? count : lineN;
+    const slotVals = mode === "list" ? s.list : lineN ? String(s.written || "").split("\n") : [];
+    const setSlot = (i, v) => { const st = this.state; v = String(v).replace(/\n/g, " ");
+      if (mode === "list") { const l = st.list.slice(); while (l.length < slotN) l.push(""); l[i] = v; this.setState({ list: l, edited: Object.assign({}, st.edited, { list: true }) }); return; }
+      const w = String(st.written || "").split("\n"); while (w.length < slotN) w.push(""); w[i] = v; this.setState({ written: w.slice(0, slotN).join("\n") }); };
+    const slotKey = (e, i) => { if (e.key !== "Enter") return; e.preventDefault(); if (e.repeat) return;
+      const nx = document.getElementById("slot-" + (i + 1)); if (nx) { nx.focus(); return; }
+      if (!closed && !(reply && reply.waiting) && !(this.state.barOpen && reply) && this.canCheckNow(part) && !this.sameAsLast(part, this.state)) this.check(); };
+    const ORD = ["First", "Second", "Third", "Fourth", "Fifth"];
+    let filled = 0;
+    const slots = Array.from({ length: slotN }, (_, i) => { const v = String(slotVals[i] || ""), ai = v.trim() ? filled++ : -1;
+      const it = mode === "list" && ai >= 0 && !s.edited.list ? itemsBy["l" + ai] : null;
       let sp = stampOf(it); if (sp && it && it.reason && /^Same as/.test(it.reason)) sp = Object.assign({}, sp, { t: "same as " + it.reason.replace(/\D+/g, "") });
-      return Object.assign({ n: i + 1, text: t, aria: "Answer " + (i + 1) + ": " + t + (sp ? ", " + sp.t : "") + ". Edit", removeAria: "Remove answer " + (i + 1),
-        border: sp ? sp.b : "rgba(129,177,255,0.4)", bg: "rgba(0,104,248,0.10)", canRemove: !locked,
-        edit: () => { if (locked) return; const l = this.state.list.slice(); const txt = l.splice(i, 1)[0]; this.setState({ list: l, chipDraft: txt, edited: Object.assign({}, this.state.edited, { list: true }) }, () => { const f = document.querySelector("[data-chipinput]"); if (f) f.focus(); }); },
-        remove: () => { if (locked) return; const l = this.state.list.slice(); l.splice(i, 1); this.setState({ list: l, edited: Object.assign({}, this.state.edited, { list: true }) }); } }, stampSty(sp)); }) : [];
-    const addChip = () => { const t = String(this.state.chipDraft || "").replace(/,$/, "").trim(); if (!t || this.state.list.length >= count) return;
-      this.setState({ list: this.state.list.concat([t]), chipDraft: "", edited: Object.assign({}, this.state.edited, { list: true }) }); };
+      return Object.assign({ n: slotN === 1 ? "" : String(i + 1), id: "slot-" + i, value: v, rows: String(lineN ? Math.min(4, 1 + Math.floor(v.length / 34)) : 1),
+        ph: slotN === 1 ? "Your answer" : ORD[i] + " answer", aria: "Answer " + (i + 1) + " of " + slotN + (sp ? ", " + sp.t : ""),
+        enter: i < slotN - 1 ? "next" : "done", state: sp ? "stamped" : v.trim() ? "done" : "", border: sp ? sp.b : v.trim() ? "rgba(61,220,151,0.5)" : "var(--line2)",
+        onChange: e => setSlot(i, e.target.value), onKey: e => slotKey(e, i) }, stampSty(sp)); });
     // Written-answer coach: the SHAPE of an answer, from the stem's command word; never content.
     const cmd = (String(part.stem || "").match(/\b(Define|Explain|Describe|Compare|Differentiate|Distinguish|Name|State|List|Give|Suggest|Tabulate|Discuss)\b/) || [])[1] || "";
     const SHAPE = { Define: "One precise sentence: what it is.", Explain: "A point, then because …", Describe: "What it looks like or does, step by step.",
@@ -3618,20 +3622,10 @@ class Component extends DCLogic {
       onNumFocus: () => { if (touch && !locked && this.state.kp !== "num") this.kpOpenFor("num"); },
       numHasStamp: !!numSp, numStamp: numSp ? numSp.t : "", numStampBg: numSp ? numSp.bg : "", numStampColor: numSp ? numSp.c : "",
       numInputMode: touch ? "none" : "decimal",
-      isList: mode === "list", chips: chips, listCounter: s.list.length + " of " + count + " named",
-      // the list's box (Murci, 2026-10-03): ONE button inside it, + while there is text to add, the arrow (check) when it is empty;
-      // with every answer named the box stays (disabled, "All N named") so the arrow keeps its place. Enter does the same.
-      showChipInput: mode === "list" && !locked, chipDraft: s.chipDraft, chipAria: s.list.length < count ? "Answer " + (s.list.length + 1) + " of " + count : "All " + count + " named",
-      chipInputOff: locked || s.list.length >= count, chipPlaceholder: s.list.length >= count ? "All " + count + " named" : s.list.length ? "Another answer, or the arrow" : "Type an answer",
-      chipBtnAdd: !!String(s.chipDraft || "").trim() && s.list.length < count, chipBtnGo: !(String(s.chipDraft || "").trim() && s.list.length < count),
-      chipAddAria: "Add answer " + (s.list.length + 1) + " of " + count,
-      onChipDraft: e => { const v = e.target.value; if (/,$/.test(v) && v.replace(/,$/, "").trim()) { this.setState({ chipDraft: v }, addChip); return; } this.setState({ chipDraft: v }); },
-      chipKeys: e => { if (e.key !== "Enter") return; e.preventDefault(); if (e.repeat) return;
-        if (String(this.state.chipDraft || "").trim()) { addChip(); return; }
-        if (!closed && !(reply && reply.waiting) && !(this.state.barOpen && reply) && this.canCheckNow(part)) this.check(); },
-      addChip: addChip,
+      isSlots: slotN > 0, slots: slots, slotsAria: slotN + (slotN === 1 ? " answer" : " answers"), rubricBox: mode === "rubric" && !lineN,
+      slotsFootOn: slotN > 1, slotsFoot: filled + " of " + slotN + (mode === "list" ? " named" : " written"),
       isRubric: mode === "rubric", written: s.written, onWritten: e => this.setState({ written: e.target.value }),
-      hasCoach: mode === "rubric" && !!cmd, coachCmd: cmd, coachShape: SHAPE[cmd] || "",
+      hasCoach: mode === "rubric" && !!cmd && !lineN, coachCmd: cmd,   // numbered lines already say how many and how short coachShape: SHAPE[cmd] || "",
       coachAim: part.marks > 1 ? part.marks + " marks: aim for " + part.marks + " separate points." : "1 mark: one clear point.",
       writtenCount: s.written.length + " / 2 500 characters",
       showCalcBtn: mode === "steps" && !locked && !kpOn, numCalcOn: mode === "num" && !locked && !kpOn,   // a number's calculator sits beside its box
@@ -3865,7 +3859,7 @@ class Component extends DCLogic {
       // the Check arrow of a pick / order / written answer shows only once it can act (Murci, 2026-10-03: "that arrow button did not work
       // and it is not even supposed to be there"; on 1.5.4 it sat dimmed and disabled, half behind the thought cloud, beside Back and
       // Skip, until all three cards were placed). A drawing keeps its "I've drawn it" word.
-      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && mode !== "num" && mode !== "lettername" && !(reply && reply.waiting) && (mode === "draw" || !primaryDisabled),
+      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "num" && mode !== "lettername" && !(reply && reply.waiting) && (mode === "draw" || !primaryDisabled),
       // the letter-name's arrow is inside its name box, as the term's, the list's and the number's (Murci's P30 lite, 2026-10-03: on its
       // own row it made the page 52 px too tall and started under the strip)
       lnArrowOn: mode === "lettername" && !locked && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
