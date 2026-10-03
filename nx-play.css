@@ -1821,3 +1821,7 @@ body.nx-play main:not(#mq-stage) [data-feed] .fd-pline { color:var(--nx-text2); 
 /* the multiple choice's Next is hidden until the component shows it (.show): the bar rule above (display:inline-flex !important on
    :is(.next, .prevq)) made an unshown Next appear, unstyled, as "Next question" at the bar's left (a retake, 2026-10-03) */
 body.nx-play.nx-play .mcqp .next:not(.show) { display:none !important; }
+/* Column II's A and B (1.3) read at the question's own size (Murci, 2026-10-03: "the A B answer choices from 1.3 are bigger in font
+   than the text prior it": 14.5 px bold letters under a 13 px question). They follow the question's token, so every fit level matches. */
+body.nx-play .mcqp .ab { font-size:var(--nx-numsz) !important; line-height:1.45; }
+body.nx-play .mcqp .ab b { font-weight:700; width:22px; }
