@@ -1425,8 +1425,16 @@ body.nx-play.nx-typing [data-footer] { bottom:calc(var(--kb, 0px) + 8px) !import
 .nx-typestrip { display:none; }
 body.nx-play.nx-typing .nx-typestrip { display:flex; position:fixed; z-index:24; left:12px; right:var(--typ-r, 12px); bottom:calc(var(--kb, 0px) + 8px);
   align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
-.nx-typehead { flex:none; width:40px; height:40px; border-radius:50%; background:#0f1d47 url("assets/robot-face.webp") center / 112% no-repeat;   /* Murci's idle face (2026-10-02) */
-  box-shadow:0 0 0 2px rgba(129, 177, 255, 0.35); }
+/* the face is a PIN (Murci, 2026-10-03, option B refined: "the tail is sharp at the end ... at 10 o'clock ... the face of the robot fits
+   perfectly in it"): a 52 px circle with a tapered tail to its upper left, one shape (mask), a 2.5 px ring along it (::before, a 5 px
+   stroke half clipped by the mask). The circle's centre is 38,38 of the 66 px box; the 128 px portrait is drawn 52 px wide there, so the
+   helmet's edge meets the ring and the visor, eyes and mouth are whole in every mood (58 px cut the visor's sides). A navy disc cut-out
+   on top keeps the face out of the tail. --face is the mood's picture. */
+.nx-typehead { --face:url("assets/robot-face.webp"); flex:none; width:66px; height:66px;   /* Murci's idle face (2026-10-02) */
+  background:radial-gradient(circle at 38px 38px, transparent 25.6px, #0f1d47 26px), var(--face) 12px 12px / 52px 52px no-repeat, #0f1d47;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2066%2066%27%3E%3Cpath%20d%3D%27M26.60%2014.63%20C18.51%2018.58%207.60%2019.06%203.36%2018.00%20C6.40%2021.14%2011.44%2030.84%2012.06%2039.81%20A26%2026%200%201%200%2026.60%2014.63Z%27%20fill%3D%27black%27/%3E%3C/svg%3E") 0 0 / 66px 66px no-repeat; mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2066%2066%27%3E%3Cpath%20d%3D%27M26.60%2014.63%20C18.51%2018.58%207.60%2019.06%203.36%2018.00%20C6.40%2021.14%2011.44%2030.84%2012.06%2039.81%20A26%2026%200%201%200%2026.60%2014.63Z%27%20fill%3D%27black%27/%3E%3C/svg%3E") 0 0 / 66px 66px no-repeat; }
+.nx-typehead::before { content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2066%2066%27%3E%3Cpath%20d%3D%27M26.60%2014.63%20C18.51%2018.58%207.60%2019.06%203.36%2018.00%20C6.40%2021.14%2011.44%2030.84%2012.06%2039.81%20A26%2026%200%201%200%2026.60%2014.63Z%27%20fill%3D%27none%27%20stroke%3D%27%2381b1ff%27%20stroke-width%3D%275%27/%3E%3C/svg%3E") 0 0 / 66px 66px no-repeat; }
 .nx-typestrip > p { margin:0; flex:1; min-width:0; padding:8px 12px; border-radius:14px 14px 14px 4px; background:#eef2ff; color:#0d2666;
   font-size:13px; font-weight:500; line-height:1.35; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; pointer-events:auto; }
 .nx-typestrip > p[data-more="true"] { -webkit-mask-image:linear-gradient(#000 calc(100% - 18px), transparent); mask-image:linear-gradient(#000 calc(100% - 18px), transparent); }
@@ -1499,11 +1507,12 @@ body.nx-play.nx-compact.nx-compact main:not(#mq-stage):not([data-done]) { paddin
   body.nx-play main:not(#mq-stage) [data-feed~="term"] { max-width:272px; }   /* the "+XP / +mark" chips centre under the sealed term */
 }
 /* the phone strip's face reacts (Murci's images, 2026-10-02): celebrating, thinking, zapped (then thinking, 1.6 s later) */
-.nx-typehead { position:relative; overflow:hidden; box-shadow:0 0 0 2px rgba(129, 177, 255, 0.35); }
-.nx-typehead[data-face="happy"] { background-image:url("assets/robot-face-happy.webp"); animation:nx-facepop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
-.nx-typehead[data-face="think"] { background-image:url("assets/robot-face-think.webp"); }
-.nx-typehead[data-face="zap"] { background-image:url("assets/robot-face-zap.webp"); }
-.nx-typehead[data-face="zap"]::after { content:""; position:absolute; inset:0; background:#0f1d47 url("assets/robot-face-think.webp") center / 112% no-repeat;
+.nx-typehead { position:relative; }
+.nx-typehead[data-face="happy"] { --face:url("assets/robot-face-happy.webp"); animation:nx-facepop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.nx-typehead[data-face="think"] { --face:url("assets/robot-face-think.webp"); }
+.nx-typehead[data-face="zap"] { --face:url("assets/robot-face-zap.webp"); }
+.nx-typehead[data-face="zap"]::after { content:""; position:absolute; inset:0; z-index:1;
+  background:radial-gradient(circle at 38px 38px, transparent 25.6px, #0f1d47 26px), url("assets/robot-face-think.webp") 12px 12px / 52px 52px no-repeat, #0f1d47;
   animation:nx-thinkin 0.3s ease 1.6s both; }
 .nx-typehead[data-face="zap"][data-zk="1"]::after { animation-name:nx-thinkin1; }
 @keyframes nx-thinkin { from { opacity:0; } }
