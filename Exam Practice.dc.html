@@ -2055,19 +2055,25 @@ class Component extends DCLogic {
     const fk = key + ":" + s.barSeq + ":" + (s.reply ? s.reply.try : 0) + ":" + s.barOpen + ":" + s.memoSeen;
     // the Check arrow just appeared (the answer is ready): bring it into view, over the face strip on a long page, inside the card
     // otherwise (on 1.5.4 it came up under the cloud). Not while typing: that path keeps the field's own Check in view already.
+    // (one rule for both: the target ends above the face strip AND inside the card; the card scrolls when it can, else the page.
+    // Measured 2026-10-03 on 2.5.4's numbered lines: the card did not scroll, the page did, and the arrow waited under the cloud at
+    // y 515, so a real tap hit the cloud)
+    const reveal = el => { const r = el.getBoundingClientRect(), ts = document.querySelector(".nx-typestrip"), b = s.reduced ? "auto" : "smooth";
+      const stripTop = ts && ts.offsetHeight ? ts.getBoundingClientRect().top - 12 : innerHeight - 12;
+      if (compact) { if (r.bottom > stripTop) window.scrollBy({ top: r.bottom - stripTop, behavior: b }); return; }
+      const lim = Math.min(q.getBoundingClientRect().bottom - 4, stripTop); if (r.bottom <= lim) return;
+      if (q.scrollHeight > q.clientHeight + 1) q.scrollBy({ top: r.bottom - lim + 12, behavior: b }); else window.scrollBy({ top: r.bottom - lim + 12, behavior: b }); };
+    // ... and again when it MOVES (a line wraps, compact mode makes the page scrollable 350 ms later): once was not enough, the first
+    // reveal ran on a page that could not scroll yet. Never while the keyboard is up (the learner is typing; it comes after).
     const arw = q.querySelector("[data-answerrow] [data-submit]"), arOn = !!(arw && arw.offsetHeight);
-    if (arOn && !this._arOn && !typing) requestAnimationFrame(() => { const r = arw.getBoundingClientRect();
-      if (compact) { const ts = document.querySelector(".nx-typestrip"), top = ts && ts.offsetHeight ? ts.getBoundingClientRect().top - 12 : innerHeight - 12;
-        if (r.bottom > top) window.scrollBy({ top: r.bottom - top, behavior: s.reduced ? "auto" : "smooth" }); }
-      else { const qb = q.getBoundingClientRect(); if (r.bottom > qb.bottom - 4) q.scrollBy({ top: r.bottom - qb.bottom + 12, behavior: s.reduced ? "auto" : "smooth" }); } });
+    const arY = arOn ? Math.round(arw.getBoundingClientRect().bottom + scrollY) : null;
+    if (arOn && !typing && (!this._arOn || arY !== this._arY || compact !== this._arC)) requestAnimationFrame(() => reveal(arw));
+    if (!typing) { this._arY = arY; this._arC = compact; }
     this._arOn = arOn;
     // a letter just picked (letter + name): the name field, the next step, comes into view over the face strip (on 1.6.2 it waited
     // half under the cloud, 548..600 under a strip at 519, and the page did not move)
     const lnb = q.querySelector("[data-lnbox]");
-    if (lnb && s.letter && s.letter !== this._lnPick && !typing) requestAnimationFrame(() => { const r = lnb.getBoundingClientRect();
-      if (compact) { const ts = document.querySelector(".nx-typestrip"), top = ts && ts.offsetHeight ? ts.getBoundingClientRect().top - 12 : innerHeight - 12;
-        if (r.bottom > top) window.scrollBy({ top: r.bottom - top, behavior: s.reduced ? "auto" : "smooth" }); }
-      else { const qb = q.getBoundingClientRect(); if (r.bottom > qb.bottom - 4) q.scrollBy({ top: r.bottom - qb.bottom + 12, behavior: s.reduced ? "auto" : "smooth" }); } });
+    if (lnb && s.letter && s.letter !== this._lnPick && !typing) requestAnimationFrame(() => reveal(lnb));
     this._lnPick = s.letter || null;
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       if (f && !document.body.classList.contains("nx-compact") && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
