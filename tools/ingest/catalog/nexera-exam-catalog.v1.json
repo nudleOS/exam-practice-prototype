@@ -1,0 +1,612 @@
+{
+ "catalogId": "https://nexera.app/catalogs/exam/v1",
+ "title": "Nexera exam-practice question types",
+ "components": {
+  "mcq": {
+   "description": "Pick ONE of 2-6 options.",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "mcq"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "opts": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "a": {
+      "type": "integer",
+      "description": "0-based index of the right option"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "opts",
+     "a"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "pickn": {
+   "description": "Pick N of several options.",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "pickn"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "opts": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "pool": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "0-based indexes of every right option"
+     },
+     "count": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "opts",
+     "pool",
+     "count"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "order": {
+   "description": "Put the options in sequence.",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "order"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "opts": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "a": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "option indexes in the right order"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "opts",
+     "a"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "term": {
+   "description": "One term or short phrase (one line).",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "term"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "a": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Every answer the memo accepts, first the memo's own wording"
+     },
+     "reject": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Real terms one or two letters away that are WRONG (e.g. 'complete dominance' for 'incomplete dominance')"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "a"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "list": {
+   "description": "N numbered one-line answers ('Name TWO ...').",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "list"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "count": {
+      "type": "integer"
+     },
+     "pool": {
+      "type": "array",
+      "items": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "description": "Each memo answer as a group of accepted synonyms"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "count",
+     "pool"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "lettername": {
+   "description": "Give the LETTER of a labelled part, then its NAME.",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "lettername"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "letters": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "a": {
+      "type": "object",
+      "properties": {
+       "letter": {
+        "type": "string"
+       },
+       "name": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      },
+      "required": [
+       "letter",
+       "name"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "letters",
+     "a"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "num": {
+   "description": "One number (keypad), within a tolerance.",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "num"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "a": {
+      "type": "number"
+     },
+     "tol": {
+      "type": "number"
+     },
+     "unit": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "a",
+     "tol"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "steps": {
+   "description": "A calculation in numbered steps, each one NUMBER (method marks per step).",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "steps"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "steps": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "label": {
+         "type": "string"
+        },
+        "marks": {
+         "type": "integer"
+        },
+        "a": {
+         "type": "number"
+        },
+        "tol": {
+         "type": "number"
+        },
+        "memo": {
+         "type": "string",
+         "description": "the memo's working for this step"
+        }
+       },
+       "required": [
+        "id",
+        "label",
+        "marks",
+        "a",
+        "tol",
+        "memo"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "steps"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "rubric": {
+   "description": "A written answer marked against the memo's points (Explain / Describe / State ...).",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "rubric"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "bullets": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "The memo's marking points, one per mark (or per 'each'). An alternative answer starts 'OR \u2014 '"
+     },
+     "each": {
+      "type": "integer",
+      "description": "Marks per point when one point is worth more than 1"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "bullets"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "draw": {
+   "description": "No catalogue type fits (a drawing, a graph to plot, a structured essay ...): the learner answers on paper and self-checks against the memo's criteria. Flag it no_fit.",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "draw"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "criteria": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "marks": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "text",
+        "marks"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "memo": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "criteria"
+    ],
+    "additionalProperties": false
+   }
+  }
+ }
+}

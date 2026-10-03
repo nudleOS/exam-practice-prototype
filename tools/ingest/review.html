@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ingestion review</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#051432;--card:#0c1c36;--line:rgba(129,177,255,.25);--text:#eef2ff;--text2:#a9b4d6;--tint:#81b1ff;--ok:#3ddc97;--warn:#f3c14f;--bad:#ff9a9c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Sora,system-ui,sans-serif;padding:20px 16px 60px}
+main{max-width:980px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:22px 0 8px}
+.sub{color:var(--text2);font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.auto{color:var(--ok);border-color:rgba(61,220,151,.4)}.check{color:var(--warn);border-color:rgba(243,193,79,.4)}.blocked{color:var(--bad);border-color:rgba(242,119,122,.45)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:10px 0}
+.part{border-top:1px solid var(--line);padding:10px 0;display:grid;grid-template-columns:86px minmax(0,1fr) 92px;gap:10px}
+.part:first-of-type{border-top:0}.n{font-weight:700;color:var(--tint)}.q{color:var(--text)}.ans{color:var(--text2);font-size:13px;margin-top:4px;white-space:pre-wrap}
+.iss{font-size:12.5px;margin-top:4px}.iss.error{color:var(--bad)}.iss.warn{color:var(--warn)}.flag{font-size:12.5px;margin-top:4px;color:var(--warn)}
+img.fig{max-width:100%;background:#fff;border-radius:10px;margin:6px 0}a.btn{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:linear-gradient(135deg,#0068f8,#1e46ff 50%,#671dff);color:#fff;text-decoration:none;font-weight:700}
+.err{color:var(--bad)}@media (max-width:600px){.part{grid-template-columns:1fr}}
+</style></head><body><main>
+<h1 id="title">Ingestion review</h1><p class="sub" id="meta">Loading…</p>
+<div class="row" id="totals"></div>
+<p style="margin:14px 0"><a class="btn" id="open">Open in the app</a></p>
+<div id="paper"></div>
+</main>
+<script>
+// A person's gate before an AI-ingested paper goes live: every part with its type, its memo answer, the validator's issues, the
+// AI's own flags and the review state. Read-only: decisions are made by re-running the ingest after fixing the data.
+const id = (new URLSearchParams(location.search).get("id") || "").replace(/[^\w.-]/g, "");
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const answer = i => i.t === "mcq" ? "→ " + (i.opts || [])[i.a] : i.t === "pickn" ? "→ " + (i.pool || []).map(k => i.opts[k]).join("; ")
+  : i.t === "order" ? "→ " + (i.a || []).map(k => i.opts[k]).join(" → ") : i.t === "term" ? "→ " + (i.a || []).join(" / ") + ((i.reject || []).length ? "   ✕ not: " + i.reject.join(", ") : "")
+  : i.t === "list" ? (i.pool || []).map((g, k) => (k + 1) + ". " + g.join(" / ")).join("\n") : i.t === "lettername" ? "→ " + i.a.letter + " · " + i.a.name.join(" / ")
+  : i.t === "num" ? "→ " + i.a + (i.unit ? " " + i.unit : "") + "  (± " + i.tol + ")" : i.t === "steps" ? (i.steps || []).map(s => s.label + " = " + s.a + " (" + s.marks + ")").join("\n")
+  : i.t === "rubric" ? (i.bullets || []).map(b => "• " + b).join("\n") : i.t === "draw" ? (i.criteria || []).map(c => "☐ " + c.text + " (" + c.marks + ")").join("\n") : "";
+(async () => {
+  if (!id) { document.getElementById("meta").innerHTML = '<span class="err">Add ?id=&lt;paper id&gt; to the address.</span>'; return; }
+  const base = "out/" + id + "/";
+  const [paper, report] = await Promise.all([fetch(base + "paper.json").then(r => r.json()), fetch(base + "report.json").then(r => r.json())]).catch(() => [null, null]);
+  if (!paper) { document.getElementById("meta").innerHTML = '<span class="err">No ingested paper "' + esc(id) + '": run tools/ingest/ingest.py first.</span>'; return; }
+  const P = paper.paper, rv = report.review || {}, iss = report.issues || [], flags = paper.flags || [];
+  document.getElementById("title").textContent = P.title + " · " + P.sitting;
+  const m = report.meta || {};
+  document.getElementById("meta").textContent = P.subject + " · " + P.total_marks + " marks · " + (m.model ? m.model + " · " + m.input_tokens + " in / " + m.output_tokens + " out tokens" : "fixture (no API call)");
+  const count = s => Object.values(rv).filter(x => x === s).length;
+  document.getElementById("totals").innerHTML = ["auto", "check", "blocked"].map(s => '<span class="chip ' + s + '">' + count(s) + " " + s + "</span>").join("")
+    + '<span class="chip">' + iss.filter(x => x.severity === "error").length + " errors · " + iss.filter(x => x.severity === "warn").length + " warnings</span>"
+    + '<span class="chip">' + flags.length + " AI flags</span>";
+  const blocked = count("blocked") > 0, open = document.getElementById("open");
+  open.href = "../../Exam Practice.dc.html?ingested=" + encodeURIComponent(id) + "&paper=" + encodeURIComponent(id) + "&play=0";
+  if (blocked) { open.textContent = "Blocked: fix the parts marked blocked first"; open.removeAttribute("href"); open.style.opacity = ".5"; }
+  const paperIss = iss.filter(x => /^(paper|-|sections)/.test(x.n) || !Object.prototype.hasOwnProperty.call(rv, x.n));
+  let html = paperIss.length ? '<div class="card">' + paperIss.map(x => '<div class="iss ' + x.severity + '">' + esc(x.n) + ": " + esc(x.msg) + "</div>").join("") + "</div>" : "";
+  paper.sections.forEach(sec => { html += "<h2>" + esc(sec.title) + " · " + sec.total + " marks</h2>";
+    sec.missions.forEach(mi => { html += '<div class="card"><div class="row"><b>' + esc(mi.id) + " " + esc(mi.title) + '</b><span class="sub">' + esc(mi.kind || "") + " · " + mi.marks + " marks</span></div>";
+      if (mi.lead) html += '<p class="sub">' + esc(mi.lead) + "</p>";
+      if (report.figures && report.figures[mi.id]) html += '<img class="fig" alt="' + esc(mi.figure.caption) + '" src="../../' + esc(report.figures[mi.id].src) + '">';
+      if (mi.table) html += '<p class="sub">Table: ' + esc(mi.table.head.join(" | ")) + " · " + mi.table.rows.length + " rows</p>";
+      mi.items.forEach(i => { const st = rv[i.n] || "check";
+        html += '<div class="part"><div><div class="n">' + esc(i.n) + '</div><div class="sub">' + esc(i.t) + " · " + i.marks + "</div></div><div><div class=q>" + esc(i.q) + '</div><div class="ans">' + esc(answer(i)) + "</div>"
+          + iss.filter(x => x.n === i.n).map(x => '<div class="iss ' + x.severity + '">' + esc(x.msg) + "</div>").join("")
+          + flags.filter(f => f.n === i.n).map(f => '<div class="flag">AI flag · ' + esc(f.kind) + ": " + esc(f.detail) + "</div>").join("")
+          + '</div><div><span class="chip ' + st + '">' + st + "</span></div></div>"; });
+      html += "</div>"; }); });
+  document.getElementById("paper").innerHTML = html;
+})();
+</script></body></html>

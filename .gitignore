@@ -5,3 +5,7 @@
 uploads/*
 !uploads/Life Sciences P1 May-June 2026 Eng.pdf
 screenshots/
+
+# AI ingestion output (regenerate with tools/ingest/ingest.py)
+tools/ingest/out/
+tools/ingest/__pycache__/

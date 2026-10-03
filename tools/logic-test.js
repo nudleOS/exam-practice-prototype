@@ -9,9 +9,10 @@ export function logic() {
   while (stack.length) { const n = stack.pop(); if (n.stateNode && n.stateNode.logic) return n.stateNode.logic; if (n.sibling) stack.push(n.sibling); if (n.child) stack.push(n.child); }
   return null;
 }
-export function run() {
-  const L = logic(), P = window.PAPER_LS_P1_2026, out = { full: 0, wrongOk: 0, fails: [] };
-  const items = {}; P.sections.forEach(s => s.missions.forEach(m => m.items.forEach(q => { items["ls:" + q.n] = q; })));
+// run() tests Life Sciences P1; run({ data, prefix }) any paper's data (an ingested paper: window.PAPERS_INGESTED[i], prefix its id + ":")
+export function run(opts = {}) {
+  const L = logic(), P = opts.data || window.PAPER_LS_P1_2026, pre = opts.prefix || "ls:", out = { full: 0, wrongOk: 0, fails: [] };
+  const items = {}; P.sections.forEach(s => s.missions.forEach(m => m.items.forEach(q => { items[pre + q.n] = q; })));
   L.missions().forEach(m => m.parts.forEach(part => {
     const q = items[part.key]; if (!q || (q.t === "draw" && !q.build)) return;   // a built drawing is auto-marked: tested too
     const B = q.build, memo = B ? (B.kind === "hist" ? { type: "histogram", cap: "The number of women with MS in different age groups", xl: B.x[0], yl: B.y[0], step: 100, v: B.answers.slice() }
