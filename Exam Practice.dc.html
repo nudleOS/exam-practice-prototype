@@ -1990,6 +1990,14 @@ class Component extends DCLogic {
     const part = this.part(), s = this.state, key = part ? part.key : "";
     if (q._part !== key) { q._part = key; q.scrollTop = 0; }
     const fk = key + ":" + s.barSeq + ":" + (s.reply ? s.reply.try : 0) + ":" + s.barOpen + ":" + s.memoSeen;
+    // the Check arrow just appeared (the answer is ready): bring it into view, over the face strip on a long page, inside the card
+    // otherwise (on 1.5.4 it came up under the cloud). Not while typing: that path keeps the field's own Check in view already.
+    const arw = q.querySelector("[data-answerrow] [data-submit]"), arOn = !!(arw && arw.offsetHeight);
+    if (arOn && !this._arOn && !typing) requestAnimationFrame(() => { const r = arw.getBoundingClientRect();
+      if (compact) { const ts = document.querySelector(".nx-typestrip"), top = ts && ts.offsetHeight ? ts.getBoundingClientRect().top - 12 : innerHeight - 12;
+        if (r.bottom > top) window.scrollBy({ top: r.bottom - top, behavior: s.reduced ? "auto" : "smooth" }); }
+      else { const qb = q.getBoundingClientRect(); if (r.bottom > qb.bottom - 4) q.scrollBy({ top: r.bottom - qb.bottom + 12, behavior: s.reduced ? "auto" : "smooth" }); } });
+    this._arOn = arOn;
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       if (f && !document.body.classList.contains("nx-compact") && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
         if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); });
@@ -3583,7 +3591,7 @@ class Component extends DCLogic {
     const shadowTint = { ok: "rgba(61,220,151,0.45)", warn: "rgba(224,161,15,0.4)", bad: "rgba(242,119,122,0.4)", neutral: "rgba(0,104,248,0.45)" }[tone];
     // The feedback bar.
     const next = () => this.advance();
-    const nextLabel = s.drill ? (lastPart ? "Finish the drill" : "Next question") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next";   // "Next", not "Next part" (Murci, 2026-10-01)
+    const nextLabel = s.drill ? (lastPart ? "Finish the drill" : "Next question") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next";
     const triesLeft = reply && reply.tries_left != null ? reply.tries_left : 0;
     // Short on phones so the button stays on one line.
     // (a phone says "Try again" only: Back, Skip and "Try again · 2 left" ran 362 px of 328 and pushed Back off the screen on the P30
@@ -3729,7 +3737,10 @@ class Component extends DCLogic {
       // control, an MCQ on a card's tap, a term on the arrow in its field, every other mode on the same arrow in a row under its
       // answer (a drawing on a worded button: an arrow alone would not say "I've drawn it"). The footer keeps Back / Skip / Next.
       checkIsIcon: "false", checkAria: draw ? "I've drawn it" : "Check your answer",
-      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && mode !== "num" && mode !== "lettername" && !(reply && reply.waiting),
+      // the Check arrow of a pick / order / written answer shows only once it can act (Murci, 2026-10-03: "that arrow button did not work
+      // and it is not even supposed to be there"; on 1.5.4 it sat dimmed and disabled, half behind the thought cloud, beside Back and
+      // Skip, until all three cards were placed). A drawing keeps its "I've drawn it" word.
+      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && mode !== "num" && mode !== "lettername" && !(reply && reply.waiting) && (mode === "draw" || !primaryDisabled),
       // the letter-name's arrow is inside its name box, as the term's, the list's and the number's (Murci's P30 lite, 2026-10-03: on its
       // own row it made the page 52 px too tall and started under the strip)
       lnArrowOn: mode === "lettername" && !locked && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
