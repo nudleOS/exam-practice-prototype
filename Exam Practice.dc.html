@@ -2000,6 +2000,14 @@ class Component extends DCLogic {
         if (r.bottom > top) window.scrollBy({ top: r.bottom - top, behavior: s.reduced ? "auto" : "smooth" }); }
       else { const qb = q.getBoundingClientRect(); if (r.bottom > qb.bottom - 4) q.scrollBy({ top: r.bottom - qb.bottom + 12, behavior: s.reduced ? "auto" : "smooth" }); } });
     this._arOn = arOn;
+    // a letter just picked (letter + name): the name field, the next step, comes into view over the face strip (on 1.6.2 it waited
+    // half under the cloud, 548..600 under a strip at 519, and the page did not move)
+    const lnb = q.querySelector("[data-lnbox]");
+    if (lnb && s.letter && s.letter !== this._lnPick && !typing) requestAnimationFrame(() => { const r = lnb.getBoundingClientRect();
+      if (compact) { const ts = document.querySelector(".nx-typestrip"), top = ts && ts.offsetHeight ? ts.getBoundingClientRect().top - 12 : innerHeight - 12;
+        if (r.bottom > top) window.scrollBy({ top: r.bottom - top, behavior: s.reduced ? "auto" : "smooth" }); }
+      else { const qb = q.getBoundingClientRect(); if (r.bottom > qb.bottom - 4) q.scrollBy({ top: r.bottom - qb.bottom + 12, behavior: s.reduced ? "auto" : "smooth" }); } });
+    this._lnPick = s.letter || null;
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       if (f && !document.body.classList.contains("nx-compact") && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
         if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); });
