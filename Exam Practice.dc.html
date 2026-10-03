@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=185">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=188">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=46">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -519,10 +519,12 @@
 
     <div data-playhead="true" style="position:sticky; top:0; z-index:22; background:rgba(var(--nx-c, 25,27,30), 0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line)">
       <div style="box-sizing:border-box; max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:8px; padding:6px 12px">
+        <sc-if value="{{ playCloseOn }}" hint-placeholder-val="{{ false }}">
         <button data-playclose="true" onClick="{{ playClose }}" aria-label="{{ playCloseAria }}" aria-haspopup="{{ playCloseHasPopup }}" style="width:44px; height:44px; flex:none; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer">
           <sc-if value="{{ playCloseMap }}" hint-placeholder-val="{{ true }}"><svg class="pc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><svg class="pc-map" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg><span class="pc-lbl" aria-hidden="true">Map</span></sc-if>
           <sc-if value="{{ playCloseX }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></sc-if>
         </button>
+        </sc-if>
         <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
           <button class="nx-prog nx-where" data-where="true" onClick="{{ openQmap }}" disabled="{{ nxWhereOff }}" aria-haspopup="dialog" aria-expanded="{{ qmapExpanded }}" aria-label="{{ nxWhereAria }}"><span class="nx-plabel">{{ nxProgLabel }}</span><span class="nx-plabel-s" aria-hidden="true">{{ nxProgShort }}</span><svg class="nx-where-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
         </sc-if>
@@ -971,6 +973,7 @@
       <div data-qmap="true" onClick="{{ qmapScrim }}">
         <div data-qmap-panel="true" role="dialog" aria-modal="true" aria-label="{{ qmapTitle }}" tabIndex="-1" onKeyDown="{{ qmapKeys }}">
           <div class="qm-head"><span class="qm-title">{{ qmapTitle }}</span><button class="qm-x" onClick="{{ closeQmap }}" aria-label="Close">×</button></div>
+          <button class="qm-map" onClick="{{ openPaperMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Back to map</button>
           <div class="qm-list">
             <sc-for list="{{ qmapGroups }}" as="g" hint-placeholder-count="3">
               <div class="qm-group" data-cur="{{ g.cur }}">
@@ -979,7 +982,6 @@
               </div>
             </sc-for>
           </div>
-          <button class="qm-map" onClick="{{ openPaperMap }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Open the paper map</button>
         </div>
       </div>
     </sc-if>
@@ -1995,7 +1997,7 @@ class Component extends DCLogic {
   }
   // The header's location is the map (Murci, 2026-09-30: the Map button "doesn't look nice ... handle that in a different way"; the
   // part dots went too): "Question 1.2 · 2 of 8" opens a panel of this Question's groups and every sub-question with how it went,
-  // a tap goes there, and "Open the paper map" leads to the whole map. Off in a fix or a drill round (their own order).
+  // a tap goes there, and "Back to map" (at its top, 2026-10-03) leads to the whole map. Off in a fix or a drill round (their own order).
   nxMapVals(s, nx) {
     const m = this.mission(), ms = this.missions(), on = nx && !!m && !s.drill, q = m ? String(m.id).split(".")[0] : "";
     const close = () => this.setState({ qmap: false }, () => { const w = document.querySelector("[data-where]"); if (w) w.focus(); });
@@ -3736,7 +3738,9 @@ class Component extends DCLogic {
       // the paper's order in the panel (Murci, 2026-09-30): the group's own lead-in line under "Question 1", then the numbered sub-question
       nxHasLead: !!(this.mission() || {}).lead, nxLead: (this.mission() || {}).lead || "", nxLeadNum: (this.mission() || {}).id || "",
       ...this.nxMapVals(s, true), hasPartTopic: !!nxTopic, partTopic: nxTopic, coachFit: "0.8",   // 0.8 = the MCQ robot's framing
-      showPlayXp: false, showCoach: !mcq, playCloseMap: !s.drill, playCloseX: !!s.drill,
+      // the header's way back to the papers is gone (Murci, 2026-10-03: "that Back to map icon should say as such but not be on the
+      // question navbar but instead at the top of the questions modal"): "Back to map" leads the question map; a drill keeps its X
+      showPlayXp: false, showCoach: !mcq, playCloseOn: !!s.drill, playCloseMap: !s.drill, playCloseX: !!s.drill,
       showPlayMarks: false, playMarks: Math.max(0, this.earnedNow() - (this._mcqPending || 0)), playMarksOf: (this.paper() || {}).total || 0,
       playMarksAria: Math.max(0, this.earnedNow() - (this._mcqPending || 0)) + " of " + ((this.paper() || {}).total || 0) + " marks",
       footShow: mcq ? "none" : "block",

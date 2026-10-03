@@ -1070,7 +1070,8 @@ html[data-nx="light"] [data-qmap] { background:rgba(20,40,80,0.18); }
   color:var(--nx-text); box-shadow:0 0 0 2px var(--nx-panel-solid, #0d1a33), 0 0 0 4px var(--nx-accent); }
 html[data-nx="light"] [data-qmap] .qp.none { color:#8a1c22; }
 [data-qmap] .qp.cur.none { color:#ffc9ca; }
-[data-qmap] .qm-map { margin-top:10px; width:100%; height:46px; display:flex; align-items:center; justify-content:center; gap:9px; border-radius:999px; cursor:pointer; font:inherit; font-size:14.5px; font-weight:700;
+/* "Back to map" leads the panel, under its title (Murci, 2026-10-03: it was the header's arrow, and "Open the paper map" at the foot) */
+[data-qmap] .qm-map { margin:2px 0 12px; width:auto; height:42px; padding:0 16px 0 10px; display:inline-flex; align-items:center; justify-content:flex-start; gap:6px; border-radius:999px; cursor:pointer; font:inherit; font-size:14.5px; font-weight:700;
   background:var(--nx-tone); border:1px solid var(--nx-tone-line); color:var(--nx-text); }
 
 /* the panel in the paper's order: QUESTION 1, the group's own lead-in line, then the numbered sub-question; the marks as plain text */
@@ -1779,3 +1780,14 @@ body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp.lost::after, body.nx-p
 body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip > p { margin-bottom:8px; }
 body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::after { left:67px; bottom:27px; }    /* small, centre 70,36 of the pin */
 body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bottom:31px; }   /* big, centre 80,30 */
+/* no way back in the header any more (only a drill's X): the row drops the empty "map" column, whose 8 px gap put the question toggle
+   at x 24, not on the 16 px edge (measured at 360). The toggle's column grows by the arrow's 42 px, so "Question 1.2" keeps its full
+   name with far bigger XP. */
+@media (max-width:600px) {
+  body.nx-play [data-playhead] > div:first-child:not(:has([data-playclose])) { grid-template-columns:minmax(0, 1fr) auto auto !important; grid-template-areas:"brand stats av" !important; }
+}
+/* (a tablet's header grid kept a second row, "map prog prog prog", for the arrow: empty, it still cost its 10 px gap, measured 72 px
+   tall at 768. One row there too.) */
+@media (min-width:601px) {
+  body.nx-play [data-playhead] > div:first-child:not(:has([data-playclose])) { grid-template-areas:"brand . stats av" !important; }
+}
