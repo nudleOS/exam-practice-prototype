@@ -375,12 +375,15 @@
     const BUDDY_3D = !reduced && !(navigator.connection && navigator.connection.saveData);
     const MOVE = { gold: { clip: "dance", from: 4.5 }, silver: { clip: "clap" }, bronze: { clip: "clap" }, none: { clip: "defeat", end: 5.5, fit: 0.85 } };   // lying down it spans ~2.1 units: framed wider
     // Warm the cache while the learner reads the question, so the robot is there when the card lands.
-    if (BUDDY_3D) (window.requestIdleCallback || setTimeout)(() => fetch(BUDDY.src).catch(() => {}));
+    // opts.noPal: no robot on this page at all (Exam Practice on a phone, Murci 2026-10-03: "we can just use that circled image
+    // one"): nothing is fetched or drawn, its lines are the host's to say (it marks every tap: judge), and the glass sinks away
+    const NOPAL = !!opts.noPal;
+    if (BUDDY_3D && !NOPAL) (window.requestIdleCallback || setTimeout)(() => fetch(BUDDY.src).catch(() => {}));
     function buddyStill(box) { box.replaceChildren(Object.assign(document.createElement("img"), { src: BUDDY.still, alt: "" })); }
     // ONE robot element (PAL.el) for the whole page: it lives in its corner and moves into the big card and back.
     // model-floor keeps its renderer through a move and re-frames on a `fit` change, so it never reloads or doubles.
     const PAL = { el: null, x: 0, anim: null, timer: 0, down: false, hurt: false, sweeping: false, cleaning: false, queued: null, cleanT: 0 };
-    function palMake() { const body = $("palBody"); if (!BUDDY_3D) { buddyStill(body); return; }
+    function palMake() { const body = $("palBody"); if (NOPAL) { PAGE.classList.add("nopal"); LAYERS.classList.add("nopal"); return; } if (!BUDDY_3D) { buddyStill(body); return; }
       const mf = document.createElement("model-floor");
       [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "none"], ["fit", "0.8"], ["inplace", ""]].forEach(([k, v]) => mf.setAttribute(k, v));   // inplace: it stays centred in its box and turns about itself
       mf.addEventListener("failed", () => { PAL.el = null; buddyStill(body); }); body.appendChild(mf); PAL.el = mf; palGreet(); }
@@ -935,7 +938,8 @@
       // the glass on the floor, and the sweep as a promise, for a host that moves on only once the robot is home (Exam Practice:
       // Next, then the sweep, then the next question). The question fades meanwhile (.sweeping). A safety net resolves it anyway.
       glass: () => $("shards").children.length,
-      cleanUp: () => new Promise(res => { if (!PAL.el || reduced || !$("shards").children.length) { $("shards").replaceChildren(); res(); return; }
+      cleanUp: () => new Promise(res => { const ps = [...$("shards").children]; if (NOPAL && ps.length && !reduced) { dropAway(ps); setTimeout(res, 640); return; }   // no robot: the pieces sink (420 ms + the last one's 210 ms delay)
+        if (!PAL.el || reduced || !$("shards").children.length) { $("shards").replaceChildren(); res(); return; }
         PAGE.classList.add("sweeping"); PAL.onClean = res;   // (the question stays faded until the next one arrives: arrive() lifts it) clearTimeout(PAL.onCleanT); PAL.onCleanT = setTimeout(cleaned, 9000);
         if (PAL.sweeping) return; palCleanUp(); }),
       // for tests and debugging: the engine's own functions and state
