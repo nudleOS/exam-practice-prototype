@@ -419,3 +419,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the paper's pages on a touch screen (Murci's P30 lite, 2026-10-03: Android's overlay scrollbar flashed at the page's edge when the
    paper opened): a finger scrolls them, so no bar; a mouse (fine pointer) keeps its scrollbar */
 @media (pointer: coarse) { .pv-pages { scrollbar-width: none; } .pv-pages::-webkit-scrollbar { display: none; } }
+/* home on a phone (Murci, 2026-10-03, after his P30 lite walk: "Centre it"): the robot sat 103 px under "Welcome back." and 45 px over
+   the level line (its frame pinned at bottom 9.7%, from the 3D model's days). Centred in its stage, 5 px down for the 10 px before the
+   level line, so the gaps match; same size. */
+@media (max-width: 600px) {
+  body.nx-app span:has(> img[src*="home-robot"]) { top: calc(50% + 5px) !important; bottom: auto !important; transform: translate(-50%, -50%) !important; }
+}
