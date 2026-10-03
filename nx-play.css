@@ -1807,3 +1807,7 @@ body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bott
 [data-qmap-panel] > .qm-head, [data-qmap-panel] > .qm-map { flex:none; }
 [data-qmap-panel] > .qm-map { align-self:flex-start; }
 [data-qmap-panel] > .qm-list { flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+/* the paper open on a long question: no fade over the bar (found on the P30 lite, 1.5.3: scrolled as far as it goes, the answer
+   tiles A / B / C sat 7 px over the bar but under its 84 px fade, nearly invisible; the fade is there for the face strip, which the
+   open paper hides) */
+@media (max-width:600px) { body.nx-play.nx-compact.pv-bottom [data-footer]:not(:has([data-keypad]))::before { display:none !important; } }
