@@ -1680,3 +1680,12 @@ body.nx-play [data-figbox] { container-type: inline-size; }
   /* (the multiple choice: no panel-cap pass measures its hint, so a long one keeps to about three lines and scrolls inside) */
   body.nx-play.nx-face.mcqp-on .nx-typestrip > p { max-height:62px; }
 }
+/* the paper button gets a line of its own on a phone (Murci, 2026-10-03: "i do not want the question 1, medals, and mark to be on the
+   same horizontal line with the view paper icon but instead be on the second line"). The button is fixed (69..109 at 360x702); the
+   question's first line (its row, or a figure above it) now starts 10 px under its foot (row 83 -> 119), so the row needs no room
+   kept for it at its right. Wider screens already put the button above the card. Doubled classes: the fit-4/5 rule (0,4,1) set 8 px. */
+@media (max-width:600px) {
+  body.nx-play.nx-play .mcqp .stage.stage { padding-top:54px !important; }
+  body.nx-play.nx-play main:not(#mq-stage) [data-question][data-question] { padding-top:44px !important; }
+  body.nx-play.nx-play .mcqp .qhead { padding-right:0; }
+}
