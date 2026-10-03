@@ -2475,7 +2475,15 @@ class Component extends DCLogic {
   // are its questions, but LS's are "Section A/B" (Section B holds Questions 2 and 3). Was a placeholder from XP (xp / 300).
   // Skip shows unless it would lead nowhere: when no other part is still open
   // (measured 2026-09-30: it showed on the only part still open whenever that part was not the last index, and led back to itself)
-  canSkip() { const m = this.mission(); if (!m || this.state.drill) return false; return this.nextOpenPart(m) >= 0; }
+  canSkip() { const m = this.mission(); if (!m || this.state.drill) return false; return this.nextOpenPart(m) >= 0 || (!this.state.revisit && !!this.nextMissionOpen()); }
+  // Skip on a mission's LAST open question (Murci, 2026-10-03: "Next mission"): it moves on to the next mission's first open question,
+  // round from the start, so it stays open on the map and comes back; inside a mission Skip keeps the 2026-09-30 order (advance).
+  // Next after an answer is not a skip: it still ends the mission on its done screen.
+  nextMissionOpen() { const ms = this.missions(), n = ms.length, mi = this.state.mi;
+    for (let d = 1; d < n; d++) { const i = (mi + d) % n, pi = ms[i].parts.findIndex(p => { const g = this.pg(p.key); return !g.closed && !g.waiting; }); if (pi >= 0) return { mi: i, pi: pi }; }
+    return null; }
+  skipPart() { const s = this.state, m = this.mission(); if (s.drill || s.revisit || this.nextOpenPart(m) >= 0) return this.advance();
+    const nx = this.nextMissionOpen(); if (nx) this.openMission(nx.mi, nx.pi); else this.advance(); }
   // the next part still open after this one, round from the start; -1 when this is the only one (or none is)
   nextOpenPart(m) { if (!m) return -1; const n = m.parts.length, pi = this.state.pi;
     for (let d = 1; d < n; d++) { const i = (pi + d) % n, p = this.pg(m.parts[i].key); if (!p.closed && !p.waiting) return i; } return -1; }
@@ -2914,7 +2922,7 @@ class Component extends DCLogic {
       targets: { xpBox: document.querySelector("[data-playhead] [data-xppill]") || undefined, marksBox: document.querySelector("[data-playhead] [data-markspill]") || undefined },
       judge: (item, pick) => this.mcqTry(pick),
       onMarksLanded: () => { this._mcqPending = 0; this.forceUpdate(); },
-      onNext: () => this.advance(),
+      onNext: () => { const p = this.part(), g = p ? this.pg(p.key) : null; if (g && !g.closed && !g.waiting) this.skipPart(); else this.advance(); },   // an open question moved on from = a Skip
       seed: s.drill ? {} : this.mcqBook(),
       noWave: false,   // its robot waves once, in place, and holds the hand-out frame (Murci, 2026-09-30)
       centreY: 0.4,   // the panel at the optical centre
@@ -3525,7 +3533,7 @@ class Component extends DCLogic {
     // No memo while the paper is under way (Murci, 2026-10-02: the memo is LOCKED until the paper is done; 2026-10-03, his P30 lite:
     // "Show the memo" beside Try again, "See the memo" when out of tries). A wrong answer offers Skip instead, out of tries offers Next;
     // the memo opens from the paper's Memo tab once the paper is finished.
-    const skipBtn = this.canSkip() ? ["Skip", () => this.advance()] : null;
+    const skipBtn = this.canSkip() ? ["Skip", () => this.skipPart()] : null;
     const bar = {
       marking: { icon: "…", title: "Being marked…", body: "This can take up to 20 seconds.", primary: ["Being marked…", null] },
       waiting: { icon: "•", title: "Saved · waiting for a marker", body: "Your answer is saved. Its marks appear on the map when it is marked.", primary: [nextLabel, next] },
@@ -3600,7 +3608,7 @@ class Component extends DCLogic {
       openFormulas: () => this.setState({ kit: true, kitTab: "formulas" }),
       hasHint: false, hintTitle: "Hint", hintText: reply ? reply.clue || "" : "",   // (the hint shows under the answer now: nxFeedVals; the box above the field made it jump 55 px)
       nxQNum: String(part.number).split(".")[0],
-      nxCanSkip: !closed && !s.marking && !(reply && s.barOpen) && this.canSkip(), skipPart: () => this.advance(),
+      nxCanSkip: !closed && !s.marking && !(reply && s.barOpen) && this.canSkip(), skipPart: () => this.skipPart(),
       nxCanBack: !s.marking && this.canBack(), backPart: () => this.prevPart(),
       // Try it again (Murci, 2026-09-30): any finished question, as practice: 3 fresh chances, the medal as a badge, no marks or XP
       // (check() pays neither on a replay: best_marks only counts a first try that is not one)
