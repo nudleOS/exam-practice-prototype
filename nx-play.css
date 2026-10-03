@@ -936,7 +936,7 @@ body.nx-play [data-playhead] .nx-av { margin-left:4px; }
    48 px pills. Primary (Check, Next part, Next, Try again) filled, as before. Secondary (Skip, Show the memo, Back) a soft tonal
    pill: the same shape and height, no loud colour. Icons are masks in the text colour. */
 /* (solid, not translucent: over the phone's plants a 11% tint vanished, measured at 375x812; a hairline edge gives it its shape) */
-body.nx-play { --nx-tone:#15284f; --nx-tone-h:#1c3565; --nx-tone-line:rgba(129,177,255,0.22);
+body.nx-app, body.nx-play { --nx-tone:#15284f; --nx-tone-h:#1c3565; --nx-tone-line:rgba(129,177,255,0.22);
   --ic-check:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
   --ic-skip:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 5l9 7-9 7z'/%3E%3Cpath d='M18 5v14'/%3E%3C/svg%3E");
   --ic-back:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5'/%3E%3Cpath d='M11 6l-6 6 6 6'/%3E%3C/svg%3E"); }
@@ -1101,7 +1101,7 @@ body.nx-play [data-submit]:active { transform:scale(0.93); }
 body.nx-play [data-submit]:disabled { background:var(--nx-tone); color:var(--nx-text2); box-shadow:none; cursor:default; opacity:0.8; }
 body.nx-play [data-enterhint] { font-size:12.5px; color:var(--nx-text2); margin-top:-2px; }
 body.nx-play:has([data-question] [data-submit]) [data-footer] [data-check] { display:none !important; }
-body.nx-play { --ic-arrow:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E");
+body.nx-app, body.nx-play { --ic-arrow:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E");
   --ic-retry:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7'/%3E%3Cpath d='M3 4v5h5'/%3E%3C/svg%3E"); }
 body.nx-play [data-footer] [data-check] { width:48px; padding:0 !important; font-size:0 !important; gap:0 !important; }
 body.nx-play [data-footer] [data-check]::after { --ic:var(--ic-arrow) !important; width:19px !important; height:19px !important; }
@@ -1831,3 +1831,56 @@ body.nx-play .mcqp .ab b { font-weight:700; width:22px; }
 body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] { min-width:44px !important; min-height:42px !important; height:42px; padding:0 12px !important; border-radius:12px !important; }   /* (grows for its mark badge after a result, "R ✓1") */
 body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] > span:nth-child(2) { font-size:15px !important; }
 body.nx-play main:not(#mq-stage) [data-chips="true"] { gap:6px !important; }
+
+/* ═══ ONE BUTTON SYSTEM (Murci, 2026-10-03: "i keep on seeing so many button designs for next, skip, next question, back, retake,
+   that is the worst defect"; measured 8 looks and 18 names for about 6 actions). Two tiers, one shape, fixed words:
+   PRIMARY = go forward, ONE per screen: the brand gradient pill, its word, the arrow at the END.
+   SECONDARY = everything else: the glass pill, its icon FIRST.
+   Heights 46 (bars and screen buttons) and 38 (.nxb-sm, inside cards and rows); type 14 / 13 px, weight 700. Only the in-field
+   Check arrow, the paper button and the close X stay circles. The play bar's own buttons already follow this (rules above). ═══ */
+body.nx-app { --b-glass:rgba(255,255,255,0.08); --b-glass-h:rgba(255,255,255,0.14); --b-glass-line:rgba(190,210,255,0.36); --b-pri-line:rgba(160,185,255,0.55); }
+html[data-nx="light"] body.nx-app { --b-glass:rgba(255,255,255,0.72); --b-glass-h:#ffffff; --b-glass-line:rgba(16,60,140,0.22); }
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain]),
+body.nx-app.nx-app :is([data-drback], .pm-src, .rv-another, .rv-go, .nxb) {
+  display:inline-flex !important; align-items:center; justify-content:center; gap:8px; box-sizing:border-box;
+  height:46px !important; min-height:46px !important; padding:0 20px !important; border-radius:999px !important;
+  font-family:inherit; font-size:14px !important; font-weight:700 !important; letter-spacing:0 !important; line-height:1 !important;
+  text-transform:none !important; white-space:nowrap; cursor:pointer; transition:background-color 160ms ease, transform 120ms ease, filter 160ms ease; }
+/* primary */
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain]) {
+  background:var(--grad, #1e46ff) !important; color:#ffffff !important; border:1px solid var(--b-pri-line) !important;
+  box-shadow:0 12px 26px -14px rgba(30,70,255,0.8), inset 0 1px 0 rgba(255,255,255,0.22) !important; }
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain]):hover { filter:brightness(1.08); }
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain]):disabled {
+  background:var(--nx-tone) !important; border-color:var(--nx-tone-line, rgba(129,177,255,0.3)) !important; color:var(--nx-text2, #a9b4d6) !important; box-shadow:none !important; cursor:default; filter:none; }
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain]):not(:disabled)::after {
+  content:""; flex:none; width:17px; height:17px; background:currentColor; -webkit-mask:var(--ic-arrow) center / contain no-repeat; mask:var(--ic-arrow) center / contain no-repeat; }
+/* secondary */
+body.nx-app.nx-app :is([data-drback], .pm-src, .rv-another, .rv-go, .nxb-sec) {
+  background:var(--b-glass) !important; color:var(--nx-text, #eef2ff) !important; border:1px solid var(--b-glass-line) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12) !important; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+body.nx-app.nx-app :is([data-drback], .pm-src, .rv-another, .rv-go, .nxb-sec):hover { background:var(--b-glass-h) !important; }
+body.nx-app.nx-app :is([data-drback], .rv-go, .fd-again)::before { content:""; flex:none; width:16px; height:16px; background:currentColor;
+  -webkit-mask:var(--ic) center / contain no-repeat; mask:var(--ic) center / contain no-repeat; }
+body.nx-app.nx-app [data-drback] { --ic:var(--ic-back); }
+body.nx-app.nx-app :is(.rv-go, .fd-again) { --ic:var(--ic-retry); }
+/* the small size, inside cards and rows */
+body.nx-app.nx-app :is(.rv-go, .nxb-sm) { height:38px !important; min-height:38px !important; padding:0 14px !important; font-size:13px !important; gap:7px; }
+body.nx-app.nx-app :is(.rv-go, .nxb-sm)::before { width:15px !important; height:15px !important; }
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain], [data-drback], .pm-src, .rv-another, .rv-go, .nxb):focus-visible {
+  outline:3px solid #81b1ff; outline-offset:3px; }
+body.nx-app.nx-app :is([data-donecontinue], [data-homecontinue], [data-homestart], .pm-go, [data-studies-primary], [data-drillagain], [data-drback], .pm-src, .rv-another, .rv-go, .nxb):active:not(:disabled) { transform:scale(0.97); }
+@media (prefers-reduced-transparency: reduce) { body.nx-app.nx-app :is([data-drback], .pm-src, .rv-another, .rv-go, .nxb-sec) { background:var(--nx-tone) !important; -webkit-backdrop-filter:none; backdrop-filter:none; } }
+/* "Practise again" sits in the result card (Try again is off the bar): under the card's words, on its own line */
+body.nx-play main:not(#mq-stage) [data-feed] .fd-again { margin-top:4px; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"] .fd-again { grid-column:1 / -1; justify-self:start; }
+/* the multiple choice's Next is the bar's Next: the arrow at the end, no white circle around it */
+body.nx-play.nx-play .mcqp .next.show:not(.skip) { padding:0 20px !important; gap:8px !important; }
+body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr.arr { width:17px !important; height:17px !important; background:none !important; box-shadow:none !important; }   /* (.show + .arr twice: the white-circle rule above is (0,6,1)) */
+body.nx-play.nx-play .mcqp .after > .next { margin-left:auto !important; }   /* forward sits right, with or without Back */
+body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr svg { stroke:#ffffff !important; width:17px; height:17px; }
+body.nx-play.nx-play .mcqp .next:not(.skip)::before { display:none !important; }
+/* the multiple choice's "Practise again": under the cards, never in the bar (the bar holds Back and Next) */
+body.nx-play .mcqp .again { display:flex; margin:12px 0 0; }
+body.nx-play .mcqp .again:not(:has(.retry:not([hidden]))) { display:none; }
+body.nx-play.nx-play .mcqp .again .retry.nxb-sm { height:38px !important; min-height:38px !important; padding:0 14px !important; font-size:13px !important; gap:7px !important; }
