@@ -1986,8 +1986,14 @@ class Component extends DCLogic {
     if (q._part !== key) { q._part = key; q.scrollTop = 0; }
     const fk = key + ":" + s.barSeq + ":" + (s.reply ? s.reply.try : 0) + ":" + s.barOpen + ":" + s.memoSeen;
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
-      if (f && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
-        if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); }); } }
+      if (f && !document.body.classList.contains("nx-compact") && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
+        if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); });
+      // a long question on a phone (nx-compact) scrolls the PAGE, not the card: the result came up under the face strip (found on the
+      // P30 lite, Q 1.4.2: "Gold · First try · +100 XP" behind the cloud and the bar's fade), so the page brings it above the strip
+      // (checked first: the uncapped card still reads a few px "scrollable" from a child's glow, and took the card branch instead)
+      else if (f && document.body.classList.contains("nx-compact")) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), ts = document.querySelector(".nx-typestrip"),
+        top = ts && ts.offsetHeight ? ts.getBoundingClientRect().top - 12 : innerHeight - 12, head = document.querySelector("[data-playhead]"), hb = head ? head.getBoundingClientRect().bottom + 8 : 72;
+        if (fb.bottom > top) window.scrollBy({ top: Math.min(fb.bottom - top, fb.top - hb), behavior: s.reduced ? "auto" : "smooth" }); }); } }
   nxStatsVals(s) {
     const close = () => this.setState({ statsOpen: false }, () => { const b = document.querySelector("[data-playhead] .nx-stats-hit"); if (b) b.focus(); });
     return { statsOpen: !!s.statsOpen, statsExpanded: s.statsOpen ? "true" : "false",
