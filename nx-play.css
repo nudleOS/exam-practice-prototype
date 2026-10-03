@@ -1825,3 +1825,9 @@ body.nx-play.nx-play .mcqp .next:not(.show) { display:none !important; }
    than the text prior it": 14.5 px bold letters under a 13 px question). They follow the question's token, so every fit level matches. */
 body.nx-play .mcqp .ab { font-size:var(--nx-numsz) !important; line-height:1.45; }
 body.nx-play .mcqp .ab b { font-weight:700; width:22px; }
+/* letter tiles at ONE compact size on every question type that uses them (Murci, 2026-10-03: "letter pickers are large ... for every
+   question type like that reduce the sizes"): 44 x 42 (a 44 px wide target), 15 px, 6 px apart, so six letters stay on one row at
+   360 px (they wrapped at 52 x 52). Pick-N, order and single letters were 54 x 42 at 16 px. */
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] { min-width:44px !important; min-height:42px !important; height:42px; padding:0 12px !important; border-radius:12px !important; }   /* (grows for its mark badge after a result, "R ✓1") */
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] > span:nth-child(2) { font-size:15px !important; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] { gap:6px !important; }

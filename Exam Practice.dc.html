@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=200">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=202">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=48">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -791,9 +791,9 @@
                   <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnLetterStampBg }}; font-size:12px; font-weight:800; color:{{ lnLetterStampColor }}">{{ lnLetterStamp }}</span>
                 </sc-if>
               </div>
-              <div role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:8px">
+              <div role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                 <sc-for list="{{ letterTiles }}" as="lt" hint-placeholder-count="6">
-                  <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:52px; height:52px; border-radius:14px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:17px; font-weight:800; cursor:pointer">{{ lt.label }}</button>
+                  <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
                 </sc-for>
               </div>
               <span style="display:flex; align-items:center; gap:8px">
