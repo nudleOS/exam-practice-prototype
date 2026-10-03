@@ -3571,7 +3571,7 @@ class Component extends DCLogic {
       waiting: "Saved. A marker will look at it.",
       // (practice: short, as the MCQ robot's; the "XP only" rule is on the result card's chip. The Hall never sees these.)
       full: reply && reply.replay ? (reply.retake ? "Marks won back." : "Nailed it! That one was practice.") : reply && reply.try === 1 ? (mode === "steps" && part.steps.length > 1 ? "Clean. All " + part.steps.length + " steps." : "Clean. Full marks.") : "Got it on try " + (reply ? reply.try : 2) + ". " + (reply && reply.try === 2 ? "Silver!" : "Bronze!"),
-      partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? "One step to fix." : (worth - got) + " marks to find."),
+      partial: got + " of " + worth + ". " + (hasFT ? "Your method carried a step forward." : reply && reply.try > 1 ? "Marks are set on the first try." : worth - got === 1 ? (mode === "steps" ? "One step to fix." : mode === "rubric" ? "One more point to find." : "One mark to find.") : (worth - got) + (mode === "rubric" ? " more points to find." : " marks to find.")),   /* (a written answer has points, not steps: on the P30 lite it said "One step to fix.") */
       zero: "Not quite. Try again.",
       out: "That's all three tries. The memo opens when you finish the paper.",   // (the memo stays locked until then: Murci, 2026-10-02)
       memo: "Here's how the examiner marks it.",
