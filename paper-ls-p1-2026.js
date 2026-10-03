@@ -95,7 +95,13 @@ window.PAPER_LS_P1_2026 = {
         { n: "3.1.1(a)", t: "term", marks: 1, q: "Name the specialised cells in the nervous system that are affected by MS.", a: ["neurons", "neurones", "nerve cells"], clues: ["The cells that carry impulses.", "N…"] },
         { n: "3.1.1(b)", t: "term", marks: 1, q: "Name the part of the cells named in 3.1.1(a) that are damaged.", a: ["myelin sheath"], clues: ["The insulating layer around the axon.", "M… sheath."] },
         { n: "3.1.2", t: "rubric", marks: 2, q: "Describe the relationship between age and the occurrence of MS in men up to the age of 69.", bullets: ["The occurrence of MS is greater in men of higher age groups"], each: 2 },
-        { n: "3.1.3", t: "draw", marks: 6, q: "Draw a histogram to represent the results in women aged 40 to 79.", criteria: [["Type of graph: histogram is drawn", 1], ["Caption includes both variables", 1], ["Correct labels and units on X-axis and Y-axis", 1], ["Scale: correct Y-axis scale and same bar width", 1], ["Plotting: 1–3 co-ordinates correct", 1], ["Plotting: only the 4 required co-ordinates, all correct", 1]], memo: "Bars at 450, 620, 600, 240 for 40–49, 50–59, 60–69, 70–79. Y-axis 'Number of women (per 100 000 people)', X-axis 'Age group (years)'." }
+        { n: "3.1.3", t: "draw", marks: 6, q: "Draw a histogram to represent the results in women aged 40 to 79.", criteria: [["Type of graph: histogram is drawn", 1], ["Caption includes both variables", 1], ["Correct labels and units on X-axis and Y-axis", 1], ["Scale: correct Y-axis scale and same bar width", 1], ["Plotting: 1–3 co-ordinates correct", 1], ["Plotting: only the 4 required co-ordinates, all correct", 1]], memo: "Bars at 450, 620, 600, 240 for 40–49, 50–59, 60–69, 70–79. Y-axis 'Number of women (per 100 000 people)', X-axis 'Age group (years)'.",
+          clues: ["A histogram's bars touch: the age groups run on with no gaps.", "Read the Women column, from 40 to 49 down to 70 to 79."],
+          // built, step by step, one memo criterion a step (T C L S P); plotted to the nearest 10
+          build: { kind: "hist", groups: ["40–49", "50–59", "60–69", "70–79"], answers: [450, 620, 600, 240], tol: 10, top: 700, steps: [50, 100, 200, 300], okSteps: [50, 100, 200],
+            x: ["Age group (years)", "Number of women (per 100 000 people)", "Multiple sclerosis"], y: ["Number of women (per 100 000 people)", "Age group (years)", "Women"],
+            capWords: [["age", "year"], ["women", "ms", "multiple sclerosis", "number", "people", "occurrence"]],
+            labels: { T: "T type of graph", C: "C caption", L: "L labels", S: "S scale", P: "P plotting" } } }
       ] },
       { id: "3.2", title: "Question 3.2", lead: "After the age of 40, the lens of the eye becomes less flexible and is unable to change its shape. This makes it difficult to focus on nearby objects. This condition is called presbyopia. The diagrams show the eye of a person with normal vision and the eye of a person with presbyopia. Both eyes are focussed on an object less than 6 m away.", kind: "Presbyopia", marks: 8, fig: "page 15", items: [
         { n: "3.2.1(a)", t: "term", marks: 1, q: "Identify part A.", note: "A: the transparent front layer of the eye.", a: ["cornea"], clues: ["Light enters through it first.", "C…"] },
@@ -128,7 +134,11 @@ window.PAPER_LS_P1_2026 = {
         { n: "3.6.1", t: "term", marks: 1, q: "Name the growth response that was investigated.", a: ["phototropism"], clues: ["Growth towards light.", "Photo-…"] },
         { n: "3.6.2", t: "term", marks: 1, q: "Name the hormone that causes this growth response.", a: ["auxins", "auxin"], clues: ["Made in the stem tip.", "A…"] },
         { n: "3.6.3", t: "rubric", marks: 2, q: "Explain why the stem tip was removed in plant C.", bullets: ["To remove the auxins and", "prevent phototropism"] },
-        { n: "3.6.4", t: "draw", marks: 3, q: "Draw a diagram to show the appearance of ALL THREE stem tips at the end of the investigation.", criteria: [["Stem A is bent towards the light", 1], ["Stem B has grown straight upwards and is taller than tip C", 1], ["No growth in stem C; stem C is shorter than A or B", 1]], memo: "A bends towards the opening; B grows straight and tall; C does not grow." }
+        { n: "3.6.4", t: "draw", marks: 3, q: "Draw a diagram to show the appearance of ALL THREE stem tips at the end of the investigation.", criteria: [["Stem A is bent towards the light", 1], ["Stem B has grown straight upwards and is taller than tip C", 1], ["No growth in stem C; stem C is shorter than A or B", 1]], memo: "A bends towards the opening; B grows straight and tall; C does not grow.",
+          clues: ["Which tips can still sense where the light comes from?", "No tip, no auxin: what happens to C's growth?"],
+          build: { kind: "stems", alt: "The cardboard box, light from the left, stems A, B and C on the tray",
+            stems: [{ id: "A", tip: "tip", ans: "left" }, { id: "B", tip: "cap", ans: "up" }, { id: "C", tip: "none", ans: "none" }],
+            labels: { A: "A bends to the light", B: "B straight, taller than C", C: "C no growth" } } }
       ] }
     ] }
   ]
