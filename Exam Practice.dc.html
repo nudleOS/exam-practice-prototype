@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=173">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=174">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=46">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1912,7 +1912,9 @@ class Component extends DCLogic {
       if (tp) { const room = compact ? (typing ? 72 : Math.round(innerHeight * 0.28)) + "px" : Math.max(40, Math.round(innerHeight - this.state.kbOff - 8 - (parseFloat(up) || 0) - (qr.top + Math.min(q.scrollHeight + 2, 220)) - 20)) + "px";
         if (tp.style.maxHeight !== room) tp.style.maxHeight = room;
         const more = tp.scrollHeight > tp.clientHeight + 1 ? "true" : "false"; if (tp.dataset.more !== more) tp.dataset.more = more; }
-      const t = ts && ts.getBoundingClientRect(); if (t && t.height) bottom = Math.min(bottom, t.top - 12); }
+      const t = ts && ts.getBoundingClientRect(); if (t && t.height) bottom = Math.min(bottom, t.top - 12);
+      // (the multiple choice, no robot: its screen ends 12 px above the strip, not at the old robot's head; nx-play reads --mq-room)
+      if (mqa && t && t.height) { const room = Math.round(innerHeight - t.top + 12) + "px"; if (document.body.style.getPropertyValue("--mq-room") !== room) document.body.style.setProperty("--mq-room", room); } }
     if (!dock && fr && rowH) bottom = Math.min(bottom, fr.getBoundingClientRect().top - 14);
     const co = document.querySelector("main > aside[aria-label='Your companion']"); if (co && !strip) { const c = co.getBoundingClientRect(), bub = co.querySelector(":scope > p");
       const under = c.width && c.left < qr.right - 1 && c.right > qr.left + 1;

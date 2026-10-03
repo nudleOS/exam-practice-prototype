@@ -1675,6 +1675,9 @@ body.nx-play [data-figbox] { container-type: inline-size; }
     align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
   body.nx-play.nx-face.mcqp-on .nx-typestrip { display:flex !important; }
   .mcqp.nopal .pal, .mcqp.nopal .pal-say { display:none !important; }
+  /* the multiple choice's screen ended at the robot's head (rule above, 470 of 640): it now ends 12 px over the face strip (the host
+     measures --mq-room; 126 = bar 66 + 8 + a one-line strip 40 + 12) */
+  body.nx-play.nx-face .mcqp-screen { bottom:var(--mq-room, 126px) !important; }
 }
 @media (max-width:600px) {
   /* (the multiple choice: no panel-cap pass measures its hint, so a long one keeps to about three lines and scrolls inside) */
