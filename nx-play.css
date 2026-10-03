@@ -1656,3 +1656,11 @@ body.nx-play [data-footer] [data-bar] button[data-kind="skip"]::after { content:
 /* the paper open at the bottom: the robot waits (its strip already hides), so its words go too (Murci's P30 lite, 2026-10-03: "You got
    this!" floated over the answer box while the paper was open) */
 body.nx-play.pv-bottom main:not(#mq-stage) > aside[aria-label="Your companion"] > p, body.nx-play.pv-bottom .mcqp .pal-say { opacity:0 !important; pointer-events:none; }
+/* the figure box is the markers' container (their size is in cqw of it) */
+body.nx-play [data-figbox] { container-type: inline-size; }
+/* a long question on a phone: the fade over the bar reaches up past the strip (84 px, near-solid at the strip's top), so what scrolls
+   under them fades out; at 64 px a check arrow's top showed as a sliver above the strip (measured on 1.6.2(a) at 360x702) */
+@media (max-width:600px) {
+  body.nx-play.nx-compact [data-footer]:not(:has([data-keypad]))::before { height:84px !important;
+    background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.96) 45%, rgb(var(--nx-c, 25,27,30))) !important; }
+}

@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=169">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=170">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=42">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -793,7 +793,10 @@
                 </sc-for>
               </div>
               <span style="display:flex; align-items:center; gap:8px">
-                <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:16px; outline:none" />
+                <span data-lnbox="true" style="position:relative; display:flex; flex:1 1 auto; min-width:0">
+                  <input data-field="true" value="{{ lname }}" onChange="{{ onLname }}" onKeyDown="{{ onEnter }}" aria-label="Name of the part" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 58px 0 14px; border-radius:12px; border:1px solid {{ lnNameBorder }}; background:var(--field); color:var(--text); font-size:16px; outline:none" />
+                  <sc-if value="{{ lnArrowOn }}" hint-placeholder-val="{{ false }}"><button data-submit="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if>
+                </span>
                 <sc-if value="{{ lnNameHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnNameStampBg }}; font-size:12px; font-weight:800; color:{{ lnNameStampColor }}">{{ lnNameStamp }}</span>
                 </sc-if>
@@ -3321,6 +3324,10 @@ class Component extends DCLogic {
     let minD = Infinity; const hs = F.hotspots.filter(h => letterSet.indexOf(h.letter) !== -1);
     for (let a = 0; a < hs.length; a++) for (let b = a + 1; b < hs.length; b++) minD = Math.min(minD, Math.hypot((hs[a].x - hs[b].x) * figW, (hs[a].y - hs[b].y) * figH));
     const spot = Math.max(24, Math.min(phone ? 36 : 40, Math.floor(minD - 3)));
+    // the markers' size follows the figure as DRAWN (Murci's P30 lite, 2026-10-03: 1.6.2(a)'s figure is 141 px wide on a phone, not
+    // the full-width 308 the size was worked out for, so B and C, 16 px apart, overlapped): the closest pair's gap as a share of the
+    // figure's width, in container units of the figure box, between 16 px and the usual cap. The letter buttons stay the big targets.
+    const spotFrac = isFinite(minD) && figW > 0 ? minD / figW : 0.2, spotCss = "clamp(16px, calc(" + (spotFrac * 100).toFixed(2) + "cqw - 3px), " + spot + "px)";
     const hint = !letterSet.length ? F.caption : locked ? (closed ? "Closed · the figure shows your answer" : "Your answer is being checked") : mode === "order" ? "Tap the letters on the figure in order"
       : mode === "pickn" ? "Tap " + (part.count || 1) + " letters on the figure" : "Tap a letter on the figure";
     // A figure to read (no letters to tap) shows whole, zoomed out to the room it has (nx-play: --fig-h), and folds away to a bar
@@ -3329,7 +3336,7 @@ class Component extends DCLogic {
     // (a figure with letters folds too when the letters are also a row of chips to tap, pickn / order / mcq: then it is not the only
     // way to answer; a letter-and-name part answers on the figure alone, so it never folds)
     const canHide = !letterSet.length || mode !== "lettername", hidden = canHide && !!s.figHidden;
-    return { hasScene: false, hasFigure: true, figSrc: F.src, figAspect: F.w + " / " + F.h, figSpots: spots, figSpotSize: spot + "px",
+    return { hasScene: false, hasFigure: true, figSrc: F.src, figAspect: F.w + " / " + F.h, figSpots: spots, figSpotSize: spotCss,
       // the group's lead IS this figure's caption ("The diagrams below represent ...") and the figure is right there above it: the
       // line goes (Murci, 2026-10-01: "eats space and is wrong because it says below"); the figure's description still reads it out
       figSaysLead: F.caption === String((this.mission() || {}).lead || "") ? "true" : "false",   // (a figure to tap too: its row shows the tap hint, not the caption)
@@ -3676,7 +3683,10 @@ class Component extends DCLogic {
       // control, an MCQ on a card's tap, a term on the arrow in its field, every other mode on the same arrow in a row under its
       // answer (a drawing on a worded button: an arrow alone would not say "I've drawn it"). The footer keeps Back / Skip / Next.
       checkIsIcon: "false", checkAria: draw ? "I've drawn it" : "Check your answer",
-      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && mode !== "num" && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
+      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && mode !== "num" && mode !== "lettername" && !(reply && reply.waiting),
+      // the letter-name's arrow is inside its name box, as the term's, the list's and the number's (Murci's P30 lite, 2026-10-03: on its
+      // own row it made the page 52 px too tall and started under the strip)
+      lnArrowOn: mode === "lettername" && !locked && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
       primaryBg: primaryDisabled ? "var(--panel)" : "var(--grad)", primaryColor: primaryDisabled ? "var(--text4)" : "#ffffff",
       primaryCursor: primaryDisabled ? "not-allowed" : "pointer", primaryShadow: primaryDisabled ? "none" : "0 10px 26px rgba(30,70,255,0.3)",
       ...this.playHeadVals(s, part),
