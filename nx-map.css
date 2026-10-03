@@ -449,3 +449,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .pm-chip-row::-webkit-scrollbar { display: none; }
   .pm-chip-row > .pm-chip { flex: none; scroll-snap-align: start; white-space: nowrap; }
 }
+/* the map's foot on a phone (measured on the P30 lite, 2026-10-03): under START sat 87 px of nothing (the group's 18 px margin and
+   the column's 48 px padding), so a 4-paper subject scrolled 72 px only to show it. 16 px + the safe area, no group margin. */
+@media (max-width: 599px) {
+  .pm-col { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .pm-group:last-child { margin-bottom: 0; }
+}
