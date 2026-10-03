@@ -1720,6 +1720,31 @@ body.nx-play [data-figbox] { container-type: inline-size; }
   /* the marks and XP pills 1 px tighter a side (9 -> 8): the toggle's column was 82.3 px for "Question 1.2" (83.4); now 86 */
   body.nx-play.nx-play [data-playhead] .nx-stats > * { padding:0 8px !important; }
 }
+/* the medals as glowing COINS (Murci, 2026-10-03: "redesign the medal circles to look more nice and glow"; the mockup's coins, but "the
+   rotating won medal is just doing too much", so no spinning ring). 17 px (was 13). Layers: the element carries the outer ring, ::before
+   the glow, ::after the coin's face (a shine top-left, an inner rim, a shaded foot) painted over the glow, so the glow is never on the
+   face. Waiting medals sit dim; the one in play glows in its own metal and breathes (the glow's OPACITY animates: the compositor runs
+   it, no repaint per frame on a low-end phone); a won medal glows brighter, held; a used try goes grey with its crack. Typed questions
+   (.tp now / won / lost) and the multiple choice (i now / yes / no) share it. */
+body.nx-play.nx-play main:not(#mq-stage) [data-tries], body.nx-play.nx-play .mcqp .qhead .tries { gap:9px; }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp, body.nx-play.nx-play .mcqp .qhead .tries i { position:relative; width:17px; height:17px; border-radius:50%; background:none; box-shadow:none; opacity:0.45; }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp::after, body.nx-play.nx-play .mcqp .qhead .tries i::after { content:""; position:absolute; inset:0; border-radius:50%; filter:saturate(0.7);
+  background:radial-gradient(circle at 34% 28%, rgba(255,255,255,0.95) 0 9%, transparent 30%),
+    radial-gradient(circle, transparent 4.6px, rgba(255,255,255,0.35) 4.6px 5.6px, transparent 5.6px), var(--tp);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.35); }
+body.nx-play.nx-play :is(main:not(#mq-stage) [data-tries] .tp, .mcqp .qhead .tries i).gold { --c:255,206,84; }
+body.nx-play.nx-play :is(main:not(#mq-stage) [data-tries] .tp, .mcqp .qhead .tries i).silver { --c:220,230,245; }
+body.nx-play.nx-play :is(main:not(#mq-stage) [data-tries] .tp, .mcqp .qhead .tries i).bronze { --c:240,160,100; }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp:is(.now, .won), body.nx-play.nx-play .mcqp .qhead .tries i:is(.now, .yes) { opacity:1; box-shadow:0 0 0 2px var(--nx-panel-solid, #0d1a33), 0 0 0 3.5px rgba(var(--c), 0.9); }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp:is(.now, .won)::after, body.nx-play.nx-play .mcqp .qhead .tries i:is(.now, .yes)::after { filter:none; }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp:is(.now, .won)::before, body.nx-play.nx-play .mcqp .qhead .tries i:is(.now, .yes)::before { content:""; position:absolute; inset:-8px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(var(--c), 0.6) 40%, rgba(var(--c), 0) 70%); }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp.now::before, body.nx-play.nx-play .mcqp .qhead .tries i.now::before { animation:nx-coin 2.4s ease-in-out infinite; }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp.won::before, body.nx-play.nx-play .mcqp .qhead .tries i.yes::before { inset:-10px; background:radial-gradient(circle, rgba(var(--c), 0.85) 40%, rgba(var(--c), 0) 70%); }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp.lost, body.nx-play.nx-play .mcqp .qhead .tries i.no { opacity:0.6; }
+body.nx-play.nx-play main:not(#mq-stage) [data-tries] .tp.lost::after, body.nx-play.nx-play .mcqp .qhead .tries i.no::after { filter:grayscale(1) brightness(0.65); background:var(--tp); box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.15); }
+@keyframes nx-coin { 50% { opacity:0.35; } }
+@media (prefers-reduced-motion: reduce) { body.nx-play.nx-play :is(main:not(#mq-stage) [data-tries] .tp, .mcqp .qhead .tries i)::before { animation:none !important; } }
 @media (prefers-reduced-transparency: reduce) { body.nx-play.nx-play [data-footer] [data-skip][data-skip], body.nx-play.nx-play .mcqp .next.skip { background:var(--nx-tone) !important; -webkit-backdrop-filter:none; backdrop-filter:none; } }
 /* the fullest phone bar (after a right answer on try 2: Back, Try again, Next) with Back's word back: 334 px of 328 at 360 px, so the
    row ran past its left gutter (Back at x 4). Buttons 14 px a side, Next 16 (was 16 / 20): 318 px. Under 360 px Back is its arrow
