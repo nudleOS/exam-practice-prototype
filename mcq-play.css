@@ -447,3 +447,9 @@
   /* ...and on the big card too: ".tile.hero .back .not { display:block }" is (0,5,0) and outranked the line above (0,4,0), so an
      empty "why not" drew a bare divider under the answer on every question with no such text (measured on LS 1.1.1) */
   .mcqp .tile.hero .back .why:empty, .mcqp .tile.hero .back .not:empty { display:none; }
+  /* the paper's figure for a question (it.img): on its white paper plate, under the stem; capped so the cards keep their room, a tap
+     enlarges it (2026-10-03) */
+  .mcqp .qimg { margin:0 0 12px; padding:6px; border-radius:12px; background:#fff; cursor:zoom-in; max-width:520px; }
+  .mcqp .qimg img { display:block; width:100%; height:auto; max-height:min(28svh, 210px); object-fit:contain; }
+  .mcqp .qimg.big { cursor:zoom-out; max-width:none; } .mcqp .qimg.big img { max-height:none; }
+  .mcqp .qimg:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }

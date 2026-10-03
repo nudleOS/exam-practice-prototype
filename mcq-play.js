@@ -216,7 +216,14 @@
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
         `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
         (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "") +
-      (it.fig ? `<div class="qfig"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/></svg><span>The diagram is on ${it.fig} of the paper</span></div>` : "");   // a question never loses its figure (the paper images are not in yet)
+      // the paper's own figure (opts gives it as it.img {src, w, h, alt}): under the stem, as printed; a tap enlarges it (2026-10-03, Murci:
+      // "the real paper had images on MCQ but our MCQs dont have any of those images")
+      (it.img ? `<figure class="qimg" role="button" tabindex="0" aria-label="Figure for ${it.n}. Tap to enlarge"><img src="${it.img.src}" width="${it.img.w}" height="${it.img.h}" alt="${esc(it.img.alt || "")}"></figure>` :
+      it.fig ? `<div class="qfig"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/></svg><span>The diagram is on ${it.fig} of the paper</span></div>` : "");   // a question never loses its figure (the paper images are not in yet)
+      const qim = st.querySelector(".qimg");
+      if (qim) { const im = qim.querySelector("img"); if (opts.fit) im.addEventListener("load", () => fitCards(), { once: true });
+        const zoom = () => { qim.classList.toggle("big"); qim.setAttribute("aria-label", "Figure for " + it.n + (qim.classList.contains("big") ? ". Tap to make smaller" : ". Tap to enlarge")); };
+        qim.onclick = zoom; qim.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); zoom(); } }; }
       const g = document.createElement("div"); g.className = "tiles"; g.id = "mq-tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
       it.opts.forEach((o, i) => {
         const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
