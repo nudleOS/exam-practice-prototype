@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=174">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=177">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=46">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1796,6 +1796,7 @@ class Component extends DCLogic {
     // a phone's question pages have no 3D robot: its circled face speaks from the strip on every question (Murci, 2026-10-03: "maybe
     // we do not need the robot on mobile for questions and we can just use that circled image one"; the done screen keeps the robot)
     document.body.classList.toggle("nx-face", st.screen === "play" && innerWidth <= 600);
+    if (st.screen === "play") this.fitWhere();
     // nx-app: the navy look on every screen but the Hall (Murci, 2026-09-29: "the rest of the app the same as the dark background";
     // the Hall stays as it is until he asks). On <html> too: the page's own background reads its tokens from the root.
     const nxApp = this.nxApp(); document.body.classList.toggle("nx-app", nxApp); document.documentElement.classList.toggle("nx-app", nxApp);
@@ -1875,6 +1876,19 @@ class Component extends DCLogic {
   // under the panel (a phone, an upright tablet), down to its head, so its words stay in view. Measured before: the memo made the
   // page 791 px tall on a 648 px screen (the header went under the top bar); on a phone the grown panel hid "Clean. Full marks.".
   // A new result or hint is scrolled into view inside it; a new part starts at its top.
+  // The header's question toggle on a phone: "Question 1.2" while it fits, "Q 1.2" once the marks / XP pills have grown into its room
+  // (Murci, 2026-10-03: the full name, no "4 of 8"; at 360 px it has 82 of the 85 px "Question 2.3" needs, less as the pills grow).
+  // The full name is measured even while hidden (nx-play keeps it laid out, invisible), so it comes back when there is room again.
+  fitWhere() { const b = document.querySelector("[data-playhead] [data-where]"); if (!b) return;
+    const full = b.querySelector(".nx-plabel"), shown = b.querySelector(b.dataset.tight === "true" ? ".nx-plabel-s" : ".nx-plabel");
+    if (innerWidth > 600 || !full || !shown) { if (b.dataset.tight) delete b.dataset.tight; return; }
+    // its room is its grid column (1fr: what the back button, the pills and the picture leave; a child's width can overhang its column,
+    // the back button's 40 px in 34), less the toggle's own padding, gap and chevron
+    const row = b.parentElement, cs = getComputedStyle(row), gap = parseFloat(cs.columnGap) || 0, tr = cs.gridTemplateColumns.split(" ").map(parseFloat);
+    let x = row.getBoundingClientRect().left + (parseFloat(cs.paddingLeft) || 0), col = 0; const bl = b.getBoundingClientRect().left;
+    while (col < tr.length - 1 && bl >= x + tr[col] + gap / 2) { x += tr[col] + gap; col++; }
+    const room = (tr[col] || 0) - (b.getBoundingClientRect().width - shown.getBoundingClientRect().width);
+    const tight = full.scrollWidth > room + 0.5 ? "true" : "false"; if (b.dataset.tight !== tight) b.dataset.tight = tight; }
   nxPanelCap() { const q = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"); if (!q) { document.body.classList.remove("nx-dock", "nx-compact"); document.body.style.removeProperty("--nx-dockH"); this._compact = null; return; }
     this.nxCentre(q);
     const qr = q.getBoundingClientRect(), fe = document.querySelector("[data-footer]"); let bottom = innerHeight - 16;
@@ -3715,8 +3729,10 @@ class Component extends DCLogic {
     const nxKind = ((this.mission() || {}).kind || "").trim(), nxTopic = /^(multiple choice|a, b, both or none|definitions)$/i.test(nxKind) ? "" : nxKind;
     const mParts = (this.mission() || {}).parts || [], nxK = Math.min(mParts.length, s.pi + 1);
     return { nxLook: true, nxNoLook: false, nxProgK: nxK, nxProgN: mParts.length, nxProgAria: "Part " + nxK + " of " + mParts.length,
-      nxProgLabel: ((this.mission() || {}).title || "") + " · " + nxK + " of " + mParts.length,   // the header's centre: "Question 1.2 · 2 of 8"
-      nxProgShort: String((this.mission() || {}).title || "").replace(/^Question\s*/i, "Q ") + " · " + nxK + "/" + mParts.length,   // a phone's one-row header: "Q 1.2 · 2/8"
+      // the header's centre names the question only (Murci, 2026-10-03: "remove 4 of 8", it read "Question 1.2 · 4 of 8"); the
+      // count stays for screen readers (nxProgAria), and the question map it opens marks the current part
+      nxProgLabel: (this.mission() || {}).title || "",
+      nxProgShort: String((this.mission() || {}).title || "").replace(/^Question\s*/i, "Q "),   // a phone's fallback, "Q 1.2" (fitWhere)
       // the paper's order in the panel (Murci, 2026-09-30): the group's own lead-in line under "Question 1", then the numbered sub-question
       nxHasLead: !!(this.mission() || {}).lead, nxLead: (this.mission() || {}).lead || "", nxLeadNum: (this.mission() || {}).id || "",
       ...this.nxMapVals(s, true), hasPartTopic: !!nxTopic, partTopic: nxTopic, coachFit: "0.8",   // 0.8 = the MCQ robot's framing

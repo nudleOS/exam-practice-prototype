@@ -1692,3 +1692,21 @@ body.nx-play [data-figbox] { container-type: inline-size; }
   body.nx-play.nx-play main:not(#mq-stage) [data-question][data-question] { padding-top:44px !important; }
   body.nx-play.nx-play .mcqp .qhead { padding-right:0; }
 }
+/* the header's question toggle says "Question 1.2" only (Murci, 2026-10-03: "remove 4 of 8"). At 360 px it needed 82 px and had 71
+   (ellipsis): the row kept an empty "prog" column (0 px, but one more 8 px gap), so the toggle now takes that column's free share
+   itself, and its padding + gap give back 3 px. */
+@media (max-width:600px) {
+  body.nx-play [data-playhead] > div:first-child { grid-template-columns:auto minmax(0, 1fr) auto auto !important; grid-template-areas:"map brand stats av" !important; }
+  body.nx-play [data-playhead] .nx-where.nx-where { padding:0 8px 0 10px !important; gap:4px; }
+}
+@media (max-width:600px) {
+  /* the full name on a phone; "Q 1.2" only when the host finds it does not fit (fitWhere sets data-tight). Hidden, the full name stays
+     laid out (absolute, invisible) so the host can still measure it. */
+  body.nx-play [data-playhead] .nx-where { position:relative; }
+  body.nx-play [data-playhead] .nx-where .nx-plabel { display:block !important; font-size:13px; font-weight:600; color:var(--nx-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.nx-play [data-playhead] .nx-where .nx-plabel-s { display:none; }
+  body.nx-play [data-playhead] .nx-where[data-tight="true"] .nx-plabel { position:absolute; left:0; top:0; visibility:hidden; pointer-events:none; }
+  body.nx-play [data-playhead] .nx-where[data-tight="true"] .nx-plabel-s { display:block; }
+  /* the marks and XP pills 1 px tighter a side (9 -> 8): the toggle's column was 82.3 px for "Question 1.2" (83.4); now 86 */
+  body.nx-play.nx-play [data-playhead] .nx-stats > * { padding:0 8px !important; }
+}
