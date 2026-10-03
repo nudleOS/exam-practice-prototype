@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=205">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=207">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=48">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -580,46 +580,6 @@
 
 
       <div data-question="true" style="min-width:0; display:flex; flex-direction:column; gap:14px">
-        <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
-          <div style="border-radius:16px; border:1px solid var(--line); background:var(--card2, rgba(var(--nx-c, 29,32,35), 0.82))">
-            <button onClick="{{ toggleCtx }}" aria-expanded="{{ ctxOpen }}" style="width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:10px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
-              <span style="flex:none; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
-              <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ ctxPeek }}</span>
-              <span style="flex:none; font-size:12.5px; font-weight:700; color:var(--tint)">{{ ctxAction }}</span>
-            </button>
-            <sc-if value="{{ ctxOpen }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:0 14px 14px; display:flex; flex-direction:column; gap:12px">
-                <sc-if value="{{ hasCtxText }}" hint-placeholder-val="{{ false }}">
-                  <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty; white-space:pre-line">{{ context }}</p>
-                </sc-if>
-                <!-- the paper's table, as printed (grid rows, not <table>: the parser would lift sc-for out of a tbody) -->
-                <sc-if value="{{ ctxHasTable }}" hint-placeholder-val="{{ false }}">
-                  <div role="table" aria-label="{{ ctxTableLabel }}" data-ctx-table="true" style="border-radius:12px; border:1px solid var(--line); overflow:hidden; font-size:13.5px; line-height:1.4; color:var(--text2)">
-                    <sc-if value="{{ ctxHasTableTitle }}" hint-placeholder-val="{{ false }}">
-                      <div style="padding:8px 12px; font-size:12px; font-weight:800; color:var(--text); background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line); text-wrap:pretty">{{ ctxTableTitle }}</div>
-                    </sc-if>
-                    <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line)">
-                      <sc-for list="{{ ctxTableHead }}" as="th" hint-placeholder-count="3">
-                        <span role="columnheader" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}">{{ th.t }}</span>
-                      </sc-for>
-                    </div>
-                    <sc-for list="{{ ctxTableRows }}" as="tr" hint-placeholder-count="3">
-                      <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; border-top:{{ tr.line }}">
-                        <sc-for list="{{ tr.cells }}" as="td" hint-placeholder-count="3">
-                          <span role="{{ td.role }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums">{{ td.t }}</span>
-                        </sc-for>
-                      </div>
-                    </sc-for>
-                  </div>
-                </sc-if>
-                <sc-if value="{{ ctxHasAfter }}" hint-placeholder-val="{{ false }}">
-                  <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty">{{ ctxAfter }}</p>
-                </sc-if>
-              </div>
-            </sc-if>
-          </div>
-        </sc-if>
-
         <sc-if value="{{ hasScene }}" hint-placeholder-val="{{ false }}">
           <div data-scene="true" style="border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
             <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ sceneAlt }}</span>
@@ -743,6 +703,48 @@
             <span data-try="true" style="font-size:12.5px; font-weight:700; color:{{ tryColor }}">{{ tryLabel }}</span>
           </div>
           <sc-if value="{{ nxHasLead }}" hint-placeholder-val="{{ false }}"><p data-lead="true" data-figlead="{{ figSaysLead }}"><b>{{ nxLeadNum }}</b> {{ nxLead }}</p></sc-if>
+          <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
+            <div data-ctx="true" data-open="{{ ctxOpen }}" style="border-radius:16px; border:1px solid var(--line); background:var(--card2, rgba(var(--nx-c, 29,32,35), 0.82))">
+              <button onClick="{{ toggleCtx }}" aria-expanded="{{ ctxOpen }}" style="width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:10px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
+                <span style="flex:none; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
+                <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ ctxPeek }}</span>
+                <span style="flex:none; font-size:12.5px; font-weight:700; color:var(--tint)">{{ ctxAction }}</span>
+              </button>
+              <sc-if value="{{ ctxOpen }}" hint-placeholder-val="{{ false }}">
+                <div data-ctx-scrim="true" onClick="{{ toggleCtx }}" aria-hidden="true"></div>
+                <div data-ctx-body="true" role="{{ ctxRole }}" aria-modal="{{ ctxModal }}" aria-label="{{ ctxSheetTitle }}" style="padding:0 14px 14px; display:flex; flex-direction:column; gap:12px">
+                  <div data-ctx-head="true"><span>{{ ctxSheetTitle }}</span><button type="button" data-ctx-x="true" onClick="{{ toggleCtx }}" aria-label="Close the shared information">×</button></div>
+                  <sc-if value="{{ hasCtxText }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty; white-space:pre-line">{{ context }}</p>
+                  </sc-if>
+                  <!-- the paper's table, as printed (grid rows, not <table>: the parser would lift sc-for out of a tbody) -->
+                  <sc-if value="{{ ctxHasTable }}" hint-placeholder-val="{{ false }}">
+                    <div role="table" aria-label="{{ ctxTableLabel }}" data-ctx-table="true" style="border-radius:12px; border:1px solid var(--line); overflow:hidden; font-size:13.5px; line-height:1.4; color:var(--text2)">
+                      <sc-if value="{{ ctxHasTableTitle }}" hint-placeholder-val="{{ false }}">
+                        <div style="padding:8px 12px; font-size:12px; font-weight:800; color:var(--text); background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line); text-wrap:pretty">{{ ctxTableTitle }}</div>
+                      </sc-if>
+                      <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line)">
+                        <sc-for list="{{ ctxTableHead }}" as="th" hint-placeholder-count="3">
+                          <span role="columnheader" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}">{{ th.t }}</span>
+                        </sc-for>
+                      </div>
+                      <sc-for list="{{ ctxTableRows }}" as="tr" hint-placeholder-count="3">
+                        <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; border-top:{{ tr.line }}">
+                          <sc-for list="{{ tr.cells }}" as="td" hint-placeholder-count="3">
+                            <span role="{{ td.role }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums">{{ td.t }}</span>
+                          </sc-for>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ ctxHasAfter }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty">{{ ctxAfter }}</p>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
           <h2 data-stem="true" tabIndex="-1" style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty; outline:none"><sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-stemnum="true">{{ partNumber }}</span></sc-if>{{ stem }}</h2>
 
           <sc-if value="{{ showRules }}" hint-placeholder-val="{{ false }}">
@@ -1816,6 +1818,7 @@ class Component extends DCLogic {
       if (this.state.paperSourceOpen) { e.preventDefault(); this.closePaperSource(); return; }
       if (this.state.finishCard) { e.preventDefault(); this.closeFinish(); return; }
       if (this.state.figBig) { e.preventDefault(); this.closeFigBig(); return; }
+      if (document.body.classList.contains("nx-ctxsheet")) { e.preventDefault(); this.setState({ ctxOpen: false }, () => { const b = document.querySelector("[data-ctx] > button"); if (b) b.focus({ preventScroll: true }); }); return; }
       if (this.state.sheet || this.state.pop) { e.preventDefault(); this.closeLayer(); return; }
       if (this.state.pvOpen) { e.preventDefault(); this.closePreview(); }
     };
@@ -1854,6 +1857,8 @@ class Component extends DCLogic {
     // a phone's question pages have no 3D robot: its circled face speaks from the strip on every question (Murci, 2026-10-03: "maybe
     // we do not need the robot on mobile for questions and we can just use that circled image one"; the done screen keeps the robot)
     document.body.classList.toggle("nx-face", st.screen === "play" && innerWidth <= 600);
+    // the extract's sheet is open on a phone: the strip, the bar and the paper button step back under it (they sit in their own layers)
+    document.body.classList.toggle("nx-ctxsheet", st.screen === "play" && innerWidth <= 600 && st.ctxOpen === true && !!document.querySelector("[data-ctx]"));
     if (st.screen === "play") this.fitWhere();
     // nx-app: the navy look on every screen but the Hall (Murci, 2026-09-29: "the rest of the app the same as the dark background";
     // the Hall stays as it is until he asks). On <html> too: the page's own background reads its tokens from the root.
@@ -3737,7 +3742,9 @@ class Component extends DCLogic {
       if (v === "missing") return { t: "missing", c: "#a4a9ae", bg: "rgba(255,255,255,0.06)", b: "var(--line2)" };
       return { t: verdictInfo(v)[1].toLowerCase(), c: "#a4a9ae", bg: "rgba(255,255,255,0.06)", b: "var(--line2)" };
     };
-    const ctxOpen = s.ctxOpen != null ? s.ctxOpen : (s.drill ? true : s.pi === 0);
+    // a phone: the extract is a one-line card that opens a bottom sheet, closed at first so the question stays in view (Murci,
+    // 2026-10-03: "Extract as a card on phones"); wider screens keep it open inline on a mission's first question
+    const ctxOpen = s.ctxOpen != null ? s.ctxOpen : phone ? false : (s.drill ? true : s.pi === 0);
     const ctxText = part._context != null ? part._context : mission ? mission.context : "";
     const ctxTable = part._table !== undefined ? part._table : mission ? mission.table || null : null;
     const ctxView = ctxTable ? tableView(ctxTable) : null;
@@ -3774,7 +3781,9 @@ class Component extends DCLogic {
       coachKey: (hintLine && (retryNow || outcome === "zero" || outcome === "partial") ? "hint" : waitHint ? "wait" : retryNow ? "retry" : outcome) + ":" + (reply ? reply.try : 0) + ":" + part.key,   // one pop per hint: the miss and the retry say the same line
       coachBubbleFlex: wide ? "none" : "1", coachBubbleMax: wide ? "280px" : "none", coachBubbleRadius: wide ? "16px" : "16px 16px 16px 4px", coachEdge: edge,
       // question
-      toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }), ctxOpen: ctxOpen, ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
+      toggleCtx: () => this.setState({ ctxOpen: !ctxOpen }, () => { if (phone && !ctxOpen) { const x = document.querySelector("[data-ctx-x]"); if (x) x.focus({ preventScroll: true }); }
+        else if (phone) { const b = document.querySelector("[data-ctx] > button"); if (b) b.focus({ preventScroll: true }); } }), ctxOpen: ctxOpen,
+      ctxRole: phone ? "dialog" : "region", ctxModal: phone ? "true" : "false", ctxSheetTitle: (mission && mission.kind) || "Shared information", ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
       hasContext: !!ctxText || !!ctxTable, context: ctxText, hasCtxText: !!ctxText,
       ctxPeek: ctxText ? ctxText.split("\n")[0] : ctxTable ? ctxTable.title || "A table of results" : "",
       ctxHasTable: !!ctxView, ctxHasTableTitle: !!(ctxTable && ctxTable.title), ctxTableTitle: ctxTable ? ctxTable.title || "" : "",

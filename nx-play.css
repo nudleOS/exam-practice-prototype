@@ -1884,3 +1884,30 @@ body.nx-play.nx-play .mcqp .next:not(.skip)::before { display:none !important; }
 body.nx-play .mcqp .again { display:flex; margin:12px 0 0; }
 body.nx-play .mcqp .again:not(:has(.retry:not([hidden]))) { display:none; }
 body.nx-play.nx-play .mcqp .again .retry.nxb-sm { height:38px !important; min-height:38px !important; padding:0 14px !important; font-size:13px !important; gap:7px !important; }
+/* The extract on a phone (Murci, 2026-10-03: "Extract as a card on phones"): the shared information sits after the lead as ONE
+   line (its peek and "Read"); opened, its body is a bottom sheet over a scrim, like the question paper, with its own close. The
+   question underneath never moves. Wider screens: the panel opens inline, no sheet head, no scrim. */
+[data-ctx] [data-ctx-head], [data-ctx] [data-ctx-scrim] { display:none; }
+@media (max-width:600px) {
+  body.nx-play [data-ctx] [data-ctx-scrim] { display:block; position:fixed; inset:0; z-index:78; background:rgba(3,8,24,0.55);
+    -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); animation:nx-ctx-fade 180ms ease both; }
+  body.nx-play [data-ctx] [data-ctx-body] { position:fixed; left:0; right:0; bottom:0; z-index:79; max-height:78svh; overflow:auto; overscroll-behavior:contain;
+    box-sizing:border-box; padding:0 16px calc(18px + env(safe-area-inset-bottom)) !important; border-radius:20px 20px 0 0;
+    background:var(--nx-sheet, #0e1838); border:1px solid rgba(129,177,255,0.35); border-bottom:0; box-shadow:0 -18px 40px -18px rgba(0,0,0,0.7);
+    animation:nx-ctx-up 240ms cubic-bezier(.2,.8,.2,1) both; }
+  body.nx-play [data-ctx] [data-ctx-head] { display:flex; align-items:center; gap:10px; position:sticky; top:0; z-index:1; margin:0 -16px; padding:14px 12px 10px 16px;
+    background:inherit; border-bottom:1px solid var(--line, rgba(255,255,255,0.08)); }
+  body.nx-play [data-ctx] [data-ctx-head] > span { flex:1; min-width:0; font-size:15px; font-weight:800; color:var(--nx-text, #fff); }
+  body.nx-play [data-ctx] [data-ctx-x] { flex:none; width:40px; height:40px; border-radius:50%; border:1px solid var(--b-glass-line, rgba(190,210,255,0.36));
+    background:var(--b-glass, rgba(255,255,255,0.08)); color:var(--nx-text, #fff); font-size:22px; line-height:1; cursor:pointer; }
+  body.nx-play [data-ctx] [data-ctx-x]:focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+  /* the one-line card: the peek always shows (the sheet is over it), the word says Read */
+  body.nx-play [data-ctx] > button > span:nth-child(2) { display:block !important; }
+}
+@keyframes nx-ctx-up { from { transform:translateY(100%); } to { transform:none; } }
+@keyframes nx-ctx-fade { from { opacity:0; } to { opacity:1; } }
+@media (prefers-reduced-motion: reduce) { body.nx-play [data-ctx] :is([data-ctx-body], [data-ctx-scrim]) { animation:none !important; } }
+html[data-nx="light"] body.nx-play { --nx-sheet:#f4f7ff; }
+@media (max-width:600px) {
+  body.nx-play.nx-ctxsheet :is(.nx-typestrip, [data-footer], .pv-fab, [data-pvfab]) { visibility:hidden !important; }
+}
