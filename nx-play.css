@@ -1624,3 +1624,12 @@ body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
   body.nx-play .mcqp .qhead:has(.qpractice) > .qid { display:contents; }
   body.nx-play .mcqp .qhead .qpractice { order:9; margin-left:0; white-space:nowrap; }
 }
+/* a long, scrolling question on a phone (Murci's P30 lite, 2026-10-03: the memo's words showed through the buttons and round the
+   strip): with the scenery gone (compact), the bar's see-through fade only showed the page under it. Here the bar is solid (0.82..0.97 still
+   let white words read through, measured) and a fade rises 64 px above it, near-solid by its middle, under the strip (lifted one layer, so its face and words stay on top). */
+@media (max-width:600px) {
+  body.nx-play.nx-compact [data-footer]:not(:has([data-keypad])) { background:rgb(var(--nx-c, 25,27,30)) !important; }
+  body.nx-play.nx-compact [data-footer]:not(:has([data-keypad]))::before { content:""; position:absolute; left:0; right:0; bottom:100%; height:64px; pointer-events:none;
+    background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.96) 55%, rgb(var(--nx-c, 25,27,30))); }
+  body.nx-play.nx-compact .nx-typestrip { z-index:25; }
+}
