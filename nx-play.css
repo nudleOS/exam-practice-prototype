@@ -1801,3 +1801,9 @@ body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bott
    but the panel still kept 78 px for the bar (--cap-off), twice: on the P30 lite 1.1.3's card D was cut, the panel scrolling 39 px,
    over 74 px of nothing. Only its own 4 px margin + 8 now. */
 @media (max-width:600px) { body.nx-play.nx-face .mcqp .stage { --cap-off:12px; } }
+/* the question map keeps its title, X and "Back to map" in place and scrolls only its list (found on the P30 lite: it opens with the
+   current question focused, which scrolled the whole panel, so on 1.5 "Back to map" sat 120 px above the panel's top, out of sight) */
+[data-qmap-panel] { display:flex; flex-direction:column; overflow:hidden !important; }
+[data-qmap-panel] > .qm-head, [data-qmap-panel] > .qm-map { flex:none; }
+[data-qmap-panel] > .qm-map { align-self:flex-start; }
+[data-qmap-panel] > .qm-list { flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
