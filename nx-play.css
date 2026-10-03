@@ -1929,3 +1929,13 @@ html[data-nx="light"] body.nx-play { --nx-sheet:#f4f7ff; }
 /* (the global field focus ring drew a second box inside the slot's own ring) */
 body.nx-app [data-slots] textarea[data-slotfield]:is(:focus, :focus-visible) { box-shadow:none !important; outline:none !important; border:0 !important; background:transparent !important; }
 [data-slots] [data-slotn]:empty { display:none; }   /* one answer: no lone "1" */
+/* Figures span the question (Murci, 2026-10-03: "the image frames need to be the same width as the question"): the FRAME stretches
+   to the text's width at every size; the image box inside keeps the image's own shape (the room the question leaves it, --fig-h,
+   times its ratio, --fig-ar), centred, so nothing stretches and the letter spots (in % of the box) stay on their labels. */
+body.nx-play main:not(#mq-stage) [data-figure] { width:auto !important; align-self:stretch !important; margin-inline:0 !important; }
+body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] { width:min(100%, calc(var(--fig-h, 4000px) * var(--fig-ar, 1.6))) !important; margin:0 auto !important; }
+/* ...and the paper's white spans the frame: a sheet behind the image box, inset like it (the box keeps the image's shape, so the
+   diagram sits centred on one full-width white sheet, as on the printed paper) */
+body.nx-play main:not(#mq-stage) [data-figure] [data-figpad] { --pt:8px; }
+body.nx-play main:not(#mq-stage) [data-figure] [data-figpad]:has(> [data-figtoggle]) { --pt:36px; }
+body.nx-play main:not(#mq-stage) [data-figure] [data-figpad]::before { content:""; position:absolute; inset:var(--pt) 8px 8px; border-radius:12px; background:#ffffff; pointer-events:none; }

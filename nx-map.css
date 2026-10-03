@@ -224,8 +224,8 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
   place-items: center; padding: 0; border-radius: 50%; border: 1px solid rgba(129, 177, 255, 0.3); background: rgba(13, 26, 63, 0.88);
   color: #9fbcff; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); }
 .pv-fab[aria-expanded="true"] { color: #fff; border-color: #5b8cff; background: #1e46ff; }
-/* the question row keeps clear of it on a phone */
-@media (max-width: 599px) { body.nx-play [data-parthead] { padding-right: 46px; } }
+/* (the question row used to keep 46 px clear of it on a phone; since 2026-10-03 the row sits UNDER the paper button, so the
+   reserve only pushed the marks in from the text's right edge: removed, Murci: "aligned with the end of text") */
 
 /* the header's back arrow (done and review screens): the arrow alone, no box (2026-10-02) */
 .hd-back { width: 44px; height: 44px; flex: none; display: grid; place-items: center; margin-left: -10px; padding: 0; border: none; border-radius: 12px;
