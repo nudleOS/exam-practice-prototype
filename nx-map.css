@@ -416,3 +416,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    sat on the answer box): 56% of the screen, but never more than the screen less 380 px (header 61 + the card's 220 px floor + gaps
    + the bar), never under 30%. At 360x702 it opens 322 px tall (top at y 380). Dragging and full screen work as before. */
 :root { --pv-h: max(30svh, min(56svh, calc(100svh - 380px))); }
+/* the paper's pages on a touch screen (Murci's P30 lite, 2026-10-03: Android's overlay scrollbar flashed at the page's edge when the
+   paper opened): a finger scrolls them, so no bar; a mouse (fine pointer) keeps its scrollbar */
+@media (pointer: coarse) { .pv-pages { scrollbar-width: none; } .pv-pages::-webkit-scrollbar { display: none; } }
