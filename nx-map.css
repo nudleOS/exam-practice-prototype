@@ -455,3 +455,11 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .pm-col { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
   .pm-group:last-child { margin-bottom: 0; }
 }
+/* the paper header on a phone (the done / review screens; found 2026-10-03 with 740 XP: "Life Science…"): the XP pill shows the bolt
+   and the number only, as the question header does (the rule above forces the word on for the map), and a long paper name wraps to a
+   second line instead of an ellipsis (the next papers: "Physical Sciences P1" ~140 px, "Mathematical Literacy P1" ~175 px) */
+@media (max-width: 400px) {
+  header:has(> span[aria-label$=" marks"]) .xp-chip > span:last-child { display: none !important; }
+  header:has(> span[aria-label$=" marks"]) > span:has(> span + span) > span:first-child { white-space: normal !important; line-height: 1.2;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+}

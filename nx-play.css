@@ -1675,6 +1675,8 @@ body.nx-play [data-footer] [data-bar] button[data-kind="skip"]::after { content:
   body.nx-app header > span[aria-label$=" marks"] > span[aria-hidden="true"]:first-child { display:none !important; }
   body.nx-app header > span[aria-label$=" marks"] { padding-left:10px !important; }
   body.nx-app header:has(> span[aria-label$=" marks"]) { gap:8px !important; }   /* (113 px of text in a 113 px box still ellipsed: sub-pixel) */
+  /* "145 /150" read as two things: the number and its total sit together (and give the title back 5 px; with "740 XP" it was 7 short) */
+  body.nx-app header > span[aria-label$=" marks"] { gap:1px !important; }
 }
 /* the paper open at the bottom: the robot waits (its strip already hides), so its words go too (Murci's P30 lite, 2026-10-03: "You got
    this!" floated over the answer box while the paper was open) */
