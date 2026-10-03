@@ -1816,3 +1816,6 @@ body.nx-play main:not(#mq-stage) [data-feed] .fd-pline { color:var(--nx-text2); 
 /* the result bar's three buttons at their widest on a phone (Back, Try again, Finish: 332 px of 328 with 10 px gaps, Back at x 12):
    8 px gaps, as the multiple choice's row */
 @media (max-width:600px) { body.nx-play.nx-play [data-footer] [data-bar] > span:has(> button) { gap:8px !important; column-gap:8px !important; } }
+/* the multiple choice's Next is hidden until the component shows it (.show): the bar rule above (display:inline-flex !important on
+   :is(.next, .prevq)) made an unshown Next appear, unstyled, as "Next question" at the bar's left (a retake, 2026-10-03) */
+body.nx-play.nx-play .mcqp .next:not(.show) { display:none !important; }

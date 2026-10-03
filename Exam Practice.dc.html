@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=197">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=198">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=47">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2541,7 +2541,9 @@ class Component extends DCLogic {
   // are its questions, but LS's are "Section A/B" (Section B holds Questions 2 and 3). Was a placeholder from XP (xp / 300).
   // Skip shows unless it would lead nowhere: when no other part is still open
   // (measured 2026-09-30: it showed on the only part still open whenever that part was not the last index, and led back to itself)
-  canSkip() { const m = this.mission(); if (!m || this.state.drill) return false; return this.nextOpenPart(m) >= 0 || (!this.state.revisit && !!this.nextMissionOpen()); }
+  // (a retake can be skipped: back to the results, its earlier result restored by endRetake; without it a multiple choice's retake
+  // showed a stray, unstyled "Next question" as its only way out, 2026-10-03)
+  canSkip() { const m = this.mission(); if (!m || this.state.drill) return false; return !!this.state.revisit || this.nextOpenPart(m) >= 0 || (!this.state.revisit && !!this.nextMissionOpen()); }
   // Skip on a mission's LAST open question (Murci, 2026-10-03: "Next mission"): it moves on to the next mission's first open question,
   // round from the start, so it stays open on the map and comes back; inside a mission Skip keeps the 2026-09-30 order (advance).
   // Next after an answer is not a skip: it still ends the mission on its done screen.
