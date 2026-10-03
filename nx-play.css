@@ -1813,3 +1813,6 @@ body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bott
 @media (max-width:600px) { body.nx-play.nx-compact.pv-bottom [data-footer]:not(:has([data-keypad]))::before { display:none !important; } }
 /* the AI-marked written answer's one-line points summary (replaces the per-point rows, 2026-10-03) */
 body.nx-play main:not(#mq-stage) [data-feed] .fd-pline { color:var(--nx-text2); font-size:13.5px; line-height:1.5; text-wrap:pretty; }
+/* the result bar's three buttons at their widest on a phone (Back, Try again, Finish: 332 px of 328 with 10 px gaps, Back at x 12):
+   8 px gaps, as the multiple choice's row */
+@media (max-width:600px) { body.nx-play.nx-play [data-footer] [data-bar] > span:has(> button) { gap:8px !important; column-gap:8px !important; } }

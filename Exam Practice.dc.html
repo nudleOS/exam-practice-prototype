@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=195">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=197">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=47">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -3591,7 +3591,10 @@ class Component extends DCLogic {
     const shadowTint = { ok: "rgba(61,220,151,0.45)", warn: "rgba(224,161,15,0.4)", bad: "rgba(242,119,122,0.4)", neutral: "rgba(0,104,248,0.45)" }[tone];
     // The feedback bar.
     const next = () => this.advance();
-    const nextLabel = s.drill ? (lastPart ? "Finish the drill" : "Next question") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next";
+    // (a phone's bar holds Back + Try again + this in 328 px: "Finish mission" (161 px) pushed Back to x -49 on every mission's last
+    // question, measured 2026-10-03; a phone says it short)
+    const nextLabel = phone ? (s.revisit ? "Results" : lastPart ? "Finish" : "Next")
+      : s.drill ? (lastPart ? "Finish the drill" : "Next question") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next";   // "Next", not "Next part" (Murci, 2026-10-01)
     const triesLeft = reply && reply.tries_left != null ? reply.tries_left : 0;
     // Short on phones so the button stays on one line.
     // (a phone says "Try again" only: Back, Skip and "Try again · 2 left" ran 362 px of 328 and pushed Back off the screen on the P30
@@ -3823,7 +3826,7 @@ class Component extends DCLogic {
     const mode = part ? part.response_mode : "";
     const tryN = pr ? pr.tries : 0;
     const locked = closed || s.marking;
-    const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : "Finish mission")
+    const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : phone ? "Finish" : "Finish mission")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next" : "Check";
     const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
       : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0
