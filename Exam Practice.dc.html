@@ -14,7 +14,7 @@
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
   <script type="module" src="model-floor.js?v=21"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
-  <script src="paper-ls-p1-2026.js?v=4"></script>
+  <script src="paper-ls-p1-2026.js?v=5"></script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
   <script src="mcq-play.js?v=53"></script>
@@ -1638,9 +1638,14 @@ function buildPapers() {
         if (q.t === "term") { SERVER.keys[key] = { term: q.a }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
         if (q.t === "list") { SERVER.keys[key] = { pool: q.pool.map(g => Array.isArray(g) ? g : [g]) }; return Object.assign(base, { response_mode: "list", marking_mode: "answer", count: q.count }); }
         if (q.t === "lettername") { SERVER.keys[key] = { letter: q.a.letter, names: q.a.name }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]]; return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
+        if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft }])) };
+          SERVER.memo[key] = q.steps.map(st => st.memo);
+          return Object.assign(base, { response_mode: "steps", marking_mode: "answer", steps: q.steps.map(st => ({ id: st.id, label: st.label, marks: st.marks, unit_hint: st.unit || "" })) }); }
         if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
+        if (q.t === "draw") { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
+          SERVER.keys[key] = { draw: true, worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) };
+          return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" }); }
         SERVER.memo[key] = q.bullets || [];
-        if (q.t === "draw") return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" });
         SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1 };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
         return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
       });
@@ -2944,10 +2949,11 @@ class Component extends DCLogic {
     const key = SERVER.keys[part.key] || {};
     const note = "DHET did not publish a marking guideline for this sitting.";
     if (part.response_mode === "steps") return { steps: part.steps.map(s => ({ id: s.id, label: s.label, marks: s.marks, memo_text: key.steps && key.steps[s.id] ? key.steps[s.id].v : "",
-      expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })), provenance: { memo_source: "authored", note: part.recipe ? "" : note } };
+      expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })),
+      provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.recipe || part.key.indexOf("ls:") === 0 ? "" : note } };
     const pts = key.pool ? key.pool.map(g => Array.isArray(g) ? g[0] : g) : (SERVER.memo[part.key] || []);
     const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.term ? key.term[0] : key.num != null ? key.num : null;
-    return { answer: answerOf, memo: { points: pts.map(t => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
+    return { answer: answerOf, memo: { points: pts.map((t, i) => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: key.worth ? key.worth[i] : key.each || 1 })) }, provenance: { memo_source: part.key.indexOf("ls:") === 0 ? "board" : "authored", note: part.key.indexOf("ls:") === 0 ? "" : note } };
   }
 
   // Exactly the answer shapes in docs/API.md. `ui` is the state, or a Hall draft of it.
