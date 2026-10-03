@@ -1971,8 +1971,12 @@ class Component extends DCLogic {
       if (q2 && pk2 === pk && !this._compact && innerWidth <= 600 && !document.body.classList.contains("nx-typing") && over(q2)) {
         this._compact = pk; document.body.classList.add("nx-compact"); this.nxPanelCap(); } }, 350);
     // the keyboard is up (a phone): the panel just got shorter, so the field being typed in is scrolled back into its view
+    // ...and the field's own Check with it (found on the P30 lite, a written answer: with the keys up the arrow under the box sat
+    // behind the thought cloud, so a learner had to close the keyboard to submit). The field's top never goes under the header.
     const ae = document.activeElement; if (typing && compact && ae && q.contains(ae)) { const a = ae.getBoundingClientRect();
-      if (a.bottom > bottom - 4) window.scrollBy(0, a.bottom - bottom + 16); else if (a.top < 72) window.scrollBy(0, a.top - 88); }
+      const sb = [...q.querySelectorAll("[data-submit]")].map(b => b.getBoundingClientRect()).filter(r => r.width && r.top >= a.top - 1).sort((x, y) => x.top - y.top)[0];
+      const end = sb ? Math.max(a.bottom, sb.bottom) : a.bottom;
+      if (end > bottom - 4) window.scrollBy(0, Math.max(0, Math.min(end - bottom + 16, a.top - 72))); else if (a.top < 72) window.scrollBy(0, a.top - 88); }
     else if (this.state.kbOff > 80 && ae && q.contains(ae)) { const a = ae.getBoundingClientRect(), b = q.getBoundingClientRect();
       if (a.bottom > b.bottom - 8 || a.top < b.top) q.scrollBy({ top: a.bottom > b.bottom - 8 ? a.bottom - b.bottom + 16 : a.top - b.top - 16 }); }
     // (a phone has no panel card: the row lines up with the text's edge, the question's padding in, not the box's)
