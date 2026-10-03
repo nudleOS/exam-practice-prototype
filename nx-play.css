@@ -1581,3 +1581,13 @@ body.nx-play.nx-play .mcqp .next.show:not(.skip) { background:linear-gradient(18
 body.nx-play.nx-play .mcqp .next.show:not(.skip):hover { background:linear-gradient(180deg, #4a72ff, #2a52ff) !important; }
 body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr { background:#ffffff !important; }
 body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr svg { stroke:#1e46ff; }
+/* the MCQ's bubble beside the robot's head on a phone, like every other question's (Murci, 2026-10-03; it hung at bottom:10%, by
+   the feet, with its puffs up at the head). The term bubble's own anchor: left 86%, TOP 15% (the head), so a long hint grows DOWN
+   toward the bar and can never climb over the cards (the 09-29 reason it was put low); the same width rule; the puffs lead from
+   the head to it. */
+@media (max-width:600px) {
+  body.nx-play.nx-play .mcqp .pal:not(.sayleft) .pal-say .say-txt { left:86% !important; top:15% !important; bottom:auto !important;
+    max-width:min(260px, calc(100vw - 16px - (var(--nx-rh) * var(--nx-fx) - var(--ph) * 0.357) - var(--ph) * 0.7143 * 0.86)) !important; transform-origin:0 0; }
+  body.nx-play.nx-play .mcqp .pal:not(.sayleft) .pal-say .p2 { left:calc(86% - 15px) !important; top:calc(15% + 14px) !important; }
+  body.nx-play.nx-play .mcqp .pal:not(.sayleft) .pal-say .p1 { left:calc(86% - 25px) !important; top:calc(15% + 28px) !important; }
+}
