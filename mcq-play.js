@@ -101,7 +101,12 @@
       // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
       const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
       let best = -1, bestBy = Infinity; for (let k = 0; k <= top_; k++) { set(k); size(); const by = overBy(); if (by <= 0) { best = k; break; } if (by < bestBy) { bestBy = by; best = k; } }
-      set(best); size(); centreStage(); panelScroll(); }
+      set(best); size(); growTiles(); centreStage(); panelScroll(); }
+    // A card's faces are absolute (the flip), so its height is only its min-height: a 3-line option spilled 3 px over both edges
+    // (1.1.9 at 360 px, fit-4: text 51 px in a 46 px card; found 2026-10-03). A card whose text needs more grows to fit it.
+    function growTiles() { RQA(".tile").forEach(t => { t.style.removeProperty("min-height"); const f = t.querySelector(".face"), x = t.querySelector(".txt"); if (!f || !x) return;
+      const cs = getComputedStyle(f), need = Math.ceil(x.scrollHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
+      if (need > t.offsetHeight + 1) t.style.setProperty("min-height", need + "px", "important"); }); }   // (important: a phone rule pins min-height:46px !important)
     // opts.centreY (0-1): where the panel and its Back / Next row sit in the room left under them (Exam Practice: 0.4, the optical
     // centre; Murci, 2026-09-30: "it looks a bit up and too close to the navbar"). Wider than a phone only (a phone's robot has the
     // lower half). The room is the fit's own: the screen less the row's room (--cap-off) and the 24 px floor gap.
