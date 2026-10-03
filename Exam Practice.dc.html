@@ -2928,6 +2928,12 @@ class Component extends DCLogic {
         return { key: "p" + i, awarded: ok ? key.each || 1 : 0, available: key.each || 1, verdict: ok ? "correct" : answer.trim() ? "incorrect" : "missing",
           evidence: ok ? [...new Set(hits)].join(", ") : "" };
       });
+      // a memo "OR" starts an ALTERNATIVE answer (2.2.3): score each alternative on its own and keep the best, so points from two
+      // different answers never add up to marks neither answer earns
+      const group = []; key.rubric.forEach((pt, i) => group.push(i && /^OR\b/.test(pt) ? group[i - 1] + 1 : i ? group[i - 1] : 0));
+      const sums = []; items.forEach((x, i) => { sums[group[i]] = (sums[group[i]] || 0) + x.awarded; });
+      const best = sums.indexOf(Math.max(...sums));
+      items.forEach((x, i) => { if (group[i] !== best) { x.awarded = 0; x.verdict = answer.trim() ? "incorrect" : "missing"; x.evidence = ""; } });
       const got = Math.min(part.marks, items.reduce((a, x) => a + x.awarded, 0));
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "ai", items: items };
     }
