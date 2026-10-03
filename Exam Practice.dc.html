@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=154">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=157">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -820,14 +820,18 @@
           </sc-if>
 
           <sc-if value="{{ isNum }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-radius:16px; border:1px solid {{ numBorder }}; background:var(--card2, rgba(var(--nx-c, 32,35,39), 0.78))">
-              <span style="font-size:13.5px; font-weight:600">Your answer</span>
-              <span style="display:flex; align-items:center; gap:8px">
-                <input id="f-num" data-field="true" value="{{ numVal }}" onChange="{{ onNum }}" onFocus="{{ onNumFocus }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" aria-label="Your answer" placeholder="Your value" autoComplete="off" autoCorrect="off" spellCheck="false" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:48px; padding:0 14px; border-radius:12px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
-                <sc-if value="{{ numHasUnit }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-size:14px; font-weight:700; color:var(--text2)">{{ numUnit }}</span></sc-if>
-                <sc-if value="{{ numHasStamp }}" hint-placeholder-val="{{ false }}">
+            <div data-numrow="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+              <span data-numbox="true" style="position:relative; display:flex; flex:1 1 auto; min-width:0">
+                <input id="f-num" data-field="true" value="{{ numVal }}" onChange="{{ onNum }}" onFocus="{{ onNumFocus }}" onKeyDown="{{ onEnter }}" inputMode="{{ numInputMode }}" aria-label="Your answer" placeholder="Your value" autoComplete="off" autoCorrect="off" spellCheck="false" enterKeyHint="done" disabled="{{ locked }}" style="flex:1; min-width:0; height:48px; padding:0 58px 0 14px; border-radius:12px; border:1px solid {{ numBorder }}; background:var(--field); color:var(--text); font-size:16px; font-weight:600; outline:none" />
+                <sc-if value="{{ numArrowOn }}" hint-placeholder-val="{{ true }}"><button data-submit="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if>
+              </span>
+              <sc-if value="{{ numHasUnit }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-size:14px; font-weight:700; color:var(--text2)">{{ numUnit }}</span></sc-if>
+              <sc-if value="{{ numHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="flex:none; height:30px; padding:0 9px; border-radius:15px; display:flex; align-items:center; background:{{ numStampBg }}; font-size:12px; font-weight:800; color:{{ numStampColor }}">{{ numStamp }}</span>
                 </sc-if>
+              <sc-if value="{{ numCalcOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openCalc }}" aria-label="Open the calculator" style="flex:none; min-height:44px; padding:0 12px; border-radius:11px; border:1px solid var(--line2); background:rgba(255,255,255,0.03); color:var(--text2); font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"></path></svg>Calculator</button></sc-if>
+            </div>
+          </sc-if>
               </span>
             </div>
           </sc-if>
@@ -1866,7 +1870,10 @@ class Component extends DCLogic {
     const phone = innerWidth <= 600, pk = (this.part() || {}).key || "";
     // a long question on a phone (decided below, per question): the robot is the strip, the page scrolls, the card is not capped
     if (this._compact && (this._compact !== pk || !phone)) { this._compact = null; document.body.classList.remove("nx-compact"); document.body.style.removeProperty("--nx-dockH"); }
-    const compact = !!this._compact, strip = typing || compact;
+    // our keypad open on a phone: the robot steps into the strip as it does for the phone's keyboard (Murci, 2026-10-03: standing on
+    // the bar, the keypad lifted it and its plants over the question)
+    const kpStrip = phone && !!this.state.kp && this.state.screen === "play"; document.body.classList.toggle("nx-kpstrip", kpStrip);
+    const compact = !!this._compact, strip = typing || compact || kpStrip;
     if (phone && fe && !typing) { const bh = Math.round(fe.getBoundingClientRect().height) + "px"; if (fe.offsetHeight && document.body.style.getPropertyValue("--nx-bar") !== bh) document.body.style.setProperty("--nx-bar", bh); }
     const dock = !phone && !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
     // typing: the strip takes the room left of the row (its leftmost button), and the panel stops 12 px above the strip
@@ -2369,8 +2376,9 @@ class Component extends DCLogic {
   fitKpField() {
     const f = this.state.kp && document.getElementById("f-" + this.state.kp), kp = document.querySelector("[data-keypad]");
     if (!f || !kp) return;
-    const fr = f.getBoundingClientRect(), kr = kp.getBoundingClientRect();
-    const below = fr.bottom - (kr.top - 12), above = 70 - fr.top;
+    // clear whichever is higher, the keypad or the robot's strip above it (it was drawn over the field's foot)
+    const fr = f.getBoundingClientRect(), kr = kp.getBoundingClientRect(), ts = document.querySelector(".nx-typestrip"), tr = ts && ts.offsetHeight ? ts.getBoundingClientRect() : null;
+    const below = fr.bottom - (Math.min(kr.top, tr ? tr.top : Infinity) - 12), above = 70 - fr.top;
     if (below > 0) window.scrollBy(0, below); else if (above > 0) window.scrollBy(0, -above);
   }
   // The calculator keypad: it writes into one numeric field (a step id, or "num").
@@ -2451,7 +2459,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
+  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
@@ -3412,7 +3420,7 @@ class Component extends DCLogic {
       lnNameHasStamp: !!lnN, lnNameStamp: lnN ? "name " + lnN.t : "", lnNameStampBg: lnN ? lnN.bg : "", lnNameStampColor: lnN ? lnN.c : "", lnNameBorder: lnN ? lnN.b : "var(--line2)",
       isTerm: mode === "term", termVal: s.term, onTerm: e => this.setState({ term: e.target.value, edited: Object.assign({}, this.state.edited, { term: true }) }),
       termHasStamp: !!termSp, termStamp: termSp ? termSp.t : "", termStampBg: termSp ? termSp.bg : "", termStampColor: termSp ? termSp.c : "", termBorder: termSp ? termSp.b : "var(--line2)",
-      isNum: mode === "num", numVal: s.numVal, numUnit: unitText(part.unit_hint), numHasUnit: !!part.unit_hint, numBorder: numSp ? numSp.b : "var(--line)",
+      isNum: mode === "num", numVal: s.numVal, numUnit: unitText(part.unit_hint), numHasUnit: !!part.unit_hint, numBorder: numSp ? numSp.b : "var(--line2)",
       onNum: e => this.setState({ numVal: e.target.value, edited: Object.assign({}, this.state.edited, { num: true }) }),
       onNumFocus: () => { if (touch && !locked && this.state.kp !== "num") this.kpOpenFor("num"); },
       numHasStamp: !!numSp, numStamp: numSp ? numSp.t : "", numStampBg: numSp ? numSp.bg : "", numStampColor: numSp ? numSp.c : "",
@@ -3433,7 +3441,8 @@ class Component extends DCLogic {
       hasCoach: mode === "rubric" && !!cmd, coachCmd: cmd, coachShape: SHAPE[cmd] || "",
       coachAim: part.marks > 1 ? part.marks + " marks: aim for " + part.marks + " separate points." : "1 mark: one clear point.",
       writtenCount: s.written.length + " / 2 500 characters",
-      showCalcBtn: (mode === "steps" || mode === "num") && !locked && !kpOn,
+      showCalcBtn: mode === "steps" && !locked && !kpOn, numCalcOn: mode === "num" && !locked && !kpOn,   // a number's calculator sits beside its box
+      numArrowOn: mode === "num" && !locked && !(reply && reply.waiting),
       openCalc: () => { const first = mode === "num" ? "num" : (stepList.find(x => !String(this.state.inputs[x.id] || "").trim()) || stepList[0] || {}).id; if (first) this.kpOpenFor(first); },
       kpShow: kpOn, kpFor: s.kp === "num" ? "Your answer" : curIdx >= 0 ? (symOf(stepList[curIdx].label) || { sym: "Step " + (curIdx + 1) }).sym + " · step " + (curIdx + 1) + " of " + stepList.length : "",
       kpDisplay: s.kpExpr || "0", kpDisplayAria: "Calculator shows " + (s.kpExpr || "0"),
@@ -3636,7 +3645,7 @@ class Component extends DCLogic {
       // control, an MCQ on a card's tap, a term on the arrow in its field, every other mode on the same arrow in a row under its
       // answer (a drawing on a worded button: an arrow alone would not say "I've drawn it"). The footer keeps Back / Skip / Next.
       checkIsIcon: "false", checkAria: draw ? "I've drawn it" : "Check your answer",
-      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
+      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "list" && mode !== "num" && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
       primaryBg: primaryDisabled ? "var(--panel)" : "var(--grad)", primaryColor: primaryDisabled ? "var(--text4)" : "#ffffff",
       primaryCursor: primaryDisabled ? "not-allowed" : "pointer", primaryShadow: primaryDisabled ? "none" : "0 10px 26px rgba(30,70,255,0.3)",
       ...this.playHeadVals(s, part),

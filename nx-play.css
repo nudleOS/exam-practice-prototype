@@ -1591,3 +1591,15 @@ body.nx-play.nx-play .mcqp .next.show:not(.skip) .arr svg { stroke:#1e46ff; }
   body.nx-play.nx-play .mcqp .pal:not(.sayleft) .pal-say .p2 { left:calc(86% - 15px) !important; top:calc(15% + 14px) !important; }
   body.nx-play.nx-play .mcqp .pal:not(.sayleft) .pal-say .p1 { left:calc(86% - 25px) !important; top:calc(15% + 28px) !important; }
 }
+/* our keypad open on a phone (Murci, 2026-10-03): the robot steps into the strip, as for the phone's keyboard and long questions (the
+   host sets nx-kpstrip; --typ-up is the bar's height, keypad included, so the strip sits on the keys) */
+@media (max-width:600px) {
+  body.nx-play.nx-kpstrip .nx-bg .nx-rocks, body.nx-play.nx-kpstrip .nx-bg .nx-fill { opacity:0; }
+  body.nx-play.nx-kpstrip main:not(#mq-stage) > aside[aria-label="Your companion"] > div { transform:translateX(-300vw) !important; }
+  body.nx-play.nx-kpstrip main:not(#mq-stage) > aside[aria-label="Your companion"] > p { opacity:0 !important; }
+  body.nx-play.nx-kpstrip .nx-typestrip { display:flex; position:fixed; z-index:24; left:12px; right:var(--typ-r, 12px); bottom:calc(var(--kb, 0px) + 8px + var(--typ-up, 0px));
+    align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
+  /* room to scroll the field above the strip: a short question's page was exactly the screen's height (640 of 640), so fitKpField's
+     scroll had nowhere to go and the strip + keys covered the field. The bar (keys included, --nx-bar) + the strip and its gaps (40 + 8 + 12 + 12: +60 left the field 8 px short). */
+  body.nx-play.nx-kpstrip.nx-kpstrip main:not(#mq-stage):not([data-done]) { padding-bottom:calc(var(--nx-bar, 380px) + 72px) !important; }
+}
