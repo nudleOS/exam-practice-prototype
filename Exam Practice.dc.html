@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=194">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=195">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=47">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -923,7 +923,7 @@
               <sc-if value="{{ nxFeedHasChips }}" hint-placeholder-val="{{ false }}"><span class="fd-chips"><sc-for list="{{ nxFeedChips }}" as="fc" hint-placeholder-count="2"><span class="fd-chip">{{ fc.t }}</span></sc-for></span></sc-if>
               <sc-if value="{{ nxFeedHasBody }}" hint-placeholder-val="{{ false }}"><span class="fd-body">{{ nxFeedBody }}</span></sc-if>
               <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
-                <span class="fd-points"><sc-for list="{{ points }}" as="pt" hint-placeholder-count="2"><span class="fd-pt"><span style="flex:none; font-weight:800; color:{{ pt.color }}">{{ pt.icon }}</span><span style="display:flex; flex-direction:column; gap:2px"><span style="font-weight:700">{{ pt.head }}</span><span style="color:var(--text2)">{{ pt.detail }}</span></span></span></sc-for><span class="fd-pfoot">{{ pointsFoot }}</span></span>
+                <span class="fd-points"><span class="fd-pline">{{ pointsLine }}</span><span class="fd-pfoot">{{ pointsFoot }}</span></span>
               </sc-if>
             </div>
           </sc-if>
@@ -1017,10 +1017,8 @@
                 <span style="font-size:13.5px; line-height:1.55; color:{{ barBodyColor }}; text-wrap:pretty">{{ barBody }}</span>
               </sc-if>
               <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex; flex-direction:column; gap:6px; max-height:28vh; overflow-y:auto">
-                  <sc-for list="{{ points }}" as="pt" hint-placeholder-count="2">
-                    <span style="display:flex; gap:8px; font-size:13px; line-height:1.5"><span style="flex:none; font-weight:800; color:{{ pt.color }}">{{ pt.icon }}</span><span style="display:flex; flex-direction:column; gap:2px"><span style="font-weight:700">{{ pt.head }}</span><span style="color:var(--text2)">{{ pt.detail }}</span></span></span>
-                  </sc-for>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <span style="font-size:13.5px; line-height:1.5; color:var(--text2)">{{ pointsLine }}</span>
                   <span style="font-size:12px; color:var(--text3)">{{ pointsFoot }}</span>
                 </div>
               </sc-if>
@@ -3798,8 +3796,16 @@ class Component extends DCLogic {
       else fb = { icon: "✕", title: reply.revealed ? "Out of tries · 0 marks" : "Not yet · 0 of " + res.marks + " marks", color: "#f2777a", border: "rgba(242,119,122,0.4)", bg: "rgba(242,119,122,0.07)" };
     } else if (reply && reply.revealed && !res) fb = { icon: "•", title: "Memo shown · no XP for this part", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
     const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
-    const pointLines = res && (res.marker === "ai" || (part && part.response_mode === "list")) ? res.items.map((x, i) => { const vi = verdictInfo(x.verdict);
-      return { icon: vi[0], color: vi[2], head: vi[1] + " · " + x.awarded + " of " + x.available, detail: x.evidence ? "From your answer: \u201c" + x.evidence + "\u201d" : part.response_mode === "list" ? "Field " + (i + 1) : "" }; }) : [];
+    // An AI-marked written answer says in ONE line how many marking points it found (Murci, 2026-10-03: "replace the feedback rows with
+    // one line"; with the memo locked the rows had no labels, so a miss read "Not yet · 0 of 1" seven times under "0 of 3"). The count
+    // is set against the marks the question asks for, the "aim for N points" its own guide gives; the memo's points stay unnamed.
+    const aiPts = res && res.marker === "ai" && res.items ? res.items : null, ptsFound = aiPts ? aiPts.filter(x => x.awarded > 0).length : 0;
+    const ptsAim = part ? part.marks || 0 : 0, ptsWord = n => ["no", "one", "two", "three", "four", "five", "six"][n] || String(n);
+    const ptsAimLine = ptsAim === 1 ? "Aim for one clear point." : "Aim for " + ptsWord(ptsAim) + " separate points.";
+    const ptsCap = w => w[0].toUpperCase() + w.slice(1);
+    const pointsLine = !aiPts ? "" : ptsFound === 0 ? "None of the marking points found yet. " + ptsAimLine
+      : ptsFound >= ptsAim ? (ptsAim === 1 ? "The marking point" : "All " + ptsWord(ptsAim) + " marking points") + " found."
+      : ptsCap(ptsWord(ptsFound)) + (ptsFound === 1 ? " marking point" : " marking points") + " found. " + ptsAimLine;
 
     const mode = part ? part.response_mode : "";
     const tryN = pr ? pr.tries : 0;
@@ -4096,8 +4102,8 @@ class Component extends DCLogic {
 
       ...this.playVals(s, phone, tablet, tabletLand, desk, mission, part, pr, reply, res, closed, mode, tryN, primaryDisabled, itemsBy, verdictInfo),
       // Kept from the old play values: the memo lines, the AI-marked points, the XP flight.
-      // Per-point lines belong in the bar only for AI-marked written answers; lists are stamped in place.
-      revealLines: revealLines, points: pointLines, hasPoints: pointLines.length > 0 && !!(res && res.marker === "ai"),
+      // The points line belongs only to AI-marked written answers; lists are stamped in place.
+      revealLines: revealLines, pointsLine: pointsLine, hasPoints: !!pointsLine,
       pointsFoot: res && res.marker === "ai" ? "Marked by AI against the memo" : "",
       showFly: !!flyOn && !this.mcqOn(), flyKey: String(s.flySeq), flyText: reply ? "+" + reply.xp_awarded : "",
       // Last, so a class test's words replace the Hall's where they share a screen.

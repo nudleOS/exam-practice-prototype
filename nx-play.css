@@ -1811,3 +1811,5 @@ body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bott
    tiles A / B / C sat 7 px over the bar but under its 84 px fade, nearly invisible; the fade is there for the face strip, which the
    open paper hides) */
 @media (max-width:600px) { body.nx-play.nx-compact.pv-bottom [data-footer]:not(:has([data-keypad]))::before { display:none !important; } }
+/* the AI-marked written answer's one-line points summary (replaces the per-point rows, 2026-10-03) */
+body.nx-play main:not(#mq-stage) [data-feed] .fd-pline { color:var(--nx-text2); font-size:13.5px; line-height:1.5; text-wrap:pretty; }
