@@ -5,7 +5,7 @@
 // drawn layer, sideScroll }. Expected, not defects: an in-box arrow over its own input; the page behind an open modal sheet
 // (pm-dim); content scrolling under the sticky header or the bottom bar; the MCQ glass resting on the bar's edge.
 
-// everything while it runs, because bubbles and strips are pointer-events:none and would otherwise be invisible to the probe.
+// Hit-testing is switched on for everything while it runs: bubbles and strips are pointer-events:none and would hide from the probe.
 window.__sweep = function (opts) {
   opts = opts || {};
   const st = document.createElement("style"); st.textContent = "*, *::before, *::after { pointer-events: auto !important; }"; document.head.appendChild(st);
