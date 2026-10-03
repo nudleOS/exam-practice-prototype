@@ -1793,3 +1793,6 @@ body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bott
 @media (min-width:601px) {
   body.nx-play [data-playhead] > div:first-child:not(:has([data-playclose])) { grid-template-areas:"brand . stats av" !important; }
 }
+/* a long question on a phone (nx-compact): the strip stays OVER the bar's 84 px fade (the compact rule above says 25; the nx-face rule,
+   later in the file, set 24 again and the fade dimmed the face and covered the cloud's foot; found on the P30 lite, Q 1.4.2) */
+@media (max-width:600px) { body.nx-play.nx-face.nx-compact .nx-typestrip { z-index:25; } }
