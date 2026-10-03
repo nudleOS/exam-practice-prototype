@@ -529,7 +529,9 @@ html[data-nx="dark"].nx-app, html[data-nx="dark"] body.nx-app {
   --nx-g1:#11264a; --nx-g2:#0a1a34; --nx-ring:#0c1c36; --nx-c-hex:#0c1c36;
 }
 /* the page: the play screen's gradient, fixed, so every screen reads as the same place */
-html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)) fixed !important; min-height:100vh; }
+html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradient(180deg, var(--nx-top), var(--nx-bot)) fixed !important; min-height:100vh; min-height:100svh; }
+/* (svh, not vh: on the P30 lite a vh is the screen with Chrome's address bar hidden, 743.7 px of a 687.7 px view, so every screen
+   was 56 px taller than the phone and scrolled; measured on the device 2026-10-03, with the app root at line 87 doing the same) */
 html[data-nx="dark"].nx-app { background:var(--nx-top); }
 /* the border shine back on the waiting cards (Murci, 2026-09-30): the component's running light (a bright arc around the 1 px ring),
    over the navy card's hairline. The earlier navy rule had switched it off (animation:none). */
