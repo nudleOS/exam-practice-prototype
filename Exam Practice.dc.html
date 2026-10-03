@@ -952,6 +952,7 @@
               <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
                 <span class="fd-points"><span class="fd-pline">{{ pointsLine }}</span><span class="fd-pfoot">{{ pointsFoot }}</span></span>
               </sc-if>
+              <sc-if value="{{ nxPractiseOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="nxb nxb-sec nxb-sm fd-again" data-practise="true" onClick="{{ retryPart }}" aria-label="Practise this question again: no marks or XP">Practise again</button></sc-if>
             </div>
           </sc-if>
 
@@ -1051,7 +1052,6 @@
               </sc-if>
               <span style="display:flex; gap:8px; margin-top:4px">
                 <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span data-backword="true">Back</span></button></sc-if>
-                <sc-if value="{{ nxCanRetry }}" hint-placeholder-val="{{ false }}"><button data-retry="true" onClick="{{ retryPart }}" aria-label="Try this question again, practice only: no marks or XP">Try again</button></sc-if>
                 <sc-if value="{{ barHasSecondary }}" hint-placeholder-val="{{ false }}">
                   <button data-kind="{{ barSecondaryKind }}" onClick="{{ barSecondary }}" aria-label="{{ barSecondaryAria }}" style="flex:none; min-height:52px; padding:0 16px; border-radius:16px; border:1px solid var(--line2); background:rgba(255,255,255,0.04); color:var(--text2); font-size:14px; font-weight:700; cursor:pointer">{{ barSecondaryLabel }}</button>
                 </sc-if>
@@ -2630,7 +2630,9 @@ class Component extends DCLogic {
   nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed) {
     // (2026-09-30, Murci: the hints come from the robot's bubble only, so the feed is a result and nothing else: no hint card while
     // retrying, no "Hint:" line under a miss; the letters-and-shape hint gave the answer away and is gone)
-    const result = showBar && !!bar && outcome !== "idle";
+    // a miss keeps its result card under the answer while the learner tries again (the bar is gone for a miss)
+    const miss = (outcome === "partial" || outcome === "zero") && !!reply && !closed;
+    const result = (showBar || miss) && !!bar && outcome !== "idle";
     const full = outcome === "full", k = Math.min(2, Math.max(0, ((reply && reply.try) || 1) - 1)), tier = full ? ["Gold", "Silver", "Bronze"][k] : "";
     const part = this.part(), term = !!part && part.response_mode === "term";
     const spelled = res && res.items && res.items[0] && res.items[0].spelling;
@@ -2645,7 +2647,9 @@ class Component extends DCLogic {
       nxFeedTone: (full ? "ok " + tier.toLowerCase() : ({ partial: "warn", zero: "bad", out: "bad", waiting: "warn" })[outcome] || "neutral") + (term ? " term" : ""),
       nxFeedMedal: full, nxFeedIcon: bar ? bar.icon : "", nxFeedTitle: full ? tier : bar ? bar.title : "",
       nxFeedHasSub: full, nxFeedSub: full ? ["First try", "Second try", "Third try"][k] : "",
-      nxFeedHasChips: chips.length > 0, nxFeedChips: chips, nxFeedHasBody: !!body, nxFeedBody: body };
+      nxFeedHasChips: chips.length > 0, nxFeedChips: chips, nxFeedHasBody: !!body, nxFeedBody: body,
+      nxPractiseOn: result && closed && !s.drill && !s.marking && !!part && part.response_mode !== "draw"
+        && !(full ? reply.try === 1 && !reply.replay : outcome === "closed" && this.pg(part.key).medal === "gold") };
   }
   // The robot's hint for a miss: its own line for this part (NX_HINTS; the first after one miss, the second after two), else the
   // paper's clue as written
@@ -2976,6 +2980,7 @@ class Component extends DCLogic {
     const s0 = this.state;
     const answer = given ? given.answer : this.answerFrom(part, s0), quiet = !!(given && given.quiet);
     window.__lastAnswer = { mode: mode, answer: JSON.parse(JSON.stringify(answer == null ? null : answer)) };
+    this._lastAns = { key: part.key, v: JSON.stringify(answer == null ? null : answer) };
     if (s0.kp) this.setState({ kp: null, kpErr: "" });
     const finish = result => {
       const s = this.state; const pr = this.pg(part.key);
@@ -3004,7 +3009,10 @@ class Component extends DCLogic {
         best_marks: Math.max(pr.best, tryNo === 1 && (!replay || pr.retake) ? (result.marks_awarded || 0) : 0), result: result,
         clue: !closed ? (clues[tryNo - 1] || clues[clues.length - 1] || null) : null,
         reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay, retake: !!pr.retake };
-      this.setState({ marking: false, reply: reply, barOpen: !quiet, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
+      // Try again is off the bar (Murci, 2026-10-03: "does it really need to be in the position it is at"): a miss with tries left
+      // leaves the question live, the result under the answer and the hint in the robot's cloud; nothing to press
+      const missLive = !closed && !result.full && !draw && mode !== "term";
+      this.setState({ marking: false, reply: reply, barOpen: !quiet && !missLive, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
         paid: result.full ? Object.assign({}, s.paid, { [part.key]: true }) : s.paid, flySeq: xp ? s.flySeq + 1 : s.flySeq,
@@ -3624,6 +3632,10 @@ class Component extends DCLogic {
       showCheckReason: !closed && !s.marking && !(reply && s.barOpen) && !!reason && !kpOn && !this.canCheckNow(part), checkReason: reason,
     };
   }
+  // the answer on screen is the one just marked short: with the question live after a miss (Try again is off the bar), its Check
+  // arrow stayed up and one tap re-sent the same answer, a try burnt for nothing (found 2026-10-03, 3.3.3); it waits for a change
+  sameAsLast(part, s) { const r = s.reply, la = this._lastAns;
+    return !!(r && r.result && !r.result.full && !s.barOpen && la && la.key === part.key && la.v === JSON.stringify(this.answerFrom(part, s))); }
   canCheckNow(part) { const s = this.state, mode = part.response_mode;
     return mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
       : mode === "match" ? Object.keys(s.matchPairs).length > 0 : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
@@ -3709,7 +3721,7 @@ class Component extends DCLogic {
       // ("Try again" in the row replays it, so no second button)
       closed: { icon: "✓", title: "Closed · " + best + " of " + (part.marks || 0), body: "", primary: [nextLabel, next], secondary: null },
     }[outcome];
-    const showBar = !!bar && (outcome === "marking" || outcome === "closed" || (reply && (s.barOpen || closed)));
+    const showBar = !!bar && outcome !== "partial" && outcome !== "zero" && (outcome === "marking" || outcome === "closed" || (reply && (s.barOpen || closed)));
     const primaryIsSuccess = outcome === "full";
     // Stamps.
     const sPaid = s.lastMult === 3 && s.streak > 0 && s.streak % 3 === 0, sLit = sPaid ? 3 : s.streak % 3;   // the streak meter's state
@@ -3926,7 +3938,7 @@ class Component extends DCLogic {
       : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0
       : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
       : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : true;
-    const primaryDisabled = !part || s.marking || (!closed && !(reply && reply.waiting) && !canCheck);
+    const primaryDisabled = !part || s.marking || (!closed && !(reply && reply.waiting) && (!canCheck || this.sameAsLast(part, s)));
     const flyOn = !s.reduced && reply && reply.xp_awarded > 0 && s.screen === "play";
 
     const rv = reply && reply.reveal;
