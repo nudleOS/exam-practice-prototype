@@ -729,7 +729,7 @@
         </sc-if>
         <sc-if value="{{ figShowOn }}" hint-placeholder-val="{{ false }}"><button data-figshow="true" onClick="{{ toggleFig }}" aria-expanded="false"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>Show figure</button></sc-if>
 
-        <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) both">
+        <section data-key="{{ partKey }}" style="display:flex; flex-direction:column; gap:12px; animation:rise 380ms cubic-bezier(0.22,0.61,0.36,1) backwards">
           <div data-parthead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
             <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-qlabel="true">Question {{ nxQNum }}</span></sc-if>
             <sc-if value="{{ nxReplay }}" hint-placeholder-val="{{ false }}"><span data-replay="true">{{ replayLabel }}</span></sc-if>
