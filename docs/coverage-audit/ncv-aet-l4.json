@@ -1,0 +1,280 @@
+{
+  "paper": "NC(V) Applied Engineering Technology L4 (6021024), 27 Feb 2019 supplementary, NC210",
+  "total_marks": 100,
+  "parts": [
+    {
+      "n": "1.1.1",
+      "marks": 4,
+      "asked": "Differentiate between kinetic energy and potential energy",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "1.1.2",
+      "marks": 2,
+      "asked": "Define centrifugal force",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "1.1.3",
+      "marks": 4,
+      "asked": "Explain how lever length influences torque about a point",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "1.2",
+      "marks": 5,
+      "asked": "List five types of gears used in engineering",
+      "fit": "fits",
+      "type": "list",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "1.3",
+      "marks": 2,
+      "asked": "What is a hydraulic accumulator",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "1.4.1",
+      "marks": 4,
+      "asked": "Calculate coefficient of friction for pulled 80 kg box",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "scenario text (mass, force) as shared lead; covered"
+    },
+    {
+      "n": "1.4.2",
+      "marks": 3,
+      "asked": "Calculate the angle of friction",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "shared scenario lead; uses mu from 1.4.1 (re-enter mu as step 1 so follow-through works inside the part); covered"
+    },
+    {
+      "n": "1.4.3",
+      "marks": 4,
+      "asked": "Horizontal force needed with a second box stacked",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "shared scenario lead; uses mu from 1.4.1; covered"
+    },
+    {
+      "n": "2.1",
+      "marks": 3,
+      "asked": "Draw 8 m beam to scale 1 cm = 1 m, all forces",
+      "fit": "no-fit",
+      "type": "draw (self-check)",
+      "need": "drawing to scale (space/load diagram)",
+      "context": "beam described in text only (no figure on paper); learner must produce the drawing; text lead covers what to read, nothing covers the answer surface"
+    },
+    {
+      "n": "2.2",
+      "marks": 7,
+      "asked": "Calculate support reactions by moments and test answer",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "beam text lead; a figure of the loaded beam would help but is optional; covered. Memo working uses a 1,5 kN load at 0,2 m that the question never states"
+    },
+    {
+      "n": "2.3",
+      "marks": 5,
+      "asked": "Draw shear-force diagram to scale 1 mm = 100 N",
+      "fit": "no-fit",
+      "type": "draw (self-check)",
+      "need": "plot a line graph on a grid (step/piecewise diagram with labelled values)",
+      "context": "needs a scaled grid answer surface; read-only context covers the beam text only"
+    },
+    {
+      "n": "2.4",
+      "marks": 5,
+      "asked": "Calculate bending moments at points A, B, C, D, E",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "points A-E are NOT defined on the question paper (only on the memo drawing); needs an authored beam figure with letter hotspots A-E, which shared figure support covers. Memo BM at D is muddled (-4 031 Nm)"
+    },
+    {
+      "n": "3.1.1",
+      "marks": 2,
+      "asked": "What is computer-aided design software",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "short extract on control systems engineering as lead; covered"
+    },
+    {
+      "n": "3.1.2",
+      "marks": 2,
+      "asked": "Name two types of control systems",
+      "fit": "fits",
+      "type": "list",
+      "need": "",
+      "context": "extract lead; covered"
+    },
+    {
+      "n": "3.1.3",
+      "marks": 4,
+      "asked": "Explain four impacts of poor design in industry",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "extract lead; covered (any 4 of 6 points)"
+    },
+    {
+      "n": "3.2",
+      "marks": 6,
+      "asked": "Height water rises in building for 350 kPa gauge",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "text lead only; covered (g given in instructions)"
+    },
+    {
+      "n": "3.3",
+      "marks": 5,
+      "asked": "Explain five situations where machines are most dangerous",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered; memo open ('any relevant')"
+    },
+    {
+      "n": "3.4.1",
+      "marks": 1,
+      "asked": "Explain function of the oil pump",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "3.4.2",
+      "marks": 1,
+      "asked": "Explain function of the oil filter",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "3.4.3",
+      "marks": 1,
+      "asked": "Explain function of the oil sump",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "3.4.4",
+      "marks": 1,
+      "asked": "Explain function of the dipstick",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "3.5",
+      "marks": 2,
+      "asked": "State two hazards that may occur in a workshop",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered; memo open ('any other applicable hazard'), so rubric slots not list"
+    },
+    {
+      "n": "4.1",
+      "marks": 5,
+      "asked": "Pressure in kPa from 0,007 kN on 3 000 mm2",
+      "fit": "fits",
+      "type": "steps",
+      "need": "",
+      "context": "text plus formula hint P = F/A; covered"
+    },
+    {
+      "n": "4.2.1-4.2.10",
+      "marks": 10,
+      "asked": "Match ten engineering terms to descriptions (A-K)",
+      "fit": "fits",
+      "type": "match",
+      "need": "",
+      "context": "two columns; Column B has 11 options for 10 terms (K is a distractor) - assumes match accepts an unequal Column B"
+    },
+    {
+      "n": "5.1",
+      "marks": 4,
+      "asked": "List four types of motion",
+      "fit": "fits",
+      "type": "list",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "5.2",
+      "marks": 4,
+      "asked": "Describe the operation of a servo motor",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "5.3",
+      "marks": 3,
+      "asked": "Name three impeller types for centrifugal pumps",
+      "fit": "fits",
+      "type": "list",
+      "need": "",
+      "context": "text lead only; covered"
+    },
+    {
+      "n": "5.4",
+      "marks": 1,
+      "asked": "State the function of an evaporator",
+      "fit": "fits",
+      "type": "rubric (written)",
+      "need": "",
+      "context": "text lead only; covered"
+    }
+  ],
+  "summary": {
+    "fits_marks": 92,
+    "settings_marks": 0,
+    "nofit_marks": 8,
+    "needs": [
+      {
+        "need": "plot a line graph on a grid (step/piecewise diagram with labelled values)",
+        "marks": 5,
+        "parts": [
+          "2.3"
+        ]
+      },
+      {
+        "need": "drawing to scale (space/load diagram)",
+        "marks": 3,
+        "parts": [
+          "2.1"
+        ]
+      }
+    ]
+  },
+  "notes": "Memo read with antiword (tick marks render as '?'/'(' so per-step mark placement is approximate; memo diagrams for 2.1/2.3 are images and were not visible). Paper has NO figures. Paper is ~92% short-answer theory + calculations. Memo defects that would break auto-marking: 2.2 working includes a 1,5 kN load at 0,2 m not in the question; 1.4.2 answer printed as '130' (should be ~13 degrees); 2.4 BM at D working is garbled (-4 031 Nm) and points A-E are undefined on the paper. 1.4.2/1.4.3 depend on 1.4.1's mu: catalogue follow-through is within a part, so cross-part carry-over must be modelled by re-entering mu as a step. 4.2 match has a distractor (11 B options for 10 A items). 2.1 and 2.3 could be placed in draw (self-check) today but would then earn 0 online marks."
+}

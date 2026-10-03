@@ -1,0 +1,804 @@
+{
+ "paper": "NSC Grade 12 Life Sciences P2, November 2025 (DBE), English",
+ "total_marks": 150,
+ "parts": [
+  {
+   "n": "1.1.1",
+   "marks": 2,
+   "asked": "define a gene: pick correct statement",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.2",
+   "marks": 2,
+   "asked": "significance of DNA replication before mitosis",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.3",
+   "marks": 2,
+   "asked": "pick feature of punctuated equilibrium",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.4",
+   "marks": 2,
+   "asked": "pick correct statement about haemophilia",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.5",
+   "marks": 2,
+   "asked": "pick heterozygous genotype from four allele-notation options",
+   "fit": "settings",
+   "type": "mcq",
+   "need": "allele-notation text (superscript alleles, e.g. X^r X^r) in option cards",
+   "context": "options need superscript allele symbols; plain text 'XrXr' is ambiguous"
+  },
+  {
+   "n": "1.1.6",
+   "marks": 2,
+   "asked": "pick combination naming molecules 1, 4, 5 in DNA",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "DNA replication figure (image, numbered parts) covered; combination options render as 'Molecule 1: ..., Molecule 4: ...' text"
+  },
+  {
+   "n": "1.1.7",
+   "marks": 2,
+   "asked": "pick combination of bases for molecules 2 and 3",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same DNA figure; covered"
+  },
+  {
+   "n": "1.1.8",
+   "marks": 2,
+   "asked": "pick parent genotypes for dihybrid cross from offspring",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "lead text + read-only table (plant, stem colour, height) covered; options are plain genotype strings (BbTt)"
+  },
+  {
+   "n": "1.1.9",
+   "marks": 2,
+   "asked": "pick number of offspring genotypes from the cross",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same table/text; covered"
+  },
+  {
+   "n": "1.1.10",
+   "marks": 2,
+   "asked": "pick true statement about X-linked dominant rickets",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.1",
+   "marks": 1,
+   "asked": "term: bond between amino acids (peptide)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.2",
+   "marks": 1,
+   "asked": "term: organelle DNA tracing female ancestry",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.3",
+   "marks": 1,
+   "asked": "term: undifferentiated cells able to become any tissue",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.4",
+   "marks": 1,
+   "asked": "term: base-sequence change giving different protein",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.5",
+   "marks": 1,
+   "asked": "term: natural shape of DNA (double helix)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.6",
+   "marks": 1,
+   "asked": "term: permanent disappearance of a species",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.7",
+   "marks": 1,
+   "asked": "term: variation with intermediate phenotypes (continuous)",
+   "fit": "settings",
+   "type": "term",
+   "need": "term reject-list for near-miss wrong answers ('discontinuous' is within 1-slip-per-5 tolerance of 'continuous')",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.8",
+   "marks": 1,
+   "asked": "term: allele expressed in heterozygous condition (dominant)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.9",
+   "marks": 1,
+   "asked": "term: position of an allele on a chromosome (locus)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.3.1",
+   "marks": 2,
+   "asked": "non-disjunction phase: A only/B only/both/none",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "Column I description + Column II items A/B as stem text; fixed 4 options; covered"
+  },
+  {
+   "n": "1.3.2",
+   "marks": 2,
+   "asked": "karyotype vs phylogenetic tree: A/B/both/none",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "Column I description + Column II items A/B as stem text; fixed 4 options; covered"
+  },
+  {
+   "n": "1.3.3",
+   "marks": 2,
+   "asked": "law of segregation description: A/B/both/none",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "Column I description + Column II items A/B as stem text; fixed 4 options; covered"
+  },
+  {
+   "n": "1.4.1(a)",
+   "marks": 1,
+   "asked": "name labelled part A on dividing-cell diagram",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "cell-division figure (image with letter labels A-C) covered; letter given, learner types name only"
+  },
+  {
+   "n": "1.4.1(b)",
+   "marks": 1,
+   "asked": "name labelled part B on dividing-cell diagram",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "cell-division figure (image with letter labels A-C) covered; letter given, learner types name only"
+  },
+  {
+   "n": "1.4.1(c)",
+   "marks": 1,
+   "asked": "name labelled part C on dividing-cell diagram",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "cell-division figure (image with letter labels A-C) covered; letter given, learner types name only"
+  },
+  {
+   "n": "1.4.2(a)",
+   "marks": 1,
+   "asked": "which diagram V-Z shows prophase of mitosis",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same figure with diagram letters V-Z; 5 letter options (or hotspot tap); covered"
+  },
+  {
+   "n": "1.4.2(b)",
+   "marks": 1,
+   "asked": "which diagram V-Z shows metaphase I",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same figure with diagram letters V-Z; 5 letter options (or hotspot tap); covered"
+  },
+  {
+   "n": "1.4.2(c)",
+   "marks": 1,
+   "asked": "which diagram V-Z shows prophase I",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same figure with diagram letters V-Z; 5 letter options (or hotspot tap); covered"
+  },
+  {
+   "n": "1.4.3(a)",
+   "marks": 1,
+   "asked": "number of chromosomes per cell after mitosis",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "same figure (count chromosomes); covered"
+  },
+  {
+   "n": "1.4.3(b)",
+   "marks": 1,
+   "asked": "number of chromosomes per cell after meiosis I",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "same figure; covered"
+  },
+  {
+   "n": "1.5.1(a)",
+   "marks": 1,
+   "asked": "name stage of protein synthesis shown",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "protein-synthesis figure (image with numbers/letters, codon bases) covered"
+  },
+  {
+   "n": "1.5.1(b)",
+   "marks": 1,
+   "asked": "name molecule 1 (tRNA)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "protein-synthesis figure (image with numbers/letters, codon bases) covered"
+  },
+  {
+   "n": "1.5.1(c)",
+   "marks": 1,
+   "asked": "name organelle Z (ribosome)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "protein-synthesis figure (image with numbers/letters, codon bases) covered"
+  },
+  {
+   "n": "1.5.2(a)",
+   "marks": 1,
+   "asked": "DNA base triplet for mRNA codon 3",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "same figure; 3-letter answer gets 0 slips so exact; covered"
+  },
+  {
+   "n": "1.5.2(b)",
+   "marks": 2,
+   "asked": "DNA triplet for blank codon 4 via tRNA anticodon",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "same figure; one exact answer worth 2 (all-or-nothing); covered"
+  },
+  {
+   "n": "1.5.3",
+   "marks": 1,
+   "asked": "which amino acid P/Q/R/S codon 5 codes for",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same figure; covered"
+  },
+  {
+   "n": "2.1.1",
+   "marks": 1,
+   "asked": "name structure A on sex-chromosome diagram",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "chromosome figure with letter labels A, P; covered"
+  },
+  {
+   "n": "2.1.2",
+   "marks": 1,
+   "asked": "term for sex chromosomes (gonosomes)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.3",
+   "marks": 1,
+   "asked": "describe how male somatic sex chromosomes differ",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same figure; covered"
+  },
+  {
+   "n": "2.1.4(a)",
+   "marks": 1,
+   "asked": "name process exchanging material at region P",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "same figure; covered"
+  },
+  {
+   "n": "2.1.4(b)",
+   "marks": 1,
+   "asked": "phase in which crossing over occurs (Prophase I)",
+   "fit": "settings",
+   "type": "term",
+   "need": "term reject-list for near-miss wrong answers ('Prophase II' is within spelling tolerance of 'Prophase I')",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.4(c)",
+   "marks": 1,
+   "asked": "give ONE reason crossing over is important",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.5",
+   "marks": 2,
+   "asked": "explain chromosome structure at end of meiosis II",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same figure; covered; memo has OR alternatives"
+  },
+  {
+   "n": "2.1.6",
+   "marks": 3,
+   "asked": "explain genetic composition of zygotes after non-disjunction",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.2.1",
+   "marks": 1,
+   "asked": "name the technique (DNA profiling)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "DNA band-profile figure (image, 4 lanes) covered"
+  },
+  {
+   "n": "2.2.2",
+   "marks": 1,
+   "asked": "which suspect (1 or 2) was at the scene",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same figure; covered"
+  },
+  {
+   "n": "2.2.3",
+   "marks": 1,
+   "asked": "give one observable reason from the bands",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same figure; covered"
+  },
+  {
+   "n": "2.2.4",
+   "marks": 2,
+   "asked": "give TWO reasons suspect might not be convicted",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text; covered (numbered slots, mark first TWO)"
+  },
+  {
+   "n": "2.2.5",
+   "marks": 4,
+   "asked": "explain DNA profiling use in paternity testing",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.3.1",
+   "marks": 1,
+   "asked": "name type of diagram (pedigree)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "pedigree figure (image: numbered individuals, shaded symbols, key) covered"
+  },
+  {
+   "n": "2.3.2",
+   "marks": 1,
+   "asked": "count offspring of parents 3 and 4",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "same pedigree; covered"
+  },
+  {
+   "n": "2.3.3(a)",
+   "marks": 1,
+   "asked": "give phenotype of individual 10",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same pedigree; one-point rubric ('female with CADASIL'); covered"
+  },
+  {
+   "n": "2.3.3(b)",
+   "marks": 1,
+   "asked": "give genotype of individual 5 (dd)",
+   "fit": "settings",
+   "type": "term",
+   "need": "case-sensitive exact genotype input (dd vs Dd vs DD differ only by case; spelling tolerance must be off)",
+   "context": "same pedigree; covered"
+  },
+  {
+   "n": "2.3.4",
+   "marks": 4,
+   "asked": "explain from pedigree why 1 and 2 are heterozygous",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same pedigree; covered"
+  },
+  {
+   "n": "2.3.5",
+   "marks": 1,
+   "asked": "percentage chance parents 7 and 8 have affected child",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "same pedigree; num with % unit; covered"
+  },
+  {
+   "n": "2.4.1(a)",
+   "marks": 1,
+   "asked": "blood group most common in both ethnic groups",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "grouped bar graph (image, values printed on bars) covered as image"
+  },
+  {
+   "n": "2.4.1(b)",
+   "marks": 1,
+   "asked": "blood group higher in group 1 than group 2",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same graph; covered"
+  },
+  {
+   "n": "2.4.2",
+   "marks": 2,
+   "asked": "state ALL genotypes of the 11% group (IBIB, IBi)",
+   "fit": "settings",
+   "type": "list",
+   "need": "allele-notation input: superscript alleles (I^B I^B, I^B i) with case-sensitive normalised matching",
+   "context": "same graph; covered"
+  },
+  {
+   "n": "2.4.3",
+   "marks": 2,
+   "asked": "which blood group had 39 600 of 360 000 people",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "same graph + stem text; 4 options worth 2; calculation unmarked; covered"
+  },
+  {
+   "n": "2.4.4",
+   "marks": 3,
+   "asked": "explain inheritance of blood group AB",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.5.1",
+   "marks": 1,
+   "asked": "name type of dominance (incomplete dominance)",
+   "fit": "settings",
+   "type": "term",
+   "need": "term reject-list for near-miss wrong answers ('complete dominance' is within tolerance of 'incomplete dominance')",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.5.2",
+   "marks": 2,
+   "asked": "explain why it is incomplete dominance",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.5.3(a)",
+   "marks": 1,
+   "asked": "name breeding biotechnology (artificial selection)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.5.3(b)",
+   "marks": 2,
+   "asked": "name TWO parent phenotypes for 100% palomino",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.5.4",
+   "marks": 6,
+   "asked": "genetic cross: cream x palomino, show phenotypic ratio",
+   "fit": "no-fit",
+   "type": "rubric (closest)",
+   "need": "genetic cross builder (monohybrid): P1 phenotypes + genotypes, meiosis/fertilisation labels, gametes, F1 genotypes + phenotypes (or Punnett grid fill-in), ratio; marked per line, compulsory ratio mark + any 5",
+   "context": "lead text gives allele letters A/G; no figure; the learner OUTPUT is a structured multi-line cross (or Punnett square) that no current type captures"
+  },
+  {
+   "n": "3.1.1",
+   "marks": 2,
+   "asked": "state TWO vision traits shared with African apes",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.1.2",
+   "marks": 4,
+   "asked": "describe TWO jaw differences humans vs African apes",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text; covered; each difference = 2 points (human + ape), mark first TWO"
+  },
+  {
+   "n": "3.1.3",
+   "marks": 6,
+   "asked": "explain foramen magnum, spine, pelvis in bipedalism",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.2.1",
+   "marks": 1,
+   "asked": "count genera represented in brain-volume table",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "read-only table (species, brain volume mL) covered"
+  },
+  {
+   "n": "3.2.2",
+   "marks": 2,
+   "asked": "give TWO A. africanus fossils found in SA",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.2.3",
+   "marks": 1,
+   "asked": "brain volume of first tool-using species",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "same table; num with unit mL; covered"
+  },
+  {
+   "n": "3.2.4",
+   "marks": 3,
+   "asked": "calculate % increase H. habilis to H. sapiens, 2 d.p.",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "same table; covered; memo marks formula substitution + x100 + answer: steps approximates the substitution mark with an intermediate number"
+  },
+  {
+   "n": "3.2.5",
+   "marks": 3,
+   "asked": "explain how fossil brain volume is determined",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.2.6",
+   "marks": 3,
+   "asked": "explain brain volume vs cultural evidence",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.3.1(a)",
+   "marks": 2,
+   "asked": "state what is meant by a biological species",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "extract (text) + world map image of ratite distribution; covered"
+  },
+  {
+   "n": "3.3.1(b)",
+   "marks": 2,
+   "asked": "explain from extract why ostrich and emu differ",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same extract; covered"
+  },
+  {
+   "n": "3.3.1(c)",
+   "marks": 2,
+   "asked": "name TWO other reproductive isolation mechanisms",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.3.2",
+   "marks": 1,
+   "asked": "identify evidence for evolution in map (biogeography)",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "map image; covered"
+  },
+  {
+   "n": "3.3.3",
+   "marks": 5,
+   "asked": "describe how biogeography supports evolution",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.4.1",
+   "marks": 1,
+   "asked": "state the independent variable",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "procedure bullet list (text extract) + flow diagram image; covered"
+  },
+  {
+   "n": "3.4.2",
+   "marks": 1,
+   "asked": "describe how the dependent variable was measured",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "same; covered"
+  },
+  {
+   "n": "3.4.3",
+   "marks": 1,
+   "asked": "state ONE controlled variable when selecting flies",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "same; covered"
+  },
+  {
+   "n": "3.4.4",
+   "marks": 2,
+   "asked": "explain why same food type was used",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.4.5",
+   "marks": 2,
+   "asked": "describe results from generation 1 and 60 graphs",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "two distribution graphs (image) covered as image; memo accepts read-off ranges (8-40 h, 140-180 h)"
+  },
+  {
+   "n": "3.4.6",
+   "marks": 6,
+   "asked": "explain starvation resistance by natural selection",
+   "fit": "fits",
+   "type": "rubric",
+   "need": "",
+   "context": "text only; covered"
+  }
+ ],
+ "summary": {
+  "fits_marks": 136,
+  "settings_marks": 8,
+  "nofit_marks": 6,
+  "needs": [
+   {
+    "need": "genetic cross builder (monohybrid/dihybrid; P1, meiosis, gametes, fertilisation, F1, ratio; Punnett grid alternative)",
+    "marks": 6,
+    "parts": [
+     "2.5.4"
+    ]
+   },
+   {
+    "need": "allele/genotype notation: superscript display + case-sensitive exact genotype input",
+    "marks": 5,
+    "parts": [
+     "1.1.5",
+     "2.3.3(b)",
+     "2.4.2"
+    ]
+   },
+   {
+    "need": "term reject-list for near-miss wrong answers (prefix negations, Roman numerals I/II)",
+    "marks": 3,
+    "parts": [
+     "1.2.7",
+     "2.1.4(b)",
+     "2.5.1"
+    ]
+   }
+  ]
+ },
+ "notes": "Catalogue generalises well: 136/150 fit as-is. Only gap is the genetic cross (2.5.4, 6 marks), a P2 staple (expect 1-2 per paper, monohybrid or dihybrid, sometimes Punnett). Genetics brings notation P1 never had: superscript alleles (I^A I^B, X^r) and case-significant genotypes (dd/Dd/DD) where the term type's spelling tolerance and any case-folding would mark wrong answers right. The same tolerance also accepts near-miss opposites ('discontinuous', 'complete dominance', 'Prophase II'), so term needs a reject list. All shared context is covered: pedigree, DNA bands, bar graph, distribution graphs, map, protein-synthesis and cell diagrams are images; brain-volume and plant tables are read-only tables; procedure and ratite extract are text. 3.2.4 steps approximates the formula-substitution mark with an intermediate number. 2.4.3 hides a calculation inside a 2-mark choice; mcq covers it. No draw or graph-plot item in this paper."
+}

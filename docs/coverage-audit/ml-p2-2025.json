@@ -1,0 +1,518 @@
+{
+ "paper": "NSC Mathematical Literacy P2, November 2025 (DBE), English",
+ "total_marks": 150,
+ "parts": [
+  {
+   "n": "1.1.1",
+   "marks": 2,
+   "asked": "Match 'elevation plan' to its definition letter A-J",
+   "fit": "settings",
+   "type": "match",
+   "need": "match with distractors (10 Column-B options for 5 items) and 2 marks per pair",
+   "context": "read-only TABLE 1 of 10 lettered definitions: covered (becomes Column B)"
+  },
+  {
+   "n": "1.1.2",
+   "marks": 2,
+   "asked": "Match 'number scale' to its definition letter A-J",
+   "fit": "settings",
+   "type": "match",
+   "need": "match with distractors (10 Column-B options for 5 items) and 2 marks per pair",
+   "context": "same TABLE 1: covered"
+  },
+  {
+   "n": "1.1.3",
+   "marks": 2,
+   "asked": "Match 'volume' to its definition letter A-J",
+   "fit": "settings",
+   "type": "match",
+   "need": "match with distractors (10 Column-B options for 5 items) and 2 marks per pair",
+   "context": "same TABLE 1: covered"
+  },
+  {
+   "n": "1.1.4",
+   "marks": 2,
+   "asked": "Match 'distance' to its definition letter A-J",
+   "fit": "settings",
+   "type": "match",
+   "need": "match with distractors (10 Column-B options for 5 items) and 2 marks per pair",
+   "context": "same TABLE 1: covered"
+  },
+  {
+   "n": "1.1.5",
+   "marks": 2,
+   "asked": "Match 'perimeter' to its definition letter A-J",
+   "fit": "settings",
+   "type": "match",
+   "need": "match with distractors (10 Column-B options for 5 items) and 2 marks per pair",
+   "context": "same TABLE 1: covered"
+  },
+  {
+   "n": "1.2.1",
+   "marks": 2,
+   "asked": "State flight arrival time in words, 12-hour format",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "flight info box (text): covered. 2 memo points (time in words + 'afternoon'), so rubric rather than all-or-nothing term"
+  },
+  {
+   "n": "1.2.2",
+   "marks": 2,
+   "asked": "Calculate 33 1/3 % of 189 passengers",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "flight info text: covered; stem shows a mixed fraction (render as text)"
+  },
+  {
+   "n": "1.2.3",
+   "marks": 2,
+   "asked": "Choose correct speed-calculation method from three fraction options",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "options are stacked fractions (1 278 / 2): text '1 278 / 2' or option images; covered"
+  },
+  {
+   "n": "1.2.4",
+   "marks": 2,
+   "asked": "State the weekday of 26 December 2024",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "flight box gives Wed 8 Jan 2025 as anchor; covered (7 days exceed mcq's 6-option cap, so term)"
+  },
+  {
+   "n": "1.3.1",
+   "marks": 6,
+   "asked": "Match six geyser-wrapping statements (a-f) to pictures P-U",
+   "fit": "fits",
+   "type": "match",
+   "need": "",
+   "context": "6-panel picture grid with printed letters P-U: image covered (no hotspots needed)"
+  },
+  {
+   "n": "1.3.2",
+   "marks": 2,
+   "asked": "Choose formula for geyser total surface area (A-D)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "options contain pi and squares: unicode text ok; covered"
+  },
+  {
+   "n": "1.3.3",
+   "marks": 2,
+   "asked": "Convert geyser length 1,2 m to mm",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text: covered"
+  },
+  {
+   "n": "2.1.1",
+   "marks": 2,
+   "asked": "Count forward-facing passenger seats on the bus plan",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "bus seating plan image: covered, but counting tiny seat icons needs pinch-zoom on a 360 px phone"
+  },
+  {
+   "n": "2.1.2",
+   "marks": 2,
+   "asked": "Give seat number with easiest access to toilet",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "seating plan image + numbering rules text: covered. Memo splits 1 row + 1 seat; term is all-or-nothing"
+  },
+  {
+   "n": "2.1.3",
+   "marks": 4,
+   "asked": "Fill four blanks in directions paragraph from word bank",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "paragraph as text extract + seating plan image: covered. Rendered as 4 mcq (word bank = 5 options each); a native cloze would read better"
+  },
+  {
+   "n": "2.2.1",
+   "marks": 2,
+   "asked": "Name the southern-most stop on route map",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "Annexure A route map image: covered"
+  },
+  {
+   "n": "2.2.2",
+   "marks": 2,
+   "asked": "Name the type of scale used on the map",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "map image: covered; synonyms bar/line/linear/graphic"
+  },
+  {
+   "n": "2.2.3",
+   "marks": 2,
+   "asked": "State clockwise or anticlockwise from stop 11 to 18",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "map image: covered"
+  },
+  {
+   "n": "2.2.4",
+   "marks": 5,
+   "asked": "Use the map's bar scale to find map distance of 19,2 km",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "measure a length on an image (on-screen ruler against a scale bar)",
+   "context": "map image shown, but 1A is for MEASURING the 500 m bar with a ruler (memo accepts 12-13 mm); on-screen size varies by device, so it cannot be measured from our image. Other 4 marks are steps-able if the bar length is given"
+  },
+  {
+   "n": "2.3.1",
+   "marks": 2,
+   "asked": "State whether bathroom door opens left or right",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "Annexure B floor plan image: covered"
+  },
+  {
+   "n": "2.3.2",
+   "marks": 5,
+   "asked": "Convert living room's longer dimension 12'8\" to cm",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "floor plan image with conversion note: covered. Steps: feet->cm 365,76; inches->cm 20,32; total 386,08 (RT for reading 12'8\" rides on the step values)"
+  },
+  {
+   "n": "2.3.3",
+   "marks": 4,
+   "asked": "Write TWO differences between Flat 1 and Flat 2",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "floor plan image: covered; 2 slots x 2 marks"
+  },
+  {
+   "n": "2.3.4",
+   "marks": 2,
+   "asked": "Give reason Flat 1 has no balcony",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "floor plan image: covered"
+  },
+  {
+   "n": "2.3.5",
+   "marks": 2,
+   "asked": "Explain no windows in north/south-facing walls",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "floor plan image: covered"
+  },
+  {
+   "n": "3.1.1",
+   "marks": 2,
+   "asked": "Find start time given 3 h 27 min ending 13:12",
+   "fit": "settings",
+   "type": "num",
+   "need": "time-of-day / date answer input (hh:mm, optionally with a date)",
+   "context": "text + picture: covered. Answer 09:45 is not a plain number"
+  },
+  {
+   "n": "3.1.2",
+   "marks": 3,
+   "asked": "Total circles in triangular pattern of seven rows",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text: covered; answer-only full marks (AO)"
+  },
+  {
+   "n": "3.1.3",
+   "marks": 4,
+   "asked": "Calculate area of triangle Part A in cm2",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "template diagram image (240 mm height) + note base 28 cm: covered. Steps: height 24 cm, area 336. Memo's alt route (mm first) not accepted by fixed steps"
+  },
+  {
+   "n": "3.1.4",
+   "marks": 5,
+   "asked": "Total template area in mm2 (C = 1,6 x B)",
+   "fit": "settings",
+   "type": "steps",
+   "need": "follow-through from an earlier part's answer (CA from 3.1.3)",
+   "context": "text: covered. Steps: C 48 384; A 33 600 mm2 (from 3.1.3); total 112 224"
+  },
+  {
+   "n": "3.1.5",
+   "marks": 4,
+   "asked": "Probability as % of red or green circle",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "TABLE 2 read-only: covered. Steps: total 74, favourable 16, 21,62 %"
+  },
+  {
+   "n": "3.2.1",
+   "marks": 2,
+   "asked": "Radius of small circle as 4/7 of 14 mm",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "earring picture + circle diagram: covered; AO"
+  },
+  {
+   "n": "3.2.2",
+   "marks": 3,
+   "asked": "Circumference of large circle, rounded to nearest mm",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "text + formula: covered. Steps: 87,976 then rounded 88 (R is its own step)"
+  },
+  {
+   "n": "3.2.3",
+   "marks": 9,
+   "asked": "Verify off-cut leather area is under 3 000 cm2",
+   "fit": "settings",
+   "type": "steps",
+   "need": "verify-a-claim: calculation steps plus a final verdict (valid/invalid) marked as the O mark",
+   "context": "text + formulae: covered. Steps: 137 cm, 4 110, 1 182,40, 2 927,60 then verdict CORRECT"
+  },
+  {
+   "n": "4.1.1",
+   "marks": 2,
+   "asked": "Name closest town directly west of Colesberg",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "Annexure C map image: covered (read by eye, typed answer; no on-map interaction)"
+  },
+  {
+   "n": "4.1.2(a)",
+   "marks": 2,
+   "asked": "Count different national roads shown on the map",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "map image: covered, but small pentagon icons need pinch-zoom/high-res on phone"
+  },
+  {
+   "n": "4.1.2(b)",
+   "marks": 3,
+   "asked": "Name the towns found on the N12",
+   "fit": "settings",
+   "type": "list",
+   "need": "list with uneven marks per line (2 for first correct, 1 for second)",
+   "context": "map image: covered"
+  },
+  {
+   "n": "4.1.3",
+   "marks": 2,
+   "asked": "Describe how provincial borders are shown on map",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "map image: covered"
+  },
+  {
+   "n": "4.2.1",
+   "marks": 2,
+   "asked": "Number of months bird spent in area A",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text: covered"
+  },
+  {
+   "n": "4.2.2",
+   "marks": 3,
+   "asked": "Date and time of arrival after 14 h 25 min flight",
+   "fit": "settings",
+   "type": "num",
+   "need": "time-of-day / date answer input (hh:mm, optionally with a date)",
+   "context": "text: covered. Answer '16 June 2023 at 09:25' mixes date and time (MA + A date + A time)"
+  },
+  {
+   "n": "4.2.3",
+   "marks": 2,
+   "asked": "Probability bird flew directly over Queenstown",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "map image: covered; answer 0"
+  },
+  {
+   "n": "4.2.4",
+   "marks": 4,
+   "asked": "Average speed over 770 km in 14 h 25 min",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "text + formula: covered. Steps: time 14,4167 h, speed 53,41 km/h (SF/S marks ride on the value)"
+  },
+  {
+   "n": "4.2.5",
+   "marks": 5,
+   "asked": "Verify claim of extra 268,13 km using mile conversion",
+   "fit": "settings",
+   "type": "steps",
+   "need": "verify-a-claim: calculation steps plus a final verdict (valid/invalid) marked as the O mark",
+   "context": "text: covered. Steps: 501,66 km, 268,34 km then verdict INVALID"
+  },
+  {
+   "n": "4.2.6",
+   "marks": 5,
+   "asked": "Adult women shorter than 5 ft, nearest million",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "bullet facts text: covered. Steps: 259,74 M, 129,87 M, 12,987 M, 13 M (rounding step). Alt order route has different intermediates"
+  },
+  {
+   "n": "5.1.1(a)",
+   "marks": 2,
+   "asked": "Letter in Diagram 2 matching a shelf",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "Annexure D (scanned ROTATED landscape page): image covered once rotated; accepted F or G. A letter-hotspot tap would be better UX than typing"
+  },
+  {
+   "n": "5.1.1(b)",
+   "marks": 2,
+   "asked": "Letter in Diagram 2 matching back of bookcase",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "Annexure D image: covered; answer C"
+  },
+  {
+   "n": "5.1.2",
+   "marks": 2,
+   "asked": "Probability of a shelf taller than 30 cm",
+   "fit": "settings",
+   "type": "num",
+   "need": "probability answer accepting equivalent forms (fraction / decimal / percent)",
+   "context": "Diagram 1 image: covered. Memo accepts 1/3, 0,333 or 33,3 %; num takes one value; memo gives 1A numerator + 1A denominator"
+  },
+  {
+   "n": "5.1.3(a)",
+   "marks": 2,
+   "asked": "Explain why hardboard is 60 cm by 90 cm",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "Diagram 1 image: covered"
+  },
+  {
+   "n": "5.1.3(b)",
+   "marks": 6,
+   "asked": "Draw scaled diagram of hardboard at scale 1:20",
+   "fit": "no-fit",
+   "type": "draw (self-check)",
+   "need": "scale drawing on a grid, auto-marked (computed dimensions + drawn width/height/shape)",
+   "context": "diagram image: covered. 3 marks numeric (3 cm, 4,5 cm) + 3 for the drawing: mixes types in one part, and draw is not banked"
+  },
+  {
+   "n": "5.2",
+   "marks": 6,
+   "asked": "Area of wood left after cutting two bookcases",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "Diagram 2 dimensions + 430 x 42 cm sketch: covered. Steps: 18 060, 8 240, 1 580. Memo lists 5 alternative routes; fixed steps accept one"
+  },
+  {
+   "n": "5.3",
+   "marks": 6,
+   "asked": "Verify more than three months to accumulate one ton",
+   "fit": "settings",
+   "type": "steps",
+   "need": "verify-a-claim: calculation steps plus a final verdict (valid/invalid) marked as the O mark",
+   "context": "text + density formula: covered. Steps: 400 000 cm3, 300 000 g, 300 kg, 3,33 months then verdict VALID"
+  }
+ ],
+ "summary": {
+  "fits_marks": 94,
+  "settings_marks": 45,
+  "nofit_marks": 11,
+  "needs": [
+   {
+    "need": "verify-a-claim: calculation steps plus a final verdict (valid/invalid) marked as the O mark",
+    "marks": 20,
+    "parts": [
+     "3.2.3",
+     "4.2.5",
+     "5.3"
+    ]
+   },
+   {
+    "need": "match with distractors (10 Column-B options for 5 items) and 2 marks per pair",
+    "marks": 10,
+    "parts": [
+     "1.1.1",
+     "1.1.2",
+     "1.1.3",
+     "1.1.4",
+     "1.1.5"
+    ]
+   },
+   {
+    "need": "scale drawing on a grid, auto-marked (computed dimensions + drawn width/height/shape)",
+    "marks": 6,
+    "parts": [
+     "5.1.3(b)"
+    ]
+   },
+   {
+    "need": "measure a length on an image (on-screen ruler against a scale bar)",
+    "marks": 5,
+    "parts": [
+     "2.2.4"
+    ]
+   },
+   {
+    "need": "time-of-day / date answer input (hh:mm, optionally with a date)",
+    "marks": 5,
+    "parts": [
+     "3.1.1",
+     "4.2.2"
+    ]
+   },
+   {
+    "need": "follow-through from an earlier part's answer (CA from 3.1.3)",
+    "marks": 5,
+    "parts": [
+     "3.1.4"
+    ]
+   },
+   {
+    "need": "list with uneven marks per line (2 for first correct, 1 for second)",
+    "marks": 3,
+    "parts": [
+     "4.1.2(b)"
+    ]
+   },
+   {
+    "need": "probability answer accepting equivalent forms (fraction / decimal / percent)",
+    "marks": 2,
+    "parts": [
+     "5.1.2"
+    ]
+   }
+  ]
+ },
+ "notes": "Question paper and answer book PDFs are SCANS with no text layer (PyMuPDF get_text is empty); ingestion needs OCR/vision. The memo has a text layer. Annexures A-D (route map, floor plans, GPS map, bookcase diagrams) live in the ANSWER BOOK, not the paper; Annexure D is a rotated landscape page. No part needs a learner-filled table, a graph plot, or on-map coordinates/bearings. Cross-cutting caveats not counted as separate needs: (1) the memo gives alternative solution routes for 2.2.4, 2.3.2, 3.1.3, 3.1.4, 3.1.5, 4.2.2, 4.2.6, 5.2, 5.3; fixed steps accept one route (learner is guided down it). (2) Method marks (MA/SF/S/C) are awarded for method even after an arithmetic slip; number-only steps award them only through the step value plus follow-through, so app marking is stricter than the memo for a slip inside a step. (3) Several 2-mark answers split 1+1 in the memo (2.1.2 row+seat, 5.1.2 numerator+denominator); term/num are all-or-nothing. (4) Phone legibility: the seat plan (2.1.1) and national-road icons (4.1.2a) need pinch-zoom/high-res images on a 360 px screen. Choices: 2.1.3 cloze counted as fits via 4 mcq; 1.1.x needs match distractors because 10 options exceed mcq's 6-option cap."
+}

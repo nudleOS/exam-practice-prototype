@@ -1,0 +1,583 @@
+{
+ "paper": "NSC Mathematics P1, November 2025 (DBE), English",
+ "total_marks": 150,
+ "parts": [
+  {
+   "n": "1.1.1",
+   "marks": 2,
+   "asked": "Solve factorised quadratic, two roots",
+   "fit": "settings",
+   "type": "num",
+   "need": "several numeric roots in one answer (unordered set, with root selection)",
+   "context": "text only"
+  },
+  {
+   "n": "1.1.2",
+   "marks": 4,
+   "asked": "Solve quadratic with formula, two roots to 2 dp",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that); also several numeric roots in one answer (unordered set, with root selection) (2 of 4 marks are the numeric roots)",
+   "context": "text only"
+  },
+  {
+   "n": "1.1.3",
+   "marks": 4,
+   "asked": "Solve quadratic inequality 8x^2 > 2x",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends); also multi-line algebraic working marked by method (solve / derive / show-that) (standard form mark)",
+   "context": "text only"
+  },
+  {
+   "n": "1.1.4",
+   "marks": 4,
+   "asked": "Solve exponential equation reducible to quadratic in 2^x",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that); also several numeric roots in one answer (unordered set, with root selection)",
+   "context": "text only"
+  },
+  {
+   "n": "1.1.5",
+   "marks": 5,
+   "asked": "Solve surd equation, square twice, reject extraneous root",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that); also several numeric roots in one answer (unordered set, with root selection) with selection",
+   "context": "text only"
+  },
+  {
+   "n": "1.2",
+   "marks": 6,
+   "asked": "Solve simultaneous linear-quadratic system for x and y",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that); also several numeric roots in one answer (unordered set, with root selection) as (x;y) pairs (coordinate pair input (x ; y))",
+   "context": "text only"
+  },
+  {
+   "n": "2.1.1",
+   "marks": 3,
+   "asked": "Show t = -2 for a geometric series",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (show-that: answer is printed, only the method can be marked)",
+   "context": "text only"
+  },
+  {
+   "n": "2.1.2",
+   "marks": 3,
+   "asked": "Find a, r, then T25 written as b^x",
+   "fit": "settings",
+   "type": "steps",
+   "need": "answer in a required exact form (e.g. power b^x as base + exponent) (a and r are plain number steps)",
+   "context": "text only"
+  },
+  {
+   "n": "2.1.3",
+   "marks": 2,
+   "asked": "Sum to infinity of the geometric series",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (substitution mark; answer 16 is a number)",
+   "context": "text only"
+  },
+  {
+   "n": "2.2.1",
+   "marks": 2,
+   "asked": "Difference between T6 and T14 of arithmetic series",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text (sigma notation as text/image) - covered"
+  },
+  {
+   "n": "2.2.2",
+   "marks": 5,
+   "asked": "Find lower limit k from sigma sum value",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (terms in k, quadratic in k, root selection); also algebraic expression/equation input (symbolic, equivalence-checked)",
+   "context": "text only"
+  },
+  {
+   "n": "3.1",
+   "marks": 2,
+   "asked": "Extend quadratic pattern to the 5th term",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "read-only table + decorative image - covered"
+  },
+  {
+   "n": "3.2",
+   "marks": 3,
+   "asked": "Show general term Tn = -n^2+38n-1",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (show-that; a steps proxy via second/first differences is possible but gameable)",
+   "context": "read-only table - covered"
+  },
+  {
+   "n": "3.3",
+   "marks": 3,
+   "asked": "Maximum depth: turning point n then T_n",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (method mark: -b/2a or T'(n)=0; n=19 and 360 are numbers)",
+   "context": "text only"
+  },
+  {
+   "n": "3.4",
+   "marks": 2,
+   "asked": "When depth is 104 m the second time",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (method mark; answer 35)",
+   "context": "read-only table - covered"
+  },
+  {
+   "n": "4.1",
+   "marks": 1,
+   "asked": "Value of t where (3;t) on log graph",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "4.2",
+   "marks": 1,
+   "asked": "Coordinates of x-intercept A",
+   "fit": "settings",
+   "type": "num",
+   "need": "coordinate pair input (x ; y)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "4.3",
+   "marks": 2,
+   "asked": "Equation of inverse of log function, y = ...",
+   "fit": "no-fit",
+   "type": "term (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "4.4",
+   "marks": 1,
+   "asked": "Equation of the asymptote of the inverse",
+   "fit": "settings",
+   "type": "num",
+   "need": "num with a prefix label (y = __ / x = __) for an asymptote equation",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "4.5",
+   "marks": 3,
+   "asked": "Sketch the inverse with intercept, point, asymptote",
+   "fit": "no-fit",
+   "type": "draw (self-check, not banked)",
+   "need": "sketch a function on axes, marked (shape, intercepts, asymptote, a point)",
+   "context": "blank answer-book axes needed - NOT covered (no plot grid)"
+  },
+  {
+   "n": "4.6",
+   "marks": 2,
+   "asked": "Range of translated inverse for x > 4",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.1",
+   "marks": 1,
+   "asked": "Domain of hyperbola g",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.2",
+   "marks": 1,
+   "asked": "Range of parabola f",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.3.1",
+   "marks": 2,
+   "asked": "x-values where g(x) <= f(x), read from graphs",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.3.2",
+   "marks": 2,
+   "asked": "x-values where f(x) < 6",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.4",
+   "marks": 3,
+   "asked": "Show parabola equation from turning point and D",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (show-that)",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.5",
+   "marks": 6,
+   "asked": "Length MT from both x-intercepts",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (2 'solve for x' equation marks); also several numeric roots in one answer (unordered set, with root selection) (two roots of f) and coordinate pair input (x ; y) (M); 4 of 6 marks are numbers",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "5.6",
+   "marks": 3,
+   "asked": "Equation of tangent to parabola at D",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked) (f'(x) and y = mx + c); gradient -2 is a number",
+   "context": "graph image (letters as hotspots) - covered"
+  },
+  {
+   "n": "6.1",
+   "marks": 1,
+   "asked": "x-intercept of g in terms of p",
+   "fit": "no-fit",
+   "type": "term (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked); also coordinate pair input (x ; y)",
+   "context": "graph image (no letters) - covered"
+  },
+  {
+   "n": "6.2",
+   "marks": 5,
+   "asked": "Determine equation of hyperbola from intersection facts",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that); also algebraic expression/equation input (symbolic, equivalence-checked) (only a=2, q=-1 are numbers)",
+   "context": "graph image - covered"
+  },
+  {
+   "n": "6.3",
+   "marks": 2,
+   "asked": "Describe translation making g an axis of symmetry",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "graph image - covered; memo OR alternatives supported"
+  },
+  {
+   "n": "7.1",
+   "marks": 2,
+   "asked": "Compound growth of holiday cost over 5 years",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (substitution mark; answer is a number)",
+   "context": "text only"
+  },
+  {
+   "n": "7.2",
+   "marks": 4,
+   "asked": "Future value of quarterly annuity due",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (substitution mark; i, x(1+i) value and answer are numbers)",
+   "context": "text only"
+  },
+  {
+   "n": "7.3.1",
+   "marks": 5,
+   "asked": "Months to repay deferred loan (logs)",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (substitution + 'correct use of logs' marks; balance, n, final answer are numbers)",
+   "context": "text only"
+  },
+  {
+   "n": "7.3.2",
+   "marks": 4,
+   "asked": "Value of the final loan payment",
+   "fit": "settings",
+   "type": "steps",
+   "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method) (substitution mark; n, balance, final payment are numbers)",
+   "context": "text only"
+  },
+  {
+   "n": "8.1",
+   "marks": 4,
+   "asked": "Derivative from first principles of linear function",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (limit notation, f(x+h), simplification); also algebraic expression/equation input (symbolic, equivalence-checked)",
+   "context": "text only"
+  },
+  {
+   "n": "8.2.1",
+   "marks": 2,
+   "asked": "Derivative of polynomial using rules",
+   "fit": "no-fit",
+   "type": "term (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked)",
+   "context": "text only"
+  },
+  {
+   "n": "8.2.2",
+   "marks": 4,
+   "asked": "Derivative of rational expression after splitting",
+   "fit": "no-fit",
+   "type": "term (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked) (also marks the rewritten expression before differentiating)",
+   "context": "text only"
+  },
+  {
+   "n": "9.1",
+   "marks": 4,
+   "asked": "Coordinates of turning point E of cubic",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked) (f'(x), f'(x)=0); also coordinate pair input (x ; y) (E(5;-36), 2 numeric marks)",
+   "context": "graph image (A-E letters) - covered"
+  },
+  {
+   "n": "9.2",
+   "marks": 3,
+   "asked": "Interval where cubic is concave down",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked) (f''(x), f''<0); also interval / inequality / set answer input (incl. unions, open/closed ends)",
+   "context": "graph image - covered"
+  },
+  {
+   "n": "9.3",
+   "marks": 4,
+   "asked": "x-values where f(x).f''(x) < 0 from graph",
+   "fit": "no-fit",
+   "type": "num (closest)",
+   "need": "interval / inequality / set answer input (incl. unions, open/closed ends); also several numeric roots in one answer (unordered set, with root selection) (x-intercepts -1 and 7)",
+   "context": "graph image - covered"
+  },
+  {
+   "n": "9.4",
+   "marks": 6,
+   "asked": "Values of t for line cutting cubic three times",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that); also several numeric roots in one answer (unordered set, with root selection) and interval / inequality / set answer input (incl. unions, open/closed ends) (answer 14 < t < 634/27)",
+   "context": "graph image - covered"
+  },
+  {
+   "n": "10.1",
+   "marks": 3,
+   "asked": "Show volume formula of rolled cylinder",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (show-that)",
+   "context": "two diagram images (sheet, cylinder) - covered"
+  },
+  {
+   "n": "10.2",
+   "marks": 3,
+   "asked": "x maximising volume via derivative = 0",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "algebraic expression/equation input (symbolic, equivalence-checked) (V'(x)); answer x = 50/3 with selection is a number",
+   "context": "diagram images - covered"
+  },
+  {
+   "n": "11.1.1",
+   "marks": 3,
+   "asked": "Show e = 84 using independence",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (show-that)",
+   "context": "read-only contingency table with letter cells - covered"
+  },
+  {
+   "n": "11.1.2",
+   "marks": 3,
+   "asked": "Probability female learner likes energy drinks",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "read-only table - covered (memo has two routes; steps labels fix one)"
+  },
+  {
+   "n": "11.2",
+   "marks": 4,
+   "asked": "Coffee cups on non-rainy day from conditional probabilities",
+   "fit": "no-fit",
+   "type": "steps (closest)",
+   "need": "multi-line algebraic working marked by method (solve / derive / show-that) (equation in unknown x built from tree terms); also algebraic expression/equation input (symbolic, equivalence-checked)",
+   "context": "text only (tree diagram is learner-drawn, optional)"
+  },
+  {
+   "n": "11.3.1",
+   "marks": 2,
+   "asked": "Arrangements with Bongi directly after Andrew",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "11.3.2",
+   "marks": 4,
+   "asked": "Probability two or more runners between Andrew and Bongi",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "text only (assumes a step can carry 2 marks: 6!(15) is worth 2)"
+  }
+ ],
+ "summary": {
+  "fits_marks": 16,
+  "settings_marks": 35,
+  "nofit_marks": 99,
+  "needs": [
+   {
+    "need": "multi-line algebraic working marked by method (solve / derive / show-that)",
+    "marks": 58,
+    "parts": [
+     "1.1.2",
+     "1.1.4",
+     "1.1.5",
+     "1.2",
+     "2.1.1",
+     "2.2.2",
+     "3.2",
+     "5.4",
+     "6.2",
+     "8.1",
+     "9.4",
+     "10.1",
+     "11.1.1",
+     "11.2"
+    ],
+    "also_secondary_in": [
+     "1.1.3"
+    ]
+   },
+   {
+    "need": "method/substitution mark inside steps (formula template with numeric blanks, or pick-the-method)",
+    "marks": 28,
+    "parts": [
+     "2.1.3",
+     "3.3",
+     "3.4",
+     "5.5",
+     "7.1",
+     "7.2",
+     "7.3.1",
+     "7.3.2"
+    ],
+    "also_secondary_in": []
+   },
+   {
+    "need": "algebraic expression/equation input (symbolic, equivalence-checked)",
+    "marks": 22,
+    "parts": [
+     "4.3",
+     "5.6",
+     "6.1",
+     "8.2.1",
+     "8.2.2",
+     "9.1",
+     "9.2",
+     "10.2"
+    ],
+    "also_secondary_in": [
+     "2.2.2",
+     "6.2",
+     "8.1",
+     "11.2"
+    ]
+   },
+   {
+    "need": "interval / inequality / set answer input (incl. unions, open/closed ends)",
+    "marks": 16,
+    "parts": [
+     "1.1.3",
+     "4.6",
+     "5.1",
+     "5.2",
+     "5.3.1",
+     "5.3.2",
+     "9.3"
+    ],
+    "also_secondary_in": [
+     "9.2",
+     "9.4"
+    ]
+   },
+   {
+    "need": "answer in a required exact form (e.g. power b^x as base + exponent)",
+    "marks": 3,
+    "parts": [
+     "2.1.2"
+    ],
+    "also_secondary_in": []
+   },
+   {
+    "need": "sketch a function on axes, marked (shape, intercepts, asymptote, a point)",
+    "marks": 3,
+    "parts": [
+     "4.5"
+    ],
+    "also_secondary_in": []
+   },
+   {
+    "need": "several numeric roots in one answer (unordered set, with root selection)",
+    "marks": 2,
+    "parts": [
+     "1.1.1"
+    ],
+    "also_secondary_in": [
+     "1.1.2",
+     "1.1.4",
+     "1.1.5",
+     "1.2",
+     "5.5",
+     "9.3",
+     "9.4"
+    ]
+   },
+   {
+    "need": "coordinate pair input (x ; y)",
+    "marks": 1,
+    "parts": [
+     "4.2"
+    ],
+    "also_secondary_in": [
+     "1.2",
+     "5.5",
+     "6.1",
+     "9.1"
+    ]
+   },
+   {
+    "need": "num with a prefix label (y = __ / x = __) for an asymptote equation",
+    "marks": 1,
+    "parts": [
+     "4.4"
+    ],
+    "also_secondary_in": []
+   }
+  ]
+ },
+ "notes": "Each settings/no-fit part's marks are counted ONCE, under its primary need (the first need in its 'need' string); 'also_secondary_in' lists parts where that need also appears. Strict reading: any mark the memo gives for writing an expression, equation, standard form, substitution or method (not a number) blocks 'fits'. Many no-fit parts still contain numeric answer marks (e.g. 1.1.2, 9.1, 10.2, 5.6) that num/steps could capture if partial banking were allowed. Five show-that parts (2.1.1, 3.2, 5.4, 10.1, 11.1.1 = 15 marks) cannot be marked by outcome at all because the answer is printed. Context is almost never the blocker: every figure is a graph/diagram image, two read-only tables (Q3, Q11.1), and the formula information sheet (must be reachable as a paper page). The one context gap is 4.5's blank axes for sketching. Paper PDF has no text layer (scanned); classification read from page images; memo read from its text layer + page images. Totals checked: Q1 25, Q2 15, Q3 10, Q4 10, Q5 18, Q6 8, Q7 15, Q8 10, Q9 17, Q10 6, Q11 16 = 150."
+}

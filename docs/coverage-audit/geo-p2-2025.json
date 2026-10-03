@@ -1,0 +1,772 @@
+{
+ "paper": "NSC Grade 12 Geography P2 November 2025 (DBE), English; memo = MG Eng",
+ "total_marks": 150,
+ "parts": [
+  {
+   "n": "1.1.1",
+   "marks": 1,
+   "asked": "Rural settlement classified by: functions or population (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.2",
+   "marks": 1,
+   "asked": "Physical position of rural settlement: site or situation (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.3",
+   "marks": 1,
+   "asked": "Loose grouping of farmsteads: town or hamlet (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.4",
+   "marks": 1,
+   "asked": "Mostly rural, some urban functions: farmstead or village (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.1.5",
+   "marks": 1,
+   "asked": "Settlement pattern in sketch: nucleated or dispersed (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "sketch map image in paper; figure covers it"
+  },
+  {
+   "n": "1.1.6",
+   "marks": 1,
+   "asked": "Contour sketch shows wet-point or dry-point settlement (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "contour sketch image in paper; figure covers it"
+  },
+  {
+   "n": "1.1.7",
+   "marks": 1,
+   "asked": "Settlement shape along river: linear or round (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "sketch image in paper; figure covers it"
+  },
+  {
+   "n": "1.2.1",
+   "marks": 1,
+   "asked": "Classify trade/transport town shown in photo (gap/junction/break-of-bulk)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "photo in paper; figure covers it"
+  },
+  {
+   "n": "1.2.2",
+   "marks": 1,
+   "asked": "Plettenberg Bay classification and function: combined (i)-(iv) option",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "photo in paper; figure covers it"
+  },
+  {
+   "n": "1.2.3",
+   "marks": 1,
+   "asked": "Settlement providing low-order goods to rural population",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.4",
+   "marks": 1,
+   "asked": "Maximum distance people travel for goods: range",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.5",
+   "marks": 1,
+   "asked": "Term for uncontrolled growth of urban areas",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.6",
+   "marks": 1,
+   "asked": "Cartoon depicts negative impact of which urban process",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "cartoon image in paper; figure covers it"
+  },
+  {
+   "n": "1.2.7",
+   "marks": 1,
+   "asked": "Term for rising share of population in urban areas",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.2.8",
+   "marks": 1,
+   "asked": "Infer missing level 2022 and rate 2024 from table",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "read-only table with blank cells; covered"
+  },
+  {
+   "n": "1.3.1",
+   "marks": 1,
+   "asked": "Read 2024 rural population percentage off bar graph",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "bar graph image with value labels; figure covers it"
+  },
+  {
+   "n": "1.3.2",
+   "marks": 1,
+   "asked": "State general trend of rural population 2017-2024",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "bar graph image; covered"
+  },
+  {
+   "n": "1.3.3",
+   "marks": 4,
+   "asked": "Explain social impact of rural depopulation on community",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "graph image + extract; covered"
+  },
+  {
+   "n": "1.3.4",
+   "marks": 2,
+   "asked": "Define land restitution",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.3.5",
+   "marks": 1,
+   "asked": "Which restitution option applied to Moletele community",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract text; covered"
+  },
+  {
+   "n": "1.3.6",
+   "marks": 6,
+   "asked": "Suggest post-restitution strategies to reduce rural depopulation",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "graph + extract; covered"
+  },
+  {
+   "n": "1.4.1",
+   "marks": 2,
+   "asked": "Define urban land-use zone",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.4.2",
+   "marks": 2,
+   "asked": "Name TWO land-use zones with commercial functions",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "urban profile sketch with letters; figure covers it"
+  },
+  {
+   "n": "1.4.3(a)",
+   "marks": 2,
+   "asked": "Give evidence B2 is high-income residential area",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "urban profile + photos with letters; figure covers it"
+  },
+  {
+   "n": "1.4.3(b)",
+   "marks": 1,
+   "asked": "Is industry at A heavy or light",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "urban profile + photo; figure covers it"
+  },
+  {
+   "n": "1.4.4",
+   "marks": 4,
+   "asked": "Explain TWO economic reasons industry is on outskirts",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "urban profile; covered"
+  },
+  {
+   "n": "1.4.5",
+   "marks": 4,
+   "asked": "Why high-income residential not near heavy industry",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "urban profile; covered"
+  },
+  {
+   "n": "1.5.1",
+   "marks": 1,
+   "asked": "Evidence of urban blight visible in photograph",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "photo + extract; covered"
+  },
+  {
+   "n": "1.5.2",
+   "marks": 2,
+   "asked": "State TWO social causes of urban blight",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "1.5.3",
+   "marks": 4,
+   "asked": "Suggest why municipality has not addressed urban blight",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract; covered"
+  },
+  {
+   "n": "1.5.4",
+   "marks": 8,
+   "asked": "Paragraph: positive economic impact of urban renewal in Wynberg",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract; one free box covers an 8-line paragraph"
+  },
+  {
+   "n": "2.1.1",
+   "marks": 1,
+   "asked": "Positive social factor of KZN sugar cane production",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.2",
+   "marks": 1,
+   "asked": "Negative economic factor hindering sugar cane farming",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.3",
+   "marks": 1,
+   "asked": "TWO economic advantages of sugar cane: combined option",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.4",
+   "marks": 1,
+   "asked": "Climatic factors favouring KZN sugar cane: combined option",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.5",
+   "marks": 1,
+   "asked": "Province producing the most gold",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.6",
+   "marks": 1,
+   "asked": "Period of largest gold-mine employment decrease from graph",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "graph image; figure covers it"
+  },
+  {
+   "n": "2.1.7",
+   "marks": 1,
+   "asked": "Physical factor reducing gold-mine employment",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.1.8",
+   "marks": 1,
+   "asked": "Economic factor reducing gold-mine employment since 2015",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.2.1",
+   "marks": 1,
+   "asked": "Which activity is secondary: transport or manufacturing (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "read-only GDP table; covered"
+  },
+  {
+   "n": "2.2.2",
+   "marks": 1,
+   "asked": "Primary activities' share of GDP from table (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "read-only GDP table; covered (learner adds 2,9 + 8,4)"
+  },
+  {
+   "n": "2.2.3",
+   "marks": 1,
+   "asked": "Largest tertiary-sector contributor from table (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "read-only GDP table; covered"
+  },
+  {
+   "n": "2.2.4",
+   "marks": 1,
+   "asked": "Sector contributing most to GDP in 2024 (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "read-only GDP table; covered"
+  },
+  {
+   "n": "2.2.5",
+   "marks": 1,
+   "asked": "Exports/imports sketch illustrates balance or domestic trade (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "sketch image; figure covers it"
+  },
+  {
+   "n": "2.2.6",
+   "marks": 1,
+   "asked": "Factor that advantages international trade (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.2.7",
+   "marks": 1,
+   "asked": "Economic benefit of international trade (Y/Z)",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.3.1",
+   "marks": 2,
+   "asked": "Define food insecurity",
+   "fit": "settings",
+   "type": "rubric (written)",
+   "need": "rubric part-marking (partial credit: a 2-mark point earns 1 for a keyword-only answer, per memo 'INSTRUCTIONS FOR PART MARKING')",
+   "context": "text only; covered (memo: partial answer earns 1)"
+  },
+  {
+   "n": "2.3.2",
+   "marks": 1,
+   "asked": "Percentage of households food-insecure in 2024 from extract",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "extract; covered"
+  },
+  {
+   "n": "2.3.3",
+   "marks": 2,
+   "asked": "Evidence in large-scale farming photo of positive food impact",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "photo; figure covers it"
+  },
+  {
+   "n": "2.3.4",
+   "marks": 2,
+   "asked": "Identify TWO economic challenges for small-scale farmers from graph",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "comparative bar graph image; figure covers it"
+  },
+  {
+   "n": "2.3.5",
+   "marks": 8,
+   "asked": "Paragraph: how those challenges reduce food production",
+   "fit": "settings",
+   "type": "rubric (written)",
+   "need": "rubric part-marking (partial credit: a 2-mark point earns 1 for a keyword-only answer, per memo 'INSTRUCTIONS FOR PART MARKING'); plus a coverage rule (minimum TWO challenge categories)",
+   "context": "graph + extract; covered"
+  },
+  {
+   "n": "2.4.1",
+   "marks": 1,
+   "asked": "Province where Dube Trade Port is located",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "location map image; figure covers it"
+  },
+  {
+   "n": "2.4.2",
+   "marks": 2,
+   "asked": "Quote extract evidence of varied manufacturing industries",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract; covered"
+  },
+  {
+   "n": "2.4.3",
+   "marks": 2,
+   "asked": "Why Dube Trade Port is classified as an IDZ",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract; covered"
+  },
+  {
+   "n": "2.4.4",
+   "marks": 4,
+   "asked": "How proximity to airport/harbour favoured automotive plants",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract + map image; covered"
+  },
+  {
+   "n": "2.4.5",
+   "marks": 6,
+   "asked": "Explain provincial economic impact of varied industries at IDZ",
+   "fit": "settings",
+   "type": "rubric (written)",
+   "need": "rubric part-marking (partial credit: a 2-mark point earns 1 for a keyword-only answer, per memo 'INSTRUCTIONS FOR PART MARKING')",
+   "context": "extract; covered"
+  },
+  {
+   "n": "2.5.1",
+   "marks": 2,
+   "asked": "Define the informal sector",
+   "fit": "settings",
+   "type": "rubric (written)",
+   "need": "rubric part-marking (partial credit: a 2-mark point earns 1 for a keyword-only answer, per memo 'INSTRUCTIONS FOR PART MARKING')",
+   "context": "text only; covered"
+  },
+  {
+   "n": "2.5.2",
+   "marks": 1,
+   "asked": "Why informal trader is located on the main road",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "photo; figure covers it"
+  },
+  {
+   "n": "2.5.3",
+   "marks": 2,
+   "asked": "State TWO challenges selling perishable goods",
+   "fit": "fits",
+   "type": "list",
+   "need": "",
+   "context": "photo; figure covers it"
+  },
+  {
+   "n": "2.5.4",
+   "marks": 2,
+   "asked": "Account for many informal traders in December from table",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "read-only monthly table; covered"
+  },
+  {
+   "n": "2.5.5",
+   "marks": 4,
+   "asked": "How municipality benefits from issuing trader permits",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract; covered"
+  },
+  {
+   "n": "2.5.6",
+   "marks": 4,
+   "asked": "What municipality can provide traders with permit money",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "extract; covered"
+  },
+  {
+   "n": "3.1.1",
+   "marks": 1,
+   "asked": "Driving direction on main road from F (C3) to Valley Glen (A5)",
+   "fit": "settings",
+   "type": "mcq",
+   "need": "map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:50 000 topographic map 2529CC eMalahleni; figure context cannot carry a full sheet"
+  },
+  {
+   "n": "3.1.2",
+   "marks": 4,
+   "asked": "Calculate area of feature 6 in m2 (measure length, given breadth)",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "measure distance on map (ruler on a scaled map image, map cm to ground m); the 3 follow-on steps fit steps with tolerance ranges",
+   "context": "NOT IN PDF: needs the printed 1:10 000 orthophoto map 2529CC15 eMalahleni; learner must MEASURE length (memo 3,5 cm, range 3,4-3,6)"
+  },
+  {
+   "n": "3.1.3",
+   "marks": 1,
+   "asked": "Why breadth measures smaller on topographic than orthophoto map",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "scales stated in paper instructions; map not required"
+  },
+  {
+   "n": "3.1.4",
+   "marks": 3,
+   "asked": "Calculate 2025 magnetic declination (11 yrs x 5' W)",
+   "fit": "settings",
+   "type": "steps",
+   "need": "angle input in degrees and minutes with a W/E direction (and minute carry: 18°74' -> 19°14')",
+   "context": "NOT IN PDF: needs the printed 1:50 000 topographic map 2529CC eMalahleni margin: base declination 18°19' and its year are printed only on the map"
+  },
+  {
+   "n": "3.1.5",
+   "marks": 1,
+   "asked": "Why calculate current magnetic declination",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.2.1",
+   "marks": 2,
+   "asked": "Match orthophoto features 6 and 7 to golf course/school/diggings",
+   "fit": "settings",
+   "type": "match",
+   "need": "map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:10 000 orthophoto map 2529CC15 eMalahleni; a cropped orthophoto with number hotspots would be covered by figure support"
+  },
+  {
+   "n": "3.2.2",
+   "marks": 2,
+   "asked": "Explain commuter challenges of street pattern at 8 (D4)",
+   "fit": "settings",
+   "type": "rubric (written)",
+   "need": "rubric part-marking (partial credit: a 2-mark point earns 1 for a keyword-only answer, per memo 'INSTRUCTIONS FOR PART MARKING'); and map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:10 000 orthophoto map 2529CC15 eMalahleni"
+  },
+  {
+   "n": "3.2.3",
+   "marks": 1,
+   "asked": "Identify land-use zone of cemetery at G (D2)",
+   "fit": "settings",
+   "type": "term",
+   "need": "map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:50 000 topographic map 2529CC eMalahleni"
+  },
+  {
+   "n": "3.2.4",
+   "marks": 2,
+   "asked": "Why that zone suits a cemetery",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "memo points are general knowledge; map helpful, not required"
+  },
+  {
+   "n": "3.2.5",
+   "marks": 1,
+   "asked": "Identify transport infrastructure at opencast mine H (D1)",
+   "fit": "settings",
+   "type": "term",
+   "need": "map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:50 000 topographic map 2529CC eMalahleni; answer = railway line or road read off map symbols"
+  },
+  {
+   "n": "3.2.6",
+   "marks": 1,
+   "asked": "Mineral mined at the opencast mine",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "general-information text states coal; covered"
+  },
+  {
+   "n": "3.2.7",
+   "marks": 1,
+   "asked": "Physical factor making industries at I (C3) well located",
+   "fit": "settings",
+   "type": "term",
+   "need": "map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:50 000 topographic map 2529CC eMalahleni; answer read from contours (flat land)"
+  },
+  {
+   "n": "3.2.8",
+   "marks": 2,
+   "asked": "Economic advantages of these industries for local population",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.3.1",
+   "marks": 2,
+   "asked": "Define data layering",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only; covered"
+  },
+  {
+   "n": "3.3.2",
+   "marks": 1,
+   "asked": "Name data layer B (non-perennial water) as on topo map",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "GIS layer sketch in paper; figure covers it"
+  },
+  {
+   "n": "3.3.3",
+   "marks": 3,
+   "asked": "Redraw layer C combining vegetation and drainage layers A+B",
+   "fit": "fits",
+   "type": "draw (self-check)",
+   "need": "",
+   "context": "GIS sketch in paper; covered, but self-check only: 3 marks NOT auto-marked/banked"
+  },
+  {
+   "n": "3.3.4",
+   "marks": 2,
+   "asked": "Name TWO map evidences supporting buffering in E3/E4",
+   "fit": "settings",
+   "type": "list",
+   "need": "map sheet as shared context (zoomable topographic / orthophoto sheet with grid-block navigation, e.g. 'block C3')",
+   "context": "NOT IN PDF: needs the printed 1:50 000 topographic map 2529CC eMalahleni; answers = sinkholes / subsiding ground / non-perennial water / woodland symbols"
+  }
+ ],
+ "summary": {
+  "fits_marks": 115,
+  "settings_marks": 31,
+  "nofit_marks": 4,
+  "needs": [
+   {
+    "need": "rubric part-marking: partial credit per marking point (keyword-only answer earns 1 of 2)",
+    "marks": 20,
+    "parts": [
+     "2.3.1",
+     "2.3.5",
+     "2.4.5",
+     "2.5.1",
+     "3.2.2"
+    ]
+   },
+   {
+    "need": "map sheet as shared context: zoomable topographic/orthophoto sheet with grid-block navigation (sheets are separate prints, not in the PDF)",
+    "marks": 17,
+    "parts": [
+     "3.1.1",
+     "3.1.2",
+     "3.1.4",
+     "3.2.1",
+     "3.2.2",
+     "3.2.3",
+     "3.2.5",
+     "3.2.7",
+     "3.3.4"
+    ]
+   },
+   {
+    "need": "rubric coverage rule: minimum N distinct categories among credited points",
+    "marks": 8,
+    "parts": [
+     "2.3.5"
+    ]
+   },
+   {
+    "need": "measure distance on map (ruler on scaled image, map cm -> ground m)",
+    "marks": 4,
+    "parts": [
+     "3.1.2"
+    ]
+   },
+   {
+    "need": "angle input: degrees + minutes + E/W direction, with minute carry",
+    "marks": 3,
+    "parts": [
+     "3.1.4"
+    ]
+   }
+  ]
+ },
+ "notes": "P2 is NOT mostly map work in this paper: Section A (120) is Q1 Rural & Urban Settlements + Q2 Economic Geography of SA; only Section B Q3 (30) is map work. Q1 (60) fits entirely; Q2 gaps are only rubric part-marking. Resources NOT in the PDF: the 1:50 000 topographic map 2529CC eMalahleni (Witbank) and the 1:10 000 orthophoto map 2529CC15 (both printed sheets, handed back after the exam); 9 Section-B parts (17 marks) depend on them, incl. the base magnetic declination printed in the topo map margin. Need marks overlap (3.2.2 counts under map context and part-marking). 3.3.3 (3 marks) fits only as draw self-check, so it is not auto-marked. Memo quirks: memo page 3 is an annotated EXEMPLAR script page from a different paper (climatology Q1, '30' circled) illustrating marking conventions - it carries no marks for this paper; 3.1.4 memo writes the unnormalised 18°74' before '19°14' west of true north'; 3.1.2 memo gives tolerance ranges (3,4-3,6 cm; 61 200-64 800 m2); memo final line says 'TOTAL SECTION B: 150' (should be grand total). Paper numbering is out of order: 3.2.1 is printed before 3.1.2."
+}

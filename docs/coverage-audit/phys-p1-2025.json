@@ -1,0 +1,591 @@
+{
+ "paper": "NSC Physical Sciences P1 (Physics), November 2025",
+ "total_marks": 150,
+ "parts": [
+  {
+   "n": "1.1",
+   "marks": 2,
+   "asked": "Direction of net force on an object",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text stem + 4 text option cards; covered"
+  },
+  {
+   "n": "1.2",
+   "marks": 2,
+   "asked": "Pick v-t graph for balloon and dropped stone",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "options are FOUR GRAPHS: needs one composite figure (A-D graphs) above the stem + letter-only option cards; covered via image, image-option cards would be nicer"
+  },
+  {
+   "n": "1.3",
+   "marks": 2,
+   "asked": "Which statements true for motor lifting box at constant velocity",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "figure (motor, box) + four roman-numeral statements in stem text; covered"
+  },
+  {
+   "n": "1.4",
+   "marks": 2,
+   "asked": "Compare velocities of equal-momentum masses m and 2m",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "small figure P/Q; covered"
+  },
+  {
+   "n": "1.5",
+   "marks": 2,
+   "asked": "Pick acceleration/net-work combination for pushed block",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "options are a 2-column table (Constant/Increases); text options 'Constant / Increases' work; figure covered"
+  },
+  {
+   "n": "1.6",
+   "marks": 2,
+   "asked": "What a red-shifted star spectrum means",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text stem + 4 text option cards; covered"
+  },
+  {
+   "n": "1.7",
+   "marks": 2,
+   "asked": "Q3 in terms of q for zero net force on Q1",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "figure of three charges; options are fractions (1/9 q, 1/3 q) - plain text 'q/9' works; covered"
+  },
+  {
+   "n": "1.8",
+   "marks": 2,
+   "asked": "Brightness of bulbs X, Y when switch opened",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "circuit image + 2-column options as text; covered"
+  },
+  {
+   "n": "1.9",
+   "marks": 2,
+   "asked": "How commutator keeps DC motor turning one way",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text stem + 4 text option cards; covered"
+  },
+  {
+   "n": "1.10",
+   "marks": 2,
+   "asked": "Pick Ek(max) vs 1/lambda graph",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "options are FOUR GRAPHS: composite figure + letter options; covered via image"
+  },
+  {
+   "n": "2.1",
+   "marks": 2,
+   "asked": "State Newton's Second Law in words",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only; memo = one 2-mark point with keyword deductions; covered"
+  },
+  {
+   "n": "2.2",
+   "marks": 4,
+   "asked": "Draw labelled free-body diagram of block",
+   "fit": "no-fit",
+   "type": "draw (self-check) closest",
+   "need": "free-body diagram builder (labelled force arrows from a dot)",
+   "context": "block + angled force figure (image); 1 mark per labelled arrow, max 3/4 if extra force/no arrows/not on dot"
+  },
+  {
+   "n": "2.3.1",
+   "marks": 2,
+   "asked": "Calculate angle theta from horizontal component",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "figure + given 15 N; memo: substitution mark + answer, answer only = 1/2 - num would over-award"
+  },
+  {
+   "n": "2.3.2",
+   "marks": 5,
+   "asked": "Calculate coefficient of static friction",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "figure; marks: formula, subst fsmax, Fy, subtraction for N, answer; positive marking from 2.3.1"
+  },
+  {
+   "n": "2.4",
+   "marks": 4,
+   "asked": "Friction change when angle decreased; explain",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text; memo accepts THREE alternative answer sets (increases/decreases/same) - rubric OR alternatives covers; choice is a marking point"
+  },
+  {
+   "n": "3.1",
+   "marks": 2,
+   "asked": "Define free fall",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "3.2",
+   "marks": 3,
+   "asked": "Calculate time p with equations of motion",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "read-only table (time vs velocity) + building figure; covered; method restriction (energy principles = 1/3)"
+  },
+  {
+   "n": "3.3",
+   "marks": 3,
+   "asked": "Calculate impact velocity q",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "table; answer RANGE 17,93-18,33 (tolerance ok); positive marking from 3.2"
+  },
+  {
+   "n": "3.4",
+   "marks": 3,
+   "asked": "Elastic or inelastic collision; explain without calculation",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text; calculations not accepted as explanation"
+  },
+  {
+   "n": "3.5",
+   "marks": 4,
+   "asked": "Sketch v-t graph through bounce with values",
+   "fit": "no-fit",
+   "type": "draw (self-check) closest",
+   "need": "sketch a graph on axes (line with key values, or add a second curve to a given graph); cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "criteria: straight line from 15, cuts axis at p, reaches q, parallel second line ending at 0; positive marking from 3.2/3.3"
+  },
+  {
+   "n": "4.1",
+   "marks": 2,
+   "asked": "Define impulse",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "4.2.1",
+   "marks": 3,
+   "asked": "Calculate average net force from graph gradient",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); answer with direction (magnitude + direction of a vector)",
+   "context": "sketch graph pf vs dt image (read off 0,01/0,03/4,5) - image covers; answer needs '225 N to the right'"
+  },
+  {
+   "n": "4.2.2",
+   "marks": 4,
+   "asked": "Calculate magnitude of initial velocity",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "graph image + 150 g; positive marking from 4.2.1"
+  },
+  {
+   "n": "4.3",
+   "marks": 2,
+   "asked": "Add graph B for bigger mass on same axes",
+   "fit": "no-fit",
+   "type": "draw (self-check) closest",
+   "need": "sketch a graph on axes (line with key values, or add a second curve to a given graph)",
+   "context": "needs the given graph as an editable base; 2 or 0, labels A and B required"
+  },
+  {
+   "n": "5.1",
+   "marks": 2,
+   "asked": "State the work-energy theorem",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "5.2",
+   "marks": 3,
+   "asked": "Kinetic energy at B using energy principles",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "figure (A-B-C incline); method restriction: energy principles only"
+  },
+  {
+   "n": "5.3",
+   "marks": 3,
+   "asked": "Free-body diagram of crate moving down incline",
+   "fit": "no-fit",
+   "type": "draw (self-check) closest",
+   "need": "free-body diagram builder (labelled force arrows from a dot)",
+   "context": "incline figure; 1 per labelled arrow; max 2/3 rules"
+  },
+  {
+   "n": "5.4",
+   "marks": 5,
+   "asked": "Determine with energy whether crate passes C",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); calculation then conclusion (yes/no decided by a computed value); cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "figure; marks: WFg subst, Wf subst, dEk subst, answer, conclusion; 5 alternative methods (dx vs Ekf) - steps needs alternative step paths"
+  },
+  {
+   "n": "6.1",
+   "marks": 2,
+   "asked": "State the Doppler effect",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "6.2.1",
+   "marks": 1,
+   "asked": "Name the independent variable",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "graph image; accepted: velocity/speed of ambulance/source"
+  },
+  {
+   "n": "6.2.2",
+   "marks": 1,
+   "asked": "Name a controlled variable",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "many accepted answers (fs, speed of sound, temperature, detector stationary) as synonym list"
+  },
+  {
+   "n": "6.3",
+   "marks": 2,
+   "asked": "Conclusion for Part B of experiment",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "graph image (two lines, Part A/B) covered; 'inversely proportional' = 0/2"
+  },
+  {
+   "n": "6.4",
+   "marks": 6,
+   "asked": "Calculate speed of sound from both Doppler readings",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "must READ 1298 Hz and 1115 Hz at 25 m/s off the graph image (covered); two equations solved simultaneously"
+  },
+  {
+   "n": "7.1",
+   "marks": 2,
+   "asked": "Describe an electric field",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "7.2",
+   "marks": 2,
+   "asked": "Draw field pattern of positive sphere",
+   "fit": "no-fit",
+   "type": "draw (self-check) closest",
+   "need": "draw a field-line pattern (lines + direction around a charge)",
+   "context": "marks: direction + radial lines; deductions for lines inside/not touching/crossing"
+  },
+  {
+   "n": "7.3",
+   "marks": 3,
+   "asked": "Show by calculation that r = 0,05 m",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "figure; answer is GIVEN so only formula + substitution are really tested - num/steps alone would give free marks"
+  },
+  {
+   "n": "7.4",
+   "marks": 6,
+   "asked": "Is the surface frictionless? Prove by calculation",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); calculation then conclusion (yes/no decided by a computed value)",
+   "context": "second figure (Y, X, Z with charges, distances) covered; 3 methods (forces, field, friction value); final 'No' + reason"
+  },
+  {
+   "n": "7.5",
+   "marks": 2,
+   "asked": "Force X exerts on Y after contact",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "3 options increases/decreases/same"
+  },
+  {
+   "n": "8.1",
+   "marks": 2,
+   "asked": "Define emf",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "8.2",
+   "marks": 3,
+   "asked": "Calculate voltmeter reading with S2 closed",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "circuit image (L1, L2, M, A1, A2, V, S1, S2) covered"
+  },
+  {
+   "n": "8.3.1",
+   "marks": 3,
+   "asked": "Calculate current through L1 from power",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "circuit image"
+  },
+  {
+   "n": "8.3.2",
+   "marks": 1,
+   "asked": "Write down ammeter A1 reading",
+   "fit": "settings",
+   "type": "num",
+   "need": "cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "circuit image; single number 2,24 A fits num, but memo positive-marks from 8.3.1"
+  },
+  {
+   "n": "8.4",
+   "marks": 6,
+   "asked": "Calculate emf of the battery",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); cross-part follow-through (positive marking from an earlier part's answer)",
+   "context": "circuit image; two equations equated for r then emf; RANGE 13,42-13,47 V; positive marking from 8.2 and 8.3.2"
+  },
+  {
+   "n": "8.5",
+   "marks": 5,
+   "asked": "Effect on A1 when both switches closed; explain",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "circuit; memo: Decrease + 4 points, alternative 'Increases' path max 3/5 - rubric alternatives cover"
+  },
+  {
+   "n": "9.1",
+   "marks": 2,
+   "asked": "Define rms potential difference",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "9.2",
+   "marks": 2,
+   "asked": "Polarity of magnet at Z",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "generator image with label Z (letter hotspot); North/South"
+  },
+  {
+   "n": "9.3",
+   "marks": 5,
+   "asked": "Calculate cost of running the fan 1,5 h",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+   "context": "text values; answer R4,03 (currency unit)"
+  },
+  {
+   "n": "9.4",
+   "marks": 3,
+   "asked": "Add graph B for doubled rotation speed",
+   "fit": "no-fit",
+   "type": "draw (self-check) closest",
+   "need": "sketch a graph on axes (line with key values, or add a second curve to a given graph)",
+   "context": "given V-t graph as base; criteria: bigger amplitude, half period, cosine shape one cycle"
+  },
+  {
+   "n": "9.5",
+   "marks": 1,
+   "asked": "One way to change to a DC generator",
+   "fit": "fits",
+   "type": "term",
+   "need": "",
+   "context": "accepted: split ring commutator / split ring / commutator"
+  },
+  {
+   "n": "10.1.1",
+   "marks": 2,
+   "asked": "Define work function",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "text only"
+  },
+  {
+   "n": "10.1.2",
+   "marks": 1,
+   "asked": "Write down threshold frequency of zinc",
+   "fit": "settings",
+   "type": "num",
+   "need": "scientific-notation number entry (x10^n)",
+   "context": "read-only table (metals, emitted, Ek(max)) covered; answer 1,045 x 10^15 Hz needs x10^n entry"
+  },
+  {
+   "n": "10.1.3",
+   "marks": 3,
+   "asked": "Compare sodium and caesium work functions; explain",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "table covered; choice + 2 points"
+  },
+  {
+   "n": "10.1.4",
+   "marks": 2,
+   "asked": "Higher intensity on metal M: electrons ejected?",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "table; No + reason"
+  },
+  {
+   "n": "10.2.1",
+   "marks": 4,
+   "asked": "Calculate frequency of photon X (E3 to E1)",
+   "fit": "settings",
+   "type": "steps",
+   "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number); scientific-notation number entry (x10^n)",
+   "context": "energy-level diagram image (values in labels) covered; answer 6,64 x 10^14 Hz"
+  },
+  {
+   "n": "10.2.2",
+   "marks": 2,
+   "asked": "Can a 2,5e-19 J photon be emitted? reason",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "energy-level diagram image covered; No + reason"
+  }
+ ],
+ "summary": {
+  "fits_marks": 66,
+  "settings_marks": 66,
+  "nofit_marks": 18,
+  "needs": [
+   {
+    "need": "formula + substitution + answer with unit (worked calculation: formula mark, substitution mark(s), final number)",
+    "marks": 64,
+    "parts": [
+     "2.3.1",
+     "2.3.2",
+     "3.2",
+     "3.3",
+     "4.2.1",
+     "4.2.2",
+     "5.2",
+     "5.4",
+     "6.4",
+     "7.3",
+     "7.4",
+     "8.2",
+     "8.3.1",
+     "8.4",
+     "9.3",
+     "10.2.1"
+    ]
+   },
+   {
+    "need": "cross-part follow-through (positive marking from an earlier part's answer)",
+    "marks": 28,
+    "parts": [
+     "2.3.2",
+     "3.3",
+     "3.5",
+     "4.2.2",
+     "5.4",
+     "8.3.2",
+     "8.4"
+    ]
+   },
+   {
+    "need": "calculation then conclusion (yes/no decided by a computed value)",
+    "marks": 11,
+    "parts": [
+     "5.4",
+     "7.4"
+    ]
+   },
+   {
+    "need": "sketch a graph on axes (line with key values, or add a second curve to a given graph)",
+    "marks": 9,
+    "parts": [
+     "3.5",
+     "4.3",
+     "9.4"
+    ]
+   },
+   {
+    "need": "free-body diagram builder (labelled force arrows from a dot)",
+    "marks": 7,
+    "parts": [
+     "2.2",
+     "5.3"
+    ]
+   },
+   {
+    "need": "scientific-notation number entry (x10^n)",
+    "marks": 5,
+    "parts": [
+     "10.1.2",
+     "10.2.1"
+    ]
+   },
+   {
+    "need": "answer with direction (magnitude + direction of a vector)",
+    "marks": 3,
+    "parts": [
+     "4.2.1"
+    ]
+   },
+   {
+    "need": "draw a field-line pattern (lines + direction around a charge)",
+    "marks": 2,
+    "parts": [
+     "7.2"
+    ]
+   }
+  ]
+ },
+ "notes": "Needs overlap: a part's full marks are counted under EVERY need it has, so need totals exceed settings+no-fit. The 'settings' verdict for 16 calculation parts (64 marks) assumes steps gains two step kinds: a formula step (pick the correct formula) and a substitution step (number slots in the formula template); without that, these are no-fit, because the memo awards formula and substitution marks and penalises answer-only (2.3.1: 1/2; 7.3 'show that' gives the answer, so only working is marked). Mixing a formula pick inside steps is the catalogue's listed 'multi-part answer that mixes types' gap. Alternative solution paths (up to 6 options in 3.3, 5 in 5.4) and accepted RANGES (3.3, 8.4) also need steps to accept several step sequences. Cross-part positive marking (7 parts) is not in the catalogue: steps follow-through is within one part only. Method restrictions ('equations of motion only', 'energy principles only': 3.2, 3.3, 5.2, 5.4) cost marks if violated; a formula-pick step could enforce them. Scientific-notation entry on the num keypad is UNVERIFIED (catalogue does not say); flagged as a setting for 10.1.2 and 10.2.1. MCQ 1.2 and 1.10 have graph options: they work only as a composite figure with letter-only cards. All shared context (circuits, graphs, table, energy diagram) is covered by image/table support; no part needs a fill-in table. Every Choose-from + Explain part fits rubric, including 2.4 whose memo accepts all three choices with different reasoning."
+}

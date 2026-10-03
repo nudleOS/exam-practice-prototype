@@ -1,0 +1,444 @@
+{
+ "paper": "NSC Business Studies P1 November 2025 (DBE), English",
+ "total_marks": 150,
+ "choice": "Section A (Q1, 30) compulsory; Section B answer any TWO of Q2-Q4 (40 each); Section C answer any ONE of Q5-Q6 (40 each). All offered parts listed once.",
+ "parts": [
+  {
+   "n": "1.1.1",
+   "marks": 2,
+   "asked": "Which Act requires product information on packaging",
+   "fit": "fits",
+   "type": "mcq",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "1.1.2",
+   "marks": 2,
+   "asked": "Classify outdated computers as a PESTLE factor",
+   "fit": "fits",
+   "type": "mcq",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "1.1.3",
+   "marks": 2,
+   "asked": "Identify economic sector for chair manufacturer",
+   "fit": "fits",
+   "type": "mcq",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "1.1.4",
+   "marks": 2,
+   "asked": "Identify the interviewer's role during an interview",
+   "fit": "fits",
+   "type": "mcq",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "1.1.5",
+   "marks": 2,
+   "asked": "Identify PDCA step for monitoring processes",
+   "fit": "fits",
+   "type": "mcq",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "1.2.1",
+   "marks": 2,
+   "asked": "Complete: National ... Development Strategy (word bank)",
+   "fit": "fits",
+   "type": "term",
+   "context": "10-word bank shown as lead/extract text; covered. (mcq caps at 6 options, so term with one accepted answer)"
+  },
+  {
+   "n": "1.2.2",
+   "marks": 2,
+   "asked": "Complete: high crime rate is a SWOT ... (word bank)",
+   "fit": "fits",
+   "type": "term",
+   "context": "10-word bank shown as lead/extract text; covered. (mcq caps at 6 options, so term with one accepted answer)"
+  },
+  {
+   "n": "1.2.3",
+   "marks": 2,
+   "asked": "Complete: job analysis component listing duties (word bank)",
+   "fit": "fits",
+   "type": "term",
+   "context": "10-word bank shown as lead/extract text; covered. (mcq caps at 6 options, so term with one accepted answer)"
+  },
+  {
+   "n": "1.2.4",
+   "marks": 2,
+   "asked": "Complete: background checks happen during ... procedure (word bank)",
+   "fit": "fits",
+   "type": "term",
+   "context": "10-word bank shown as lead/extract text; covered. (mcq caps at 6 options, so term with one accepted answer)"
+  },
+  {
+   "n": "1.2.5",
+   "marks": 2,
+   "asked": "Complete: new methods to improve quality = quality ... (word bank)",
+   "fit": "fits",
+   "type": "term",
+   "context": "10-word bank shown as lead/extract text; covered. (mcq caps at 6 options, so term with one accepted answer)"
+  },
+  {
+   "n": "1.3.1",
+   "marks": 2,
+   "asked": "Match Black Economic Empowerment to its description",
+   "fit": "fits",
+   "type": "match",
+   "context": "two columns, 5 terms vs 10 descriptions (5 distractors); fits only if match allows a longer Column B"
+  },
+  {
+   "n": "1.3.2",
+   "marks": 2,
+   "asked": "Match horizontal integration to its description",
+   "fit": "fits",
+   "type": "match",
+   "context": "two columns, 5 terms vs 10 descriptions (5 distractors); fits only if match allows a longer Column B"
+  },
+  {
+   "n": "1.3.3",
+   "marks": 2,
+   "asked": "Match employment contract to its description",
+   "fit": "fits",
+   "type": "match",
+   "context": "two columns, 5 terms vs 10 descriptions (5 distractors); fits only if match allows a longer Column B"
+  },
+  {
+   "n": "1.3.4",
+   "marks": 2,
+   "asked": "Match purchasing function to its description",
+   "fit": "fits",
+   "type": "match",
+   "context": "two columns, 5 terms vs 10 descriptions (5 distractors); fits only if match allows a longer Column B"
+  },
+  {
+   "n": "1.3.5",
+   "marks": 2,
+   "asked": "Match total quality management to its description",
+   "fit": "fits",
+   "type": "match",
+   "context": "two columns, 5 terms vs 10 descriptions (5 distractors); fits only if match allows a longer Column B"
+  },
+  {
+   "n": "2.1",
+   "marks": 4,
+   "asked": "Name FOUR types of leave under the BCEA",
+   "fit": "fits",
+   "type": "list",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "2.2",
+   "marks": 4,
+   "asked": "Outline the role of SETAs supporting the SDA",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "2.3.1",
+   "marks": 3,
+   "asked": "Identify Porter force for Bona Frames and quote motivation",
+   "fit": "settings",
+   "type": "rubric",
+   "need": "gated/dependent mark: a later point (motivation) scores only if an earlier point (identification) is right",
+   "context": "short scenario text (Bona Frames); shared text extract covers it"
+  },
+  {
+   "n": "2.3.2",
+   "marks": 3,
+   "asked": "Describe applying ONE other Porter force (not rivalry)",
+   "fit": "settings",
+   "type": "rubric",
+   "need": "rubric sub-max groups (per-heading caps; choose N of M point groups; per-side caps in a compare)",
+   "context": "none; memo: force 2 + description sub-max 1, mark first one only, rivalry excluded"
+  },
+  {
+   "n": "2.4",
+   "marks": 4,
+   "asked": "Explain the steps in strategy evaluation",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "2.5",
+   "marks": 6,
+   "asked": "Discuss any TWO types of intensive strategies",
+   "fit": "settings",
+   "type": "rubric",
+   "need": "rubric sub-max groups (per-heading caps; choose N of M point groups; per-side caps in a compare)",
+   "context": "none; memo: per strategy name 2 + discussion 1, sub-max 3, first TWO only"
+  },
+  {
+   "n": "2.6.1",
+   "marks": 2,
+   "asked": "Quote TWO NCA compliance ways from the scenario",
+   "fit": "fits",
+   "type": "rubric (2 one-line slots)",
+   "context": "short scenario text (Meyer Furniture); shared text extract covers it; tap-to-highlight in the extract would suit quote questions better"
+  },
+  {
+   "n": "2.6.2",
+   "marks": 4,
+   "asked": "Recommend other ways businesses comply with the NCA",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "short scenario text (Meyer Furniture); shared text extract covers it; memo excludes points already quoted in 2.6.1 (AI marker instruction)"
+  },
+  {
+   "n": "2.7",
+   "marks": 6,
+   "asked": "Explain applying ownership as a BBBEE pillar",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "2.8",
+   "marks": 4,
+   "asked": "Advise on advantages of diversification strategies",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "3.1",
+   "marks": 4,
+   "asked": "Give FOUR examples of fringe benefits",
+   "fit": "fits",
+   "type": "list",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "3.2",
+   "marks": 6,
+   "asked": "Outline the placement procedure as HR activity",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "3.3.1",
+   "marks": 2,
+   "asked": "Name the salary determination method in the scenario",
+   "fit": "fits",
+   "type": "term",
+   "context": "short scenario text (Fabric Wholesalers); shared text extract covers it"
+  },
+  {
+   "n": "3.3.2",
+   "marks": 4,
+   "asked": "Explain LRA implications on the HR function",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "short scenario text (Fabric Wholesalers); shared text extract covers it"
+  },
+  {
+   "n": "3.4",
+   "marks": 4,
+   "asked": "Advise on reasons for terminating an employment contract",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "3.5",
+   "marks": 4,
+   "asked": "Outline difference between quality control and quality assurance",
+   "fit": "settings",
+   "type": "rubric",
+   "need": "rubric sub-max groups (per-heading caps; choose N of M point groups; per-side caps in a compare)",
+   "context": "none; memo is a two-column comparison (sub-max 2 per side, max 2 if only one side); answer need not be tabular"
+  },
+  {
+   "n": "3.6.1",
+   "marks": 2,
+   "asked": "Quote TWO TQM cost-of-quality ways from scenario",
+   "fit": "fits",
+   "type": "rubric (2 one-line slots)",
+   "context": "short scenario text (Bilon Manufacturers); shared text extract covers it"
+  },
+  {
+   "n": "3.6.2",
+   "marks": 4,
+   "asked": "Discuss impact of poorly implemented TQM",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "short scenario text (Bilon Manufacturers); shared text extract covers it"
+  },
+  {
+   "n": "3.7",
+   "marks": 6,
+   "asked": "Describe advantages of monitoring and evaluating quality processes",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "3.8",
+   "marks": 4,
+   "asked": "Advise on quality indicators of public relations function",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "4.1",
+   "marks": 2,
+   "asked": "Name TWO types of defensive strategies",
+   "fit": "fits",
+   "type": "list",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "4.2",
+   "marks": 4,
+   "asked": "Outline the strategic management process",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none; memo gives OPTION 1 OR OPTION 2 (alternatives supported)"
+  },
+  {
+   "n": "4.3.1",
+   "marks": 2,
+   "asked": "Quote TWO challenges for Global Farms from scenario",
+   "fit": "fits",
+   "type": "rubric (2 one-line slots)",
+   "context": "short scenario text (Global Farms); shared text extract covers it plus a 2-column answer-guide table (Challenges | Business environments) the learner fills"
+  },
+  {
+   "n": "4.3.2",
+   "marks": 2,
+   "asked": "Classify each quoted challenge by business environment",
+   "fit": "settings",
+   "type": "mcq per row (macro/micro/market)",
+   "need": "fill-in table: a row-linked column where each learner answer from the previous part gets its own classification picker",
+   "context": "short scenario text (Global Farms); shared text extract covers it; the answer table is a FILL-IN table (not supported); memo: if environment not linked to the challenge, mark challenge only"
+  },
+  {
+   "n": "4.4",
+   "marks": 6,
+   "asked": "Discuss impact of COIDA on businesses",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none; positives AND/OR negatives, single Max 6"
+  },
+  {
+   "n": "4.5",
+   "marks": 4,
+   "asked": "Recommend ways to deal with PESTLE social-factor challenges",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "4.6",
+   "marks": 4,
+   "asked": "Outline the purpose of induction",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "4.7",
+   "marks": 6,
+   "asked": "Explain UIF as a benefit required by law",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "4.8.1",
+   "marks": 2,
+   "asked": "Name TQM element applied by Fibernet in scenario",
+   "fit": "fits",
+   "type": "term",
+   "context": "short scenario text (Fibernet Limited); shared text extract covers it"
+  },
+  {
+   "n": "4.8.2",
+   "marks": 4,
+   "asked": "Explain benefits of a good quality management system",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "short scenario text (Fibernet Limited); shared text extract covers it"
+  },
+  {
+   "n": "4.9",
+   "marks": 4,
+   "asked": "Advise on role of quality circles in continuous improvement",
+   "fit": "fits",
+   "type": "rubric",
+   "context": "none (question text only)"
+  },
+  {
+   "n": "5",
+   "marks": 40,
+   "asked": "Essay on Employment Equity Act: purpose, impact, compliance, penalties",
+   "fit": "no-fit",
+   "type": "rubric (closest)",
+   "need": "structured essay: intro + 4 headed body sections each with its own fact sub-max (10/14/12/10) + conclusion, facts capped at 32, plus insight 8 (Layout/Analysis/Synthesis/Originality, 0-2 each)",
+   "context": "short lead paragraph (text); covered"
+  },
+  {
+   "n": "6",
+   "marks": 40,
+   "asked": "Essay on HR: recruitment, internal recruitment, interviewer, contract",
+   "fit": "no-fit",
+   "type": "rubric (closest)",
+   "need": "structured essay: intro + 4 headed body sections each with its own fact sub-max (10/14/12/10) + conclusion, facts capped at 32, plus insight 8 (Layout/Analysis/Synthesis/Originality, 0-2 each)",
+   "context": "short lead paragraph (text); covered"
+  }
+ ],
+ "summary": {
+  "fits_marks": 132,
+  "settings_marks": 18,
+  "nofit_marks": 80,
+  "offered_marks": 230,
+  "per_sitting_150_estimate": {
+   "fits": 98,
+   "settings": 12,
+   "nofit": 40,
+   "basis": "A 30 fits; Section B averaged over Q2-Q4 x2 (68 fits / 12 settings); Section C 40 no-fit whichever essay"
+  },
+  "needs": [
+   {
+    "need": "structured essay: intro + 4 headed body sections each with its own fact sub-max (10/14/12/10) + conclusion, facts capped at 32, plus insight 8 (Layout/Analysis/Synthesis/Originality, 0-2 each)",
+    "marks": 80,
+    "parts": [
+     "5",
+     "6"
+    ]
+   },
+   {
+    "need": "rubric sub-max groups (per-heading caps; choose N of M point groups; per-side caps in a compare)",
+    "marks": 13,
+    "parts": [
+     "2.3.2",
+     "2.5",
+     "3.5"
+    ]
+   },
+   {
+    "need": "gated/dependent mark: a later point (motivation) scores only if an earlier point (identification) is right",
+    "marks": 3,
+    "parts": [
+     "2.3.1"
+    ]
+   },
+   {
+    "need": "fill-in table: a row-linked column where each learner answer from the previous part gets its own classification picker",
+    "marks": 2,
+    "parts": [
+     "4.3.2"
+    ]
+   }
+  ]
+ },
+ "notes": "Totals are over all 230 offered marks (both choices counted). Every Section C mark is no-fit: essays carry facts capped at 32 across headed sub-maxima PLUS 8 LASO insight marks that memo-point matching cannot award, so one free box is not honest. Section B is overwhelmingly rubric-shaped (points worth 2, or 1+1 fact/elaboration) and fits; memo rule 15.10.1 (2 marks for a full sentence, 1 for a phrase) must be applied by the AI marker. 'Mark the first N only' rules map to fixed list/slot counts. 1.2 has a 10-word bank, over mcq's 6-option cap, so it is banked as term. 1.3 fits only if match supports a Column B longer than Column A (5 terms, 10 descriptions) - verify. Quote-from-scenario parts (2.6.1, 3.6.1, 4.3.1; 6 marks) fit via rubric slots but tap-to-highlight in the extract would be the natural input. 2.6.2 carries a cross-part exclusion (do not credit 2.6.1 quotes). No graphs, images, calculations or maps anywhere in this paper."
+}

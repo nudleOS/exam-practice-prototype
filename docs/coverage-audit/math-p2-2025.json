@@ -1,0 +1,586 @@
+{
+ "paper": "NSC Mathematics P2 November 2025 (DBE), English",
+ "total_marks": 150,
+ "parts": [
+  {
+   "n": "1.1",
+   "marks": 3,
+   "asked": "Determine least squares regression line equation from 11 data pairs",
+   "fit": "settings",
+   "type": "steps",
+   "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+   "context": "read-only table: covered (11-row age/price table); learner needs a calculator with regression mode"
+  },
+  {
+   "n": "1.2",
+   "marks": 2,
+   "asked": "Predict selling price of a 5-year-old car",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "read-only table: covered; follow-through from 1.1 is cross-part"
+  },
+  {
+   "n": "1.3",
+   "marks": 2,
+   "asked": "Use correlation coefficient to judge if prediction valid",
+   "fit": "fits",
+   "type": "rubric (written)",
+   "need": "",
+   "context": "read-only table: covered"
+  },
+  {
+   "n": "1.4",
+   "marks": 1,
+   "asked": "State estimated average yearly decrease in price",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text: covered (unit R)"
+  },
+  {
+   "n": "2.1.1",
+   "marks": 1,
+   "asked": "How many people visited the website",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "read-only table: covered (cumulative frequency)"
+  },
+  {
+   "n": "2.1.2",
+   "marks": 2,
+   "asked": "People who spent more than 40 up to 80 minutes",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "read-only table: covered"
+  },
+  {
+   "n": "2.1.3",
+   "marks": 3,
+   "asked": "Draw histogram from cumulative frequency table on given grid",
+   "fit": "settings",
+   "type": "build: hist",
+   "need": "hist builder: pre-printed caption/labels/scale (skip those steps) + configurable memo criteria",
+   "context": "read-only table: covered; answer book pre-prints the grid, caption, axis labels and 0-70 scale; memo criteria are 2 freq / all freq / no gaps, not T/C/L/S/P"
+  },
+  {
+   "n": "2.1.4",
+   "marks": 1,
+   "asked": "Comment on skewness of the data",
+   "fit": "fits",
+   "type": "mcq",
+   "need": "",
+   "context": "text: covered"
+  },
+  {
+   "n": "2.2",
+   "marks": 5,
+   "asked": "Find missing score, sd, count players outside one sd",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "read-only table: covered (one-row table of 8 scores); steps: total, x=10, sigma, upper bound, count; interval mark uses two numbers"
+  },
+  {
+   "n": "3.1",
+   "marks": 2,
+   "asked": "Length of QR in simplified surd form",
+   "fit": "settings",
+   "type": "num",
+   "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+   "context": "image (diagram) with letter hotspots: covered (Cartesian triangle PQR with coordinates)"
+  },
+  {
+   "n": "3.2",
+   "marks": 2,
+   "asked": "Calculate gradient of QR",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; answer 1/2 entered as 0.5"
+  },
+  {
+   "n": "3.3",
+   "marks": 2,
+   "asked": "Calculate angle of inclination theta",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "3.4",
+   "marks": 2,
+   "asked": "Determine the equation of QR",
+   "fit": "settings",
+   "type": "num",
+   "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "3.5",
+   "marks": 2,
+   "asked": "Coordinates of S making PQRS a parallelogram",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; x and y as two number steps"
+  },
+  {
+   "n": "3.6",
+   "marks": 5,
+   "asked": "Coordinates of T where PT perpendicular to QR",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; steps m_PT, c, 5x=20, x, y; memo's alternative isosceles route not supported"
+  },
+  {
+   "n": "3.7",
+   "marks": 3,
+   "asked": "Area of parallelogram PQRS",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; cross-part follow-through from 3.1/3.6"
+  },
+  {
+   "n": "4.1",
+   "marks": 1,
+   "asked": "Write down value of p",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered (circle, tangents, axes)"
+  },
+  {
+   "n": "4.2",
+   "marks": 4,
+   "asked": "Show that q = 4 (Pythagoras in q)",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "multi-line symbolic working (math keyboard + rendered lines, marked per memo point by AI/CAS)",
+   "context": "image (diagram) with letter hotspots: covered; working is algebra in q, answer given"
+  },
+  {
+   "n": "4.3",
+   "marks": 2,
+   "asked": "Equation of circle in standard form",
+   "fit": "settings",
+   "type": "num",
+   "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "4.4",
+   "marks": 1,
+   "asked": "Minimum distance circle to y-axis after translation",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "text + image: covered"
+  },
+  {
+   "n": "4.5",
+   "marks": 3,
+   "asked": "Calculate coordinates of A and B",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; steps (x+6)^2=9, x_A, x_B"
+  },
+  {
+   "n": "4.6",
+   "marks": 4,
+   "asked": "Determine equation of tangent BC",
+   "fit": "settings",
+   "type": "steps",
+   "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+   "context": "image (diagram) with letter hotspots: covered; m_MB, m_BC, c as numbers, final equation as template step"
+  },
+  {
+   "n": "4.7",
+   "marks": 2,
+   "asked": "Write down coordinates of C",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "4.8",
+   "marks": 4,
+   "asked": "Calculate size of angle ACB",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; memo lists 5 methods, steps fixes one route"
+  },
+  {
+   "n": "5.1.1",
+   "marks": 2,
+   "asked": "Express cos 40 deg in terms of k",
+   "fit": "no-fit",
+   "type": "num",
+   "need": "algebraic expression input (single answer in terms of a variable, equivalence-checked)",
+   "context": "text: covered; needs rendered trig/fractions"
+  },
+  {
+   "n": "5.1.2",
+   "marks": 5,
+   "asked": "Express double-angle fraction in terms of k",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "multi-line symbolic working (math keyboard + rendered lines, marked per memo point by AI/CAS)",
+   "context": "text: covered; expression is a rendered fraction"
+  },
+  {
+   "n": "5.1.3",
+   "marks": 4,
+   "asked": "Express sin 10 deg in terms of k",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "multi-line symbolic working (math keyboard + rendered lines, marked per memo point by AI/CAS)",
+   "context": "text: covered"
+  },
+  {
+   "n": "5.2.1",
+   "marks": 4,
+   "asked": "Simplify trig expression to a single ratio",
+   "fit": "settings",
+   "type": "build: stems",
+   "need": "stems item-state picker over text/maths items (no diagram)",
+   "context": "text: covered (needs rendered fraction); each reduction formula is one mark"
+  },
+  {
+   "n": "5.2.2",
+   "marks": 2,
+   "asked": "Values of x where square root expression is real",
+   "fit": "settings",
+   "type": "num",
+   "need": "interval/inequality answer template (number endpoints + open/closed toggles, union of intervals)",
+   "context": "text: covered"
+  },
+  {
+   "n": "6.1",
+   "marks": 6,
+   "asked": "Prove a trigonometric identity",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "multi-line symbolic working (math keyboard + rendered lines, marked per memo point by AI/CAS)",
+   "context": "text: covered (rendered identity)"
+  },
+  {
+   "n": "6.2",
+   "marks": 7,
+   "asked": "General solution from arithmetic-sequence trig terms",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "multi-line symbolic working (math keyboard + rendered lines, marked per memo point by AI/CAS)",
+   "context": "text: covered; last 3 marks (116,57 + k.180) would fit a template, first 4 are symbolic"
+  },
+  {
+   "n": "7.1",
+   "marks": 1,
+   "asked": "Write down the period of f",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "image of graph f: covered"
+  },
+  {
+   "n": "7.2",
+   "marks": 3,
+   "asked": "Draw graph of g(x)=tan2x-1 on given axes",
+   "fit": "no-fit",
+   "type": "draw (self-check)",
+   "need": "sketch a function graph on given axes (asymptotes, shape, intercepts), auto-marked",
+   "context": "answer book pre-prints axes with f; learner must draw on them"
+  },
+  {
+   "n": "7.3",
+   "marks": 1,
+   "asked": "Equation of h after 45 deg translation, simplest form",
+   "fit": "no-fit",
+   "type": "term",
+   "need": "algebraic expression input (single answer in terms of a variable, equivalence-checked)",
+   "context": "text: covered"
+  },
+  {
+   "n": "7.4",
+   "marks": 1,
+   "asked": "Write down the range of h",
+   "fit": "settings",
+   "type": "num",
+   "need": "interval/inequality answer template (number endpoints + open/closed toggles, union of intervals)",
+   "context": "text: covered"
+  },
+  {
+   "n": "7.5",
+   "marks": 4,
+   "asked": "Solve trig inequality on interval using graphs",
+   "fit": "settings",
+   "type": "steps",
+   "need": "interval/inequality answer template (number endpoints + open/closed toggles, union of intervals)",
+   "context": "image of graphs (with learner's 7.2 sketch): only f is available as an image; critical value 22,5 as a step, one symbolic sign-flip mark lost"
+  },
+  {
+   "n": "8.1",
+   "marks": 2,
+   "asked": "Show that AB = 18 cm",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered (3D stage); steps BC=[]xAB, AB^2=[]"
+  },
+  {
+   "n": "8.2",
+   "marks": 2,
+   "asked": "Calculate length of AC",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "8.3",
+   "marks": 2,
+   "asked": "Calculate length of KC (sine rule)",
+   "fit": "fits",
+   "type": "num",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "8.4",
+   "marks": 4,
+   "asked": "Calculate angle KAC (cosine rule)",
+   "fit": "fits",
+   "type": "steps",
+   "need": "",
+   "context": "image (diagram) with letter hotspots: covered; steps AK, KC^2 term, cos, angle"
+  },
+  {
+   "n": "9.1",
+   "marks": 5,
+   "asked": "Prove angle at centre = 2x angle at circumference",
+   "fit": "no-fit",
+   "type": "rubric (written)",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered; construction (KO produced) must be drawn/added; numbered angles needed as hotspots"
+  },
+  {
+   "n": "9.2.1",
+   "marks": 2,
+   "asked": "Calculate O2 with reasons",
+   "fit": "settings",
+   "type": "num",
+   "need": "reason picker attached to numeric steps (pick theorem-reason from a fixed list; S and R marks)",
+   "context": "image (diagram) with letter hotspots: covered (numbered angles O1/O2 shown in image)"
+  },
+  {
+   "n": "9.2.2",
+   "marks": 3,
+   "asked": "Calculate angle M with reasons",
+   "fit": "settings",
+   "type": "steps",
+   "need": "reason picker attached to numeric steps (pick theorem-reason from a fixed list; S and R marks)",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "10.1",
+   "marks": 3,
+   "asked": "Calculate QTS with reasons",
+   "fit": "settings",
+   "type": "steps",
+   "need": "reason picker attached to numeric steps (pick theorem-reason from a fixed list; S and R marks)",
+   "context": "image (diagram) with letter hotspots: covered (many numbered angles)"
+  },
+  {
+   "n": "10.2",
+   "marks": 3,
+   "asked": "Prove PQ parallel to SR",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered; no numeric answer, the route is the skill"
+  },
+  {
+   "n": "10.3",
+   "marks": 2,
+   "asked": "Prove PT is a diameter",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "11.1.1",
+   "marks": 2,
+   "asked": "Calculate FD/CF with reasons (proportionality)",
+   "fit": "settings",
+   "type": "num",
+   "need": "reason picker attached to numeric steps (pick theorem-reason from a fixed list; S and R marks)",
+   "context": "image (diagram) with letter hotspots: covered; given ratios as rendered fractions in text; answer 2/3 as decimal (fraction entry preferable)"
+  },
+  {
+   "n": "11.1.2",
+   "marks": 4,
+   "asked": "Calculate BA/EA with reasons",
+   "fit": "settings",
+   "type": "steps",
+   "need": "reason picker attached to numeric steps (pick theorem-reason from a fixed list; S and R marks)",
+   "context": "image (diagram) with letter hotspots: covered; steps FD=[]x, BD=[]x, ratio; also uses coefficient slots"
+  },
+  {
+   "n": "11.1.3",
+   "marks": 4,
+   "asked": "Ratio area triangle GCF to area GFDA",
+   "fit": "settings",
+   "type": "steps",
+   "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+   "context": "image (diagram) with letter hotspots: covered; steps as coefficients of kp.sinC, then answer 9/16"
+  },
+  {
+   "n": "11.2.1",
+   "marks": 2,
+   "asked": "Prove PR = PW.QR/QE",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered (cyclic quad, tangent, numbered angles)"
+  },
+  {
+   "n": "11.2.2",
+   "marks": 1,
+   "asked": "From similar triangles prove PQ^2 = RQ.QZ",
+   "fit": "no-fit",
+   "type": "mcq",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered; mcq of ratio statements possible at lower demand"
+  },
+  {
+   "n": "11.2.3",
+   "marks": 3,
+   "asked": "Prove triangle QSZ similar to triangle QRS",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "11.2.4",
+   "marks": 3,
+   "asked": "Prove PQ = QS",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered"
+  },
+  {
+   "n": "11.2.5",
+   "marks": 4,
+   "asked": "Prove PW = QE.PZ / sqrt(QR.QZ)",
+   "fit": "no-fit",
+   "type": "steps",
+   "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+   "context": "image (diagram) with letter hotspots: covered"
+  }
+ ],
+ "summary": {
+  "fits_marks": 50,
+  "settings_marks": 45,
+  "nofit_marks": 55,
+  "needs": [
+   {
+    "need": "multi-line symbolic working (math keyboard + rendered lines, marked per memo point by AI/CAS)",
+    "marks": 26,
+    "parts": [
+     "4.2",
+     "5.1.2",
+     "5.1.3",
+     "6.1",
+     "6.2"
+    ]
+   },
+   {
+    "need": "statement-reason proof builder (compose statements from diagram symbols: angles, segments, ratios, ||, |||; pick reasons; construction step)",
+    "marks": 23,
+    "parts": [
+     "9.1",
+     "10.2",
+     "10.3",
+     "11.2.1",
+     "11.2.2",
+     "11.2.3",
+     "11.2.4",
+     "11.2.5"
+    ]
+   },
+   {
+    "need": "number-slot math answer template (expression with number blanks, e.g. y = []x + [], []sqrt[], (x-[])^2+(y-[])^2=[]); usable as a step",
+    "marks": 17,
+    "parts": [
+     "1.1",
+     "3.1",
+     "3.4",
+     "4.3",
+     "4.6",
+     "11.1.3"
+    ]
+   },
+   {
+    "need": "reason picker attached to numeric steps (pick theorem-reason from a fixed list; S and R marks)",
+    "marks": 14,
+    "parts": [
+     "9.2.1",
+     "9.2.2",
+     "10.1",
+     "11.1.1",
+     "11.1.2"
+    ]
+   },
+   {
+    "need": "interval/inequality answer template (number endpoints + open/closed toggles, union of intervals)",
+    "marks": 7,
+    "parts": [
+     "5.2.2",
+     "7.4",
+     "7.5"
+    ]
+   },
+   {
+    "need": "stems item-state picker over text/maths items (no diagram)",
+    "marks": 4,
+    "parts": [
+     "5.2.1"
+    ]
+   },
+   {
+    "need": "hist builder: pre-printed caption/labels/scale (skip those steps) + configurable memo criteria",
+    "marks": 3,
+    "parts": [
+     "2.1.3"
+    ]
+   },
+   {
+    "need": "algebraic expression input (single answer in terms of a variable, equivalence-checked)",
+    "marks": 3,
+    "parts": [
+     "5.1.1",
+     "7.3"
+    ]
+   },
+   {
+    "need": "sketch a function graph on given axes (asymptotes, shape, intercepts), auto-marked",
+    "marks": 3,
+    "parts": [
+     "7.2"
+    ]
+   }
+  ]
+ },
+ "notes": "Question paper and answer book are scanned (no text layer); read from page images. Memo has text. Totals check: 150. Most 'fits' marks (50) rely on RE-AUTHORING memo working as number-only steps (e.g. 3.6, 4.5, 4.8, 8.4); memo method marks like 'substitution' map to an intermediate number. Memos give alternative methods (4.8 has five, 3.6/4.5/10.x two or three); steps locks one route, so a correct alternative route is marked wrong. Consistent accuracy is applied across parts (1.2 uses 1.1, 3.7 uses 3.1/3.6, 11.2.4/11.2.5 reuse 11.2.2); steps follow-through is within one part only. Geometry (Q9-11, 41 marks) splits into reason picker on numeric steps (14), full proof builder (23) and a coefficient-template area ratio (4); reasons need one shared theorem-reason list, and statements need numbered-angle hotspots (O2, S1), which letter hotspots do not cover. Trig identities/expressions (Q5-6) need multi-line symbolic working: the single biggest gap (26 marks). Cheaper bridges at lower cognitive demand: mcq for single-statement answers (7.3, 7.4, 5.2.2, 11.2.2 = 5 marks); order with partial credit (Parsons-style) for identity/geometry proofs. Fractions (2/3, 11/4, 9/16, -4/3) would be entered as decimals in num; exact-fraction entry would be better. Q1.1 and Q2.2 need calculator statistics (regression, sigma); not verified whether the app keypad has a stats mode. 7.5 depends on the learner's own 7.2 sketch as context; the app can only show f."
+}
