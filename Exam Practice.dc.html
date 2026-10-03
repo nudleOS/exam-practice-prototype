@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=164">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=165">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=39">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1743,10 +1743,13 @@ class Component extends DCLogic {
     const vv = window.visualViewport;
     // Only while a text field has focus (Murci's P30 lite, 2026-10-03: the visual viewport also shrinks for a pinch-zoom or Chrome's
     // own bars, which put the multiple choice into typing mode with no keyboard: the strip over its bar). A blur re-measures.
-    if (vv) { this._vv = () => { const ae = document.activeElement, field = !!(ae && ae.matches && ae.matches("input, textarea"));
+    // A focus re-measures too: after a wrong answer the field blurs and takes focus again while the keyboard may never close (no
+    // resize comes), and the blur's measure had set it to 0 (the robot and its bubble over the field, keys up). The design preview's
+    // &kb= keyboard is not measured (no real keys: the measure would undo it).
+    if (vv && !(kbSim > 0)) { this._vv = () => { const ae = document.activeElement, field = !!(ae && ae.matches && ae.matches("input, textarea"));
         const off = field ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0; if (off !== this.state.kbOff) this.setState({ kbOff: off }); };
       this._vvBlur = () => setTimeout(this._vv, 0);
-      vv.addEventListener("resize", this._vv); vv.addEventListener("scroll", this._vv); document.addEventListener("focusout", this._vvBlur); }
+      vv.addEventListener("resize", this._vv); vv.addEventListener("scroll", this._vv); document.addEventListener("focusout", this._vvBlur); document.addEventListener("focusin", this._vvBlur); }
     this._esc = e => {
       if (e.key !== "Escape") return;
       if (this.state.paperSourceOpen) { e.preventDefault(); this.closePaperSource(); return; }
@@ -1844,7 +1847,10 @@ class Component extends DCLogic {
       // renders), so fit now AND once more after the padding has grown.
       const kpKey = this.state.kp ? this.state.kp + ":" + this.state.footH : null;
       if (kpKey && kpKey !== this._kpKey) { this.fitKpField(); clearTimeout(this._kpT); this._kpT = setTimeout(() => this.fitKpField(), 120); }
-      this._kpKey = kpKey; this.nxLogoAlign(); this.nxPanelCap(); }
+      this._kpKey = kpKey; this.nxLogoAlign(); this.nxPanelCap();
+      // typing: once more after the strip has slid in (nx-typein, 200 ms): a hint that arrives with it was measured mid-slide, the
+      // cap and the field's scroll were left 11 px short (the field cut by the card's edge, the hint under it)
+      if (document.body.classList.contains("nx-typing")) { clearTimeout(this._capT); this._capT = setTimeout(() => { if (this.state.screen === "play") this.nxPanelCap(); }, 260); } }
     if (sheet && this._arrow) {
       this._arrow = false;
       const o = document.querySelector('[data-sheet] [data-opt="' + this.state.optIdx + '"]'); if (o) o.focus();
@@ -2460,7 +2466,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); document.removeEventListener("focusout", this._vvBlur); }
+  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); clearTimeout(this._capT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); document.removeEventListener("focusout", this._vvBlur); document.removeEventListener("focusin", this._vvBlur); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
