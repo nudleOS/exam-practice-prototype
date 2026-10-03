@@ -1906,7 +1906,10 @@ class Component extends DCLogic {
     // with every question), never docked. Its height lifts the robot and its rocks onto it (nx-play reads --nx-bar).
     const phone = innerWidth <= 600, pk = (this.part() || {}).key || "";
     // a long question on a phone (decided below, per question): the robot is the strip, the page scrolls, the card is not capped
-    if (this._compact && (this._compact !== pk || !phone)) { this._compact = null; document.body.classList.remove("nx-compact"); document.body.style.removeProperty("--nx-dockH"); }
+    // never on a multiple choice (it has its own stage; found on the P30 lite: 1.1.x / 1.3.x went compact and hid the rocks and plants
+    // Murci chose to keep, from the start or after a miss)
+    const mcqOn = document.body.classList.contains("mcqp-on");
+    if (this._compact && (this._compact !== pk || !phone || mcqOn)) { this._compact = null; document.body.classList.remove("nx-compact"); document.body.style.removeProperty("--nx-dockH"); }
     // our keypad open on a phone: the robot steps into the strip as it does for the phone's keyboard (Murci, 2026-10-03: standing on
     // the bar, the keypad lifted it and its plants over the question)
     const kpStrip = phone && !!this.state.kp && this.state.screen === "play"; document.body.classList.toggle("nx-kpstrip", kpStrip);
@@ -1966,9 +1969,9 @@ class Component extends DCLogic {
     // child's glow past the edge) with the card at 239 px of a 358 px cap, which sent every question compact (and, before, sent the
     // robot "back", smaller). Confirmed 350 ms later (the card rises in).
     const over = el => { const m = parseFloat(el.style.maxHeight); return m > 0 && el.offsetHeight >= m - 1 && el.scrollHeight - el.clientHeight > 1; };
-    if (!compact && phone && !typing && over(q) && !this._compactT) this._compactT = setTimeout(() => { this._compactT = 0;
+    if (!compact && phone && !typing && !mcqOn && over(q) && !this._compactT) this._compactT = setTimeout(() => { this._compactT = 0;
       const q2 = document.querySelector("body.nx-play main:not(#mq-stage) [data-question]"), pk2 = (this.part() || {}).key || "";
-      if (q2 && pk2 === pk && !this._compact && innerWidth <= 600 && !document.body.classList.contains("nx-typing") && over(q2)) {
+      if (q2 && pk2 === pk && !this._compact && innerWidth <= 600 && !document.body.classList.contains("nx-typing") && !document.body.classList.contains("mcqp-on") && over(q2)) {
         this._compact = pk; document.body.classList.add("nx-compact"); this.nxPanelCap(); } }, 350);
     // the keyboard is up (a phone): the panel just got shorter, so the field being typed in is scrolled back into its view
     // ...and the field's own Check with it (found on the P30 lite, a written answer: with the keys up the arrow under the box sat
