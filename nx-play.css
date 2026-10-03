@@ -966,14 +966,13 @@ body.nx-play.nx-dock [data-footer] > div, body.nx-play.nx-dock [data-footer] > d
 @media (min-width:601px) {
   body.nx-play .mcqp .stage > .after.docked { left:var(--dock-left) !important; justify-content:space-between !important; }
 }
-/* a phone: the row across the bottom, Back at its left end (an arrow alone, its name for the screen reader) */
+/* a phone: the row across the bottom, Back at its left end: its arrow AND its word (Murci, 2026-10-03: "back button should also have
+   the Back text too"; it was an arrow alone, 46 px) */
 @media (max-width:600px) {
   body.nx-play [data-footer]:not(:has([data-keypad])) { left:16px !important; }
   body.nx-play [data-footer] > div, body.nx-play [data-footer] > div > div { width:100%; }
   body.nx-play .mcqp .stage > .after { left:16px !important; justify-content:space-between !important; }
   body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-back], [data-bar] button), body.nx-play .mcqp :is(.next, .prevq) { height:46px !important; min-height:46px !important; padding:0 16px !important; font-size:14px !important; gap:7px !important; }
-  body.nx-play [data-footer] [data-back], body.nx-play .mcqp .prevq { width:46px; padding:0 !important; font-size:0 !important; }
-  body.nx-play [data-footer] [data-back] [data-backword] { display:none; }
 }
 /* (the Check row's wrapper and the result bar are items of a right-aligned flex box: they shrank to their buttons, so Back could not
    reach the left edge; measured 353 px of the 900 px row) */
@@ -1551,11 +1550,13 @@ body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-bar] but
   background:var(--nx-glass) !important; border:1px solid var(--nx-glass-line) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,0.12) !important;
   -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:var(--nx-text) !important; }
 body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-bar] button:not([data-bar-primary])):hover, body.nx-play.nx-play .mcqp :is(.prevq, .retry):hover { background:var(--nx-glass-h) !important; }
-/* ([data-skip] twice: the tonal rule's :is() counts as its most specific argument, (0,4,2), and outranked a plain (0,4,1)) */
+/* Skip: the same glass pill as Back, its word and its icon (Murci, 2026-10-03: "the Skip button should also be the same design as the
+   back button"; it was quiet words with no box). ([data-skip] twice: the tonal rule's :is() counts as its most specific argument,
+   (0,4,2), and outranked a plain (0,4,1).) */
 body.nx-play.nx-play [data-footer] [data-skip][data-skip], body.nx-play.nx-play .mcqp .next.skip {
-  background:none !important; border:1px solid transparent !important; box-shadow:none !important; -webkit-backdrop-filter:none; backdrop-filter:none;
-  color:var(--nx-text2) !important; padding:0 12px !important; font-weight:700 !important; }
-body.nx-play.nx-play [data-footer] [data-skip][data-skip]:hover, body.nx-play.nx-play .mcqp .next.skip:hover { background:none !important; color:var(--nx-text) !important; text-decoration:none !important; }
+  background:var(--nx-glass) !important; border:1px solid var(--nx-glass-line) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:var(--nx-text) !important; padding:0 16px !important; font-weight:700 !important; }
+body.nx-play.nx-play [data-footer] [data-skip][data-skip]:hover, body.nx-play.nx-play .mcqp .next.skip:hover { background:var(--nx-glass-h) !important; color:var(--nx-text) !important; text-decoration:none !important; }
 body.nx-play.nx-play [data-footer] [data-bar-primary], body.nx-play.nx-play .mcqp .next:not(.skip) {
   border:1px solid rgba(160,185,255,0.55) !important; font-weight:700 !important; padding:0 20px !important; }
 body.nx-play.nx-play [data-footer] [data-bar-primary]:not(:disabled) { background:var(--grad, #2f5bff) !important; color:#ffffff !important; box-shadow:0 12px 26px -14px rgba(30,70,255,0.8) !important; }
@@ -1718,4 +1719,24 @@ body.nx-play [data-figbox] { container-type: inline-size; }
   body.nx-play [data-playhead] .nx-where[data-tight="true"] .nx-plabel-s { display:block; }
   /* the marks and XP pills 1 px tighter a side (9 -> 8): the toggle's column was 82.3 px for "Question 1.2" (83.4); now 86 */
   body.nx-play.nx-play [data-playhead] .nx-stats > * { padding:0 8px !important; }
+}
+@media (prefers-reduced-transparency: reduce) { body.nx-play.nx-play [data-footer] [data-skip][data-skip], body.nx-play.nx-play .mcqp .next.skip { background:var(--nx-tone) !important; -webkit-backdrop-filter:none; backdrop-filter:none; } }
+/* the fullest phone bar (after a right answer on try 2: Back, Try again, Next) with Back's word back: 334 px of 328 at 360 px, so the
+   row ran past its left gutter (Back at x 4). Buttons 14 px a side, Next 16 (was 16 / 20): 318 px. Under 360 px Back is its arrow
+   again (its name stays for the screen reader). */
+@media (max-width:600px) {
+  body.nx-play.nx-play [data-footer] :is([data-back], [data-retry], [data-skip], [data-bar] button:not([data-bar-primary])), body.nx-play.nx-play .mcqp :is(.prevq, .retry, .next.skip) { padding:0 14px !important; }
+  body.nx-play.nx-play [data-footer] [data-bar-primary], body.nx-play.nx-play .mcqp .next:not(.skip) { padding:0 16px !important; }
+}
+@media (max-width:359px) {
+  body.nx-play.nx-play [data-footer] [data-back], body.nx-play.nx-play .mcqp .prevq { width:46px; padding:0 !important; font-size:0 !important; }
+  body.nx-play.nx-play [data-footer] [data-back] [data-backword] { display:none; }
+}
+/* the multiple choice's fullest bar (Back, Try again, Next after a right answer on try 2) WRAPPED once Back had its word: 93 + 120 + 109
+   + two 8 px gaps + Next's 10 px margin = 349 px of 328, so Next fell to a second row under Back (Murci, 2026-10-03: "Look at the
+   current next button, it is not good"). One row, never wrapping; Back / Try again 12 px a side, Next 14 / 10 and no margin: 325 px. */
+@media (max-width:600px) {
+  body.nx-play.nx-play .mcqp .stage > .after { flex-wrap:nowrap !important; }
+  body.nx-play.nx-play .mcqp .stage > .after > :is(.prevq, .retry) { padding:0 12px !important; }
+  body.nx-play.nx-play .mcqp .stage > .after > .next:not(.skip) { padding:0 10px 0 14px !important; margin-left:0 !important; }
 }
