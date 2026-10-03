@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=202">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=205">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=48">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1151,7 +1151,7 @@
               <button data-revisit="{{ dr.number }}" onClick="{{ dr.open }}" aria-label="{{ dr.aria }}" style="min-height:48px; padding:9px 12px; border-radius:14px; border:1px solid rgba(224,161,15,0.35); background:rgba(224,161,15,0.07); color:var(--text); display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left">
                 <span style="flex:none; font-size:13px; font-weight:800; color:#f3c14f">{{ dr.number }}</span>
                 <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px"><span style="font-size:12.5px; font-weight:700">{{ dr.lost }}</span><span style="font-size:12px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ dr.label }}</span></span>
-                <span aria-hidden="true" style="flex:none; font-size:12px; font-weight:800; color:var(--tint)">Replay ›</span>
+                <span aria-hidden="true" style="flex:none; font-size:12px; font-weight:800; color:var(--tint)">Retake ›</span>
               </button>
             </sc-for>
           </section>
@@ -1190,7 +1190,7 @@
       </section>
       <div style="display:flex; flex-direction:column; gap:10px">
         <button data-drillagain="true" onClick="{{ drAgain }}" disabled="{{ drAgainDisabled }}" style="min-height:56px; border:none; border-radius:16px; background:{{ drAgainBg }}; color:{{ drAgainColor }}; font-size:16px; font-weight:800; cursor:pointer; box-shadow:{{ drAgainShadow }}">{{ drAgainLabel }}</button>
-        <button onClick="{{ drBack }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:600; cursor:pointer">Back to topics</button>
+        <button data-drback="true" onClick="{{ drBack }}" style="min-height:48px; border-radius:16px; border:1px solid var(--line2); background:transparent; color:var(--text); font-size:14px; font-weight:600; cursor:pointer">Back to topics</button>
       </div>
     </main>
   </sc-if>
@@ -2247,8 +2247,8 @@ class Component extends DCLogic {
           : FC.pass != null ? (FC.pct >= 80 ? "Well above" : FC.pct >= FC.pass ? "Above" : "Below") + " this subject's " + FC.pass + "% pass mark." : "Every question on the paper, done.",
         finishMedals: FC.medals || "", finishHasMedals: !!FC.medals,
         // a low finish leads with the review; a good one with the next paper (the Hall is gone, 2026-10-01)
-        finishPrimary: low ? "See what cost you marks" : "Choose another paper",
-        finishSecondary: low ? "Choose another paper" : "See what cost you marks" } : {}),
+        finishPrimary: low ? "Review my marks" : "Choose another paper",
+        finishSecondary: low ? "Choose another paper" : "Review my marks" } : {}),
       finishPrimaryGo: () => (low ? this.finishToSummary() : this.finishToPapers()),
       finishSecondaryGo: () => (low ? this.finishToPapers() : this.finishToSummary()),
     };
@@ -2466,7 +2466,7 @@ class Component extends DCLogic {
     // the sheet
     const sel = all.filter(x => x.p.id === s.pmOpen)[0] || null, g = sel && sel.g, p = sel && sel.p;
     const go = sel && g ? (sel.state === "done" ? { label: "Review my paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id, screen: "summary" }, () => window.scrollTo(0, 0)) }
-      : { label: sel.state === "going" ? "Continue at Q " + sel.nextId : "Start paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id }, () => this.openMission(Math.max(0, g.next))) }) : null;
+      : { label: sel.state === "going" ? "Continue at " + sel.nextId : "Start paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id }, () => this.openMission(Math.max(0, g.next))) }) : null;
     const layout = phone ? "phone" : desk ? "desk" : "tab";
     return {
       ...this.finishCardVals(s, s.vw),
@@ -2836,7 +2836,7 @@ class Component extends DCLogic {
         delta: lost > 0 ? (answered ? "−" + lost + " of " + q.marks : q.marks + (q.marks === 1 ? " mark" : " marks")) : "+" + back + " won back",
         // the reason first: it is what the learner needs (a long question line would cut it off at the end)
         why: (lost > 0 ? why : "Retaken") + (lost > 0 && back > 0 ? " · +" + back + " won back" : "") + " · " + short(q.stem),
-        canGo: lost > 0, won: lost <= 0, goLabel: answered ? "Retake" : "Answer",
+        canGo: lost > 0, won: lost <= 0, goLabel: "Retake",
         aria: (answered ? "Retake " : "Answer ") + q.number + ", " + lost + " of " + q.marks + " marks to win" + (answered ? ", no XP" : ""),
         go: () => answered ? this.retakePart(mi, pi, "summary") : this.resetInputs({ screen: "play", mi: mi, pi: pi, revisit: true, revisitTo: "summary" }) }); }));
     rows.sort((a, b) => (b.lost > 0) - (a.lost > 0) || b.lost - a.lost);
@@ -3312,7 +3312,7 @@ class Component extends DCLogic {
           open: () => this.retakePart(s.mi, x.pi, "done") }; }),
       doneNextTitle: nm ? nm.id + " · " + nm.title : "Review my paper",
       doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. The finish line is next.",
-      doneContinueLabel: nm ? "Continue" : "Cross the finish line",
+      doneContinueLabel: nm ? "Continue" : "Finish the paper",
       // No road to walk back to (2026-10-02): Continue opens the next question; the last one shows the finish card on the paper map.
       // (the finish lands on the finished paper's OWN subject: the map remembers the last subject chip, so it could celebrate a Life
       // Sciences paper over the Physical Sciences road, 2026-10-03)
@@ -3692,8 +3692,9 @@ class Component extends DCLogic {
     const next = () => this.advance();
     // (a phone's bar holds Back + Try again + this in 328 px: "Finish mission" (161 px) pushed Back to x -49 on every mission's last
     // question, measured 2026-10-03; a phone says it short)
-    const nextLabel = phone ? (s.revisit ? "Results" : lastPart ? "Finish" : "Next")
-      : s.drill ? (lastPart ? "Finish the drill" : "Next question") : s.revisit ? "Back to the results" : lastPart ? "Finish mission" : "Next";   // "Next", not "Next part" (Murci, 2026-10-01)
+    // one word per action, every width (Murci, 2026-10-03, the button system): Next, Finish on a mission's (or drill's) last question,
+    // Continue back to the results from a revisit
+    const nextLabel = s.revisit ? "Continue" : lastPart ? "Finish" : "Next";
     const triesLeft = reply && reply.tries_left != null ? reply.tries_left : 0;
     // Short on phones so the button stays on one line.
     // (a phone says "Try again" only: Back, Skip and "Try again · 2 left" ran 362 px of 328 and pushed Back off the screen on the P30
@@ -3704,7 +3705,7 @@ class Component extends DCLogic {
       warn: { border: "rgba(224,161,15,0.5)", bg: "linear-gradient(180deg, rgba(52,40,14,0.97), rgba(31,26,16,0.98))", color: "#f3c14f", icon: "#e0a10f" },
       bad: { border: "rgba(242,119,122,0.5)", bg: "linear-gradient(180deg, rgba(56,26,28,0.97), rgba(33,22,24,0.98))", color: "#ff9a9c", icon: "#f2777a" },
       neutral: { border: "var(--line2)", bg: "rgba(32,35,39,0.97)", color: "#ffffff", icon: "#81b1ff" } }[tone];
-    const xpText = reply && res && res.full ? (reply.replay ? (reply.retake ? "Retake — no XP" : "Replay — no XP") : "+" + reply.xp_awarded + " XP · " + (reply.try === 1 ? "first try" : "try " + reply.try) + (reply.multiplier > 1 ? " · ×" + reply.multiplier + " streak" : "")) : "";
+    const xpText = reply && res && res.full ? (reply.replay ? (reply.retake ? "Retake — no XP" : "Practice — no XP") : "+" + reply.xp_awarded + " XP · " + (reply.try === 1 ? "first try" : "try " + reply.try) + (reply.multiplier > 1 ? " · ×" + reply.multiplier + " streak" : "")) : "";
     // No memo while the paper is under way (Murci, 2026-10-02: the memo is LOCKED until the paper is done; 2026-10-03, his P30 lite:
     // "Show the memo" beside Try again, "See the memo" when out of tries). A wrong answer offers Skip instead, out of tries offers Next;
     // the memo opens from the paper's Memo tab once the paper is finished.
@@ -3912,7 +3913,7 @@ class Component extends DCLogic {
       const draw = part.response_mode === "draw";
       if (draw) fb = { icon: "•", title: "Not marked online", body: "Compare your drawing with what the examiner looks for below.", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
       else if (res.full) fb = { icon: "✓", title: "Correct · " + res.marks + (res.marks === 1 ? " mark" : " marks"), color: "#3ddc97", border: "rgba(61,220,151,0.4)", bg: "rgba(61,220,151,0.08)",
-        xp: reply.replay ? (reply.retake ? "Retake — no XP" : "Replay — no XP") : "+" + reply.xp_awarded + " XP" + (reply.multiplier > 1 ? " · ×" + reply.multiplier : "") };
+        xp: reply.replay ? (reply.retake ? "Retake — no XP" : "Practice — no XP") : "+" + reply.xp_awarded + " XP" + (reply.multiplier > 1 ? " · ×" + reply.multiplier : "") };
       else if (res.marks_awarded > 0) fb = { icon: "◐", title: res.marks_awarded + " of " + res.marks + " marks so far", color: "#81b1ff", border: "rgba(129,177,255,0.35)", bg: "rgba(129,177,255,0.07)" };
       else fb = { icon: "✕", title: reply.revealed ? "Out of tries · 0 marks" : "Not yet · 0 of " + res.marks + " marks", color: "#f2777a", border: "rgba(242,119,122,0.4)", bg: "rgba(242,119,122,0.07)" };
     } else if (reply && reply.revealed && !res) fb = { icon: "•", title: "Memo shown · no XP for this part", color: "#a4a9ae", border: "var(--line2)", bg: "var(--panel2)" };
@@ -3932,7 +3933,7 @@ class Component extends DCLogic {
     const mode = part ? part.response_mode : "";
     const tryN = pr ? pr.tries : 0;
     const locked = closed || s.marking;
-    const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : phone ? "Finish" : "Finish mission")
+    const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : "Finish")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next" : "Check";
     const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
       : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0
@@ -4083,7 +4084,7 @@ class Component extends DCLogic {
         return { label: m[1], on: on,
           pick: () => this.setState({ home: m[0], picking: false, sheet: null, pop: null, bubbleMsg: "" }, () => { if (m[0] !== "first") this.countUp(); }),
           bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
-      continueLabel: finished ? "Review what cost you marks" : "Continue " + rs.next_mission.number,
+      continueLabel: finished ? "Review my marks" : "Continue at " + rs.next_mission.number,
       continueTitle: finished ? "Every mission done · " + rs.marks_earned + " of " + rs.total_marks : rs.next_mission.title,
       resumeKicker: resumeName + (resumePaper ? " · " + resumePaper.sitting : ""),
       homeMoreOn: false,
