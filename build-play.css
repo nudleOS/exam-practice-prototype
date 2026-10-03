@@ -1,0 +1,76 @@
+/* build-play.css: the drawing questions as builders (build-play.js). The app's own tokens, so a builder sits like any answer box. */
+.bp { display:flex; flex-direction:column; gap:10px; }
+.bp[data-locked="true"] :is(.bp-opt, .bp-sh, .bp-h, .bp-in) { pointer-events:none; }
+.bp-steps { display:flex; flex-wrap:wrap; gap:4px; }
+.bp-step { height:32px; padding:0 8px; border-radius:999px; border:1px solid var(--b-glass-line, rgba(190,210,255,0.36)); background:var(--b-glass, rgba(255,255,255,0.08));
+  color:var(--nx-text2, #c9d3f5); font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+.bp-step[aria-current="step"] { background:var(--grad, #1e46ff); color:#fff; border-color:rgba(160,185,255,0.55); }
+.bp-step[data-done="true"]::before { content:"✓ "; color:#3ddc97; }
+.bp-q { margin:0; font-size:13.5px; font-weight:700; color:var(--nx-text, #fff); }
+.bp-hint { margin:0; font-size:12.5px; line-height:1.5; color:var(--nx-text2, #a9b4d6); }
+.bp-opts { display:flex; gap:8px; }
+.bp-opt { flex:1; min-height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px 4px; border-radius:14px;
+  border:1px solid var(--line2, rgba(190,210,255,0.3)); background:var(--field, rgba(255,255,255,0.04)); color:var(--nx-text, #fff); font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+.bp-opt[aria-pressed="true"] { border-color:rgba(129,177,255,0.9); background:rgba(0,104,248,0.22); box-shadow:0 0 0 3px rgba(129,177,255,0.18); }
+.bp-in { box-sizing:border-box; width:100%; min-height:46px; padding:10px 12px; border-radius:14px; border:1px solid var(--line2, rgba(190,210,255,0.3));
+  background:var(--field, rgba(255,255,255,0.04)); color:var(--nx-text, #fff); font:inherit; font-size:16px; resize:none; }
+.bp-in option { color:#000; }
+.bp-in:focus { outline:none; border-color:rgba(129,177,255,0.85); box-shadow:0 0 0 3px rgba(129,177,255,0.18); }
+.bp-chart { width:100%; height:auto; touch-action:none; user-select:none; -webkit-user-select:none; }
+.bp-chart .bp-grid { stroke:rgba(190,210,255,0.14); }
+.bp-chart .bp-axis { stroke:var(--nx-text2, #c9d3f5); stroke-width:1.2; }
+.bp-chart .bp-tick { font-size:9px; fill:var(--nx-text2, #9aa7cc); }
+.bp-chart .bp-alab { font-size:9.5px; fill:var(--nx-text2, #c9d3f5); }
+.bp-chart .bp-val { font-size:10px; font-weight:700; fill:var(--nx-text, #fff); }
+.bp-chart .bp-barr { fill:rgba(129,177,255,0.5); stroke:#81b1ff; }
+.bp-chart .bp-line { fill:none; stroke:#81b1ff; stroke-width:2; }
+.bp-chart .bp-knob { fill:#ffffff; stroke:#1e46ff; stroke-width:1.5; }
+.bp-chart .bp-h { cursor:ns-resize; outline:none; }
+.bp-chart .bp-h:focus-visible .bp-knob { stroke:#81b1ff; stroke-width:3; }
+.bp-box { width:100%; height:auto; background:#fff; border-radius:12px; }
+.bp-cols { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); }
+.bp-sg { display:grid; grid-template-columns:repeat(2, 40px); gap:6px; justify-content:center; }
+.bp-sh { width:40px; height:40px; padding:0; display:grid; place-items:center; border-radius:12px; border:1px solid var(--line2, rgba(190,210,255,0.3));
+  background:var(--field, rgba(255,255,255,0.04)); color:var(--nx-text, #fff); cursor:pointer; }
+.bp-sh[aria-pressed="true"] { background:var(--grad, #1e46ff); border-color:rgba(160,185,255,0.55); color:#fff; }
+:is(.bp-step, .bp-opt, .bp-sh, .bp-paper):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+.bp-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.bp-paper { border:0; background:none; padding:6px 0; color:var(--tint, #81b1ff); font:inherit; font-size:13px; font-weight:700; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+.bp-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.bp-chip { padding:4px 9px; border-radius:999px; font-size:12px; font-weight:700; background:rgba(242,119,122,0.15); color:#ffb0b2; }
+.bp-chip[data-ok="true"] { background:rgba(61,220,151,0.14); color:#7ff0bf; }
+.bp-self { display:flex; flex-direction:column; gap:6px; padding:12px; border-radius:14px; border:1px solid var(--line2, rgba(190,210,255,0.3)); }
+.bp-tick-row { display:flex; gap:8px; align-items:flex-start; font-size:13px; color:var(--nx-text, #fff); }
+.bp-tick-row input { width:18px; height:18px; margin:1px 0 0; flex:none; }
+html[data-nx="light"] .bp-chip { color:#a32d2d; } html[data-nx="light"] .bp-chip[data-ok="true"] { color:#0f6e56; }
+/* spacing (Murci, 2026-10-03: "make sure the spacing between elements and text is best designed"), on a 4 px grid: 6 px from a label to
+   its own control, 8 px between sibling options, 14 px between groups (the question card's own gap), the chart flush in its group */
+.bp { gap:14px; }
+.bp-body { display:flex; flex-direction:column; gap:14px; }
+.bp-grp { display:flex; flex-direction:column; gap:6px; }
+.bp-steps { gap:6px; }
+.bp-step { display:inline-flex; align-items:center; gap:5px; padding:0 10px 0 8px; }
+.bp-n { min-width:9px; text-align:center; }
+.bp-step[data-done="true"]::before { content:none; }
+.bp-step[data-done="true"] .bp-n { color:#3ddc97; }
+.bp-opts { gap:8px; }
+.bp-q { line-height:1.4; }
+.bp-hint { margin-top:-4px; }
+.bp-foot { margin-top:-2px; min-height:38px; }
+.bp-cols { margin-top:-4px; }
+.bp .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+/* the five steps: one even row at any width (numbered chips wrapped "Plot" to a second line at 360 px); left to right is the order,
+   a done step wears a tick, the current one is filled */
+.bp-steps { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:4px; }
+.bp-step { justify-content:center; gap:3px; padding:0 2px; min-width:0; white-space:nowrap; }
+/* a done step is green (a tick glyph widened "Caption" past its chip at 360 px); the current one stays filled */
+.bp-step[data-done="true"] { background:rgba(61,220,151,0.12); border-color:rgba(61,220,151,0.5); color:#7ff0bf; }
+html[data-nx="light"] .bp-step[data-done="true"] { color:#0f6e56; }
+/* while a bar is held: no text selection anywhere (a mouse drag selected the hint and pulled the page; the bar stopped short) */
+html.bp-drag, html.bp-drag * { -webkit-user-select:none !important; user-select:none !important; }
+/* each stem's four shapes sit centred UNDER its stem (equal thirds put A's 37 px left of stem A) */
+.bp-cols { display:block; position:relative; height:86px; margin-top:-2px; }
+.bp-sg { position:absolute; top:0; left:calc(var(--x) * 100% - 43px); }
+/* a wide screen: the drawing keeps a readable size (at 818 px wide the chart stood 670 px tall and ran under the bar); centred */
+.bp-chart, .bp-box { max-width:520px; margin-inline:auto; display:block; }
+.bp-cols { width:100%; max-width:520px; margin-inline:auto; }
