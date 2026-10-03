@@ -17,7 +17,7 @@
   <script src="paper-ls-p1-2026.js?v=5"></script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
-  <script src="mcq-play.js?v=53"></script>
+  <script src="mcq-play.js?v=54"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -3087,6 +3087,7 @@ class Component extends DCLogic {
       canBack: () => this.canBack(), onBack: () => this.prevPart(),   // Back under the panel's left edge
       onScore: r => { if (!s.drill) this.mcqBook()[r.n] = { got: r.marks, of: r.item.marks, tier: r.tier, gone: r.gone || [], tries: r.tries, ok: r.ok, a: r.item.a }; },
       onMap: () => this.setState({ screen: "map" }),
+      autoClose: 2800,   // the result card closes itself once read (Murci, 2026-10-03); a tap still closes it sooner
       noPal: innerWidth <= 600,   // a phone: no robot, the page's face strip says its lines (nx-face)
       look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 4 : 5, skip: () => this.canSkip(), heroIn: "stage", celebrate: "corner", after: "panel",   /* a phone may go to fit-4 (the robot a step back) since the row sits under the cards (2026-10-01: at 360x640 fit-3 left it 28 px short) */   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
       leadFor: () => m.lead || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });

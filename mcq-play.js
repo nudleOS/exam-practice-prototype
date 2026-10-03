@@ -246,7 +246,7 @@
         t.addEventListener("click", () => { if (!S.done || S.busy) return; if (t.classList.contains("hero")) tapOut(); else if (t.classList.contains("flipped")) lift(t); });
         g.appendChild(t);
       });
-      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="after" id="mq-after"><button class="retry" id="mq-retry" hidden aria-label="Try this question again, practice only: no marks or XP">Try again</button></div>`);   // the marks under the last card; then Try again and Next
+      st.appendChild(g); st.insertAdjacentHTML("beforeend", `${panel ? "" : `<div class="qmarks">${it.marks} marks</div>`}<div class="again"><button class="retry nxb nxb-sec nxb-sm" id="mq-retry" hidden aria-label="Practise this question again: no marks or XP">Practise again</button></div><div class="after" id="mq-after"></div>`);   // the marks under the last card; Practise again under the cards (off the bar, 2026-10-03); the bar holds Back and Next
       // opts.onBack / opts.canBack: the host owns the order (it mounts one mission's MCQs, but a Back can lead to a part of another
       // type): the host says whether there is a way back and takes it (measured 2026-09-30: back:false left no Back at all)
       const hostBack = typeof opts.onBack === "function", canBack = hostBack ? !!(opts.canBack ? opts.canBack() : true) : k > 0 && opts.back !== false;
@@ -361,7 +361,7 @@
       let c = $("cont"); if (cont && !c) { c = document.createElement("button"); c.className = "cont"; c.id = "mq-cont"; c.onclick = e => { e.stopPropagation(); onPanel ? dismiss() : next(); }; }
       if (c) c.textContent = onPanel ? "Tap anywhere to close" : "Tap anywhere to continue";
       if (cont) { $("heroLayer").appendChild(c); if (onPanel) ($("after") || $("stage")).appendChild(NEXT); else NEXT.remove(); } else { if (c) c.remove(); (hero ? $("heroLayer") : $("after") || $("stage")).appendChild(NEXT); }
-      if ($("retry")) $("retry").hidden = opts.retry === false || !(S.done && !hero); }
+      if ($("retry")) $("retry").hidden = opts.retry === false || !(S.done && !hero) || S.tier === "gold"; }   // gold needs no second go
     // A tap outside the open card, or on it: inside a group it continues; between groups it puts the card back.
     // The map: every group (as on the paper) and its sub-questions, each with its result; a tap opens that question.
     function openMap() { if (S.busy) return; const groups = [];
@@ -375,7 +375,10 @@
     $("mapSheet").addEventListener("click", e => { if (e.target === e.currentTarget) closeMap(); });
     listen(document, "keydown", e => { if (e.key === "Escape" && !$("mapSheet").hidden) { e.stopImmediatePropagation(); closeMap(); } }, true);
     function tapOut() { if (opts.after !== "panel" && S.done && !S.busy && $("cont") && $("cont").isConnected) next(); else dismiss(); }   // on the panel a tap only closes
-    function showNext() { placeNext(); NEXT.classList.add("show"); ($("cont") && $("cont").isConnected ? $("cont") : NEXT).focus({ preventScroll: true }); nextInView(); }
+    function autoClose() { if (!opts.autoClose || opts.after !== "panel") return; const S0 = S; clearTimeout(S.acT);
+      const tryClose = n => { if (S !== S0 || !S.heroT || !S.heroT.classList.contains("hero")) return; if (S.busy && n < 20) { S.acT = setTimeout(() => tryClose(n + 1), 200); return; } dismiss(); };
+      S.acT = setTimeout(() => tryClose(0), opts.autoClose); }
+    function showNext() { autoClose(); placeNext(); NEXT.classList.add("show"); ($("cont") && $("cont").isConnected ? $("cont") : NEXT).focus({ preventScroll: true }); nextInView(); }
     // Under the grid, Next can land behind the dock's solid fade (a tall question on a short screen): bring it up into view.
     function nextInView() { if (NEXT.parentElement !== $("stage")) return; const d = RQ(".dock").getBoundingClientRect(), clear = d.top + d.height * 0.4, r = NEXT.getBoundingClientRect();
       if (r.bottom > clear) SC.scrollBy({ top: r.bottom - clear + 12, behavior: reduced ? "auto" : "smooth" }); }
