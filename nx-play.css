@@ -1612,3 +1612,7 @@ body.nx-play main:not(#mq-stage) [data-feed~="term"] { max-width:272px; }
 /* the multiple choice never shows the strip (Murci's P30 lite, 2026-10-03): it has its own robot and bubble, no text field, and its
    own bar, which the strip sat on top of (Back / Skip / Next hidden; the strip's face circle empty) */
 body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
+/* the mission's done screen on a phone (Murci's P30 lite, 2026-10-03: "Mission 1.4 complete" cut off at both edges): main centres its
+   items, so the column sized to its content, and a missed question's one-line label (nowrap, its ellipsis waiting for a width) made
+   it 467 px on a 360 px screen, centred -53..413. Stretched to the screen, the label ellipses as meant. */
+@media (max-width:767px) { body.nx-app main[data-done] > [data-donecol] { width:100%; align-self:stretch; } }
