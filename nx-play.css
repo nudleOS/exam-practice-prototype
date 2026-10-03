@@ -1797,3 +1797,7 @@ body.nx-play:is(.nx-typing, .nx-kpstrip) .nx-typestrip::before { left:75px; bott
 /* a long question on a phone (nx-compact): the strip stays OVER the bar's 84 px fade (the compact rule above says 25; the nx-face rule,
    later in the file, set 24 again and the fade dimmed the face and covered the cloud's foot; found on the P30 lite, Q 1.4.2) */
 @media (max-width:600px) { body.nx-play.nx-face.nx-compact .nx-typestrip { z-index:25; } }
+/* the multiple choice on a phone with the face strip: its screen already ends 12 px over the strip (--mq-room, so over the bar too),
+   but the panel still kept 78 px for the bar (--cap-off), twice: on the P30 lite 1.1.3's card D was cut, the panel scrolling 39 px,
+   over 74 px of nothing. Only its own 4 px margin + 8 now. */
+@media (max-width:600px) { body.nx-play.nx-face .mcqp .stage { --cap-off:12px; } }
