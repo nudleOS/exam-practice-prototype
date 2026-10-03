@@ -1576,6 +1576,15 @@ const tableView = t => {
 };
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
 const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
+// A slip that changes the meaning: a numeral differs (prophase i / ii, 2 / 3), or one word is the other with a meaning prefix
+// (incomplete / complete, heterozygous / homozygous is caught by the glossary below, dis-, non-, hypo- ...). Same word count only:
+// a dropped or added word is not a spelling slip either (distance alone allowed "prophase" for "prophase i").
+const MEANING_PREFIX = ["in", "im", "il", "ir", "un", "dis", "non", "a", "an", "anti", "de", "hyper", "hypo", "endo", "exo", "inter", "intra", "pre", "post", "sub", "super", "mis"];
+const meaningSlip = (typed, target) => { const a = typed.split(" "), b = target.split(" "); if (a.length !== b.length) return true;
+  return a.some((w, i) => { const v = b[i]; if (w === v) return false;
+    if (/^(?:[ivx]+|\d+)$/.test(w) || /^(?:[ivx]+|\d+)$/.test(v)) return true;
+    const [lo, hi] = w.length < v.length ? [w, v] : [v, w];
+    return MEANING_PREFIX.some(px => hi === px + lo); }); };
 const lev = (a, b) => { a = a || ""; b = b || ""; const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
   for (let j = 1; j <= b.length; j++) d[0][j] = j;
   for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
@@ -1600,7 +1609,7 @@ const fmtNum = v => { const r = Math.round(v * 1e6) / 1e6; return String(r).repl
 const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 
 // ── Mock of the marking service, standing in for the backend. The screens only ever see its replies.
-const SERVER = { keys: {}, clues: {}, memo: {} };
+const SERVER = { keys: {}, clues: {}, memo: {}, glossary: {} };   // glossary: { paperPrefix: { normalised term: true } }
 
 function buildPapers() {
   // AET: only the structure the brief describes. Its text is not in this project yet, so nothing is invented.
@@ -1634,7 +1643,8 @@ function buildPapers() {
         if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]]; return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts }); }
         if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
         if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
-        if (q.t === "term") { SERVER.keys[key] = { term: q.a }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
+        if (q.t === "term") { const gl = SERVER.glossary[key.split(":")[0]] = SERVER.glossary[key.split(":")[0]] || {}; q.a.forEach(t => { gl[norm(t)] = true; });
+          SERVER.keys[key] = { term: q.a, reject: q.reject || [] }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
         if (q.t === "list") { SERVER.keys[key] = { pool: q.pool.map(g => Array.isArray(g) ? g : [g]) }; return Object.assign(base, { response_mode: "list", marking_mode: "answer", count: q.count }); }
         if (q.t === "lettername") { SERVER.keys[key] = { letter: q.a.letter, names: q.a.name }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]]; return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
         if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft }])) };
@@ -2950,7 +2960,10 @@ class Component extends DCLogic {
     // TERM_SLIPS - how close a misspelling may be and still count (Murci, 2026-09-30: "yes", close misspellings count; a Life Sciences
     // teacher should confirm the rule): one wrong / missing / extra letter from 5 letters, two from 10; shorter terms must be exact.
     if (key.term) { const n = norm(answer), slips = tn => tn.length >= 10 ? 2 : tn.length >= 5 ? 1 : 0;
-      const hit = key.term.find(t => { const tn = norm(t); return n === tn || (slips(tn) > 0 && lev(n, tn) <= slips(tn)); }), ok = hit != null;
+      // a slip is forgiven only when it is a slip: not a different real term (another answer in this paper, or the part's own reject
+      // list), not a change of meaning (meaningSlip)
+      const own = key.term.map(norm), other = n && own.indexOf(n) === -1 && ((SERVER.glossary[part.key.split(":")[0]] || {})[n] || (key.reject || []).some(r => norm(r) === n));
+      const hit = other ? null : key.term.find(t => { const tn = norm(t); return n === tn || (slips(tn) > 0 && lev(n, tn) <= slips(tn) && !meaningSlip(n, tn)); }), ok = hit != null;
       const spelling = ok && norm(hit) !== n ? String(hit) : null;   // accepted with a slip: the feedback names the spelling
       return whole(ok, [{ key: "t", awarded: ok ? part.marks : 0, available: part.marks, verdict: n ? (ok ? "correct" : "incorrect") : "missing", spelling: spelling }]); }
     if (key.letter) { const half = part.marks / 2;
