@@ -17,7 +17,7 @@
   <script src="paper-ls-p1-2026.js?v=2"></script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
-  <script src="mcq-play.js?v=46"></script>
+  <script src="mcq-play.js?v=48"></script>
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -80,7 +80,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=170">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=172">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=46">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1793,6 +1793,9 @@ class Component extends DCLogic {
       row.scrollTo({ left: Math.max(0, row.scrollLeft + d), behavior: st.reduced ? "auto" : "smooth" }); }); }
     // typing mode: the keyboard is up on the play screen (Murci, 2026-10-02: it hid the robot and all its space)
     document.body.classList.toggle("nx-typing", st.screen === "play" && st.kbOff > 80);
+    // a phone's question pages have no 3D robot: its circled face speaks from the strip on every question (Murci, 2026-10-03: "maybe
+    // we do not need the robot on mobile for questions and we can just use that circled image one"; the done screen keeps the robot)
+    document.body.classList.toggle("nx-face", st.screen === "play" && innerWidth <= 600);
     // nx-app: the navy look on every screen but the Hall (Murci, 2026-09-29: "the rest of the app the same as the dark background";
     // the Hall stays as it is until he asks). On <html> too: the page's own background reads its tokens from the root.
     const nxApp = this.nxApp(); document.body.classList.toggle("nx-app", nxApp); document.documentElement.classList.toggle("nx-app", nxApp);
@@ -1891,14 +1894,15 @@ class Component extends DCLogic {
     // our keypad open on a phone: the robot steps into the strip as it does for the phone's keyboard (Murci, 2026-10-03: standing on
     // the bar, the keypad lifted it and its plants over the question)
     const kpStrip = phone && !!this.state.kp && this.state.screen === "play"; document.body.classList.toggle("nx-kpstrip", kpStrip);
-    const compact = !!this._compact, strip = typing || compact || kpStrip;
+    const compact = !!this._compact, strip = typing || compact || kpStrip || (phone && document.body.classList.contains("nx-face"));
     if (phone && fe && !typing) { const bh = Math.round(fe.getBoundingClientRect().height) + "px"; if (fe.offsetHeight && document.body.style.getPropertyValue("--nx-bar") !== bh) document.body.style.setProperty("--nx-bar", bh); }
     const dock = !phone && !typing && !!fe && !fe.querySelector("[data-keypad]") && rowH > 0;
     // typing: the strip takes the room left of the row (its leftmost button), and the panel stops 12 px above the strip
-    if (strip) { const ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
+    // (the multiple choice: its own bar, #mq-after, is the one the strip sits on; the typed questions' bar is hidden then)
+    if (strip) { const mqa = document.body.classList.contains("mcqp-on") && document.querySelector("#mq-after"), ts = document.querySelector(".nx-typestrip"), bs = [...document.querySelectorAll("[data-footer] button")].filter(b => b.getBoundingClientRect().width > 0);
       const left = bs.length ? Math.min(...bs.map(b => b.getBoundingClientRect().left)) : innerWidth, stack = phone || left < innerWidth / 2,
         rh = bs.length ? Math.round(Math.max(...bs.map(b => b.getBoundingClientRect().height))) : 0,
-        r = stack ? "12px" : Math.max(12, Math.round(innerWidth - left + 8)) + "px", up = (phone && fe ? Math.round(fe.getBoundingClientRect().height) : stack ? rh + 8 : 0) + "px";
+        r = stack ? "12px" : Math.max(12, Math.round(innerWidth - left + 8)) + "px", up = (phone && mqa ? Math.max(0, Math.round(innerHeight - mqa.getBoundingClientRect().top)) : phone && fe ? Math.round(fe.getBoundingClientRect().height) : stack ? rh + 8 : 0) + "px";
       if (ts && ts.style.getPropertyValue("--typ-r") !== r) ts.style.setProperty("--typ-r", r);
       if (ts && ts.style.getPropertyValue("--typ-up") !== up) ts.style.setProperty("--typ-up", up);
       // a long hint must not climb over the field (measured at 360x640: a 5-line hint ran 54 px over it): it gets the room between
@@ -2489,7 +2493,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); clearTimeout(this._capT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); document.removeEventListener("focusout", this._vvBlur); document.removeEventListener("focusin", this._vvBlur); }
+  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip", "nx-face"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); clearTimeout(this._capT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); document.removeEventListener("focusout", this._vvBlur); document.removeEventListener("focusin", this._vvBlur); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
@@ -2952,6 +2956,7 @@ class Component extends DCLogic {
       canBack: () => this.canBack(), onBack: () => this.prevPart(),   // Back under the panel's left edge
       onScore: r => { if (!s.drill) this.mcqBook()[r.n] = { got: r.marks, of: r.item.marks, tier: r.tier, gone: r.gone || [], tries: r.tries, ok: r.ok, a: r.item.a }; },
       onMap: () => this.setState({ screen: "map" }),
+      noPal: innerWidth <= 600,   // a phone: no robot, the page's face strip says its lines (nx-face)
       look: "panel", robotFixed: true, idleSay: "You got this!", fit: true, fitMax: () => innerWidth <= 600 ? 4 : 5, skip: () => this.canSkip(), heroIn: "stage", celebrate: "corner", after: "panel",   /* a phone may go to fit-4 (the robot a step back) since the row sits under the cards (2026-10-01: at 360x640 fit-3 left it 28 px short) */   // the boss's design: panel, fixed robot on its rock; every card on screen; the answer card fills the panel
       leadFor: () => m.lead || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });
   }
@@ -3613,7 +3618,7 @@ class Component extends DCLogic {
       coachAlign: wide ? "center" : "flex-end", coachGap: wide ? "14px" : "10px", coachMb: wide ? "0" : "4px",
       coachW: wide ? "220px" : tablet ? "92px" : "72px", coachH: wide ? "330px" : tablet ? "138px" : "108px",
       coachShadowH: wide ? "20px" : "10px", coachShadowTint: shadowTint,
-      coachModelOn: !s.reduced && !s.saveData, coachPoster: true, playClip: s.playClip, playLoop: s.playLoop == null ? "once" : s.playLoop, playFrom: s.playFrom || (s.playClip === "greet" ? String(NX_GREET.from) : ""), playHold: s.playHold || (s.playClip === "greet" ? String(NX_GREET.hold) : ""),   /* practice: the silhouette until the model has loaded (nx-play hides it then) */
+      coachModelOn: !s.reduced && !s.saveData && !phone, coachPoster: !phone, playClip: s.playClip, playLoop: s.playLoop == null ? "once" : s.playLoop, playFrom: s.playFrom || (s.playClip === "greet" ? String(NX_GREET.from) : ""), playHold: s.playHold || (s.playClip === "greet" ? String(NX_GREET.hold) : ""),   /* practice: the silhouette until the model has loaded (nx-play hides it then) */
       // retrying (practice): the robot is back up and says so, not the last miss's line (it read "Not quite" through the retry)
       // the phone strip's face (Murci's images, 2026-10-02): celebrating on full marks, zapped on a miss (then thinking while its hint
       // shows), thinking while an answer is read; idle otherwise. stripZk alternates per try, so a second miss zaps again.

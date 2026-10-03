@@ -1610,7 +1610,8 @@ body.nx-play main:not(#mq-stage) :is(div, span):has(> input[aria-label="Name of 
 body.nx-play main:not(#mq-stage) :is(div, span):has(> #f-num) { max-width:200px; }
 body.nx-play main:not(#mq-stage) [data-feed~="term"] { max-width:272px; }
 /* the multiple choice never shows the strip (Murci's P30 lite, 2026-10-03): it has its own robot and bubble, no text field, and its
-   own bar, which the strip sat on top of (Back / Skip / Next hidden; the strip's face circle empty) */
+   own bar, which the strip sat on top of (Back / Skip / Next hidden; the strip's face circle empty). A phone since 2026-10-03: no robot
+   there, the strip IS its voice, on its bar (nx-face, at the end of this file) */
 body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
 /* the mission's done screen on a phone (Murci's P30 lite, 2026-10-03: "Mission 1.4 complete" cut off at both edges): main centres its
    items, so the column sized to its content, and a missed question's one-line label (nowrap, its ellipsis waiting for a width) made
@@ -1663,4 +1664,19 @@ body.nx-play [data-figbox] { container-type: inline-size; }
 @media (max-width:600px) {
   body.nx-play.nx-compact [data-footer]:not(:has([data-keypad]))::before { height:84px !important;
     background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.96) 45%, rgb(var(--nx-c, 25,27,30))) !important; }
+}
+/* a phone's question pages: the circled face instead of the 3D robot (Murci, 2026-10-03: "maybe we do not need the robot on mobile
+   for questions and we can just use that circled image one"; scope "questions only", the rocks + plants stay). The host sets nx-face
+   on the play screen at <=600 px and loads no model there (the MCQ mounts with noPal); the face strip sits on the bar on EVERY
+   question, as it did only while typing. The done screen keeps its 3D robot. */
+@media (max-width:600px) {
+  body.nx-play.nx-face main:not(#mq-stage) > aside[aria-label="Your companion"] { display:none !important; }
+  body.nx-play.nx-face .nx-typestrip { display:flex; position:fixed; z-index:24; left:12px; right:var(--typ-r, 12px); bottom:calc(var(--kb, 0px) + 8px + var(--typ-up, 0px));
+    align-items:flex-end; gap:8px; pointer-events:none; animation:nx-typein 200ms ease both; }
+  body.nx-play.nx-face.mcqp-on .nx-typestrip { display:flex !important; }
+  .mcqp.nopal .pal, .mcqp.nopal .pal-say { display:none !important; }
+}
+@media (max-width:600px) {
+  /* (the multiple choice: no panel-cap pass measures its hint, so a long one keeps to about three lines and scrolls inside) */
+  body.nx-play.nx-face.mcqp-on .nx-typestrip > p { max-height:62px; }
 }
