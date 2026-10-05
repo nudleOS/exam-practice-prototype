@@ -1642,7 +1642,7 @@ function buildPapers() {
         const parts = (m.parts || m.items || []).map(q => {
           const key = P.id + ":" + q.n; count++;
           SERVER.clues[key] = q.clues || [];
-          const base = { key: key, board: true, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length };
+          const base = { key: key, board: true, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length, img: q.img || null };   // img: an ingested MCQ's own figure
           if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]]; return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts }); }
           if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
           if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
@@ -3139,7 +3139,7 @@ class Component extends DCLogic {
     if (this._mcq && this._mcqRun === run) { if (this._mcqAt !== at) { this._mcqAt = at; this._mcq.go(part.number); } return; }
     if (this._mcq) this._mcq.destroy();
     this._mcqRun = run; this._mcqAt = at;
-    const items = m.parts.filter(q => q.response_mode === "mcq").map(q => ({ n: q.number, q: q.stem, opts: q.options, marks: q.marks, img: ((this.paper() || {}).id === "ls" && QIMGS[q.number]) || null }));
+    const items = m.parts.filter(q => q.response_mode === "mcq").map(q => ({ n: q.number, q: q.stem, opts: q.options, marks: q.marks, img: q.img || ((this.paper() || {}).id === "ls" && QIMGS[q.number]) || null }));
     const paper = { sections: [{ title: m.section || "", missions: [{ id: m.id, title: m.title, items: items }] }] };
     const head = () => document.querySelector("[data-playhead]");
     this._mcq = window.McqPlay.mount({ paper: paper, order: items.map(q => q.n), start: part.number, hud: false, screen: true, back: false,
