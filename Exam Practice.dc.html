@@ -842,6 +842,39 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ isLetterNames }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <div style="display:flex; align-items:center; gap:8px">
+                <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ lnsHead }}</span>
+                <button onClick="{{ openFigure }}" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Figure</button>
+              </div>
+              <sc-for list="{{ lnRows }}" as="lr" hint-placeholder-count="2">
+                <div data-lnrow="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03)">
+                  <div style="display:flex; align-items:center; gap:8px; min-height:28px">
+                    <span style="flex:1; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ lr.label }}</span>
+                    <sc-if value="{{ lr.lHas }}" hint-placeholder-val="{{ false }}">
+                      <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lr.lBg }}; font-size:12px; font-weight:800; color:{{ lr.lColor }}">{{ lr.lStamp }}</span>
+                    </sc-if>
+                  </div>
+                  <div role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
+                    <sc-for list="{{ lr.tiles }}" as="lt" hint-placeholder-count="6">
+                      <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
+                    </sc-for>
+                  </div>
+                  <span style="display:flex; align-items:center; gap:8px">
+                    <span data-lnbox="true" style="position:relative; display:flex; flex:1 1 auto; min-width:0">
+                      <input data-field="true" value="{{ lr.name }}" onChange="{{ lr.onName }}" onKeyDown="{{ onEnter }}" aria-label="{{ lr.nameAria }}" placeholder="Name of the part" autoCapitalize="off" spellCheck="false" autoComplete="off" autoCorrect="off" enterKeyHint="{{ lr.enterHint }}" disabled="{{ locked }}" style="flex:1; min-width:0; height:50px; padding:0 {{ lr.padR }} 0 14px; border-radius:12px; border:1px solid {{ lr.nBorder }}; background:var(--field); color:var(--text); font-size:16px; outline:none" />
+                      <sc-if value="{{ lr.arrowOn }}" hint-placeholder-val="{{ false }}"><button data-submit="true" onClick="{{ primary }}" disabled="{{ primaryDisabled }}" aria-label="Check your answer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button></sc-if>
+                    </span>
+                    <sc-if value="{{ lr.nHas }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lr.nBg }}; font-size:12px; font-weight:800; color:{{ lr.nColor }}">{{ lr.nStamp }}</span>
+                    </sc-if>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
           <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:8px">
               <span data-termhead="true" style="display:flex; align-items:center; gap:10px">
@@ -1610,6 +1643,21 @@ function evalExpr(src) {
 }
 const fmtNum = v => { const r = Math.round(v * 1e6) / 1e6; return String(r).replace(".", ","); };
 const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+// Letter + name answers (Murci, 2026-10-05). `pool`: every part the memo accepts, {letter, names}. A row's letter earns its mark
+// when it is one of the memo's letters; its name earns its mark only when it names THAT part (1.4.1(a), "C – urethra OR D – penis":
+// "C – penis" earns the letter mark only). A row whose letter is none of them is marked on its name alone, against any part still
+// free (as a single letter + name always was). Each memo part counts once ("B – capillaries" twice earns one pair). Rows that
+// match by letter are placed first, so a wrong-letter row never takes the part another row named by its letter.
+const pairMarks = (rows, pool, half, keyOf) => {
+  const used = pool.map(() => false), up = x => String(x || "").trim().toUpperCase(), named = (p, nm) => !!nm && p.names.some(n => norm(n) === nm);
+  const at = rows.map(r => { const L = up(r.letter), j = L ? pool.findIndex((p, x) => !used[x] && up(p.letter) === L) : -1; if (j >= 0) used[j] = true; return j; });
+  let got = 0; const items = [];
+  rows.forEach((r, k) => { const nm = norm(r.name), lOk = at[k] >= 0; let nOk = lOk && named(pool[at[k]], nm);
+    if (!lOk) { const j = pool.findIndex((p, x) => !used[x] && named(p, nm)); if (j >= 0) { used[j] = true; nOk = true; } }
+    got += (lOk ? half : 0) + (nOk ? half : 0);
+    items.push({ key: keyOf(k, "letter"), awarded: lOk ? half : 0, available: half, verdict: !up(r.letter) ? "missing" : lOk ? "correct" : "incorrect" },
+      { key: keyOf(k, "name"), awarded: nOk ? half : 0, available: half, verdict: !nm ? "missing" : nOk ? "correct" : "incorrect" }); });
+  return { got: Math.round(got * 100) / 100, items: items }; };
 
 // ── Mock of the marking service, standing in for the backend. The screens only ever see its replies.
 const SERVER = { keys: {}, clues: {}, memo: {}, glossary: {} };   // glossary: { paperPrefix: { normalised term: true } }
@@ -1650,7 +1698,13 @@ function buildPapers() {
           if (q.t === "term") { const gl = SERVER.glossary[key.split(":")[0]] = SERVER.glossary[key.split(":")[0]] || {}; q.a.forEach(t => { gl[norm(t)] = true; });
             SERVER.keys[key] = { term: q.a, reject: q.reject || [] }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
           if (q.t === "list") { SERVER.keys[key] = { pool: q.pool.map(g => Array.isArray(g) ? g : [g]) }; return Object.assign(base, { response_mode: "list", marking_mode: "answer", count: q.count }); }
-          if (q.t === "lettername") { SERVER.keys[key] = { letter: q.a.letter, names: q.a.name }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]]; return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
+          // or: other letter + name pairs the memo accepts instead (1.4.1(a): C – urethra OR D – penis)
+          if (q.t === "lettername") { const or = (q.or || []).map(p => ({ letter: p.letter, names: p.name }));
+            SERVER.keys[key] = { letter: q.a.letter, names: q.a.name, or: or }; SERVER.memo[key] = [q.a.letter + " · " + q.a.name[0]].concat(or.map(p => "OR " + p.letter + " · " + p.names[0])); return Object.assign(base, { response_mode: "lettername", marking_mode: "answer", letters: q.letters }); }
+          // the LETTERS and NAMES of `count` parts in one part, any order (1.5.2): one row per part
+          if (q.t === "letternames") { SERVER.keys[key] = { pairs: q.pool.map(p => ({ letter: p.letter, names: p.name })), count: q.count };
+            SERVER.memo[key] = q.pool.map(p => p.letter + " · " + p.name[0]);
+            return Object.assign(base, { response_mode: "letternames", marking_mode: "answer", letters: q.letters, count: q.count }); }
           if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft }])) };
             SERVER.memo[key] = q.steps.map(st => st.memo);
             return Object.assign(base, { response_mode: "steps", marking_mode: "answer", steps: q.steps.map(st => ({ id: st.id, label: st.label, marks: st.marks, unit_hint: st.unit || "" })) }); }
@@ -1697,7 +1751,7 @@ class Component extends DCLogic {
     studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyFolder: null, studyErr: "",
     paperSourceOpen: false, paperSourceId: null, paperSourcePage: 1, paperSourceUrl: "",
     home: null, menu: null, selQual: "high_school", selSubj: "Life Sciences", selPaper: "ls-p1-2026", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, lastSub: null, describeOpen: false, sceneOn: true, figBig: false, srLive: "", runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", bus: busEmpty(), homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, lastSub: null, describeOpen: false, sceneOn: true, figBig: false, srLive: "", runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", bus: busEmpty(), homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   // ── The question paper and its memo (2026-10-02): page images (NX_PAGES), opened at the question's page. A phone: a panel
   // rising from the bottom; wider: a panel at the side. The page makes room for it (body.pv-bottom / pv-side, set in
@@ -2873,7 +2927,7 @@ class Component extends DCLogic {
   resetInputs(extra) { if (this.nxLeave(() => this.resetNow(extra))) return; this.resetNow(extra); }
   resetNow(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
   // "What cost you marks" (2026-10-02): the paper's mark (and its first-try mark once a retake changed it), one plain line, then
   // every part below full marks, the most marks lost first, each with why and a Retake; parts won back show it.
@@ -2982,11 +3036,10 @@ class Component extends DCLogic {
       const hit = other ? null : key.term.find(t => { const tn = norm(t); return n === tn || (slips(tn) > 0 && lev(n, tn) <= slips(tn) && !meaningSlip(n, tn)); }), ok = hit != null;
       const spelling = ok && norm(hit) !== n ? String(hit) : null;   // accepted with a slip: the feedback names the spelling
       return whole(ok, [{ key: "t", awarded: ok ? part.marks : 0, available: part.marks, verdict: n ? (ok ? "correct" : "incorrect") : "missing", spelling: spelling }]); }
-    if (key.letter) { const half = part.marks / 2;
-      const lOk = String((answer || {}).letter || "").trim().toUpperCase() === String(key.letter).toUpperCase();
-      const nOk = key.names.some(nm => norm((answer || {}).name) === norm(nm));
-      const items = [{ key: "letter", awarded: lOk ? half : 0, available: half, verdict: lOk ? "correct" : "incorrect" }, { key: "name", awarded: nOk ? half : 0, available: half, verdict: nOk ? "correct" : "incorrect" }];
-      return { marks_awarded: (lOk ? half : 0) + (nOk ? half : 0), marks: part.marks, full: lOk && nOk, marker: "auto", items: items }; }
+    if (key.letter) { const m = pairMarks([answer || {}], [{ letter: key.letter, names: key.names }].concat(key.or || []), part.marks / 2, (k, kind) => kind);
+      return { marks_awarded: m.got, marks: part.marks, full: m.got >= part.marks, marker: "auto", items: m.items }; }
+    if (key.pairs) { const rows = (answer || []).slice(0, key.count), m = pairMarks(rows, key.pairs, part.marks / (2 * key.count), (k, kind) => kind.charAt(0) + k);
+      return { marks_awarded: m.got, marks: part.marks, full: m.got >= part.marks, marker: "auto", items: m.items }; }
     if (key.num != null) { const v = num(answer);
       if (v === null) return whole(false, [{ key: "num", awarded: 0, available: part.marks, verdict: "missing" }]);
       if (isNaN(v)) return whole(false, [{ key: "num", awarded: 0, available: part.marks, verdict: "unreadable", reason: "We could not read a number. Use digits, for example 12." }]);
@@ -3025,7 +3078,7 @@ class Component extends DCLogic {
       expected: key.steps && key.steps[s.id] ? { value: key.steps[s.id].a, unit: s.unit_hint } : null })),
       provenance: { memo_source: part.board ? "board" : "authored", note: part.recipe || part.board ? "" : note } };
     const pts = key.pool ? key.pool.map(g => Array.isArray(g) ? g[0] : g) : (SERVER.memo[part.key] || []);
-    const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.term ? key.term[0] : key.num != null ? key.num : null;
+    const answerOf = key.mcq != null ? key.mcq : key.pickn ? key.pickn : key.order ? key.order : key.letter ? { letter: key.letter, name: key.names[0] } : key.pairs ? key.pairs.slice(0, key.count).map(p => ({ letter: p.letter, name: p.names[0] })) : key.term ? key.term[0] : key.num != null ? key.num : null;
     return { answer: answerOf, memo: { points: pts.map((t, i) => ({ text: String(t).charAt(0).toUpperCase() + String(t).slice(1), marks: key.worth ? key.worth[i] : key.each || 1 })) }, provenance: { memo_source: part.board ? "board" : "authored", note: part.board ? "" : note } };
   }
 
@@ -3037,7 +3090,7 @@ class Component extends DCLogic {
     return mode === "steps" ? Object.assign({}, ui.inputs) : mode === "list" ? list.filter(x => String(x || "").trim())
       : mode === "match" ? part.match.left.map((_, l) => ui.matchPairs[l] != null ? ui.matchPairs[l] : null)
       : mode === "mcq" ? ui.pick : mode === "pickn" ? ui.picks.slice() : mode === "order" ? ui.orderSeq.slice()
-      : mode === "lettername" ? { letter: ui.letter, name: ui.lname } : mode === "term" ? ui.term : mode === "num" ? ui.numVal
+      : mode === "lettername" ? { letter: ui.letter, name: ui.lname } : mode === "letternames" ? Array.from({ length: part.count || 1 }, (_, k) => ({ letter: ((ui.lrows || [])[k] || {}).letter || "", name: ((ui.lrows || [])[k] || {}).name || "" })) : mode === "term" ? ui.term : mode === "num" ? ui.numVal
       : mode === "build" ? JSON.parse(JSON.stringify(ui.build || {})) : mode === "draw" ? !!ui.drawn : ui.written;
   }
   // `given` (from mcq-play): { answer, quiet } — the answer passed in (a setState'd pick would not be read yet), and
@@ -3503,6 +3556,8 @@ class Component extends DCLogic {
     if (pr.closed || s.marking || (s.barOpen && reply)) return;
     const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim()), i = opts.indexOf(L), need = part.count || 1;
     if (mode === "lettername") { this.setState({ letter: L, edited: Object.assign({}, s.edited, { letter: true }) }, () => { const n = document.querySelector('[aria-label="Name of the part"]'); if (n && !s.figBig) n.focus(); }); return; }
+    if (mode === "letternames") { const rows = s.lrows || [], k = Math.max(0, rows.findIndex(r => r && r.letter === L)), free = Array.from({ length: need }, (_, x) => x).find(x => !(rows[x] || {}).letter);
+      this.lrowSet(rows.some(r => r && r.letter === L) ? k : free != null ? free : need - 1, { letter: L }); return; }
     if (i < 0) return;
     if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, s.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }); return; }
     if (mode === "pickn") { const has = s.picks.indexOf(i) !== -1;
@@ -3514,7 +3569,7 @@ class Component extends DCLogic {
   figureVals(sc, s, phone, part, reply, res, closed, stampOf) {
     const F = FIGS[sc.fig]; if (!F) return { hasScene: false, hasFigure: false, figFrameOn: false, figShowOn: false, figSaysLead: "false" };
     const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim());
-    const letterSet = mode === "lettername" ? (part.letters || []) : (["pickn", "order", "mcq"].indexOf(mode) !== -1 && opts.length && opts.every(o => /^[A-Z]$/.test(o))) ? opts : [];
+    const letterSet = mode === "lettername" || mode === "letternames" ? (part.letters || []) : (["pickn", "order", "mcq"].indexOf(mode) !== -1 && opts.length && opts.every(o => /^[A-Z]$/.test(o))) ? opts : [];
     const locked = closed || s.marking || (s.barOpen && !!reply);
     const itemsBy = {}; if (res && res.items) res.items.forEach(x => { itemsBy[x.key] = x; });
     const rv = closed && reply && reply.reveal ? reply.reveal.answer : null;
@@ -3522,6 +3577,7 @@ class Component extends DCLogic {
       const L = h.letter, i = opts.indexOf(L);
       let sel = false, sp = null, memo = false, badge = "";
       if (mode === "lettername") { sel = s.letter === L; if (sel && !s.edited.letter) sp = stampOf(itemsBy.letter); memo = !!rv && rv.letter === L && !sel; }
+      if (mode === "letternames") { sel = (s.lrows || []).some(r => r && r.letter === L); memo = Array.isArray(rv) && rv.some(p => p.letter === L) && !sel; }
       if (mode === "mcq") { sel = s.pick === i; if (sel && !s.edited["o" + i]) sp = stampOf(itemsBy["o" + i]); memo = rv === i && !sel; }
       if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; if (sel && !s.edited.picks) sp = stampOf(itemsBy["o" + i]); memo = Array.isArray(rv) && rv.indexOf(i) !== -1 && !sel; }
       if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : ""; if (sel && !s.edited.order) sp = stampOf(itemsBy["pos" + pos]); }
@@ -3661,7 +3717,7 @@ class Component extends DCLogic {
         bg: set ? "var(--grad)" : op ? "rgba(129,177,255,0.10)" : "rgba(255,255,255,0.05)", color: set ? "#ffffff" : op ? "#cfe0ff" : "var(--text)",
         border: set ? "transparent" : "var(--line2)", tap: () => set ? this.kpSet() : this.kpPress(lab) }; });
     const reason = mode === "mcq" ? "Pick one answer" : mode === "pickn" ? "Pick " + need + " · " + pickedN + " picked" : mode === "order" ? "Place all " + opts.length + " · " + s.orderSeq.length + " placed"
-      : mode === "lettername" ? "Pick the letter and give the name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? ""
+      : mode === "lettername" ? "Pick the letter and give the name" : mode === "letternames" ? "Give a letter and its name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? ""
       : mode === "build" ? (part.build && part.build.kind === "hist" ? "Choose the graph type and plot a bar" : "Pick a shape for every stem") : "Enter your answer";
     return {
       // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
@@ -3683,6 +3739,22 @@ class Component extends DCLogic {
       lname: s.lname, onLname: e => this.setState({ lname: e.target.value, edited: Object.assign({}, this.state.edited, { lname: true }) }),
       lnLetterHasStamp: !!lnL, lnLetterStamp: lnL ? "letter " + lnL.t : "", lnLetterStampBg: lnL ? lnL.bg : "", lnLetterStampColor: lnL ? lnL.c : "",
       lnNameHasStamp: !!lnN, lnNameStamp: lnN ? "name " + lnN.t : "", lnNameStampBg: lnN ? lnN.bg : "", lnNameStampColor: lnN ? lnN.c : "", lnNameBorder: lnN ? lnN.b : "var(--line2)",
+      // LETTERS and NAMES of several parts (1.5.2, Murci's mockup 2026-10-05): one row per part, any order; a letter on another row
+      // is dimmed here (a tap moves it); the Check arrow sits in the last row's name box
+      isLetterNames: mode === "letternames", lnsHead: (part.count || 1) + " parts, any order",   // (one line at 360 px: "Letters on the figure · 2 parts, any order" wrapped)
+      lnRows: mode === "letternames" ? Array.from({ length: part.count || 1 }, (_, k) => { const r = (s.lrows || [])[k] || {}, n = part.count || 1;
+        const lS = s.edited["l" + k] ? null : stampOf(itemsBy["l" + k]), nS = s.edited["n" + k] ? null : stampOf(itemsBy["n" + k]);
+        const arrow = k === n - 1 && !locked && !(reply && reply.waiting);
+        return { label: "Part " + (k + 1), aria: "Part " + (k + 1) + " of " + n, groupAria: "Letter for part " + (k + 1),
+          tiles: (part.letters || []).map((L, j) => { const on = r.letter === L, oi = (s.lrows || []).findIndex((o, x) => x !== k && o && o.letter === L);
+            return { label: L, checked: on ? "true" : "false", tab: (r.letter ? on : j === 0) ? "0" : "-1",
+              aria: "Letter " + L + (oi >= 0 ? ", now on part " + (oi + 1) : ""), opacity: oi >= 0 ? "0.4" : "1",
+              border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
+              pick: () => { if (!locked) this.lrowSet(k, { letter: L }); } }; }),
+          name: r.name || "", onName: e => this.lrowSet(k, { name: e.target.value }), nameAria: "Name of part " + (k + 1),
+          enterHint: k < n - 1 ? "next" : "done", arrowOn: arrow, padR: arrow ? "58px" : "14px", nBorder: nS ? nS.b : "var(--line2)",
+          lHas: !!lS, lStamp: lS ? "letter " + lS.t : "", lBg: lS ? lS.bg : "", lColor: lS ? lS.c : "",
+          nHas: !!nS, nStamp: nS ? "name " + nS.t : "", nBg: nS ? nS.bg : "", nColor: nS ? nS.c : "" }; }) : [],
       isTerm: mode === "term", termVal: s.term, onTerm: e => this.setState({ term: e.target.value, edited: Object.assign({}, this.state.edited, { term: true }) }),
       termHasStamp: !!termSp, termStamp: termSp ? termSp.t : "", termStampBg: termSp ? termSp.bg : "", termStampColor: termSp ? termSp.c : "", termBorder: termSp ? termSp.b : "var(--line2)",
       isNum: mode === "num", numVal: s.numVal, numUnit: unitText(part.unit_hint), numHasUnit: !!part.unit_hint, numBorder: numSp ? numSp.b : "var(--line2)",
@@ -3712,10 +3784,18 @@ class Component extends DCLogic {
     return !!(r && r.result && !r.result.full && !s.barOpen && la && la.key === part.key && la.v === JSON.stringify(this.answerFrom(part, s))); }
   // a builder is ready to check: the histogram has a graph type and a bar plotted; the stems all have a shape
   buildReady(part, b) { b = b || {}; return part.build && part.build.kind === "hist" ? !!b.type && (b.v || []).some(x => x > 0) : (part.build ? part.build.stems : []).every(st => !!b[st.id]); }
+  // letters + names: ready once one row has its letter AND its name (a learner who knows one part may send one, as a list)
+  lrowsReady(s) { return (s.lrows || []).some(r => r && r.letter && String(r.name || "").trim()); }
+  // a row's letter or name; a letter already on another row moves here (two rows never name one part)
+  lrowSet(k, patch) { const s = this.state, rows = (s.lrows || []).map(r => Object.assign({ letter: "", name: "" }, r));
+    while (rows.length <= k) rows.push({ letter: "", name: "" });
+    if (patch.letter) rows.forEach((r, x) => { if (x !== k && r.letter === patch.letter) { r.letter = ""; } });
+    Object.assign(rows[k], patch);
+    this.setState({ lrows: rows, edited: Object.assign({}, s.edited, patch.letter != null ? { ["l" + k]: true } : { ["n" + k]: true }) }); }
   canCheckNow(part) { const s = this.state, mode = part.response_mode;
     return mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
       : mode === "match" ? Object.keys(s.matchPairs).length > 0 : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
-      : mode === "order" ? s.orderSeq.length === (part.options || []).length : mode === "lettername" ? !!(s.letter && String(s.lname).trim())
+      : mode === "order" ? s.orderSeq.length === (part.options || []).length : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s)
       : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : mode === "build" ? this.buildReady(part, s.build) : true; }
 
   // ── Mission play: the lesson header, the companion, stamps in place, the feedback bar.
@@ -3933,7 +4013,7 @@ class Component extends DCLogic {
       // the Check arrow of a pick / order / written answer shows only once it can act (Murci, 2026-10-03: "that arrow button did not work
       // and it is not even supposed to be there"; on 1.5.4 it sat dimmed and disabled, half behind the thought cloud, beside Back and
       // Skip, until all three cards were placed). A drawing keeps its "I've drawn it" word.
-      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "num" && mode !== "lettername" && !(reply && reply.waiting) && (mode === "draw" || !primaryDisabled),
+      nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "num" && mode !== "lettername" && mode !== "letternames" && !(reply && reply.waiting) && (mode === "draw" || !primaryDisabled),
       // the letter-name's arrow is inside its name box, as the term's, the list's and the number's (Murci's P30 lite, 2026-10-03: on its
       // own row it made the page 52 px too tall and started under the strip)
       lnArrowOn: mode === "lettername" && !locked && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
@@ -4022,7 +4102,7 @@ class Component extends DCLogic {
     const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
       : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0
       : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
-      : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim()
+      : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim()
       : mode === "build" ? this.buildReady(part, s.build) : true;
     const primaryDisabled = !part || s.marking || (!closed && !(reply && reply.waiting) && (!canCheck || this.sameAsLast(part, s)));
     const flyOn = !s.reduced && reply && reply.xp_awarded > 0 && s.screen === "play";
