@@ -2017,3 +2017,15 @@ body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > :not([da
 body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] { row-gap:0 !important; }
 body.nx-play main:not(#mq-stage) [data-question][data-figside="true"]::after { grid-column:1 / -1; grid-row:2; }
 body.nx-play main:not(#mq-stage) [data-question][data-figside="true"]:not([data-scrolls="true"])::after { display:none; }
+
+/* ==== the result card spins in (feedSpin, Murci 2026-10-05: "like the MCQ cards") ====
+   During the turn the card is two-sided: its own face (content and fill, their backs hidden) and .fd-back, the medal's colour, turned
+   180 degrees; a glare sweeps across. The classes come off when it lands. */
+body.nx-play main:not(#mq-stage) [data-feed].fd-spin { position:relative; transform-style:preserve-3d; backface-visibility:hidden; -webkit-backface-visibility:hidden; will-change:transform; }
+body.nx-play main:not(#mq-stage) [data-feed].fd-spin > * { backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+body.nx-play main:not(#mq-stage) [data-feed] > .fd-back { position:absolute; inset:-1px; border-radius:inherit; transform:rotateY(180deg); pointer-events:none;
+  background:radial-gradient(circle at 50% 50%, var(--fd-medal) 0 22px, transparent 23px), linear-gradient(180deg, color-mix(in srgb, var(--fd-glow, #cfd4db) 34%, var(--nx-card, #0c1c36)), var(--nx-card, #0c1c36));
+  box-shadow:0 0 0 2px var(--fd-glow, #cfd4db), 0 18px 40px -16px var(--fd-glow, #cfd4db); }
+body.nx-play main:not(#mq-stage) [data-feed] > .fd-glare { position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; z-index:3; }
+body.nx-play main:not(#mq-stage) [data-feed] > .fd-glare > b { position:absolute; inset:0; opacity:0;
+  background:linear-gradient(105deg, transparent 36%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.16) 55%, transparent 64%); }

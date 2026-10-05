@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=222">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=223">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -2189,6 +2189,9 @@ class Component extends DCLogic {
     if (lnb && s.letter && s.letter !== this._lnPick && !typing) requestAnimationFrame(() => reveal(lnb));
     this._lnPick = s.letter || null;
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
+      // (not a term: its result card is only the XP and marks chips; the sealed field is its medal card and has its own seal and shine)
+      const won = q.querySelector('[data-feed~="ok"]:not([data-feed~="term"])');
+      if (won && s.reply && this._spinFor === key + ":" + s.reply.try) { this._spinFor = null; this.feedSpin(won, s.reduced); }
       if (f && !document.body.classList.contains("nx-compact") && q.scrollHeight > q.clientHeight + 1) requestAnimationFrame(() => { const fb = f.getBoundingClientRect(), qb = q.getBoundingClientRect();
         if (fb.bottom > qb.bottom) q.scrollBy({ top: Math.min(fb.bottom - qb.bottom + 14, fb.top - qb.top - 12), behavior: s.reduced ? "auto" : "smooth" }); });
       // a long question on a phone (nx-compact) scrolls the PAGE, not the card: the result came up under the face strip (found on the
@@ -2817,6 +2820,29 @@ class Component extends DCLogic {
   // The break: the field's picture in pieces cut from one crack point, each flung out, falling to the ground (the screen's
   // bottom, among the plants), bouncing once, lying there, then fading. The real field is hidden meanwhile (termState "broken").
   // snap: the field as it was (its box, its text, its look), taken before the result renders. Resolves when a new field may come.
+  // The result card spins in as the MCQ's medal card does (mcq-play spinInPanel, Murci 2026-10-05): a shine, then 540 degrees
+  // (back, front, back, front) under a sweeping glare, pulled back a little mid-turn so it stays inside the panel, landing with a small
+  // overshoot; then its medal turns once. Its back is the medal's colour (.fd-back), the faces hide their backs (nx-play .fd-spin).
+  // Transform and opacity only. Reduced motion: a fade. Only for a result just marked (_spinFor), never one shown again.
+  feedSpin(card, reduced) {
+    if (!card || !card.animate) return;
+    if (reduced) { card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" }); return; }
+    if (card._spin) card._spin.cancel();
+    const back = document.createElement("i"); back.className = "fd-back"; back.setAttribute("aria-hidden", "true");
+    const glare = document.createElement("i"); glare.className = "fd-glare"; glare.setAttribute("aria-hidden", "true"); glare.appendChild(document.createElement("b"));
+    card.append(back, glare); card.classList.add("fd-spin");
+    const SHINE = 320, TURN = 1700, kf = Array.from({ length: 9 }, (_, k) => { const t = k / 8;
+      return { offset: t, transform: `perspective(900px) rotateY(${(-540 + 540 * t).toFixed(1)}deg) scale(${(1 - 0.12 * Math.sin(t * Math.PI)).toFixed(4)})` }; });
+    const shine = card.animate([{ transform: "perspective(900px) rotateY(-540deg)" }, { transform: "perspective(900px) rotateY(-540deg) scale(1.03)" }, { transform: "perspective(900px) rotateY(-540deg)" }],
+      { duration: SHINE, easing: "ease-in-out" });
+    card._spin = shine;
+    shine.finished.then(() => {
+      glare.firstChild.animate([{ transform: "translateX(-100%)", opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 1, offset: 0.75 }, { transform: "translateX(100%)", opacity: 0 }],
+        { duration: TURN, easing: "cubic-bezier(.45,0,.25,1)" });
+      const turn = card.animate(kf, { duration: TURN, easing: "cubic-bezier(.6,-0.18,.3,1.18)" }); card._spin = turn; return turn.finished;
+    }).then(() => { const m = card.querySelector(".fd-medal"); if (m) m.animate([{ transform: "rotateY(0deg)" }, { transform: "rotateY(360deg)" }], { duration: 700, easing: "cubic-bezier(.3,.7,.3,1)" }); })
+      .catch(() => {}).finally(() => { back.remove(); glare.remove(); card.classList.remove("fd-spin"); card._spin = null; });
+  }
   termSnap() { const f = document.querySelector("[data-question] [data-termrow] input"); if (!f) return null;
     const cs = getComputedStyle(f); return { r: f.getBoundingClientRect(), text: f.value, font: cs.font, pad: cs.paddingLeft, radius: cs.borderRadius,
       bg: cs.backgroundColor, border: cs.borderTopWidth + " " + cs.borderTopStyle + " " + cs.borderTopColor, color: cs.color }; }
@@ -3150,6 +3176,7 @@ class Component extends DCLogic {
       // Try again is off the bar (Murci, 2026-10-03: "does it really need to be in the position it is at"): a miss with tries left
       // leaves the question live, the result under the answer and the hint in the robot's cloud; nothing to press
       const missLive = !closed && !result.full && !draw && mode !== "term";
+      if (result.full && !draw) this._spinFor = part.key + ":" + tryNo;   // the result card spins in once, for this try (feedSpin)
       this.setState({ marking: false, reply: reply, barOpen: !quiet && !missLive, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
