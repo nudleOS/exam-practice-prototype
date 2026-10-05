@@ -2053,3 +2053,20 @@ body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile][data-verdict="o
    measured: the ruled-out C and E still showed as badges) */
 body.nx-play main:not(#mq-stage) [data-tile][data-dead="breaking"]:not(#nx-none) { visibility:hidden !important; }   /* its glass copy cracks in its place */
 body.nx-play main:not(#mq-stage) [data-tile][data-dead="true"]:not(#nx-none) { display:none !important; }
+
+/* ==== the result card is SOLID medal metal, as the MCQ's medal card (Murci, 2026-10-05: on 1.4 "it looks like it is transparent rather
+   than solid silver"): the MCQ back faces' fills and 2 px ring (mcq-play.css .tile.<tier> .back; light: nx-play's), on the card and on
+   the back it shows while it spins. Was a 2-10% tint over the panel. Not a term's chips (its sealed field is its medal card). */
+body.nx-play main:not(#mq-stage) [data-feed~="ok"]:not([data-feed~="term"]) { border-color:transparent !important; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="gold"]:not([data-feed~="term"]), body.nx-play main:not(#mq-stage) [data-feed~="gold"] > .fd-back {
+  background:linear-gradient(180deg, #3a3016, #2a220d) !important; box-shadow:0 20px 48px rgba(227,179,65,0.28), 0 0 0 2px #e3b341, inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35) !important; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="silver"]:not([data-feed~="term"]), body.nx-play main:not(#mq-stage) [data-feed~="silver"] > .fd-back {
+  background:linear-gradient(180deg, #34383e, #24272b) !important; box-shadow:0 20px 48px rgba(210,216,224,0.18), 0 0 0 2px #c3c8cf, inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35) !important; }
+body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="bronze"]:not([data-feed~="term"]), body.nx-play main:not(#mq-stage) [data-feed~="bronze"] > .fd-back {
+  background:linear-gradient(180deg, #3a2618, #28180e) !important; box-shadow:0 20px 48px rgba(217,155,108,0.22), 0 0 0 2px #b0764a, inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.35) !important; }
+body.nx-play main:not(#mq-stage) [data-feed] > .fd-back { background-image:none; }
+body.nx-play main:not(#mq-stage) [data-feed~="gold"] > .fd-back::after, body.nx-play main:not(#mq-stage) [data-feed~="silver"] > .fd-back::after, body.nx-play main:not(#mq-stage) [data-feed~="bronze"] > .fd-back::after {
+  content:""; position:absolute; left:50%; top:50%; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; background:var(--fd-medal); box-shadow:0 0 18px var(--fd-glow); }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="gold"]:not([data-feed~="term"]), html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="gold"] > .fd-back { background:linear-gradient(180deg, #fff8e3, #fdeec6) !important; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="silver"]:not([data-feed~="term"]), html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="silver"] > .fd-back { background:linear-gradient(180deg, #f6f8fb, #e6ebf1) !important; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="bronze"]:not([data-feed~="term"]), html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="bronze"] > .fd-back { background:linear-gradient(180deg, #fcefe5, #f5dac7) !important; }
