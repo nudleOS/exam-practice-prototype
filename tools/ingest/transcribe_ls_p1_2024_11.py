@@ -37,14 +37,17 @@ q11 = [
         ["Pain receptor → motor neuron → sensory neuron → leg muscle", "Foot muscle → sensory neuron → motor neuron → pain receptor",
          "Foot muscle → motor neuron → sensory neuron → pain receptor", "Pain receptor → sensory neuron → motor neuron → leg muscle"], 3,
         ["A reflex starts where the stimulus is felt.", "The impulse travels in to the spinal cord before it travels out to the muscle."]),
-    # TABLE-SHAPED OPTIONS (flagged): the paper prints the options as a table (MUSCLE IN X | STRUCTURE Y | PART Z); flattened here
+    # options printed as a TABLE: optTable carries it; opts read each row as a line (the medal card, the memo)
     mcq("1.1.6", "The diagram represents a part of the human eye. A spectator in a soccer stadium is seated 200 metres away from the field. "
         "Which ONE of the following describes the condition of structures X, Y and Z when he looks at the ball placed in the middle of the field?",
         ["Muscle in X relaxed · Structure Y slack · Part Z more convex", "Muscle in X contracted · Structure Y slack · Part Z less convex",
          "Muscle in X relaxed · Structure Y taut · Part Z less convex", "Muscle in X contracted · Structure Y taut · Part Z more convex"], 2,
         ["200 metres is far away: the eye is focusing on a distant object.", "For a distant object the lens has to bend the light less."],
         figure=fig(4, (211, 110, 384, 266), "Part of the human eye in section. X points to the ciliary body above the lens, Y to the "
-                   "suspensory ligament below it, and Z to the lens.")),
+                   "suspensory ligament below it, and Z to the lens."),
+        optTable={"head": ["MUSCLE IN X", "STRUCTURE Y", "PART Z"],
+                  "rows": [["Relaxed", "Slack", "More convex"], ["Contracted", "Slack", "Less convex"],
+                           ["Relaxed", "Taut", "Less convex"], ["Contracted", "Taut", "More convex"]]}),
     mcq("1.1.7", "Which ONE of the following is involved in thermoregulation?",
         ["Corpus callosum", "Hypothalamus", "Cerebellum", "Spinal cord"], 1,
         ["Body temperature is kept steady by a control centre in the brain.", "The same centre also controls the water balance of the blood."]),
@@ -92,9 +95,10 @@ q13 = [
 ]
 ln = lambda n, q, letter, names, clues: {"t": "lettername", "n": n, "marks": 2, "q": q, "clues": clues, "letters": LET, "a": {"letter": letter, "name": names}}
 q14 = [
-    # ALTERNATIVE PAIRS (flagged): the memo accepts C – urethra OR D – penis; the catalogue holds one letter
-    ln("1.4.1(a)", "Give the LETTER and NAME of the structure that forms part of both the urinary and reproductive systems", "C", ["urethra"],
-       ["Urine and semen leave the body the same way.", "Follow the tube that runs from the bladder to the outside."]),
+    # the memo accepts C – urethra OR D – penis (`or`); "C – penis" earns the letter mark only (Murci, 2026-10-05)
+    {**ln("1.4.1(a)", "Give the LETTER and NAME of the structure that forms part of both the urinary and reproductive systems", "C", ["urethra"],
+          ["Urine and semen leave the body the same way.", "Follow the tube that runs from the bladder to the outside."]),
+     "or": [{"letter": "D", "name": ["penis"]}]},
     ln("1.4.1(b)", "Give the LETTER and NAME of the structure that stores sperm temporarily", "B", ["epididymis"],
        ["Sperm mature here before they move on.", "It is the coiled tube lying against the testis."]),
     ln("1.4.1(c)", "Give the LETTER and NAME of the structure that secretes testosterone", "E", ["testis", "testes"],
@@ -108,10 +112,11 @@ q15 = [
     {"t": "pickn", "n": "1.5.1", "marks": 2, "q": "Write the LETTERS of the parts that serve as endocrine glands only.",
      "clues": ["A gland that makes both hormones and digestive juices is not an endocrine gland ONLY.", "Look for glands that release hormones into the blood and nothing else."],
      "opts": ["A", "B", "C", "D", "E", "F"], "pool": [0, 5], "count": 2},
-    # TWO LETTER + NAME PAIRS IN ONE PART (flagged no_fit): self-checked until the catalogue has a fitting type
-    {"t": "draw", "n": "1.5.2", "marks": 4, "q": "Give the LETTERS and NAMES of the parts responsible for the regulation of body temperature.",
+    # two LETTER + NAME pairs in one part, any order
+    {"t": "letternames", "n": "1.5.2", "marks": 4, "q": "Give the LETTERS and NAMES of the parts responsible for the regulation of body temperature.",
      "clues": ["The body loses heat through the skin in two ways.", "One part carries warm blood near the surface; the other makes sweat."],
-     "criteria": [{"text": "B – capillaries / blood vessel", "marks": 2}, {"text": "C – sweat gland", "marks": 2}]},
+     "letters": ["A", "B", "C", "D", "E", "F"], "count": 2,
+     "pool": [{"letter": "B", "name": ["capillaries", "capillary", "blood vessel", "blood vessels"]}, {"letter": "C", "name": ["sweat gland", "sweat glands"]}]},
     term("1.5.3(a)", "Name the hormone secreted by part A (the regulation of water content in the blood)", ["ADH", "antidiuretic hormone"],
          ["It is released when the blood has too little water.", "It makes the kidney tubules take more water back."]),
     term("1.5.3(b)", "Name target organ E (the regulation of water content in the blood)", ["kidney", "kidneys"],
@@ -140,9 +145,7 @@ paper = {
     "paper": {"subject": "Life Sciences", "title": "Life Sciences P1", "sitting": "November 2024", "total_marks": 150, "time": "2½ hours"},
     "sections": [{"title": "Section A", "total": 50, "missions": missions}],
     "flags": [
-        {"n": "1.1.6", "kind": "no_fit", "detail": "The options are a table (MUSCLE IN X | STRUCTURE Y | PART Z); flattened into lines until the MCQ card can show table options."},
-        {"n": "1.4.1(a)", "kind": "memo_issue", "detail": "The memo accepts C – urethra OR D – penis; the catalogue holds one letter, so D – penis is marked wrong for now."},
-        {"n": "1.5.2", "kind": "no_fit", "detail": "Two LETTER + NAME pairs in one part (4 marks); self-checked until the catalogue has a type for it."},
+        {"n": "1.4.1(a)", "kind": "low_confidence", "detail": "The memo accepts C – urethra OR D – penis. Marked: either letter earns its mark, the name only when it names the part of the letter chosen ('C – penis' = 1). A Life Sciences teacher should confirm."},
         {"n": "paper", "kind": "low_confidence", "detail": "Question 1 (Section A) only, hand-transcribed from the paper and memo PDFs; no API call. Section B is not in yet."},
     ],
 }
