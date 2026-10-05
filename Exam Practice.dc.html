@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=223">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=227">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -805,7 +805,7 @@
                 <span style="padding:9px 12px; border-radius:12px; border:1px dashed var(--line2); font-size:13px; font-weight:700; color:var(--text2)">{{ seqText }}</span>
               </sc-if>
               <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
-                <button data-tile="true" data-idx="{{ tl.idx }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ locked }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
+                <button data-tile="true" data-idx="{{ tl.idx }}" data-letter="{{ tl.letter }}" data-dead="{{ tl.dead }}" data-verdict="{{ tl.verdict }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ tl.off }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
                   <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; background:{{ tl.badgeBg }}; font-size:13px; font-weight:800; color:{{ tl.badgeColor }}">{{ tl.badge }}</span>
                   <span style="flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.4; text-wrap:pretty">{{ tl.text }}</span>
                   <sc-if value="{{ tl.hasStamp }}" hint-placeholder-val="{{ false }}">
@@ -825,7 +825,7 @@
               </div>
               <div role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                 <sc-for list="{{ letterTiles }}" as="lt" hint-placeholder-count="6">
-                  <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
+                  <button data-tile="true" data-letter="{{ lt.label }}" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
                 </sc-for>
               </div>
               <span style="display:flex; align-items:center; gap:8px">
@@ -846,12 +846,12 @@
                 <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ lnsHead }}</span>
               </div>
               <sc-for list="{{ lnRows }}" as="lr" hint-placeholder-count="2">
-                <div data-lnrow="true" data-anscard="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px">
+                <div data-lnrow="true" data-row="{{ lr.k }}" data-anscard="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px">
                   <div data-lnhead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
                     <span data-lnbadge="true" aria-hidden="true">{{ lr.n }}</span>
                     <div role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                       <sc-for list="{{ lr.tiles }}" as="lt" hint-placeholder-count="6">
-                        <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
+                        <button data-tile="true" data-letter="{{ lt.label }}" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
                       </sc-for>
                     </div>
                     <sc-if value="{{ lr.lHas }}" hint-placeholder-val="{{ false }}">
@@ -1751,7 +1751,7 @@ class Component extends DCLogic {
     studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyFolder: null, studyErr: "",
     paperSourceOpen: false, paperSourceId: null, paperSourcePage: 1, paperSourceUrl: "",
     home: null, menu: null, selQual: "high_school", selSubj: "Life Sciences", selPaper: "ls-p1-2026", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, lastSub: null, describeOpen: false, sceneOn: true, figBig: false, srLive: "", runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", bus: busEmpty(), homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, lastSub: null, describeOpen: false, sceneOn: true, figBig: false, srLive: "", runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", bus: busEmpty(), homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   // ── The question paper and its memo (2026-10-02): page images (NX_PAGES), opened at the question's page. A phone: a panel
   // rising from the bottom; wider: a panel at the side. The page makes room for it (body.pv-bottom / pv-side, set in
@@ -2751,7 +2751,7 @@ class Component extends DCLogic {
   prevPart() { if (this.canBack()) this.resetInputs({ pi: this.state.pi - 1 }); }
   // the part again, as practice (a replay: no marks or XP), with 3 fresh chances; its first attempt's marks and medal stand
   retryPart(key) { const part = this.part(), k = key || (part && part.key); if (!k) return;
-    const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false, replay: true }); this.resetInputs({ prog: pp }); }
+    const pp = Object.assign({}, this.state.prog); pp[k] = Object.assign({}, this.pg(k), { tries: 0, closed: false, replay: true, dead: [] }); this.resetInputs({ prog: pp }); }
   // The panel's feedback, under the answer (practice, non-MCQ parts): a check's result, or the hint while the learner retries.
   // Under the answer, so the field never moves; a full mark is a medal result (the tier by try, as the MCQ card).
   nxFeedVals(s, reply, res, got, outcome, bar, showBar, closed) {
@@ -2843,6 +2843,24 @@ class Component extends DCLogic {
     }).then(() => { const m = card.querySelector(".fd-medal"); if (m) m.animate([{ transform: "rotateY(0deg)" }, { transform: "rotateY(360deg)" }], { duration: 700, easing: "cubic-bezier(.3,.7,.3,1)" }); })
       .catch(() => {}).finally(() => { back.remove(); glare.remove(); card.classList.remove("fd-spin"); card._spin = null; });
   }
+  // a letter chip's data-dead: "false", "breaking" (ruled out this very try: its place held while its glass cracks), "true" (gone)
+  deadAttr(out, L) { return !out ? "false" : (this.state.deadFresh || []).indexOf(L) !== -1 ? "breaking" : "true"; }
+  // the letters a try marked wrong, with the pair row they were on: one letter + name, each pair, a letters-only pick or MCQ
+  deadLetters(part, mode, answer, result) {
+    const items = result.items || [], bad = k => (items.find(x => x.key === k) || {}).verdict === "incorrect";
+    const opts = (part.options || []).map(o => String(o).trim()), lettersOnly = opts.length > 0 && opts.every(o => /^[A-Z]$/.test(o));
+    if (mode === "lettername") return answer && answer.letter && bad("letter") ? [{ L: answer.letter, row: null }] : [];
+    if (mode === "letternames") return (answer || []).map((r, k) => r && r.letter && bad("l" + k) ? { L: r.letter, row: k } : null).filter(Boolean);
+    if (lettersOnly && mode === "pickn") return (answer || []).filter(i => bad("o" + i)).map(i => ({ L: opts[i], row: null }));
+    if (lettersOnly && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];
+    return [];
+  }
+  // each ruled-out letter's chip as termBreak draws a field: its box, its letter centred, round, no cross (it is 42 px)
+  chipSnaps(dead) {
+    return dead.map(d => { const b = document.querySelector(d.row != null ? '[data-lnrow][data-row="' + d.row + '"] [data-tile][data-letter="' + d.L + '"]'
+        : '[data-question] [data-tile][data-letter="' + d.L + '"][aria-checked="true"]'); if (!b) return null;
+      const cs = getComputedStyle(b); return { r: b.getBoundingClientRect(), text: d.L, font: cs.font, pad: "0", radius: cs.borderRadius, center: true, small: true }; }).filter(Boolean);
+  }
   termSnap() { const f = document.querySelector("[data-question] [data-termrow] input"); if (!f) return null;
     const cs = getComputedStyle(f); return { r: f.getBoundingClientRect(), text: f.value, font: cs.font, pad: cs.paddingLeft, radius: cs.borderRadius,
       bg: cs.backgroundColor, border: cs.borderTopWidth + " " + cs.borderTopStyle + " " + cs.borderTopColor, color: cs.color }; }
@@ -2861,11 +2879,20 @@ class Component extends DCLogic {
     if (!snap || this.state.reduced || !snap.r.width) return new Promise(res => setTimeout(res, this.state.reduced ? 700 : 0));
     const r = snap.r, W = r.width, H = r.height, layer = document.createElement("div");
     layer.setAttribute("aria-hidden", "true"); layer.dataset.termshards = "true"; document.body.appendChild(layer);
-    const cx = W * (0.3 + Math.random() * 0.4), cy = H * (0.35 + Math.random() * 0.3), N = 8;
+    // a different break every time (Murci, 2026-10-05: "crack randomly with different shapes of cracks"): 5 to 9 cracks from a random
+    // impact point, each kinked at 2 or 3 random points; the pieces are cut along the same lines (below), so the shards match the cracks
+    const cx = W * (0.3 + Math.random() * 0.4), cy = H * (0.35 + Math.random() * 0.3), N = 5 + Math.floor(Math.random() * 5);
     const ang = Array.from({ length: N }, (_, i) => (i + 0.2 + Math.random() * 0.6) / N * Math.PI * 2 - Math.PI).sort((a, b) => a - b);
     // where a ray from the crack point meets the field's edge
     const edge = a => { const dx = Math.cos(a), dy = Math.sin(a), tx = dx > 0 ? (W - cx) / dx : dx < 0 ? -cx / dx : Infinity, ty = dy > 0 ? (H - cy) / dy : dy < 0 ? -cy / dy : Infinity, t = Math.min(tx, ty); return [cx + dx * t, cy + dy * t]; };
     const corners = [[0, 0], [W, 0], [W, H], [0, H]].map(p => ({ p, a: Math.atan2(p[1] - cy, p[0] - cx) }));
+    // a crack: the impact point to the edge through 2-3 kinks, each pushed sideways a little (up to 18% of its length, 14 px at most)
+    const clampP = q => [Math.max(0, Math.min(W, q[0])), Math.max(0, Math.min(H, q[1]))];
+    const rays = ang.map(a => { const e = edge(a), L = Math.hypot(e[0] - cx, e[1] - cy), K = 2 + Math.floor(Math.random() * 2), nx = -Math.sin(a), ny = Math.cos(a), out = [];
+      for (let k = 1; k <= K; k++) { const t = k / (K + 1) + (Math.random() - 0.5) * 0.12, j = (Math.random() - 0.5) * 2 * Math.min(14, L * 0.18);
+        out.push(clampP([cx + (e[0] - cx) * t + nx * j, cy + (e[1] - cy) * t + ny * j])); }
+      out.push(e); return out; });
+    const polyLen = pts => pts.reduce((m, q, i) => i ? m + Math.hypot(q[0] - pts[i - 1][0], q[1] - pts[i - 1][1]) : 0, 0);
     // the ground: the screen's bottom, or (a phone, keyboard down) the top of the action bar the robot's rock now stands on
     const fbar = innerWidth <= 600 && !document.body.classList.contains("nx-typing") && document.querySelector("[data-footer]"), ground = (fbar ? Math.round(fbar.getBoundingClientRect().top) : innerHeight) - 26, G = 2600, all = [];
     // 1 · it is WRONG, unmistakably (Murci, 2026-09-30: "users really perceive that as being the wrong answer and not guess what
@@ -2873,25 +2900,34 @@ class Component extends DCLogic {
     // three times, then cracks run out from one point; only then does it break (below, at CRACK_AT)
     const SHAKE = 460, CRACK_AT = 700, whole = document.createElement("div"), wg = document.createElement("div"), wt = document.createElement("span"), x = document.createElement("i");
     whole.className = "ts-whole"; whole.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px";
-    wg.className = "ts-glass"; wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad;
-    x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt, x); whole.appendChild(wg); layer.appendChild(whole);
+    wg.className = "ts-glass"; wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
+    x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt); if (!snap.small) wg.append(x); whole.appendChild(wg); layer.appendChild(whole);
     if (navigator.vibrate) try { navigator.vibrate([70, 50, 90]); } catch (e) { /* not allowed here */ }
     whole.animate([{ transform: "none" }, { transform: "translateX(-9px)", offset: 0.12 }, { transform: "translateX(8px)", offset: 0.3 }, { transform: "translateX(-7px)", offset: 0.48 },
       { transform: "translateX(6px)", offset: 0.64 }, { transform: "translateX(-3px)", offset: 0.82 }, { transform: "none" }], { duration: SHAKE, easing: "ease-in-out" });
     const NSV = "http://www.w3.org/2000/svg", svg = document.createElementNS(NSV, "svg"); svg.setAttribute("class", "ts-cracks"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    ang.forEach(a => { const e = edge(a), ln = document.createElementNS(NSV, "path"), len = Math.hypot(e[0] - cx, e[1] - cy);
-      ln.setAttribute("d", "M" + cx.toFixed(1) + " " + cy.toFixed(1) + " L" + e[0].toFixed(1) + " " + e[1].toFixed(1)); ln.style.strokeDasharray = len; ln.style.strokeDashoffset = len; svg.appendChild(ln);
-      ln.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 200, delay: SHAKE + 20, fill: "forwards", easing: "ease-out" }); });
+    // the cracks run out from the impact (a jagged line each), then their side branches, then (sometimes) a broken ring round the impact
+    const crack = (pts, delay, dur, thin) => { const ln = document.createElementNS(NSV, "path"), len = polyLen(pts) || 1;
+      ln.setAttribute("d", pts.map((q, i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" ")); if (thin) ln.style.strokeWidth = "1";
+      ln.style.strokeDasharray = len; ln.style.strokeDashoffset = len; svg.appendChild(ln);
+      ln.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: dur, delay: delay, fill: "forwards", easing: "ease-out" }); };
+    rays.forEach(r => crack([[cx, cy]].concat(r), SHAKE + 20 + Math.random() * 40, 170 + Math.random() * 80));
+    rays.forEach(r => { if (Math.random() < 0.45) { const k = Math.floor(Math.random() * (r.length - 1)), from = r[k], to = r[k + 1] || r[k], a = Math.atan2(to[1] - from[1], to[0] - from[0]) + (Math.random() < 0.5 ? -1 : 1) * (0.45 + Math.random() * 0.5),
+      l = Math.hypot(W, H) * (0.06 + Math.random() * 0.1); crack([from, clampP([from[0] + Math.cos(a) * l, from[1] + Math.sin(a) * l])], SHAKE + 120 + Math.random() * 60, 120, true); } });
+    if (Math.random() < 0.5) { const rr = Math.min(W, H) * (0.18 + Math.random() * 0.14);
+      ang.forEach((a, i) => { if (Math.random() < 0.35) return; const b = i === N - 1 ? ang[0] + Math.PI * 2 : ang[i + 1], m = (a + b) / 2, w = rr * (0.85 + Math.random() * 0.3);
+        crack([[cx + Math.cos(a) * rr, cy + Math.sin(a) * rr], clampP([cx + Math.cos(m) * w, cy + Math.sin(m) * w]), [cx + Math.cos(b) * rr, cy + Math.sin(b) * rr]].map(clampP), SHAKE + 140, 110, true); }); }
     wg.appendChild(svg);
     const pieces = [];
     for (let i = 0; i < N; i++) { const a0 = ang[i], a1 = i === N - 1 ? ang[0] + Math.PI * 2 : ang[i + 1];
       const mid = corners.map(c => ({ p: c.p, a: c.a < a0 ? c.a + Math.PI * 2 : c.a })).filter(c => c.a > a0 && c.a < a1).sort((x, y) => x.a - y.a).map(c => c.p);
-      const pts = [[cx, cy], edge(a0)].concat(mid, [edge(a1)]);
+      // the piece between two cracks, cut along both of them (jagged edges that match the lines drawn)
+      const pts = [[cx, cy]].concat(rays[i], mid, rays[(i + 1) % N].slice().reverse());
       const mx = pts.reduce((m, p) => m + p[0], 0) / pts.length, my = pts.reduce((m, p) => m + p[1], 0) / pts.length;
       const outer = document.createElement("div"), inner = document.createElement("div"), txt = document.createElement("span");
       outer.className = "ts-piece"; outer.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px; transform-origin:" + mx.toFixed(1) + "px " + my.toFixed(1) + "px";
       inner.className = "ts-glass"; inner.style.cssText = "border-radius:" + snap.radius + "; clip-path:polygon(" + pts.map(p => p[0].toFixed(1) + "px " + p[1].toFixed(1) + "px").join(",") + ")";
-      txt.textContent = snap.text; txt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad; inner.appendChild(txt); outer.appendChild(inner); outer.style.visibility = "hidden"; layer.appendChild(outer); pieces.push(outer);
+      txt.textContent = snap.text; txt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : ""); inner.appendChild(txt); outer.appendChild(inner); outer.style.visibility = "hidden"; layer.appendChild(outer); pieces.push(outer);
       // the fall: out from the crack, a little up, then gravity; it lands where its centre meets the ground, bounces once, lies there
       const ux = mx - cx, uy = my - cy, ul = Math.hypot(ux, uy) || 1, v = 90 + Math.random() * 140;
       const vx = ux / ul * v + (Math.random() - 0.5) * 60, vy = uy / ul * v * 0.6 - 160 - Math.random() * 120, spin = (Math.random() < 0.5 ? -1 : 1) * (160 + Math.random() * 420);
@@ -2969,7 +3005,7 @@ class Component extends DCLogic {
   resetInputs(extra) { if (this.nxLeave(() => this.resetNow(extra))) return; this.resetNow(extra); }
   resetNow(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
   // "What cost you marks" (2026-10-02): the paper's mark (and its first-try mark once a retake changed it), one plain line, then
   // every part below full marks, the most marks lost first, each with why and a Retake; parts won back show it.
@@ -3004,7 +3040,7 @@ class Component extends DCLogic {
   // screen "Back to the results" returns to (the done screen, or the review page).
   retakePart(mi, pi, back) { const m = this.missions()[mi], q = m && m.parts[pi]; if (!q) return;
     const g = this.pg(q.key), pp = Object.assign({}, this.state.prog);
-    pp[q.key] = Object.assign({}, g, { tries: 0, closed: false, replay: true, retake: true, first: g.first != null ? g.first : (g.best || 0) });
+    pp[q.key] = Object.assign({}, g, { tries: 0, closed: false, replay: true, retake: true, dead: [], first: g.first != null ? g.first : (g.best || 0) });
     // (a multiple choice keeps its own record of finished questions, seeded from mcqBook at mount: the retake's question came up
     // already answered and ignored every tap, 2026-10-03. Its record goes for the retake, and both come back if it is left untried.)
     const mb = q.response_mode === "mcq" ? this.mcqBook() : null;
@@ -3148,7 +3184,10 @@ class Component extends DCLogic {
     if (s0.kp) this.setState({ kp: null, kpErr: "" });
     const finish = result => {
       const s = this.state; const pr = this.pg(part.key);
-      const snap = !quiet && mode === "term" && result.marker !== "unavailable" ? this.termSnap() : null;   // (right: it flips; wrong: it breaks)   // the field as it is, before the result hides it
+      const snap = !quiet && mode === "term" && result.marker !== "unavailable" ? this.termSnap() : null;
+      // wrong LETTERS break like glass and stay out for this question, as a wrong MCQ card does (Murci, 2026-10-05)
+      const dead = result.marker === "unavailable" ? [] : this.deadLetters(part, mode, answer, result), chipSnaps = !quiet ? this.chipSnaps(dead) : [];
+      const deadL = dead.map(d => d.L), opts0 = (part.options || []).map(o => String(o).trim());   // (right: it flips; wrong: it breaks)   // the field as it is, before the result hides it
       if (result.marker === "unavailable") { this.setState({ marking: false, reply: { waiting: true }, barOpen: true, barSeq: s.barSeq + 1, runLog: s.runLog.concat([{ key: part.key, waiting: true, xp: 0 }]), prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { waiting: true }) }) }, () => this.react("greet")); return; }
       const tryNo = pr.tries + 1;
       const draw = mode === "draw";
@@ -3177,7 +3216,11 @@ class Component extends DCLogic {
       // leaves the question live, the result under the answer and the hint in the robot's cloud; nothing to press
       const missLive = !closed && !result.full && !draw && mode !== "term";
       if (result.full && !draw) this._spinFor = part.key + ":" + tryNo;   // the result card spins in once, for this try (feedSpin)
-      this.setState({ marking: false, reply: reply, barOpen: !quiet && !missLive, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
+      this.setState({ deadFresh: deadL, picks: deadL.length && mode === "pickn" ? s.picks.filter(i => deadL.indexOf(opts0[i]) === -1) : s.picks,
+        pick: deadL.length && mode === "mcq" && deadL.indexOf(opts0[s.pick]) !== -1 ? null : s.pick,
+        letter: deadL.length && mode === "lettername" ? "" : s.letter,
+        lrows: deadL.length && mode === "letternames" ? (s.lrows || []).map((r, k) => dead.some(d => d.row === k) ? Object.assign({}, r, { letter: "" }) : r) : s.lrows,
+        marking: false, reply: reply, barOpen: !quiet && !missLive, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
         paid: result.full ? Object.assign({}, s.paid, { [part.key]: true }) : s.paid, flySeq: xp ? s.flySeq + 1 : s.flySeq,
@@ -3186,6 +3229,7 @@ class Component extends DCLogic {
         prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
           firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay,
           retake: pr.retake, first: pr.first,   // a retake's flag, and the mark before any retake (the paper's first-try mark)
+          dead: (pr.dead || []).concat(deadL.filter(L => (pr.dead || []).indexOf(L) === -1)),   // letters this question has ruled out
           // the medal the question earned (the question map shows it): the try it was right on; a practice replay keeps the first one's
           medal: pr.medal || (result.full && !replay && !draw ? ["gold", "silver", "bronze"][Math.min(2, tryNo - 1)] : ""),
           obs: tryNo === 1 && !draw ? (pr.obs || []).concat([this.obsOf(part, pr, result)]) : pr.obs } }) });
@@ -3198,6 +3242,9 @@ class Component extends DCLogic {
       // a typed term, wrong: the field breaks and falls; a new one drops in for the next try (none after the last)
       if (snap && result.full) this.termFlip(snap);
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
+      chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
+      // ...and the letter leaves the row as it breaks apart (termBreak's CRACK_AT, 700 ms), not before: until then its place is held
+      clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => this.setState({ deadFresh: [] }), this.state.reduced || !chipSnaps.length ? 0 : 720);
       return reply;
     };
     const result = this.mark(part, answer);
@@ -3598,6 +3645,7 @@ class Component extends DCLogic {
     const reply = s.reply; const pr = this.pg(part.key);
     if (pr.closed || s.marking || (s.barOpen && reply)) return;
     const mode = part.response_mode, opts = (part.options || []).map(o => String(o).trim()), i = opts.indexOf(L), need = part.count || 1;
+    if ((pr.dead || []).indexOf(L) !== -1) return;   // ruled out by a wrong try
     if (mode === "lettername") { this.setState({ letter: L, edited: Object.assign({}, s.edited, { letter: true }) }, () => { const n = document.querySelector('[aria-label="Name of the part"]'); if (n && !s.figBig) n.focus(); }); return; }
     if (mode === "letternames") { const rows = s.lrows || [], k = Math.max(0, rows.findIndex(r => r && r.letter === L)), free = Array.from({ length: need }, (_, x) => x).find(x => !(rows[x] || {}).letter);
       this.lrowSet(rows.some(r => r && r.letter === L) ? k : free != null ? free : need - 1, { letter: L }); return; }
@@ -3680,16 +3728,20 @@ class Component extends DCLogic {
     const stampSty = sp => sp ? { hasStamp: true, stamp: sp.t, stampBg: sp.bg, stampColor: sp.c } : { hasStamp: false, stamp: "", stampBg: "transparent", stampColor: "" };
     const memoStamp = { t: "✓ memo", c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
     const need = part.count || 1;
+    const deadT = this.pg(part.key).dead || [], chipsOnly = opts.length > 0 && opts.every(o => /^[A-Z]$/.test(String(o).trim()));
     const tiles = isTiles ? opts.map((o, i) => {
       let sel = false, badge = letters[i], sp = null;
       if (mode === "mcq") { sel = s.pick === i; sp = s.edited["o" + i] ? null : stampOf(itemsBy["o" + i]); if (!sp && revealAns === i && s.pick !== i) sp = memoStamp; }
       if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; sp = s.edited.picks ? null : stampOf(itemsBy["o" + i]); if (!sp && Array.isArray(revealAns) && revealAns.indexOf(i) !== -1 && !sel) sp = memoStamp; }
       if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : letters[i] === o ? "·" : letters[i];
         sp = sel && !s.edited.order ? stampOf(itemsBy["pos" + pos]) : null; }
+      const out = chipsOnly && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket, no stamp
       const st = stampSty(sp);
       return Object.assign({ idx: String(i), text: o, badge: badge,
+        letter: chipsOnly ? String(o).trim() : "", dead: this.deadAttr(out, String(o).trim()), off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
         role: mode === "mcq" ? "radio" : mode === "pickn" ? "checkbox" : "button", checked: mode === "order" ? "false" : sel ? "true" : "false",
-        aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : letters[i] + ". " + o) + (sp ? ", " + sp.t : ""),
+        // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
+        aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + o) + (sp ? ", " + sp.t : ""),
         tab: mode === "mcq" ? ((s.pick == null ? i === 0 : sel) ? "0" : "-1") : "0",
         border: sp ? sp.b : sel ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: sel ? "rgba(0,104,248,0.16)" : "rgba(32,35,39,0.78)",
         shadow: sel ? "0 0 0 3px rgba(0,104,248,0.18)" : "none",
@@ -3775,10 +3827,11 @@ class Component extends DCLogic {
       counterColor: pickedN === need ? "#3ddc97" : "var(--text2)", counterKey: "w" + s.pickWarn, counterAnim: s.pickWarn && !s.reduced ? "shake 360ms ease both" : "none",
       hasSeq: mode === "order", seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
       isLetterName: mode === "lettername",
-      letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L;
+      letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L, out = (this.pg(part.key).dead || []).indexOf(L) !== -1;
         return { label: L, checked: on ? "true" : "false", aria: "Letter " + L, tab: (s.letter ? on : j === 0) ? "0" : "-1",
           border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
-          pick: () => { if (!locked) this.setState({ letter: L, edited: Object.assign({}, this.state.edited, { letter: true }) }); } }; }) : [],
+          dead: this.deadAttr(out, L), off: locked || out,
+          pick: () => { if (!locked && !out) this.setState({ letter: L, edited: Object.assign({}, this.state.edited, { letter: true }) }); } }; }) : [],
       lname: s.lname, onLname: e => this.setState({ lname: e.target.value, edited: Object.assign({}, this.state.edited, { lname: true }) }),
       lnLetterHasStamp: !!lnL, lnLetterStamp: lnL ? "letter " + lnL.t : "", lnLetterStampBg: lnL ? lnL.bg : "", lnLetterStampColor: lnL ? lnL.c : "",
       lnNameHasStamp: !!lnN, lnNameStamp: lnN ? "name " + lnN.t : "", lnNameStampBg: lnN ? lnN.bg : "", lnNameStampColor: lnN ? lnN.c : "", lnNameBorder: lnN ? lnN.b : "var(--line2)",
@@ -3788,12 +3841,13 @@ class Component extends DCLogic {
       lnRows: mode === "letternames" ? Array.from({ length: part.count || 1 }, (_, k) => { const r = (s.lrows || [])[k] || {}, n = part.count || 1;
         const lS = s.edited["l" + k] ? null : stampOf(itemsBy["l" + k]), nS = s.edited["n" + k] ? null : stampOf(itemsBy["n" + k]);
         const arrow = k === n - 1 && !locked && !(reply && reply.waiting);
-        return { n: String(k + 1), aria: "Part " + (k + 1) + " of " + n, groupAria: "Letter for part " + (k + 1),
-          tiles: (part.letters || []).map((L, j) => { const on = r.letter === L, oi = (s.lrows || []).findIndex((o, x) => x !== k && o && o.letter === L);
+        return { n: String(k + 1), k: String(k), aria: "Part " + (k + 1) + " of " + n, groupAria: "Letter for part " + (k + 1),
+          tiles: (part.letters || []).map((L, j) => { const on = r.letter === L, oi = (s.lrows || []).findIndex((o, x) => x !== k && o && o.letter === L), out = (this.pg(part.key).dead || []).indexOf(L) !== -1;
             return { label: L, checked: on ? "true" : "false", tab: (r.letter ? on : j === 0) ? "0" : "-1",
               aria: "Letter " + L + (oi >= 0 ? ", now on part " + (oi + 1) : ""), opacity: oi >= 0 ? "0.4" : "1",
               border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
-              pick: () => { if (!locked) this.lrowSet(k, { letter: L }); } }; }),
+              dead: this.deadAttr(out, L), off: locked || out,
+              pick: () => { if (!locked && !out) this.lrowSet(k, { letter: L }); } }; }),
           name: r.name || "", onName: e => this.lrowSet(k, { name: e.target.value }), nameAria: "Name of part " + (k + 1),
           enterHint: k < n - 1 ? "next" : "done", arrowOn: arrow, padR: arrow ? "58px" : "14px", nBorder: nS ? nS.b : "var(--line2)",
           lHas: !!lS, lStamp: lS ? "letter " + lS.t : "", lBg: lS ? lS.bg : "", lColor: lS ? lS.c : "",

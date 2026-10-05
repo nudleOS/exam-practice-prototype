@@ -1989,7 +1989,9 @@ body.nx-play [data-anscard] [data-tile] { width:42px !important; height:42px !im
   background:var(--nx-badge) !important; color:var(--nx-badge-ink) !important; font-size:15px !important; font-weight:800 !important;
   transition:background 160ms, box-shadow 160ms, opacity 160ms; }
 body.nx-play [data-anscard] [data-tile]:not(:disabled):hover { box-shadow:0 0 0 2px var(--nx-card-hover); }
-body.nx-play [data-anscard] [data-tile][aria-checked="true"] { background:var(--nx-accent) !important; color:#ffffff !important; box-shadow:0 0 0 2px var(--nx-sel-line); }
+/* a picked letter is one solid accent disc, to its edge (Murci, 2026-10-05: "the selected letter boxes do not fill the border"; the
+   2 px ring in a second blue read as a border the fill stopped short of) */
+body.nx-play [data-anscard] [data-tile][aria-checked="true"] { background:var(--nx-accent) !important; color:#ffffff !important; box-shadow:none !important; }
 body.nx-play [data-anscard] [data-lnbox] input { border-radius:16px !important; }
 /* the stamps row of a single letter + name: only while it holds a stamp (it was the "Letter on the figure" heading) */
 body.nx-play [data-anscard] > [data-lnstamps]:not(:has(span)) { display:none; }
@@ -2029,3 +2031,25 @@ body.nx-play main:not(#mq-stage) [data-feed] > .fd-back { position:absolute; ins
 body.nx-play main:not(#mq-stage) [data-feed] > .fd-glare { position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; z-index:3; }
 body.nx-play main:not(#mq-stage) [data-feed] > .fd-glare > b { position:absolute; inset:0; opacity:0;
   background:linear-gradient(105deg, transparent 36%, rgba(255,255,255,0.16) 45%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.16) 55%, transparent 64%); }
+
+/* ==== letters-only picks in the MCQ family too (Murci, 2026-10-05: 1.5.1 "into the same style") ====
+   Pick-N, order or one letter whose options are only letters (1.5.1, the June paper's 1.4.2) sit in the answer card, the letters the
+   MCQ's round badges, the picked ones its accent. A chip that carries its result stamp ("R ¹3 1") widens into a pill and keeps the
+   verdict colours the template gives it. */
+body.nx-play main:not(#mq-stage) [data-chips="true"] { box-sizing:border-box; align-self:flex-start; max-width:100%; background:var(--nx-card); border:1px solid var(--nx-card-line);
+  border-radius:23px; padding:12px !important; box-shadow:0 12px 26px -20px rgba(10,40,100,0.45); }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile] { border-radius:21px !important; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile]:not(:has(> span:nth-child(3))) { width:42px; min-width:42px !important; padding:0 !important; border-color:transparent !important;
+  background:var(--nx-badge) !important; color:var(--nx-badge-ink) !important; box-shadow:none; transition:background 160ms, box-shadow 160ms; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile]:not(:has(> span:nth-child(3))):not(:disabled):hover { box-shadow:0 0 0 2px var(--nx-card-hover); }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile][aria-checked="true"]:not(:has(> span:nth-child(3))) { background:var(--nx-accent) !important; color:#ffffff !important; box-shadow:none !important; }
+/* marked right: a solid green pill to its edge, its stamp in white (it was a faint tint inside a green line and a soft ring) */
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile][data-verdict="ok"] { background:#1f9d68 !important; border-color:transparent !important; color:#ffffff !important; box-shadow:none !important; }
+body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile][data-verdict="ok"] > span:nth-child(3) { background:rgba(255,255,255,0.22) !important; color:#ffffff !important; }
+
+/* a letter a wrong try ruled out (deadLetters) BREAKS OFF (Murci, 2026-10-05: "after breaking they should be removed from the selection,
+   they break off"): termBreak draws it shattering where it stood, and the letter leaves the row for the rest of the question (a new
+   try, Practise again or a retake brings every letter back). (:not(#nx-none): the chips' badge rule outranked a plain [data-dead],
+   measured: the ruled-out C and E still showed as badges) */
+body.nx-play main:not(#mq-stage) [data-tile][data-dead="breaking"]:not(#nx-none) { visibility:hidden !important; }   /* its glass copy cracks in its place */
+body.nx-play main:not(#mq-stage) [data-tile][data-dead="true"]:not(#nx-none) { display:none !important; }
