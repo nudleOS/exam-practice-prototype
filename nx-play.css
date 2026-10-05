@@ -1974,3 +1974,46 @@ body.nx-play .mcqp .tblhead { display:grid; grid-template-columns:repeat(var(--c
 body.nx-play .mcqp .cells { display:grid; grid-template-columns:repeat(var(--cols), minmax(0, 1fr)); gap:10px; align-items:center; }
 body.nx-play .mcqp .cells > span { min-width:0; overflow-wrap:anywhere; }
 @media (max-width:600px) { body.nx-play .mcqp .tblhead, body.nx-play .mcqp .cells { gap:6px; } body.nx-play .mcqp .tblhead { font-size:10.5px; letter-spacing:0.03em; } }
+
+/* ==== Version B (Murci, 2026-10-05): the answers in the MCQ family ====
+   A letter + name, each of several pairs, and a typed term sit in the MCQ option's card (its fill, hairline, 23 px corners, soft
+   drop); the letters are the MCQ's round badges, the picked one the MCQ's accent; a pair is numbered with the same badge. The
+   template's inline colours are the fallback outside nx-play. */
+body.nx-play [data-anscard] { box-sizing:border-box; background:var(--nx-card) !important; border:1px solid var(--nx-card-line) !important;
+  border-radius:23px !important; padding:12px !important; box-shadow:0 12px 26px -20px rgba(10,40,100,0.45); }
+/* a single answer's card hugs its box (Murci, 2026-10-03: boxes are sized by the question's type, 272 px for a term or a name, so the
+   width says how long an answer is expected): full width, the card read as "write a lot" around a short box. A pair card fills its
+   column: its six letters set the width. */
+body.nx-play [data-anscard]:not([data-lnrow]) { align-self:flex-start; width:fit-content; max-width:100%; min-width:min(100%, 300px); }
+body.nx-play [data-anscard] [data-tile] { width:42px !important; height:42px !important; border-radius:50% !important; border:0 !important;
+  background:var(--nx-badge) !important; color:var(--nx-badge-ink) !important; font-size:15px !important; font-weight:800 !important;
+  transition:background 160ms, box-shadow 160ms, opacity 160ms; }
+body.nx-play [data-anscard] [data-tile]:not(:disabled):hover { box-shadow:0 0 0 2px var(--nx-card-hover); }
+body.nx-play [data-anscard] [data-tile][aria-checked="true"] { background:var(--nx-accent) !important; color:#ffffff !important; box-shadow:0 0 0 2px var(--nx-sel-line); }
+body.nx-play [data-anscard] [data-lnbox] input { border-radius:16px !important; }
+/* the stamps row of a single letter + name: only while it holds a stamp (it was the "Letter on the figure" heading) */
+body.nx-play [data-anscard] > [data-lnstamps]:not(:has(span)) { display:none; }
+/* a pair card: its badge and letters on one line, 36 px letters (6 letters + the badge fit the 288 px card on a 360 phone and the
+   322 px column beside a figure), the name box 44 px: 164 -> ~120 px a card */
+body.nx-play [data-lnrow] [data-tile] { width:36px !important; height:36px !important; font-size:14px !important; }
+body.nx-play [data-anscard] [data-lnbox] input { height:44px !important; }
+body.nx-play [data-lnbadge] { flex:none; width:28px; height:28px; border-radius:50%; display:grid; place-items:center;
+  background:var(--nx-badge); color:var(--nx-badge-ink); font-size:12.5px; font-weight:800; }
+
+/* ==== Version C on a desktop: the figure BESIDE the question (nxPanelCap sets data-figside from NX_SIDE_MIN) ====
+   The figure's column is the wider one (it holds a diagram, the answers' column holds 42 px badges and a name box); the figure
+   stays in view while a long question scrolls in its own column. */
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] { display:grid !important; grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr);
+  column-gap:24px; align-items:start; }
+/* the frame runs the panel's full content height (Murci, 2026-10-05: "full height inside the bigger card ... not touch the edges";
+   its top is level with the question's first line), the image centred on the white sheet at its own shape (letter spots stay put).
+   nxPanelCap reads the frame's chrome from its padding, so the stretch never reads as room taken. */
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > [data-figure] { grid-column:1; grid-row:1; align-self:stretch !important;
+  display:flex; flex-direction:column; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > [data-figure] > [data-figpad] { flex:1; display:flex; flex-direction:column; justify-content:center; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > :not([data-figure]) { grid-column:2; grid-row:1; min-width:0; }
+/* one row (the panel's inline 14 px gap stays between the columns only); the docked bar's fade strip spans both columns, and only
+   while the panel scrolls (nxPanelCap: data-scrolls), so the frame reaches the panel's bottom padding */
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] { row-gap:0 !important; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"]::after { grid-column:1 / -1; grid-row:2; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"]:not([data-scrolls="true"])::after { display:none; }

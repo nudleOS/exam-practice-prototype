@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=216">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=222">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -817,9 +817,8 @@
           </sc-if>
 
           <sc-if value="{{ isLetterName }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:12px">
-              <div style="display:flex; align-items:center; gap:8px">
-                <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">Letter on the figure</span>
+            <div data-anscard="true" style="display:flex; flex-direction:column; gap:12px">
+              <div data-lnstamps="true" style="display:flex; align-items:center; justify-content:flex-end; gap:8px">
                 <sc-if value="{{ lnLetterHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnLetterStampBg }}; font-size:12px; font-weight:800; color:{{ lnLetterStampColor }}">{{ lnLetterStamp }}</span>
                 </sc-if>
@@ -847,17 +846,17 @@
                 <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ lnsHead }}</span>
               </div>
               <sc-for list="{{ lnRows }}" as="lr" hint-placeholder-count="2">
-                <div data-lnrow="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03)">
-                  <div style="display:flex; align-items:center; gap:8px; min-height:28px">
-                    <span style="flex:1; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ lr.label }}</span>
+                <div data-lnrow="true" data-anscard="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px">
+                  <div data-lnhead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                    <span data-lnbadge="true" aria-hidden="true">{{ lr.n }}</span>
+                    <div role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
+                      <sc-for list="{{ lr.tiles }}" as="lt" hint-placeholder-count="6">
+                        <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
+                      </sc-for>
+                    </div>
                     <sc-if value="{{ lr.lHas }}" hint-placeholder-val="{{ false }}">
                       <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lr.lBg }}; font-size:12px; font-weight:800; color:{{ lr.lColor }}">{{ lr.lStamp }}</span>
                     </sc-if>
-                  </div>
-                  <div role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
-                    <sc-for list="{{ lr.tiles }}" as="lt" hint-placeholder-count="6">
-                      <button data-tile="true" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ locked }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
-                    </sc-for>
                   </div>
                   <span style="display:flex; align-items:center; gap:8px">
                     <span data-lnbox="true" style="position:relative; display:flex; flex:1 1 auto; min-width:0">
@@ -874,7 +873,7 @@
           </sc-if>
 
           <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:8px">
+            <div data-anscard="true" style="display:flex; flex-direction:column; gap:8px">
               <span data-termhead="true" style="display:flex; align-items:center; gap:10px">
                 <span style="flex:1; min-width:0; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">The term</span>
               </span>
@@ -1640,6 +1639,9 @@ function evalExpr(src) {
   const v = expr(); return i === toks.length && isFinite(v) ? v : NaN;
 }
 const fmtNum = v => { const r = Math.round(v * 1e6) / 1e6; return String(r).replace(".", ","); };
+// the narrowest screen that shows a question's figure BESIDE it (version C, Murci 2026-10-05): 1366 x 768 laptops and up; a
+// tablet keeps it above (at 1024 the answers' column would be under 300 px)
+const NX_SIDE_MIN = 1100;
 const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 // Letter + name answers (Murci, 2026-10-05). `pool`: every part the memo accepts, {letter, names}. A row's letter earns its mark
 // when it is one of the memo's letters; its name earns its mark only when it names THAT part (1.4.1(a), "C – urethra OR D – penis":
@@ -2109,11 +2111,27 @@ class Component extends DCLogic {
     // frame's width and is stretched to that height ("don't care if they are stretched"). Measured, not set per screen: the rest of the
     // panel differs by question type. Stable across renders (the rest does not change).
     const fig = q.querySelector("[data-figure]"), fbx = fig && fig.querySelector("[data-figbox]");
-    if (fbx && fbx.clientWidth) { const ar = parseFloat(getComputedStyle(fig).getPropertyValue("--fig-ar")) || 1.6, full = Math.round(((fig.parentElement || fig).clientWidth - 18) / ar);   // the frame hugs the image (2026-10-02): its own width follows --fig-h
+    // the figure BESIDE the question on a desktop (Murci, 2026-10-05, version C: "the figure bigger, careful of spacing"): the
+    // left column is the figure at its own shape, the right the question and its answers (nx-play reads data-figside). Below
+    // NX_SIDE_MIN (tablets, phones) it stays above the question.
+    const side = !phone && innerWidth >= NX_SIDE_MIN && !!fbx; if (q.dataset.figside !== String(side)) q.dataset.figside = String(side);
+    // (beside, the panel's fade strip shows only while the panel scrolls: as a grid row it held the frame 52 px off the panel's bottom
+    // padding, measured at 1100 x 680. Scrolling is judged WITHOUT the strip, so hiding it cannot flip the answer.)
+    if (side) { const af = getComputedStyle(q, "::after"), strip = q.dataset.scrolls === "true" ? (parseFloat(af.height) || 0) + (parseFloat(af.marginTop) || 0) : 0,
+      scrolls = String(q.scrollHeight - strip - q.clientHeight > 1); if (q.dataset.scrolls !== scrolls) q.dataset.scrolls = scrolls; }
+    if (fbx && fbx.clientWidth) { const ar = parseFloat(getComputedStyle(fig).getPropertyValue("--fig-ar")) || 1.6, full = Math.round(((side ? fig : fig.parentElement || fig).clientWidth - 18) / ar);   // the frame hugs the image (2026-10-02): its own width follows --fig-h
       // (the panel's borders are inside its cap but outside its scroll box: measured, leaving them in kept a 2 px scroll)
-      const cur = fbx.offsetHeight, rest = q.scrollHeight - cur, room = Math.floor(cap - (q.offsetHeight - q.clientHeight) - rest),
-        floor = fig.dataset.fighot !== "true" ? 110 : q.querySelector('[data-chips="true"]') ? 120 : 150;   // (letters with chips to tap too: the figure is not the only input)
-      const h = Math.max(floor, Math.min(full, room));
+      // (beside: only the frame and the panel's padding share the figure's column, not the question)
+      const qs = getComputedStyle(q), pad = (parseFloat(qs.paddingTop) || 0) + (parseFloat(qs.paddingBottom) || 0);
+      // (beside, the frame stretches to the panel's height, so its chrome is read from its padding and border, not its height)
+      const fp = fbx.parentElement, fps = fp ? getComputedStyle(fp) : null, chrome = (fig.offsetHeight - fig.clientHeight) + (fps ? (parseFloat(fps.paddingTop) || 0) + (parseFloat(fps.paddingBottom) || 0) : 0);
+      const cur = fbx.offsetHeight, rest = side ? chrome + pad : q.scrollHeight - cur, room = Math.floor(cap - (q.offsetHeight - q.clientHeight) - rest),
+        // a figure to read keeps a readable size (Murci, 2026-10-05: "i do want the figure to be bigger"; at 110 px 1.5's homeostasis
+        // diagram was a smudge on the P30): 200 px on a phone, 160 on a tablet. A phone question that then runs long goes compact
+        // (the page scrolls), as any long question does. (letters with chips to tap too: the figure is not the only input)
+        floor = fig.dataset.fighot !== "true" ? Math.min(full, phone ? 200 : 160) : q.querySelector('[data-chips="true"]') ? 120 : 150;
+      // compact (the page scrolls past the card): no reason to shrink the figure at all
+      const h = compact && phone ? full : Math.max(floor, Math.min(full, room));
       if (Math.abs(h - cur) > 1) fig.style.setProperty("--fig-h", h + "px"); }
     // A phone whose question does not fit beside the robot (the figure at its floor, or a long question): the robot steps into the
     // strip and the page scrolls (Murci, 2026-10-02: "Robot steps into strip"; the robot stepping back smaller still left 59-221 px
@@ -3743,7 +3761,7 @@ class Component extends DCLogic {
       lnRows: mode === "letternames" ? Array.from({ length: part.count || 1 }, (_, k) => { const r = (s.lrows || [])[k] || {}, n = part.count || 1;
         const lS = s.edited["l" + k] ? null : stampOf(itemsBy["l" + k]), nS = s.edited["n" + k] ? null : stampOf(itemsBy["n" + k]);
         const arrow = k === n - 1 && !locked && !(reply && reply.waiting);
-        return { label: "Part " + (k + 1), aria: "Part " + (k + 1) + " of " + n, groupAria: "Letter for part " + (k + 1),
+        return { n: String(k + 1), aria: "Part " + (k + 1) + " of " + n, groupAria: "Letter for part " + (k + 1),
           tiles: (part.letters || []).map((L, j) => { const on = r.letter === L, oi = (s.lrows || []).findIndex((o, x) => x !== k && o && o.letter === L);
             return { label: L, checked: on ? "true" : "false", tab: (r.letter ? on : j === 0) ? "0" : "-1",
               aria: "Letter " + L + (oi >= 0 ? ", now on part " + (oi + 1) : ""), opacity: oi >= 0 ? "0.4" : "1",
