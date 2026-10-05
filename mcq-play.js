@@ -401,7 +401,8 @@
     // The companion on the big card. One 3D view only (phones cap WebGL contexts); none on the small cards.
     const BUDDY = { src: "assets/companion-robot.glb", still: "assets/companion-stand.webp" };
     const BUDDY_3D = !reduced && !(navigator.connection && navigator.connection.saveData);
-    const MOVE = { gold: { clip: "dance", from: 4.5 }, silver: { clip: "clap" }, bronze: { clip: "clap" }, none: { clip: "defeat", end: 5.5, fit: 0.85 } };   // lying down it spans ~2.1 units: framed wider
+    // (Murci, 2026-10-05: "a right answer should make it dance": silver and bronze dance too; they clapped)
+    const MOVE = { gold: { clip: "dance", from: 4.5 }, silver: { clip: "dance", from: 4.5 }, bronze: { clip: "dance", from: 4.5 }, none: { clip: "defeat", end: 5.5, fit: 0.85 } };   // lying down it spans ~2.1 units: framed wider
     // Warm the cache while the learner reads the question, so the robot is there when the card lands.
     // opts.noPal: no robot on this page at all (Exam Practice on a phone, Murci 2026-10-03: "we can just use that circled image
     // one"): nothing is fetched or drawn, its lines are the host's to say (it marks every tap: judge), and the glass sinks away

@@ -20,7 +20,7 @@
     var el = document.createElement("script"); el.src = window.__ingestSrc = "tools/ingest/out/" + m[1] + "/paper.js?v=" + Date.now(); document.head.appendChild(el); })();</script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
-  <script src="mcq-play.js?v=57"></script>
+  <script src="mcq-play.js?v=58"></script>
   <script src="build-play.js?v=8"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=232">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=234">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -2867,6 +2867,52 @@ class Component extends DCLogic {
     let go = false; const start = () => { if (go) return; go = true; pre.forEach(x => x.classList.remove("nx-preroll")); if (q.isConnected) this.rollNow(q); };
     requestAnimationFrame(() => requestAnimationFrame(start)); setTimeout(start, 120);
   }
+  // the letters a try marked RIGHT (deadLetters' twin)
+  okLetters(part, mode, answer, result) {
+    const items = result.items || [], good = k => (items.find(x => x.key === k) || {}).verdict === "correct";
+    const opts = (part.options || []).map(o => String(o).trim()), lettersOnly = opts.length > 0 && opts.every(o => /^[A-Z]$/.test(o));
+    if (mode === "lettername") return answer && answer.letter && good("letter") ? [{ L: answer.letter, row: null }] : [];
+    if (mode === "letternames") return (answer || []).map((r, k) => r && r.letter && good("l" + k) ? { L: r.letter, row: k } : null).filter(Boolean);
+    if (lettersOnly && mode === "pickn") return (answer || []).filter(i => good("o" + i)).map(i => ({ L: opts[i], row: null }));
+    if (lettersOnly && mode === "mcq" && answer != null && good("o" + answer)) return [{ L: opts[answer], row: null }];
+    return [];
+  }
+  ballEl(d) { return document.querySelector(d.row != null ? '[data-lnrow][data-row="' + d.row + '"] [data-ball="true"][data-letter="' + d.L + '"]'
+    : '[data-question] [data-ball="true"][data-letter="' + d.L + '"][aria-checked="true"]'); }
+  // a burst of small lights at a point (the try coin's sparks, a right ball's celebration)
+  sparkle(x, y, n, colors, spread) {
+    const layer = document.createElement("div"); layer.setAttribute("aria-hidden", "true"); layer.className = "nx-sparks"; document.body.appendChild(layer);
+    for (let k = 0; k < n; k++) { const sp = document.createElement("i"), a = Math.PI * 2 * k / n + Math.random() * 0.6, d = spread * (0.6 + Math.random() * 0.6), col = colors[k % colors.length];
+      sp.style.cssText = "left:" + x + "px; top:" + y + "px; background:" + col + "; box-shadow:0 0 6px " + col; layer.appendChild(sp);
+      sp.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 }, { transform: "translate(calc(-50% + " + (Math.cos(a) * d).toFixed(1) + "px), calc(-50% + " + (Math.sin(a) * d + 8).toFixed(1) + "px)) scale(0.3)", opacity: 0 }],
+        { duration: 560 + Math.random() * 240, easing: "cubic-bezier(.2,.6,.4,1)", fill: "both" }); }
+    setTimeout(() => layer.remove(), 1000);
+  }
+  // The blast (a wrong ball bursts, termBreak's CRACK_AT): its rail jolts and the balls beside it are knocked away and settle back,
+  // the nearest hardest (Murci, 2026-10-05: breaking "more immersive")
+  ballRecoil(dead) {
+    dead.forEach(d => { const b = this.ballEl(Object.assign({}, d)) || document.querySelector('[data-question] [data-ball="true"][data-letter="' + d.L + '"][data-dead="breaking"]');
+      const track = b && b.closest('[data-track="true"]'); if (!track) return; const x = b.getBoundingClientRect().left;
+      track.animate([{ translate: "0 0" }, { translate: "0 2px" }, { translate: "0 -1px" }, { translate: "0 0" }], { duration: 260, easing: "ease-out" });
+      [...track.querySelectorAll('[data-ball="true"]')].filter(o => o !== b && o.offsetWidth && o.dataset.dead === "false").forEach(o => {
+        const ox = o.getBoundingClientRect().left, dir = ox < x ? -1 : 1, k = Math.round(Math.abs(ox - x) / (o.offsetWidth + 6)), dist = Math.max(1.5, 8 - (k - 1) * 2.5);
+        o.animate([{ translate: "0 0" }, { translate: (dir * dist).toFixed(1) + "px -2px", offset: 0.25 }, { translate: (-dir * dist * 0.25).toFixed(1) + "px 0", offset: 0.6 }, { translate: "0 0" }],
+          { duration: 460, easing: "ease-out" }); }); });
+  }
+  // The right balls celebrate (Murci, 2026-10-05): each hops in turn, squashing as it lands, its disc spinning once, a burst of
+  // light; on a full mark the balls not picked step back (they dim and sink), so the right ones stand out
+  ballsCheer(ok, full) {
+    const balls = ok.map(d => this.ballEl(d)).filter(Boolean);
+    balls.forEach((b, i) => { const delay = i * 120;
+      b.animate([{ translate: "0 0", scale: "1 1" }, { translate: "0 -16px", scale: "0.94 1.08", offset: 0.35 }, { translate: "0 0", scale: "1.12 0.88", offset: 0.6 },
+        { translate: "0 -4px", scale: "0.98 1.02", offset: 0.78 }, { translate: "0 0", scale: "1 1" }], { duration: 640, delay: delay, easing: "ease-out" });
+      const f = b.querySelector('[data-ballf], :scope > span:nth-child(2)'); if (f) f.animate([{ rotate: "0deg" }, { rotate: "360deg" }], { duration: 640, delay: delay, easing: "cubic-bezier(.3,.7,.3,1)" });
+      setTimeout(() => { const r = b.getBoundingClientRect(); this.sparkle(r.left + r.width / 2, r.top + r.height / 2 - 10, 8, ["#ffe08a", "#7ff0b8", "#ffffff"], 26); }, delay + 220); });
+    if (!full) return;
+    const tracks = new Set(balls.map(b => b.closest('[data-track="true"]')).filter(Boolean));
+    tracks.forEach(t => t.querySelectorAll('[data-ball="true"]').forEach(o => { if (balls.indexOf(o) !== -1 || !o.offsetWidth) return;
+      (this._dims = this._dims || []).push(o.animate([{ opacity: 1, scale: "1" }, { opacity: 0.42, scale: "0.88" }], { duration: 520, delay: 260, easing: "ease-out", fill: "forwards" })); }));
+  }
   // where every ball stands (before a broken one leaves), so rollGaps can roll the others into its place
   ballSpots() { const m = new Map(); document.querySelectorAll('[data-question] [data-ball="true"]').forEach(b => { if (b.offsetWidth) m.set(b, b.getBoundingClientRect().left); }); return m; }
   // The balls left of a gap stay; the ones after it ROLL into place (Murci, 2026-10-05: "the balls need to roll to place for the ones
@@ -2884,11 +2930,7 @@ class Component extends DCLogic {
     if (this.state.reduced) return; const pips = [...document.querySelectorAll('[data-question] [data-tries] .tp')], lost = pips[i], next = pips[i + 1]; if (!lost) return;
     lost.animate([{ transform: "none", filter: "none" }, { transform: "translateX(-2px) rotate(-14deg) scale(1.3)", filter: "brightness(1.8)", offset: 0.2 },
       { transform: "translateX(2px) rotate(10deg) scale(1.1)", offset: 0.45 }, { transform: "rotate(-4deg) scale(0.92)", offset: 0.7 }, { transform: "none", filter: "none" }], { duration: 640, easing: "ease-out" });
-    const r = lost.getBoundingClientRect(), layer = document.createElement("div"); layer.setAttribute("aria-hidden", "true"); layer.className = "nx-sparks"; document.body.appendChild(layer);
-    for (let k = 0; k < 7; k++) { const sp = document.createElement("i"), a = Math.PI * 2 * k / 7 + Math.random() * 0.6, d = 14 + Math.random() * 12; sp.style.left = (r.left + r.width / 2) + "px"; sp.style.top = (r.top + r.height / 2) + "px"; layer.appendChild(sp);
-      sp.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 }, { transform: "translate(calc(-50% + " + (Math.cos(a) * d).toFixed(1) + "px), calc(-50% + " + (Math.sin(a) * d + 6).toFixed(1) + "px)) scale(0.3)", opacity: 0 }],
-        { duration: 520 + Math.random() * 200, delay: 90, easing: "cubic-bezier(.2,.6,.4,1)", fill: "both" }); }
-    setTimeout(() => layer.remove(), 900);
+    const r = lost.getBoundingClientRect(); setTimeout(() => this.sparkle(r.left + r.width / 2, r.top + r.height / 2, 7, ["#ffd9a0"], 20), 90);
     if (next) next.animate([{ transform: "scale(0.6)" }, { transform: "scale(1.35)", offset: 0.55 }, { transform: "scale(1)" }], { duration: 520, delay: 380, easing: "cubic-bezier(.3,1.4,.5,1)", fill: "backwards" });
   }
   rollNow(q) {
@@ -2968,6 +3010,18 @@ class Component extends DCLogic {
     wg.className = "ts-glass" + (snap.ball ? " ts-ball" : ""); wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
     x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt); if (!snap.small) wg.append(x); whole.appendChild(wg); layer.appendChild(whole);
     if (navigator.vibrate) try { navigator.vibrate([70, 50, 90]); } catch (e) { /* not allowed here */ }
+    if (snap.ball) {   // a BALL is hit (Murci, 2026-10-05, "more immersive"): it squashes, rebounds, then cracks; at the burst a shockwave and glass dust
+      wg.animate([{ transform: "none" }, { transform: "scale(1.18, 0.84)", offset: 0.12 }, { transform: "scale(0.92, 1.08)", offset: 0.3 }, { transform: "scale(1.04, 0.97)", offset: 0.48 }, { transform: "none" }],
+        { duration: SHAKE, easing: "ease-out" });
+      setTimeout(() => { const cx0 = r.left + W / 2, cy0 = r.top + H / 2, ring = document.createElement("i"); ring.className = "ts-ring";
+        ring.style.cssText = "left:" + cx0 + "px; top:" + cy0 + "px; width:" + W + "px; height:" + H + "px"; layer.appendChild(ring);
+        ring.animate([{ transform: "translate(-50%,-50%) scale(0.5)", opacity: 0.95 }, { transform: "translate(-50%,-50%) scale(2.6)", opacity: 0 }], { duration: 520, easing: "cubic-bezier(.15,.7,.3,1)", fill: "forwards" });
+        for (let k = 0; k < 12; k++) { const g = document.createElement("i"), a = Math.random() * Math.PI * 2, v = 50 + Math.random() * 70; g.className = "ts-dust";
+          g.style.cssText = "left:" + cx0 + "px; top:" + cy0 + "px"; layer.appendChild(g); const dx = Math.cos(a) * v, dy = Math.sin(a) * v * 0.7 - 30;
+          g.animate([{ transform: "translate(-50%,-50%) rotate(0deg)", opacity: 1 }, { transform: "translate(calc(-50% + " + (dx * 0.6).toFixed(0) + "px), calc(-50% + " + dy.toFixed(0) + "px)) rotate(180deg)", opacity: 1, offset: 0.4 },
+            { transform: "translate(calc(-50% + " + dx.toFixed(0) + "px), calc(-50% + " + (dy + 120 + Math.random() * 60).toFixed(0) + "px)) rotate(420deg)", opacity: 0 }], { duration: 900 + Math.random() * 300, easing: "cubic-bezier(.3,.1,.6,1)", fill: "forwards" }); }
+      }, CRACK_AT);
+    }
     whole.animate([{ transform: "none" }, { transform: "translateX(-9px)", offset: 0.12 }, { transform: "translateX(8px)", offset: 0.3 }, { transform: "translateX(-7px)", offset: 0.48 },
       { transform: "translateX(6px)", offset: 0.64 }, { transform: "translateX(-3px)", offset: 0.82 }, { transform: "none" }], { duration: SHAKE, easing: "ease-in-out" });
     const NSV = "http://www.w3.org/2000/svg", svg = document.createElementNS(NSV, "svg"); svg.setAttribute("class", "ts-cracks"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -3068,7 +3122,10 @@ class Component extends DCLogic {
   pg(key) { return this.state.prog[key] || { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }; }
 
   resetInputs(extra) { if (this.nxLeave(() => this.resetNow(extra))) return; this.resetNow(extra); }
-  resetNow(extra) { this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
+  resetNow(extra) {
+    // a fresh round (a new part, Practise again, a retake): the last round's ball effects go (the "stepped back" dim is held with
+    // fill: forwards, so it came back on a practice round, measured), and the balls roll in again
+    (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
@@ -3300,8 +3357,10 @@ class Component extends DCLogic {
           obs: tryNo === 1 && !draw ? (pr.obs || []).concat([this.obsOf(part, pr, result)]) : pr.obs } }) });
       // Reactions come from the marks: full dances, partial encourages, zero is defeated (the robot slumps down), the memo greets.
       const got = result.marks_awarded || 0;
-      const flinch = !closed && !result.full && got === 0 && !draw;
-      if (!quiet) this.react(draw || revealed ? "greet" : result.full ? "dance" : got > 0 ? "greet" : "defeat", flinch ? NX_FLINCH : undefined);
+      // (Murci, 2026-10-05: "a wrong answer no matter what question it should hurt the robot and a right answer should make it dance":
+      // part marks and the end of the tries hurt too; they were a greeting)
+      const flinch = !closed && !result.full && !draw;
+      if (!quiet) this.react(draw ? "greet" : result.full ? "dance" : "defeat", flinch ? NX_FLINCH : undefined);
       // the robot says the hint once it is back up (never words floating over a robot still falling)
       clearTimeout(this._hr); if (!quiet) { if (flinch && !this.state.reduced) { this.setState({ hintReady: false }); this._hr = setTimeout(() => this.setState({ hintReady: true }), (NX_FLINCH.hold - NX_FLINCH.from) * 1000 + 260); } else this.setState({ hintReady: true }); }
       // a typed term, wrong: the field breaks and falls; a new one drops in for the next try (none after the last)
@@ -3309,6 +3368,9 @@ class Component extends DCLogic {
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
       if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), 60);   // the try coin it cost cracks; the next one lights
+      if (chipSnaps.length && !this.state.reduced) setTimeout(() => this.ballRecoil(dead), 700);   // the burst jolts the balls beside it
+      const okL = !quiet && !draw ? this.okLetters(part, mode, answer, result) : [];
+      if (okL.length && !this.state.reduced) setTimeout(() => this.ballsCheer(okL, !!result.full), 80);   // the right balls celebrate
       // ...and the letter leaves the row as it breaks apart (termBreak's CRACK_AT, 700 ms), not before: until then its place is held
       clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => { const before = this.ballSpots(); this.setState({ deadFresh: [] }, () => this.rollGaps(before)); },
         this.state.reduced || !chipSnaps.length ? 0 : 720);
