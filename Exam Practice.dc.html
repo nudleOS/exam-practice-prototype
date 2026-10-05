@@ -2686,8 +2686,11 @@ class Component extends DCLogic {
     clearTimeout(this._rc); clearTimeout(this._rc2); const f = Object.assign({ playLoop: "once" }, part ? { playFrom: String(part.from), playHold: String(part.hold) } : { playFrom: "", playHold: "" });
     if (this.state.reduced) { this.setState(Object.assign({ playClip: clip }, f)); return; }
     this.setState(Object.assign({ playClip: "" }, f)); this._rc = setTimeout(() => this.setState({ playClip: clip }), 60);
-    // a flinch stands back up (the greeting) once it has played
-    if (part && !stand) this._rc2 = setTimeout(() => { if (this.state.playClip === clip) this.react("greet", NX_STAND); }, 60 + (part.hold - part.from) * 1000 + 150);
+    // a flinch stands back up (the greeting) once it has played. ONLY a flinch (any clip but the greeting): the stand is react("greet",
+    // NX_STAND), a greeting WITH a stretch, and it rescheduled itself, re-posing the standing robot every ~260 ms for as long as the
+    // question stayed open (measured 2026-10-05 on 1.5.1 after a miss: 17.2, 17.4, 17.7 ... 19.9 s; Murci: "some sort of glitch with
+    // the robot"). The platform's Companion.tsx carries the same fix.
+    if (part && !stand && clip !== "greet") this._rc2 = setTimeout(() => { if (this.state.playClip === clip) this.react("greet", NX_STAND); }, 60 + (part.hold - part.from) * 1000 + 150);
   }
 
   scrollReveal() { const r = document.querySelector("[data-reveal]"); if (r) r.scrollIntoView({ block: "start", behavior: this.state.reduced ? "auto" : "smooth" }); }
