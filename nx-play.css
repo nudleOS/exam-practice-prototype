@@ -1964,3 +1964,13 @@ body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest
   body.nx-play.nx-dock main:not(#mq-stage) [data-question]::after { content:""; position:sticky; bottom:-32px; z-index:2; flex:none; height:52px; margin-top:-14px; pointer-events:none;
     background:linear-gradient(180deg, transparent, var(--nx-panel, #051c3b) 20px); }
 }
+
+/* An MCQ whose options are a TABLE (LS P1 Nov 2024 1.1.6, Murci 2026-10-05): one full-width card per row, a cell per column, the
+   column heads over the cells (mcq-play.js alignHead() measures where). Full width at every fit level and on a phone: three cells
+   do not fit the phone's 280 px card. */
+html body.nx-play .mcqp .tiles.tbl, html body.nx-play .mcqp:is(.fit-1, .fit-2, .fit-3, .fit-4, .fit-5) .tiles.tbl { grid-template-columns:minmax(0, 1fr) !important; max-width:none !important; }
+body.nx-play .mcqp .tblhead { display:grid; grid-template-columns:repeat(var(--cols), minmax(0, 1fr)); gap:10px; margin:2px 0 8px; box-sizing:border-box;
+  font-size:11.5px; font-weight:700; letter-spacing:0.06em; line-height:1.25; text-transform:uppercase; color:var(--nx-text2); }
+body.nx-play .mcqp .cells { display:grid; grid-template-columns:repeat(var(--cols), minmax(0, 1fr)); gap:10px; align-items:center; }
+body.nx-play .mcqp .cells > span { min-width:0; overflow-wrap:anywhere; }
+@media (max-width:600px) { body.nx-play .mcqp .tblhead, body.nx-play .mcqp .cells { gap:6px; } body.nx-play .mcqp .tblhead { font-size:10.5px; letter-spacing:0.03em; } }

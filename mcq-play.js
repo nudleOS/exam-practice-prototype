@@ -101,7 +101,12 @@
       // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
       const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
       let best = -1, bestBy = Infinity; for (let k = 0; k <= top_; k++) { set(k); size(); const by = overBy(); if (by <= 0) { best = k; break; } if (by < bestBy) { bestBy = by; best = k; } }
-      set(best); size(); growTiles(); centreStage(); panelScroll(); }
+      set(best); size(); growTiles(); alignHead(); centreStage(); panelScroll(); }
+    // a table's column heads sit over the cards' cells: measured off the first card (its letter and padding change with the fit
+    // level and the screen), in layout terms (offsets, not client rects: the cards deal in and lift with transforms)
+    function alignHead() { const hd = PAGE.querySelector("#mq-tblhead"), c = PAGE.querySelector("#mq-tiles .tile .cells"), g = PAGE.querySelector("#mq-tiles"); if (!hd || !c || !g) return;
+      const left = el => { let x = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) x += e.offsetLeft; return x; };
+      const l = left(c) - left(g); hd.style.marginLeft = l + "px"; hd.style.width = c.offsetWidth + "px"; }
     // A card's faces are absolute (the flip), so its height is only its min-height: a 3-line option spilled 3 px over both edges
     // (1.1.9 at 360 px, fit-4: text 51 px in a 46 px card; found 2026-10-03). A card whose text needs more grows to fit it.
     function growTiles() { RQA(".tile").forEach(t => { t.style.removeProperty("min-height"); const f = t.querySelector(".face"), x = t.querySelector(".txt"); if (!f || !x) return;
@@ -225,12 +230,20 @@
         const zoom = () => { qim.classList.toggle("big"); qim.setAttribute("aria-label", "Figure for " + it.n + (qim.classList.contains("big") ? ". Tap to make smaller" : ". Tap to enlarge")); };
         qim.onclick = zoom; qim.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); zoom(); } }; }
       const g = document.createElement("div"); g.className = "tiles"; g.id = "mq-tiles"; g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", "Options");
+      // options printed as a TABLE (it.table {head, rows}; LS P1 Nov 2024 1.1.6, Murci 2026-10-05: "as printed"): one card per row, a
+      // cell per column, the column heads above the cards; a screen reader hears each card as "C: muscle in X relaxed, ...". The
+      // flattened option text (it.opts) stays the answer's words everywhere else (the medal card, the memo).
+      const tbl = it.table && it.table.rows && it.table.rows.length === it.opts.length ? it.table : null;
+      if (tbl) { g.classList.add("tbl"); g.style.setProperty("--cols", tbl.head.length);
+        st.insertAdjacentHTML("beforeend", `<div class="tblhead" id="mq-tblhead" aria-hidden="true" style="--cols:${tbl.head.length}">${tbl.head.map(h => `<span>${esc(h)}</span>`).join("")}</div>`); }
       it.opts.forEach((o, i) => {
         const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
         t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--gd", (1.2 + i * 0.85).toFixed(2) + "s"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
-        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${o}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
+        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${tbl ? `<span class="cells">${tbl.rows[i].map(c => `<span>${esc(c)}</span>`).join("")}</span>` : o}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
           <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="buddy" aria-hidden="true"></div><div class="copy"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div></div>`;
         const face = t.querySelector(".face");
+        // (a head's single letters are the figure's labels and stay capitals: "muscle in X", not "muscle in x")
+        if (tbl) face.setAttribute("aria-label", L[i] + ": " + tbl.head.map((h, j) => h.toLowerCase().replace(/\b[a-z]\b/g, c => c.toUpperCase()) + " " + String(tbl.rows[i][j]).toLowerCase()).join(", "));
         face.addEventListener("pointermove", e => { const r = face.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
           face.style.setProperty("--mx", x + "px"); face.style.setProperty("--my", y + "px");
           if (e.pointerType === "touch" || reduced || S.done || t.classList.contains("sel")) return;
