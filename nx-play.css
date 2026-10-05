@@ -2070,3 +2070,40 @@ body.nx-play main:not(#mq-stage) [data-feed~="gold"] > .fd-back::after, body.nx-
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="gold"]:not([data-feed~="term"]), html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="gold"] > .fd-back { background:linear-gradient(180deg, #fff8e3, #fdeec6) !important; }
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="silver"]:not([data-feed~="term"]), html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="silver"] > .fd-back { background:linear-gradient(180deg, #f6f8fb, #e6ebf1) !important; }
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="ok"][data-feed~="bronze"]:not([data-feed~="term"]), html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-feed~="bronze"] > .fd-back { background:linear-gradient(180deg, #fcefe5, #f5dac7) !important; }
+
+/* ==== the letter choices are pool balls (Murci, 2026-10-05: rollBalls rolls them in) ====
+   A sphere lit from the top left (its shading and gloss stay still), the letter on a white disc that turns as it rolls. Picked: the
+   accent ball, a touch lower and smaller, as if pressed into the felt; right: a green ball. A ball's result stamp is a small badge on
+   its shoulder (it no longer widens the ball into a pill). Ruled-out balls still crack and break off (data-dead rules above).
+   (:not(#nx-none): above the earlier badge and pill rules for the same chips) */
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) { position:relative; box-sizing:border-box; width:42px !important; min-width:42px !important; height:42px !important;
+  min-height:42px !important; padding:0 !important; border:0 !important; border-radius:50% !important; display:grid !important; place-items:center; overflow:visible;
+  background:radial-gradient(circle at 33% 27%, #ffffff 0 6%, #8fb8ff 15%, #2f66cc 46%, #163a82 76%, #0b2252 100%) !important;
+  box-shadow:inset -4px -6px 10px rgba(0,0,0,0.38), 0 6px 9px -4px rgba(0,0,0,0.6) !important; color:#13254a !important;
+  transition:transform 160ms ease, box-shadow 160ms ease, filter 160ms ease; }
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none)::after { content:""; position:absolute; left:18%; top:10%; width:36%; height:22%; border-radius:50%;
+  background:rgba(255,255,255,0.55); filter:blur(1.5px); pointer-events:none; }
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) > :is([data-ballf], span:nth-child(2)) { display:grid !important; place-items:center; width:52%; height:52%;
+  border-radius:50%; background:radial-gradient(circle at 40% 35%, #ffffff, #e2e9f6); color:#13254a !important; font-size:13px !important; font-weight:800 !important; line-height:1; flex:none !important; }
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none):not(:disabled):hover { filter:brightness(1.12); }
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"][aria-checked="true"]:not(#nx-none) {
+  background:radial-gradient(circle at 33% 27%, #ffffff 0 6%, #7fe0ff 15%, #0188fd 46%, #0457b8 78%, #033a7d 100%) !important;
+  box-shadow:inset -4px -6px 10px rgba(0,0,0,0.3), 0 0 0 3px rgba(1,136,253,0.35), 0 3px 6px -3px rgba(0,0,0,0.6) !important; transform:translateY(1px) scale(0.96); }
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"][data-verdict="ok"]:not(#nx-none) {
+  background:radial-gradient(circle at 33% 27%, #ffffff 0 6%, #a6f5cf 15%, #22b36f 46%, #137a4a 78%, #0b4f30 100%) !important;
+  box-shadow:inset -4px -6px 10px rgba(0,0,0,0.3), 0 0 0 3px rgba(61,220,151,0.3), 0 3px 6px -3px rgba(0,0,0,0.6) !important; }
+/* its stamp ("\2713 1"): a small badge on the ball's shoulder */
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) > span:nth-child(3) { position:absolute; right:-8px; top:-8px; height:18px !important; padding:0 5px !important;
+  border-radius:9px !important; font-size:10px !important; line-height:18px; z-index:2; box-shadow:0 2px 4px rgba(0,0,0,0.4); }
+/* while they roll in, the card clips them at its edge (rollBalls) */
+body.nx-play main:not(#mq-stage) .nx-rolling { overflow:hidden !important; }
+body.nx-play main:not(#mq-stage) .nx-preroll [data-ball="true"] { visibility:hidden !important; }   /* until rollBalls has measured them */
+/* a phone: 38 px balls (six and a pair's number fit the 288 px card) */
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) { width:38px !important; min-width:38px !important; height:38px !important; min-height:38px !important; }
+  body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) > :is([data-ballf], span:nth-child(2)) { font-size:12px !important; }
+}
+/* a pair's balls are 36 px (six plus the number on one line beside a figure, 322 px) */
+body.nx-play main:not(#mq-stage) [data-lnrow] [data-tile][data-ball="true"]:not(#nx-none) { width:36px !important; min-width:36px !important; height:36px !important; min-height:36px !important; }
+/* a ball that broke off stays gone: the ball rule above sets display with the same weight and comes later (one more attribute wins) */
+body.nx-play main:not(#mq-stage) [data-tile][data-dead="true"][data-ball]:not(#nx-none) { display:none !important; }

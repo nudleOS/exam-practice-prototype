@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=228">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=230">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -805,7 +805,7 @@
                 <span style="padding:9px 12px; border-radius:12px; border:1px dashed var(--line2); font-size:13px; font-weight:700; color:var(--text2)">{{ seqText }}</span>
               </sc-if>
               <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
-                <button data-tile="true" data-idx="{{ tl.idx }}" data-letter="{{ tl.letter }}" data-dead="{{ tl.dead }}" data-verdict="{{ tl.verdict }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ tl.off }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
+                <button data-tile="true" data-idx="{{ tl.idx }}" data-letter="{{ tl.letter }}" data-ball="{{ tl.ball }}" data-dead="{{ tl.dead }}" data-verdict="{{ tl.verdict }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ tl.off }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
                   <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; background:{{ tl.badgeBg }}; font-size:13px; font-weight:800; color:{{ tl.badgeColor }}">{{ tl.badge }}</span>
                   <span style="flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.4; text-wrap:pretty">{{ tl.text }}</span>
                   <sc-if value="{{ tl.hasStamp }}" hint-placeholder-val="{{ false }}">
@@ -825,7 +825,7 @@
               </div>
               <div role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                 <sc-for list="{{ letterTiles }}" as="lt" hint-placeholder-count="6">
-                  <button data-tile="true" data-letter="{{ lt.label }}" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
+                  <button data-tile="true" data-letter="{{ lt.label }}" data-ball="true" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:15px; font-weight:700; cursor:pointer"><span data-ballf="true">{{ lt.label }}</span></button>
                 </sc-for>
               </div>
               <span style="display:flex; align-items:center; gap:8px">
@@ -851,7 +851,7 @@
                     <span data-lnbadge="true" aria-hidden="true">{{ lr.n }}</span>
                     <div role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                       <sc-for list="{{ lr.tiles }}" as="lt" hint-placeholder-count="6">
-                        <button data-tile="true" data-letter="{{ lt.label }}" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer">{{ lt.label }}</button>
+                        <button data-tile="true" data-letter="{{ lt.label }}" data-ball="true" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer"><span data-ballf="true">{{ lt.label }}</span></button>
                       </sc-for>
                     </div>
                     <sc-if value="{{ lr.lHas }}" hint-placeholder-val="{{ false }}">
@@ -2188,6 +2188,7 @@ class Component extends DCLogic {
     const lnb = q.querySelector("[data-lnbox]");
     if (lnb && s.letter && s.letter !== this._lnPick && !typing) requestAnimationFrame(() => reveal(lnb));
     this._lnPick = s.letter || null;
+    if (this._rolledFor !== key) { this._rolledFor = key; this.rollBalls(q); }   // the letter balls roll in (rollBalls)
     if (q._feed !== fk) { q._feed = fk; const f = q.querySelector("[data-feed], [data-reveal]");
       // (not a term: its result card is only the XP and marks chips; the sealed field is its medal card and has its own seal and shine)
       const won = q.querySelector('[data-feed~="ok"]:not([data-feed~="term"])');
@@ -2848,6 +2849,39 @@ class Component extends DCLogic {
   }
   // a letter chip's data-dead: "false", "breaking" (ruled out this very try: its place held while its glass cracks), "true" (gone)
   deadAttr(out, L) { return !out ? "false" : (this.state.deadFresh || []).indexOf(L) !== -1 ? "breaking" : "true"; }
+  // The letter balls roll in like pool balls (Murci, 2026-10-05, the approved sketch): from beyond the card's right edge, A first
+  // and furthest, each slowing by friction (constant deceleration: the distance left falls as (1 - t)^2) and stopping just behind
+  // the one ahead, which it nudges (a click). The letter's disc turns by the distance rolled (a roll, not a slide) and lands upright.
+  // Each row of a pair rolls a beat after the one above. The card clips them while they roll (nx-rolling). Reduced motion: none.
+  rollBalls(q) {
+    if (!q || this.state.reduced) return;
+    // measured AFTER layout (2 frames on): at the render that opens a question the letters were still a column, so A measured a 50 px
+    // roll (it took 0.25 s) instead of 413 px; until then the balls are hidden (nx-preroll), so none shows in place first
+    const pre = [...q.querySelectorAll('[data-chips="true"], [data-anscard]')].filter(x => x.querySelector('[data-ball="true"]'));
+    pre.forEach(x => x.classList.add("nx-preroll"));
+    // (and a timer too: a throttled tab can starve animation frames, and the balls must never stay hidden)
+    let go = false; const start = () => { if (go) return; go = true; pre.forEach(x => x.classList.remove("nx-preroll")); if (q.isConnected) this.rollNow(q); };
+    requestAnimationFrame(() => requestAnimationFrame(start)); setTimeout(start, 120);
+  }
+  rollNow(q) {
+    const DECEL = 1600, STAGGER = 240;   // px/s^2 (a 300 px roll takes ~0.61 s), ms between balls (measured: never catches the one ahead)
+    const groups = [...q.querySelectorAll('[data-chips="true"], [data-anscard] [role="radiogroup"]')].filter(g => g.querySelector('[data-ball="true"]'));
+    groups.forEach((g, gi) => {
+      const card = g.closest('[data-anscard]') || g, cr = card.getBoundingClientRect(), balls = [...g.querySelectorAll('[data-ball="true"]')].filter(b => b.offsetWidth);
+      if (!balls.length) return;
+      card.classList.add("nx-rolling"); let end = 0;
+      balls.forEach((b, i) => {
+        const r = b.getBoundingClientRect(), D = Math.max(0, cr.right - r.left + 8), T = Math.sqrt(2 * D / DECEL) * 1000, delay = gi * 160 + i * STAGGER, rad = r.width / 2 || 18;
+        const kf = [], ks = []; for (let k = 0; k <= 16; k++) { const t = k / 16, rem = D * (1 - t) * (1 - t);
+          kf.push({ offset: t, transform: "translateX(" + rem.toFixed(1) + "px)" }); ks.push({ offset: t, transform: "rotate(" + (rem / rad * 57.2958).toFixed(1) + "deg)" }); }
+        b.animate(kf, { duration: T, delay: delay, easing: "linear", fill: "backwards" });
+        const f = b.querySelector('[data-ballf], :scope > span:nth-child(2)'); if (f) f.animate(ks, { duration: T, delay: delay, easing: "linear", fill: "backwards" });
+        if (i > 0) { const ahead = balls[i - 1]; setTimeout(() => ahead.animate([{ translate: "0 0" }, { translate: "-3px 0" }, { translate: "0 0" }], { duration: 180, easing: "ease-out" }), delay + T - 20); }
+        end = Math.max(end, delay + T);
+      });
+      setTimeout(() => card.classList.remove("nx-rolling"), end + 60);
+    });
+  }
   // the letters a try marked wrong, with the pair row they were on: one letter + name, each pair, a letters-only pick or MCQ
   deadLetters(part, mode, answer, result) {
     const items = result.items || [], bad = k => (items.find(x => x.key === k) || {}).verdict === "incorrect";
@@ -3741,7 +3775,7 @@ class Component extends DCLogic {
       const out = chipsOnly && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket, no stamp
       const st = stampSty(sp);
       return Object.assign({ idx: String(i), text: o, badge: badge,
-        letter: chipsOnly ? String(o).trim() : "", dead: this.deadAttr(out, String(o).trim()), off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
+        letter: chipsOnly ? String(o).trim() : "", ball: chipsOnly ? "true" : "false", dead: this.deadAttr(out, String(o).trim()), off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
         role: mode === "mcq" ? "radio" : mode === "pickn" ? "checkbox" : "button", checked: mode === "order" ? "false" : sel ? "true" : "false",
         // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
         aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + o) + (sp ? ", " + sp.t : ""),
