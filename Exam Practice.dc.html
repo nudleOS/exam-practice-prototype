@@ -20,7 +20,7 @@
     var el = document.createElement("script"); el.src = window.__ingestSrc = "tools/ingest/out/" + m[1] + "/paper.js?v=" + Date.now(); document.head.appendChild(el); })();</script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
-  <script src="mcq-play.js?v=56"></script>
+  <script src="mcq-play.js?v=57"></script>
   <script src="build-play.js?v=8"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=230">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=232">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -700,7 +700,7 @@
             <sc-if value="{{ nxReplay }}" hint-placeholder-val="{{ false }}"><span data-replay="true">{{ replayLabel }}</span></sc-if>
             <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
             <sc-if value="{{ nxTriesOn }}" hint-placeholder-val="{{ false }}"><span data-tries="true" role="img" aria-label="{{ nxTriesAria }}"><sc-for list="{{ nxTries }}" as="td" hint-placeholder-count="3"><i class="{{ td.cls }}"></i></sc-for></span></sc-if>
-            <span data-partmarks="true" data-hasn="{{ partMarksHasN }}" data-earned="{{ partMarksEarned }}" aria-label="{{ partMarks }}" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarksN }}<span data-mw="true">{{ partMarksW }}</span></span>
+            <span data-partmarks="true" data-hasn="{{ partMarksHasN }}" data-earned="{{ partMarksEarned }}" aria-label="{{ partMarks }}" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarksN }}<span data-mw="true">{{ partMarksW }}</span><sc-if value="{{ firstTryOn }}" hint-placeholder-val="{{ false }}"><span data-firsttry="true">first try only</span></sc-if></span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
               <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:12px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
             </sc-if>
@@ -804,6 +804,7 @@
               <sc-if value="{{ hasSeq }}" hint-placeholder-val="{{ false }}">
                 <span style="padding:9px 12px; border-radius:12px; border:1px dashed var(--line2); font-size:13px; font-weight:700; color:var(--text2)">{{ seqText }}</span>
               </sc-if>
+              <div data-track="{{ tilesChips }}" style="display:contents">
               <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
                 <button data-tile="true" data-idx="{{ tl.idx }}" data-letter="{{ tl.letter }}" data-ball="{{ tl.ball }}" data-dead="{{ tl.dead }}" data-verdict="{{ tl.verdict }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ tl.off }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
                   <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; background:{{ tl.badgeBg }}; font-size:13px; font-weight:800; color:{{ tl.badgeColor }}">{{ tl.badge }}</span>
@@ -813,6 +814,7 @@
                   </sc-if>
                 </button>
               </sc-for>
+              </div>
             </div>
           </sc-if>
 
@@ -823,7 +825,7 @@
                   <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnLetterStampBg }}; font-size:12px; font-weight:800; color:{{ lnLetterStampColor }}">{{ lnLetterStamp }}</span>
                 </sc-if>
               </div>
-              <div role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
+              <div data-track="true" role="radiogroup" aria-label="Letter" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                 <sc-for list="{{ letterTiles }}" as="lt" hint-placeholder-count="6">
                   <button data-tile="true" data-letter="{{ lt.label }}" data-ball="true" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; font-size:15px; font-weight:700; cursor:pointer"><span data-ballf="true">{{ lt.label }}</span></button>
                 </sc-for>
@@ -848,8 +850,8 @@
               <sc-for list="{{ lnRows }}" as="lr" hint-placeholder-count="2">
                 <div data-lnrow="true" data-row="{{ lr.k }}" data-anscard="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px">
                   <div data-lnhead="true" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
-                    <span data-lnbadge="true" aria-hidden="true">{{ lr.n }}</span>
-                    <div role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
+                    <span data-lnbadge="true" aria-hidden="true">Part {{ lr.n }}</span>
+                    <div data-track="true" role="radiogroup" aria-label="{{ lr.groupAria }}" onKeyDown="{{ tilesKeys }}" style="display:flex; flex-wrap:wrap; gap:6px">
                       <sc-for list="{{ lr.tiles }}" as="lt" hint-placeholder-count="6">
                         <button data-tile="true" data-letter="{{ lt.label }}" data-ball="true" data-dead="{{ lt.dead }}" role="radio" aria-checked="{{ lt.checked }}" aria-label="{{ lt.aria }}" tabIndex="{{ lt.tab }}" onClick="{{ lt.pick }}" disabled="{{ lt.off }}" style="width:44px; height:42px; border-radius:12px; border:1.5px solid {{ lt.border }}; background:{{ lt.bg }}; color:{{ lt.color }}; opacity:{{ lt.opacity }}; font-size:15px; font-weight:700; cursor:pointer"><span data-ballf="true">{{ lt.label }}</span></button>
                       </sc-for>
@@ -2763,7 +2765,9 @@ class Component extends DCLogic {
     // retrying, no "Hint:" line under a miss; the letters-and-shape hint gave the answer away and is gone)
     // a miss keeps its result card under the answer while the learner tries again (the bar is gone for a miss)
     const miss = (outcome === "partial" || outcome === "zero") && !!reply && !closed;
-    const result = (showBar || miss) && !!bar && outcome !== "idle";
+    // (Murci, 2026-10-05: "i do not like that box Not yet 0 of 2, we have our robot with hints": a miss with tries left shows no box;
+    // the try coins in the header crack and move on instead, pipLose. A medal, and the end of the tries, still show it.)
+    const result = !miss && showBar && !!bar && outcome !== "idle";
     const full = outcome === "full", k = Math.min(2, Math.max(0, ((reply && reply.try) || 1) - 1)), tier = full ? ["Gold", "Silver", "Bronze"][k] : "";
     const part = this.part(), term = !!part && part.response_mode === "term";
     const spelled = res && res.items && res.items[0] && res.items[0].spelling;
@@ -2771,7 +2775,7 @@ class Component extends DCLogic {
     // a practice round (Try it again) pays nothing: one chip says so (measured: it showed "+1 mark", the marks the answer is worth, while
     // none were banked)
     const chips = full ? (reply.replay ? [{ t: reply.retake ? "Retake · marks back, no XP" : "Practice · no marks or XP" }] : [{ t: "+" + (reply.xp_awarded || 0) + " XP" }].concat(reply.multiplier > 1 ? [{ t: "×" + reply.multiplier + " streak" }] : [],
-      [{ t: reply.try > 1 ? "Marks are for the first try" : got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }])) : [];
+      reply.try > 1 ? [] : [{ t: got > 0 ? "+" + got + (got === 1 ? " mark" : " marks") : "0 marks" }])) : [];
     const hintBody = !!(bar && reply && reply.clue && bar.body === "Hint: " + reply.clue);
     const body = full ? (spelled ? "Accepted: it is spelled “" + spelled + "”" + (s.term && String(s.term).trim().toLowerCase() !== spelled.toLowerCase() ? " (you typed “" + String(s.term).trim() + "”)." : ".") : "") : bar && bar.body && !hintBody ? bar.body : "";
     return { nxFeedOn: result,
@@ -2863,11 +2867,35 @@ class Component extends DCLogic {
     let go = false; const start = () => { if (go) return; go = true; pre.forEach(x => x.classList.remove("nx-preroll")); if (q.isConnected) this.rollNow(q); };
     requestAnimationFrame(() => requestAnimationFrame(start)); setTimeout(start, 120);
   }
+  // where every ball stands (before a broken one leaves), so rollGaps can roll the others into its place
+  ballSpots() { const m = new Map(); document.querySelectorAll('[data-question] [data-ball="true"]').forEach(b => { if (b.offsetWidth) m.set(b, b.getBoundingClientRect().left); }); return m; }
+  // The balls left of a gap stay; the ones after it ROLL into place (Murci, 2026-10-05: "the balls need to roll to place for the ones
+  // dropped naturally"): each from where it stood, slowing by friction, its disc turning by the distance, the nearest first.
+  rollGaps(before) {
+    if (this.state.reduced || !before || !before.size) return; const DECEL = 1600; let n = 0;
+    before.forEach((x0, b) => { if (!b.isConnected || !b.offsetWidth) return; const dx = x0 - b.getBoundingClientRect().left; if (dx < 0.5) return;
+      const T = Math.max(220, Math.sqrt(2 * dx / DECEL) * 1000), rad = b.offsetWidth / 2 || 18, delay = 40 * n++, kf = [], ks = [];
+      for (let k = 0; k <= 12; k++) { const t = k / 12, rem = dx * (1 - t) * (1 - t); kf.push({ offset: t, transform: "translateX(" + rem.toFixed(1) + "px)" }); ks.push({ offset: t, transform: "rotate(" + (rem / rad * 57.2958).toFixed(1) + "deg)" }); }
+      b.animate(kf, { duration: T, delay: delay, easing: "linear", fill: "backwards" });
+      const f = b.querySelector('[data-ballf], :scope > span:nth-child(2)'); if (f) f.animate(ks, { duration: T, delay: delay, easing: "linear", fill: "backwards" }); });
+  }
+  // A try coin it cost cracks (a shake, a flash, sparks) and the next coin lights up (a pop): the tries left, told where they are
+  pipLose(i) {
+    if (this.state.reduced) return; const pips = [...document.querySelectorAll('[data-question] [data-tries] .tp')], lost = pips[i], next = pips[i + 1]; if (!lost) return;
+    lost.animate([{ transform: "none", filter: "none" }, { transform: "translateX(-2px) rotate(-14deg) scale(1.3)", filter: "brightness(1.8)", offset: 0.2 },
+      { transform: "translateX(2px) rotate(10deg) scale(1.1)", offset: 0.45 }, { transform: "rotate(-4deg) scale(0.92)", offset: 0.7 }, { transform: "none", filter: "none" }], { duration: 640, easing: "ease-out" });
+    const r = lost.getBoundingClientRect(), layer = document.createElement("div"); layer.setAttribute("aria-hidden", "true"); layer.className = "nx-sparks"; document.body.appendChild(layer);
+    for (let k = 0; k < 7; k++) { const sp = document.createElement("i"), a = Math.PI * 2 * k / 7 + Math.random() * 0.6, d = 14 + Math.random() * 12; sp.style.left = (r.left + r.width / 2) + "px"; sp.style.top = (r.top + r.height / 2) + "px"; layer.appendChild(sp);
+      sp.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 }, { transform: "translate(calc(-50% + " + (Math.cos(a) * d).toFixed(1) + "px), calc(-50% + " + (Math.sin(a) * d + 6).toFixed(1) + "px)) scale(0.3)", opacity: 0 }],
+        { duration: 520 + Math.random() * 200, delay: 90, easing: "cubic-bezier(.2,.6,.4,1)", fill: "both" }); }
+    setTimeout(() => layer.remove(), 900);
+    if (next) next.animate([{ transform: "scale(0.6)" }, { transform: "scale(1.35)", offset: 0.55 }, { transform: "scale(1)" }], { duration: 520, delay: 380, easing: "cubic-bezier(.3,1.4,.5,1)", fill: "backwards" });
+  }
   rollNow(q) {
     const DECEL = 1600, STAGGER = 240;   // px/s^2 (a 300 px roll takes ~0.61 s), ms between balls (measured: never catches the one ahead)
     const groups = [...q.querySelectorAll('[data-chips="true"], [data-anscard] [role="radiogroup"]')].filter(g => g.querySelector('[data-ball="true"]'));
     groups.forEach((g, gi) => {
-      const card = g.closest('[data-anscard]') || g, cr = card.getBoundingClientRect(), balls = [...g.querySelectorAll('[data-ball="true"]')].filter(b => b.offsetWidth);
+      const card = g.matches('[data-track="true"]') ? g : g.querySelector('[data-track="true"]') || g.closest('[data-anscard]') || g, cr = card.getBoundingClientRect(), balls = [...g.querySelectorAll('[data-ball="true"]')].filter(b => b.offsetWidth);
       if (!balls.length) return;
       card.classList.add("nx-rolling"); let end = 0;
       balls.forEach((b, i) => {
@@ -2896,7 +2924,7 @@ class Component extends DCLogic {
   chipSnaps(dead) {
     return dead.map(d => { const b = document.querySelector(d.row != null ? '[data-lnrow][data-row="' + d.row + '"] [data-tile][data-letter="' + d.L + '"]'
         : '[data-question] [data-tile][data-letter="' + d.L + '"][aria-checked="true"]'); if (!b) return null;
-      const cs = getComputedStyle(b); return { r: b.getBoundingClientRect(), text: d.L, font: cs.font, pad: "0", radius: cs.borderRadius, center: true, small: true }; }).filter(Boolean);
+      const cs = getComputedStyle(b); return { r: b.getBoundingClientRect(), text: d.L, font: cs.font, pad: "0", radius: cs.borderRadius, center: true, small: true, ball: b.dataset.ball === "true" }; }).filter(Boolean);
   }
   termSnap() { const f = document.querySelector("[data-question] [data-termrow] input"); if (!f) return null;
     const cs = getComputedStyle(f); return { r: f.getBoundingClientRect(), text: f.value, font: cs.font, pad: cs.paddingLeft, radius: cs.borderRadius,
@@ -2937,7 +2965,7 @@ class Component extends DCLogic {
     // three times, then cracks run out from one point; only then does it break (below, at CRACK_AT)
     const SHAKE = 460, CRACK_AT = 700, whole = document.createElement("div"), wg = document.createElement("div"), wt = document.createElement("span"), x = document.createElement("i");
     whole.className = "ts-whole"; whole.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px";
-    wg.className = "ts-glass"; wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
+    wg.className = "ts-glass" + (snap.ball ? " ts-ball" : ""); wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
     x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt); if (!snap.small) wg.append(x); whole.appendChild(wg); layer.appendChild(whole);
     if (navigator.vibrate) try { navigator.vibrate([70, 50, 90]); } catch (e) { /* not allowed here */ }
     whole.animate([{ transform: "none" }, { transform: "translateX(-9px)", offset: 0.12 }, { transform: "translateX(8px)", offset: 0.3 }, { transform: "translateX(-7px)", offset: 0.48 },
@@ -2963,7 +2991,7 @@ class Component extends DCLogic {
       const mx = pts.reduce((m, p) => m + p[0], 0) / pts.length, my = pts.reduce((m, p) => m + p[1], 0) / pts.length;
       const outer = document.createElement("div"), inner = document.createElement("div"), txt = document.createElement("span");
       outer.className = "ts-piece"; outer.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px; transform-origin:" + mx.toFixed(1) + "px " + my.toFixed(1) + "px";
-      inner.className = "ts-glass"; inner.style.cssText = "border-radius:" + snap.radius + "; clip-path:polygon(" + pts.map(p => p[0].toFixed(1) + "px " + p[1].toFixed(1) + "px").join(",") + ")";
+      inner.className = "ts-glass" + (snap.ball ? " ts-ball" : ""); inner.style.cssText = "border-radius:" + snap.radius + "; clip-path:polygon(" + pts.map(p => p[0].toFixed(1) + "px " + p[1].toFixed(1) + "px").join(",") + ")";
       txt.textContent = snap.text; txt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : ""); inner.appendChild(txt); outer.appendChild(inner); outer.style.visibility = "hidden"; layer.appendChild(outer); pieces.push(outer);
       // the fall: out from the crack, a little up, then gravity; it lands where its centre meets the ground, bounces once, lies there
       const ux = mx - cx, uy = my - cy, ul = Math.hypot(ux, uy) || 1, v = 90 + Math.random() * 140;
@@ -3280,8 +3308,10 @@ class Component extends DCLogic {
       if (snap && result.full) this.termFlip(snap);
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
+      if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), 60);   // the try coin it cost cracks; the next one lights
       // ...and the letter leaves the row as it breaks apart (termBreak's CRACK_AT, 700 ms), not before: until then its place is held
-      clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => this.setState({ deadFresh: [] }), this.state.reduced || !chipSnaps.length ? 0 : 720);
+      clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => { const before = this.ballSpots(); this.setState({ deadFresh: [] }, () => this.rollGaps(before)); },
+        this.state.reduced || !chipSnaps.length ? 0 : 720);
       return reply;
     };
     const result = this.mark(part, answer);
@@ -4077,7 +4107,9 @@ class Component extends DCLogic {
       ctxTableLabel: ctxTable ? ctxTable.title || ctxTable.head.join(", ") : "", ctxTableCols: ctxView ? ctxView.cols : "", ctxTableHead: ctxView ? ctxView.head : [],
       ctxTableRows: ctxView ? ctxView.rows : [], ctxHasAfter: !!(ctxTable && ctxTable.after), ctxAfter: ctxTable ? ctxTable.after || "" : "",
       partKey: part.key + ":" + s.pi, partNumber: part.number,
-      partMarks: part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") : "Not marked online",
+      partMarks: part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") + (!(this.pg(part.key).replay && !this.pg(part.key).retake) ? ", first try only" : "") : "Not marked online",
+      // the first-try rule lives on the question, by its marks (Murci, 2026-10-05: not as a chip on a silver or bronze); not on a practice round
+      firstTryOn: !!part.marks && !(this.pg(part.key).replay && !this.pg(part.key).retake),
       // the number and the word apart, so a phone can show "[icon] 1" as the MCQ header does (it reads the same everywhere else)
       partMarksHasN: part.marks ? "true" : "false", partMarksN: part.marks ? String(part.marks) : "", partMarksW: part.marks ? (part.marks === 1 ? " mark" : " marks") : "Not marked online",
       partMarksEarned: !!(reply && res && res.full && reply.try === 1 && !reply.replay && reply.best_marks > 0) ? "true" : "false",

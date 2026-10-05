@@ -216,7 +216,7 @@
       const esc = t => t.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
       st.innerHTML = (panel
         // one line (Murci, 2026-09-30): the paper's question ("Question 1") beside its part's chip (1.1.1), the marks on the right
-        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="tries" role="img"></span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span></div>` + (lead ? `<p class="qlead"><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` : "")
+        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="tries" role="img"></span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span>${S.practice ? "" : `<span class="qfirst">first try only</span>`}</div>` + (lead ? `<p class="qlead"><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` : "")
         : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
         (desc ? `<p class="qdesc">${desc}</p>` : "") +
         `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +

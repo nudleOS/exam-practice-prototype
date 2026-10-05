@@ -2107,3 +2107,42 @@ body.nx-play main:not(#mq-stage) .nx-preroll [data-ball="true"] { visibility:hid
 body.nx-play main:not(#mq-stage) [data-lnrow] [data-tile][data-ball="true"]:not(#nx-none) { width:36px !important; min-width:36px !important; height:36px !important; min-height:36px !important; }
 /* a ball that broke off stays gone: the ball rule above sets display with the same weight and comes later (one more attribute wins) */
 body.nx-play main:not(#mq-stage) [data-tile][data-dead="true"][data-ball]:not(#nx-none) { display:none !important; }
+
+/* ==== Question 1 polish (Murci, 2026-10-05) ==== */
+/* the first-try rule, by the question's marks (it was a chip on the silver / bronze card) */
+body.nx-play main:not(#mq-stage) [data-firsttry], body.nx-play .mcqp .qhead .qfirst { font-size:11.5px; font-weight:600; color:var(--nx-text2); white-space:nowrap; opacity:0.85; }
+body.nx-play main:not(#mq-stage) [data-firsttry]::before, body.nx-play .mcqp .qhead .qfirst::before { content:"\00b7"; margin:0 5px 0 6px; }
+/* a try coin's sparks (pipLose) */
+.nx-sparks { position:fixed; inset:0; pointer-events:none; z-index:30; }
+.nx-sparks i { position:absolute; width:4px; height:4px; border-radius:50%; background:#ffd9a0; box-shadow:0 0 6px #ffb347; }
+/* the TRACK the balls roll along: a recessed rail, rounded at its ends, a lip of light along its bottom edge; they roll in from its
+   right end (rollNow clips them to it) */
+body.nx-play main:not(#mq-stage) [data-track="true"]:not(#nx-none) { display:flex !important; flex-wrap:nowrap !important; align-items:center; gap:6px !important; box-sizing:border-box;
+  width:100%; padding:5px 8px; border-radius:30px; background:linear-gradient(180deg, #04112a, #0a1d3d 70%, #0d2348);
+  box-shadow:inset 0 4px 7px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(129,177,255,0.18), 0 1px 0 rgba(255,255,255,0.04); }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-track="true"]:not(#nx-none) { background:linear-gradient(180deg, #c9d6ea, #dfe8f5 70%, #e9f0fa);
+  box-shadow:inset 0 4px 7px rgba(16,40,90,0.28), inset 0 -1px 0 rgba(255,255,255,0.9); }
+body.nx-play main:not(#mq-stage) [data-chips="true"] > [data-track="true"] { flex-basis:100%; }
+/* the balls exactly as the approved sketch: the sphere lit from the top left, the letter on a white disc half the ball across
+   (weight 600), the gloss above the disc, a soft shadow on the rail */
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) { background:radial-gradient(circle at 33% 27%, #ffffff 0 6%, #8fb8ff 15%, #2f66cc 46%, #163a82 76%, #0b2252 100%) !important;
+  box-shadow:inset -5px -7px 11px rgba(0,0,0,0.38), 0 7px 6px -5px rgba(0,0,0,0.6) !important; }
+/* (fixed sizes: the ball is a grid whose column hugs its content, so 50% was half of nothing, a sliver; Murci: "not the same as the
+   widget design") half the ball across: 21 / 19 (phone) / 18 px (a pair) */
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) > :is([data-ballf], span:nth-child(2)) { width:21px !important; height:21px !important; min-width:0 !important;
+  background:radial-gradient(circle at 40% 35%, #ffffff, #e6ecf7) !important; font-weight:600 !important; font-size:12.5px !important; letter-spacing:0; }
+body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none)::after { left:18%; top:11%; width:36%; height:20%; z-index:1; }
+/* 1.5.2's part numbers are LABELS, not balls (they read as answer choices, Murci): "PART 1" above its rail, the letter's stamp at the
+   card's top right */
+body.nx-play [data-lnrow] [data-lnhead] { position:relative; flex-wrap:wrap; }
+body.nx-play [data-lnbadge]:not(#nx-none) { flex:0 0 100% !important; width:auto !important; height:auto !important; display:block !important; border-radius:0 !important; background:none !important;
+  color:var(--nx-text2) !important; font-size:11.5px !important; font-weight:800 !important; letter-spacing:0.09em; text-transform:uppercase; margin:0 0 2px 4px; }
+body.nx-play [data-lnrow] [data-lnhead] > span:not([data-lnbadge]) { position:absolute; right:0; top:-4px; }
+/* a ball breaks as a BALL: the copy that cracks and the pieces that fall are the red sphere with its letter disc (termBreak, ts-ball) */
+[data-termshards] .ts-glass.ts-ball, [data-termshards] .ts-whole .ts-glass.ts-ball { border:0 !important; justify-content:center;
+  background:radial-gradient(circle at 33% 27%, #ffffff 0 6%, #ffb0b0 15%, #e0484f 46%, #9b1f27 76%, #5e0f15 100%) !important;
+  box-shadow:inset -5px -7px 11px rgba(0,0,0,0.4) !important; color:#5e0f15 !important; }
+[data-termshards] .ts-glass.ts-ball > span { display:grid; place-items:center; width:50%; height:50%; border-radius:50%; background:radial-gradient(circle at 40% 35%, #ffffff, #f3dede);
+  font-weight:600 !important; font-size:12.5px !important; line-height:1; margin:auto !important; }
+@media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-tile][data-ball="true"]:not(#nx-none) > :is([data-ballf], span:nth-child(2)) { width:19px !important; height:19px !important; font-size:11.5px !important; } }
+body.nx-play main:not(#mq-stage) [data-lnrow] [data-tile][data-ball="true"]:not(#nx-none) > :is([data-ballf], span:nth-child(2)) { width:18px !important; height:18px !important; font-size:11px !important; }
