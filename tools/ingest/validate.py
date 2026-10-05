@@ -58,6 +58,15 @@ def semantic_issues(paper):
                     pts = [b for b in i.get("bullets") or [] if not b.startswith("OR")]
                     if len(pts) * (i.get("each") or 1) < i.get("marks", 0): add(n, "warn", "fewer memo points than marks")
                 if t == "lettername" and i.get("a", {}).get("letter") not in (i.get("letters") or []): add(n, "error", "answer letter is not one of the letters")
+                if t == "lettername" and any(p.get("letter") not in (i.get("letters") or []) for p in i.get("or") or []): add(n, "error", "an alternative letter is not one of the letters")
+                if t == "letternames":
+                    pool = i.get("pool") or []
+                    if len(pool) < i.get("count", 0): add(n, "error", "fewer memo parts than the count asked")
+                    if any(p.get("letter") not in (i.get("letters") or []) for p in pool): add(n, "error", "a memo letter is not one of the letters")
+                    if i.get("marks") != 2 * i.get("count", 0): add(n, "warn", "a letter + name is 2 marks per part: marks are not 2 x count")
+                tb = i.get("optTable")
+                if t == "mcq" and tb and (len(tb.get("rows") or []) != len(opts) or any(len(r) != len(tb.get("head") or []) for r in tb.get("rows") or [])):
+                    add(n, "error", "the options table needs one row per option and one cell per column")
         if sec.get("total") is not None and sec_sum != sec["total"]:
             add(sec.get("title", "?"), "warn", f"section parts add up to {sec_sum}, the paper says {sec['total']}")
         total += sec_sum

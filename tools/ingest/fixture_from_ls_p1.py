@@ -11,8 +11,8 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 ROOT = HERE.parent.parent
-KEEP = {"mcq": ["opts", "a"], "pickn": ["opts", "pool", "count"], "order": ["opts", "a"], "term": ["a", "reject"], "list": ["count", "pool"],
-        "lettername": ["letters", "a"], "num": ["a", "tol", "unit"], "steps": ["steps"], "rubric": ["bullets", "each"], "draw": ["criteria", "memo"]}
+KEEP = {"mcq": ["opts", "a", "optTable"], "letternames": ["letters", "count", "pool"], "pickn": ["opts", "pool", "count"], "order": ["opts", "a"], "term": ["a", "reject"], "list": ["count", "pool"],
+        "lettername": ["letters", "a", "or"], "num": ["a", "tol", "unit"], "steps": ["steps"], "rubric": ["bullets", "each"], "draw": ["criteria", "memo"]}
 # where 3.6's diagram sits on page 18 (fractions of the page, measured on the 1000x1415 page image): exercises the cropper
 FIGURE = {"3.6": {"page": 18, "bbox": [0.228, 0.36, 0.822, 0.62], "caption": "Three plants in a cardboard box, light from the left: A untreated, B with a black cap, C with its tip removed."}}
 

@@ -172,6 +172,32 @@
               "type": "integer",
               "description": "0-based index of the right option"
              },
+             "optTable": {
+              "type": "object",
+              "properties": {
+               "head": {
+                "type": "array",
+                "items": {
+                 "type": "string"
+                }
+               },
+               "rows": {
+                "type": "array",
+                "items": {
+                 "type": "array",
+                 "items": {
+                  "type": "string"
+                 }
+                }
+               }
+              },
+              "required": [
+               "head",
+               "rows"
+              ],
+              "additionalProperties": false,
+              "description": "Only when the paper prints the options as a TABLE: its column heads, and one row of cells per option in the order of opts (opts then reads each row as a line)"
+             },
              "figure": {
               "type": "object",
               "properties": {
@@ -484,6 +510,29 @@
                "name"
               ],
               "additionalProperties": false
+             },
+             "or": {
+              "type": "array",
+              "items": {
+               "type": "object",
+               "properties": {
+                "letter": {
+                 "type": "string"
+                },
+                "name": {
+                 "type": "array",
+                 "items": {
+                  "type": "string"
+                 }
+                }
+               },
+               "required": [
+                "letter",
+                "name"
+               ],
+               "additionalProperties": false
+              },
+              "description": "Other letter + name pairs the memo accepts INSTEAD ('C - urethra OR D - penis': a = C, or = [D])"
              }
             },
             "required": [
@@ -494,6 +543,80 @@
              "clues",
              "letters",
              "a"
+            ],
+            "additionalProperties": false
+           },
+           {
+            "type": "object",
+            "properties": {
+             "t": {
+              "type": "string",
+              "const": "letternames"
+             },
+             "n": {
+              "type": "string",
+              "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+             },
+             "marks": {
+              "type": "integer"
+             },
+             "q": {
+              "type": "string",
+              "description": "The question text exactly as printed, without the marks"
+             },
+             "clues": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Two hints that lead the learner without giving the answer"
+             },
+             "note": {
+              "type": "string",
+              "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "letters": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              }
+             },
+             "count": {
+              "type": "integer"
+             },
+             "pool": {
+              "type": "array",
+              "items": {
+               "type": "object",
+               "properties": {
+                "letter": {
+                 "type": "string"
+                },
+                "name": {
+                 "type": "array",
+                 "items": {
+                  "type": "string"
+                 }
+                }
+               },
+               "required": [
+                "letter",
+                "name"
+               ],
+               "additionalProperties": false
+              },
+              "description": "Every part the memo accepts, each with its accepted names"
+             }
+            },
+            "required": [
+             "t",
+             "n",
+             "marks",
+             "q",
+             "clues",
+             "letters",
+             "count",
+             "pool"
             ],
             "additionalProperties": false
            },

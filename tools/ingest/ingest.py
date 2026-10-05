@@ -31,7 +31,10 @@ SYSTEM = """You turn a South African past exam paper and its official marking me
 
 The output is JSON that must follow the given schema. Every marks-bearing question part appears exactly once, as ONE catalogue
 component (the `t` field). Choose the component by how the MEMO marks the part, not by how the question looks:
-- mcq / pickn / order / term / list / lettername / num / steps / rubric as described in the schema;
+- mcq / pickn / order / term / list / lettername / letternames / num / steps / rubric as described in the schema;
+- options printed as a table go in `mcq.optTable` (head + one row per option), opts reading each row as a line;
+- a letter + name the memo accepts in two ways ("C - urethra OR D - penis") uses `lettername.or`; the LETTERS and NAMES of
+  several parts in one numbered part use `letternames` (count + pool), never two parts and never `draw`;
 - a part no component can mark (a drawing, a graph to plot, a genetic cross diagram, a structured essay) becomes `draw` with the
   memo's criteria, and gets a `no_fit` flag.
 

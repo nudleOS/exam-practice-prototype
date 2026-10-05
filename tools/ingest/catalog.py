@@ -50,6 +50,8 @@ def component(t, description, props, required):
 
 COMPONENTS = {
     "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
+                                                       "optTable": obj({"head": STRS, "rows": {"type": "array", "items": STRS}}, ["head", "rows"]) | {
+                                                           "description": "Only when the paper prints the options as a TABLE: its column heads, and one row of cells per option in the order of opts (opts then reads each row as a line)"},
                                                        "figure": {**FIGURE, "description": "Only when the paper prints a figure for THIS one question (not the whole block)"}}, ["opts", "a"]),
     "pickn": component("pickn", "Pick N of several options.", {"opts": STRS, "pool": {**INTS, "description": "0-based indexes of every right option"}, "count": INT}, ["opts", "pool", "count"]),
     "order": component("order", "Put the options in sequence.", {"opts": STRS, "a": {**INTS, "description": "option indexes in the right order"}}, ["opts", "a"]),
@@ -59,7 +61,13 @@ COMPONENTS = {
     "list": component("list", "N numbered one-line answers ('Name TWO ...').", {
         "count": INT, "pool": {"type": "array", "items": STRS, "description": "Each memo answer as a group of accepted synonyms"}}, ["count", "pool"]),
     "lettername": component("lettername", "Give the LETTER of a labelled part, then its NAME.", {
-        "letters": STRS, "a": obj({"letter": STR, "name": STRS}, ["letter", "name"])}, ["letters", "a"]),
+        "letters": STRS, "a": obj({"letter": STR, "name": STRS}, ["letter", "name"]),
+        "or": {"type": "array", "items": obj({"letter": STR, "name": STRS}, ["letter", "name"]),
+               "description": "Other letter + name pairs the memo accepts INSTEAD ('C - urethra OR D - penis': a = C, or = [D])"}}, ["letters", "a"]),
+    "letternames": component("letternames", "Give the LETTERS and NAMES of COUNT labelled parts, in any order (one letter + name per part).", {
+        "letters": STRS, "count": INT,
+        "pool": {"type": "array", "items": obj({"letter": STR, "name": STRS}, ["letter", "name"]), "description": "Every part the memo accepts, each with its accepted names"}},
+        ["letters", "count", "pool"]),
     "num": component("num", "One number (keypad), within a tolerance.", {"a": NUM, "tol": NUM, "unit": STR}, ["a", "tol"]),
     "steps": component("steps", "A calculation in numbered steps, each one NUMBER (method marks per step).", {
         "steps": {"type": "array", "items": obj({"id": STR, "label": STR, "marks": INT, "a": NUM, "tol": NUM,
