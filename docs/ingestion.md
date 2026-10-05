@@ -2,6 +2,8 @@
 
 **Status (2026-10-03):** the pipeline is built and its back half is proven offline (LS P1 fixture: loads as its own paper, marks
 83/83). The first real run (Life Sciences P2 Nov 2025) waits on credentials. The review routing rule (`validate.route`) is pending.
+**2026-10-05:** Life Sciences P1 Nov 2024, Question 1 (Section A) is in, HAND-transcribed through the same back half (below); an MCQ
+can now carry its own figure.
 
 ## Purpose
 Internal users upload a past paper and its memo; the app turns it into the same interactive, memo-marked practice the hand-built
@@ -13,20 +15,24 @@ looks and how it is marked. AI never generates UI.
 paper.pdf + memo.pdf
    -> ingest.py: Claude (claude-opus-5-5, vision, adaptive thinking, structured output = catalog/paper.schema.json)
    -> response.json (raw) -> validate.check: schema + semantic checks -> validate.review: auto / check / blocked per part
-   -> crop_figures: page + bbox -> figures/*.png (palette PNG)
+   -> crop_figures: page + bbox -> figures/*.png (palette PNG), a mission's figure and an MCQ's own
    -> to_app -> paper.js (window.PAPERS_INGESTED) + report.json
    -> review.html?id=<id> (a person checks) -> Exam Practice.dc.html?ingested=<id>&paper=<id>
 ```
 In the app, `buildPapers` -> `fromData(src, meta)` builds every paper from data with its own key prefix (`<id>:<part>`); an
-ingested mission's figure registers its own FIGS / SCENES entry; `HOME_TO_LOCAL[id] = id` links the paper map's catalogue entry.
+ingested mission's figure registers its own FIGS / SCENES entry; an MCQ's own figure rides on its part as `img` and shows under the
+stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` links the paper map's catalogue entry.
 
 ## Contract
 - **Catalogue** `tools/ingest/catalog/nexera-exam-catalog.v1.json` (`catalogId` `https://nexera.app/catalogs/exam/v1`): the 10 types
   (mcq, pickn, order, term, list, lettername, num, steps, rubric, draw), each a JSON Schema of its props. Follows A2UI's catalog
   convention (https://a2ui.org/concepts/catalogs/); the output is OUR paper data, not A2UI surface messages.
 - **Output** `catalog/paper.schema.json`: `{catalog, paper{subject,title,sitting,total_marks,time}, sections[{title,total,missions[
-  {id,title,kind,lead,marks,extract,table,figure{page,bbox,caption},items[component]}]}], flags[{n,kind,detail}]}`.
-- **App data** (`paper.js`): the paper-ls-p1-2026.js shape plus `id`, `subject`, `catalog`; `figure{src,w,h,caption}` per mission.
+  {id,title,kind,lead,marks,extract,table,figure{page,bbox,caption},items[component]}]}], flags[{n,kind,detail}]}`. An `mcq` may
+  carry its own `figure{page,bbox,caption}` when the paper prints one for that question alone (LS P1 Nov 2024 1.1.6, 1.1.9, 1.1.10).
+- **App data** (`paper.js`): the paper-ls-p1-2026.js shape plus `id`, `subject`, `catalog`; `figure{src,w,h,caption}` per mission;
+  `img{src,w,h,alt}` on an MCQ with its own figure. Crops are keyed `<mission id>` and `part:<number>` (a block with one part, 4.2,
+  shares its number, so the two never share a key).
 - Source of truth for `catalog/*.json` is `catalog.py` (`python tools/ingest/catalog.py`).
 
 ## Error handling and observability
@@ -52,7 +58,14 @@ python tools/ingest/ingest.py PAPER.pdf MEMO.pdf --id ls-p2-2025-11 --from-json 
 open http://localhost:8767/tools/ingest/review.html?id=ls-p2-2025-11
 # offline test of the back half
 python tools/ingest/fixture_from_ls_p1.py && python tools/ingest/ingest.py "uploads/Life Sciences P1 May-June 2026 Eng.pdf" "uploads/Life Sciences P1 May-June 2026 MG Eng.pdf" --id ls-p1-fixture --from-json
+# a hand transcription (no API call): LS P1 Nov 2024
+python tools/ingest/transcribe_ls_p1_2024_11.py && python tools/ingest/ingest.py PAPER.pdf MEMO.pdf --id ls-p1-2024-11 --from-json
 ```
+**Hand transcriptions** (`transcribe_*.py`) are the source and are committed, like `paper-ls-p1-2026.js`; their `out/` is
+regenerated. They write `response.json` in the catalogue format, so they pass the same schema and semantic checks as an AI run.
+What the catalogue cannot hold yet is flagged in the data (`flags`), never silently bent: LS P1 Nov 2024 1.1.6 (options printed as a
+table, flattened), 1.4.1(a) (the memo accepts C – urethra OR D – penis; only C is marked right), 1.5.2 (two letter + name pairs in
+one part; self-checked for now).
 Known limits: steps lose follow-through formulas (functions are not data); builders (histogram, stems) are not in the catalogue
 (drawings ingest as self-check); scanned PDFs rely on the model's vision (Mathematics, Maths Lit); resources not in the PDF (map
 sheets) must be added by hand.
