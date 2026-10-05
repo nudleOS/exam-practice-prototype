@@ -112,29 +112,38 @@ def call_claude(paper_pdf, memo_pdf, model, effort):
 
 
 def crop_figures(paper, paper_pdf, out):
+    """{mission id: crop} for a block's figure, {"part:" + number: crop} for one question's own (an MCQ's): a part can share its
+    mission's number (a block with one part, 4.2), so the two never share a key."""
     doc, figs = fitz.open(paper_pdf), {}
     (out / "figures").mkdir(parents=True, exist_ok=True)
+
+    def crop(f, stem):
+        if not f or not 1 <= f["page"] <= len(doc):
+            return None
+        page = doc[f["page"] - 1]
+        W, H = page.rect.width, page.rect.height
+        x0, y0, x1, y1 = f["bbox"]
+        pad = 0.01
+        clip = fitz.Rect(max(0, x0 - pad) * W, max(0, y0 - pad) * H, min(1, x1 + pad) * W, min(1, y1 + pad) * H)
+        if clip.is_empty:
+            return None
+        pix = page.get_pixmap(dpi=150, clip=clip)
+        name = f"q{stem.replace('.', '_')}.png"
+        pix.save(str(out / "figures" / name))
+        try:  # a palette PNG: diagrams are line art (the hand-made crops were 32 colours)
+            from PIL import Image
+            Image.open(out / "figures" / name).convert("RGB").quantize(colors=32).save(out / "figures" / name, optimize=True)
+        except ImportError:
+            pass
+        return {"src": f"tools/ingest/out/{out.name}/figures/{name}", "w": pix.width, "h": pix.height}
+
     for sec in paper["sections"]:
         for m in sec["missions"]:
-            f = m.get("figure")
-            if not f or not 1 <= f["page"] <= len(doc):
-                continue
-            page = doc[f["page"] - 1]
-            W, H = page.rect.width, page.rect.height
-            x0, y0, x1, y1 = f["bbox"]
-            pad = 0.01
-            clip = fitz.Rect(max(0, x0 - pad) * W, max(0, y0 - pad) * H, min(1, x1 + pad) * W, min(1, y1 + pad) * H)
-            if clip.is_empty:
-                continue
-            pix = page.get_pixmap(dpi=150, clip=clip)
-            name = f"q{m['id'].replace('.', '_')}.png"
-            pix.save(str(out / "figures" / name))
-            try:  # a palette PNG: diagrams are line art (the hand-made crops were 32 colours)
-                from PIL import Image
-                Image.open(out / "figures" / name).convert("RGB").quantize(colors=32).save(out / "figures" / name, optimize=True)
-            except ImportError:
-                pass
-            figs[m["id"]] = {"src": f"tools/ingest/out/{out.name}/figures/{name}", "w": pix.width, "h": pix.height}
+            c = crop(m.get("figure"), m["id"])
+            if c: figs[m["id"]] = c
+            for i in m["items"]:
+                c = crop(i.get("figure"), i["n"])
+                if c: figs["part:" + i["n"]] = c
     return figs
 
 

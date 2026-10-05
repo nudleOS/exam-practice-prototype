@@ -36,6 +36,11 @@ COMMON = {
 }
 COMMON_REQ = ["n", "marks", "q", "clues"]
 
+FIGURE = obj({
+    "page": {"type": "integer", "description": "1-based page of the QUESTION PAPER the figure is on"},
+    "bbox": {"type": "array", "items": NUM, "description": "[x0, y0, x1, y1] as fractions of the page width and height (0-1), tight around the figure and its labels"},
+    "caption": {"type": "string", "description": "What the figure shows, for a learner who cannot see it (alt text)"}}, ["page", "bbox", "caption"])
+
 
 def component(t, description, props, required):
     """A catalogue component: its type tag `t` plus the common fields."""
@@ -44,7 +49,8 @@ def component(t, description, props, required):
 
 
 COMPONENTS = {
-    "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"}}, ["opts", "a"]),
+    "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
+                                                       "figure": {**FIGURE, "description": "Only when the paper prints a figure for THIS one question (not the whole block)"}}, ["opts", "a"]),
     "pickn": component("pickn", "Pick N of several options.", {"opts": STRS, "pool": {**INTS, "description": "0-based indexes of every right option"}, "count": INT}, ["opts", "pool", "count"]),
     "order": component("order", "Put the options in sequence.", {"opts": STRS, "a": {**INTS, "description": "option indexes in the right order"}}, ["opts", "a"]),
     "term": component("term", "One term or short phrase (one line).", {
@@ -69,10 +75,6 @@ COMPONENTS = {
 
 TABLE = obj({"title": STR, "head": STRS, "rows": {"type": "array", "items": STRS},
              "after": {"type": "string", "description": "Text printed after the table, if any"}}, ["head", "rows"])
-FIGURE = obj({
-    "page": {"type": "integer", "description": "1-based page of the QUESTION PAPER the figure is on"},
-    "bbox": {"type": "array", "items": NUM, "description": "[x0, y0, x1, y1] as fractions of the page width and height (0-1), tight around the figure and its labels"},
-    "caption": {"type": "string", "description": "What the figure shows, for a learner who cannot see it (alt text)"}}, ["page", "bbox", "caption"])
 MISSION = obj({
     "id": {"type": "string", "description": "The question number this block of parts shares, e.g. 2.4"},
     "title": STR, "kind": {"type": "string", "description": "A 2-5 word topic name"},

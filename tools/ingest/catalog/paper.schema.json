@@ -171,6 +171,33 @@
              "a": {
               "type": "integer",
               "description": "0-based index of the right option"
+             },
+             "figure": {
+              "type": "object",
+              "properties": {
+               "page": {
+                "type": "integer",
+                "description": "1-based page of the QUESTION PAPER the figure is on"
+               },
+               "bbox": {
+                "type": "array",
+                "items": {
+                 "type": "number"
+                },
+                "description": "[x0, y0, x1, y1] as fractions of the page width and height (0-1), tight around the figure and its labels"
+               },
+               "caption": {
+                "type": "string",
+                "description": "What the figure shows, for a learner who cannot see it (alt text)"
+               }
+              },
+              "required": [
+               "page",
+               "bbox",
+               "caption"
+              ],
+              "additionalProperties": false,
+              "description": "Only when the paper prints a figure for THIS one question (not the whole block)"
              }
             },
             "required": [

@@ -36,11 +36,10 @@ def semantic_issues(paper):
             if m.get("marks") is not None and msum != m["marks"]:
                 add(m.get("id", "?"), "warn", f"parts add up to {msum}, the question says {m['marks']}")
             sec_sum += msum
-            fig = m.get("figure")
-            if fig:
-                b = fig.get("bbox") or []
-                if len(b) != 4 or not all(0 <= x <= 1 for x in b) or b[0] >= b[2] or b[1] >= b[3]:
-                    add(m.get("id", "?"), "error", f"figure bbox is not 4 fractions x0<x1, y0<y1: {b}")
+            for where, fig in [(m.get("id", "?"), m.get("figure"))] + [(i.get("n", "?"), i.get("figure")) for i in items]:
+                b = (fig or {}).get("bbox")
+                if fig and (len(b or []) != 4 or not all(0 <= x <= 1 for x in b) or b[0] >= b[2] or b[1] >= b[3]):
+                    add(where, "error", f"figure bbox is not 4 fractions x0<x1, y0<y1: {b}")
             for i in items:
                 n, t = i.get("n", "?"), i.get("t")
                 if n in seen: add(n, "error", "duplicate part number")
@@ -91,7 +90,7 @@ def route(item, issues, flags):
 
 
 def to_app(paper, pid, figures):
-    """The app's paper data. `figures`: {mission id: {"src", "w", "h"}} for the crops ingest.py made."""
+    """The app's paper data. `figures`: {mission id or "part:" + number: {"src", "w", "h"}} for the crops ingest.py made."""
     meta = paper["paper"]
     secs = []
     for sec in paper["sections"]:
@@ -101,6 +100,8 @@ def to_app(paper, pid, figures):
             for i in m["items"]:
                 i = dict(i)
                 if i["t"] == "draw": i["criteria"] = [[c["text"], c["marks"]] for c in i.get("criteria", [])]
+                fig = i.pop("figure", None)   # one question's own figure: the app shows it under the stem (an MCQ card's `img`)
+                if fig and "part:" + i["n"] in figures: i["img"] = {**figures["part:" + i["n"]], "alt": fig["caption"]}
                 items.append(i)
             mm = {k: m[k] for k in ("id", "title", "kind", "lead", "marks", "extract", "table") if m.get(k) not in (None, "")}
             if m["id"] in figures:
