@@ -820,7 +820,6 @@
             <div style="display:flex; flex-direction:column; gap:12px">
               <div style="display:flex; align-items:center; gap:8px">
                 <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">Letter on the figure</span>
-                <button onClick="{{ openFigure }}" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Figure</button>
                 <sc-if value="{{ lnLetterHasStamp }}" hint-placeholder-val="{{ false }}">
                   <span style="height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ lnLetterStampBg }}; font-size:12px; font-weight:800; color:{{ lnLetterStampColor }}">{{ lnLetterStamp }}</span>
                 </sc-if>
@@ -846,7 +845,6 @@
             <div style="display:flex; flex-direction:column; gap:12px">
               <div style="display:flex; align-items:center; gap:8px">
                 <span style="flex:1; font-size:12.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3)">{{ lnsHead }}</span>
-                <button onClick="{{ openFigure }}" style="min-height:36px; padding:0 12px; border-radius:11px; border:1px solid rgba(129,177,255,0.4); background:rgba(0,104,248,0.10); color:var(--tint); font-size:12.5px; font-weight:700; cursor:pointer">Figure</button>
               </div>
               <sc-for list="{{ lnRows }}" as="lr" hint-placeholder-count="2">
                 <div data-lnrow="true" role="group" aria-label="{{ lr.aria }}" style="display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:14px; border:1px solid var(--line2); background:rgba(255,255,255,0.03)">
@@ -3731,7 +3729,7 @@ class Component extends DCLogic {
       hasCounter: mode === "pickn", counterText: pickedN >= need && s.pickWarn && mode === "pickn" ? "Pick " + need + ": unpick one first" : "Pick " + need + " · " + pickedN + " picked",
       counterColor: pickedN === need ? "#3ddc97" : "var(--text2)", counterKey: "w" + s.pickWarn, counterAnim: s.pickWarn && !s.reduced ? "shake 360ms ease both" : "none",
       hasSeq: mode === "order", seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
-      isLetterName: mode === "lettername", openFigure: () => this.setState({ kit: true, kitTab: "figures" }),
+      isLetterName: mode === "lettername",
       letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L;
         return { label: L, checked: on ? "true" : "false", aria: "Letter " + L, tab: (s.letter ? on : j === 0) ? "0" : "-1",
           border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
@@ -4382,11 +4380,11 @@ class Component extends DCLogic {
       ...this.rvVals(s),
 
       kitOpen: s.kit, closeKit: () => this.setState({ kit: false }),
-      kitTabs: [["rules", "Instructions"], ["formulas", "Formula sheet"], ["figures", "Figures"]].map(t => ({ label: t[1], on: s.kitTab === t[0], pick: () => this.setState({ kitTab: t[0] }),
+      kitTabs: [["rules", "Instructions"], ["formulas", "Formula sheet"]].map(t => ({ label: t[1], on: s.kitTab === t[0], pick: () => this.setState({ kitTab: t[0] }),
         border: s.kitTab === t[0] ? "rgba(129,177,255,0.55)" : "var(--line2)", bg: s.kitTab === t[0] ? "rgba(0,104,248,0.14)" : "transparent" })),
       kitItems: s.kitTab === "rules" ? [{ head: "Exam instructions", body: "Follow the directions printed with each question. Open the question paper to check its diagrams and page layout." }]
-        : s.kitTab === "formulas" ? [{ head: "No formula sheet", body: "This Life Sciences paper does not include a formula sheet." }]
-        : [{ head: "Figures", body: "Open the question paper to view each figure in its printed context." }],
+        // (no Figures tab, Murci 2026-10-05: the figure is in the question itself; the "Figure" buttons that opened it are gone)
+        : [{ head: "No formula sheet", body: "This paper does not include a formula sheet." }],
 
       ...this.playVals(s, phone, tablet, tabletLand, desk, mission, part, pr, reply, res, closed, mode, tryN, primaryDisabled, itemsBy, verdictInfo),
       // Kept from the old play values: the memo lines, the AI-marked points, the XP flight.
