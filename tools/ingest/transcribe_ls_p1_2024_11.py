@@ -1,4 +1,4 @@
-"""Life Sciences P1 Nov 2024, Question 1, hand-transcribed into the catalogue format (as if Claude had produced it), then run through
+"""Life Sciences P1 Nov 2024, Questions 1 and 2, hand-transcribed into the catalogue format (as if Claude had produced it), then run through
 `ingest.py --from-json` like any ingested paper. Stems, options, marks and answers are the paper's and the memo's own; the clues and
 the figure captions (alt text) are ours. No API call: the transcription is the source, kept in git (out/ is not).
 
@@ -140,17 +140,143 @@ missions = [
                    "of the brain. B: the network of vessels under the skin's surface. C: the coiled structure in the skin with a duct to the "
                    "surface. D: the organ behind the stomach. E: the kidney on the right of the picture. F: the small structure on top of the kidney on the left of the picture.")},
 ]
+# ---- Question 2 (Section B), from the question paper pages 9-13 and the memo pages 5-6 ----
+lst = lambda n, q, count, marks, pool, clues: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
+rub = lambda n, q, marks, bullets, clues, **kw: {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets, **kw}
+num = lambda n, q, a, tol, unit, clues, marks=1: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
+q21 = [
+    term("2.1.1(a)", "Identify part A", ["fallopian tube", "fallopian tubes"],
+         ["It carries the ovum from the ovary towards the uterus.", "Fertilisation normally happens in it."]),
+    term("2.1.1(b)", "Identify part B", ["ovary", "ovaries"],
+         ["It makes the ova.", "It also makes oestrogen and progesterone."]),
+    # (a list: an answer scores when it holds an accepted answer's first word, so each group leads with its key word)
+    lst("2.1.2(a)", "Give TWO characteristics of the endometrium that make it suitable for implantation", 2, 2,
+        [["blood", "vascular", "rich blood supply"], ["glandular", "glands"], ["thick", "thickened"]],
+        ["Think of what an embryo needs from the wall it sinks into.", "Look at how thick the lining is, and what it carries."]),
+    lst("2.1.2(b)", "Give TWO visible reasons why there is an increased chance of fertilisation in this female", 2, 2,
+        [["sperm", "sperm cells are present"], ["ovulation", "ovum has been released", "egg has been released"]],
+        ["Look at what is swimming in the tube.", "Look at what has just left the ovary."]),
+    rub("2.1.3", "Identify and describe the type of gametogenesis that leads to the formation of structure C.", 6,
+        ["During oogenesis (compulsory)", "diploid cells in the ovary undergo mitosis", "to form numerous follicles", "at the onset of puberty",
+         "under the influence of FSH", "one cell inside a follicle enlarges and undergoes meiosis",
+         "of the four cells produced, only one survives to form a mature haploid ovum"],
+        ["Structure C is a female gamete: name the process first.", "Go in order: mitosis to make follicles, then puberty, FSH and meiosis."]),
+    rub("2.1.4", "In an ectopic pregnancy, the fertilised ovum can become implanted in part A. This normally results in the death of the embryo and may "
+        "endanger the mother's life. Explain why an ectopic pregnancy may result in the death of an embryo.", 3,
+        ["Part A (the fallopian tube) cannot provide the space", "and there is no endometrium / blood supply",
+         "to provide nutrients / oxygen or remove waste products", "for the embryo to develop"],
+        ["Compare the tube with the uterus wall.", "What does the endometrium give a growing embryo that the tube cannot?"]),
+]
+q22 = [
+    num("2.2.1", "On which day of this menstrual cycle is the level of progesterone the highest?", 20, 0.001, "",
+        ["Read down the progesterone column only.", "Find its biggest number, then read the day beside it."]),
+    term("2.2.2", "Name the reproductive hormone that will begin to increase from day 24 of this female's menstrual cycle.", ["FSH", "follicle stimulating hormone"],
+         ["A new cycle is about to begin.", "This hormone starts a new follicle growing."]),
+    rub("2.2.3", "Use data from the table to explain your answer to QUESTION 2.2.2.", 2,
+        ["The progesterone level is decreasing (from 5 to 0,8 ng/mℓ)", "therefore FSH secretion is no longer inhibited"],
+        ["Look at progesterone from day 24 to day 28.", "High progesterone holds a hormone back. What happens when it falls?"]),
+    {"t": "steps", "n": "2.2.4", "marks": 3, "q": "Calculate the percentage increase in the oestrogen level from day 8 to day 10. Show ALL your working.",
+     "clues": ["Find how much the level went up first.", "Then divide that by the day 8 level and multiply by 100."],
+     "steps": [{"id": "s1", "label": "Increase from day 8 to day 10 (pg/mℓ)", "marks": 1, "a": 210, "tol": 0.5, "memo": "280 − 70 = 210 ✓"},
+               {"id": "s2", "label": "Percentage increase (%)", "marks": 2, "a": 300, "tol": 0.5, "memo": "210 ÷ 70 × 100 ✓ = 300% ✓"}]},
+    term("2.2.5", "How would the progesterone level differ after day 20 if this female was pregnant?",
+         ["remains high", "it remains high", "remain high", "stays high", "it stays high", "will increase", "it will increase", "increases", "it increases"],
+         ["Pregnancy needs the uterus lining kept in place.", "Which hormone keeps the lining, and would it fall?"]),
+    rub("2.2.6", "Explain what causes the change in the progesterone level stated in QUESTION 2.2.5.", 2,
+        ["The corpus luteum does not disintegrate", "and continues to secrete progesterone", "OR — The placenta develops", "which secretes progesterone"],
+        ["Which structure makes progesterone after ovulation?", "In a pregnancy, what keeps it going, and what takes over later?"]),
+]
+q23 = [
+    term("2.3.1", "According to the passage, which type of cataract is associated with a disorder of the pancreas?",
+         ["subcapsular cataracts", "subcapsular cataract", "subcapsular", "sub capsular cataracts", "sub capsular"],
+         ["Which disorder of the pancreas is named in the passage?", "Find the type of cataract the passage links to it."]),
+    rub("2.3.2", "Use information in the passage to explain why cataracts cause vision loss.", 5,
+        ["Protein structures in the lens start to disintegrate and clump together", "The lens becomes opaque / milky",
+         "less / no light passes through the lens", "onto the retina", "therefore less / no stimuli are converted to impulses"],
+        ["Start with what the passage says happens to the proteins in the lens.", "Follow the light: through the lens, to the retina, to impulses."]),
+]
+q24 = [
+    rub("2.4.1", "Explain how the structure of his eyeball affects his vision when he reads a book without glasses", 3,
+        ["The eyeball is too short", "The image forms behind the retina", "causing blurred vision",
+         "OR — The cornea is less convex", "Less refraction occurs / the image forms behind the retina", "causing blurred vision"],
+        ["A book is close: the light has to be bent a lot.", "Where does the image fall if the eyeball is short?"]),
+    rub("2.4.2", "Explain how wearing glasses with convex lenses will improve his vision when he reads a book", 2,
+        ["The light rays will be refracted more", "causing the image to fall on the retina"],
+        ["A convex lens bends light inwards.", "Where does the image fall now?"]),
+]
+q25 = [
+    term("2.5.1", "Identify the type of neuron shown in the diagrams.", ["motor neuron", "motor neurone", "motor neurons"],
+         ["Look at where the cell body is.", "Which neuron carries impulses to a muscle?"]),
+    lst("2.5.2", "Give ONE visible reason for your answer to QUESTION 2.5.1.", 1, 1,
+        [["dendrites", "many dendrites", "multipolar"], ["cell body", "cell body at one end"], ["long", "long axon", "axon is long"]],
+        ["Look at the cell body and the branches around it.", "Compare the lengths of the axon and the dendrites."]),
+    rub("2.5.3", "Describe the function of the type of neuron identified in QUESTION 2.5.1.", 3,
+        ["It transmits impulses", "from the central nervous system / interneuron", "to the effector"],
+        ["What does this neuron carry?", "From where, and to what?"]),
+    {"t": "order", "n": "2.5.4", "marks": 2, "q": "Use the letters A, B and C to indicate the direction in which an impulse moves through the neuron.",
+     "clues": ["An impulse enters a neuron through its dendrites.", "It leaves through the axon's branched ends."], "opts": ["A", "B", "C"], "a": [2, 0, 1]},
+    term("2.5.5", "Name the disorder associated with degeneration of the myelin sheaths of neurons.", ["multiple sclerosis", "MS"],
+         ["The myelin is attacked and scars form.", "Its name means \"many scars\"."]),
+]
+q26 = [
+    num("2.6.1(a)", "Give the axon diameter (in µm) at which an impulse moves at 20 m/s in a myelinated neuron", 5, 0.5, "µm",
+        ["Use the myelinated graph only.", "Find 20 m/s on the speed axis and read down."]),
+    num("2.6.1(b)", "Give the axon diameter (in µm) at which an impulse moves at 20 m/s in an unmyelinated neuron", 800, 10, "µm",
+        ["Use the unmyelinated graph only.", "Find 20 m/s on the speed axis and read down."]),
+    rub("2.6.2(a)", "Use the graphs to describe the difference in impulse speed for myelinated and unmyelinated neurons", 2,
+        ["The impulse speed is faster in a myelinated neuron than in an unmyelinated neuron",
+         "OR — The impulse speed is slower in an unmyelinated neuron than in a myelinated neuron"],
+        ["Compare the speeds the two graphs reach.", "Say which is faster, and than which."], each=2),
+    rub("2.6.2(b)", "Use the graphs to describe the relationship between axon diameter and impulse speed", 2,
+        ["As the axon diameter increases, the impulse speed increases"],
+        ["Both lines go the same way.", "As one value goes up, what does the other do?"], each=2),
+]
+missions_b = [
+    {"id": "2.1", "title": "Question 2.1", "kind": "Female reproduction", "marks": 15,
+     "lead": "The diagram below represents a part of the female reproductive system.", "items": q21,
+     "figure": fig(9, (104, 160, 522, 441), "Part of the female reproductive system. A: the curved tube arching over the ovary, with sperm cells "
+                   "swimming in it. B: the oval ovary below it. C: a small round cell just released beside the ovary. On the right, the endometrium "
+                   "lines the uterus, and more sperm cells are swimming towards it.")},
+    {"id": "2.2", "title": "Question 2.2", "kind": "Menstrual cycle hormones", "marks": 10,
+     "lead": "The table below shows the levels of two hormones during the menstrual cycle of a healthy human female.", "items": q22,
+     "table": {"head": ["Day of menstrual cycle", "Oestrogen level (pg/mℓ)", "Progesterone level (ng/mℓ)"],
+               "rows": [["4", "55", "0,23"], ["8", "70", "0,03"], ["10", "280", "0,03"], ["12", "300", "0,03"], ["14", "140", "3,0"],
+                        ["16", "110", "12,5"], ["20", "80", "15,0"], ["24", "70", "5,0"], ["28", "65", "0,8"]]}},
+    {"id": "2.3", "title": "Question 2.3", "kind": "Cataracts", "marks": 6, "lead": "Read the passage below.", "items": q23,
+     "extract": "CATARACTS – THE MOST COMMON CAUSE OF BLINDNESS\n\nCataracts are primarily formed when protein structures in the lens of the eye "
+                "start to disintegrate and clump together. Cataracts is the most common cause of blindness and the main cause of vision loss in "
+                "people over 40 years of age.\n\nTwo types of cataracts that occur are nuclear cataracts and subcapsular cataracts. In nuclear "
+                "cataracts, the cataracts form in the central region of the lens and gradually spread outwards. In subcapsular cataracts, the "
+                "cataracts develop at the back of the lens and it is most common in people with diabetes."},
+    {"id": "2.4", "title": "Question 2.4", "kind": "Long-sightedness", "marks": 5, "lead": "A man is long-sighted. Explain how:", "items": q24},
+    {"id": "2.5", "title": "Question 2.5", "kind": "Neurons", "marks": 8,
+     "lead": "The diagrams below represent a neuron with a myelin sheath (myelinated) and a neuron without a myelin sheath (unmyelinated). "
+             "(The diagrams are NOT drawn to scale.)", "items": q25,
+     "figure": fig(12, (131, 142, 486, 374), "Two neurons, not drawn to scale. Left: a neuron with a myelin sheath in segments along its long "
+                   "middle fibre. Right: the same kind of neuron without a myelin sheath. A labels its long middle fibre, B the branched ends at "
+                   "the top, and C the branches around the cell body at the bottom.")},
+    {"id": "2.6", "title": "Question 2.6", "kind": "Impulse speed", "marks": 6,
+     "lead": "In the human body, the axons of myelinated neurons have much smaller diameters than the axons of unmyelinated neurons. The graphs "
+             "below show the speed of nerve impulses in myelinated neurons and in unmyelinated neurons with different axon diameters.", "items": q26,
+     "figure": fig(13, (98, 168, 552, 403), "Two straight-line graphs of impulse speed (m/s) against axon diameter (µm). Myelinated neuron: "
+                   "5 µm 20, 10 µm 40, 15 µm 60, 20 µm 80, 25 µm 100, 30 µm 120 m/s. Unmyelinated neuron: 200 µm 5, 400 µm 10, 600 µm 15, "
+                   "800 µm 20, 1000 µm 25, 1200 µm 30 m/s.")},
+]
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Life Sciences", "title": "Life Sciences P1", "sitting": "November 2024", "total_marks": 150, "time": "2½ hours"},
-    "sections": [{"title": "Section A", "total": 50, "missions": missions}],
+    "sections": [{"title": "Section A", "total": 50, "missions": missions}, {"title": "Section B", "total": 100, "missions": missions_b}],
     "flags": [
         {"n": "1.4.1(a)", "kind": "low_confidence", "detail": "The memo accepts C – urethra OR D – penis. Marked: either letter earns its mark, the name only when it names the part of the letter chosen ('C – penis' = 1). A Life Sciences teacher should confirm."},
-        {"n": "paper", "kind": "low_confidence", "detail": "Question 1 (Section A) only, hand-transcribed from the paper and memo PDFs; no API call. Section B is not in yet."},
+        {"n": "2.1.3", "kind": "no_fit", "detail": "The memo makes 'oogenesis' a COMPULSORY mark (1) + any 5; the written-answer marker has no compulsory point, so it is not enforced."},
+        {"n": "2.5.4", "kind": "low_confidence", "detail": "An order of LETTERS (C → A → B): the letter balls need a sequence design (shown to Murci first)."},
+        {"n": "paper", "kind": "low_confidence", "detail": "Questions 1 and 2, hand-transcribed from the paper and memo PDFs; no API call. Question 3 is not in yet."},
     ],
 }
 out = Path(__file__).parent / "out" / "ls-p1-2024-11"
 out.mkdir(parents=True, exist_ok=True)
-(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper and memo PDFs (no API call)", "scope": "Question 1"},
+(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper and memo PDFs (no API call)", "scope": "Questions 1 and 2"},
                                                "paper": paper}, indent=1, ensure_ascii=False), encoding="utf-8")
-print("parts:", sum(len(m["items"]) for m in missions), "marks:", sum(i["marks"] for m in missions for i in m["items"]))
+for sec in paper["sections"]:
+    print(sec["title"], "parts:", sum(len(m["items"]) for m in sec["missions"]), "marks:", sum(i["marks"] for m in sec["missions"] for i in m["items"]))
