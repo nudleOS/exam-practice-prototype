@@ -37,6 +37,14 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
     letters; the name earns its mark only when it names THE PART OF THAT LETTER ("C – penis" = 1 of 2). A row whose letter is none
     of them is marked on its name alone (as a single letter + name always was). Each memo part counts once. A Life Sciences
     teacher should confirm the rule. The exam service marks the platform's attempts: it needs the same rule and types (not yet).
+  - **`list.pool` is authored for its matcher:** each memo point is a group of accepted answers, and an answer scores a group when
+    it holds the FIRST WORD of one of them (a substring test, so "protect" also takes "protected"). So every accepted answer must
+    LEAD with a word only that point uses: `["body (the cell body is at one end)", "soma"]`, never `"cell body"` (any answer with
+    "cell" scored, LS P1 Nov 2024 2.5.2) nor a lead word like "the", "same", "no", "many". The words after the first are what the
+    memo shows (the group's first entry). A stand-in until the AI marker (Ollama) marks written lists.
+  - **Where an `mcq` plays:** in the MCQ card component, except when its options are all single letters (they play as letter balls
+    on the page, as every letter pick does) or its mission has a `table` (the component shows an extract, not a table; LS P1 Nov
+    2024 3.3.3). On the page an MCQ answers on the tap, as a card does.
 - **Output** `catalog/paper.schema.json`: `{catalog, paper{subject,title,sitting,total_marks,time}, sections[{title,total,missions[
   {id,title,kind,lead,marks,extract,table,figure{page,bbox,caption},items[component]}]}], flags[{n,kind,detail}]}`. An `mcq` may
   carry its own `figure{page,bbox,caption}` when the paper prints one for that question alone (LS P1 Nov 2024 1.1.6, 1.1.9, 1.1.10).
