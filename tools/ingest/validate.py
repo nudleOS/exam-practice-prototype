@@ -25,6 +25,34 @@ def schema_errors(paper):
             for e in sorted(v.iter_errors(paper), key=lambda e: list(e.absolute_path))]
 
 
+# the LEAD rule for a list pool: the exam service's papers/domain/list_keys.py, character for character (and the app's
+# leadHit); tools/ingest/check_lead_rule.py runs all three on the service's cases. An entry's key: its words before any "("
+# up to and including the first word not a stop word; a line names it when the key's words stand together in it, each
+# starting a word, a number exactly.
+LEAD_STOP = frozenset("the a an same no not many all one two three four five until of in on at to for by with and or is are was were be its their there".split())
+
+
+def lead_words(text):
+    import unicodedata
+    t = "".join(c for c in unicodedata.normalize("NFKD", str(text or "")) if not unicodedata.combining(c)).lower()
+    return [w for w in re.split(r"[^a-z0-9]+", t.replace("'", "").replace("’", "")) if w]
+
+
+def lead_key(entry):
+    ws = lead_words(str(entry).split("(")[0])
+    for i, w in enumerate(ws[:3]):
+        if w not in LEAD_STOP:
+            return tuple(ws[: i + 1])
+    return tuple(ws[:3])
+
+
+def lead_hit(line, entries):
+    a = lead_words(line)
+    hit = lambda x, k: x == k if k.isdigit() else x.startswith(k)
+    return any(k and any(all(hit(a[i + j], k[j]) for j in range(len(k))) for i in range(len(a) - len(k) + 1))
+               for k in (lead_key(e) for e in entries))
+
+
 def semantic_issues(paper):
     out = []
     add = lambda n, sev, msg: out.append({"n": n, "severity": sev, "msg": msg})
@@ -56,6 +84,9 @@ def semantic_issues(paper):
                 if t == "order" and sorted(i.get("a") or []) != list(range(len(opts))): add(n, "error", "order is not a permutation of the options")
                 if t == "term" and not [a for a in i.get("a") or [] if a.strip()]: add(n, "error", "no accepted answer")
                 if t == "list" and len(i.get("pool") or []) < i.get("count", 0): add(n, "error", "fewer memo answers than the count asked")
+                if t == "list":   # a key of stop words only ("the same") would credit almost any line
+                    weak = [e for g in i.get("pool") or [] for e in (g if isinstance(g, list) else [g]) if all(w in LEAD_STOP for w in lead_key(e))]
+                    if weak: add(n, "error", f"list entries with no lead word: {weak}")
                 if t == "steps" and sum(s.get("marks", 0) for s in i.get("steps") or []) != i.get("marks"): add(n, "warn", "step marks do not add up to the part")
                 if t == "steps":   # a label is on screen during play: it names the quantity, never the working the memo marks
                     stps = i.get("steps") or []

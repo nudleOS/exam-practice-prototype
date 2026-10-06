@@ -1697,6 +1697,22 @@ const pairMarks = (rows, pool, half, keyOf) => {
       { key: keyOf(k, "name"), awarded: nOk ? half : 0, available: half, verdict: !nm ? "missing" : nOk ? "correct" : "incorrect" }); });
   return { got: Math.round(got * 100) / 100, items: items }; };
 
+// <lead-rule> The LEAD rule for a written list (2026-10-06): the exam service's papers/domain/list_keys.py, character for
+// character; both run the cases in its tests/fixtures/list_lead_cases.json (tools/ingest/check_lead_rule.py). An entry's KEY
+// is its words before any "(" up to and including the first word not a stop word ("two year" from "two-year-old"); a line
+// names it when the key's words stand together in it, each STARTING a word ("protect" takes "protected", "age" does not
+// take "average") and a number exactly ("2" does not take "12"). It was the first word as a SUBSTRING: "2" scored "12".
+const LEAD_STOP = new Set(["the", "a", "an", "same", "no", "not", "many", "all", "one", "two", "three", "four", "five", "until", "of", "in", "on",
+  "at", "to", "for", "by", "with", "and", "or", "is", "are", "was", "were", "be", "its", "their", "there"]);
+const leadWords = s => String(s == null ? "" : s).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/['\u2019]/g, "").split(/[^a-z0-9]+/).filter(Boolean);
+const leadKey = e => { const ws = leadWords(String(e).split("(")[0]);
+  for (let i = 0; i < Math.min(3, ws.length); i++) if (!LEAD_STOP.has(ws[i])) return ws.slice(0, i + 1);
+  return ws.slice(0, 3); };
+const leadHit = (line, entries) => { const a = leadWords(line);
+  return entries.some(e => { const k = leadKey(e);
+    return k.length > 0 && a.some((_, i) => i + k.length <= a.length && k.every((w, j) => /^\d+$/.test(w) ? a[i + j] === w : a[i + j].startsWith(w))); }); };
+// </lead-rule>
+
 // ── Mock of the marking service, standing in for the backend. The screens only ever see its replies.
 const SERVER = { keys: {}, clues: {}, memo: {}, glossary: {} };   // glossary: { paperPrefix: { normalised term: true } }
 
@@ -3390,10 +3406,11 @@ class Component extends DCLogic {
       const groups = key.pool.map(g => Array.isArray(g) ? g : [g]);
       const usedBy = {}; let got = 0;
       const each = part.marks / Math.max(1, part.count || groups.length);
+      // the lead rule (above, the service's own); the FIRST FREE group a line names scores, as the service's judge_list
       const items = answer.slice(0, part.count || answer.length).map((a, i) => { const n = norm(a);
-        const gi = groups.findIndex(g => g.some(syn => { const t = norm(syn); return n && (n === t || n.indexOf(t.split(" ")[0]) !== -1); }));
-        if (gi >= 0 && usedBy[gi] == null) { usedBy[gi] = i; got += each; return { key: "l" + i, awarded: each, available: each, verdict: "correct" }; }
-        if (gi >= 0) return { key: "l" + i, awarded: 0, available: each, verdict: "incorrect", reason: "Same as answer " + (usedBy[gi] + 1) + "." };
+        const hits = groups.map((g, gi) => n && leadHit(a, g) ? gi : -1).filter(gi => gi >= 0), gi = hits.find(h => usedBy[h] == null);
+        if (gi != null) { usedBy[gi] = i; got += each; return { key: "l" + i, awarded: each, available: each, verdict: "correct" }; }
+        if (hits.length) return { key: "l" + i, awarded: 0, available: each, verdict: "incorrect", reason: "Same as answer " + (usedBy[hits[0]] + 1) + "." };
         return { key: "l" + i, awarded: 0, available: each, verdict: n ? "incorrect" : "missing" }; });
       got = Math.round(got * 100) / 100;
       return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items };

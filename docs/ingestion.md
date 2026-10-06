@@ -40,11 +40,18 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
     letters; the name earns its mark only when it names THE PART OF THAT LETTER ("C – penis" = 1 of 2). A row whose letter is none
     of them is marked on its name alone (as a single letter + name always was). Each memo part counts once. A Life Sciences
     teacher should confirm the rule. The exam service marks the platform's attempts: it needs the same rule and types (not yet).
-  - **`list.pool` is authored for its matcher:** each memo point is a group of accepted answers, and an answer scores a group when
-    it holds the FIRST WORD of one of them (a substring test, so "protect" also takes "protected"). So every accepted answer must
-    LEAD with a word only that point uses: `["body (the cell body is at one end)", "soma"]`, never `"cell body"` (any answer with
-    "cell" scored, LS P1 Nov 2024 2.5.2) nor a lead word like "the", "same", "no", "many". The words after the first are what the
-    memo shows (the group's first entry). A stand-in until the AI marker (Ollama) marks written lists.
+  - **`list.pool` is authored for its matcher (the LEAD rule):** each memo point is a group of accepted answers, and an answer
+    scores a group when it holds one entry's KEY: the entry's words before any "(" up to and including the first word that is not
+    a stop word ("twin", "mrs", "two year" from "two-year-old", "until 18"), standing together in the answer, each word STARTING
+    one of the answer's words ("protect" takes "protected"; "age" does not take "average") and a number EXACTLY ("2" does not
+    take "12" or "20"). So every accepted answer must LEAD with words only that point uses: `["body (the cell body is at one
+    end)", "soma"]`, never `"cell body"` (any answer with "cell" scored, LS P1 Nov 2024 2.5.2). An entry whose key is stop
+    words only ("the same") is an error. The words after the key are what the memo shows (the group's first entry). A later line
+    naming a group an earlier one scored says "Same as answer N.". Until 2026-10-06 the key was the first word as a SUBSTRING
+    ("2" scored "12", "age" "average"); the exam service runs the same rule (`list_match: "lead"`), and
+    `tools/ingest/check_lead_rule.py` proves the app, validate.py and the service agree on the service's own cases. A
+    compound word no longer matches mid-word ("sunlight" does not take "light"): give it as an entry if the memo accepts it.
+    A stand-in until a model marks written lists.
   - `rubric.must[]`: the indexes of COMPULSORY points (the memo's "Compulsory mark * (1) + Any (5)", LS P1 Nov 2024 2.1.3). Each
     earns its own mark and nothing stands in for it: the other points together earn at most the marks less the compulsory ones
     (no "oogenesis" = 5 of 6 at most). The memo shows a compulsory point with its "*". The exam service needs the same rule.
