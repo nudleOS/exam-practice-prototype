@@ -642,6 +642,68 @@
             "properties": {
              "t": {
               "type": "string",
+              "const": "genotype"
+             },
+             "n": {
+              "type": "string",
+              "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+             },
+             "marks": {
+              "type": "integer"
+             },
+             "q": {
+              "type": "string",
+              "description": "The question text exactly as printed, without the marks"
+             },
+             "clues": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Two hints that lead the learner without giving the answer"
+             },
+             "note": {
+              "type": "string",
+              "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "alleles": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Every allele of the system as printed, dominant first (['D', 'd'], ['I\u1d2c', 'I\u1d2e', 'i'], ['X\u1d34', 'X\u02b0', 'Y'])"
+             },
+             "count": {
+              "type": "integer"
+             },
+             "pool": {
+              "type": "array",
+              "items": {
+               "type": "array",
+               "items": {
+                "type": "string"
+               }
+              },
+              "description": "Every genotype the memo accepts, each as its two alleles (['I\u1d2e', 'i'])"
+             }
+            },
+            "required": [
+             "t",
+             "n",
+             "marks",
+             "q",
+             "clues",
+             "alleles",
+             "count",
+             "pool"
+            ],
+            "additionalProperties": false
+           },
+           {
+            "type": "object",
+            "properties": {
+             "t": {
+              "type": "string",
               "const": "num"
              },
              "n": {
@@ -870,99 +932,177 @@
               }
              },
              "build": {
-              "type": "object",
-              "properties": {
-               "kind": {
-                "type": "string",
-                "const": "hist"
-               },
-               "want": {
-                "type": "string",
-                "enum": [
-                 "histogram",
-                 "bar",
-                 "line"
-                ]
-               },
-               "groups": {
-                "type": "array",
-                "items": {
-                 "type": "string"
-                }
-               },
-               "answers": {
-                "type": "array",
-                "items": {
-                 "type": "number"
-                }
-               },
-               "tol": {
-                "type": "number"
-               },
-               "top": {
-                "type": "number"
-               },
-               "steps": {
-                "type": "array",
-                "items": {
-                 "type": "number"
-                }
-               },
-               "okSteps": {
-                "type": "array",
-                "items": {
-                 "type": "number"
-                }
-               },
-               "snap": {
-                "type": "number"
-               },
-               "x": {
-                "type": "array",
-                "items": {
-                 "type": "string"
-                }
-               },
-               "y": {
-                "type": "array",
-                "items": {
-                 "type": "string"
-                }
-               },
-               "capWords": {
-                "type": "array",
-                "items": {
-                 "type": "array",
-                 "items": {
+              "anyOf": [
+               {
+                "type": "object",
+                "properties": {
+                 "kind": {
+                  "type": "string",
+                  "const": "hist"
+                 },
+                 "want": {
+                  "type": "string",
+                  "enum": [
+                   "histogram",
+                   "bar",
+                   "line"
+                  ]
+                 },
+                 "groups": {
+                  "type": "array",
+                  "items": {
+                   "type": "string"
+                  }
+                 },
+                 "answers": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  }
+                 },
+                 "tol": {
+                  "type": "number"
+                 },
+                 "top": {
+                  "type": "number"
+                 },
+                 "steps": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  }
+                 },
+                 "okSteps": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  }
+                 },
+                 "snap": {
+                  "type": "number"
+                 },
+                 "x": {
+                  "type": "array",
+                  "items": {
+                   "type": "string"
+                  }
+                 },
+                 "y": {
+                  "type": "array",
+                  "items": {
+                   "type": "string"
+                  }
+                 },
+                 "capWords": {
+                  "type": "array",
+                  "items": {
+                   "type": "array",
+                   "items": {
+                    "type": "string"
+                   }
+                  }
+                 },
+                 "typeQ": {
+                  "type": "string"
+                 },
+                 "typeHint": {
+                  "type": "string"
+                 },
+                 "unit": {
                   "type": "string"
                  }
-                }
+                },
+                "required": [
+                 "kind",
+                 "want",
+                 "groups",
+                 "answers",
+                 "tol",
+                 "top",
+                 "steps",
+                 "okSteps",
+                 "x",
+                 "y",
+                 "capWords"
+                ],
+                "additionalProperties": false,
+                "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"
                },
-               "typeQ": {
-                "type": "string"
-               },
-               "typeHint": {
-                "type": "string"
-               },
-               "unit": {
-                "type": "string"
+               {
+                "type": "object",
+                "properties": {
+                 "kind": {
+                  "type": "string",
+                  "const": "cross"
+                 },
+                 "alleles": {
+                  "type": "array",
+                  "items": {
+                   "type": "string"
+                  }
+                 },
+                 "phenos": {
+                  "type": "array",
+                  "items": {
+                   "type": "string"
+                  }
+                 },
+                 "parents": {
+                  "type": "array",
+                  "items": {
+                   "type": "object",
+                   "properties": {
+                    "pheno": {
+                     "type": "string"
+                    },
+                    "geno": {
+                     "type": "array",
+                     "items": {
+                      "type": "string"
+                     }
+                    }
+                   },
+                   "required": [
+                    "pheno",
+                    "geno"
+                   ],
+                   "additionalProperties": false
+                  }
+                 },
+                 "offspring": {
+                  "type": "array",
+                  "items": {
+                   "type": "object",
+                   "properties": {
+                    "geno": {
+                     "type": "array",
+                     "items": {
+                      "type": "string"
+                     }
+                    },
+                    "pheno": {
+                     "type": "string"
+                    }
+                   },
+                   "required": [
+                    "geno",
+                    "pheno"
+                   ],
+                   "additionalProperties": false
+                  }
+                 }
+                },
+                "required": [
+                 "kind",
+                 "alleles",
+                 "phenos",
+                 "parents",
+                 "offspring"
+                ],
+                "additionalProperties": false,
+                "description": "Only for a MONOHYBRID genetic cross the memo marks P1 phenotypes, P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (compulsory), P1/F1, meiosis/fertilisation: BUILT on a Punnett square. alleles: the system's alleles; phenos: every phenotype the stem names; parents: the two P1 parents; offspring: EVERY possible genotype with its phenotype. The criteria keep the memo's 8 points"
                }
-              },
-              "required": [
-               "kind",
-               "want",
-               "groups",
-               "answers",
-               "tol",
-               "top",
-               "steps",
-               "okSteps",
-               "x",
-               "y",
-               "capWords"
-              ],
-              "additionalProperties": false,
-              "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"
+              ]
              },
              "memo": {
               "type": "string"

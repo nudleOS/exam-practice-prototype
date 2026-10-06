@@ -78,6 +78,22 @@ def semantic_issues(paper):
                     if len(pool) < i.get("count", 0): add(n, "error", "fewer memo parts than the count asked")
                     if any(p.get("letter") not in (i.get("letters") or []) for p in pool): add(n, "error", "a memo letter is not one of the letters")
                     if i.get("marks") != 2 * i.get("count", 0): add(n, "warn", "a letter + name is 2 marks per part: marks are not 2 x count")
+                if t == "genotype":
+                    al, pool = i.get("alleles") or [], i.get("pool") or []
+                    if len(pool) < i.get("count", 0): add(n, "error", "fewer memo genotypes than the count asked")
+                    if any(len(g) != 2 or any(x not in al for x in g) for g in pool): add(n, "error", "a memo genotype is not two of the alleles")
+                    if i.get("count") and (i.get("marks") or 0) % i["count"]: add(n, "warn", "marks do not split evenly over the genotypes")
+                b = i.get("build") or {}
+                if t == "draw" and b.get("kind") == "cross":   # everything the marker derives must exist: each parent, each offspring's phenotype
+                    al, ph, par = b.get("alleles") or [], b.get("phenos") or [], b.get("parents") or []
+                    gt = lambda g: "|".join(sorted(g))
+                    key = {gt(o.get("geno") or []): o.get("pheno") for o in b.get("offspring") or []}
+                    if len(par) != 2 or any(len(p.get("geno") or []) != 2 or any(x not in al for x in p["geno"]) or p.get("pheno") not in ph for p in par):
+                        add(n, "error", "a cross needs two parents, each a phenotype from phenos and two of the alleles")
+                    elif any(key.get(gt([x, y])) not in ph for x in par[0]["geno"] for y in par[1]["geno"]):
+                        add(n, "error", "an offspring genotype of this cross has no phenotype in offspring (or one not in phenos)")
+                    elif any(key.get(gt(p["geno"])) != p["pheno"] for p in par): add(n, "error", "a parent's phenotype disagrees with offspring's for its genotype")
+                    if i.get("marks") and len(i.get("criteria") or []) <= i["marks"] - 1: add(n, "warn", "a cross's criteria: the memo's points (usually 8 for 6 marks)")
                 tb = i.get("optTable")
                 if t == "mcq" and tb and (len(tb.get("rows") or []) != len(opts) or any(len(r) != len(tb.get("head") or []) for r in tb.get("rows") or [])):
                     add(n, "error", "the options table needs one row per option and one cell per column")

@@ -35,7 +35,13 @@ component (the `t` field). Choose the component by how the MEMO marks the part, 
 - options printed as a table go in `mcq.optTable` (head + one row per option), opts reading each row as a line;
 - a letter + name the memo accepts in two ways ("C - urethra OR D - penis") uses `lettername.or`; the LETTERS and NAMES of
   several parts in one numbered part use `letternames` (count + pool), never two parts and never `draw`;
-- a part no component can mark (a drawing, a graph to plot, a genetic cross diagram, a structured essay) becomes `draw` with the
+- a GENOTYPE answer ("Give the genotype of individual 5", "State ALL the possible genotypes") is `genotype`: the system's
+  alleles exactly as printed (superscripts as Unicode: Iᴮ, Xʰ), each memo genotype as its two alleles; never `term` or `list`
+  (they fold case, so DD would pass for dd);
+- a MONOHYBRID genetic cross the memo marks point by point (P1 phenotypes and genotypes, meiosis, gametes, fertilisation, F1
+  genotypes and phenotypes, ratio) is `draw` with `build.kind` "cross" (parents, every offspring genotype's phenotype) and the
+  memo's criteria; no flag;
+- a part no component can mark (a drawing, a graph to plot, a dihybrid cross, a structured essay) becomes `draw` with the
   memo's criteria, and gets a `no_fit` flag.
 
 The memo is the source of truth for answers and marks:

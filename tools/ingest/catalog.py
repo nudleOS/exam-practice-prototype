@@ -71,6 +71,11 @@ COMPONENTS = {
         "letters": STRS, "count": INT,
         "pool": {"type": "array", "items": obj({"letter": STR, "name": STRS}, ["letter", "name"]), "description": "Every part the memo accepts, each with its accepted names"}},
         ["letters", "count", "pool"]),
+    "genotype": component("genotype", "COUNT genotypes built from the paper's alleles (never typed: case and superscripts are exact, DD is never dd).", {
+        "alleles": {**STRS, "description": "Every allele of the system as printed, dominant first (['D', 'd'], ['Iᴬ', 'Iᴮ', 'i'], ['Xᴴ', 'Xʰ', 'Y'])"},
+        "count": INT,
+        "pool": {"type": "array", "items": STRS, "description": "Every genotype the memo accepts, each as its two alleles (['Iᴮ', 'i'])"}},
+        ["alleles", "count", "pool"]),
     "num": component("num", "One number (keypad), within a tolerance.", {"a": NUM, "tol": NUM, "unit": STR}, ["a", "tol"]),
     "steps": component("steps", "A calculation in numbered steps, each one NUMBER (method marks per step).", {
         "steps": {"type": "array", "items": obj({"id": STR, "label": STR, "marks": INT, "a": NUM, "tol": NUM,
@@ -83,12 +88,18 @@ COMPONENTS = {
                  "mark, and the other points together earn at most marks minus the compulsory ones"}}, ["bullets"]),
     "draw": component("draw", "No catalogue type fits (a drawing, a graph to plot, a structured essay ...): the learner answers on paper and self-checks against the memo's criteria. Flag it no_fit.", {
         "criteria": {"type": "array", "items": obj({"text": STR, "marks": INT}, ["text", "marks"])},
-        "build": obj({"kind": {"type": "string", "const": "hist"}, "want": {"type": "string", "enum": ["histogram", "bar", "line"]},
-                      "groups": STRS, "answers": {"type": "array", "items": NUM}, "tol": NUM, "top": NUM, "steps": {"type": "array", "items": NUM},
-                      "okSteps": {"type": "array", "items": NUM}, "snap": NUM, "x": STRS, "y": STRS, "capWords": {"type": "array", "items": STRS},
-                      "typeQ": STR, "typeHint": STR, "unit": STR},
-                     ["kind", "want", "groups", "answers", "tol", "top", "steps", "okSteps", "x", "y", "capWords"]) | {
-            "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"},
+        "build": {"anyOf": [
+            obj({"kind": {"type": "string", "const": "hist"}, "want": {"type": "string", "enum": ["histogram", "bar", "line"]},
+                 "groups": STRS, "answers": {"type": "array", "items": NUM}, "tol": NUM, "top": NUM, "steps": {"type": "array", "items": NUM},
+                 "okSteps": {"type": "array", "items": NUM}, "snap": NUM, "x": STRS, "y": STRS, "capWords": {"type": "array", "items": STRS},
+                 "typeQ": STR, "typeHint": STR, "unit": STR},
+                ["kind", "want", "groups", "answers", "tol", "top", "steps", "okSteps", "x", "y", "capWords"]) | {
+                "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"},
+            obj({"kind": {"type": "string", "const": "cross"}, "alleles": STRS, "phenos": STRS,
+                 "parents": {"type": "array", "items": obj({"pheno": STR, "geno": STRS}, ["pheno", "geno"])},
+                 "offspring": {"type": "array", "items": obj({"geno": STRS, "pheno": STR}, ["geno", "pheno"])}},
+                ["kind", "alleles", "phenos", "parents", "offspring"]) | {
+                "description": "Only for a MONOHYBRID genetic cross the memo marks P1 phenotypes, P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (compulsory), P1/F1, meiosis/fertilisation: BUILT on a Punnett square. alleles: the system's alleles; phenos: every phenotype the stem names; parents: the two P1 parents; offspring: EVERY possible genotype with its phenotype. The criteria keep the memo's 8 points"}]},
         "memo": STR}, ["criteria"]),
 }
 

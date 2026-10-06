@@ -52,6 +52,20 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
     the memo marks T C L S P (type, caption, labels, scale, plotting) is BUILT on the phone, one criterion a step (LS P1 June 2026 3.1.3
     histogram; Nov 2025 2.3.4 bar graph). `want` is the right type (a wrong type loses T and S, as the memo rules); `x` / `y` are the
     axis label choices, the right one first; `capWords` are word groups the caption needs one of each; `snap` is what a drag moves to.
+  - `genotype{alleles, count, pool}` (LS P2 Nov 2025 2.3.3(b), 2.4.2): genotypes BUILT from the paper's alleles on sockets filled
+    from a tray, never typed. A typed genotype was lost twice: `term` folds case (`DD` passed for `dd`) and `list` keeps a-z only
+    and tests "contains" (a wrong `IBIA` held "ibi" and earned the Iᴮi mark). Alleles are the paper's tokens with Unicode
+    superscripts (Iᴮ, Xʰ), compared exactly; a genotype is its two alleles in any order; each memo genotype counts once. When the
+    paper prints no symbols, the tray offers the system's WHOLE set (Iᴬ Iᴮ i): it shows the notation, not the answer.
+  - `draw.build{kind:"cross", alleles, phenos, parents[{pheno, geno}], offspring[{geno, pheno}]}` (LS P2 Nov 2025 2.5.4): a
+    monohybrid cross BUILT on a Punnett square. Only the two parents and the genotype -> phenotype key are data; the marker
+    derives the gametes, the four offspring, their phenotypes and the ratio, so the data cannot contradict itself (the validator
+    derives them too and refuses a cross with an offspring the key does not name). Marked on the memo's 8 points: P1 phenotypes,
+    P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (COMPULSORY, and only with the right phenotypes; 2 : 2 is 1 : 1),
+    P1 and F1, meiosis and fertilisation; the ratio's mark + at most marks - 1 from the other seven. The learner places the four
+    labels on a rail (the memo marks them: printing them gives two marks away). The square may be either way round. Its criteria
+    stay OUT of the part during play (they name the answers) and show in the memo at the end. The memo's gamete-line layout is
+    not offered: the square earns the same two marks.
   - **Where an `mcq` plays:** in the MCQ card component, except when its options are all single letters (they play as letter balls
     on the page, as every letter pick does) or its mission has a `table` (the component shows an extract, not a table; LS P1 Nov
     2024 3.3.3). On the page an MCQ answers on the tap, as a card does.
@@ -96,8 +110,7 @@ python tools/ingest/transcribe_ls_p1_2024_11.py && python tools/ingest/ingest.py
 regenerated. They write `response.json` in the catalogue format, so they pass the same schema and semantic checks as an AI run.
 What the catalogue cannot hold yet is flagged in the data (`flags`), never silently bent. LS P1 Nov 2024 Question 1 had three such
 parts (1.1.6 table options, 1.4.1(a) alternative pairs, 1.5.2 two pairs in one part); the catalogue now holds all three.
-Known limits: steps lose follow-through formulas (functions are not data); builders (histogram, stems) are not in the catalogue
-(drawings ingest as self-check); scanned PDFs rely on the model's vision (Mathematics, Maths Lit); resources not in the PDF (map
-sheets) must be added by hand. Genotypes: `term` and `list` fold case and keep only a-z/0-9, so `dd` also accepts `DD`, and a
-superscript allele (Iᴮ) cannot be told from a plain letter; a genetic cross ingests as a self-check `draw` (LS P2 Nov 2025 2.3.3(b),
-2.4.2, 2.5.4, flagged no_fit).
+Known limits: steps lose follow-through formulas (functions are not data); the stems builder is not in the catalogue (the
+histogram, genotype and cross builders are; other drawings ingest as self-check); scanned PDFs rely on the model's vision (Mathematics, Maths Lit); resources not in the PDF (map
+sheets) must be added by hand. A dihybrid cross (a 4 x 4 square) and a cross asked as a percentage chance still ingest as a
+self-check `draw`.
