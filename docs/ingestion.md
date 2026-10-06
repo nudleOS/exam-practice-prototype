@@ -30,6 +30,9 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
   - `mcq.optTable{head, rows}`: options the paper prints as a TABLE (1.1.6); one row of cells per option, in the order of `opts`
     (which stay each row read as a line: the medal card and the memo use them). The card shows one full-width row per option under
     the column heads; a screen reader hears "C: muscle in X relaxed, structure Y taut, part Z less convex".
+  - `mcq.ab{a, b}`: COLUMN I / COLUMN II ("A only, B only, both A and B, none", LS P1 1.3 every sitting): COLUMN II's two items,
+    with `q` as COLUMN I's description and `opts` exactly A only / B only / Both A and B / None (the validator checks). The page draws
+    it as a Venn: the two items are its circles, and the learner taps the region the description belongs to.
   - `lettername.or[{letter, name[]}]`: other pairs the memo accepts instead (1.4.1(a): C – urethra OR D – penis).
   - `letternames{letters, count, pool[{letter, name[]}]}`: the LETTERS and NAMES of `count` parts in one numbered part, any order
     (1.5.2); one row per part, a letter on another row is dimmed (a tap moves it), 2 marks per part.

@@ -52,7 +52,10 @@ COMPONENTS = {
     "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
                                                        "optTable": obj({"head": STRS, "rows": {"type": "array", "items": STRS}}, ["head", "rows"]) | {
                                                            "description": "Only when the paper prints the options as a TABLE: its column heads, and one row of cells per option in the order of opts (opts then reads each row as a line)"},
-                                                       "figure": {**FIGURE, "description": "Only when the paper prints a figure for THIS one question (not the whole block)"}}, ["opts", "a"]),
+                                                       "figure": {**FIGURE, "description": "Only when the paper prints a figure for THIS one question (not the whole block)"},
+                                                       "ab": obj({"a": STR, "b": STR}, ["a", "b"]) | {
+                                                           "description": "Only for COLUMN I / COLUMN II (A only, B only, both A and B, none): COLUMN II's two items; opts are then exactly "
+                                                                          "['A only', 'B only', 'Both A and B', 'None'] and q is COLUMN I's description"}}, ["opts", "a"]),
     "pickn": component("pickn", "Pick N of several options.", {"opts": STRS, "pool": {**INTS, "description": "0-based indexes of every right option"}, "count": INT}, ["opts", "pool", "count"]),
     "order": component("order", "Put the options in sequence.", {"opts": STRS, "a": {**INTS, "description": "option indexes in the right order"}}, ["opts", "a"]),
     "term": component("term", "One term or short phrase (one line).", {

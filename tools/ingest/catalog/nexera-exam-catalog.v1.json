@@ -95,6 +95,23 @@
       ],
       "additionalProperties": false,
       "description": "Only when the paper prints a figure for THIS one question (not the whole block)"
+     },
+     "ab": {
+      "type": "object",
+      "properties": {
+       "a": {
+        "type": "string"
+       },
+       "b": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "a",
+       "b"
+      ],
+      "additionalProperties": false,
+      "description": "Only for COLUMN I / COLUMN II (A only, B only, both A and B, none): COLUMN II's two items; opts are then exactly ['A only', 'B only', 'Both A and B', 'None'] and q is COLUMN I's description"
      }
     },
     "required": [

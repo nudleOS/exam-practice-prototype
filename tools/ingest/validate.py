@@ -48,6 +48,8 @@ def semantic_issues(paper):
                 if len(i.get("clues") or []) < 2: add(n, "warn", "fewer than 2 hints")
                 opts = i.get("opts") or []
                 if t == "mcq" and not (0 <= i.get("a", -1) < len(opts)): add(n, "error", f"answer index {i.get('a')} outside {len(opts)} options")
+                if t == "mcq" and i.get("ab") and [o.strip().lower() for o in opts] != ["a only", "b only", "both a and b", "none"]:
+                    add(n, "error", "a COLUMN II pair (ab) needs the options A only, B only, Both A and B, None, in that order")
                 if t == "pickn" and (len(i.get("pool") or []) < i.get("count", 0) or any(not 0 <= x < len(opts) for x in i.get("pool") or [])):
                     add(n, "error", "pick-N pool does not fit its options or count")
                 if t == "order" and sorted(i.get("a") or []) != list(range(len(opts))): add(n, "error", "order is not a permutation of the options")
