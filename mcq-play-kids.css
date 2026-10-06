@@ -25,9 +25,8 @@ body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face 
 body.mcqp-kids .mcqp .tile:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) { --cast:rgba(var(--c),0.5); }
 /* K · the edge: lit in the colour at the top-right, a faint grey hairline everywhere else */
 body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
-body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(255,255,255,0.8) 330deg, transparent 350deg),
-    linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.4) 18%, rgba(255,255,255,0.07) 42%, rgba(255,255,255,0.05) 100%); }
+/* (the rule above draws the rim on a waiting card too; its running light turns in mcq-play.css's .edge, in this colour) */
+body.mcqp-kids .mcqp .face > .edge { --mq-arc:rgba(255,255,255,0.8); }
 /* K · the letter: a solid badge in the option's colour */
 body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .letter { background:rgb(var(--c)); border-color:transparent; color:var(--ink); box-shadow:0 4px 12px rgba(var(--c),0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
 /* K · picked / growing (before the verdict): a ring and glow in its colour, the glow reaching a little further */
@@ -38,7 +37,7 @@ body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no):not(.shine):not(.flipped):not(
 
 /* The sweep across the card passes ONCE (Murci: "only have the whole card flash move shine run once"): when the cards
    have landed, a sweep crosses each, card after card, then stops. The light running round the rim keeps the base's
-   loop (a 6 s lap, each card at a different point of it: mcq-play.css mq-edgeShine) — Murci: it "should behave as it
+   loop (a 6 s lap, each card at a different point of it: mcq-play.css mq-edgeSpin) — Murci: it "should behave as it
    was". The base loops the sweep too (6.5 s, infinite); this replaces it with one pass. */
 body.mcqp-kids .mcqp .face .gleam::before { opacity:0.3; animation:mq-kgleam 1.5s cubic-bezier(.45,.05,.35,1) both; animation-delay:calc(0.8s + var(--d, 0ms) * 2); }
 @keyframes mq-kgleam { from { transform:translateX(-170%) skewX(-14deg); } to { transform:translateX(430%) skewX(-14deg); } }
@@ -85,9 +84,7 @@ html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.f
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.3) 0%, rgba(var(--c),0.1) 30%, rgba(var(--c),0) 56%), rgba(246,247,250,0.94);
   box-shadow:0 14px 28px -16px rgba(20,30,70,0.3); }
 html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.yes):not(.shine):not(.flipped):not(.hero) .face::before { background:linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
-html[data-theme="light"] body.mcqp-kids .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(var(--c),0.85) 330deg, transparent 350deg),
-    linear-gradient(218deg, rgba(var(--c),0.95) 0%, rgba(var(--c),0.45) 18%, rgba(20,30,60,0.18) 42%, rgba(20,30,60,0.14) 100%); }
+html[data-theme="light"] body.mcqp-kids .mcqp .face > .edge { --mq-arc:rgba(var(--c),0.85); }
 html[data-theme="light"] body.mcqp-kids .mcqp .tile.sel:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face, html[data-theme="light"] body.mcqp-kids .mcqp .tile.raised:not(.yes):not(.no):not(.shine):not(.flipped):not(.hero) .face {
   box-shadow:0 22px 36px -18px rgba(20,30,70,0.35), 0 0 0 2px rgb(var(--c)), 0 0 16px rgba(var(--c),0.35);
   background:radial-gradient(115% 150% at 100% 0%, rgba(var(--c),0.4) 0%, rgba(var(--c),0.14) 34%, rgba(var(--c),0) 62%), rgba(246,247,250,0.94); }

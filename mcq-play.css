@@ -383,8 +383,8 @@
     --glass-in:inset 0 -8px 16px -12px rgba(30,60,160,0.16);
     box-shadow:0 16px 30px -16px rgba(20,30,70,0.34), var(--glass-in); }
   html[data-theme="light"] .mcqp .face::before, html[data-theme="light"] .mcqp .back::before { background:linear-gradient(145deg, rgba(255,255,255,0.7), rgba(20,30,60,0.3) 22%, rgba(20,30,60,0.24) 60%, rgba(20,30,60,0.36)); }
-  html[data-theme="light"] .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before { background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(60,90,255,0.75) 330deg, transparent 350deg),
-    linear-gradient(145deg, rgba(255,255,255,0.7), rgba(20,30,60,0.3) 22%, rgba(20,30,60,0.24) 60%, rgba(20,30,60,0.36)); }
+  /* the light skin: its rim is the rule above (every card); the running light turns in .edge, in its own colour */
+  html[data-theme="light"] .mcqp .face > .edge { --mq-arc:rgba(60,90,255,0.75); }
   html[data-theme="light"] .mcqp .letter { background:rgba(20,30,60,0.06); border-color:rgba(20,30,60,0.36); color:var(--text); box-shadow:inset 0 1px 0 rgba(255,255,255,0.55); }
   html[data-theme="light"] .mcqp .tile.sel .face { box-shadow:0 24px 38px -18px rgba(20,30,70,0.38), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
   html[data-theme="light"] .mcqp .tile.raised .face { box-shadow:0 30px 48px -20px rgba(20,30,70,0.42), 0 0 0 1px rgba(20,30,60,0.3), var(--glass-in); }
