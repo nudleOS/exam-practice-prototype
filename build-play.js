@@ -93,7 +93,7 @@
     draw();
     return { sync(s) { const nv = Object.assign({ type: "", cap: "", xl: "", yl: "", step: 0, v: cfg.groups.map(() => 0) }, clone(s.value));
         const changed = JSON.stringify(nv) !== JSON.stringify(v), was = locked + chips; v = nv; locked = !!s.locked;
-        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, cfg.labels) : "";
+        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, cfg.labels || LABELS.hist) : "";
         if (changed && !Object.keys(s.value || {}).length) i = 0;   // a fresh try (Practise again / a retake) starts at step 1
         if ((changed || was !== locked + chips) && !drag) draw(true); },
       destroy() { document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
@@ -125,12 +125,16 @@
     }
     draw();
     return { sync(s) { const nv = clone(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v), was = locked + chips; v = nv; locked = !!s.locked;
-        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, cfg.labels) : "";
+        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, cfg.labels || Object.fromEntries(cfg.stems.map(st => [st.id, "Stem " + st.id]))) : "";
         if (changed || was !== locked + chips) draw(); },
       destroy() { host.innerHTML = ""; } };
   }
 
+  // each kind names its marker's items (the memo's own words); a paper may override them with cfg.labels. (No paper ever carried
+  // labels: chipRow read undefined[key] and threw on every render after a Check, so the T C L S P chips never showed; 2026-10-06)
+  const LABELS = { hist: { T: "Type", C: "Caption", L: "Axes labels", S: "Scale", P: "Plotting" } };
   function chipRow(items, labels) {
+    labels = labels || {};
     return `<div class="bp-chips" role="status">${items.map(it => { const ok = it.awarded >= it.available;
       return `<span class="bp-chip" data-ok="${ok}">${ok ? "✓" : it.awarded > 0 ? "◐" : "✕"} ${esc(labels[it.key] || it.key)}${it.available > 1 ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
   }
