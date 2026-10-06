@@ -4240,7 +4240,8 @@ class Component extends DCLogic {
     const stampOf = it => {
       if (!it) return null;
       const v = it.verdict;
-      if (v === "correct") return { t: it.available === 0 ? "✓" : "✓ " + it.awarded, c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
+      // (no number on a later try: marks are the first try's, so "✓ 1" on a silver ball claimed a mark the paper never banked, 3.3.3)
+      if (v === "correct") return { t: it.available === 0 || (reply && reply.try > 1) ? "✓" : "✓ " + it.awarded, c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
       if (v === "follow_through") return { t: "carried forward ✓", c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
       if (v === "incorrect") return { t: it.available === 0 ? "✕" : "✕ 0", c: "#ff9a9c", bg: "rgba(242,119,122,0.14)", b: "rgba(242,119,122,0.5)" };
       if (v === "unreadable") return { t: "couldn't read it", c: "#f3c14f", bg: "rgba(224,161,15,0.14)", b: "rgba(224,161,15,0.5)" };
