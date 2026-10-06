@@ -151,7 +151,7 @@ q21 = [
          ["It makes the ova.", "It also makes oestrogen and progesterone."]),
     # (a list: an answer scores when it holds an accepted answer's first word, so each group leads with its key word)
     lst("2.1.2(a)", "Give TWO characteristics of the endometrium that make it suitable for implantation", 2, 2,
-        [["blood", "vascular", "rich blood supply"], ["glandular", "glands"], ["thick", "thickened"]],
+        [["blood (a rich blood supply)", "vascular"], ["glandular", "glands"], ["thick", "thickened"]],
         ["Think of what an embryo needs from the wall it sinks into.", "Look at how thick the lining is, and what it carries."]),
     lst("2.1.2(b)", "Give TWO visible reasons why there is an increased chance of fertilisation in this female", 2, 2,
         [["sperm", "sperm cells are present"], ["ovulation", "ovum has been released", "egg has been released"]],
@@ -208,7 +208,7 @@ q25 = [
     term("2.5.1", "Identify the type of neuron shown in the diagrams.", ["motor neuron", "motor neurone", "motor neurons"],
          ["Look at where the cell body is.", "Which neuron carries impulses to a muscle?"]),
     lst("2.5.2", "Give ONE visible reason for your answer to QUESTION 2.5.1.", 1, 1,
-        [["dendrites", "many dendrites", "multipolar"], ["cell body", "cell body at one end"], ["long", "long axon", "axon is long"]],
+        [["dendrites (many dendrites)", "multipolar"], ["body (the cell body is at one end)", "soma"], ["long (a long axon)"]],
         ["Look at the cell body and the branches around it.", "Compare the lengths of the axon and the dendrites."]),
     rub("2.5.3", "Describe the function of the type of neuron identified in QUESTION 2.5.1.", 3,
         ["It transmits impulses", "from the central nervous system / interneuron", "to the effector"],
