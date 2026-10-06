@@ -1,4 +1,4 @@
-"""Life Sciences P1 Nov 2024, Questions 1 and 2, hand-transcribed into the catalogue format (as if Claude had produced it), then run through
+"""Life Sciences P1 Nov 2024, the whole paper (Questions 1 to 3), hand-transcribed into the catalogue format (as if Claude had produced it), then run through
 `ingest.py --from-json` like any ingested paper. Stems, options, marks and answers are the paper's and the memo's own; the clues and
 the figure captions (alt text) are ours. No API call: the transcription is the source, kept in git (out/ is not).
 
@@ -263,6 +263,134 @@ missions_b = [
                    "800 µm 20, 1000 µm 25, 1200 µm 30 m/s.")},
 ]
 
+# ---- Question 3 (Section B), from the question paper pages 14-18 and the memo pages 7-9 ----
+# (a list scores an answer that holds the FIRST WORD of an accepted answer, so every accepted answer here leads with a word only that
+# point uses: "body (the cell body ...)", never "the" / "same" / "no"; the words after it are what the memo shows)
+mcq1 = lambda n, q, opts, a, clues: {"t": "mcq", "n": n, "marks": 1, "q": q, "clues": clues, "opts": opts, "a": a}
+q31 = [
+    lst("3.1.1(a)", "Give ONE reason from the passage why vultures are considered as oviparous", 1, 1,
+        [["lay (they lay eggs)", "laid", "egg"]],
+        ["What does an oviparous animal do with its young before they hatch?", "Find what the female vulture does in the passage."]),
+    lst("3.1.1(b)", "Give ONE reason from the passage why vultures have a high survival rate even though few eggs are laid", 1, 1,
+        [["protected (the eggs are protected / incubated by the parents)", "protect", "incubat"],
+         ["fed (the chicks are fed by the parents)", "feed", "parental"]],
+        ["Few eggs, yet most survive: who looks after them?", "Look at what the parents do before and after the eggs hatch."]),
+    lst("3.1.2", "Fertilisation in vultures takes place internally. State TWO advantages of internal fertilisation.", 2, 2,
+        [["chance (fertilisation is more likely: the gametes are in close contact)", "likely", "contact"],
+         ["protected (the gametes are protected from predators / drying out)", "predat", "desiccat", "dry", "environment"],
+         ["water (water is not needed)"],
+         ["fewer (fewer gametes are needed)"]],
+        ["Think about where the gametes meet, and what can harm them outside the body.", "Compare it with fish releasing gametes into water."]),
+    lst("3.1.3", "State TWO characteristics of chicks that display altricial development.", 2, 2,
+        [["eyes (the eyes are closed when they hatch)", "eye", "blind"],
+         ["featherless (no down feathers)", "feather", "naked"],
+         ["immobile (unable to move after hatching)", "move", "helpless"],
+         ["dependent (on the parents for food / protection)", "depend"]],
+        ["Altricial chicks hatch early in their development.", "Think about what they can and cannot do on day one."]),
+    rub("3.1.4", "Explain why birds with altricial development would have short incubation periods.", 2,
+        ["The chicks are not fully developed when they hatch", "since the eggs have less yolk / there is a high degree of parental care"],
+        ["How developed is an altricial chick when it hatches?", "Link that to the yolk in the egg and the care after hatching."]),
+]
+q32 = [
+    term("3.2.1(a)", "Identify part X", ["pupil", "the pupil"], ["It is the opening that lets light into the eye.", "It looks black in the middle of the eye."]),
+    term("3.2.1(b)", "Identify part Y", ["iris", "the iris"], ["It is the coloured ring around X.", "Its muscles change the size of X."]),
+    rub("3.2.2", "Explain why the pupillary mechanism is considered to be a reflex action.", 3,
+        ["It is a rapid", "involuntary / automatic response", "to light"],
+        ["A reflex has three features: how fast, whether you control it, and what triggers it.", "What triggers this one?"]),
+    lst("3.2.3", "Name the TWO effector muscles that are involved in the pupillary mechanism.", 2, 2,
+        [["radial muscles", "radial"], ["circular muscles", "circular"]],
+        ["Both are in the iris.", "One set runs like the spokes of a wheel, the other in rings."]),
+    rub("3.2.4", "Explain the significance of the change in the diameter of part X from diagram A to diagram B.", 4,
+        ["The pupil dilated / enlarged so that", "more light enters the eye", "to improve vision", "in dim light"],
+        ["Did X get bigger or smaller from A to B?", "What does that let in, and when would the eye need it?"]),
+]
+q33 = [
+    rub("3.3.1", "State the purpose of the control group in this investigation.", 2,
+        ["To ensure that the change in blood glucose levels", "was due to insulin only"],
+        ["A control lets you compare.", "What must the change be due to, and nothing else?"]),
+    rub("3.3.2", "Describe TWO ways in which insulin decreases blood glucose levels.", 4,
+        ["It stimulates the absorption of glucose from the blood into the cells", "It stimulates the liver / muscles to convert glucose to glycogen",
+         "It causes increased cellular respiration, which uses glucose"],
+        ["Think of where the glucose goes when it leaves the blood.", "One way stores it, one way takes it into cells."], each=2),
+    mcq1("3.3.3", "Which group (X or Y) consists of healthy individuals?", ["X", "Y"], 1,
+         ["Compare each group's glucose at 0 minutes with the normal range in the note.", "Which group's insulin rose after the glucose?"]),
+    rub("3.3.4", "Use data in the table to explain your answer to QUESTION 3.3.3.", 3,
+        ["At 0 minutes the blood glucose level for group Y was within the normal range / for group X it was high",
+         "At 90 minutes the blood glucose level for group Y returned to normal / for group X it remained high",
+         "After the ingestion of glucose the insulin level for group Y increased / for group X it decreased"],
+        ["Quote numbers from the table, and compare them with the normal ranges.", "Look at 0 minutes, at 90 minutes, and at the insulin."]),
+]
+q34 = [
+    term("3.4.1(a)", "Identify the type of interaction represented by the diagram", ["negative feedback mechanism", "negative feedback", "negative feedback loop"],
+         ["A change is detected and then reversed.", "Is the response the opposite of the change, or more of it?"]),
+    term("3.4.1(b)", "Identify gland Y", ["thyroid", "thyroid gland"], ["It makes thyroxin.", "It sits in the neck."]),
+    term("3.4.1(c)", "Identify the disorder that is characterised by the enlargement of gland Y", ["goitre", "goiter"],
+         ["A swelling in the neck.", "It is often caused by too little iodine."]),
+    lst("3.4.2", "State ONE function of thyroxin.", 1, 1,
+        [["metabolic (it regulates the metabolic rate)", "metabol"], ["heart (the growth and functioning of the heart / nervous system)", "nervous", "growth"],
+         ["bone (bone development / muscle control)", "muscle"]],
+        ["It sets how fast the body uses energy.", "Think of the word metabolism."]),
+    rub("3.4.3", "Describe the role of the pituitary gland in correcting the level of thyroxin at X.", 4,
+        ["The thyroxin level is low", "The pituitary gland is stimulated", "More TSH is secreted", "which stimulates gland Y / the thyroid gland",
+         "to secrete more thyroxin"],
+        ["Follow the solid arrows from X.", "What does the pituitary release, and what does that make gland Y do?"]),
+    rub("3.4.4", "Explain why a continuous undersecretion of thyroxin may lead to an increase in body mass.", 2,
+        ["A lower metabolic rate", "causes decreased usage of nutrients", "and excess nutrients / fat will be stored in the body"],
+        ["Too little thyroxin slows something down.", "If fewer nutrients are used up, where do they go?"]),
+]
+q35 = [
+    term("3.5.1(a)", "For this investigation give the independent variable", ["auxins", "auxin", "presence of auxins", "the presence of auxins", "presence or absence of auxins"],
+         ["What did the investigators change between the groups?", "Groups B and C differ in one thing only."]),
+    lst("3.5.1(b)", "For this investigation give TWO variables that were controlled", 2, 2,
+        [["species (the same species of plant)"], ["duration (72 hours in the dark)", "hours", "72", "time"], ["light (all kept in darkness)", "dark"]],
+        ["What was kept the same for all twelve plants?", "Read the bullets: the plants, where they were kept, and for how long."]),
+    rub("3.5.2(a)", "Give the expected results of the plants in group A", 1, ["The plant / stem grows (straight) upwards"],
+        ["Group A keeps its own tip, and there is no light from one side.", "Which way does it grow?"]),
+    rub("3.5.2(b)", "Give the expected results of the plants in group C", 1, ["No upward growth will occur", "OR — Lateral branches will develop"],
+        ["Group C has no tip and no auxins.", "What do auxins from the tip normally make the stem do?"]),
+    rub("3.5.3", "How was the reliability of this investigation ensured?", 2, ["Four plants were used in each group"],
+        ["Reliability comes from repeating.", "How many plants were in each group?"], each=2),
+    rub("3.5.4", "After 72 hours, the stems of the plants in group B bent towards the right-hand side. Explain these results.", 4,
+        ["The auxins diffuse into the left side of the stem", "The higher concentration of auxins on the left side",
+         "results in more cell elongation / growth of cells on the left side", "There is less growth on the right-hand side and the stem bends to the right"],
+        ["Look at where the agar sits on group B's stem.", "More auxin on one side makes that side grow more: which way does it bend?"]),
+]
+missions_q3 = [
+    {"id": "3.1", "title": "Question 3.1", "kind": "Vulture breeding", "marks": 8, "lead": "The passage below describes the breeding habits of vultures.", "items": q31,
+     "extract": "Vultures are birds of prey that feed on the flesh of dead animals.\n\nA female vulture lays only one to two fertilised eggs, which are then "
+                "protected by both parents during incubation. Incubation is the period from the time an egg is laid up to the time it hatches. Vultures "
+                "have a short incubation period of 32 to 45 days. This short incubation period is typical of birds displaying altricial development. "
+                "After hatching, the parents feed the young chicks as often as 20 times a day."},
+    {"id": "3.2", "title": "Question 3.2", "kind": "Pupillary mechanism", "marks": 11, "lead": "The diagrams below represent the pupillary mechanism in the human eye.",
+     "items": q32,
+     "figure": fig(15, (109, 110, 502, 274), "Two front views of an eye, diagram A and diagram B, with an arrow from A to B. X labels the dark round opening "
+                   "in the centre; Y labels the grey ring around it. In diagram B the dark opening X is larger and the grey ring Y narrower than in diagram A.")},
+    {"id": "3.3", "title": "Question 3.3", "kind": "Insulin and glucose", "marks": 10,
+     "lead": "An investigation was conducted to determine the effect of insulin on blood glucose levels.", "items": q33,
+     "extract": "The procedure was as follows:\n• Two groups of ten people each were selected.\n• One of the groups consisted of healthy individuals and the "
+                "second group, which served as a control, consisted of people with diabetes.\n• Each group was given 75 g of glucose to ingest.\n"
+                "• Their blood was tested again after 60 and 90 minutes to determine the levels of glucose and insulin.\n\nNOTE:\n• The normal level of "
+                "glucose in the blood is between 3,9 mmol/ℓ and 5,6 mmol/ℓ.\n• The normal level of insulin in the blood, 60 minutes after glucose "
+                "ingestion, is between 18 mU/ℓ and 276 mU/ℓ.\n\nThe results are recorded in the table below.",
+     # (the paper's table runs the two groups side by side, six columns of times; one row per group and time reads the same on a phone)
+     "table": {"title": "Average levels in the blood", "head": ["Group", "Time after glucose ingestion (minutes)", "Glucose (mmol/ℓ)", "Insulin (mU/ℓ)"],
+               "rows": [["X", "0", "6,8", "4"], ["X", "60", "8,9", "2"], ["X", "90", "8,7", "2"], ["Y", "0", "4,5", "8"], ["Y", "60", "6,2", "142"], ["Y", "90", "4,5", "108"]]}},
+    {"id": "3.4", "title": "Question 3.4", "kind": "Thyroxin control", "marks": 10, "lead": "The flow diagram below shows the homeostatic control of thyroxin in the human body.",
+     "items": q34,
+     "figure": fig(17, (121, 131, 512, 321), "A flow diagram between GLAND Y on the left and the PITUITARY GLAND on the right. Two arrows run from gland Y into the pituitary: a dashed one on top, labelled 'Level of thyroxin (X)', and a solid one below, labelled 'Level of thyroxin (Z)'. Inside the pituitary the two lines cross: the dashed X line turns down into the arrow along the bottom, labelled 'More TSH', which runs back to gland Y; the solid Z line turns up into the arrow over the top, labelled 'Less TSH', which runs back to gland Y.")},
+    {"id": "3.5", "title": "Question 3.5", "kind": "Auxins and tropism", "marks": 11,
+     "lead": "An investigation was conducted to determine the effect of auxins on plant tropism.", "items": q35,
+     "extract": "The investigation was conducted as follows:\n• Twelve plants of the same species were divided into three groups (group A, B and C), of four "
+                "plants each.\n• All the plants were kept in darkness for 72 hours during the investigation.\n• The growing tips of group A received no "
+                "treatment.\n• The growing tips of group B were cut off and replaced by a piece of agar that contained auxins (agar is a jelly-like substance "
+                "through which other substances can diffuse).\n• The growing tips of group C were cut off and replaced by a piece of agar without auxins.\n\n"
+                "The diagram below shows how the growing tips of the three groups were treated.",
+     "figure": fig(18, (167, 309, 419, 482), "Three plant stems side by side. Group A: the stem with its rounded growing tip. Group B: the tip cut off, and a "
+                   "striped block of agar containing auxins on the cut end, sitting over the left side of the stem. Group C: the tip cut off, and a plain "
+                   "block of agar without auxins on the cut end.")},
+]
+missions_b += missions_q3
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Life Sciences", "title": "Life Sciences P1", "sitting": "November 2024", "total_marks": 150, "time": "2½ hours"},
@@ -271,12 +399,12 @@ paper = {
         {"n": "1.4.1(a)", "kind": "low_confidence", "detail": "The memo accepts C – urethra OR D – penis. Marked: either letter earns its mark, the name only when it names the part of the letter chosen ('C – penis' = 1). A Life Sciences teacher should confirm."},
         {"n": "2.1.3", "kind": "no_fit", "detail": "The memo makes 'oogenesis' a COMPULSORY mark (1) + any 5; the written-answer marker has no compulsory point, so it is not enforced."},
         {"n": "2.5.4", "kind": "low_confidence", "detail": "An order of LETTERS (C → A → B): the letter balls need a sequence design (shown to Murci first)."},
-        {"n": "paper", "kind": "low_confidence", "detail": "Questions 1 and 2, hand-transcribed from the paper and memo PDFs; no API call. Question 3 is not in yet."},
+        {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
     ],
 }
 out = Path(__file__).parent / "out" / "ls-p1-2024-11"
 out.mkdir(parents=True, exist_ok=True)
-(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper and memo PDFs (no API call)", "scope": "Questions 1 and 2"},
+(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper and memo PDFs (no API call)", "scope": "Questions 1 to 3 (the whole paper)"},
                                                "paper": paper}, indent=1, ensure_ascii=False), encoding="utf-8")
 for sec in paper["sections"]:
     print(sec["title"], "parts:", sum(len(m["items"]) for m in sec["missions"]), "marks:", sum(i["marks"] for m in sec["missions"] for i in m["items"]))
