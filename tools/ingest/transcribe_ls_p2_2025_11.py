@@ -220,8 +220,9 @@ q23 = [
          ["It traces a characteristic through the generations of one family.", "Breeders of horses and dogs keep this kind of record too."]),
     num("2.3.2", "How many offspring do parents 3 and 4 have?", 1, 0, "", ["Find the line that joins 3 and 4.", "Follow it down to their children."]),
     term("2.3.3(a)", "Give the phenotype of individual 10", ["female with CADASIL"], ["Use the key.", "What does a filled circle stand for?"]),
-    term("2.3.3(b)", "Give the genotype of individual 5", ["dd"],
-         ["Individual 5 does not have CADASIL, and its allele is dominant.", "What genotype must a person without the disorder have?"]),
+    # a genotype is BUILT from the alleles (catalogue `genotype`, 2026-10-06): typed, a case-folding matcher passed DD and Dd for dd
+    {"t": "genotype", "n": "2.3.3(b)", "marks": 1, "q": "Give the genotype of individual 5", "alleles": ["D", "d"], "count": 1, "pool": [["d", "d"]],
+     "clues": ["Individual 5 does not have CADASIL, and its allele is dominant.", "What genotype must a person without the disorder have?"]},
     rub("2.3.4", "Using evidence from the diagram, explain why individuals 1 and 2 are both heterozygous.", 4,
         ["Both individual 1 and 2 have CADASIL", "indicating they have a dominant allele / the (genotype) Dd",
          "but have children who do not have CADASIL / are homozygous recessive", "indicating that they inherited a recessive allele from each parent"],
@@ -236,8 +237,11 @@ q24 = [
     mcq1("2.4.1(b)", "Which blood group has a higher percentage in ethnic group 1 than in ethnic group 2", GROUPS, 0,
          ["Compare the black bar with the white bar for each blood group.", "Where is the black bar taller?"]),
     # superscripts: the matcher keeps only a-z and 0-9, so each answer LEADS with the typed form (IBIB) and shows the printed one after it
-    lst("2.4.2", "State ALL the possible genotypes of 11% of the people in ethnic group 1.", 2, 2, [["IBIB (IᴮIᴮ)"], ["IBi (Iᴮi)"]],
-        ["Which blood group is 11% in ethnic group 1?", "That group can be homozygous or heterozygous: write both, with the I alleles."]),
+    # the paper prints no allele symbols here (a learner must know them); the tray offers the WHOLE ABO system (Iᴬ, Iᴮ, i), so it shows
+    # the notation, not the answer. Typed, the superscripts were lost and a wrong IBIA held "ibi" (the list matcher's contains-check)
+    {"t": "genotype", "n": "2.4.2", "marks": 2, "q": "State ALL the possible genotypes of 11% of the people in ethnic group 1.",
+     "alleles": ["Iᴬ", "Iᴮ", "i"], "count": 2, "pool": [["Iᴮ", "Iᴮ"], ["Iᴮ", "i"]],
+     "clues": ["Which blood group is 11% in ethnic group 1?", "That group can be homozygous or heterozygous: build both."]},
     mcq("2.4.3", "Ethnic group 1 had a population of 360 000 people in 2021. Which blood group (A, B, AB or O) had 39 600 people?", GROUPS, 1,
         ["Work out what percentage 39 600 is of 360 000.", "Find that percentage among ethnic group 1's bars."]),
     rub("2.4.4", "Explain the inheritance of blood group AB.", 3,
@@ -258,9 +262,13 @@ q25 = [
     lst("2.5.3(b)", "Name the TWO phenotypes of the horses that must be interbred for a 100% chance of palomino offspring.", 2, 2,
         [["chestnut (coloured coat)"], ["cream (coloured coat)"]],
         ["A palomino has one allele of each colour.", "Which two homozygous horses always give one of each?"]),
-    # a GENETIC CROSS: the memo marks 8 points, 1 compulsory (the ratio) + any 5; no catalogue type lays a cross out, so it is drawn on
-    # paper and self-checked (flagged no_fit)
+    # a GENETIC CROSS: the memo marks 8 points, 1 compulsory (the ratio) + any 5; BUILT on a Punnett square (draw.build cross,
+    # 2026-10-06): the parents and every offspring genotype's phenotype are the key, the marker derives the rest
     {"t": "draw", "n": "2.5.4", "marks": 6,
+     "build": {"kind": "cross", "alleles": ["A", "G"], "phenos": ["cream-coloured", "palomino", "chestnut-coloured"],
+               "parents": [{"pheno": "cream-coloured", "geno": ["A", "A"]}, {"pheno": "palomino", "geno": ["A", "G"]}],
+               "offspring": [{"geno": ["A", "A"], "pheno": "cream-coloured"}, {"geno": ["A", "G"], "pheno": "palomino"},
+                             {"geno": ["G", "G"], "pheno": "chestnut-coloured"}]},
      "q": "A horse with a cream-coloured coat was crossed with a palomino horse. Use a genetic cross to show the expected phenotypic ratio of the offspring.",
      "clues": ["Which genotype gives cream, and which gives the golden in-between colour?",
                "Lay it out: P1, meiosis, gametes, fertilisation, F1, then the ratio."],
@@ -429,9 +437,6 @@ paper = {
     "paper": {"subject": "Life Sciences", "title": "Life Sciences P2", "sitting": "November 2025", "total_marks": 150, "time": "2½ hours"},
     "sections": [{"title": "Section A", "total": 50, "missions": missions}, {"title": "Section B", "total": 100, "missions": missions_b}],
     "flags": [
-        {"n": "2.3.3(b)", "kind": "no_fit", "detail": "A genotype (dd): the term matcher lowercases the answer, so DD and Dd are also marked right. A case-sensitive genotype input (or an allele picker) is the right layout."},
-        {"n": "2.4.2", "kind": "no_fit", "detail": "Genotypes with superscript alleles (IᴮIᴮ, Iᴮi): the list matcher keeps only a-z and 0-9 and credits an answer that CONTAINS a key, so they are keyed as typed (IBIB, IBi), case is ignored, and a wrong IBIA also holds 'ibi'. An allele picker (Iᴬ / Iᴮ / i, two per genotype) is the right layout."},
-        {"n": "2.5.4", "kind": "no_fit", "detail": "Genetic cross (P1 phenotypes and genotypes, meiosis, gametes, fertilisation, F1 genotypes and phenotypes, 1 : 1 ratio): the memo marks 8 points, 1 compulsory (the ratio) + any 5. Played as a drawing with self-check criteria (not marked online); a cross builder with a Punnett-grid option (the memo accepts either) is the right layout."},
         {"n": "3.4", "kind": "no_fit", "detail": "The question prints TWO figures: the procedure diagram (page 16: a container of flies, food removed, food returned, a new generation) and the results graphs (page 17). A mission holds one figure: the graphs are kept (3.4.5 reads them); the procedure diagram repeats the printed procedure and is left out."},
         {"n": "3.4.4", "kind": "memo_issue", "detail": "The memo's third point reads 'so that any changes that occur are only due to food availability ✓ of food' (a repeated 'of food'); transcribed as 'only due to the availability of food'."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
