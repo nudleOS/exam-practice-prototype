@@ -32,22 +32,22 @@
       for (let t = 0; t <= mx; t += st) g += `<line x1="${X0}" x2="${X1}" y1="${y(t)}" y2="${y(t)}" class="bp-grid"/><text x="${X0 - 5}" y="${y(t) + 3}" class="bp-tick" text-anchor="end">${t}</text>`;
       v.v.forEach((n, k) => { const x = X0 + k * w + gap / 2, bw = w - gap;
         if (v.type !== "line") b += `<rect x="${x}" y="${y(n)}" width="${bw}" height="${Y0 - y(n)}" class="bp-barr"/>`;
-        b += `<g class="bp-h" data-k="${k}" tabindex="${locked ? -1 : 0}" role="slider" aria-label="${esc(cfg.groups[k])} years" aria-valuemin="0" aria-valuemax="${mx}" aria-valuenow="${n}" aria-valuetext="${n}">`
+        b += `<g class="bp-h" data-k="${k}" tabindex="${locked ? -1 : 0}" role="slider" aria-label="${esc(cfg.groups[k])} ${esc(cfg.unit || "years")}" aria-valuemin="0" aria-valuemax="${mx}" aria-valuenow="${n}" aria-valuetext="${n}">`
           + (v.type === "line" ? `<circle cx="${x + bw / 2}" cy="${y(n)}" r="7" class="bp-knob"/>` : `<rect x="${x + bw / 2 - 15}" y="${y(n) - 7}" width="30" height="14" rx="7" class="bp-knob"/>`)
           + `<rect x="${x}" y="${Math.min(y(n) - 18, Y0 - 30)}" width="${bw}" height="40" fill="transparent"/></g>`
           + `<text x="${x + bw / 2}" y="${y(n) - 12}" class="bp-val" text-anchor="middle">${n || ""}</text>`
           + `<text x="${X0 + k * w + w / 2}" y="${Y0 + 21}" class="bp-tick" text-anchor="middle">${esc(cfg.groups[k])}</text>`; });
       if (v.type === "line") b = `<polyline points="${v.v.map((n, k) => (X0 + k * w + w / 2) + "," + y(n)).join(" ")}" class="bp-line"/>` + b;
-      return `<svg class="bp-chart" viewBox="0 0 300 223" aria-label="Your histogram">`
+      return `<svg class="bp-chart" viewBox="0 0 300 223" aria-label="Your graph">`
         + `<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="bp-axis"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="bp-axis"/>${g}${b}`
         + `<text x="170" y="220" class="bp-alab" text-anchor="middle">${esc(v.xl || "X-axis label?")}</text>`
         + `<text transform="translate(10,98) rotate(-90)" class="bp-alab" text-anchor="middle">${esc(v.yl ? v.yl.replace(/ \(per .*\)$/, "") : "Y-axis label?")}</text></svg>`;
     }
     function body() {
-      if (i === 0) return `<div class="bp-grp"><p class="bp-q">Which graph shows age GROUPS against a number?</p><div class="bp-opts">`
+      if (i === 0) return `<div class="bp-grp"><p class="bp-q">${esc(cfg.typeQ || "Which graph shows age GROUPS against a number?")}</p><div class="bp-opts">`
         + [["histogram", "Histogram"], ["bar", "Bar graph"], ["line", "Line graph"]].map(([k, t]) =>
           `<button type="button" class="bp-opt" data-type="${k}" aria-pressed="${v.type === k}">${ICON[k]}<span>${t}</span></button>`).join("") + `</div></div>`
-        + `<p class="bp-hint">A histogram's bars touch: its groups run on with no gaps.</p>`;
+        + `<p class="bp-hint">${esc(cfg.typeHint || "A histogram's bars touch: its groups run on with no gaps.")}</p>`;
       if (i === 1) return `<div class="bp-grp"><label class="bp-q" for="bp-cap">The caption: name BOTH variables</label>`
         + `<textarea id="bp-cap" class="bp-in" rows="2" maxlength="160" placeholder="The number of … in different …" autocapitalize="off" spellcheck="false">${esc(v.cap)}</textarea></div>`
         + `<p class="bp-hint">What changes along the bottom, and what was counted.</p>`;
@@ -77,7 +77,7 @@
       host.querySelector(".bp-paper").onclick = () => { paper = !paper; draw(); };
       const ch = host.querySelector(".bp-chart"); if (!ch || i !== 4 || locked) return;
       let k = -1; const mx = max();
-      const at = e => { const r = ch.getBoundingClientRect(), yy = (e.clientY - r.top) * 223 / r.height; return Math.max(0, Math.min(mx, Math.round((180 - yy) / 166 * mx / 10) * 10)); };
+      const at = e => { const r = ch.getBoundingClientRect(), yy = (e.clientY - r.top) * 223 / r.height; const sn = cfg.snap || 10; return Math.max(0, Math.min(mx, Math.round((180 - yy) / 166 * mx / sn) * sn)); };
       const put = (kk, n) => { const a = v.v.slice(); a[kk] = n; set({ v: a }); };
       // (a drag repaints the svg's CHILDREN only: rebuilding the svg would drop the pointer capture, and a finger that slid past the
       // chart's edge would stop moving the bar)
@@ -86,7 +86,7 @@
       ch.onpointermove = e => { if (k < 0) return; const n = at(e); if (n !== v.v[k]) { put(k, n); paint(); } };
       const end = () => { if (k < 0) return; const kk = k; k = -1; drag = false; document.documentElement.classList.remove("bp-drag"); o.onChange(clone(v)) /* one more update: the host reveals its Check now the bar is let go */; draw(); const n = host.querySelector(`.bp-h[data-k="${kk}"]`); if (n) n.focus({ preventScroll: true }); };
       ch.onpointerup = end; ch.onpointercancel = end;
-      q(".bp-h").forEach(h => h.onkeydown = e => { const d = { ArrowUp: 10, ArrowRight: 10, ArrowDown: -10, ArrowLeft: -10, PageUp: 50, PageDown: -50 }[e.key];
+      q(".bp-h").forEach(h => h.onkeydown = e => { const sn = cfg.snap || 10, d = { ArrowUp: sn, ArrowRight: sn, ArrowDown: -sn, ArrowLeft: -sn, PageUp: 5 * sn, PageDown: -5 * sn }[e.key];
         if (d == null) return; e.preventDefault(); const kk = +h.dataset.k; put(kk, Math.max(0, Math.min(mx, v.v[kk] + d))); draw(true); });
     }
     draw();

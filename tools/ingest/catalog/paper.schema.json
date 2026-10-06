@@ -869,6 +869,101 @@
                "additionalProperties": false
               }
              },
+             "build": {
+              "type": "object",
+              "properties": {
+               "kind": {
+                "type": "string",
+                "const": "hist"
+               },
+               "want": {
+                "type": "string",
+                "enum": [
+                 "histogram",
+                 "bar",
+                 "line"
+                ]
+               },
+               "groups": {
+                "type": "array",
+                "items": {
+                 "type": "string"
+                }
+               },
+               "answers": {
+                "type": "array",
+                "items": {
+                 "type": "number"
+                }
+               },
+               "tol": {
+                "type": "number"
+               },
+               "top": {
+                "type": "number"
+               },
+               "steps": {
+                "type": "array",
+                "items": {
+                 "type": "number"
+                }
+               },
+               "okSteps": {
+                "type": "array",
+                "items": {
+                 "type": "number"
+                }
+               },
+               "snap": {
+                "type": "number"
+               },
+               "x": {
+                "type": "array",
+                "items": {
+                 "type": "string"
+                }
+               },
+               "y": {
+                "type": "array",
+                "items": {
+                 "type": "string"
+                }
+               },
+               "capWords": {
+                "type": "array",
+                "items": {
+                 "type": "array",
+                 "items": {
+                  "type": "string"
+                 }
+                }
+               },
+               "typeQ": {
+                "type": "string"
+               },
+               "typeHint": {
+                "type": "string"
+               },
+               "unit": {
+                "type": "string"
+               }
+              },
+              "required": [
+               "kind",
+               "want",
+               "groups",
+               "answers",
+               "tol",
+               "top",
+               "steps",
+               "okSteps",
+               "x",
+               "y",
+               "capWords"
+              ],
+              "additionalProperties": false,
+              "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"
+             },
              "memo": {
               "type": "string"
              }
