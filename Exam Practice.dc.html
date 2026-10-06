@@ -3439,7 +3439,8 @@ class Component extends DCLogic {
         // marks only for a first try (Murci): an attempt's first, or a RETAKE's first (2026-10-02: retakes win marks back, no XP)
         best_marks: Math.max(pr.best, tryNo === 1 && (!replay || pr.retake) ? (result.marks_awarded || 0) : 0), result: result,
         clue: !closed ? (clues[tryNo - 1] || clues[clues.length - 1] || null) : null,
-        reveal: revealed || draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay, retake: !!pr.retake };
+        // (no memo during the paper, Murci 2026-10-03: out of tries the reply carries no answer; a drawing gets its self-check criteria)
+        reveal: draw ? this.reveal(part) : null, xp_awarded: xp, multiplier: mult, streak: streak, replay: replay, retake: !!pr.retake };
       // Try again is off the bar (Murci, 2026-10-03: "does it really need to be in the position it is at"): a miss with tries left
       // leaves the question live, the result under the answer and the hint in the robot's cloud; nothing to press
       const missLive = !closed && !result.full && !draw && mode !== "term";
@@ -3551,12 +3552,6 @@ class Component extends DCLogic {
       leadFor: () => m.lead || "", iconFor: i => NX_ICONS[i % NX_ICONS.length] });
   }
 
-  showMemo() {
-    const part = this.part(); if (!part) return; const s = this.state; const pr = this.pg(part.key);
-    this.setState({ streak: 0, lastMult: 1, barOpen: true, barSeq: s.barSeq + 1, memoSeen: true, runLog: s.runLog.concat([{ key: part.key, memo: true, xp: 0 }]),
-      reply: { part: part.number, try: pr.tries, closed: true, revealed: true, result: null, reveal: this.reveal(part), xp_awarded: 0 },
-      prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { closed: true, revealed: true }) }) }, () => { this.react("greet"); this.scrollReveal(); });
-  }
 
   advance() {
     const dr = this.state.drill;
