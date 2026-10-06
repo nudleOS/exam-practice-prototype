@@ -534,13 +534,12 @@ html[data-nx="dark"].nx-app body.nx-app:not(.nx-play) { background:linear-gradie
    was 56 px taller than the phone and scrolled; measured on the device 2026-10-03, with the app root at line 87 doing the same) */
 html[data-nx="dark"].nx-app { background:var(--nx-top); }
 /* the border shine back on the waiting cards (Murci, 2026-09-30): the component's running light (a bright arc around the 1 px ring),
-   over the navy card's hairline. The earlier navy rule had switched it off (animation:none). */
+   over the navy card's hairline. The earlier navy rule had switched it off (animation:none). The arc turns in the
+   component's .edge (on the compositor since 2026-10-07): here its colour, and the hairline under it. */
 body.nx-play .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(170,205,255,0.95) 330deg, transparent 350deg), linear-gradient(var(--nx-card-line), var(--nx-card-line)) !important;
-  animation:mq-edgeShine 6s linear infinite !important; }
-html[data-nx="light"] body.nx-play .mcqp .tile:not(.raised):not(.no):not(.yes):not(.dead):not(.flipped):not(.sel) .face::before {
-  background:conic-gradient(from var(--ga), transparent 0deg 300deg, rgba(2,133,251,0.9) 330deg, transparent 350deg), linear-gradient(var(--nx-card-line), var(--nx-card-line)) !important; }
-@media (prefers-reduced-motion: reduce) { body.nx-play .mcqp .face::before { animation:none !important; } }
+  background:linear-gradient(var(--nx-card-line), var(--nx-card-line)) !important; animation:none !important; }
+body.nx-play .mcqp .face > .edge { --mq-arc:rgba(170,205,255,0.95); }
+html[data-nx="light"] body.nx-play .mcqp .face > .edge { --mq-arc:rgba(2,133,251,0.9); }
 
 /* after "panel": Back and Next on the panel, under the cards (a tap anywhere only closes the big card) */
 body.nx-play .mcqp .after { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; min-height:46px; }

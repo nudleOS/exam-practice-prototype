@@ -239,7 +239,7 @@
       it.opts.forEach((o, i) => {
         const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
         t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--gd", (1.2 + i * 0.85).toFixed(2) + "s"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
-        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${tbl ? `<span class="cells">${tbl.rows[i].map(c => `<span>${esc(c)}</span>`).join("")}</span>` : o}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
+        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="edge" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${tbl ? `<span class="cells">${tbl.rows[i].map(c => `<span>${esc(c)}</span>`).join("")}</span>` : o}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
           <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="buddy" aria-hidden="true"></div><div class="copy"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div></div>`;
         const face = t.querySelector(".face");
         // (a head's single letters are the figure's labels and stay capitals: "muscle in X", not "muscle in x")
