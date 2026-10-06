@@ -683,6 +683,13 @@
      "each": {
       "type": "integer",
       "description": "Marks per point when one point is worth more than 1"
+     },
+     "must": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "0-based indexes of COMPULSORY points (the memo's 'Compulsory mark * (1) + Any (5)'): each earns its own mark, and the other points together earn at most marks minus the compulsory ones"
      }
     },
     "required": [

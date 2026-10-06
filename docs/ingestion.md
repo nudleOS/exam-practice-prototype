@@ -42,6 +42,9 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
     LEAD with a word only that point uses: `["body (the cell body is at one end)", "soma"]`, never `"cell body"` (any answer with
     "cell" scored, LS P1 Nov 2024 2.5.2) nor a lead word like "the", "same", "no", "many". The words after the first are what the
     memo shows (the group's first entry). A stand-in until the AI marker (Ollama) marks written lists.
+  - `rubric.must[]`: the indexes of COMPULSORY points (the memo's "Compulsory mark * (1) + Any (5)", LS P1 Nov 2024 2.1.3). Each
+    earns its own mark and nothing stands in for it: the other points together earn at most the marks less the compulsory ones
+    (no "oogenesis" = 5 of 6 at most). The memo shows a compulsory point with its "*". The exam service needs the same rule.
   - **Where an `mcq` plays:** in the MCQ card component, except when its options are all single letters (they play as letter balls
     on the page, as every letter pick does) or its mission has a `table` (the component shows an extract, not a table; LS P1 Nov
     2024 3.3.3). On the page an MCQ answers on the tap, as a card does.

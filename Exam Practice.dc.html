@@ -1737,8 +1737,9 @@ function buildPapers() {
           if (q.t === "draw") { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             SERVER.keys[key] = { draw: true, worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) };
             return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" }); }
-          SERVER.memo[key] = q.bullets || [];
-          SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1 };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
+          // must: the COMPULSORY points' indexes (2.1.3, "Compulsory mark * (1) + Any (5)"); the memo marks them as the paper's memo does
+          SERVER.memo[key] = (q.bullets || []).map((b, i) => (q.must || []).indexOf(i) !== -1 ? b + " *" : b);
+          SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1, must: q.must || [] };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
           return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
         });
         // the paper's extract (the case text, the results table, "study the information below") is the question's shared information:
@@ -3363,7 +3364,13 @@ class Component extends DCLogic {
       const sums = []; items.forEach((x, i) => { sums[group[i]] = (sums[group[i]] || 0) + x.awarded; });
       const best = sums.indexOf(Math.max(...sums));
       items.forEach((x, i) => { if (group[i] !== best) { x.awarded = 0; x.verdict = answer.trim() ? "incorrect" : "missing"; x.evidence = ""; } });
-      const got = Math.min(part.marks, items.reduce((a, x) => a + x.awarded, 0));
+      // a COMPULSORY point (key.must, LS P1 Nov 2024 2.1.3: "Compulsory mark * (1) + Any (5)") earns its own mark and nothing stands in
+      // for it: the other points together earn at most the marks less the compulsory ones (no "oogenesis" = 5 of 6 at most)
+      const must = key.must || [], inMust = i => must.indexOf(i) !== -1;
+      const mustGot = items.reduce((a, x, i) => a + (inMust(i) ? x.awarded : 0), 0), mustWorth = must.reduce((a, i) => a + (items[i] ? items[i].available : 0), 0);
+      const restGot = items.reduce((a, x, i) => a + (inMust(i) ? 0 : x.awarded), 0);
+      must.forEach(i => { const x = items[i]; if (x && x.verdict !== "correct") x.reason = "Compulsory: no other point can earn this mark."; });
+      const got = Math.min(part.marks, mustGot + Math.min(restGot, Math.max(0, part.marks - mustWorth)));
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "ai", items: items };
     }
     return { marker: "unavailable", message: "saved" };

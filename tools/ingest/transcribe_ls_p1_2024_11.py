@@ -157,10 +157,11 @@ q21 = [
         [["sperm", "sperm cells are present"], ["ovulation", "ovum has been released", "egg has been released"]],
         ["Look at what is swimming in the tube.", "Look at what has just left the ovary."]),
     rub("2.1.3", "Identify and describe the type of gametogenesis that leads to the formation of structure C.", 6,
-        ["During oogenesis (compulsory)", "diploid cells in the ovary undergo mitosis", "to form numerous follicles", "at the onset of puberty",
+        # ("Oogenesis" alone: the stand-in marker needs 2 of a point's long words, and "During oogenesis" failed "Oogenesis takes place ...")
+        ["Oogenesis", "diploid cells in the ovary undergo mitosis", "to form numerous follicles", "at the onset of puberty",
          "under the influence of FSH", "one cell inside a follicle enlarges and undergoes meiosis",
          "of the four cells produced, only one survives to form a mature haploid ovum"],
-        ["Structure C is a female gamete: name the process first.", "Go in order: mitosis to make follicles, then puberty, FSH and meiosis."]),
+        ["Structure C is a female gamete: name the process first.", "Go in order: mitosis to make follicles, then puberty, FSH and meiosis."], must=[0]),
     rub("2.1.4", "In an ectopic pregnancy, the fertilised ovum can become implanted in part A. This normally results in the death of the embryo and may "
         "endanger the mother's life. Explain why an ectopic pregnancy may result in the death of an embryo.", 3,
         ["Part A (the fallopian tube) cannot provide the space", "and there is no endometrium / blood supply",
@@ -397,7 +398,6 @@ paper = {
     "sections": [{"title": "Section A", "total": 50, "missions": missions}, {"title": "Section B", "total": 100, "missions": missions_b}],
     "flags": [
         {"n": "1.4.1(a)", "kind": "low_confidence", "detail": "The memo accepts C – urethra OR D – penis. Marked: either letter earns its mark, the name only when it names the part of the letter chosen ('C – penis' = 1). A Life Sciences teacher should confirm."},
-        {"n": "2.1.3", "kind": "no_fit", "detail": "The memo makes 'oogenesis' a COMPULSORY mark (1) + any 5; the written-answer marker has no compulsory point, so it is not enforced."},
         {"n": "2.5.4", "kind": "low_confidence", "detail": "An order of LETTERS (C → A → B): the letter balls need a sequence design (shown to Murci first)."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
     ],

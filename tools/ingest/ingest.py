@@ -44,7 +44,8 @@ The memo is the source of truth for answers and marks:
   that word alone also earns the mark, so include it; never add answers the memo does not give;
 - `term.reject` lists real terms one or two letters away that are wrong (opposites, other stages, I vs II);
 - `rubric.bullets` are the memo's marking points, one per mark (set `each` when one point is worth more); an alternative answer
-  set starts with a bullet beginning "OR — ";
+  set starts with a bullet beginning "OR — "; a point the memo marks COMPULSORY ("Compulsory mark * (1) + Any (5)") goes in
+  `rubric.must` by its index;
 - `steps` follow the memo's working, one numeric result per step, step marks summing to the part's marks;
 - `clues` are two hints that lead toward the idea without stating or spelling the answer.
 
