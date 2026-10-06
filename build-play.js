@@ -1,7 +1,9 @@
 /* build-play.js: the paper's drawing questions as things to BUILD, auto-marked against the memo's own criteria (Murci approved the
-   mockup 2026-10-03: "Yes please"). Two kinds:
+   mockup 2026-10-03: "Yes please"). Four kinds:
    - "hist"  (3.1.3) a histogram, one examiner rule per step: Type (T), Caption (C), Axes labels (L), Scale (S), Plot (P, drag bars).
    - "stems" (3.6.4) three stems in the box: tap how each looks after the investigation (bends left / straight up / right / no growth).
+   - "geno"  (LS P2 Nov 2025 2.3.3(b), 2.4.2) genotypes built from the paper's alleles: sockets filled from a tray, exact (DD is not dd).
+   - "cross" (LS P2 Nov 2025 2.5.4) a monohybrid cross on a Punnett square, the memo's 8 points (ratio compulsory + any 5).
    The host (Exam Practice) owns the ANSWER (its state, so Check, marking and "same answer" work as for every other type); this
    module owns only its DOM and its step. A learner who drew it on paper gets the criteria as a self-check (shown, never banked).
 
@@ -130,6 +132,91 @@
       destroy() { host.innerHTML = ""; } };
   }
 
+  // ── genetics (LS P2 Nov 2025 2.3.3(b), 2.4.2, 2.5.4; mockup 2026-10-06): SOCKETS filled from a TRAY. Tap a socket, then a tray item;
+  // or just tap tray items, each filling the next empty socket of its kind in reading order. A filled socket tapped empties and stays
+  // chosen. The alleles are the paper's own tokens (Iᴮ, Xʰ ...), never typed, so case and superscripts are exact: DD is never dd.
+  // The answer is a flat map, socket id -> token (ratio numbers as numbers): the marker reads it, nothing is derived on the phone.
+  // an allele token's superscript, DRAWN: the data keeps the paper's Unicode modifier letters (exact to compare), but Sora has no
+  // glyph for them and the fallback drew Iᴬ and Iᴮ 13 px wide, the A and B unreadable; shown as a real <sup>, spoken "superscript B"
+  const SUP = "ᴬᴮᴰᴱᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᴿᵀᵁᵂᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ", PLAIN = "ABDEGHIJKLMNOPRTUWabcdefghijklmnoprstuvwxyz";
+  const supRun = new RegExp("[" + SUP + "]+", "g"), plain = r => [...r].map(c => PLAIN[[...SUP].indexOf(c)]).join("");
+  const tok = s => esc(s).replace(supRun, r => `<sup class="gx-sup">${plain(r)}</sup>`);
+  const spoken = s => String(s == null ? "" : s).replace(supRun, r => " superscript " + plain(r));
+  function sockets(host, o, spec) {
+    // spec: ids [[id, kind, aria name]] in reading order; view(v, S, N) -> html; tray { kind: [tokens] }; trayName { kind }; labels
+    let v = clone(o.value), act = "", locked = false, chips = "";
+    const kindOf = id => (spec.ids.find(x => x[0] === id) || [])[1];
+    // the next empty socket of a kind: FORWARD only (a learner working down the cross is never sent back up), and a kind listed in
+    // spec.within stays in its own group (the parents' two phenotypes do not chain on to the offspring's, at the bottom)
+    const nextEmpty = (kind, after) => { const L = spec.ids, i = L.findIndex(x => x[0] === after), hit = L.slice(i + 1).find(x => x[1] === kind && !v[x[0]]);
+      return hit && (i < 0 || (spec.within || []).indexOf(kind) === -1 || hit[3] === L[i][3]) ? hit[0] : ""; };
+    const S = (id, cls) => { const x = spec.ids.find(y => y[0] === id), val = v[id] || "";
+      return `<button type="button" class="gx-s${cls ? " " + cls : ""}" data-sock="${id}" data-k="${x[1]}" data-f="${!!val}" aria-pressed="${act === id}"`
+        + ` aria-label="${esc(x[2])}${val ? ": " + esc(spoken(val)) : ", empty"}"${locked ? " disabled" : ""}>${val ? tok(val) : spec.empty && spec.empty[x[1]] ? `<span class="gx-pl">${spec.empty[x[1]]}</span>` : ""}</button>`; };
+    const N = id => locked ? `<span class="gx-n"><output class="gx-nv">${v[id] || "–"}</output></span>`   // (closed: the number alone, no dead steppers)
+      : `<span class="gx-n" role="group" aria-label="How many"><button type="button" class="gx-nb" data-n="${id}" data-d="-1" aria-label="One fewer">−</button>`
+      + `<output class="gx-nv" aria-live="polite">${v[id] || "–"}</output><button type="button" class="gx-nb" data-n="${id}" data-d="1" aria-label="One more">+</button></span>`;
+    const set = () => o.onChange(clone(v));
+    function draw(focus) {
+      const kind = act ? kindOf(act) : spec.first;
+      host.innerHTML = `<div class="bp gx" data-locked="${locked}">${spec.view(v, S, N, locked)}${chips}`
+        + (locked ? "" : `<div class="gx-tray" role="group" aria-label="${esc(spec.trayName[kind])}"><p class="gx-th">${esc(spec.trayName[kind])}</p>`
+          + `<div class="gx-ti">${spec.tray[kind].map(t => `<button type="button" class="gx-t" data-kind="${kind}" data-t="${esc(t)}" aria-label="${esc(spoken(t))}">${tok(t)}</button>`).join("")}</div></div>`) + `</div>`;
+      host.querySelectorAll("[data-sock]").forEach(b => b.onclick = () => { if (locked) return; const id = b.dataset.sock;
+        if (v[id]) { delete v[id]; set(); act = id; } else act = act === id ? "" : id; draw(id); });
+      host.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { if (locked) return; const kind = b.dataset.kind, id = act && kindOf(act) === kind ? act : nextEmpty(kind, "");
+        if (!id) return; v[id] = b.dataset.t; set(); act = nextEmpty(kind, id); draw(); const n = host.querySelector(`[data-kind="${kind}"][data-t="${b.dataset.t}"]`); if (n) n.focus({ preventScroll: true }); });
+      host.querySelectorAll("[data-n]").forEach(b => b.onclick = () => { if (locked) return; const id = b.dataset.n, n = Math.max(0, Math.min(4, (v[id] || 0) + +b.dataset.d));
+        if (n) v[id] = n; else delete v[id]; set(); draw(); const f = host.querySelector(`[data-n="${id}"][data-d="${b.dataset.d}"]`); if (f) f.focus({ preventScroll: true }); });
+      if (focus) { const n = host.querySelector(`[data-sock="${focus}"]`); if (n) n.focus({ preventScroll: true }); }
+    }
+    draw();
+    return { sync(s) { const nv = clone(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v), was = locked + chips; v = nv; locked = !!s.locked; if (locked) act = "";
+        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, o.cfg.labels || spec.labels) : "";
+        if (changed && !Object.keys(nv).length) act = "";   // a fresh try starts with no socket chosen
+        if (changed || was !== locked + chips) draw(); },
+      destroy() { host.innerHTML = ""; } };
+  }
+  // a genotype question: `count` genotypes of two alleles each, from the paper's alleles (2.4.2: Iᴬ Iᴮ i, two genotypes)
+  function geno(host, o) {
+    const cfg = o.cfg, n = cfg.count || 1, ids = [];
+    for (let k = 0; k < n; k++) ids.push(["g" + k + "a", "al", (n > 1 ? "Genotype " + (k + 1) : "Genotype") + ", first allele"], ["g" + k + "b", "al", (n > 1 ? "Genotype " + (k + 1) : "Genotype") + ", second allele"]);
+    return sockets(host, o, { ids: ids, first: "al", tray: { al: cfg.alleles }, trayName: { al: "Alleles: tap one" },
+      labels: Object.fromEntries(Array.from({ length: n }, (_, k) => ["g" + k, n > 1 ? "Genotype " + (k + 1) : "Genotype"])),
+      view: (v, S) => Array.from({ length: n }, (_, k) => `<div class="gx-g"><span class="gx-k">${n > 1 ? "Genotype " + (k + 1) : "Genotype"}</span>${S("g" + k + "a")}${S("g" + k + "b")}</div>`).join("") });
+  }
+  // a monohybrid cross (2.5.4), laid out as the memo marks it: P1 phenotypes and genotypes, the gametes on a Punnett square's edges,
+  // its cells the F1 genotypes, then the F1 phenotypes and their ratio. The four labels (P1, Meiosis, Fertilisation, F1) are placed by
+  // the learner on the rail: the memo marks them, so printing them would give two marks away. The memo also accepts gamete and
+  // fertilisation LINES instead of a square; the square is the one layout here (the same two marks).
+  function cross(host, o) {
+    const cfg = o.cfg, nf = Math.min(3, cfg.phenos.length), al = "al", ph = "ph", lab = "lab";
+    const ids = [["L0", lab, "Label for the parents' row"], ["P0", ph, "First parent's phenotype", "P"], ["P1", ph, "Second parent's phenotype", "P"],
+      ["G00", al, "First parent's genotype, first allele"], ["G01", al, "First parent's genotype, second allele"],
+      ["G10", al, "Second parent's genotype, first allele"], ["G11", al, "Second parent's genotype, second allele"],
+      ["L1", lab, "Label for the gametes"], ["T0", al, "Gamete, top edge, first"], ["T1", al, "Gamete, top edge, second"],
+      ["S0", al, "Gamete, side edge, first"], ["S1", al, "Gamete, side edge, second"], ["L2", lab, "Label for the square's cells"]];
+    ["00", "01", "10", "11"].forEach(rc => ids.push(["C" + rc + "a", al, "Offspring, row " + (+rc[0] + 1) + " column " + (+rc[1] + 1) + ", first allele"],
+      ["C" + rc + "b", al, "Offspring, row " + (+rc[0] + 1) + " column " + (+rc[1] + 1) + ", second allele"]));
+    ids.push(["L3", lab, "Label for the offspring's row"]);
+    for (let k = 0; k < nf; k++) ids.push(["F" + k, ph, "Offspring phenotype " + (k + 1), "F"]);
+    const cell = (S, rc) => `<td class="gx-cell">${S("C" + rc + "a")}${S("C" + rc + "b")}</td>`;
+    return sockets(host, o, { ids: ids, first: al, within: [ph], empty: { ph: "phenotype", lab: "label" },   // (a blank dashed pill said nothing at 360 px)
+      tray: { al: cfg.alleles, ph: [...cfg.phenos].sort(), lab: ["F1", "Fertilisation", "Meiosis", "P1"] },   // (sorted: a paper's order could read as the answer)
+      trayName: { al: "Alleles: tap one", ph: "Phenotypes: tap one", lab: "Labels: tap one" },
+      labels: { P: "P1 phenotypes", G: "P1 genotypes", M: "Gametes", F: "F1 genotypes", Ph: "F1 phenotypes", R: "Ratio (compulsory)", L1: "P1 and F1", L2: "Meiosis and fertilisation" },
+      view: (v, S, N, locked) => `<div class="gx-x">`
+        + `<div class="gx-r">${S("L0", "gx-lab")}<div class="gx-c"><span class="gx-k">Phenotype</span><div class="gx-pair">${S("P0", "gx-ph")}<b class="gx-by" aria-hidden="true">×</b>${S("P1", "gx-ph")}</div></div></div>`
+        + `<div class="gx-r"><span></span><div class="gx-c"><span class="gx-k">Genotype</span><div class="gx-pair"><span class="gx-gt">${S("G00")}${S("G01")}</span><b class="gx-by" aria-hidden="true">×</b><span class="gx-gt">${S("G10")}${S("G11")}</span></div></div></div>`
+        + `<div class="gx-r">${S("L1", "gx-lab")}<div class="gx-c"><span class="gx-k">Gametes</span><span class="gx-hint">on the square's edges</span></div></div>`
+        + `<div class="gx-r">${S("L2", "gx-lab")}<table class="gx-pq"><tr><td class="gx-x0" aria-hidden="true">×</td><td>${S("T0")}</td><td>${S("T1")}</td></tr>`
+        + `<tr><td>${S("S0")}</td>${cell(S, "00")}${cell(S, "01")}</tr><tr><td>${S("S1")}</td>${cell(S, "10")}${cell(S, "11")}</tr></table></div>`
+        + `<div class="gx-r">${S("L3", "gx-lab")}<div class="gx-c"><span class="gx-k">Phenotypes and how many of each</span>`
+        + Array.from({ length: nf }, (_, k) => !locked || v["F" + k] ? `<div class="gx-f">${S("F" + k, "gx-ph")}${v["F" + k] ? N("R" + k) : ""}</div>` : "").join("")
+        + ((k => k.length > 1 ? `<p class="gx-ratio">Ratio ${k.map(x => v["R" + x] || "–").join(" : ")}</p>` : "")([0, 1, 2].slice(0, nf).filter(x => v["F" + x])))
+        + `</div></div></div>` });
+  }
+
   // each kind names its marker's items (the memo's own words); a paper may override them with cfg.labels. (No paper ever carried
   // labels: chipRow read undefined[key] and threw on every render after a Check, so the T C L S P chips never showed; 2026-10-06)
   const LABELS = { hist: { T: "Type", C: "Caption", L: "Axes labels", S: "Scale", P: "Plotting" } };
@@ -144,5 +231,5 @@
       `<label class="bp-tick-row"><input type="checkbox"> ${esc(c[0])}</label>`).join("")}<p class="bp-hint">A self-check: it guides you, it is not marked.</p></div>`;
   }
 
-  window.BuildPlay = { mount(host, o) { return (o.kind === "hist" ? hist : stems)(host, o); } };
+  window.BuildPlay = { mount(host, o) { return ({ hist: hist, geno: geno, cross: cross }[o.kind] || stems)(host, o); } };
 })();

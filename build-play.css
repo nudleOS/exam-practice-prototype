@@ -74,3 +74,52 @@ html.bp-drag, html.bp-drag * { -webkit-user-select:none !important; user-select:
 /* a wide screen: the drawing keeps a readable size (at 818 px wide the chart stood 670 px tall and ran under the bar); centred */
 .bp-chart, .bp-box { max-width:520px; margin-inline:auto; display:block; }
 .bp-cols { width:100%; max-width:520px; margin-inline:auto; }
+/* genetics (2026-10-06): sockets filled from a tray. An allele socket is a 34 px ball (the order track's letter balls), a phenotype or
+   a label a pill; empty is a dashed ring, the chosen one rings blue. The tray sticks to the bottom of the screen while a cross is
+   filled, so a socket at the top and its allele are never a scroll apart. */
+.gx { gap:12px; max-width:520px; }
+.gx-s { box-sizing:border-box; min-width:34px; height:34px; padding:0 6px; border-radius:17px; border:1.5px dashed rgba(129,177,255,0.55);
+  background:rgba(255,255,255,0.03); color:var(--nx-text, #fff); font:inherit; font-size:15px; font-weight:800; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; touch-action:manipulation; }
+.gx-s[data-f="true"] { border-style:solid; border-color:rgba(160,185,255,0.75); background:radial-gradient(circle at 35% 30%, #8fb8ff, #2f66cc 55%, #163a82); color:#fff; }
+.gx-s[aria-pressed="true"] { border-style:solid; border-color:#81b1ff; box-shadow:0 0 0 3px rgba(129,177,255,0.38); }
+.gx-ph, .gx-lab { font-size:12px; font-weight:700; line-height:1.15; padding:3px 8px; }
+.gx-ph[data-f="true"], .gx-lab[data-f="true"] { background:rgba(0,104,248,0.26); }
+.gx-g { display:flex; align-items:center; gap:6px; }
+.gx-g .gx-k { min-width:86px; }
+.gx-k { font-size:11px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:var(--nx-text2, #a9b4d6); }
+.gx-x { display:flex; flex-direction:column; gap:10px; }
+.gx-r { display:grid; grid-template-columns:68px minmax(0, 1fr); gap:8px; align-items:center; }
+.gx-lab { width:100%; min-height:30px; height:auto; font-size:11px; }
+.gx-c { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.gx-pair { display:flex; align-items:center; gap:6px; }
+.gx-pair .gx-ph { flex:1 1 0; min-width:0; min-height:34px; height:auto; }
+.gx-gt { display:inline-flex; gap:3px; }
+.gx-by, .gx-x0 { color:var(--nx-text2, #a9b4d6); font-weight:800; }
+.gx-hint { font-size:12px; color:var(--nx-text2, #a9b4d6); }
+.gx-pq { border-collapse:separate; border-spacing:4px; margin:-4px; }
+.gx-pq td { padding:0; text-align:center; }
+.gx-cell { padding:4px !important; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(190,210,255,0.22); white-space:nowrap; }
+.gx-cell .gx-s + .gx-s { margin-left:3px; }
+.gx-f { display:flex; align-items:center; gap:8px; }
+.gx-f .gx-ph { flex:1 1 auto; min-width:0; min-height:34px; height:auto; }
+.gx-n { display:inline-flex; align-items:center; gap:2px; flex:none; }
+.gx-nb { width:32px; height:32px; border-radius:50%; border:1px solid rgba(129,177,255,0.5); background:rgba(0,104,248,0.18); color:#fff;
+  font:inherit; font-size:17px; font-weight:800; line-height:1; cursor:pointer; touch-action:manipulation; }
+.gx-nv { min-width:18px; text-align:center; font-weight:800; color:var(--nx-text, #fff); }
+.gx-ratio { margin:0; font-size:13px; font-weight:800; color:var(--nx-text, #fff); }
+.gx-tray { position:sticky; bottom:8px; z-index:2; display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:16px;
+  background:#0c1d40; border:1px solid rgba(129,177,255,0.38); }   /* solid: at 95% the heading scrolling under it ghosted through */
+.gx-th { margin:0; font-size:11px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:var(--nx-text2, #a9b4d6); }
+.gx-ti { display:flex; flex-wrap:wrap; gap:8px; }
+.gx-t { min-width:44px; height:44px; padding:0 12px; border-radius:22px; border:0; background:radial-gradient(circle at 35% 30%, #8fb8ff, #2f66cc 55%, #163a82);
+  color:#fff; font:inherit; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; }
+.gx-t:is([data-kind="ph"], [data-kind="lab"]) { font-size:13px; background:rgba(0,104,248,0.3); border:1px solid rgba(129,177,255,0.5); }
+:is(.gx-s, .gx-t, .gx-nb):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+.gx[data-locked="true"] .gx-s { cursor:default; }
+/* a phone scrolls the PAGE under a fixed strip and bar: sticky to the viewport's foot, the tray slid under them (found at 360 x 702:
+   the A and G balls half behind the robot's strip). It sticks above the strip instead: --nx-dockH is the strip's measured top. */
+body.nx-compact .gx-tray { bottom:calc(var(--nx-dockH, 150px) + 6px); }
+.gx-pl { font-size:11px; font-weight:600; color:rgba(169,180,214,0.6); }
+/* an allele's superscript (Iᴮ, Xʰ): drawn, about two thirds of the letter and raised, so Iᴬ and Iᴮ read apart in a 34 px ball */
+.gx-sup { font-size:0.68em; font-weight:800; line-height:0; vertical-align:0.5em; margin-left:1px; }
