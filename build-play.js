@@ -19,6 +19,7 @@
     right: svg('<path d="M10 21v-7a5 5 0 0 1 5-5h4M16 6l3 3-3 3"/>'), none: svg('<circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/>') };
 
   // ── the histogram builder
+  // (the axis-label choices are listed SORTED: the config keeps the right one first, which a learner could read as the answer)
   function hist(host, o) {
     const cfg = o.cfg, STEPS = ["Type", "Caption", "Axes", "Scale", "Plot"];
     let v = Object.assign({ type: "", cap: "", xl: "", yl: "", step: 0, v: cfg.groups.map(() => 0) }, clone(o.value));
@@ -51,8 +52,8 @@
       if (i === 1) return `<div class="bp-grp"><label class="bp-q" for="bp-cap">The caption: name BOTH variables</label>`
         + `<textarea id="bp-cap" class="bp-in" rows="2" maxlength="160" placeholder="The number of … in different …" autocapitalize="off" spellcheck="false">${esc(v.cap)}</textarea></div>`
         + `<p class="bp-hint">What changes along the bottom, and what was counted.</p>`;
-      if (i === 2) return `<div class="bp-grp"><label class="bp-q" for="bp-x">The X-axis (along the bottom)</label><select id="bp-x" class="bp-in"><option value="">Choose…</option>${cfg.x.map(t => `<option${v.xl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`
-        + `<div class="bp-grp"><label class="bp-q" for="bp-y">The Y-axis (up the side)</label><select id="bp-y" class="bp-in"><option value="">Choose…</option>${cfg.y.map(t => `<option${v.yl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`;
+      if (i === 2) return `<div class="bp-grp"><label class="bp-q" for="bp-x">The X-axis (along the bottom)</label><select id="bp-x" class="bp-in"><option value="">Choose…</option>${[...cfg.x].sort().map(t => `<option${v.xl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`
+        + `<div class="bp-grp"><label class="bp-q" for="bp-y">The Y-axis (up the side)</label><select id="bp-y" class="bp-in"><option value="">Choose…</option>${[...cfg.y].sort().map(t => `<option${v.yl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`;
       if (i === 3) return `<div class="bp-grp"><p class="bp-q">The Y-axis goes up in steps of</p><div class="bp-opts">${cfg.steps.map(s => `<button type="button" class="bp-opt" data-step="${s}" aria-pressed="${v.step === s}">${s}</button>`).join("")}</div></div>${chart()}`;
       return chart() + `<p class="bp-hint">Drag each bar to its value (arrow keys work too). The table is in the shared information.</p>`;
     }
