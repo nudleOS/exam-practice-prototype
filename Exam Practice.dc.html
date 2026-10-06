@@ -1644,6 +1644,9 @@ const fmtNum = v => { const r = Math.round(v * 1e6) / 1e6; return String(r).repl
 // the narrowest screen that shows a question's figure BESIDE it (version C, Murci 2026-10-05): 1366 x 768 laptops and up; a
 // tablet keeps it above (at 1024 the answers' column would be under 300 px)
 const NX_SIDE_MIN = 1100;
+// the moment the glass bursts (termBreak: red and shaking 0-460 ms, cracks running 480-680, the pieces fly at 700). The robot's hurt,
+// the try coin's crack, the knocked balls and the row closing all wait for it, so they land together (Murci, 2026-10-06)
+const NX_GLASS_BREAK = 700;
 const norm = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 // Letter + name answers (Murci, 2026-10-05). `pool`: every part the memo accepts, {letter, names}. A row's letter earns its mark
 // when it is one of the memo's letters; its name earns its mark only when it names THAT part (1.4.1(a), "C – urethra OR D – penis":
@@ -3011,7 +3014,7 @@ class Component extends DCLogic {
     // 1 · it is WRONG, unmistakably (Murci, 2026-09-30: "users really perceive that as being the wrong answer and not guess what
     // happened"): the whole field turns red with a cross, the phone buzzes (Android: iOS gives the web no vibration), it shakes
     // three times, then cracks run out from one point; only then does it break (below, at CRACK_AT)
-    const SHAKE = 460, CRACK_AT = 700, whole = document.createElement("div"), wg = document.createElement("div"), wt = document.createElement("span"), x = document.createElement("i");
+    const SHAKE = 460, CRACK_AT = NX_GLASS_BREAK, whole = document.createElement("div"), wg = document.createElement("div"), wt = document.createElement("span"), x = document.createElement("i");
     whole.className = "ts-whole"; whole.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px";
     wg.className = "ts-glass" + (snap.ball ? " ts-ball" : ""); wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
     x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt); if (!snap.small) wg.append(x); whole.appendChild(wg); layer.appendChild(whole);
@@ -3131,7 +3134,7 @@ class Component extends DCLogic {
   resetNow(extra) {
     // a fresh round (a new part, Practise again, a retake): the last round's ball effects go (the "stepped back" dim is held with
     // fill: forwards, so it came back on a practice round, measured), and the balls roll in again
-    (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
+    (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; clearTimeout(this._glassT); this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
@@ -3366,20 +3369,25 @@ class Component extends DCLogic {
       // (Murci, 2026-10-05: "a wrong answer no matter what question it should hurt the robot and a right answer should make it dance":
       // part marks and the end of the tries hurt too; they were a greeting)
       const flinch = !closed && !result.full && !draw;
-      if (!quiet) this.react(draw ? "greet" : result.full ? "dance" : "defeat", flinch ? NX_FLINCH : undefined);
+      // a wrong answer that breaks glass (the term's capsule, a letter ball) hurts the robot when the glass BURSTS, not when it is marked
+      // (Murci, 2026-10-06: "the robot animates before the glasses break"); nothing to break: at once
+      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0), hurtAt = glass ? NX_GLASS_BREAK : 0;
+      clearTimeout(this._glassT);
+      if (!quiet) { const go = () => this.react(draw ? "greet" : result.full ? "dance" : "defeat", flinch ? NX_FLINCH : undefined);
+        if (hurtAt) this._glassT = setTimeout(() => { const q = this.part(); if (q && q.key === part.key) go(); }, hurtAt); else go(); }
       // the robot says the hint once it is back up (never words floating over a robot still falling)
-      clearTimeout(this._hr); if (!quiet) { if (flinch && !this.state.reduced) { this.setState({ hintReady: false }); this._hr = setTimeout(() => this.setState({ hintReady: true }), (NX_FLINCH.hold - NX_FLINCH.from) * 1000 + 260); } else this.setState({ hintReady: true }); }
+      clearTimeout(this._hr); if (!quiet) { if (flinch && !this.state.reduced) { this.setState({ hintReady: false }); this._hr = setTimeout(() => this.setState({ hintReady: true }), hurtAt + (NX_FLINCH.hold - NX_FLINCH.from) * 1000 + 260); } else this.setState({ hintReady: true }); }
       // a typed term, wrong: the field breaks and falls; a new one drops in for the next try (none after the last)
       if (snap && result.full) this.termFlip(snap);
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
-      if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), 60);   // the try coin it cost cracks; the next one lights
-      if (chipSnaps.length && !this.state.reduced) setTimeout(() => this.ballRecoil(dead), 700);   // the burst jolts the balls beside it
+      if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), hurtAt || 60);   // the try coin it cost cracks; the next one lights
+      if (chipSnaps.length && !this.state.reduced) setTimeout(() => this.ballRecoil(dead), NX_GLASS_BREAK);   // the burst jolts the balls beside it
       const okL = !quiet && !draw ? this.okLetters(part, mode, answer, result) : [];
       if (okL.length && !this.state.reduced) setTimeout(() => this.ballsCheer(okL, !!result.full), 80);   // the right balls celebrate
       // ...and the letter leaves the row as it breaks apart (termBreak's CRACK_AT, 700 ms), not before: until then its place is held
       clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => { const before = this.ballSpots(); this.setState({ deadFresh: [] }, () => this.rollGaps(before)); },
-        this.state.reduced || !chipSnaps.length ? 0 : 720);
+        this.state.reduced || !chipSnaps.length ? 0 : NX_GLASS_BREAK + 20);
       return reply;
     };
     const result = this.mark(part, answer);
