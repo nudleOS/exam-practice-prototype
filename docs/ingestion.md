@@ -48,6 +48,10 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
   - `rubric.must[]`: the indexes of COMPULSORY points (the memo's "Compulsory mark * (1) + Any (5)", LS P1 Nov 2024 2.1.3). Each
     earns its own mark and nothing stands in for it: the other points together earn at most the marks less the compulsory ones
     (no "oogenesis" = 5 of 6 at most). The memo shows a compulsory point with its "*". The exam service needs the same rule.
+  - `draw.build{kind:"hist", want, groups, answers, tol, top, steps, okSteps, snap, x, y, capWords, typeQ, typeHint, unit}`: a graph
+    the memo marks T C L S P (type, caption, labels, scale, plotting) is BUILT on the phone, one criterion a step (LS P1 June 2026 3.1.3
+    histogram; Nov 2025 2.3.4 bar graph). `want` is the right type (a wrong type loses T and S, as the memo rules); `x` / `y` are the
+    axis label choices, the right one first; `capWords` are word groups the caption needs one of each; `snap` is what a drag moves to.
   - **Where an `mcq` plays:** in the MCQ card component, except when its options are all single letters (they play as letter balls
     on the page, as every letter pick does) or its mission has a `table` (the component shows an extract, not a table; LS P1 Nov
     2024 3.3.3). On the page an MCQ answers on the tap, as a card does.
