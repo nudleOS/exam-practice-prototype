@@ -2145,7 +2145,11 @@ class Component extends DCLogic {
     // (beside, the panel's fade strip shows only while the panel scrolls: as a grid row it held the frame 52 px off the panel's bottom
     // padding, measured at 1100 x 680. Scrolling is judged WITHOUT the strip, so hiding it cannot flip the answer.)
     if (side) { const af = getComputedStyle(q, "::after"), strip = q.dataset.scrolls === "true" ? (parseFloat(af.height) || 0) + (parseFloat(af.marginTop) || 0) : 0,
-      scrolls = String(q.scrollHeight - strip - q.clientHeight > 1); if (q.dataset.scrolls !== scrolls) q.dataset.scrolls = scrolls; }
+      scrolls = String(q.scrollHeight - strip - q.clientHeight > 1); if (q.dataset.scrolls !== scrolls) q.dataset.scrolls = scrolls;
+      // the frame stays put while the question's column scrolls (Murci, 2026-10-06: "the image must not scroll"): sticky, at the
+      // panel's visible content height (nx-play reads --nx-sideh)
+      const qs1 = getComputedStyle(q), sideh = Math.max(0, q.clientHeight - (parseFloat(qs1.paddingTop) || 0) - (parseFloat(qs1.paddingBottom) || 0)) + "px";
+      if (q.style.getPropertyValue("--nx-sideh") !== sideh) q.style.setProperty("--nx-sideh", sideh); }
     if (fbx && fbx.clientWidth) { const ar = parseFloat(getComputedStyle(fig).getPropertyValue("--fig-ar")) || 1.6, full = Math.round(((side ? fig : fig.parentElement || fig).clientWidth - 18) / ar);   // the frame hugs the image (2026-10-02): its own width follows --fig-h
       // (the panel's borders are inside its cap but outside its scroll box: measured, leaving them in kept a 2 px scroll)
       // (beside: only the frame and the panel's padding share the figure's column, not the question)

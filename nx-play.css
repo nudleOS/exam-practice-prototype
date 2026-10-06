@@ -2259,6 +2259,11 @@ body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none)::bef
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none) { color:#0b3d8f; background:#e6efff; border-color:#9dbcf0; }
 @media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none) { height:34px; border-radius:17px; } }
 
+/* ==== the figure beside the question stays put (Murci, 2026-10-06: "the image must not scroll"): only the question's column scrolls
+   in the panel; the frame is sticky at the panel's visible content height (nxPanelCap: --nx-sideh), so it still runs to the panel's
+   bottom padding (2026-10-05: "full height ... not touch the edges"). */
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"][data-scrolls="true"] > [data-figure] { position:sticky; top:0; align-self:start !important;
+  height:var(--nx-sideh, auto); box-sizing:border-box; }
 /* (the head wraps when the pill is there, the pill at the right of its row: beside the marks it pushed "2 marks" past the panel's
    edge in the side layout's narrow column, measured at 1348 x 648. The head's empty spacer goes (its gap alone wrapped the marks,
    2 px over). Measured: side column = row 1 the label, coins and marks, row 2 the pill; 360 px = row 2 the marks and the pill) */
