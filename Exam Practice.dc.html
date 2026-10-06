@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=235">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=241">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -803,6 +803,22 @@
               </sc-if>
               <sc-if value="{{ hasSeq }}" hint-placeholder-val="{{ false }}">
                 <span style="padding:9px 12px; border-radius:12px; border:1px dashed var(--line2); font-size:13px; font-weight:700; color:var(--text2)">{{ seqText }}</span>
+              </sc-if>
+              <sc-if value="{{ hasSeqTrack }}" hint-placeholder-val="{{ false }}">
+                <span data-seqhint="true" style="font-size:12.5px; font-weight:700; color:var(--text2)">{{ seqHint }}</span>
+                <div data-seqtrack="true" data-closed="{{ seqClosed }}" data-won="{{ seqWonAttr }}" role="list" aria-label="{{ seqAria }}" style="--n:{{ seqN }}">
+                  <span data-fibre="true" aria-hidden="true"><i data-pulse="true"></i></span>
+                  <sc-for list="{{ seqSlots }}" as="sl" hint-placeholder-count="3">
+                    <span data-socket="{{ sl.k }}" data-full="{{ sl.fullAttr }}" role="listitem" aria-label="{{ sl.aria }}">
+                      <span data-hole="true">
+                        <sc-if value="{{ sl.full }}" hint-placeholder-val="{{ false }}">
+                          <button data-tile="true" data-ball="true" data-placed="true" data-letter="{{ sl.L }}" data-verdict="{{ sl.verdict }}" aria-checked="false" aria-label="{{ sl.btnAria }}" onClick="{{ sl.pick }}" disabled="{{ sl.off }}"><span aria-hidden="true"></span><span data-ballf="true">{{ sl.L }}</span></button>
+                        </sc-if>
+                      </span>
+                      <span data-socklab="true" aria-hidden="true">{{ sl.lab }}</span>
+                    </span>
+                  </sc-for>
+                </div>
               </sc-if>
               <div data-track="{{ tilesChips }}" style="display:contents">
               <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
@@ -2876,6 +2892,69 @@ class Component extends DCLogic {
     let go = false; const start = () => { if (go) return; go = true; pre.forEach(x => x.classList.remove("nx-preroll")); if (q.isConnected) this.rollNow(q); };
     requestAnimationFrame(() => requestAnimationFrame(start)); setTimeout(start, 120);
   }
+  // ---- 2.5.4: an order of letters on a nerve track (Murci, 2026-10-06, the approved sketch) ----
+  seqOn(part) { const o = (part && part.options) || []; return !!part && part.response_mode === "order" && o.length > 1 && o.every(x => /^[A-Z]$/.test(String(x).trim())); }
+  // where each letter's ball stands, BY LETTER (a ball going from the tray to a socket is a different element after the render)
+  ballRects() { const m = {}; document.querySelectorAll('[data-question] [data-chips="true"] [data-ball="true"][data-letter]').forEach(b => { if (b.offsetWidth) m[b.dataset.letter] = b.getBoundingClientRect(); }); return m; }
+  // FLIP: every ball rolls from where it stood to where the render put it, slowing by friction, its disc turning by the distance
+  seqRoll(before) {
+    if (this.state.reduced || !before) return;
+    requestAnimationFrame(() => document.querySelectorAll('[data-question] [data-chips="true"] [data-ball="true"][data-letter]').forEach(b => {
+      const a = before[b.dataset.letter]; if (!a || !b.offsetWidth) return; const z = b.getBoundingClientRect(), dx = a.left - z.left, dy = a.top - z.top, d = Math.hypot(dx, dy); if (d < 1) return;
+      const T = Math.max(260, Math.min(700, Math.sqrt(2 * d / 1600) * 1000)), rad = z.width / 2 || 20, kf = [], ks = [];
+      for (let k = 0; k <= 12; k++) { const t = k / 12, rem = (1 - t) * (1 - t);
+        kf.push({ offset: t, transform: "translate(" + (dx * rem).toFixed(1) + "px, " + (dy * rem).toFixed(1) + "px)" }); ks.push({ offset: t, transform: "rotate(" + (dx * rem / rad * 57.2958).toFixed(1) + "deg)" }); }
+      b.animate(kf, { duration: T, easing: "linear" }); const f = b.querySelector("[data-ballf]"); if (f) f.animate(ks, { duration: T, easing: "linear" }); }));
+  }
+  // a ball that broke comes back as a new one, rolling in from the end of its rail (as the balls do when the question opens)
+  seqRollIn(L) {
+    if (this.state.reduced) return; const b = document.querySelector('[data-question] [data-chips="true"] [data-ball="true"][data-letter="' + L + '"]'); if (!b || !b.offsetWidth) return;
+    const card = b.closest('[data-track="true"]') || b.closest("[data-seqtrack]"), cr = card.getBoundingClientRect(), r = b.getBoundingClientRect();
+    const D = Math.max(0, cr.right - r.left + 8), T = Math.sqrt(2 * D / 1600) * 1000, rad = r.width / 2 || 20, kf = [], ks = [];
+    for (let k = 0; k <= 16; k++) { const t = k / 16, rem = D * (1 - t) * (1 - t); kf.push({ offset: t, transform: "translateX(" + rem.toFixed(1) + "px)" }); ks.push({ offset: t, transform: "rotate(" + (rem / rad * 57.2958).toFixed(1) + "deg)" }); }
+    card.classList.add("nx-rolling"); b.animate(kf, { duration: T, delay: 160, easing: "linear", fill: "backwards" });
+    const f = b.querySelector("[data-ballf]"); if (f) f.animate(ks, { duration: T, delay: 160, easing: "linear", fill: "backwards" });
+    setTimeout(() => card.classList.remove("nx-rolling"), T + 220);
+  }
+  // a tap: a ball in the tray rolls up into the next empty socket; one on the track rolls back down and the ones after it close up
+  seqTap(i) {
+    if (this._seqBusy) return; const st0 = this.state, pos = st0.orderSeq.indexOf(i), before = this.ballRects();
+    this.setState({ orderSeq: pos === -1 ? st0.orderSeq.concat([i]) : st0.orderSeq.filter(x => x !== i), edited: Object.assign({}, st0.edited, { order: true }) }, () => this.seqRoll(before));
+  }
+  // the first place out of order, and the ball standing in it as termBreak draws a field (taken before the result renders)
+  seqMarked(result) {
+    const first = (result.items || []).findIndex(x => x.verdict !== "correct"); if (result.full || first < 0) return { first: -1, snap: null, el: null, L: "" };
+    const b = document.querySelector('[data-question] [data-seqtrack] [data-socket="' + first + '"] [data-ball="true"]'); if (!b) return { first: first, snap: null, el: null, L: "" };
+    const cs = getComputedStyle(b);
+    return { first: first, el: b, L: b.dataset.letter, snap: { r: b.getBoundingClientRect(), text: b.dataset.letter, font: cs.font, pad: "0", radius: cs.borderRadius, center: true, small: true, ball: true } };
+  }
+  // The impulse runs the track: a light along the fibre, each ball it reaches lighting green in turn. Right: it runs the whole way and
+  // the balls hop. Wrong: it stops at the first ball out of order (by 440 ms, while that ball shakes), which cracks and breaks at
+  // NX_GLASS_BREAK (the robot is hurt then, check()), and the rest roll back down to the tray for the next try
+  seqPulse(part, sq, full) {
+    const tr = document.querySelector("[data-question] [data-seqtrack]"); if (!tr) return;
+    const socks = [...tr.querySelectorAll("[data-socket]")], pulse = tr.querySelector("[data-pulse]"), fib = tr.querySelector("[data-fibre]"), red = this.state.reduced;
+    const fr = fib.getBoundingClientRect(), at = k => { const r = socks[k].getBoundingClientRect(); return Math.max(0, Math.min(1, (r.left + r.width / 2 - fr.left) / (fr.width || 1))); };
+    const stop = full ? socks.length - 1 : Math.max(0, sq.first), end = at(stop), dur = red ? 0 : full ? 900 : Math.min(440, 900 * end);
+    this._seqBusy = true; clearTimeout(this._seqT); tr.classList.add("nx-pulsing");
+    const run = red ? null : pulse.animate([{ width: "0%" }, { width: (end * 100).toFixed(1) + "%" }], { duration: Math.max(1, dur), easing: "linear", fill: "forwards" });
+    if (run) (this._dims = this._dims || []).push(run);
+    socks.forEach((sk, k) => { if (k > stop || (!full && k === stop)) return; const b = sk.querySelector('[data-ball="true"]'); if (!b) return;
+      setTimeout(() => { b.dataset.lit = "true"; if (red) return; const r = b.getBoundingClientRect(); this.sparkle(r.left + r.width / 2, r.top + r.height / 2, 6, ["#9fd8ff", "#7ff0b8", "#ffffff"], 18); },
+        end ? dur * at(k) / end : 0); });
+    if (full) { this._seqT = setTimeout(() => { this._seqBusy = false; tr.classList.remove("nx-pulsing");
+      if (!red) this.ballsCheer([], false, socks.map(sk => sk.querySelector('[data-ball="true"]'))); }, dur + 80); return; }
+    if (sq.snap) { if (sq.el) sq.el.style.visibility = "hidden"; this.termBreak(sq.snap); }
+    this._seqT = setTimeout(() => {
+      const q = this.part(); if (!q || q.key !== part.key) { this._seqBusy = false; return; }
+      const before = this.ballRects(); delete before[sq.L];
+      if (run) pulse.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: "ease-out" }).finished.then(() => run.cancel(), () => run.cancel());
+      tr.classList.remove("nx-pulsing");
+      this.setState({ orderSeq: [] }, () => { this._seqBusy = false;
+        document.querySelectorAll('[data-question] [data-chips="true"] [data-ball="true"]').forEach(b => { b.style.visibility = ""; delete b.dataset.lit; });
+        this.seqRoll(before); if (sq.L) this.seqRollIn(sq.L); });
+    }, red ? 0 : NX_GLASS_BREAK + 20);
+  }
   // the letters a try marked RIGHT (deadLetters' twin)
   okLetters(part, mode, answer, result) {
     const items = result.items || [], good = k => (items.find(x => x.key === k) || {}).verdict === "correct";
@@ -2910,8 +2989,8 @@ class Component extends DCLogic {
   }
   // The right balls celebrate (Murci, 2026-10-05): each hops in turn, squashing as it lands, its disc spinning once, a burst of
   // light; on a full mark the balls not picked step back (they dim and sink), so the right ones stand out
-  ballsCheer(ok, full) {
-    const balls = ok.map(d => this.ballEl(d)).filter(Boolean);
+  ballsCheer(ok, full, els) {
+    const balls = (els || ok.map(d => this.ballEl(d))).filter(Boolean);
     balls.forEach((b, i) => { const delay = i * 120;
       b.animate([{ translate: "0 0", scale: "1 1" }, { translate: "0 -16px", scale: "0.94 1.08", offset: 0.35 }, { translate: "0 0", scale: "1.12 0.88", offset: 0.6 },
         { translate: "0 -4px", scale: "0.98 1.02", offset: 0.78 }, { translate: "0 0", scale: "1 1" }], { duration: 640, delay: delay, easing: "ease-out" });
@@ -2946,7 +3025,7 @@ class Component extends DCLogic {
     const DECEL = 1600, STAGGER = 240;   // px/s^2 (a 300 px roll takes ~0.61 s), ms between balls (measured: never catches the one ahead)
     const groups = [...q.querySelectorAll('[data-chips="true"], [data-anscard] [role="radiogroup"]')].filter(g => g.querySelector('[data-ball="true"]'));
     groups.forEach((g, gi) => {
-      const card = g.matches('[data-track="true"]') ? g : g.querySelector('[data-track="true"]') || g.closest('[data-anscard]') || g, cr = card.getBoundingClientRect(), balls = [...g.querySelectorAll('[data-ball="true"]')].filter(b => b.offsetWidth);
+      const card = g.matches('[data-track="true"]') ? g : g.querySelector('[data-track="true"]') || g.closest('[data-anscard]') || g, cr = card.getBoundingClientRect(), balls = [...g.querySelectorAll('[data-ball="true"]')].filter(b => b.offsetWidth && !b.closest("[data-seqtrack]"));
       if (!balls.length) return;
       card.classList.add("nx-rolling"); let end = 0;
       balls.forEach((b, i) => {
@@ -3134,7 +3213,9 @@ class Component extends DCLogic {
   resetNow(extra) {
     // a fresh round (a new part, Practise again, a retake): the last round's ball effects go (the "stepped back" dim is held with
     // fill: forwards, so it came back on a practice round, measured), and the balls roll in again
-    (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; clearTimeout(this._glassT); this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
+    (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; clearTimeout(this._glassT);
+    clearTimeout(this._seqT); this._seqBusy = false; document.querySelectorAll("[data-seqtrack]").forEach(t => { t.classList.remove("nx-pulsing"); t.querySelectorAll("[data-ball]").forEach(b => { delete b.dataset.lit; b.style.visibility = ""; }); });
+    this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
@@ -3305,7 +3386,7 @@ class Component extends DCLogic {
   // `given` (from mcq-play): { answer, quiet } — the answer passed in (a setState'd pick would not be read yet), and
   // quiet = no verdict bar and no focus move (the component shows the verdict). Returns the reply.
   check(given) {
-    const part = this.part(); if (!part || this.state.marking) return;
+    const part = this.part(); if (!part || this.state.marking || this._seqBusy) return;
     const p = this.pg(part.key); if (p.closed) return;
     const mode = part.response_mode;
     const s0 = this.state;
@@ -3318,6 +3399,7 @@ class Component extends DCLogic {
       const snap = !quiet && mode === "term" && result.marker !== "unavailable" ? this.termSnap() : null;
       // wrong LETTERS break like glass and stay out for this question, as a wrong MCQ card does (Murci, 2026-10-05)
       const dead = result.marker === "unavailable" ? [] : this.deadLetters(part, mode, answer, result), chipSnaps = !quiet ? this.chipSnaps(dead) : [];
+      const seqR = !quiet && result.marker !== "unavailable" && this.seqOn(part) ? this.seqMarked(result) : null;   // 2.5.4's track: the ball out of order
       const deadL = dead.map(d => d.L), opts0 = (part.options || []).map(o => String(o).trim());   // (right: it flips; wrong: it breaks)   // the field as it is, before the result hides it
       if (result.marker === "unavailable") { this.setState({ marking: false, reply: { waiting: true }, barOpen: true, barSeq: s.barSeq + 1, runLog: s.runLog.concat([{ key: part.key, waiting: true, xp: 0 }]), prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { waiting: true }) }) }, () => this.react("greet")); return; }
       const tryNo = pr.tries + 1;
@@ -3371,7 +3453,7 @@ class Component extends DCLogic {
       const flinch = !closed && !result.full && !draw;
       // a wrong answer that breaks glass (the term's capsule, a letter ball) hurts the robot when the glass BURSTS, not when it is marked
       // (Murci, 2026-10-06: "the robot animates before the glasses break"); nothing to break: at once
-      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0), hurtAt = glass ? NX_GLASS_BREAK : 0;
+      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || !!(seqR && seqR.snap)), hurtAt = glass ? NX_GLASS_BREAK : 0;
       clearTimeout(this._glassT);
       if (!quiet) { const go = () => this.react(draw ? "greet" : result.full ? "dance" : "defeat", flinch ? NX_FLINCH : undefined);
         if (hurtAt) this._glassT = setTimeout(() => { const q = this.part(); if (q && q.key === part.key) go(); }, hurtAt); else go(); }
@@ -3381,6 +3463,7 @@ class Component extends DCLogic {
       if (snap && result.full) this.termFlip(snap);
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
+      if (seqR) this.seqPulse(part, seqR, !!result.full);   // the impulse runs the track; a ball out of order breaks
       if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), hurtAt || 60);   // the try coin it cost cracks; the next one lights
       if (chipSnaps.length && !this.state.reduced) setTimeout(() => this.ballRecoil(dead), NX_GLASS_BREAK);   // the burst jolts the balls beside it
       const okL = !quiet && !draw ? this.okLetters(part, mode, answer, result) : [];
@@ -3872,12 +3955,13 @@ class Component extends DCLogic {
     const memoStamp = { t: "✓ memo", c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
     const need = part.count || 1;
     const deadT = this.pg(part.key).dead || [], chipsOnly = opts.length > 0 && opts.every(o => /^[A-Z]$/.test(String(o).trim()));
+    const seqBalls = mode === "order" && chipsOnly && opts.length > 1;   // 2.5.4's track (below): no stamp on a ball, the impulse says it
     const tiles = isTiles ? opts.map((o, i) => {
       let sel = false, badge = letters[i], sp = null;
       if (mode === "mcq") { sel = s.pick === i; sp = s.edited["o" + i] ? null : stampOf(itemsBy["o" + i]); if (!sp && revealAns === i && s.pick !== i) sp = memoStamp; }
       if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; sp = s.edited.picks ? null : stampOf(itemsBy["o" + i]); if (!sp && Array.isArray(revealAns) && revealAns.indexOf(i) !== -1 && !sel) sp = memoStamp; }
       if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : letters[i] === o ? "·" : letters[i];
-        sp = sel && !s.edited.order ? stampOf(itemsBy["pos" + pos]) : null; }
+        sp = sel && !s.edited.order && !seqBalls ? stampOf(itemsBy["pos" + pos]) : null; }
       const out = chipsOnly && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket, no stamp
       const st = stampSty(sp);
       return Object.assign({ idx: String(i), text: o, badge: badge,
@@ -3896,11 +3980,25 @@ class Component extends DCLogic {
           if (mode === "pickn") { const has = st0.picks.indexOf(i) !== -1;
             if (!has && st0.picks.length >= need) { this.setState({ pickWarn: st0.pickWarn + 1 }); return; }
             this.setState({ picks: has ? st0.picks.filter(x => x !== i) : st0.picks.concat([i]), edited: Object.assign({}, st0.edited, { picks: true }) }); return; }
+          if (seqBalls) { this.seqTap(i); return; }
           const pos = st0.orderSeq.indexOf(i);
           this.setState({ orderSeq: pos === -1 ? st0.orderSeq.concat([i]) : st0.orderSeq.slice(0, pos), edited: Object.assign({}, st0.edited, { order: true }) });
         } }, st); }) : [];
     const pickedN = mode === "pickn" ? s.picks.length : 0;
     const seq = mode === "order" ? s.orderSeq.map(i => opts[i]) : [];
+    // 2.5.4 (Murci, 2026-10-06, the approved sketch): an order of LETTERS is a track of sockets the balls roll up into; on Check an
+    // impulse runs it (seqPulse). Won, the track shows the order (the learner's own) and the tray goes; out of tries it stays empty and
+    // the balls wait in the tray, locked: no memo during the paper (Murci, 2026-10-03: it opens when the paper is finished)
+    const seqN = seqBalls ? opts.length : 0, seqKey = seqBalls ? ((SERVER.keys[part.key] || {}).order || []) : [];
+    const pgQ = this.pg(part.key), seqWon = seqBalls && closed && (!!(reply && reply.result && reply.result.full) || (!reply && !!pgQ.medal));
+    const seqLost = seqBalls && closed && !seqWon, seqOwn = seqWon && !s.orderSeq.length, seqShown = seqOwn ? seqKey : s.orderSeq;   // (seqOwn: a won question revisited)
+    const seqLab = k => seqN === 3 ? ["FIRST", "THEN", "LAST"][k] : k === 0 ? "FIRST" : k === seqN - 1 ? "LAST" : (k + 1) + (k === 1 ? "ND" : k === 2 ? "RD" : "TH");
+    const seqSlots = Array.from({ length: seqN }, (_, k) => { const oi = seqShown[k], L = oi != null ? String(opts[oi]).trim() : "";
+      return { k: String(k), full: !!L, fullAttr: L ? "true" : "false", L: L, lab: seqLab(k), verdict: !L ? "" : seqWon ? "ok" : "", off: locked,
+        aria: seqLab(k).toLowerCase() + ": " + (L || "empty"),
+        btnAria: L + ", placed " + seqLab(k).toLowerCase() + (locked ? "" : ", tap to take it back"),
+        pick: () => { if (!locked && oi != null) this.seqTap(oi); } }; });
+    const tilesShown = seqBalls ? tiles.filter(t => !seqOwn && s.orderSeq.indexOf(+t.idx) === -1) : tiles;
     // Letter + name
     const lnL = mode === "lettername" ? (s.edited.letter ? null : stampOf(itemsBy.letter)) : null;
     const lnN = mode === "lettername" ? (s.edited.lname ? null : stampOf(itemsBy.name)) : null;
@@ -3961,14 +4059,16 @@ class Component extends DCLogic {
       // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
       // the panel 242 px over at 412x915 and pushed the figure out of sight (Murci, 2026-10-01: "be able to see the images from 1.4")
       tilesChips: isTiles && (part.options || []).length > 0 && (part.options || []).every(o => /^[A-Z]$/.test(String(o).trim())) ? "true" : "false",
-      isTiles: isTiles, tiles: tiles, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
+      isTiles: isTiles, tiles: tilesShown, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
       tilesKeys: e => { if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].indexOf(e.key) === -1) return;
         const ts = [].slice.call(e.currentTarget.querySelectorAll("[data-tile]")); const i = ts.indexOf(document.activeElement); if (i < 0) return;
         e.preventDefault(); const nx = ts[(i + (e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : ts.length - 1)) % ts.length]; nx.focus();
         if (e.currentTarget.getAttribute("role") === "radiogroup") nx.click(); },
       hasCounter: mode === "pickn", counterText: pickedN >= need && s.pickWarn && mode === "pickn" ? "Pick " + need + ": unpick one first" : "Pick " + need + " · " + pickedN + " picked",
       counterColor: pickedN === need ? "#3ddc97" : "var(--text2)", counterKey: "w" + s.pickWarn, counterAnim: s.pickWarn && !s.reduced ? "shake 360ms ease both" : "none",
-      hasSeq: mode === "order", seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
+      hasSeq: mode === "order" && !seqBalls, seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
+      hasSeqTrack: seqBalls, seqSlots: seqSlots, seqN: String(seqN), seqClosed: seqWon ? "true" : "false", seqWonAttr: seqWon ? "true" : "false",
+      seqAria: "Your order, " + seqN + " places", seqHint: !seqBalls ? "" : seqWon ? "Your order" : seqLost ? "Out of tries" : "Tap the letters in order · tap one on the track to take it back",
       isLetterName: mode === "lettername",
       letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L, out = (this.pg(part.key).dead || []).indexOf(L) !== -1;
         return { label: L, checked: on ? "true" : "false", aria: "Letter " + L, tab: (s.letter ? on : j === 0) ? "0" : "-1",
@@ -4125,9 +4225,9 @@ class Component extends DCLogic {
     const stampOf = it => {
       if (!it) return null;
       const v = it.verdict;
-      if (v === "correct") return { t: "✓ " + it.awarded, c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
+      if (v === "correct") return { t: it.available === 0 ? "✓" : "✓ " + it.awarded, c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
       if (v === "follow_through") return { t: "carried forward ✓", c: "#3ddc97", bg: "rgba(61,220,151,0.14)", b: "rgba(61,220,151,0.5)" };
-      if (v === "incorrect") return { t: "✕ 0", c: "#ff9a9c", bg: "rgba(242,119,122,0.14)", b: "rgba(242,119,122,0.5)" };
+      if (v === "incorrect") return { t: it.available === 0 ? "✕" : "✕ 0", c: "#ff9a9c", bg: "rgba(242,119,122,0.14)", b: "rgba(242,119,122,0.5)" };
       if (v === "unreadable") return { t: "couldn't read it", c: "#f3c14f", bg: "rgba(224,161,15,0.14)", b: "rgba(224,161,15,0.5)" };
       if (v === "missing") return { t: "missing", c: "#a4a9ae", bg: "rgba(255,255,255,0.06)", b: "var(--line2)" };
       return { t: verdictInfo(v)[1].toLowerCase(), c: "#a4a9ae", bg: "rgba(255,255,255,0.06)", b: "var(--line2)" };
