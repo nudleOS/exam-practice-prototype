@@ -16,6 +16,8 @@ fig = lambda page, b, caption: {"page": page, "bbox": box(*b), "caption": captio
 mcq = lambda n, q, opts, a, clues, **kw: {"t": "mcq", "n": n, "marks": 2, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
 term = lambda n, q, a, clues, marks=1: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a}
 AB = ["A only", "B only", "Both A and B", "None"]
+# Column I / Column II (1.3): the description is the stem, COLUMN II's two items are `ab` (the Venn layout draws them as its two circles)
+abq = lambda n, q, a_item, b_item, a, clues: mcq(n, q, AB, a, clues, ab={"a": a_item, "b": b_item})
 LET = ["A", "B", "C", "D", "E"]
 
 q11 = [
@@ -86,11 +88,11 @@ q12 = [
          ["It sits at the tip of the sperm's head.", "Its enzymes dissolve a way into the ovum."]),
 ]
 q13 = [
-    mcq("1.3.1", "Acts as a micro-filter for the developing foetus A: Placenta · B: Cervix", AB, 0,
+    abq("1.3.1", "Acts as a micro-filter for the developing foetus", "Placenta", "Cervix", 0,
         ["Which structure stands between the mother's blood and the foetus's blood?", "The cervix is a passage, not a filter."]),
-    mcq("1.3.2", "The part of the brain that controls heart rate A: Corpus callosum · B: Medulla oblongata", AB, 1,
+    abq("1.3.2", "The part of the brain that controls heart rate", "Corpus callosum", "Medulla oblongata", 1,
         ["The heart rate is not under conscious control.", "The corpus callosum joins the two halves of the cerebrum."]),
-    mcq("1.3.3", "The area on the retina where there are no rods or cones A: Blind spot · B: Cornea", AB, 0,
+    abq("1.3.3", "The area on the retina where there are no rods or cones", "Blind spot", "Cornea", 0,
         ["Is the cornea part of the retina?", "Where the optic nerve leaves the eye there is no room for receptors."]),
 ]
 ln = lambda n, q, letter, names, clues: {"t": "lettername", "n": n, "marks": 2, "q": q, "clues": clues, "letters": LET, "a": {"letter": letter, "name": names}}
@@ -398,7 +400,6 @@ paper = {
     "sections": [{"title": "Section A", "total": 50, "missions": missions}, {"title": "Section B", "total": 100, "missions": missions_b}],
     "flags": [
         {"n": "1.4.1(a)", "kind": "low_confidence", "detail": "The memo accepts C – urethra OR D – penis. Marked: either letter earns its mark, the name only when it names the part of the letter chosen ('C – penis' = 1). A Life Sciences teacher should confirm."},
-        {"n": "2.5.4", "kind": "low_confidence", "detail": "An order of LETTERS (C → A → B): the letter balls need a sequence design (shown to Murci first)."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
     ],
 }
