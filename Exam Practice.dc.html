@@ -1749,8 +1749,10 @@ function buildPapers() {
           if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
           if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : { stems: b });
+            // (the answers stay in the key, never in the part; so do a paper's chip `labels`: LS P1 2026 3.6.4's named each stem's
+            // ANSWER, "✕ A bends to the light" on a miss told the learner the shape; the builder's own neutral names show instead)
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
-              stems: b.stems ? b.stems.map(st => ({ id: st.id, tip: st.tip })) : undefined }) }); }   // (the answers stay in the key, never in the part)
+              labels: undefined, stems: b.stems ? b.stems.map(st => ({ id: st.id, tip: st.tip })) : undefined }) }); }
           if (q.t === "draw") { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             SERVER.keys[key] = { draw: true, worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) };
             return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" }); }
