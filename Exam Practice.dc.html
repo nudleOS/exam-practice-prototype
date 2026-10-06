@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=241">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=243">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -832,6 +832,23 @@
                 </button>
               </sc-for>
               </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasVenn }}" hint-placeholder-val="{{ false }}">
+            <div data-venn="true">
+              <div data-vennitems="true"><span data-vitem="a"><b aria-hidden="true">A</b>{{ vennA }}</span><span data-vitem="b"><b aria-hidden="true">B</b>{{ vennB }}</span></div>
+              <svg data-vennsvg="true" viewBox="0 0 320 224" role="radiogroup" aria-label="{{ vennGroupAria }}">
+                <defs><pattern id="nxv-crack" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#262d3b"></rect><path d="M0 9 L7 12 L11 6 L22 10 M7 12 L9 22 M11 6 L15 0" fill="none" stroke="#3d4659" stroke-width="1.2"></path></pattern></defs>
+                <path data-vr="3" data-state="{{ vennS3 }}" d="M6 6 H314 V218 H6Z M160 58.84 A72 72 0 1 0 160 181.16 A72 72 0 1 0 160 58.84Z" role="radio" aria-checked="{{ vennC3 }}" aria-label="{{ vennAria3 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap3 }}" onKeyDown="{{ vennKey3 }}"></path>
+                <path data-vr="0" data-state="{{ vennS0 }}" d="M160 58.84 A72 72 0 1 0 160 181.16 A72 72 0 0 1 160 58.84Z" role="radio" aria-checked="{{ vennC0 }}" aria-label="{{ vennAria0 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap0 }}" onKeyDown="{{ vennKey0 }}"></path>
+                <path data-vr="1" data-state="{{ vennS1 }}" d="M160 58.84 A72 72 0 1 1 160 181.16 A72 72 0 0 0 160 58.84Z" role="radio" aria-checked="{{ vennC1 }}" aria-label="{{ vennAria1 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap1 }}" onKeyDown="{{ vennKey1 }}"></path>
+                <path data-vr="2" data-state="{{ vennS2 }}" d="M160 58.84 A72 72 0 0 1 160 181.16 A72 72 0 0 1 160 58.84Z" role="radio" aria-checked="{{ vennC2 }}" aria-label="{{ vennAria2 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap2 }}" onKeyDown="{{ vennKey2 }}"></path>
+                <circle data-vring="true" cx="122" cy="120" r="72"></circle><circle data-vring="true" cx="198" cy="120" r="72"></circle>
+                <text data-vlab="big" x="84" y="86" text-anchor="middle">A</text><text data-vlab="big" x="236" y="86" text-anchor="middle">B</text>
+                <text data-vlab="true" x="94" y="126" text-anchor="middle">A only</text><text data-vlab="true" x="160" y="124" text-anchor="middle">Both</text>
+                <text data-vlab="true" x="226" y="126" text-anchor="middle">B only</text><text data-vlab="true" x="290" y="208" text-anchor="middle">None</text>
+              </svg>
             </div>
           </sc-if>
 
@@ -1713,7 +1730,7 @@ function buildPapers() {
           SERVER.clues[key] = q.clues || [];
           const base = { key: key, board: true, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length, img: q.img || null };   // img: an ingested MCQ's own figure
           if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]];   // opt_table: options printed as a table (1.1.6), the card shows its rows
-            return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts, opt_table: q.optTable || null }); }
+            return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts, opt_table: q.optTable || null, ab: q.ab || null }); }
           if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
           if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
           if (q.t === "term") { const gl = SERVER.glossary[key.split(":")[0]] = SERVER.glossary[key.split(":")[0]] || {}; q.a.forEach(t => { gl[norm(t)] = true; });
@@ -2901,6 +2918,33 @@ class Component extends DCLogic {
     let go = false; const start = () => { if (go) return; go = true; pre.forEach(x => x.classList.remove("nx-preroll")); if (q.isConnected) this.rollNow(q); };
     requestAnimationFrame(() => requestAnimationFrame(start)); setTimeout(start, 120);
   }
+  // ---- COLUMN I / COLUMN II as a Venn (mcq.ab): the region hit ----
+  // Wrong: the diagram shakes, the region is red (data-state "breaking"), cracks run out from its middle (clipped to the region) and it
+  // bursts at NX_GLASS_BREAK with a ring of red dust, then lies grey and cracked (the CSS pattern). Right: a burst of light from its middle.
+  vennHit(i, right) {
+    const sv = document.querySelector("[data-question] [data-vennsvg]"); if (!sv || this.state.reduced || i == null) return;
+    const C = [[94, 120], [226, 120], [160, 120], [290, 202]][i], r = sv.getBoundingClientRect(), k = r.width / 320, X = r.left + C[0] * k, Y = r.top + C[1] * k;
+    if (right) { this.sparkle(X, Y, 10, ["#ffe08a", "#7ff0b8", "#ffffff"], 30); return; }
+    sv.animate([{ translate: "0 0" }, { translate: "-7px 0", offset: 0.15 }, { translate: "6px 0", offset: 0.35 }, { translate: "-4px 0", offset: 0.55 }, { translate: "2px 0", offset: 0.75 }, { translate: "0 0" }],
+      { duration: 460, easing: "ease-in-out" });
+    if (navigator.vibrate) try { navigator.vibrate([70, 50, 90]); } catch (e) { /* not allowed here */ }
+    const NS = "http://www.w3.org/2000/svg", lay = document.createElementNS(NS, "svg"), reg = sv.querySelector('[data-vr="' + i + '"]');
+    lay.setAttribute("viewBox", "0 0 320 224"); lay.setAttribute("aria-hidden", "true");
+    lay.style.cssText = "position:fixed; left:" + r.left + "px; top:" + r.top + "px; width:" + r.width + "px; height:" + r.height + "px; pointer-events:none; z-index:31; overflow:visible";
+    const cp = document.createElementNS(NS, "clipPath"), cpp = document.createElementNS(NS, "path"), id = "nxv-clip-" + Date.now();
+    cp.id = id; cpp.setAttribute("d", reg ? reg.getAttribute("d") : ""); cpp.setAttribute("clip-rule", "evenodd"); cp.appendChild(cpp); lay.appendChild(cp);
+    const g = document.createElementNS(NS, "g"); g.setAttribute("clip-path", "url(#" + id + ")"); lay.appendChild(g);
+    const N = 6 + Math.floor(Math.random() * 4);
+    for (let n = 0; n < N; n++) { const a = (n + Math.random() * 0.7) / N * Math.PI * 2, L = 40 + Math.random() * 46, pts = [C];
+      for (let s = 1; s <= 3; s++) { const j = (Math.random() - 0.5) * 0.55; pts.push([C[0] + Math.cos(a + j) * L * s / 3, C[1] + Math.sin(a + j) * L * s / 3]); }
+      const pl = document.createElementNS(NS, "polyline"); pl.setAttribute("points", pts.map(q => q[0].toFixed(1) + "," + q[1].toFixed(1)).join(" "));
+      pl.setAttribute("fill", "none"); pl.setAttribute("stroke", "#ffe1e1"); pl.setAttribute("stroke-width", "1.6"); pl.setAttribute("stroke-linejoin", "round"); g.appendChild(pl);
+      const len = L * 1.15; pl.style.strokeDasharray = len; pl.style.strokeDashoffset = len;
+      pl.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 200, delay: 480 + n * 22, easing: "ease-out", fill: "forwards" }); }
+    document.body.appendChild(lay);
+    setTimeout(() => { this.sparkle(X, Y, 12, ["#ff8a8a", "#ffd0d0", "#c0393f"], 34); lay.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }); }, NX_GLASS_BREAK);
+    setTimeout(() => lay.remove(), NX_GLASS_BREAK + 420);
+  }
   // ---- 2.5.4: an order of letters on a nerve track (Murci, 2026-10-06, the approved sketch) ----
   seqOn(part) { const o = (part && part.options) || []; return !!part && part.response_mode === "order" && o.length > 1 && o.every(x => /^[A-Z]$/.test(String(x).trim())); }
   // where each letter's ball stands, BY LETTER (a ball going from the tray to a socket is a different element after the render)
@@ -3057,6 +3101,7 @@ class Component extends DCLogic {
     if (mode === "letternames") return (answer || []).map((r, k) => r && r.letter && bad("l" + k) ? { L: r.letter, row: k } : null).filter(Boolean);
     if (lettersOnly && mode === "pickn") return (answer || []).filter(i => bad("o" + i)).map(i => ({ L: opts[i], row: null }));
     if (lettersOnly && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];
+    if (part.ab && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];   // a Venn region
     return [];
   }
   // each ruled-out letter's chip as termBreak draws a field: its box, its letter centred, round, no cross (it is 42 px)
@@ -3469,7 +3514,7 @@ class Component extends DCLogic {
       const flinch = !closed && !result.full && !draw;
       // a wrong answer that breaks glass (the term's capsule, a letter ball) hurts the robot when the glass BURSTS, not when it is marked
       // (Murci, 2026-10-06: "the robot animates before the glasses break"); nothing to break: at once
-      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || !!(seqR && seqR.snap)), hurtAt = glass ? NX_GLASS_BREAK : 0;
+      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || !!(seqR && seqR.snap) || (!!part.ab && dead.length > 0)), hurtAt = glass ? NX_GLASS_BREAK : 0;
       clearTimeout(this._glassT);
       if (!quiet) { const go = () => this.react(draw ? "greet" : result.full ? "dance" : "defeat", flinch ? NX_FLINCH : undefined);
         if (hurtAt) this._glassT = setTimeout(() => { const q = this.part(); if (q && q.key === part.key) go(); }, hurtAt); else go(); }
@@ -3480,13 +3525,14 @@ class Component extends DCLogic {
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
       if (seqR) this.seqPulse(part, seqR, !!result.full);   // the impulse runs the track; a ball out of order breaks
+      if (part.ab && !quiet) this.vennHit(answer, !!result.full);   // the Venn: the region cracks and bursts, or lights up
       if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), hurtAt || 60);   // the try coin it cost cracks; the next one lights
       if (chipSnaps.length && !this.state.reduced) setTimeout(() => this.ballRecoil(dead), NX_GLASS_BREAK);   // the burst jolts the balls beside it
       const okL = !quiet && !draw ? this.okLetters(part, mode, answer, result) : [];
       if (okL.length && !this.state.reduced) setTimeout(() => this.ballsCheer(okL, !!result.full), 80);   // the right balls celebrate
       // ...and the letter leaves the row as it breaks apart (termBreak's CRACK_AT, 700 ms), not before: until then its place is held
       clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => { const before = this.ballSpots(); this.setState({ deadFresh: [] }, () => this.rollGaps(before)); },
-        this.state.reduced || !chipSnaps.length ? 0 : NX_GLASS_BREAK + 20);
+        this.state.reduced || !(chipSnaps.length || part.ab) ? 0 : NX_GLASS_BREAK + 20);
       return reply;
     };
     const result = this.mark(part, answer);
@@ -3505,7 +3551,7 @@ class Component extends DCLogic {
     // shows the table: the component shows a question's extract, not its table (LS P1 Nov 2024 3.3.3, "X or Y" read off the results
     // table, measured: the table was missing and the cards read "A · X", "B · Y")
     const lettersOnly = (part.options || []).length > 0 && part.options.every(o => /^[A-Z]$/.test(String(o).trim()));
-    if (lettersOnly || (part._table !== undefined ? part._table : m.table)) return false;
+    if (lettersOnly || part.ab || (part._table !== undefined ? part._table : m.table)) return false;   // (part.ab: the Venn, below)
     // A part that is already closed opens in the page's closed view (with Replay) — but the part the component is
     // playing closes DURING its animation, and must not unmount it then.
     // (2026-09-30: a closed part the component finished opens in the component again, as it ended: seeded from mcqBook. Measured: the
@@ -4016,6 +4062,18 @@ class Component extends DCLogic {
         btnAria: L + ", placed " + seqLab(k).toLowerCase() + (locked ? "" : ", tap to take it back"),
         pick: () => { if (!locked && oi != null) this.seqTap(oi); } }; });
     const tilesShown = seqBalls ? tiles.filter(t => !seqOwn && s.orderSeq.indexOf(+t.idx) === -1) : tiles;
+    // COLUMN I / COLUMN II (mcq.ab, LS P1 1.3; the first 2025 layout, Murci 2026-10-06): a Venn of COLUMN II's two items, a region per
+    // option (A only, B only, both, none, in that order). A tap answers, as every MCQ on the page; a wrong region breaks and stays out.
+    const venn = mode === "mcq" && !!part.ab;
+    const vennState = i => { if (!venn) return ""; const L = String(opts[i] || "").trim(), d = this.deadAttr(deadT.indexOf(L) !== -1, L);
+      if (d === "breaking") return "breaking"; if (d === "true") return "dead";
+      const sp = s.edited["o" + i] ? null : stampOf(itemsBy["o" + i]); if (sp && /^\u2713/.test(sp.t)) return "ok"; return s.pick === i ? "picked" : ""; };
+    const vennTap = i => () => { if (locked || vennState(i) === "dead" || vennState(i) === "breaking") return;
+      this.setState({ pick: i, edited: Object.assign({}, this.state.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }, () => this.check()); };
+    const vennWords = venn ? [part.ab.a + " only", part.ab.b + " only", "both " + part.ab.a + " and " + part.ab.b, "neither " + part.ab.a + " nor " + part.ab.b] : [];
+    const vennVals = {}; [0, 1, 2, 3].forEach(i => { const st = vennState(i); vennVals["vennS" + i] = st; vennVals["vennC" + i] = s.pick === i && st !== "dead" ? "true" : "false";
+      vennVals["vennAria" + i] = venn ? opts[i] + ": " + vennWords[i] + (st === "dead" ? ", ruled out" : st === "ok" ? ", right" : "") : "";
+      vennVals["vennTap" + i] = vennTap(i); vennVals["vennKey" + i] = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); vennTap(i)(); } }; });
     // Letter + name
     const lnL = mode === "lettername" ? (s.edited.letter ? null : stampOf(itemsBy.letter)) : null;
     const lnN = mode === "lettername" ? (s.edited.lname ? null : stampOf(itemsBy.name)) : null;
@@ -4076,7 +4134,8 @@ class Component extends DCLogic {
       // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
       // the panel 242 px over at 412x915 and pushed the figure out of sight (Murci, 2026-10-01: "be able to see the images from 1.4")
       tilesChips: isTiles && (part.options || []).length > 0 && (part.options || []).every(o => /^[A-Z]$/.test(String(o).trim())) ? "true" : "false",
-      isTiles: isTiles, tiles: tilesShown, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
+      isTiles: isTiles && !venn, tiles: tilesShown, hasVenn: venn, vennA: venn ? part.ab.a : "", vennB: venn ? part.ab.b : "", vennTab: locked ? "-1" : "0",
+      vennGroupAria: venn ? "Where does it belong: " + part.ab.a + " (A), " + part.ab.b + " (B), both or none?" : "", ...vennVals, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
       tilesKeys: e => { if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].indexOf(e.key) === -1) return;
         const ts = [].slice.call(e.currentTarget.querySelectorAll("[data-tile]")); const i = ts.indexOf(document.activeElement); if (i < 0) return;
         e.preventDefault(); const nx = ts[(i + (e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : ts.length - 1)) % ts.length]; nx.focus();

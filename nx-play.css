@@ -2270,3 +2270,32 @@ body.nx-play main:not(#mq-stage) [data-question][data-figside="true"][data-scrol
 body.nx-play main:not(#mq-stage) [data-parthead]:has([data-again]):not(#nx-none) { flex-wrap:wrap !important; row-gap:8px !important; }
 body.nx-play main:not(#mq-stage) [data-parthead]:has([data-again]) > span:empty { display:none; }
 @media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-parthead]:has([data-again]) [data-partmarks] { margin-left:0 !important; } }
+
+/* ==== COLUMN I / COLUMN II as a Venn (mcq.ab; the first 2025 layout, Murci 2026-10-06) ====
+   COLUMN II's two items above, two circles below; a region per answer (A only, B only, both, none). A tap answers. Picked: the accent;
+   right: green; wrong: red while it cracks (vennHit), then grey and cracked (the #nxv-crack pattern), out for this question. */
+body.nx-play main:not(#mq-stage) [data-venn] { display:flex; flex-direction:column; gap:10px; width:100%; max-width:400px; }   /* (440 drew it 308 px tall on a desktop panel) */
+body.nx-play main:not(#mq-stage) [data-vennitems] { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+body.nx-play main:not(#mq-stage) [data-vitem] { display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:4px 12px 4px 5px; border-radius:17px; box-sizing:border-box;
+  background:rgba(0,104,248,0.12); border:1px solid rgba(129,177,255,0.35); font-size:13.5px; font-weight:600; color:var(--nx-text); line-height:1.25; }
+body.nx-play main:not(#mq-stage) [data-vitem] > b { flex:none; width:24px; height:24px; border-radius:50%; display:grid; place-items:center;
+  background:radial-gradient(circle at 35% 30%, #8fb8ff, #2f66cc 55%, #163a82); color:#fff; font-size:12px; font-weight:800; }
+body.nx-play main:not(#mq-stage) [data-vennsvg] { display:block; width:100%; height:auto; overflow:visible; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+body.nx-play main:not(#mq-stage) [data-vr] { fill:#14295a; cursor:pointer; outline:none; transition:fill 180ms ease; }
+body.nx-play main:not(#mq-stage) [data-vr="2"] { fill:#1c3c78; }
+body.nx-play main:not(#mq-stage) [data-vr="3"] { fill:#0c1d40; fill-rule:evenodd; }
+/* (hover lights an untouched region only: it outranked the result fills, so a right region under the mouse stayed blue) */
+@media (hover:hover) and (pointer:fine) { body.nx-play main:not(#mq-stage) [data-vr][data-state=""]:hover { fill:#24508f; } }
+body.nx-play main:not(#mq-stage) [data-vr]:focus-visible { stroke:#7fd4ff; stroke-width:3; }
+body.nx-play main:not(#mq-stage) [data-vr][data-state="picked"] { fill:#0188fd; }
+body.nx-play main:not(#mq-stage) [data-vr][data-state="ok"] { fill:#22b36f; }
+body.nx-play main:not(#mq-stage) [data-vr][data-state="breaking"] { fill:#d23a44; }
+body.nx-play main:not(#mq-stage) [data-vr][data-state="dead"] { fill:url(#nxv-crack); cursor:default; }
+body.nx-play main:not(#mq-stage) [data-vring] { fill:none; stroke:#5b8ad6; stroke-width:2; pointer-events:none; }
+body.nx-play main:not(#mq-stage) [data-vlab] { fill:#a9bfe6; font-size:12px; font-weight:700; pointer-events:none; }
+body.nx-play main:not(#mq-stage) [data-vlab="big"] { fill:#dfe9ff; font-size:15px; font-weight:800; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vr][data-state=""] { fill:#dbe6f7; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vr="2"][data-state=""] { fill:#c4d5f0; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vr="3"][data-state=""] { fill:#eef3fb; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vlab] { fill:#3d5687; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vlab="big"] { fill:#0b1f45; }
