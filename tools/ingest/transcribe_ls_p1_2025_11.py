@@ -224,7 +224,7 @@ q25 = [
     {"t": "steps", "n": "2.5.4", "marks": 3,
      "q": "Calculate the daily amount of added human growth hormone that was given to a boy with a mass of 25 kg. Show ALL your working, INCLUDING the correct unit.",
      "clues": ["The dosage is per kg of body weight.", "Multiply the dosage by the boy's mass."],
-     "steps": [{"id": "s1", "label": "Daily amount: 25 × 0,028 (mg)", "marks": 3, "a": 0.7, "tol": 0.005, "memo": "25 × 0,028 ✓ = 0,7 ✓ mg ✓"}]},
+     "steps": [{"id": "s1", "label": "Daily amount of growth hormone (mg)", "marks": 3, "a": 0.7, "tol": 0.005, "memo": "25 × 0,028 ✓ = 0,7 ✓ mg ✓"}]},
     rub("2.5.5", "Give a conclusion for this investigation.", 2, ["Added growth hormone causes an increase in height of children with ISS"],
         ["A conclusion answers the aim.", "What did the growth hormone do to the boys' height?"], each=2),
 ]

@@ -7,6 +7,7 @@ to_app(paper, pid, figures) -> the app's paper data (the shape paper-ls-p1-2026.
 Usage: python tools/ingest/validate.py tools/ingest/out/<id>/paper.json   (prints the report)
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -56,6 +57,14 @@ def semantic_issues(paper):
                 if t == "term" and not [a for a in i.get("a") or [] if a.strip()]: add(n, "error", "no accepted answer")
                 if t == "list" and len(i.get("pool") or []) < i.get("count", 0): add(n, "error", "fewer memo answers than the count asked")
                 if t == "steps" and sum(s.get("marks", 0) for s in i.get("steps") or []) != i.get("marks"): add(n, "warn", "step marks do not add up to the part")
+                if t == "steps":   # a label is on screen during play: it names the quantity, never the working the memo marks
+                    stps = i.get("steps") or []
+                    keys = {float(s["a"]) for s in stps if isinstance(s.get("a"), (int, float))}
+                    for s in stps:
+                        lab = s.get("label", "")
+                        nums = {float(x.replace(" ", "").replace(",", ".")) for x in re.findall(r"\d+(?:[ ,.]\d+)*", lab)}
+                        if re.search(r"\d\s*[×÷−+=*/x]\s*[\d(]", lab) or nums & keys:
+                            add(n, "error", f"step {s.get('id')}'s label prints the working or an answer: {lab!r}")
                 if t == "rubric":
                     pts = [b for b in i.get("bullets") or [] if not b.startswith("OR")]
                     if len(pts) * (i.get("each") or 1) < i.get("marks", 0): add(n, "warn", "fewer memo points than marks")

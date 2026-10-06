@@ -69,6 +69,9 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
 - Each run logs the request id, model, stop reason, tokens and duration; `report.json` keeps them with the issues and flags.
 - Validation issues: `error` (cannot go live) / `warn` (a person looks); the AI's own flags: low_confidence, no_fit,
   memo_issue, missing_resource, figure_unclear.
+- A `steps` label is on screen while the learner works, so it names the quantity and its unit only ("Percentage increase (%)").
+  A label with working between numbers (`721 ÷ 609`) or any step's answer in it is an `error`: the memo marks that working
+  (caught in LS P1 Nov 2025 2.5.4 and LS P2 Nov 2025 3.2.4, 2026-10-06).
 
 ## Security
 - Credentials: the SDK chain (`ANTHROPIC_API_KEY`, `ant auth login`), else `%USERPROFILE%\.nexera\anthropic.env`, OUTSIDE the
@@ -86,7 +89,7 @@ python tools/ingest/ingest.py PAPER.pdf MEMO.pdf --id ls-p2-2025-11 --from-json 
 open http://localhost:8767/tools/ingest/review.html?id=ls-p2-2025-11
 # offline test of the back half
 python tools/ingest/fixture_from_ls_p1.py && python tools/ingest/ingest.py "uploads/Life Sciences P1 May-June 2026 Eng.pdf" "uploads/Life Sciences P1 May-June 2026 MG Eng.pdf" --id ls-p1-fixture --from-json
-# a hand transcription (no API call): LS P1 Nov 2024
+# a hand transcription (no API call): LS P1 Nov 2024; the same for ls_p1_2025_11 and ls_p2_2025_11
 python tools/ingest/transcribe_ls_p1_2024_11.py && python tools/ingest/ingest.py PAPER.pdf MEMO.pdf --id ls-p1-2024-11 --from-json
 ```
 **Hand transcriptions** (`transcribe_*.py`) are the source and are committed, like `paper-ls-p1-2026.js`; their `out/` is
