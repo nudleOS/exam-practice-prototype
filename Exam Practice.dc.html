@@ -3493,6 +3493,11 @@ class Component extends DCLogic {
   mcqOn() {
     const s = this.state; if (s.screen !== "play" || !window.McqPlay) return false;
     const m = this.mission(), part = this.part(); if (!m || !part || part.response_mode !== "mcq") return false;
+    // A pick of LETTERS plays as letter balls on the page, as every letter pick does, and a part under a TABLE plays on the page, which
+    // shows the table: the component shows a question's extract, not its table (LS P1 Nov 2024 3.3.3, "X or Y" read off the results
+    // table, measured: the table was missing and the cards read "A · X", "B · Y")
+    const lettersOnly = (part.options || []).length > 0 && part.options.every(o => /^[A-Z]$/.test(String(o).trim()));
+    if (lettersOnly || (part._table !== undefined ? part._table : m.table)) return false;
     // A part that is already closed opens in the page's closed view (with Replay) — but the part the component is
     // playing closes DURING its animation, and must not unmount it then.
     // (2026-09-30: a closed part the component finished opens in the component again, as it ended: seeded from mcqBook. Measured: the
@@ -3884,7 +3889,8 @@ class Component extends DCLogic {
     if (mode === "letternames") { const rows = s.lrows || [], k = Math.max(0, rows.findIndex(r => r && r.letter === L)), free = Array.from({ length: need }, (_, x) => x).find(x => !(rows[x] || {}).letter);
       this.lrowSet(rows.some(r => r && r.letter === L) ? k : free != null ? free : need - 1, { letter: L }); return; }
     if (i < 0) return;
-    if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, s.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }); return; }
+    // (an MCQ answers on the tap, as a card does: the answer row has no arrow for an MCQ, so a pick alone could never be checked)
+    if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, s.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }, () => this.check()); return; }
     if (mode === "pickn") { const has = s.picks.indexOf(i) !== -1;
       if (!has && s.picks.length >= need) { this.setState({ pickWarn: s.pickWarn + 1 }); return; }
       this.setState({ picks: has ? s.picks.filter(x => x !== i) : s.picks.concat([i]), edited: Object.assign({}, s.edited, { picks: true }) }); return; }
@@ -3984,7 +3990,8 @@ class Component extends DCLogic {
         pick: () => {
           if (locked) return;
           const st0 = this.state;
-          if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, st0.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }); return; }
+          // an MCQ on the page answers on the tap, as a card does (LS P1 Nov 2024 3.3.3, X or Y: measured, no way to check the pick)
+          if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, st0.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }, () => this.check()); return; }
           if (mode === "pickn") { const has = st0.picks.indexOf(i) !== -1;
             if (!has && st0.picks.length >= need) { this.setState({ pickWarn: st0.pickWarn + 1 }); return; }
             this.setState({ picks: has ? st0.picks.filter(x => x !== i) : st0.picks.concat([i]), edited: Object.assign({}, st0.edited, { picks: true }) }); return; }
