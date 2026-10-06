@@ -2161,3 +2161,55 @@ body.nx-play [data-replay]:not(#nx-none)::before, body.nx-play .mcqp .qpractice:
 body.nx-play main:not(#mq-stage) [data-parthead]:has([data-replay]):not(#nx-none) { flex-wrap:wrap !important; row-gap:6px !important; }
 body.nx-play .mcqp .qhead:has(.qpractice) { flex-wrap:wrap; row-gap:4px; }
 body.nx-play .mcqp .qhead:has(.qpractice) > .qid { display:contents; }
+
+/* ==== the typed term: a glass capsule (Murci, 2026-10-06, the approved sketch) ====
+   Up to 380 px (the card's width on a phone; the same for every term: the width never hints at the answer's length), 60 px, the term at
+   20 px. Typing: a band of light travels round its edge, it lights up on focus with a glow under it, the arrow is an orb that charges
+   once there is a term, an "Enter" keycap beside it (a mouse and keyboard only). Right: it seals in the medal's metal as before and the
+   coin rolls in from the right into the orb's place, the tier under it. Wrong: the crack and shatter as before. */
+@property --nx-ta { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+@keyframes nx-term-sweep { to { --nx-ta:360deg; } }
+@keyframes nx-orb-pulse { 50% { box-shadow:0 0 0 7px rgba(47,123,255,0.12), 0 0 24px rgba(47,123,255,0.75); } }
+@keyframes nx-coin-roll { from { transform:translateX(150px) rotate(420deg); opacity:0; } 30% { opacity:1; } to { transform:none; opacity:1; } }
+html body.nx-play main:not(#mq-stage) [data-termrow]:not(#nx-none) { max-width:380px !important; width:100%; position:relative; }
+html body.nx-play main:not(#mq-stage) [data-anscard]:has([data-termrow]):not(#nx-none) { min-width:min(100%, 404px); }
+@media (max-width:600px) { html body.nx-play main:not(#mq-stage) [data-termrow]:not(#nx-none) { max-width:none !important; }
+  html body.nx-play main:not(#mq-stage) [data-anscard]:has([data-termrow]):not(#nx-none) { width:100%; min-width:0; } }
+/* the capsule while typing */
+html body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="typing"] > input:not(#nx-none) { height:60px !important; border-radius:30px !important; font-size:20px !important;
+  font-weight:500 !important; padding:0 64px 0 22px !important; border:1.5px solid transparent !important; background:#0a1a36 !important;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,0.5) !important; transition:box-shadow 300ms ease; }
+html body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="typing"] > input:not(#nx-none):focus { outline:none !important;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,0.5), 0 16px 26px -14px rgba(47,123,255,0.7) !important; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="typing"] > input:not(#nx-none) { background:#f3f7fe !important; color:#0b1f45 !important;
+  box-shadow:inset 0 3px 7px rgba(16,40,90,0.14) !important; }
+/* its edge light: a band travelling round the rim (brighter on focus) */
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="typing"]::before { content:""; position:absolute; inset:0; border-radius:30px; padding:1.5px; pointer-events:none; z-index:1;
+  background:conic-gradient(from var(--nx-ta), rgba(91,155,255,0.15), rgba(91,155,255,0.75) 12%, rgba(91,155,255,0.15) 25%, rgba(91,155,255,0.15));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:nx-term-sweep 4s linear infinite; }
+body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="typing"]:focus-within::before { background:conic-gradient(from var(--nx-ta), #2f7bff, #7fd4ff 12%, #2f7bff 25%, #2f7bff); }
+body.nx-play main:not(#mq-stage) [data-anscard]:focus-within [data-termhead] > span { color:#7fb4ff !important; transition:color 200ms; }
+/* the orb: dim until there is a term, then it charges and pulses; the Enter keycap beside it on a mouse-and-keyboard screen */
+html body.nx-play main:not(#mq-stage) [data-termrow] [data-submit]:not(#nx-none) { width:46px; height:46px; margin-top:-23px; right:7px; z-index:2; color:#9fb6de;
+  background:radial-gradient(circle at 35% 30%, #2a3f6e, #14254a); box-shadow:inset 0 -3px 6px rgba(0,0,0,0.4); transition:background 250ms, box-shadow 250ms, color 250ms; }
+html body.nx-play main:not(#mq-stage) [data-termrow]:has(> input:not(:placeholder-shown)) [data-submit]:not(#nx-none) { color:#ffffff;
+  background:radial-gradient(circle at 35% 30%, #7fd4ff, #2f7bff 55%, #1546a8); box-shadow:0 0 0 4px rgba(47,123,255,0.2), 0 0 18px rgba(47,123,255,0.6); animation:nx-orb-pulse 1.6s ease-in-out infinite; }
+@media (hover:hover) and (pointer:fine) {
+  body.nx-play main:not(#mq-stage) [data-termrow] [data-submit]::before { content:"Enter \21b5"; position:absolute; right:calc(100% + 8px); top:50%; transform:translateY(-50%); white-space:nowrap;
+    font-size:11px; font-weight:600; color:#8fa6cf; border:1px solid #2b4677; border-radius:6px; padding:2px 6px; opacity:0; transition:opacity 200ms; pointer-events:none; }
+  body.nx-play main:not(#mq-stage) [data-termrow]:has(> input:not(:placeholder-shown)) [data-submit]::before { opacity:1; }
+}
+/* the keycap says it: no separate hint line */
+html body.nx-play [data-enterhint]:not(#nx-none) { display:none !important; }
+/* right: the sealed capsule (60 px, the term at the left), the coin rolling into the orb's place, the tier under it */
+html body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"] > input:not(#nx-none) { height:60px !important; border-radius:30px !important; font-size:20px !important;
+  padding:0 64px 0 22px !important; text-align:left; }
+html body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="ok"]:not(#nx-none) { margin-bottom:24px; }
+html body.nx-play main:not(#mq-stage) [data-termstate~="ok"]::after { border-radius:30px !important; }
+html body.nx-play main:not(#mq-stage) [data-termmedal]:not(#nx-none) { width:46px; height:46px; margin-top:-23px; right:7px; animation:nx-coin-roll 900ms cubic-bezier(.2,.8,.3,1.1) 560ms both; }
+html body.nx-play main:not(#mq-stage) [data-termtier]:not(#nx-none) { top:calc(100% + 8px); bottom:auto; left:22px; right:auto; text-align:left; opacity:0.9; }
+/* the broken field's socket and the out-of-tries socket are capsules too */
+html body.nx-play main:not(#mq-stage) [data-termsocket]:not(#nx-none) { border-radius:30px; }
+html body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="broken"] > input:not(#nx-none), html body.nx-play main:not(#mq-stage) [data-termrow][data-termstate~="out"] > input:not(#nx-none) { height:60px !important; border-radius:30px !important; }
+@media (prefers-reduced-motion:reduce) { body.nx-play main:not(#mq-stage) [data-termrow]::before, html body.nx-play main:not(#mq-stage) [data-termrow] [data-submit]:not(#nx-none),
+  html body.nx-play main:not(#mq-stage) [data-termmedal]:not(#nx-none) { animation:none !important; } }

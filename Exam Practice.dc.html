@@ -84,7 +84,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=234">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=235">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=8">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1879,6 +1879,12 @@ class Component extends DCLogic {
     try { const ms = localStorage.getItem("nx-map-subject"); if (ms) this.setState({ pmSubj: ms }); } catch (e) { /* storage off */ }
     this._onScroll = () => document.body.classList.toggle("nx-scrolled", window.scrollY > 8);
     window.addEventListener("scroll", this._onScroll, { passive: true });
+    // the typed term (Murci, 2026-10-06, the capsule): a few sparks rise where the letters land, at the end of what is typed
+    this._tsp = e => { const f = e.target; if (this.state.reduced || !f || !f.matches || !f.matches("[data-termrow] input") || !f.value) return;
+      const cs = getComputedStyle(f), r = f.getBoundingClientRect(), cv = this._tcv || (this._tcv = document.createElement("canvas")), cx = cv.getContext("2d"); cx.font = cs.font;
+      const x = Math.min(r.right - 70, r.left + (parseFloat(cs.paddingLeft) || 0) + cx.measureText(f.value).width - f.scrollLeft);
+      this.sparkle(x + 2, r.top + r.height / 2 - 6, 3, ["#9fd8ff", "#ffffff"], 14); };
+    document.addEventListener("input", this._tsp);
     // design preview: &kb=300 plays a 300 px keyboard while a field has focus (the pane has no on-screen keyboard)
     const kbSim = parseInt(new URLSearchParams(location.search).get("kb"), 10) || 0;
     if (kbSim > 0) { const box = document.createElement("div"); box.className = "nx-kbsim"; box.style.height = kbSim + "px";
@@ -2729,7 +2735,7 @@ class Component extends DCLogic {
       if (k < 1) this._cu = requestAnimationFrame(step); };
     this._cu = requestAnimationFrame(step);
   }
-  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip", "nx-face"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); clearTimeout(this._capT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); document.removeEventListener("focusout", this._vvBlur); document.removeEventListener("focusin", this._vvBlur); }
+  componentWillUnmount() { clearTimeout(this._compactT); window.removeEventListener("scroll", this._onScroll); document.removeEventListener("input", this._tsp); if (this._kbIn) { document.removeEventListener("focusin", this._kbIn); document.removeEventListener("focusout", this._kbOut); } document.body.classList.remove("nx-typing", "nx-kpstrip", "nx-face"); (this._shards || []).forEach(l => l.remove()); if (this._mcq) { this._mcq.destroy(); this._mcq = null; } clearTimeout(this._tdT); window.removeEventListener("vortex-open", this._vopen); window.removeEventListener("vortex-dir", this._vdir); clearTimeout(this._rc); clearTimeout(this._kpT); clearTimeout(this._capT); if (this._scIO) this._scIO.disconnect(); if (window.visualViewport && this._vv) { window.visualViewport.removeEventListener("resize", this._vv); window.visualViewport.removeEventListener("scroll", this._vv); document.removeEventListener("focusout", this._vvBlur); document.removeEventListener("focusin", this._vvBlur); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout); cancelAnimationFrame(this._cu); clearTimeout(this._nd); document.removeEventListener("keydown", this._esc); window.removeEventListener("scroll", this._tsc); cancelAnimationFrame(this._tscR); clearInterval(this._tick); window.removeEventListener("storage", this._st); cancelAnimationFrame(this._dc); clearTimeout(this._dcT); clearTimeout(this._dgT); document.removeEventListener("loaded", this._ld); window.removeEventListener("resize", this._rs); clearInterval(this._p); clearTimeout(this._mk); }
 
   paper() { return (this.papers || []).filter(p => p.id === this.state.paperId)[0] || null; }
