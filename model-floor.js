@@ -8,6 +8,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 class ModelFloor extends HTMLElement {
   static get observedAttributes() { return ["src", "floor", "face", "clip", "yaw", "lift", "paused", "fit", "speed"]; }
   connectedCallback() {
+    // A copy in a page's raw template (<x-dc>: live markup, not an inert <template>) is never a view. Defining the element
+    // upgraded those copies before the runtime rendered and removed them: 3 WebGL contexts and a 3.2 MB download for robots
+    // no screen showed (measured 2026-10-06 at 360x687, a phone's question page: the stack ran define -> connectedCallback).
+    if (this.closest("x-dc")) return;
     // A move (removed here, added there in the same task) keeps the live renderer: see disconnectedCallback.
     clearTimeout(this._tdT);
     // Self-healing: a live mount is one that still has its canvas. Returning on `_up` alone
