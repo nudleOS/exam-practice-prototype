@@ -98,4 +98,6 @@ What the catalogue cannot hold yet is flagged in the data (`flags`), never silen
 parts (1.1.6 table options, 1.4.1(a) alternative pairs, 1.5.2 two pairs in one part); the catalogue now holds all three.
 Known limits: steps lose follow-through formulas (functions are not data); builders (histogram, stems) are not in the catalogue
 (drawings ingest as self-check); scanned PDFs rely on the model's vision (Mathematics, Maths Lit); resources not in the PDF (map
-sheets) must be added by hand.
+sheets) must be added by hand. Genotypes: `term` and `list` fold case and keep only a-z/0-9, so `dd` also accepts `DD`, and a
+superscript allele (Iᴮ) cannot be told from a plain letter; a genetic cross ingests as a self-check `draw` (LS P2 Nov 2025 2.3.3(b),
+2.4.2, 2.5.4, flagged no_fit).
