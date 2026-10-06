@@ -2248,3 +2248,20 @@ body.nx-play main:not(#mq-stage) [data-chips="true"]:has([data-seqtrack]) > [dat
 body.nx-play main:not(#mq-stage) [data-chips="true"]:has([data-seqtrack][data-closed="true"]) > [data-track="true"]:not(#nx-none) { display:none !important; }
 @media (max-width:600px) { body.nx-play [data-seqtrack] { --hole:46px; } }
 
+/* ==== Practise again in the question's head (Murci, 2026-10-06: the out-of-tries box is gone from every question page; the button
+   "can just sit somewhere else well positioned to avoid clutter"): a pill right after the try coins, the spent coins and their refill
+   read together. One place for it, the medal cards too. */
+body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none) { order:7; flex:none; display:inline-flex; align-items:center; gap:6px; box-sizing:border-box;
+  height:30px; margin:0 0 0 auto; padding:0 12px 0 10px; border-radius:15px; border:1px solid rgba(129,177,255,0.45); background:rgba(0,104,248,0.12);
+  color:#cfe0ff; font:inherit; font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer; transition:background 160ms ease, border-color 160ms ease; }
+body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none):hover { background:rgba(0,104,248,0.22); border-color:rgba(129,177,255,0.75); }
+body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none)::before { width:14px; height:14px; }
+html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none) { color:#0b3d8f; background:#e6efff; border-color:#9dbcf0; }
+@media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-parthead] [data-again]:not(#nx-none) { height:34px; border-radius:17px; } }
+
+/* (the head wraps when the pill is there, the pill at the right of its row: beside the marks it pushed "2 marks" past the panel's
+   edge in the side layout's narrow column, measured at 1348 x 648. The head's empty spacer goes (its gap alone wrapped the marks,
+   2 px over). Measured: side column = row 1 the label, coins and marks, row 2 the pill; 360 px = row 2 the marks and the pill) */
+body.nx-play main:not(#mq-stage) [data-parthead]:has([data-again]):not(#nx-none) { flex-wrap:wrap !important; row-gap:8px !important; }
+body.nx-play main:not(#mq-stage) [data-parthead]:has([data-again]) > span:empty { display:none; }
+@media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-parthead]:has([data-again]) [data-partmarks] { margin-left:0 !important; } }

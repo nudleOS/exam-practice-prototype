@@ -700,6 +700,7 @@
             <sc-if value="{{ nxReplay }}" hint-placeholder-val="{{ false }}"><span data-replay="true">{{ replayLabel }}</span></sc-if>
             <span data-partchip="true" style="display:contents"><span data-partnum="true" style="padding:5px 11px; border-radius:10px; background:rgba(129,177,255,0.12); font-size:13px; font-weight:800; color:var(--tint)">{{ partNumber }}</span><sc-if value="{{ hasPartTopic }}" hint-placeholder-val="{{ false }}"><span data-parttopic="true" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partTopic }}</span></sc-if></span>
             <sc-if value="{{ nxTriesOn }}" hint-placeholder-val="{{ false }}"><span data-tries="true" role="img" aria-label="{{ nxTriesAria }}"><sc-for list="{{ nxTries }}" as="td" hint-placeholder-count="3"><i class="{{ td.cls }}"></i></sc-for></span></sc-if>
+            <sc-if value="{{ nxPractiseOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="fd-again" data-again="true" onClick="{{ retryPart }}" aria-label="Practise this question again: no marks or XP">Practise again</button></sc-if>
             <span data-partmarks="true" data-hasn="{{ partMarksHasN }}" data-earned="{{ partMarksEarned }}" aria-label="{{ partMarks }}" style="font-size:13px; font-weight:700; color:var(--text2)">{{ partMarksN }}<span data-mw="true">{{ partMarksW }}</span><sc-if value="{{ firstTryOn }}" hint-placeholder-val="{{ false }}"><span data-firsttry="true">first try only</span></sc-if></span>
             <sc-if value="{{ hasPartTag }}" hint-placeholder-val="{{ false }}">
               <span data-parttag="true" style="padding:3px 9px; border-radius:8px; border:1px solid {{ partTagBorder }}; background:{{ partTagBg }}; font-size:12px; font-weight:800; color:{{ partTagColor }}; white-space:nowrap">{{ partTag }}</span>
@@ -805,7 +806,7 @@
                 <span style="padding:9px 12px; border-radius:12px; border:1px dashed var(--line2); font-size:13px; font-weight:700; color:var(--text2)">{{ seqText }}</span>
               </sc-if>
               <sc-if value="{{ hasSeqTrack }}" hint-placeholder-val="{{ false }}">
-                <span data-seqhint="true" style="font-size:12.5px; font-weight:700; color:var(--text2)">{{ seqHint }}</span>
+                <sc-if value="{{ seqHasHint }}" hint-placeholder-val="{{ true }}"><span data-seqhint="true" style="font-size:12.5px; font-weight:700; color:var(--text2)">{{ seqHint }}</span></sc-if>
                 <div data-seqtrack="true" data-closed="{{ seqClosed }}" data-won="{{ seqWonAttr }}" role="list" aria-label="{{ seqAria }}" style="--n:{{ seqN }}">
                   <span data-fibre="true" aria-hidden="true"><i data-pulse="true"></i></span>
                   <sc-for list="{{ seqSlots }}" as="sl" hint-placeholder-count="3">
@@ -1002,7 +1003,6 @@
               <sc-if value="{{ hasPoints }}" hint-placeholder-val="{{ false }}">
                 <span class="fd-points"><span class="fd-pline">{{ pointsLine }}</span><span class="fd-pfoot">{{ pointsFoot }}</span></span>
               </sc-if>
-              <sc-if value="{{ nxPractiseOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="nxb nxb-sec nxb-sm fd-again" data-practise="true" onClick="{{ retryPart }}" aria-label="Practise this question again: no marks or XP">Practise again</button></sc-if>
             </div>
           </sc-if>
 
@@ -2792,7 +2792,10 @@ class Component extends DCLogic {
     const miss = (outcome === "partial" || outcome === "zero") && !!reply && !closed;
     // (Murci, 2026-10-05: "i do not like that box Not yet 0 of 2, we have our robot with hints": a miss with tries left shows no box;
     // the try coins in the header crack and move on instead, pipLose. A medal, and the end of the tries, still show it.)
-    const result = !miss && showBar && !!bar && outcome !== "idle";
+    // (Murci, 2026-10-06: "that out of tries box ... i dont want to see it in any question page": the end of the tries shows no box
+    // either, nor a closed question revisited without a medal; the cracked coins and the robot say it. A medal still shows its card.)
+    const part0 = this.part(), lostEnd = outcome === "out" || (outcome === "closed" && !(part0 && this.pg(part0.key).medal));
+    const result = !miss && showBar && !!bar && outcome !== "idle" && !lostEnd;
     const full = outcome === "full", k = Math.min(2, Math.max(0, ((reply && reply.try) || 1) - 1)), tier = full ? ["Gold", "Silver", "Bronze"][k] : "";
     const part = this.part(), term = !!part && part.response_mode === "term";
     const spelled = res && res.items && res.items[0] && res.items[0].spelling;
@@ -2808,7 +2811,8 @@ class Component extends DCLogic {
       nxFeedMedal: full, nxFeedIcon: bar ? bar.icon : "", nxFeedTitle: full ? tier : bar ? bar.title : "",
       nxFeedHasSub: full, nxFeedSub: full ? ["First try", "Second try", "Third try"][k] : "",
       nxFeedHasChips: chips.length > 0, nxFeedChips: chips, nxFeedHasBody: !!body, nxFeedBody: body,
-      nxPractiseOn: result && closed && !s.drill && !s.marking && !!part && part.response_mode !== "draw"
+      // Practise again sits in the question's head beside the try coins (Murci, 2026-10-06: "somewhere else well positioned to avoid clutter")
+      nxPractiseOn: closed && !s.drill && !s.marking && !!part && part.response_mode !== "draw"
         && !(full ? reply.try === 1 && !reply.replay : outcome === "closed" && this.pg(part.key).medal === "gold") };
   }
   // The robot's hint for a miss: its own line for this part (NX_HINTS; the first after one miss, the second after two), else the
@@ -4068,7 +4072,7 @@ class Component extends DCLogic {
       counterColor: pickedN === need ? "#3ddc97" : "var(--text2)", counterKey: "w" + s.pickWarn, counterAnim: s.pickWarn && !s.reduced ? "shake 360ms ease both" : "none",
       hasSeq: mode === "order" && !seqBalls, seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
       hasSeqTrack: seqBalls, seqSlots: seqSlots, seqN: String(seqN), seqClosed: seqWon ? "true" : "false", seqWonAttr: seqWon ? "true" : "false",
-      seqAria: "Your order, " + seqN + " places", seqHint: !seqBalls ? "" : seqWon ? "Your order" : seqLost ? "Out of tries" : "Tap the letters in order · tap one on the track to take it back",
+      seqAria: "Your order, " + seqN + " places", seqHasHint: seqBalls && !seqLost, seqHint: !seqBalls ? "" : seqWon ? "Your order" : "Tap the letters in order · tap one on the track to take it back",
       isLetterName: mode === "lettername",
       letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L, out = (this.pg(part.key).dead || []).indexOf(L) !== -1;
         return { label: L, checked: on ? "true" : "false", aria: "Letter " + L, tab: (s.letter ? on : j === 0) ? "0" : "-1",
