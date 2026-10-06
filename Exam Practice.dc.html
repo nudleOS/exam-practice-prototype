@@ -2827,7 +2827,8 @@ class Component extends DCLogic {
   // wrong, then gets replaced by another field, since there are 3 chances; and show a right field, with Gold, Silver and Bronze").
   // One field. Three tries, each worth a medal (gold, silver, bronze): the pips beside "The term" show them, a lost one cracked.
   // Wrong: the field breaks (termBreak draws the pieces) and a new one drops into its place (tryAgain). Right: the field seals in the
-  // medal's colour with the medal on it; a close misspelling shows the right spelling. Out of tries: the empty socket, then the memo.
+  // medal's colour with the medal on it; a close misspelling shows the right spelling. Out of tries: the empty socket (the memo opens
+  // when the paper is finished).
   termVals(s, part, reply, res, locked, mode) {
     const off = { nxTerm: false, termShow: s.term, termState: "", nxTermMedal: false, termTierText: "", nxTermSocket: false, termSocketText: "",
       termSocketKind: "", termSocketHidden: "true", termSocketIsAnswer: false, nxInlineSubmit: false };
@@ -2838,13 +2839,12 @@ class Component extends DCLogic {
     // a check just failed and its result is up: the field is broken (its pieces fall); closed = no field comes back
     const broken = !full && !!(reply && res) && (s.barOpen || closed);
     const state = full ? "ok " + tier : broken ? (closed ? "out" : "broken") : "typing";
-    // out of tries: the empty socket shows the term, in grey, so the learner meets the answer at once (Murci, 2026-09-30: "it should
-    // show automatically"); the memo stays a tap away
-    const answer = String(((SERVER.keys[part.key] || {}).term || [""])[0] || "");
+    // out of tries: the socket stays EMPTY (Murci, 2026-10-06: "go with the newer rule": no memo during the paper, 2026-10-03; it was the
+    // term in grey, 2026-09-30's "it should show automatically", while the robot said the memo opens when the paper is finished)
     return { nxTerm: true, termShow: spelled ? spelled : s.term, termState: state,
-      nxTermMedal: full, nxTermSocket: state === "broken" || state === "out", termSocketText: state === "out" ? answer : "",
+      nxTermMedal: full, nxTermSocket: state === "broken" || state === "out", termSocketText: "",
       termTierText: full ? ["Gold", "Silver", "Bronze"][k] + " · " + ["First try", "Second try", "Third try"][k] : "",
-      termSocketKind: state === "out" ? "answer" : "true", termSocketHidden: state === "out" ? "false" : "true", termSocketIsAnswer: state === "out",
+      termSocketKind: "true", termSocketHidden: "true", termSocketIsAnswer: false,
       nxInlineSubmit: state === "typing" && !locked };
   }
   // The three tries as the medals they are worth (gold, silver, bronze), on every question's head (Murci, 2026-10-01: "why do we only
