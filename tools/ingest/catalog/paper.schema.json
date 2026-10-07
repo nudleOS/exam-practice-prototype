@@ -120,6 +120,13 @@
           "caption": {
            "type": "string",
            "description": "What the figure shows, for a learner who cannot see it (alt text)"
+          },
+          "source": {
+           "type": "string",
+           "enum": [
+            "answer_book"
+           ],
+           "description": "Only when the figure is printed in the ANSWER BOOK (an answer sheet's graph or annexure), not the question paper: page is then the answer book's"
           }
          },
          "required": [
@@ -215,6 +222,13 @@
                "caption": {
                 "type": "string",
                 "description": "What the figure shows, for a learner who cannot see it (alt text)"
+               },
+               "source": {
+                "type": "string",
+                "enum": [
+                 "answer_book"
+                ],
+                "description": "Only when the figure is printed in the ANSWER BOOK (an answer sheet's graph or annexure), not the question paper: page is then the answer book's"
                }
               },
               "required": [

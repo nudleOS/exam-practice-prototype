@@ -39,7 +39,10 @@ COMMON_REQ = ["n", "marks", "q", "clues"]
 FIGURE = obj({
     "page": {"type": "integer", "description": "1-based page of the QUESTION PAPER the figure is on"},
     "bbox": {"type": "array", "items": NUM, "description": "[x0, y0, x1, y1] as fractions of the page width and height (0-1), tight around the figure and its labels"},
-    "caption": {"type": "string", "description": "What the figure shows, for a learner who cannot see it (alt text)"}}, ["page", "bbox", "caption"])
+    "caption": {"type": "string", "description": "What the figure shows, for a learner who cannot see it (alt text)"},
+    "source": {"type": "string", "enum": ["answer_book"], "description": "Only when the figure is printed in the ANSWER BOOK (an answer sheet's "
+                                                                           "graph or annexure), not the question paper: page is then the answer book's"}},
+    ["page", "bbox", "caption"])
 
 
 def component(t, description, props, required):

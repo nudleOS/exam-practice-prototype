@@ -20,7 +20,9 @@ types and auto-marked against the official memo. Judge each question part agains
 | build: stems | for each labelled item in a diagram, picks one of a few end-states | one mark per item | items, states, answers |
 
 Shared context the app already shows: a lead line, an extract (text) as a sheet, data TABLES (rows and columns, read-only),
-figures (an image with optional tappable letter hotspots), the question paper and memo as page images. A figure without
+figures (an image with optional tappable letter hotspots; cropped from the question paper, or from the ANSWER BOOK when a figure's
+`source` is `answer_book` and the ingest gets `--answer-book`: an answer sheet's graph or an annexure), the question paper and memo as
+page images (a scanned paper's question pages are mapped by eye in make_pages.py FOUND_BY_EYE). A figure without
 hotspots (every ingested paper today) is a figure to read even when the answer is a letter: the letters are answered on
 their chips, and the figure keeps its readable size and opens big on a tap.
 

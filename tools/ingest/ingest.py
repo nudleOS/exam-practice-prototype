@@ -128,13 +128,17 @@ def call_claude(paper_pdf, memo_pdf, model, effort):
     return json.loads(text), {"request_id": msg._request_id, "model": msg.model, "input_tokens": u.input_tokens, "output_tokens": u.output_tokens}
 
 
-def crop_figures(paper, paper_pdf, out):
+def crop_figures(paper, paper_pdf, out, answer_book=None):
     """{mission id: crop} for a block's figure, {"part:" + number: crop} for one question's own (an MCQ's): a part can share its
-    mission's number (a block with one part, 4.2), so the two never share a key."""
-    doc, figs = fitz.open(paper_pdf), {}
+    mission's number (a block with one part, 4.2), so the two never share a key. A figure with source "answer_book" (an answer
+    sheet's graph, Mathematical Literacy P1 2025 3.2) is cropped from the answer book given with --answer-book."""
+    docs, figs = {"paper": fitz.open(paper_pdf), "answer_book": fitz.open(answer_book) if answer_book else None}, {}
     (out / "figures").mkdir(parents=True, exist_ok=True)
 
     def crop(f, stem):
+        doc = docs["answer_book" if (f or {}).get("source") == "answer_book" else "paper"]
+        if f and doc is None:
+            sys.exit(f"{stem}: its figure is in the answer book: pass --answer-book <answer book pdf>")
         if not f or not 1 <= f["page"] <= len(doc):
             return None
         page = doc[f["page"] - 1]
@@ -169,6 +173,7 @@ def main():
     ap.add_argument("paper"); ap.add_argument("memo"); ap.add_argument("--id", required=True)
     ap.add_argument("--model", default="claude-opus-5-5"); ap.add_argument("--effort", default="high", choices=["low", "medium", "high", "xhigh", "max"])
     ap.add_argument("--from-json", action="store_true", help="skip the API: re-run checks on out/<id>/response.json")
+    ap.add_argument("--answer-book", help="the answer book PDF, for figures whose source is the answer book")
     a = ap.parse_args()
     out = HERE / "out" / a.id
     out.mkdir(parents=True, exist_ok=True)
@@ -183,7 +188,7 @@ def main():
         (out / "response.json").write_text(json.dumps({"meta": meta, "paper": paper}, indent=1, ensure_ascii=False), encoding="utf-8")
     issues = validate.check(paper)
     states = validate.review(paper, issues)
-    figs = crop_figures(paper, a.paper, out)
+    figs = crop_figures(paper, a.paper, out, a.answer_book)
     app = validate.to_app(paper, a.id, figs)
     (out / "paper.json").write_text(json.dumps(paper, indent=1, ensure_ascii=False), encoding="utf-8")
     (out / "report.json").write_text(json.dumps({"meta": meta, "issues": issues, "review": states, "flags": paper.get("flags", []),
