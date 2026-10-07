@@ -8,7 +8,7 @@ types and auto-marked against the official memo. Judge each question part agains
 | mcq | taps one of 2-6 option cards (text, optional image above the stem) | exact | options, the answer index, an image |
 | pickn | picks N of several options | each right pick scores | options, N, the right set |
 | order | taps options into a sequence | whole sequence exact | the items, the order |
-| term | types one term / short phrase (one line) | exact or close spelling (1 slip per 5 letters), list of accepted synonyms | accepted answers |
+| term | types one term / short phrase (one line) | exact or close spelling (1 slip per 5 letters), list of accepted synonyms; `strict`: letters and digits exact (spacing and punctuation free), for IUPAC names, formulas and cell notation, where one letter is another compound (hexane / hexene) | accepted answers, strict |
 | lettername | picks a LETTER label on a diagram, then types the part's NAME | letter exact + name as term | the letters, the answer |
 | num | types one number (own calculator keypad), optional unit shown | within a tolerance | value, tolerance, unit |
 | steps | a calculation in numbered steps, each a NUMBER box; follow-through marks if an earlier step was wrong | per step within tolerance, follow-through | step labels, values, tolerances, follow-through formulas |

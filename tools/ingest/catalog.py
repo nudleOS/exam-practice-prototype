@@ -69,7 +69,10 @@ COMPONENTS = {
                                                      "absent: a one-to-one match, each right item used at most once"}}, ["left", "right", "a"]),
     "term": component("term", "One term or short phrase (one line).", {
         "a": {**STRS, "description": "Every answer the memo accepts, first the memo's own wording"},
-        "reject": {**STRS, "description": "Real terms one or two letters away that are WRONG (e.g. 'complete dominance' for 'incomplete dominance')"}}, ["a"]),
+        "reject": {**STRS, "description": "Real terms one or two letters away that are WRONG (e.g. 'complete dominance' for 'incomplete dominance')"},
+        "strict": {"type": "boolean", "description": "true when ANY letter changes the meaning, so no spelling slip is forgiven: IUPAC names "
+                                                    "(hexane / hexene), formulas (H2SO4 / H2SO3), cell notation. Letters and digits must match in "
+                                                    "order; spacing and punctuation are free. List every accepted form in a"}}, ["a"]),
     "list": component("list", "N numbered one-line answers ('Name TWO ...').", {
         "count": INT, "pool": {"type": "array", "items": STRS, "description": "Each memo answer as a group of accepted synonyms"}}, ["count", "pool"]),
     "lettername": component("lettername", "Give the LETTER of a labelled part, then its NAME.", {

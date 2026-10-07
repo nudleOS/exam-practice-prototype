@@ -369,6 +369,10 @@
        "type": "string"
       },
       "description": "Real terms one or two letters away that are WRONG (e.g. 'complete dominance' for 'incomplete dominance')"
+     },
+     "strict": {
+      "type": "boolean",
+      "description": "true when ANY letter changes the meaning, so no spelling slip is forgiven: IUPAC names (hexane / hexene), formulas (H2SO4 / H2SO3), cell notation. Letters and digits must match in order; spacing and punctuation are free. List every accepted form in a"
      }
     },
     "required": [
