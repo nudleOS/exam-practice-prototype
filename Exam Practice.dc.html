@@ -15,9 +15,16 @@
   <script type="module" src="model-floor.js?v=22"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-  <!-- an AI-ingested paper (tools/ingest): ?ingested=<id> loads tools/ingest/out/<id>/paper.js before the app reads its papers -->
-  <script>(function () { var m = /[?&]ingested=([\w.-]+)/.exec(location.search); if (!m || m[1].indexOf("..") >= 0 || window.__ingestSrc) return;
-    var el = document.createElement("script"); el.src = window.__ingestSrc = "tools/ingest/out/" + m[1] + "/paper.js?v=" + Date.now(); document.head.appendChild(el); })();</script>
+  <!-- The papers the ingestion pipeline has FINISHED (tools/ingest/out/<id>/paper.js, each passed validate.py) load with the page,
+       so the paper map opens them: add an id here when its paper is done. Until 2026-10-07 only a ?ingested=<id> link loaded a
+       paper, one at a time, and the map said "still preparing" for every finished paper. ?ingested=<id> still adds one more
+       (a paper under review). The app waits until each has arrived (or failed to). -->
+  <script>(function () { if (window.__ingestWant != null) return;
+    var ids = ["ls-p1-2025-11", "ls-p2-2025-11", "ls-p1-2024-11"], m = /[?&]ingested=([\w.-]+)/.exec(location.search);
+    if (m && m[1].indexOf("..") < 0 && ids.indexOf(m[1]) < 0) ids.push(m[1]);
+    window.__ingestWant = ids.length;
+    ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + Date.now();
+      el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
 <script src="papers-catalogue.js?v=2"></script>
 <script src="papers-pages.js?v=1"></script>
   <script src="mcq-play.js?v=59"></script>
@@ -1922,8 +1929,8 @@ class Component extends DCLogic {
         const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0);
         if (qs.get("done")) setTimeout(() => this.setState({ screen: "done" }), 0); });   // &done=1: the mission's done screen (design preview)
       else this.forceUpdate(); };
-    // (an ingested paper, ?ingested=<id>, loads after the page: wait for its data too, as for Life Sciences P1's)
-    const have = () => !!window.PAPER_LS_P1_2026 && (!window.__ingestSrc || !!window.PAPERS_INGESTED);
+    // (the ingested papers load after the page: wait for every one of them too, as for Life Sciences P1's)
+    const have = () => !!window.PAPER_LS_P1_2026 && (window.PAPERS_INGESTED || []).length >= (window.__ingestWant || 0);
     if (have()) ready(); else { let n = 0; this._p = setInterval(() => { if (have() || ++n > 40) { clearInterval(this._p); ready(); } }, 100); }
     this._rs = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     window.addEventListener("resize", this._rs); this._rs();
