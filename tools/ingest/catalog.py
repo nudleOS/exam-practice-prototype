@@ -58,6 +58,15 @@ COMPONENTS = {
                                                                           "['A only', 'B only', 'Both A and B', 'None'] and q is COLUMN I's description"}}, ["opts", "a"]),
     "pickn": component("pickn", "Pick N of several options.", {"opts": STRS, "pool": {**INTS, "description": "0-based indexes of every right option"}, "count": INT}, ["opts", "pool", "count"]),
     "order": component("order", "Put the options in sequence.", {"opts": STRS, "a": {**INTS, "description": "option indexes in the right order"}}, ["opts", "a"]),
+    "match": component("match", "Match each COLUMN A item to ONE COLUMN B description (more descriptions than items, e.g. A-J for five terms), "
+                       "or classify each item into one of a few groups (micro / market / macro environment).", {
+        "left": {**STRS, "description": "COLUMN A's items (or the items to classify), in the paper's order"},
+        "right": {**STRS, "description": "COLUMN B's descriptions (or the groups), in the paper's order (A, B, C ...)"},
+        "a": {**INTS, "description": "for each left item, the 0-based index of its right item"},
+        "each": {**INT, "description": "marks per pair when one pair is worth more than 1 (1.3: 5 x 2)"},
+        "heads": {**STRS, "description": "Only when the paper titles the two sides otherwise than COLUMN A / COLUMN B: the two titles"},
+        "groups": {"type": "boolean", "description": "true when the right items are GROUPS that several left items may share (classifying); "
+                                                     "absent: a one-to-one match, each right item used at most once"}}, ["left", "right", "a"]),
     "term": component("term", "One term or short phrase (one line).", {
         "a": {**STRS, "description": "Every answer the memo accepts, first the memo's own wording"},
         "reject": {**STRS, "description": "Real terms one or two letters away that are WRONG (e.g. 'complete dominance' for 'incomplete dominance')"}}, ["a"]),
@@ -120,7 +129,10 @@ FLAG = obj({
 PAPER = obj({
     "catalog": {"type": "string", "const": CATALOG_ID},
     "paper": obj({"subject": STR, "title": STR, "sitting": STR, "total_marks": INT, "time": STR}, ["subject", "title", "sitting", "total_marks", "time"]),
-    "sections": {"type": "array", "items": obj({"title": STR, "total": INT, "missions": {"type": "array", "items": MISSION}}, ["title", "total", "missions"])},
+    "sections": {"type": "array", "items": obj({"title": STR, "total": INT, "missions": {"type": "array", "items": MISSION},
+                                                "answer_any": {**INT, "description": "Only for a section that says 'Answer any N questions': N. Its questions "
+                                                               "are the missions' first numbers (2.x, 3.x, 4.x); the total is N questions' marks"}},
+                                               ["title", "total", "missions"])},
     "flags": {"type": "array", "items": FLAG}}, ["catalog", "paper", "sections", "flags"])
 
 

@@ -31,7 +31,12 @@ SYSTEM = """You turn a South African past exam paper and its official marking me
 
 The output is JSON that must follow the given schema. Every marks-bearing question part appears exactly once, as ONE catalogue
 component (the `t` field). Choose the component by how the MEMO marks the part, not by how the question looks:
-- mcq / pickn / order / term / list / lettername / letternames / num / steps / rubric as described in the schema;
+- mcq / pickn / order / match / term / list / lettername / letternames / num / steps / rubric as described in the schema;
+- a matching question (COLUMN A to COLUMN B with more descriptions than items, e.g. five terms to A-J) is ONE `match`:
+  `a` gives each left item's right index, `each` the marks a pair (5 x 2), `heads` the paper's own titles if not COLUMN A/B;
+  classifying items into a few groups (micro / market / macro environment) is a `match` with `groups` true;
+- a 'Quote ... from the scenario' part is `pickn` over the scenario's own sentences (the memo marks only quoted sentences);
+- a section that says 'Answer any N questions' sets `answer_any` N (its total is N questions' marks);
 - options printed as a table go in `mcq.optTable` (head + one row per option), opts reading each row as a line;
 - a letter + name the memo accepts in two ways ("C - urethra OR D - penis") uses `lettername.or`; the LETTERS and NAMES of
   several parts in one numbered part use `letternames` (count + pool), never two parts and never `draw`;
@@ -41,8 +46,10 @@ component (the `t` field). Choose the component by how the MEMO marks the part, 
 - a MONOHYBRID genetic cross the memo marks point by point (P1 phenotypes and genotypes, meiosis, gametes, fertilisation, F1
   genotypes and phenotypes, ratio) is `draw` with `build.kind` "cross" (parents, every offspring genotype's phenotype) and the
   memo's criteria; no flag;
-- a part no component can mark (a drawing, a graph to plot, a dihybrid cross, a structured essay) becomes `draw` with the
-  memo's criteria, and gets a `no_fit` flag.
+- an essay the memo marks by points under headings with sub-maxima (Business Studies Section C) is ONE `rubric`: its bullets
+  the memo's points under their headings (introduction, each aspect with its sub-maximum, conclusion) and the insight marks;
+- a part no component can mark (a drawing, a graph to plot, a dihybrid cross) becomes `draw` with the memo's criteria, and gets
+  a `no_fit` flag.
 
 The memo is the source of truth for answers and marks:
 - copy question text, lead lines, extracts and tables exactly as printed (no paraphrase); tables as rows, never flattened into text;

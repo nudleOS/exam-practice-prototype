@@ -82,6 +82,12 @@ def semantic_issues(paper):
                 if t == "pickn" and (len(i.get("pool") or []) < i.get("count", 0) or any(not 0 <= x < len(opts) for x in i.get("pool") or [])):
                     add(n, "error", "pick-N pool does not fit its options or count")
                 if t == "order" and sorted(i.get("a") or []) != list(range(len(opts))): add(n, "error", "order is not a permutation of the options")
+                if t == "match":
+                    left, right, a = i.get("left") or [], i.get("right") or [], i.get("a") or []
+                    if len(a) != len(left) or any(not 0 <= x < len(right) for x in a): add(n, "error", "a match needs one right index per left item")
+                    if len(left) * (i.get("each") or 1) != i.get("marks"): add(n, "error", "a match's marks are its pairs times each")
+                    if not i.get("groups") and len(set(a)) != len(a): add(n, "error", "a one-to-one match uses a right item twice (classifying? set groups)")
+                    if i.get("heads") is not None and len(i["heads"]) != 2: add(n, "error", "a match's heads are two titles")
                 if t == "term" and not [a for a in i.get("a") or [] if a.strip()]: add(n, "error", "no accepted answer")
                 if t == "list" and len(i.get("pool") or []) < i.get("count", 0): add(n, "error", "fewer memo answers than the count asked")
                 if t == "list":   # a key of stop words only ("the same") would credit almost any line
@@ -128,6 +134,15 @@ def semantic_issues(paper):
                 tb = i.get("optTable")
                 if t == "mcq" and tb and (len(tb.get("rows") or []) != len(opts) or any(len(r) != len(tb.get("head") or []) for r in tb.get("rows") or [])):
                     add(n, "error", "the options table needs one row per option and one cell per column")
+        anyn = sec.get("answer_any")
+        if anyn:   # "Answer any N": every question carries the same marks, and the section counts N of them
+            qs = {}
+            for m in sec.get("missions", []):
+                qn = str(m.get("id", "?")).split(".")[0]
+                qs[qn] = qs.get(qn, 0) + sum(int(i.get("marks") or 0) for i in m.get("items", []))
+            if not 0 < anyn < len(qs): add(sec.get("title", "?"), "error", f"answer any {anyn} of {len(qs)} questions")
+            if len(set(qs.values())) > 1: add(sec.get("title", "?"), "error", f"the questions to choose from carry different marks: {qs}")
+            sec_sum = anyn * max(qs.values() or [0])
         if sec.get("total") is not None and sec_sum != sec["total"]:
             add(sec.get("title", "?"), "warn", f"section parts add up to {sec_sum}, the paper says {sec['total']}")
         total += sec_sum
@@ -178,7 +193,7 @@ def to_app(paper, pid, figures):
                 mm["figure"] = {**figures[m["id"]], "caption": m["figure"]["caption"]}
             mm["items"] = items
             ms.append(mm)
-        secs.append({"title": sec["title"], "total": sec["total"], "missions": ms})
+        secs.append({"title": sec["title"], "total": sec["total"], "missions": ms, **({"answer_any": sec["answer_any"]} if sec.get("answer_any") else {})})
     return {"id": pid, "subject": meta["subject"], "title": meta["title"], "sitting": meta["sitting"], "total": meta["total_marks"],
             "time": meta["time"], "catalog": paper["catalog"], "sections": secs}
 

@@ -244,6 +244,87 @@
     "additionalProperties": false
    }
   },
+  "match": {
+   "description": "Match each COLUMN A item to ONE COLUMN B description (more descriptions than items, e.g. A-J for five terms), or classify each item into one of a few groups (micro / market / macro environment).",
+   "props": {
+    "type": "object",
+    "properties": {
+     "t": {
+      "type": "string",
+      "const": "match"
+     },
+     "n": {
+      "type": "string",
+      "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+     },
+     "marks": {
+      "type": "integer"
+     },
+     "q": {
+      "type": "string",
+      "description": "The question text exactly as printed, without the marks"
+     },
+     "clues": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Two hints that lead the learner without giving the answer"
+     },
+     "note": {
+      "type": "string",
+      "description": "Optional: what a figure's label shows, for the record (never shown)"
+     },
+     "left": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "COLUMN A's items (or the items to classify), in the paper's order"
+     },
+     "right": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "COLUMN B's descriptions (or the groups), in the paper's order (A, B, C ...)"
+     },
+     "a": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "for each left item, the 0-based index of its right item"
+     },
+     "each": {
+      "type": "integer",
+      "description": "marks per pair when one pair is worth more than 1 (1.3: 5 x 2)"
+     },
+     "heads": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Only when the paper titles the two sides otherwise than COLUMN A / COLUMN B: the two titles"
+     },
+     "groups": {
+      "type": "boolean",
+      "description": "true when the right items are GROUPS that several left items may share (classifying); absent: a one-to-one match, each right item used at most once"
+     }
+    },
+    "required": [
+     "t",
+     "n",
+     "marks",
+     "q",
+     "clues",
+     "left",
+     "right",
+     "a"
+    ],
+    "additionalProperties": false
+   }
+  },
   "term": {
    "description": "One term or short phrase (one line).",
    "props": {
