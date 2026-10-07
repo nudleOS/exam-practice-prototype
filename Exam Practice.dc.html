@@ -2594,7 +2594,9 @@ class Component extends DCLogic {
       const comp = !g ? 0 : g.done ? 1 : g.missions.length ? g.closedN / g.missions.length : 0, pct = Math.round(100 * comp);   // the ring = questions (Murci, 2026-10-02)
       // design preview, "Cup race (demo)": Business Studies, the first three papers from Start done (gold, silver, bronze) and the
       // fourth racing; Geography a finished track (mixed cups, the finish glowing). In the road's order: Nov 2024 P1, P2, Nov 2025 P2, P1.
-      const dm = s.pmRace && NX_DEMO[p.subject] && NX_DEMO[p.subject][p.year + "-" + pno(p)];
+      // only on a paper with no content yet (g null): a paper that has its questions shows the learner's own state (2026-10-07: the
+      // demo painted "Done · 71 / 150" on Business Studies P2 Nov 2025, never played, and its sheet offered only Review)
+      const dm = s.pmRace && !g && NX_DEMO[p.subject] && NX_DEMO[p.subject][p.year + "-" + pno(p)];
       const demo = !dm ? null : dm[0] ? { state: "done", pct: 100, tier: dm[0], meta: "Done · " + dm[1] + " / 150", comp: 1 }
         : { state: "going", pct: Math.round(dm[1] * 100), tier: "", meta: "Continue at Q 3", comp: dm[1] };
       if (demo) return { p: p, g: g, state: demo.state, pct: demo.pct, tier: demo.tier, name: name, meta: demo.meta, nextId: "3", comp: demo.comp };
