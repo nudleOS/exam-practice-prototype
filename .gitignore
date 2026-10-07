@@ -13,6 +13,7 @@ uploads/*
 !uploads/Physical Sciences P2 Nov 2025 Eng.pdf
 !uploads/Geography P1 Nov 2025 Eng.pdf
 !uploads/Geography P2 Nov 2025 Eng.pdf
+!uploads/Mathematical Literacy P1 Nov 2025 Eng.pdf
 screenshots/
 
 # AI ingestion output (regenerate with tools/ingest/ingest.py)
