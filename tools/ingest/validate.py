@@ -148,6 +148,11 @@ def semantic_issues(paper):
         total += sec_sum
     pt = paper.get("paper", {}).get("total_marks")
     if pt is not None and total != pt: add("paper", "warn", f"all parts add up to {total}, the paper says {pt}")
+    # options WE write (a printed paper's own A-D keep their order) must not all put the answer in one place: Maths P2's six
+    # were all A on 2026-10-08, so a learner who spotted it scored without reading
+    at = [i.get("a") for sec in paper.get("sections", []) for m in sec.get("missions", []) for i in m.get("items", []) if i.get("t") == "mcq"]
+    if len(at) >= 4 and len(set(at)) == 1:
+        add("paper", "warn", f"every multiple-choice answer is option {at[0] + 1} of its list: vary where the answer sits")
     return out
 
 

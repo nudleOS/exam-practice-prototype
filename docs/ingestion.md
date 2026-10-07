@@ -93,6 +93,9 @@ stem in the MCQ card (as Life Sciences P1's `QIMGS`); `HOME_TO_LOCAL[id] = id` l
 - A `steps` label is on screen while the learner works, so it names the quantity and its unit only ("Percentage increase (%)").
   A label with working between numbers (`721 ÷ 609`) or any step's answer in it is an `error`: the memo marks that working
   (caught in LS P1 Nov 2025 2.5.4 and LS P2 Nov 2025 3.2.4, 2026-10-06).
+- Options WE write for an `mcq` (a printed paper keeps its own A-D) must not all put the answer in one place: a paper whose 4+
+  MCQs all answer at the same position is a `warn` (Maths P2 Nov 2025's six were all A, 2026-10-08: a learner who spots it
+  scores without reading).
 
 ## Security
 - Credentials: the SDK chain (`ANTHROPIC_API_KEY`, `ant auth login`), else `%USERPROFILE%\.nexera\anthropic.env`, OUTSIDE the
