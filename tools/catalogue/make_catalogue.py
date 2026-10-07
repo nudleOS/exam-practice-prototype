@@ -1,7 +1,8 @@
 """Writes papers-catalogue.js: a MOCK of the exam service's paper list (GET /v1/papers) for rollout 1's Grade 12 November
 papers (six subjects, P1 + P2, 2025 + 2024). Every fact comes from the paper itself:
   time  = the cover's "TIME:" line (text papers read by script; the 8 scanned maths covers read by eye 2026-10-02: 3 hours)
-  marks = the cover's total; questions / missions = the question paper's mark map (pairs/<QP>.json, checked against the memo's
+  marks = the cover's total (a ready paper played in part: the marks it plays, the cover's kept as printed_marks);
+          questions / missions = the question paper's mark map (pairs/<QP>.json, checked against the memo's
           by compare_pairs.py on 2026-10-02; the memo maps hold answers and stay out of git)
 
 A paper in FINISHED is transcribed and validated (tools/ingest/out/<id>/paper.js): it is "ready", the page loads it with the
@@ -64,6 +65,11 @@ if __name__ == "__main__":
                     assert os.path.exists(os.path.join(ROOT, "tools", "ingest", "out", pid, "paper.js")), pid + ": not ingested yet"
                     entry["status"] = "ready"
                     entry["source_pdf"] = "uploads/" + FINISHED[pid][0]
+                    # a paper played in part (Geography: its maps are not published, so Section B's map questions wait) shows the marks
+                    # it plays; the cover's stays as printed_marks
+                    played = json.load(open(os.path.join(ROOT, "tools", "ingest", "out", pid, "paper.json"), encoding="utf-8"))["paper"].get("total_marks")
+                    if played and played != entry["total_marks"]:
+                        entry["printed_marks"], entry["total_marks"] = entry["total_marks"], played
                 papers.append(entry)
     unknown = set(FINISHED) - {p["id"] for p in papers}
     assert not unknown, "FINISHED names papers outside the catalogue: %s" % sorted(unknown)
