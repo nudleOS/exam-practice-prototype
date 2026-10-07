@@ -2299,3 +2299,6 @@ html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vr="2"][data-state=
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vr="3"][data-state=""] { fill:#eef3fb; }
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vlab] { fill:#3d5687; }
 html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vlab="big"] { fill:#0b1f45; }
+/* the paper's own line breaks: a lead's second paragraph, statements (i) to (iv), a chemical equation on each line. Transcriptions
+   write them as \n, and white-space:normal ran them together (PS P1 1.3, BS essays; PS P2 7.1's three equations) (2026-10-07) */
+body.nx-play [data-lead], body.nx-play [data-question] [data-stem], body.nx-play .mcqp h1 > span:not(.num), body.nx-play .mcqp .qdesc { white-space:pre-line; }
