@@ -30,6 +30,7 @@ FINISHED = {
     "ls-p1-2024-11": ("Life Sciences P1 Nov 2024 Eng.pdf", "Life Sciences P1 Nov MG 2024 Eng.pdf"),
     "bs-p1-2025-11": ("Business Studies P1 Nov 2025 Eng.pdf", "Business Studies P1 Nov 2025 MG Eng.pdf"),
     "bs-p2-2025-11": ("Business Studies P2 Nov 2025 Eng.pdf", "Business Studies P2 Nov 2025 MG Eng.pdf"),
+    "ps-p1-2025-11": ("Physical Sciences P1 Nov 2025 Eng.pdf", "Physical Sciences P1 Nov 2025 MG Afr & Eng.pdf"),
 }
 
 
