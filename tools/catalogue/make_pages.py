@@ -25,6 +25,10 @@ DOCS.update({pid: {"qp": "uploads/" + qp, "mg": "uploads/" + mg} for pid, (qp, m
 OUT = {"qp": "assets/papers/{id}/qp-{n:02d}.jpg", "mg": "uploads/papers/{id}/mg-{n:02d}.jpg"}
 WIDTH = 1000
 LBL = re.compile(r"^\s*(\d{1,2}\.\d{1,2})(?:\.\d{1,2})?(?:\s|$)", re.M)
+# a SCANNED question paper has no text to read the question numbers from: its pages are read by eye (2026-10-07)
+FOUND_BY_EYE = {
+    "ml-p1-2025-11": {"1.1": 3, "1.2": 4, "1.3": 5, "2.1": 6, "2.2": 7, "3.1": 8, "3.2": 9, "4.1": 10, "4.2": 11, "5.1": 12, "5.2": 13},
+}
 
 
 def ensure_pdf(rel):
@@ -56,6 +60,8 @@ for pid, docs in DOCS.items():
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 page.get_pixmap(matrix=fitz.Matrix(z, z), alpha=False).save(path, jpg_quality=70)
                 made += 1
+        if not find and kind == "qp":
+            find = dict(FOUND_BY_EYE.get(pid, {}))
         manifest[pid][kind] = {"pages": doc.page_count, "src": OUT[kind].format(id=pid, n=0)[:-6], "pdf": rel,
                                "w": WIDTH, "h": round(WIDTH * doc[0].rect.height / doc[0].rect.width), "find": find}
         print("%s %s: %d pages (%d rendered now), %d questions located" % (pid, kind, doc.page_count, made, len(find)))
