@@ -984,10 +984,10 @@
 
           <sc-if value="{{ isMatch }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:12px">
-              <span style="font-size:13px; line-height:1.55; color:var(--text2)">Tap a Column A item, then tap its description. One description is not used.</span>
+              <span style="font-size:13px; line-height:1.55; color:var(--text2)">{{ matchHint }}</span>
               <div style="display:grid; grid-template-columns:{{ matchCols }}; gap:12px">
-                <div role="group" aria-label="Column A" style="display:flex; flex-direction:column; gap:8px">
-                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN A</span>
+                <div role="group" aria-label="{{ matchHeadA }}" style="display:flex; flex-direction:column; gap:8px">
+                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">{{ matchHeadA }}</span>
                   <sc-for list="{{ matchLeft }}" as="ml" hint-placeholder-count="5">
                     <button onClick="{{ ml.pick }}" aria-pressed="{{ ml.on }}" aria-label="{{ ml.aria }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ ml.border }}; background:{{ ml.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
                       <span style="flex:1">{{ ml.text }}</span>
@@ -995,8 +995,8 @@
                     </button>
                   </sc-for>
                 </div>
-                <div role="group" aria-label="Column B" style="display:flex; flex-direction:column; gap:8px">
-                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">COLUMN B</span>
+                <div role="group" aria-label="{{ matchHeadB }}" style="display:flex; flex-direction:column; gap:8px">
+                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">{{ matchHeadB }}</span>
                   <sc-for list="{{ matchRight }}" as="mr" hint-placeholder-count="5">
                     <button onClick="{{ mr.pick }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ mr.border }}; background:{{ mr.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
                       <span style="flex:none; font-size:12px; font-weight:800; color:var(--text3)">{{ mr.key }}</span>
@@ -1747,7 +1747,7 @@ function buildPapers() {
   const fromData = (src, meta) => { const P = Object.assign({ sections: [] }, meta);
     let count = 0;
     if (src) src.sections.forEach(sec0 => {
-      const sec = { title: sec0.title, total: sec0.total, missions: [] };
+      const sec = { title: sec0.title, total: sec0.total, answer_any: sec0.answer_any || 0, missions: [] };
       (sec0.missions || []).forEach(m => {
         const parts = (m.parts || m.items || []).map(q => {
           const key = P.id + ":" + q.n; count++;
@@ -1756,6 +1756,9 @@ function buildPapers() {
           if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]];   // opt_table: options printed as a table (1.1.6), the card shows its rows
             return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts, opt_table: q.optTable || null, ab: q.ab || null }); }
           if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
+          if (q.t === "match") { SERVER.keys[key] = { match: q.a, each: q.each || 1 };
+            SERVER.memo[key] = q.left.map((l, i) => l + " → " + String.fromCharCode(65 + q.a[i]) + ". " + q.right[q.a[i]]);
+            return Object.assign(base, { response_mode: "match", marking_mode: "answer", match: { left: q.left, right: q.right, heads: q.heads || null, groups: !!q.groups } }); }
           if (q.t === "order") { SERVER.keys[key] = { order: q.a }; SERVER.memo[key] = [q.a.map(i => q.opts[i]).join(" → ")]; return Object.assign(base, { response_mode: "order", marking_mode: "answer", options: q.opts }); }
           if (q.t === "term") { const gl = SERVER.glossary[key.split(":")[0]] = SERVER.glossary[key.split(":")[0]] || {}; q.a.forEach(t => { gl[norm(t)] = true; });
             SERVER.keys[key] = { term: q.a, reject: q.reject || [] }; SERVER.memo[key] = [q.a[0]]; return Object.assign(base, { response_mode: "term", marking_mode: "answer" }); }
@@ -2400,7 +2403,7 @@ class Component extends DCLogic {
       editStudies: () => this.editStudies(),
       studyResetGo: () => { STUDIES_API.reset(); this.setState({ studies: null, studiesAsked: false, srLive: "Your studies will be asked again." }); } } };
   }
-  earnedNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => b + (this.pg(p.key).best || 0), 0), 0); }
+  earnedNow() { return this.paperMarks(this.paper(), p => this.pg(p.key).best); }
   // Map preview seeds. "progress" is the home page's returning learner: 21 of 100, next up 1.4.
   seedMap(kind, after) {
     const paper = this.paper() || (this.papers || []).filter(x => x.id === HOME_TO_LOCAL[HOME.resume.paper_id])[0]; if (!paper) return;
@@ -2502,13 +2505,34 @@ class Component extends DCLogic {
   // Open the paper map; a returning learner's progress (the 21 of 150 the home describes) comes too, as Continue does.
   pmGoMap() { const s = this.state, go = () => this.setState({ screen: "map", pmOpen: null, sheet: null, pop: null }, () => window.scrollTo(0, 0));
     if (s.home !== "first" && !Object.keys(s.prog || {}).length) this.seedMap("progress", go); else go(); }
+  // A paper's marks from a value per part (its best, or its first try). A section that says "Answer any N" (answer_any: Business
+  // Studies' Section B any TWO, C any ONE) counts its N best questions, a question being the missions that share a first number
+  // (2.x, 3.x, 4.x): practising all three never scores past the paper's total. The exam marks the FIRST N answered; practice
+  // counts the best N (2026-10-07), so trying a third question never costs marks.
+  paperMarks(L, val) {
+    return !L ? 0 : L.sections.reduce((a, sec) => {
+      const qs = {}; sec.missions.forEach(m => { const qn = String(m.id).split(".")[0]; qs[qn] = (qs[qn] || 0) + m.parts.reduce((b, p) => b + (val(p) || 0), 0); });
+      const v = Object.values(qs).sort((x, y) => y - x);
+      return a + (sec.answer_any ? v.slice(0, sec.answer_any) : v).reduce((x, y) => x + y, 0); }, 0);
+  }
+  // The ids of the missions a paper still WANTS: every one of a compulsory section; in an "Answer any N" section, those of an
+  // unfinished question while fewer than N of its questions are finished (two of Section B's three done: Section B is done).
+  paperWanted(L) {
+    const shut = m => m.parts.every(q => this.pg(q.key).closed), want = new Set();
+    (L ? L.sections : []).forEach(sec => {
+      if (!sec.answer_any) { sec.missions.forEach(m => want.add(m.id)); return; }
+      const byQ = {}; sec.missions.forEach(m => { const qn = String(m.id).split(".")[0]; (byQ[qn] = byQ[qn] || []).push(m); });
+      const qs = Object.values(byQ); if (qs.filter(g => g.every(shut)).length >= sec.answer_any) return;
+      qs.filter(g => !g.every(shut)).forEach(g => g.forEach(m => want.add(m.id))); });
+    return want;
+  }
   // A paper's live state from this device's progress; null for a paper Nexera is still preparing (no content here yet).
   pmProgress(p) {
     const L = (this.papers || []).filter(x => x.id === HOME_TO_LOCAL[p.id])[0]; if (!L) return null;
     const ms = L.sections.reduce((a, sec) => a.concat(sec.missions), []), parts = ms.reduce((a, m) => a.concat(m.parts), []);
     const shut = m => m.parts.every(q => this.pg(q.key).closed);
-    const earned = parts.reduce((a, q) => a + (this.pg(q.key).best || 0), 0);
-    const total = L.total || parts.reduce((a, q) => a + (q.marks || 0), 0), next = ms.findIndex(m => !shut(m));
+    const earned = this.paperMarks(L, q => this.pg(q.key).best), want = this.paperWanted(L);
+    const total = L.total || parts.reduce((a, q) => a + (q.marks || 0), 0), next = ms.findIndex(m => want.has(m.id) && !shut(m));
     return { local: L, missions: ms, earned: earned, total: total, next: next, done: next < 0 && ms.length > 0,
       started: parts.some(q => this.pg(q.key).tries > 0), closedN: ms.filter(shut).length };
   }
@@ -3349,7 +3373,7 @@ class Component extends DCLogic {
   // open, so the done screen said "IN PROGRESS · Mission 1.3 complete" and the part left "To revisit"). A tried retake stands.
   endRetake() { const r = this._retakeSaved; this._retakeSaved = null; if (!r) return; const now = this.pg(r.key); if (now.tries || now.closed) return;
     this.setState({ prog: Object.assign({}, this.state.prog, { [r.key]: r.g }) }); if (r.mb) this.mcqBook()[r.n] = r.mb; }
-  firstNow() { return this.missions().reduce((a, m) => a + m.parts.reduce((b, p) => { const g = this.pg(p.key); return b + (g.first != null ? g.first : (g.best || 0)); }, 0), 0); }
+  firstNow() { return this.paperMarks(this.paper(), p => { const g = this.pg(p.key); return g.first != null ? g.first : (g.best || 0); }); }
   openMission(i, pi = 0) { this.resetInputs({ screen: "play", mi: i, pi: pi, runLog: [], revisit: false, figHidden: false, missionStart: { mi: i, earned: this.earnedNow() } }); }
 
   // The marker, standing in for the service. Returns the reply shape of the API.
@@ -3451,7 +3475,9 @@ class Component extends DCLogic {
       if (isNaN(v)) return whole(false, [{ key: "num", awarded: 0, available: part.marks, verdict: "unreadable", reason: "We could not read a number. Use digits, for example 12." }]);
       const ok = Math.abs(v - key.num) <= key.tol; return whole(ok, [{ key: "num", awarded: ok ? part.marks : 0, available: part.marks, verdict: ok ? "correct" : "incorrect" }]); }
     if (key.match) {
-      let got = 0; const items = key.match.map((r, l) => { const ok = answer[l] === r; if (ok) got++; return { key: "m" + l, awarded: ok ? 1 : 0, available: 1, verdict: answer[l] == null ? "missing" : ok ? "correct" : "incorrect" }; });
+      // each: a pair's marks (Business Studies 1.3: five pairs, 2 each); 1 when the paper gives one mark a pair
+      const each = key.each || 1;
+      let got = 0; const items = key.match.map((r, l) => { const ok = answer[l] === r; if (ok) got += each; return { key: "m" + l, awarded: ok ? each : 0, available: each, verdict: answer[l] == null ? "missing" : ok ? "correct" : "incorrect" }; });
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items };
     }
     if (key.rubric) {
@@ -4465,6 +4491,12 @@ class Component extends DCLogic {
         if (!primaryDisabled && !closed && !(reply && reply.waiting) && !(s.barOpen && reply)) this.check(); },
       isBuild: mode === "build",
       isMatch: mode === "match", matchCols: phone ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))",
+      matchHeadA: mode === "match" && part.match.heads ? part.match.heads[0] : "COLUMN A", matchHeadB: mode === "match" && part.match.heads ? part.match.heads[1] : "COLUMN B",
+      // the paper's own column titles; a one-to-one match says how many descriptions are left over (plain arithmetic: 10 for 5 terms
+      // leaves five), a classification never does (it would tell the learner whether the items share a group)
+      matchHint: mode !== "match" ? "" : part.match.groups ? "Tap an item, then tap the group it belongs to. A group may take more than one item."
+        : (() => { const spare = part.match.right.length - part.match.left.length, word = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][spare] || String(spare);
+            return "Tap a Column A item, then tap its description." + (spare > 0 ? " " + word + (spare === 1 ? " description is" : " descriptions are") + " not used." : ""); })(),
       matchLeft: mode === "match" ? part.match.left.map((t, l) => { const r = s.matchPairs[l]; const on = s.matchSel === l; const it = itemsBy["m" + l]; const sp = stampOf(it);
         return { text: t, on: on, paired: sp ? sp.t : r != null ? "→ " + String.fromCharCode(65 + r) : "", pairColor: sp ? sp.c : "var(--tint)",
           aria: t + (r != null ? ", paired with " + String.fromCharCode(65 + r) : "") + (sp ? ", " + sp.t : ""),
@@ -4472,7 +4504,7 @@ class Component extends DCLogic {
           pick: () => { if (!locked) this.setState({ matchSel: on ? null : l }); } }; }) : [],
       matchRight: mode === "match" ? part.match.right.map((t, r) => { const usedBy = Object.keys(s.matchPairs).filter(k => s.matchPairs[k] === r)[0];
         return { key: String.fromCharCode(65 + r), text: t, border: usedBy != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: "rgba(32,35,39,0.72)",
-          pick: () => { if (locked || this.state.matchSel == null) return; const mp = Object.assign({}, this.state.matchPairs); Object.keys(mp).forEach(k => { if (mp[k] === r) delete mp[k]; }); mp[this.state.matchSel] = r; this.setState({ matchPairs: mp, matchSel: null }); } }; }) : [],
+          pick: () => { if (locked || this.state.matchSel == null) return; const mp = Object.assign({}, this.state.matchPairs); if (!part.match.groups) Object.keys(mp).forEach(k => { if (mp[k] === r) delete mp[k]; }); mp[this.state.matchSel] = r; this.setState({ matchPairs: mp, matchSel: null }); } }; }) : [],
       isDraw: draw,
       ...this.sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, touch),
       ...this.layer2Vals(s, phone, tablet, part, reply, res, closed, mode, locked, stampOf),
@@ -4548,9 +4580,9 @@ class Component extends DCLogic {
     const reply = s.reply; const res = reply && reply.result;
     const closed = !!(pr && pr.closed);
     const partMarks = p => this.pg(p.key).best;
-    const paperEarned = pp => pp ? pp.sections.reduce((a, sec) => a + sec.missions.reduce((b, m) => b + m.parts.reduce((c, p) => c + (this.pg(p.key).best || 0), 0), 0), 0) : 0;
+    const paperEarned = pp => this.paperMarks(pp, p => this.pg(p.key).best);
     const missionState = m => this.missionGrade(m);
-    const suggestedIdx = missions.findIndex(m => !m.parts.every(p => this.pg(p.key).closed));
+    const wantedNow = this.paperWanted(paper), suggestedIdx = missions.findIndex(m => wantedNow.has(m.id) && !m.parts.every(p => this.pg(p.key).closed));
     const total = paper ? paper.total : 0, earned = paperEarned(paper);
 
     const verdictInfo = v => ({ correct: ["✓", "Correct", "#3ddc97"], follow_through: ["✓", "Carried forward", "#3ddc97"], incorrect: ["✕", "Not yet", "#f2777a"],
