@@ -290,8 +290,9 @@ window.NX_CATALOGUE = {
    "duration_minutes": 180,
    "questions": 5,
    "missions": 13,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2025"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2025",
+   "source_pdf": "uploads/Mathematical Literacy P2 Nov 2025 Eng.pdf"
   },
   {
    "id": "ml-p1-2024-11",
@@ -350,8 +351,9 @@ window.NX_CATALOGUE = {
    "duration_minutes": 180,
    "questions": 11,
    "missions": 37,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2025"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2025",
+   "source_pdf": "uploads/Mathematics P1 Nov 2025 Eng.pdf"
   },
   {
    "id": "math-p2-2025-11",
@@ -370,8 +372,9 @@ window.NX_CATALOGUE = {
    "duration_minutes": 180,
    "questions": 11,
    "missions": 41,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2025"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2025",
+   "source_pdf": "uploads/Mathematics P2 Nov 2025 Eng.pdf"
   },
   {
    "id": "math-p1-2024-11",
