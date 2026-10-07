@@ -20,7 +20,9 @@ types and auto-marked against the official memo. Judge each question part agains
 | build: stems | for each labelled item in a diagram, picks one of a few end-states | one mark per item | items, states, answers |
 
 Shared context the app already shows: a lead line, an extract (text) as a sheet, data TABLES (rows and columns, read-only),
-figures (an image with optional tappable letter hotspots), the question paper and memo as page images.
+figures (an image with optional tappable letter hotspots), the question paper and memo as page images. A figure without
+hotspots (every ingested paper today) is a figure to read even when the answer is a letter: the letters are answered on
+their chips, and the figure keeps its readable size and opens big on a tap.
 
 NOT supported today (examples): a table the learner FILLS IN, a line/scatter graph to plot on a grid, algebra/expression input
 with symbols (fractions, exponents, roots), a sketch of a function, geometry constructions or proofs, map reading ON a map

@@ -4067,6 +4067,10 @@ class Component extends DCLogic {
         badgeBg: sp ? (sp.t.indexOf("✓") !== -1 ? "#1f9d68" : "#d64b4e") : memo ? "#1f9d68" : "#1e46ff",
         tap: () => this.figTap(L) };
     });
+    // a figure is one to TAP only when its letters have spots on it. An ingested figure has none (hotspots: []), so a letter question
+    // (PS P2 2.1.x: options A-G under a table of structures) answers on its chips and the figure stays one to read: its 160/200 px
+    // floor and a tap to enlarge. Keyed on the letters alone, it shrank to 120 px and would not open (2026-10-07)
+    const hot = spots.length > 0;
     const letters = F.hotspots.map(h => h.letter).sort().join(", ");
     // The question column is 640 px on wide layouts (desktop, landscape tablet), else the page width.
     const wideCol = s.vw >= 1100 || (s.vw >= 600 && s.vw > s.vh);
@@ -4078,7 +4082,7 @@ class Component extends DCLogic {
     // the full-width 308 the size was worked out for, so B and C, 16 px apart, overlapped): the closest pair's gap as a share of the
     // figure's width, in container units of the figure box, between 16 px and the usual cap. The letter buttons stay the big targets.
     const spotFrac = isFinite(minD) && figW > 0 ? minD / figW : 0.2, spotCss = "clamp(16px, calc(" + (spotFrac * 100).toFixed(2) + "cqw - 3px), " + spot + "px)";
-    const hint = !letterSet.length ? F.caption : locked ? (closed ? "Closed · the figure shows your answer" : "Your answer is being checked") : mode === "order" ? "Tap the letters on the figure in order"
+    const hint = !hot ? F.caption : locked ? (closed ? "Closed · the figure shows your answer" : "Your answer is being checked") : mode === "order" ? "Tap the letters on the figure in order"
       : mode === "pickn" ? "Tap " + (part.count || 1) + " letters on the figure" : "Tap a letter on the figure";
     // A figure to read (no letters to tap) shows whole, zoomed out to the room it has (nx-play: --fig-h), and folds away to a bar
     // and back (Murci, 2026-10-01: 1.4's diagrams were "cut/hidden in half from the frame": the panel's cap shrank the block to
@@ -4090,11 +4094,11 @@ class Component extends DCLogic {
       // the group's lead IS this figure's caption ("The diagrams below represent ...") and the figure is right there above it: the
       // line goes (Murci, 2026-10-01: "eats space and is wrong because it says below"); the figure's description still reads it out
       figSaysLead: F.caption === String((this.mission() || {}).lead || "") ? "true" : "false",   // (a figure to tap too: its row shows the tap hint, not the caption)
-      figAr: (F.w / F.h).toFixed(4), figHot: letterSet.length ? "true" : "false", figCanHide: canHide, figHiddenAttr: hidden ? "true" : "false",
+      figAr: (F.w / F.h).toFixed(4), figHot: hot ? "true" : "false", figCanHide: canHide, figHiddenAttr: hidden ? "true" : "false",
       // the frame holds the figure and nothing else (Murci, 2026-10-01: "never has text inside it": no caption, no hint, no Enlarge);
       // Hide sits on the figure, folded it is one "Show figure" button. A tap on a figure to read still opens it big.
       figFrameOn: !hidden, figShowOn: hidden,
-      figBoxTap: !letterSet.length ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, toggleFig: () => this.setState({ figHidden: !s.figHidden }),
+      figBoxTap: !hot ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, toggleFig: () => this.setState({ figHidden: !s.figHidden }),
       figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint,   // (the enlarged view's line)
       figBigOpen: s.figBig, openFigBig: () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }),
       closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: Math.min(2 * 640, Math.round(F.w * 0.9)) + "px",
