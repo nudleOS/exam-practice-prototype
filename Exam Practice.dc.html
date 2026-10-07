@@ -92,7 +92,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=244">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=245">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1138,7 +1138,7 @@
             <div data-keypad="true" role="group" aria-label="Calculator" style="margin:0 0 8px; padding:10px; border-radius:20px; border:1px solid var(--line2); background:rgba(var(--nx-c, 28,31,36), 0.98); box-shadow:0 -12px 32px rgba(0,0,0,0.45)">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
                 <span style="flex:none; max-width:45%; font-size:12px; font-weight:700; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ kpFor }}</span>
-                <span role="status" aria-label="{{ kpDisplayAria }}" style="flex:1; min-width:0; text-align:right; font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl">{{ kpDisplay }}</span>
+                <span role="status" aria-label="{{ kpDisplayAria }}" style="flex:1; min-width:0; text-align:right; font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl"><span style="direction:ltr; unicode-bidi:isolate">{{ kpDisplay }}</span></span>
                 <button onClick="{{ kpClose }}" aria-label="Close calculator" style="width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--line2); background:transparent; color:var(--text2); font-size:17px; cursor:pointer">×</button>
               </div>
               <sc-if value="{{ kpHasErr }}" hint-placeholder-val="{{ false }}">
@@ -1161,7 +1161,7 @@
           <sc-if value="{{ showCheck }}" hint-placeholder-val="{{ true }}">
             <div style="padding:12px 0 max(16px, env(safe-area-inset-bottom)); background:var(--dock-bg, linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.96) 34%))">
               <sc-if value="{{ showCheckReason }}" hint-placeholder-val="{{ false }}">
-                <span role="status" style="display:block; margin-bottom:6px; text-align:center; font-size:12.5px; font-weight:600; color:var(--text3)">{{ checkReason }}</span>
+                <span data-checkreason="true" role="status" style="display:block; margin-bottom:6px; text-align:center; font-size:12.5px; font-weight:600; color:var(--text3)">{{ checkReason }}</span>
               </sc-if>
               <div style="display:flex; gap:8px">
               <sc-if value="{{ nxCanBack }}" hint-placeholder-val="{{ false }}"><button data-back="true" onClick="{{ backPart }}" aria-label="Previous question"><span data-backword="true">Back</span></button></sc-if>
@@ -1651,7 +1651,7 @@ const tableView = t => {
       cells: r.map((c, i) => ({ t: c, a: al(i), role: i ? "cell" : "rowheader", w: i ? "500" : "700", c: i ? "var(--text2)" : "var(--text)" })) })) };
 };
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
-const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
+const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(/−/g, "-").replace(/[×x*]10\^/i, "e").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
 // A slip that changes the meaning: a numeral differs (prophase i / ii, 2 / 3), or one word is the other with a meaning prefix
 // (incomplete / complete, heterozygous / homozygous is caught by the glossary below, dis-, non-, hypo- ...). Same word count only:
 // a dropped or added word is not a spelling slip either (distance alone allowed "prophase" for "prophase i").
@@ -1682,6 +1682,10 @@ function evalExpr(src) {
   const v = expr(); return i === toks.length && isFinite(v) ? v : NaN;
 }
 const fmtNum = v => { const r = Math.round(v * 1e6) / 1e6; return String(r).replace(".", ","); };
+// The calculator's own: standard form beyond fmtNum's range, as a learner writes it (1,045×10^15; 6,63×10^-34), which num() reads.
+// fmtNum's 6 decimals turned 3,4×10^-19 J into "0" and 1,045×10^15 into 1044999999999999,9 (2026-10-07)
+const kpNum = v => { const a = Math.abs(v); if (!a || (a >= 1e-3 && a < 1e9)) return fmtNum(v);
+  const [m, e] = Number(v.toPrecision(10)).toExponential().split("e"); return m.replace(".", ",") + "×10^" + e.replace("+", ""); };
 // the narrowest screen that shows a question's figure BESIDE it (version C, Murci 2026-10-05): 1366 x 768 laptops and up; a
 // tablet keeps it above (at 1024 the answers' column would be under 300 px)
 const NX_SIDE_MIN = 1100;
@@ -2772,8 +2776,9 @@ class Component extends DCLogic {
   kpSet() {
     const s = this.state, part = this.part(); if (!part || !s.kp) return;
     let e = s.kpExpr.trim(); if (!e) { this.setState({ kpErr: "Type a number first." }); return; }
-    if (/[+×÷^√²()]|.−/.test(e)) { const v = evalExpr(e); if (isNaN(v)) { this.setState({ kpErr: "Can't work that out. Check the brackets and signs." }); return; } e = fmtNum(v); }
-    else e = e.replace(/^−/, "-");
+    const sci = /^−?\d+(?:,\d+)?×10\^−?\d+$/.test(e);   // a number in standard form stays as the learner wrote it
+    if (!sci && /[+×÷^√²()]|.−/.test(e)) { const v = evalExpr(e); if (isNaN(v)) { this.setState({ kpErr: "Can't work that out. Check the brackets and signs." }); return; } e = kpNum(v); }
+    e = e.replace(/−/g, "-");
     if (s.kp === "num") { this.setState({ numVal: e, kp: null, kpExpr: "", kpErr: "", edited: Object.assign({}, s.edited, { num: true }) }); return; }
     const ids = part.steps.map(x => x.id), i = ids.indexOf(s.kp), nextId = ids[i + 1];
     const inputs = Object.assign({}, s.inputs, { [s.kp]: e }), edited = Object.assign({}, s.edited, { [s.kp]: true });
@@ -4204,7 +4209,7 @@ class Component extends DCLogic {
     const curIdx = stepList.findIndex(x => x.id === s.kp);
     const symOf = lbl => { const m = String(lbl).match(/,\s*([^,()]+?)\s*\(([^)]*)\)\s*$/); return m ? { sym: m[1], unit: m[2] } : null; };
     const givenChips = (part.givens || []).map(g => ({ label: g.symbol + " " + fmtNum(g.value) + (g.unit ? " " + unitText(g.unit) : ""), aria: "Type " + g.label + ", " + fmtNum(g.value),
-      border: "var(--line2)", bg: "rgba(255,255,255,0.04)", color: "var(--text)", tap: () => this.setState({ kpExpr: this.state.kpExpr + fmtNum(g.value), kpErr: "" }) }));
+      border: "var(--line2)", bg: "rgba(255,255,255,0.04)", color: "var(--text)", tap: () => this.setState({ kpExpr: this.state.kpExpr + kpNum(g.value), kpErr: "" }) }));
     const earlierChips = curIdx > 0 ? stepList.slice(0, curIdx).filter(x => String(s.inputs[x.id] || "").trim()).map((x, j) => { const sy = symOf(x.label); const v = String(s.inputs[x.id]).trim();
       return { label: (sy ? sy.sym : "Step " + (j + 1)) + " " + v, aria: "Type your " + (sy ? sy.sym : "step " + (j + 1)) + ", " + v,
         border: "rgba(61,220,151,0.45)", bg: "rgba(61,220,151,0.10)", color: "#bff5dc", tap: () => this.setState({ kpExpr: this.state.kpExpr + v.replace(/\s.*$/, ""), kpErr: "" }) }; }) : [];

@@ -678,7 +678,8 @@ body.nx-play [data-footer] [data-bar] { padding:0 !important; border:0 !importan
   -webkit-backdrop-filter:none !important; backdrop-filter:none !important; animation:none !important; }
 body.nx-play [data-footer] [data-bar] > :not(:last-child) { display:none !important; }
 body.nx-play [data-footer] [data-bar] > :last-child { margin:0 !important; gap:10px !important; justify-content:flex-end; }
-body.nx-play [data-footer] [role="status"]:not([data-bar]) { display:none; }   /* "Enter your answer" over Check: the disabled Check says it */
+body.nx-play [data-footer] [data-checkreason] { display:none; }   /* "Enter your answer" over Check: the disabled Check says it.
+   Named, not [role=status]: the calculator's display is a status in the footer too, and that broad rule hid it (2026-10-07) */
 body.nx-play [data-footer] div:has(> div > [data-check]) { padding:0 !important; background:none !important; }
 body.nx-play [data-footer] div:has(> [data-check]) { gap:10px !important; }
 body.nx-play [data-footer] :is([data-check], [data-bar-primary], [data-skip], [data-bar] button) { flex:none !important; min-height:46px !important; height:46px; padding:0 24px !important; border-radius:999px !important;
@@ -791,7 +792,7 @@ body.nx-play main:not(#mq-stage) [data-termmedal]::after { content:""; position:
 body.nx-play main:not(#mq-stage) [data-question] { overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
 body.nx-play main:not(#mq-stage) [data-question]::-webkit-scrollbar { display:none; }
 /* "Enter your answer" over Check: the host writes display:block inline, so the rule needs !important (measured: it still showed) */
-body.nx-play [data-footer] [role="status"]:not([data-bar]) { display:none !important; }
+body.nx-play [data-footer] [data-checkreason] { display:none !important; }
 /* where the robot stands UNDER the panel (a phone; an upright tablet), its words go beside its head, not above it: the panel stops
    just above its head (nxPanelCap), and a bubble over the head was hidden by a grown panel (measured at 375x812 and 360x640) */
 @media (max-width:600px), (min-width:601px) and (max-width:1024px) and (orientation:portrait) {

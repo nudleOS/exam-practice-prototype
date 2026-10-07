@@ -122,6 +122,8 @@ Build each question type once, well, and every paper, present or future, gets a 
   - **your earlier values** in this part ("hf 8 m" once s1 has a value), exactly as typed.
   - There are no chips for anything the learner hasn't been given or entered.
 - **Numbers:** the SA decimal comma is the default display, and a point is accepted too. The value sent is exactly what the field shows.
+  - **Standard form** (built 2026-10-07): a value typed as `1,045×10^15` stays as typed after Set. A result of 10⁹ or more, or below 0,001, is written the same way (`3,978×10^-19`), never rounded to "0". The marker reads `×10^` and `e` alike.
+  - The display reads left to right ("1,045×10^15"). It keeps the newest digits in view when long, but the expression is never mirrored.
 - **In the Hall:** keypad and chips stay (a permitted exam calculator); formula lines go.
 - **Rule note:** earlier briefs said "the app never calculates for the learner". This keypad is the learner's own calculator, operated by them, like the scientific calculator permitted in the exam room.
 
