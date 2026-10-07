@@ -1,0 +1,96 @@
+{
+  "file": "Mathematical Literacy P1 Nov 2024 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [ {"name": "ALL", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 29,
+      "items": [
+        {"label": "1.1.1", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "double bar graph: voters per time slot, School X and Y (1.1)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the number of voters at School Y from 16:00-16:30."},
+        {"label": "1.1.2", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "double bar graph (1.1)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Identify the time slot when 30 people voted at School X."},
+        {"label": "1.1.3", "marks": 2, "type": "mcq", "figure": "graph", "figure_ref": "double bar graph (1.1)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Choose the statement (A-C) below that BEST describes the trend of the voters at School Y."},
+        {"label": "1.1.4", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The probability of randomly selecting a voter from School X is 0,56 ... Write 0,56 as a simplified fraction."},
+        {"label": "1.1.5", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "double bar graph (1.1)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the total number of voters at both schools who voted during the 17:00-17:30 time slot."},
+        {"label": "1.2.1", "marks": 3, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 1: Comparative food prices", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Identify the food items that showed a decrease in both the month-on-month and year-on-year percentage change."},
+        {"label": "1.2.2", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the missing value, A."},
+        {"label": "1.2.3", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the price of a dozen eggs during May 2022."},
+        {"label": "1.2.4", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write down the unit ratio, in the form 1 : ..., for the price of the oranges"},
+        {"label": "1.3.1", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2: Terminology used in Mathematical Literacy", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Break-even point"},
+        {"label": "1.3.2", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Inflation"},
+        {"label": "1.3.3", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Variable expenses"},
+        {"label": "1.3.4", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Mean"}
+      ],
+      "subtotals": [],
+      "notes": "Paper-level: scanned, read visually. Cover: 13 pages + ANSWER SHEET (page 14, for QUESTION 4.1) + addendum with 3 annexures (A: tax table for 2.3; B: Shoprite/Pick n Pay graphs for 3.1; C: Indian Union budget pie charts for 5.1). Five questions, answer ALL; 29+30+29+31+31 = 150. Q1: no group subtotals printed. 1.1 = 11, 1.2 = 10, 1.3 = 8; sum 29 matches [29]."
+    },
+    {
+      "q": 2,
+      "printed_total": 30,
+      "items": [
+        {"label": "2.1.1", "marks": 2, "type": "short_answer", "figure": "scenario_text", "figure_ref": "prepaid electricity till slip (2.1)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the meter number."},
+        {"label": "2.1.2", "marks": 3, "type": "calculation", "figure": "scenario_text", "figure_ref": "prepaid electricity till slip (2.1)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the missing value, B."},
+        {"label": "2.1.3", "marks": 7, "type": "calculation", "figure": "table", "figure_ref": "TABLE 3: Residential electricity tariff", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "A partial residential electricity tariff table (excluding VAT) is shown below. Determine the number of kWh units Miecke purchased."},
+        {"label": "2.2.1", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "Home solar system unit payment options advert (2.2)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the monthly instalment for the rent-to-own option."},
+        {"label": "2.2.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "payment options advert (2.2)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate, excluding VAT, the cash price of the home solar system unit."},
+        {"label": "2.2.3", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "payment options advert (2.2)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "After seven years, Miecke decides to buy-out the rent-to-own option. Calculate the extra amount"},
+        {"label": "2.3.1", "marks": 3, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A (annual tax table 2023/2024)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Identify the tax bracket that Miecke will use to calculate her income tax payable."},
+        {"label": "2.3.2", "marks": 5, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE A", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate Miecke's annual tax payable for the 2023/2024 tax year."}
+      ],
+      "subtotals": [],
+      "notes": "2.1 = 12, 2.2 = 10, 2.3 = 8; sum 30 matches [30]."
+    },
+    {
+      "q": 3,
+      "printed_total": 29,
+      "items": [
+        {"label": "3.1.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE B (GRAPH 1 stores, GRAPH 2 employees)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Identify the year in which there was a decrease in the number of employees"},
+        {"label": "3.1.2", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "It is projected that the number of Pick n Pay stores will increase by 95,39%"},
+        {"label": "3.1.3", "marks": 6, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "An analyst stated that Shoprite employed more employees per store than Pick n Pay during 2023."},
+        {"label": "3.1.4", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine, as a percentage, the probability of randomly selecting a year where the number of Shoprite stores"},
+        {"label": "3.2.1", "marks": 3, "type": "short_answer", "figure": "scenario_text", "figure_ref": "time-spent data set (3.2)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the number of customers that represent the sample size and the number"},
+        {"label": "3.2.2", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Choose the correct option (A, B, C, D or E) that represents the stage in the data handling process"},
+        {"label": "3.2.3", "marks": 2, "type": "explain", "figure": "scenario_text", "figure_ref": "time-spent data set (3.2)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give a reason why the value of 127 is considered to be an outlier"},
+        {"label": "3.2.4(a)", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "ranked data + incomplete box-and-whisker plot (3.2.4)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the value of the upper quartile (Q3)."},
+        {"label": "3.2.4(b)", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "ranked data + box-and-whisker plot (3.2.4)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Vuyo stated that if the outlier value was removed from the data set, the new interquartile (IQR) value would be 13."}
+      ],
+      "subtotals": [],
+      "notes": "3.1 = 14, 3.2 = 15; sum 29 matches [29]."
+    },
+    {
+      "q": 4,
+      "printed_total": 31,
+      "items": [
+        {"label": "4.1.1(a)", "marks": 3, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 4 budgeted expenses; TABLE 5 cost to hire DJ Rain", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write a formula to calculate the cost to hire DJ Rain for more than 5 hours"},
+        {"label": "4.1.1(b)", "marks": 4, "type": "table_complete", "figure": "table", "figure_ref": "TABLE 5 (reprinted on ANSWER SHEET)", "answer_on": "answer_sheet", "phone_fit": "medium", "prompt": "Complete the table by calculating the missing values P, Q and R."},
+        {"label": "4.1.2(a)", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "ANSWER SHEET graph: comparison of the cost for the different DJs", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the type of graph used to represent the cost to hire DJ 5-Star."},
+        {"label": "4.1.2(b)", "marks": 4, "type": "graph_plot", "figure": "graph", "figure_ref": "ANSWER SHEET graph", "answer_on": "answer_sheet", "phone_fit": "hard", "prompt": "Use TABLE 5, showing the cost to hire DJ Rain for up to 9 hours, to draw a line graph"},
+        {"label": "4.1.3", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "TABLE 4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Lee's parents decide to hire DJ 5-Star for the 21st birthday party."},
+        {"label": "4.1.4", "marks": 2, "type": "explain", "figure": "table", "figure_ref": "TABLE 4 / ANSWER SHEET graph", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give ONE reason why Lee's parents did not choose DJ Cool."},
+        {"label": "4.2.1", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 6: Actual number of guests per function", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write, as a decimal, the probability that a cinema-style venue was chosen"},
+        {"label": "4.2.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 6", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the median number of guests accommodated during 2023."},
+        {"label": "4.2.3", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "TABLE 6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The manager stated that the range of the number of guests per function during 2022"}
+      ],
+      "subtotals": [],
+      "notes": "4.1 = 20, 4.2 = 11; sum 31 matches [31]. Instructions say 'Use the attached ANSWER SHEET to answer QUESTION 4.1', but the sheet only carries TABLE 5 (P, Q, R) and the graph grid, so only 4.1.1(b) and 4.1.2(b) are marked answer_sheet; the rest assumed answer book. ODD: TABLE 4 prices DJ Cool at 'R6 000 for the party', but the dash-dot DJ Cool line on the ANSWER SHEET graph is drawn at about R6 500 (between the 6 000 and 7 000 gridlines); recorded as printed."
+    },
+    {
+      "q": 5,
+      "printed_total": 31,
+      "items": [
+        {"label": "5.1.1", "marks": 2, "type": "fill_blank", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Choose the correct word from those given in brackets ... A budget is a (deficit/surplus/balanced) budget"},
+        {"label": "5.1.2", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE C (Indian Union budget pie charts)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "General sales tax (GST) is a tax that is similar to VAT ... Calculate the missing percentage"},
+        {"label": "5.1.3", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate, in lakh crores, the amount spent on defence in India."},
+        {"label": "5.1.4", "marks": 3, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "List THREE sources of income shown on the pie chart where the total percentages add up"},
+        {"label": "5.1.5", "marks": 6, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Sanji calculated, in lakh crores, the amount spent on interest payments."},
+        {"label": "5.2.1", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "exchange-rate note (5.2)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Convert R302,4 billion to million rands."},
+        {"label": "5.2.2", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": "exchange-rate note (5.2)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Hence, convert the South African corporate income tax to lakh crore."},
+        {"label": "5.3.1", "marks": 2, "type": "explain", "figure": "table", "figure_ref": "TABLE 7: Inflation rates in India", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Describe the trend in the inflation rates in India."},
+        {"label": "5.3.2", "marks": 6, "type": "calculation", "figure": "table", "figure_ref": "TABLE 7", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate how much the house was worth at the end of 2022."}
+      ],
+      "subtotals": [],
+      "notes": "5.1 = 17, 5.2 = 6, 5.3 = 8; sum 31 matches [31]. Printed 'TOTAL: 150' at end."
+    }
+  ]
+}

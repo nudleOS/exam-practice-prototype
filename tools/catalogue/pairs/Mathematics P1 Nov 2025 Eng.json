@@ -1,0 +1,82 @@
+{
+  "file": "Mathematics P1 Nov 2025 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [
+    {"name": "(no sections)", "rule": "Answer ALL (in the SPECIAL ANSWER BOOK)", "questions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+  ],
+  "notes": "Scanned, no text layer; read visually. Cover: MARKS 150; 11 pages + 1 information sheet + an answer book of 23 pages. Instructions: 11 questions, answer ALL in the SPECIAL ANSWER BOOK provided, so answer_on = special_answer_book throughout (that answer book is the known-missing document; 4.5 asks to draw on axes provided in it). Page 12 = information sheet (formulae), skipped. TOTAL: 150 after Q11. Every question's leaves sum to its printed total; totals sum to 150.",
+  "questions": [
+    {"q": 1, "printed_total": 25, "items": [
+      {"label": "1.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Solve for x: (x + 5)(x - 2) = 0"},
+      {"label": "1.1.2", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Solve for x: 5x^2 + 2 = -9x (correct to TWO decimal places)"},
+      {"label": "1.1.3", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Solve for x: 8x^2 > 2x"},
+      {"label": "1.1.4", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Solve for x: 2.2^(2x) - 9.2^x + 4 = 0"},
+      {"label": "1.1.5", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Solve for x: sqrt(sqrt(1/x) + 2) = 1/sqrt(x)"},
+      {"label": "1.2", "marks": 6, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the values of x and y if: x is the sum of 2 and y"}
+    ], "subtotals": [], "notes": "Sum 2+4+4+4+5+6 = 25 = [25]."},
+    {"q": 2, "printed_total": 15, "items": [
+      {"label": "2.1.1", "marks": 3, "type": "proof", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Given the infinite geometric series (t + 10) + (t - 2) + (t + 4) + ... Show that t = -2"},
+      {"label": "2.1.2", "marks": 3, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the value of T25. Write your answer in the form Tn = b^x"},
+      {"label": "2.1.3", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the sum of the infinite series"},
+      {"label": "2.2.1", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Given sum from p=k to 117 of (4p - 1) = 26 675. Write down the difference between T6 and T14"},
+      {"label": "2.2.2", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the value of k"}
+    ], "subtotals": [], "notes": "Sum 3+3+2+2+5 = 15 = [15]."},
+    {"q": 3, "printed_total": 10, "items": [
+      {"label": "3.1", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "torpedo depth table (with submarine picture) for Q3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the depth of the torpedo at the end of the first 5 seconds"},
+      {"label": "3.2", "marks": 3, "type": "proof", "figure": "table", "figure_ref": "torpedo depth table for Q3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Show that the depth of the torpedo at the end of n seconds was Tn = -n^2 + 38n - 1"},
+      {"label": "3.3", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "torpedo depth table for Q3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the maximum depth that the torpedo reached"},
+      {"label": "3.4", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "torpedo depth table for Q3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "After how many seconds was the torpedo at 104 m below sea level for the second time?"}
+    ], "subtotals": [], "notes": "Sum 2+3+3+2 = 10 = [10]."},
+    {"q": 4, "printed_total": 10, "items": [
+      {"label": "4.1", "marks": 1, "type": "calculation", "figure": "graph", "figure_ref": "graph of f(x) = log base 1/3 of x for Q4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Calculate the value of t"},
+      {"label": "4.2", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f(x) = log base 1/3 of x for Q4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the coordinates of A"},
+      {"label": "4.3", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f for Q4", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the equation of f^-1, the inverse of f, in the form y = ..."},
+      {"label": "4.4", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f for Q4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the equation of the asymptote of f^-1"},
+      {"label": "4.5", "marks": 3, "type": "graph_plot", "figure": "graph", "figure_ref": "set of axes provided in the answer book", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Draw the graph of f^-1 on the set of axes provided in the ANSWER BOOK"},
+      {"label": "4.6", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f for Q4", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "The graph of h is obtained when f^-1 is translated 5 units to the right"}
+    ], "subtotals": [], "notes": "Sum 1+1+2+1+3+2 = 10 = [10]."},
+    {"q": 5, "printed_total": 18, "items": [
+      {"label": "5.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graphs of f (parabola) and g (hyperbola) for Q5", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the domain of g"},
+      {"label": "5.2", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graphs of f and g for Q5", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the range of f"},
+      {"label": "5.3.1", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graphs of f and g for Q5", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the values of x for which g(x) <= f(x)"},
+      {"label": "5.3.2", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graphs of f and g for Q5", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the values of x for which f(x) < 6"},
+      {"label": "5.4", "marks": 3, "type": "proof", "figure": "graph", "figure_ref": "graphs of f and g for Q5", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Show that the equation of the parabola is f(x) = -1/2 x^2 + 3x + 7/2"},
+      {"label": "5.5", "marks": 6, "type": "calculation", "figure": "graph", "figure_ref": "graphs of f and g for Q5", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the length of MT"},
+      {"label": "5.6", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "graphs of f and g for Q5", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Determine the equation of the tangent to f at D"}
+    ], "subtotals": [], "notes": "Sum 1+1+2+2+3+6+3 = 18 = [18]."},
+    {"q": 6, "printed_total": 8, "items": [
+      {"label": "6.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graphs of g (line) and f (hyperbola) for Q6", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the coordinates of the x-intercept of g in terms of p"},
+      {"label": "6.2", "marks": 5, "type": "calculation", "figure": "graph", "figure_ref": "graphs of g and f for Q6", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Graph g intersects the horizontal asymptote of graph f at x = 1 ... Determine the equation of f"},
+      {"label": "6.3", "marks": 2, "type": "explain", "figure": "graph", "figure_ref": "graphs of g and f for Q6", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Describe the transformation that g must undergo to become an axis of symmetry of f"}
+    ], "subtotals": [], "notes": "Sum 1+5+2 = 8 = [8]."},
+    {"q": 7, "printed_total": 15, "items": [
+      {"label": "7.1", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "A travel company informs Robert that a holiday ... costs R40 000 now"},
+      {"label": "7.2", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Sarah opened a savings account that paid interest at a rate of 5,8% p.a."},
+      {"label": "7.3.1", "marks": 5, "type": "calculation", "figure": "scenario_text", "figure_ref": "scenario for 7.3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The bank granted Rajesh a loan of R900 000 ... How long, in completed months"},
+      {"label": "7.3.2", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": "scenario for 7.3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the value of the final payment"}
+    ], "subtotals": [], "notes": "Sum 2+4+5+4 = 15 = [15]."},
+    {"q": 8, "printed_total": 10, "items": [
+      {"label": "8.1", "marks": 4, "type": "proof", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Determine f'(x) from first principles if it is given that f(x) = -2x + 3"},
+      {"label": "8.2.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine g'(x) if g(x) = -3x^4 + 2x"},
+      {"label": "8.2.2", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Determine dy/dx if y = (2x^4 + 1)/x^2"}
+    ], "subtotals": [], "notes": "Sum 4+2+4 = 10 = [10]."},
+    {"q": 9, "printed_total": 17, "items": [
+      {"label": "9.1", "marks": 4, "type": "calculation", "figure": "graph", "figure_ref": "graph of cubic f(x) = x^3 - 8x^2 + 5x + 14 for Q9", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the coordinates of E"},
+      {"label": "9.2", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "For which values of x is f concave down?"},
+      {"label": "9.3", "marks": 4, "type": "short_answer", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The coordinates of B are (2; 0). Use the graph to determine x for which f(x).f''(x) < 0"},
+      {"label": "9.4", "marks": 6, "type": "calculation", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "For which values of t will y = -11x + t intersect f at 3 distinct points?"}
+    ], "subtotals": [], "notes": "Sum 4+3+4+6 = 17 = [17]."},
+    {"q": 10, "printed_total": 6, "items": [
+      {"label": "10.1", "marks": 3, "type": "proof", "figure": "diagram", "figure_ref": "metal sheet and cylinder diagrams for Q10", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Show that the volume of the cylinder is given by V = 25x^2/(4 pi) - x^3/(4 pi)"},
+      {"label": "10.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "metal sheet and cylinder diagrams for Q10", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the value of x that will maximise the volume of the cylinder"}
+    ], "subtotals": [], "notes": "Sum 3+3 = 6 = [6]."},
+    {"q": 11, "printed_total": 16, "items": [
+      {"label": "11.1.1", "marks": 3, "type": "proof", "figure": "table", "figure_ref": "juice / energy drinks two-way table for 11.1", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The events male and preferring juice are independent. Show that e = 84"},
+      {"label": "11.1.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "juice / energy drinks two-way table for 11.1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the probability that a female learner ... will like energy drinks"},
+      {"label": "11.2", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "At a kiosk, 120 people buy either a cup of coffee or a bottle of water"},
+      {"label": "11.3.1", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "runners scenario for 11.3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the total number of possible ways ... if Bongi finishes immediately after Andrew"},
+      {"label": "11.3.2", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": "runners scenario for 11.3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the probability that TWO OR MORE runners finish after Andrew and before Bongi"}
+    ], "subtotals": [], "notes": "Sum 3+3+4+2+4 = 16 = [16]."}
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "file": "Mathematics P2 Nov 2025 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [
+    {"name": "(no sections)", "rule": "Answer ALL (in the SPECIAL ANSWER BOOK)", "questions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+  ],
+  "notes": "Scanned, no text layer; read visually. Cover: MARKS 150; 14 pages + 1 information sheet + answer book of 27 pages. Instructions: 11 questions, answer ALL in the SPECIAL ANSWER BOOK. Page 15 = information sheet (formulae), skipped. 'Provide reasons for your statements in QUESTIONS 9, 10 and 11' printed above Q9. Q11 has no printed subtotal for 11.1; [23] closes Q11. TOTAL: 150. Every question's leaves sum to its printed total; totals sum to 150.",
+  "questions": [
+    {"q": 1, "printed_total": 8, "items": [
+      {"label": "1.1", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "age / selling price table for Q1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the equation of the least squares regression line"},
+      {"label": "1.2", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "age / selling price table for Q1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Predict the selling price of a similar car ... that is 5 years old"},
+      {"label": "1.3", "marks": 2, "type": "explain", "figure": "table", "figure_ref": "age / selling price table for Q1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Use the correlation coefficient to show whether the prediction made in QUESTION 1.2 is valid"},
+      {"label": "1.4", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "age / selling price table for Q1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Use the answer to QUESTION 1.1 to write down the estimated average yearly decrease"}
+    ], "subtotals": [], "notes": "Sum 3+2+2+1 = 8 = [8]."},
+    {"q": 2, "printed_total": 12, "items": [
+      {"label": "2.1.1", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "cumulative frequency table for 2.1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "How many people visited this website on that day?"},
+      {"label": "2.1.2", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "cumulative frequency table for 2.1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "How many people spent more than 40 and up to 80 minutes on the website?"},
+      {"label": "2.1.3", "marks": 3, "type": "graph_plot", "figure": "table", "figure_ref": "cumulative frequency table for 2.1; grid in answer book", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Draw a histogram to represent the information provided in the cumulative frequency table"},
+      {"label": "2.1.4", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "cumulative frequency table for 2.1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Comment on the skewness of the data"},
+      {"label": "2.2", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "points of 8 players for 2.2", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "There are 9 players in a basketball team ... How many players' points score was outside ONE standard deviation"}
+    ], "subtotals": [], "notes": "Sum 1+2+3+1+5 = 12 = [12]."},
+    {"q": 3, "printed_total": 18, "items": [
+      {"label": "3.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the length of QR. Leave your answer in simplified surd form"},
+      {"label": "3.2", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the gradient of QR"},
+      {"label": "3.3", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the size of theta"},
+      {"label": "3.4", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the equation of QR"},
+      {"label": "3.5", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "PQRS, in that order, is a parallelogram. Write down the coordinates of S"},
+      {"label": "3.6", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "T is a point on QR such that PT is perpendicular to QR. Calculate the coordinates of T"},
+      {"label": "3.7", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "triangle PQR on Cartesian plane for Q3", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the area of parallelogram PQRS"}
+    ], "subtotals": [], "notes": "Sum 2+2+2+2+2+5+3 = 18 = [18]."},
+    {"q": 4, "printed_total": 21, "items": [
+      {"label": "4.1", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "circle centre M(p;q) with tangents from C for Q4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the value of p"},
+      {"label": "4.2", "marks": 4, "type": "proof", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Show that q = 4"},
+      {"label": "4.3", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the equation of the circle in the form (x - a)^2 + (y - b)^2 = r^2"},
+      {"label": "4.4", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "If the circle is translated 2 units to the left, determine the minimum distance"},
+      {"label": "4.5", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the coordinates of A and B"},
+      {"label": "4.6", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Determine the equation of tangent BC"},
+      {"label": "4.7", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the coordinates of C"},
+      {"label": "4.8", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "circle centre M(p;q) for Q4", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the size of ACB"}
+    ], "subtotals": [], "notes": "Sum 1+4+2+1+3+4+2+4 = 21 = [21]."},
+    {"q": 5, "printed_total": 17, "items": [
+      {"label": "5.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "It is given that tan 50 = k. Express in terms of k: cos 40"},
+      {"label": "5.1.2", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Express in terms of k: 2sin 25.cos 25 / (-2 + 4sin^2 25)"},
+      {"label": "5.1.3", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Express in terms of k: sin 10"},
+      {"label": "5.2.1", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Given sin(540 + x).cos(90 + x) / sin(-x). Simplify fully to a single trigonometric ratio"},
+      {"label": "5.2.2", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Hence, determine the values of x in [0; 360] for which the square root will be real"}
+    ], "subtotals": [], "notes": "Sum 2+5+4+4+2 = 17 = [17]."},
+    {"q": 6, "printed_total": 13, "items": [
+      {"label": "6.1", "marks": 6, "type": "proof", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove that: [tan(180 - x)](1 - cos^2 x) + cos^2 x = (sin x - cos x)(1 + sin x.cos x) / -cos x"},
+      {"label": "6.2", "marks": 7, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "sin^2 x; cos^2 x and 1/2 sin 2x are the first three terms of an arithmetic sequence ... general solution"}
+    ], "subtotals": [], "notes": "Sum 6+7 = 13 = [13]."},
+    {"q": 7, "printed_total": 10, "items": [
+      {"label": "7.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f(x) = cos 2x for Q7", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the period of f"},
+      {"label": "7.2", "marks": 3, "type": "graph_plot", "figure": "graph", "figure_ref": "set of axes provided in the answer book", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "On the set of axes provided in the ANSWER BOOK, draw the graph of g(x) = tan 2x - 1"},
+      {"label": "7.3", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f(x) = cos 2x for Q7", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Graph f is translated 45 to the left to form graph h. Determine the equation of h"},
+      {"label": "7.4", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f(x) = cos 2x for Q7", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the range of h"},
+      {"label": "7.5", "marks": 4, "type": "short_answer", "figure": "graph", "figure_ref": "graphs of f and g for Q7", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Determine the values of x for which (1 - tan 2x)(cos 2x) >= 0 in [0; 135]"}
+    ], "subtotals": [], "notes": "Sum 1+3+1+1+4 = 10 = [10]."},
+    {"q": 8, "printed_total": 10, "items": [
+      {"label": "8.1", "marks": 2, "type": "proof", "figure": "diagram", "figure_ref": "puppet-stage 3D diagram for Q8", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Show that AB = 18 cm"},
+      {"label": "8.2", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "puppet-stage 3D diagram for Q8", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the length of AC"},
+      {"label": "8.3", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "puppet-stage 3D diagram for Q8", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the length of diagonal KC"},
+      {"label": "8.4", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "puppet-stage 3D diagram for Q8", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "If AB = BK, calculate the size of KAC"}
+    ], "subtotals": [], "notes": "Sum 2+2+2+4 = 10 = [10]."},
+    {"q": 9, "printed_total": 10, "items": [
+      {"label": "9.1", "marks": 5, "type": "proof", "figure": "diagram", "figure_ref": "circle centre O with K, T, P for 9.1", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Use the diagram above to prove the theorem ... angle at the centre equals twice"},
+      {"label": "9.2.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "circle with diameter POF and tangent MF for 9.2", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate, with reasons, the size of O2"},
+      {"label": "9.2.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "circle with diameter POF and tangent MF for 9.2", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate, with reasons, the size of M"}
+    ], "subtotals": [], "notes": "Sum 5+2+3 = 10 = [10]."},
+    {"q": 10, "printed_total": 8, "items": [
+      {"label": "10.1", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "cyclic quad PQRS with T for Q10", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate, with reasons, the size of QTS"},
+      {"label": "10.2", "marks": 3, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad PQRS with T for Q10", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove that PQ || SR"},
+      {"label": "10.3", "marks": 2, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad PQRS with T for Q10", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove that PT is a diameter of the circle"}
+    ], "subtotals": [], "notes": "Sum 3+3+2 = 8 = [8]."},
+    {"q": 11, "printed_total": 23, "items": [
+      {"label": "11.1.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "triangle ABC with AD || EF for 11.1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate, with reasons, the value of FD/CF"},
+      {"label": "11.1.2", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "triangle ABC with AD || EF for 11.1", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate, with reasons, the value of BA/EA"},
+      {"label": "11.1.3", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "triangle ABC with AD || EF for 11.1", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate, with reasons, Area of triangle GCF / Area of GFDA"},
+      {"label": "11.2.1", "marks": 2, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad WVZR with tangent QS for 11.2", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove, with reasons, that PR = PW.QR / QE"},
+      {"label": "11.2.2", "marks": 1, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad WVZR with tangent QS for 11.2", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "If triangle PQZ ||| triangle RQP, then PQ^2 = RQ.QZ"},
+      {"label": "11.2.3", "marks": 3, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad WVZR with tangent QS for 11.2", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove that triangle QSZ ||| triangle QRS"},
+      {"label": "11.2.4", "marks": 3, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad WVZR with tangent QS for 11.2", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove that PQ = QS"},
+      {"label": "11.2.5", "marks": 4, "type": "proof", "figure": "diagram", "figure_ref": "cyclic quad WVZR with tangent QS for 11.2", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Prove that PW = QE.PZ / sqrt(QR.QZ)"}
+    ], "subtotals": [], "notes": "Sum 2+4+4+2+1+3+3+4 = 23 = [23]."}
+  ]
+}

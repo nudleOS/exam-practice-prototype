@@ -1,0 +1,146 @@
+{
+  "file": "Physical Sciences P1 Nov 2024 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "notes": "Cover: MARKS 150, 16 pages + 3 data sheets (pages 17-19: physical constants and formulae; not questions). TEN questions, answer ALL in the ANSWER BOOK. End of paper prints TOTAL: 150.",
+  "sections": [ {"name": "(no sections)", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 20,
+      "items": [
+        {"label": "1.1", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Several forces are acting on a moving object. Which ONE ... equilibrium?"},
+        {"label": "1.2", "marks": 2, "type": "mcq", "figure": "graph", "figure_ref": "acceleration-time graph for 1.2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A stone thrown vertically downwards from the top of a building takes"},
+        {"label": "1.3", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "ball and wall diagram for 1.3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A ball moving horizontally has constant momentum p and kinetic energy K"},
+        {"label": "1.4", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "box on rough incline for 1.4", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A force F acts on a box as the box moves from rest"},
+        {"label": "1.5", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "bouncing ball A/B diagram for 1.5", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A ball falling vertically downwards from point A strikes the ground with"},
+        {"label": "1.6", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The absorption spectrum of an element surrounding a moving star is observed"},
+        {"label": "1.7", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "two charged spheres in cylinder for 1.7", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Two small identical spheres, each with mass m and charge +Q"},
+        {"label": "1.8", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The kilowatt-hour (kWh) is a unit of"},
+        {"label": "1.9", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "simplified electric motor for 1.9", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The diagram below shows a simplified electric motor. The rotation of"},
+        {"label": "1.10", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Which of the following statements is/are TRUE for the photoelectric effect?"}
+      ],
+      "subtotals": [],
+      "notes": "Multiple choice, (2) printed after each item; [20] at end."
+    },
+    {
+      "q": 2,
+      "printed_total": 15,
+      "items": [
+        {"label": "2.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term static friction."},
+        {"label": "2.2", "marks": 2, "type": "drawing", "figure": "diagram", "figure_ref": "crate on table with mass hanger, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw a labelled free-body diagram showing ALL the HORIZONTAL forces acting"},
+        {"label": "2.3.1", "marks": 4, "type": "calculation", "figure": "graph", "figure_ref": "acceleration vs hanging mass sketch graph, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the: Coefficient of static friction (µs)"},
+        {"label": "2.3.2", "marks": 5, "type": "calculation", "figure": "graph", "figure_ref": "acceleration vs hanging mass sketch graph, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Magnitude of the acceleration represented by Y on the graph if the"},
+        {"label": "2.4", "marks": 2, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "A 5 kg block is now placed inside the crate and the"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 3,
+      "printed_total": 16,
+      "items": [
+        {"label": "3.1.1", "marks": 5, "type": "calculation", "figure": "graph", "figure_ref": "position-time sketch graphs for balls A and B, Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Using EQUATIONS OF MOTION ONLY, calculate the value of EACH ... t"},
+        {"label": "3.1.2", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "position-time sketch graphs for balls A and B, Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Z"},
+        {"label": "3.1.3", "marks": 4, "type": "calculation", "figure": "graph", "figure_ref": "position-time sketch graphs for balls A and B, Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Y"},
+        {"label": "3.2", "marks": 4, "type": "graph_plot", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "On the same set of axes, sketch the velocity-time graphs for ball A"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 4,
+      "printed_total": 12,
+      "items": [
+        {"label": "4.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write down the principle of conservation of mechanical energy in words."},
+        {"label": "4.2", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "trolleys A and B with spring and incline, Q4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the speed of trolley B at the bottom of the inclined"},
+        {"label": "4.3.1", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "trolleys A and B with spring and incline, Q4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the change in momentum of trolley B"},
+        {"label": "4.3.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the change in momentum of trolley A"},
+        {"label": "4.4", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the speed of trolley A after t seconds."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 5,
+      "printed_total": 12,
+      "items": [
+        {"label": "5.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term work done by a force."},
+        {"label": "5.2", "marks": 4, "type": "drawing", "figure": "diagram", "figure_ref": "crate pulled at 30 degrees from A to B, Q5", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw a labelled free-body diagram showing ALL the forces acting on the"},
+        {"label": "5.3", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "crate pulled at 30 degrees from A to B, Q5", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Using ENERGY PRINCIPLES ONLY, calculate the magnitude of force F."},
+        {"label": "5.4", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A 2 kg object is placed in the crate. What effect will"}
+      ],
+      "subtotals": [],
+      "notes": "5.4 asks to 'Write only INCREASES, DECREASES or REMAINS THE SAME' yet carries (2)."
+    },
+    {
+      "q": 6,
+      "printed_total": 12,
+      "items": [
+        {"label": "6.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "wavelength-time graph, Q6", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the phenomenon that explains why the wavelengths shown in the graph"},
+        {"label": "6.2", "marks": 2, "type": "explain", "figure": "graph", "figure_ref": "wavelength-time graph, Q6", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Is the car moving TOWARDS or AWAY FROM the listener? Give a"},
+        {"label": "6.3.1", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "wavelength-time graph, Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the: Frequency of the sound emitted by the siren"},
+        {"label": "6.3.2", "marks": 6, "type": "calculation", "figure": "graph", "figure_ref": "wavelength-time graph, Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Magnitude of the velocity of the car"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 7,
+      "printed_total": 14,
+      "items": [
+        {"label": "7.1", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "charge P and point X, Q7", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the magnitude of the electric field at X."},
+        {"label": "7.2", "marks": 3, "type": "drawing", "figure": "diagram", "figure_ref": "charges P and S, Q7", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw the resultant electric field pattern due to charges P and S."},
+        {"label": "7.3.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "State Coulomb's law in words."},
+        {"label": "7.3.2", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "charges P, S and T, Q7.3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "What is the polarity of charge T? Choose from POSITIVE or NEGATIVE."},
+        {"label": "7.3.3", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "charges P, S and T, Q7.3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the magnitude of charge T."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 8,
+      "printed_total": 21,
+      "items": [
+        {"label": "8.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term power."},
+        {"label": "8.2.1", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "circuit with L1, L2, R1, R2, A1, A2, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "If both light bulbs operate as RATED, calculate the: Reading on ammeter A2"},
+        {"label": "8.2.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "circuit with L1, L2, R1, R2, A1, A2, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Reading on ammeter A1"},
+        {"label": "8.2.3", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "circuit with L1, L2, R1, R2, A1, A2, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Resistance of resistor R1"},
+        {"label": "8.2.4", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "circuit with L1, L2, R1, R2, A1, A2, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Emf of the battery"},
+        {"label": "8.3", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "circuit with L1, L2, R1, R2, A1, A2, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Bulb L1 burns out after a while. Assume that the resistance of"}
+      ],
+      "subtotals": [],
+      "notes": "8.3 is YES/NO supported by a calculation (5)."
+    },
+    {
+      "q": 9,
+      "printed_total": 13,
+      "items": [
+        {"label": "9.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "induced current-time graph, Q9", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the type of generator. Choose from AC or DC."},
+        {"label": "9.2", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "State the energy conversion that takes place in this generator while it"},
+        {"label": "9.3", "marks": 1, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give a reason why this generator is NOT suitable for the transmission"},
+        {"label": "9.4", "marks": 2, "type": "calculation", "figure": "graph", "figure_ref": "induced current-time graph, Q9", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the frequency at which the coil rotates in the generator."},
+        {"label": "9.5", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term root mean square (rms) current."},
+        {"label": "9.6", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "induced current-time graph, Q9", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the root-mean-square current delivered by the generator."},
+        {"label": "9.7", "marks": 2, "type": "explain", "figure": "graph", "figure_ref": "second induced current-time graph, Q9.7", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The graph below shows how the induced current varies with time after"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 10,
+      "printed_total": 15,
+      "items": [
+        {"label": "10.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term photoelectric effect."},
+        {"label": "10.2.1", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "light on potassium sheet, Q10.2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Which colour of light is responsible for ejecting electrons that have a"},
+        {"label": "10.2.2", "marks": 2, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Explain the answer to QUESTION 10.2.1."},
+        {"label": "10.2.3", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The electrons with a maximum kinetic energy of 2,65 x 10-20 J"},
+        {"label": "10.2.4", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The intensity of the red light is increased, while the intensities of"},
+        {"label": "10.3.1", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the type of spectrum formed."},
+        {"label": "10.3.2", "marks": 2, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Explain the presence of the coloured lines in the spectrum."}
+      ],
+      "subtotals": [],
+      "notes": "10.2.4 is a choice (INCREASES/DECREASES/REMAINS THE SAME) worth (2), no reason asked."
+    }
+  ]
+}

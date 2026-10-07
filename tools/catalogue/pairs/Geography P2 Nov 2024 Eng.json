@@ -1,0 +1,876 @@
+{
+ "file": "Geography P2 Nov 2024 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Exact piece of land that a settlement is built on"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The situation of a commercial livestock farm is influenced by …"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Settlements located close to a water source in arid areas"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The shape of this settlement is influenced by a river"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The largest rural settlement type"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Greater profits are associated with this settlement pattern"
+    },
+    {
+     "label": "1.1.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Land returned to the original owners"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "An economic challenge of land reform"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The smallest urban settlement in an urban hierarchy is a …"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … has the smallest number of settlements."
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … is the largest settlement type found in South Africa."
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … is an urban settlement type made up of a major city and towns."
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The … of a city covers a larger area than a town."
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A university has a … range and a … sphere of influence than a school."
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The range associated with the purchase of a motor vehicle is greater"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the term rural-urban migration."
+    },
+    {
+     "label": "1.3.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "graph",
+     "figure_ref": "sketch + graph: poverty and rural-urban migration for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the graph, the percentage level of poverty decreased by a smaller amount in (rural/urban)"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "sketch + graph: poverty and rural-urban migration for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How has unemployment contributed to this trend in poverty levels"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does the movement of young adults to urban areas have a"
+    },
+    {
+     "label": "1.3.5",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest strategies that can be introduced in rural areas to reduce"
+    },
+    {
+     "label": "1.4.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the concept urban profile."
+    },
+    {
+     "label": "1.4.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "sketch of urban profile for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Comment on the height of buildings in the CBD in comparison to"
+    },
+    {
+     "label": "1.4.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch of urban profile for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How has the demand for land influenced the density of buildings in"
+    },
+    {
+     "label": "1.4.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch of urban profile for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why are both the transition zone and rural-urban fringe referred to"
+    },
+    {
+     "label": "1.4.5",
+     "marks": 6,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch of urban profile for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest economic reasons why the rural-urban fringe would be an"
+    },
+    {
+     "label": "1.5.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the term informal settlement."
+    },
+    {
+     "label": "1.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "photographs + extract: upgrading of informal settlements for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State ONE factor in the extract that has a negative impact on the"
+    },
+    {
+     "label": "1.5.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain TWO economic reasons for the increase in informal settlements."
+    },
+    {
+     "label": "1.5.4",
+     "marks": 8,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "photographs + extract: upgrading of informal settlements for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "In a paragraph of approximately EIGHT lines, explain how the upgrading"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 8
+    },
+    {
+     "label": "1.2",
+     "marks": 7
+    }
+   ],
+   "notes": "1.1 is Y/Z matching (COLUMN A/B). Subtotals are the printed group marks (8 x 1) (8) and (7 x 1) (7); 1.3-1.5 print per-item marks only (15 each). 1.3.2 is a choose rural/urban bracket item."
+  },
+  {
+   "q": 2,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The main difference between small-scale and large-scale farming is the …"
+    },
+    {
+     "label": "2.1.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photographs P, Q, R, S for 2.1.2-2.1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Photograph … below illustrates small-scale farming."
+    },
+    {
+     "label": "2.1.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photographs P, Q, R, S for 2.1.2-2.1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A characteristic of small-scale farming evident in the photograph is …"
+    },
+    {
+     "label": "2.1.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is an economic advantage for a farmer practising large-scale farming."
+    },
+    {
+     "label": "2.1.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Cattle farming is an activity in the … economic sector."
+    },
+    {
+     "label": "2.1.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Distribution of dairy products is an activity in the … economic sector."
+    },
+    {
+     "label": "2.1.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A factor favouring cattle farming in South Africa is …"
+    },
+    {
+     "label": "2.1.8",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Challenges faced by small-scale cattle farmers in South Africa are:"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The main purpose of an industrial development zone (IDZ) is to promote …"
+    },
+    {
+     "label": "2.2.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "SDIs are generally located in … areas."
+    },
+    {
+     "label": "2.2.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A positive economic impact of spatial development initiatives (SDIs) is …"
+    },
+    {
+     "label": "2.2.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A social challenge experienced in the Saldanha Bay IDZ is …"
+    },
+    {
+     "label": "2.2.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The main industry associated with the West Coast SDI is a/an …"
+    },
+    {
+     "label": "2.2.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The South-western Cape core industrial region is restricted by …"
+    },
+    {
+     "label": "2.2.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A physical factor that promotes industries in the South-western Cape"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graph + extract: coal mining for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the graph, what amount of coal, in billions, was exported in 2023?"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graph + extract: coal mining for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What has been the general trend in profits from the export of coal"
+    },
+    {
+     "label": "2.3.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graph + extract: coal mining for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the graph, between which years was the smallest number of employees"
+    },
+    {
+     "label": "2.3.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "graph + extract: coal mining for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give ONE possible reason for the small number of employees"
+    },
+    {
+     "label": "2.3.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "graph + extract: coal mining for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the negative impact of decreasing high-quality coal reserves"
+    },
+    {
+     "label": "2.3.6",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why the coal mining industry is important to the economy of"
+    },
+    {
+     "label": "2.4.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "infographic Gauteng (PWV) (extract, statistics, road sketch map) for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Refer to the statistics and state the percentage that the Gauteng (PWV)"
+    },
+    {
+     "label": "2.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "infographic Gauteng (PWV) (extract, statistics, road sketch map) for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote evidence from the extract that shows why 31% of South Africa's labour force"
+    },
+    {
+     "label": "2.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "infographic Gauteng (PWV) (extract, statistics, road sketch map) for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Refer to the sketch and explain the role of the major roads in"
+    },
+    {
+     "label": "2.4.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain TWO challenges faced by the Gauteng (PWV) core industrial region."
+    },
+    {
+     "label": "2.4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "infographic Gauteng (PWV) (extract, statistics, road sketch map) for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest ONE advantage and ONE disadvantage of industries moving towards"
+    },
+    {
+     "label": "2.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "extract + graph: informal sector for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the extract, what is the percentage of informal trading"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "extract + graph: informal sector for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote evidence from the extract why trading has been restricted in"
+    },
+    {
+     "label": "2.5.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "extract + graph: informal sector for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the graph, which is the busiest time period for trading"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest TWO reasons for the rapid growth of the informal sector in"
+    },
+    {
+     "label": "2.5.5",
+     "marks": 8,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "In a paragraph of approximately EIGHT lines, explain measures that the municipality"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 8
+    },
+    {
+     "label": "2.2",
+     "marks": 7
+    }
+   ],
+   "notes": "2.2 is Y/Z matching. TOTAL SECTION A: 120 printed."
+  },
+  {
+   "q": 3,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "3.1.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH) + orthophoto map 2926AA 10 BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The (topographical map/orthophoto map) has a smaller scale."
+    },
+    {
+     "label": "3.1.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A small-scale map shows:"
+    },
+    {
+     "label": "3.1.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The grid reference of the reservoir at F in block B1 on the topographical"
+    },
+    {
+     "label": "3.1.4",
+     "marks": 1,
+     "type": "map_measure",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2926AA 10 BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Determine the true bearing of spot height 1431 at 6 in block A3"
+    },
+    {
+     "label": "3.1.5",
+     "marks": 4,
+     "type": "calculation",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Calculate the average gradient from spot height 1358 at G in block A3"
+    },
+    {
+     "label": "3.1.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Is the gradient (answer to QUESTION 3.1.5) steep or gentle?"
+    },
+    {
+     "label": "3.1.7",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why would this gradient (answer to QUESTION 3.1.6) be an advantage for road construction?"
+    },
+    {
+     "label": "3.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2926AA 10 BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The main settlement pattern at area 8 in blocks D1 and E1"
+    },
+    {
+     "label": "3.2.2(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What evidence suggests that this suburb is still undergoing development?"
+    },
+    {
+     "label": "3.2.2(b)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the negative impact that this development could have on farming"
+    },
+    {
+     "label": "3.2.3(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2926AA 10 BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How did topography influence the development of the gridiron street pattern"
+    },
+    {
+     "label": "3.2.3(b)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2926AA 10 BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain ONE economic advantage that residents in the residential area at 9"
+    },
+    {
+     "label": "3.2.4(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the primary activity practised in blocks A1/A2 and B1/B2."
+    },
+    {
+     "label": "3.2.4(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is this primary activity (answer to QUESTION 3.2.4(a)) practised on a large scale?"
+    },
+    {
+     "label": "3.2.4(c)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Identify TWO strategies that were put in place in blocks A1/A2 and B1/B2"
+    },
+    {
+     "label": "3.3.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The process of converting data from raster to vector format is called data …"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2926AA 10 BLOEMFONTEIN-NOORD (NORTH) / topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how the data was converted from the vertical aerial photograph"
+    },
+    {
+     "label": "3.3.3(a)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Redraw block A3 and insert only: A human-made line feature"
+    },
+    {
+     "label": "3.3.3(b)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Redraw block A3 and insert only: A human-made polygon feature"
+    },
+    {
+     "label": "3.3.4",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the concept data integration."
+    },
+    {
+     "label": "3.3.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2926AA BLOEMFONTEIN-NOORD (NORTH)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the method of data integration used on the topographical map."
+    }
+   ],
+   "subtotals": [],
+   "notes": "No [30] bracket printed at the end of Q3; 'TOTAL SECTION B: 30', 'GRAND TOTAL: 150'. Leaves: 3.1=10, 3.2=12, 3.3=8 (no group subtotals printed). Map sheets (2926AA BLOEMFONTEIN-NOORD topo 1:50 000 + 2926AA 10 orthophoto 1:10 000) are NOT in the folder. 3.1.5 gives distance 7,8 cm; heights must be read off the map. 3.3.3 is a redraw-a-block drawing."
+  }
+ ]
+}

@@ -1,0 +1,910 @@
+{
+ "file": "Geography P1 Nov 2025 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The name of the air pressure cell that dominates the interior of South Africa in winter"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Air movement associated with high-pressure cells"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The general direction of movement of a coastal low-pressure system is …"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The … is known as a blocking high when it is in the path"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The elongation of isobars extending outwards from a high-pressure cell"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … is found between two air masses of different moisture contents."
+    },
+    {
+     "label": "1.1.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "synoptic sketch in 1.1.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The conditions represented in the sketch below will lead to …"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "station-model sketch in 1.1.8",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Rainfall with 20 knots of wind is likely at …"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph on slope aspect for 1.2.1-1.2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Slope aspect refers to …"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph on slope aspect for 1.2.1-1.2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The photograph represents a valley in the … Hemisphere."
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph on slope aspect for 1.2.1-1.2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Slope B represents a … and … slope."
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph on valley winds for 1.2.4-1.2.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The arrows at A indicate a/an … wind."
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph on valley winds for 1.2.4-1.2.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The main conditions for the formation of the wind at A are … and …"
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… forms when the dew point temperature of air is below freezing point"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The negative physical (natural) impact of the answer to QUESTION 1.2.6"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What is the name of the boundary between two air masses, as shown in sketch A?"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give ONE reason why the boundary between the two air masses in sketch A would form a wave."
+    },
+    {
+     "label": "1.3.3",
+     "marks": 1,
+     "type": "term",
+     "figure": "photo",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the stage of development of the mid-latitude cyclone associated with"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how the weather conditions illustrated in photographs C and D developed"
+    },
+    {
+     "label": "1.3.5(a)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a fully labelled cross-section of a cold front (E-F): Correct cross-section"
+    },
+    {
+     "label": "1.3.5(b)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw ... cold front (E-F): General direction of movement of the mid-latitude cyclone"
+    },
+    {
+     "label": "1.3.5(c)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw ... cold front (E-F): Cloud type"
+    },
+    {
+     "label": "1.3.5(d)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw ... cold front (E-F): Sector"
+    },
+    {
+     "label": "1.3.6",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B + photographs C, D on mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Refer to sketch B. Explain how the difference in temperature of the air masses"
+    },
+    {
+     "label": "1.4.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "scenario_text",
+     "figure_ref": "infographic Tropical Cyclone Dikeledi (fact file, location map, satellite images C, D) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the fact file, in which stage of development was Tropical Cyclone Dikeledi"
+    },
+    {
+     "label": "1.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "infographic Tropical Cyclone Dikeledi (fact file, location map, satellite images C, D) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO reasons in the fact file to support your answer to QUESTION 1.4.1."
+    },
+    {
+     "label": "1.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "infographic Tropical Cyclone Dikeledi (fact file, location map, satellite images C, D) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why Tropical Cyclone Dikeledi developed between 5° and 20° south"
+    },
+    {
+     "label": "1.4.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "infographic Tropical Cyclone Dikeledi (fact file, location map, satellite images C, D) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the weather conditions associated with the forward left-hand quadrant"
+    },
+    {
+     "label": "1.4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "infographic Tropical Cyclone Dikeledi (fact file, location map, satellite images C, D) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why Tropical Cyclone Dikeledi intensified from 8 January to 13 January 2025."
+    },
+    {
+     "label": "1.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "synoptic weather map (berg winds) + text for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name ONE South African city indicated on the synoptic weather map that is"
+    },
+    {
+     "label": "1.5.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "synoptic weather map (berg winds) + text for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give evidence from the synoptic weather map to support your answer to QUESTION 1.5.1."
+    },
+    {
+     "label": "1.5.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the processes that lead to berg winds being warm and dry."
+    },
+    {
+     "label": "1.5.4",
+     "marks": 8,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "The warm and dry conditions can influence veld fires. In a paragraph of approximately EIGHT lines"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 8
+    },
+    {
+     "label": "1.2",
+     "marks": 7
+    },
+    {
+     "label": "1.3.5",
+     "marks": 4
+    }
+   ],
+   "notes": "1.1 is Y/Z completion (COLUMN A/B). 1.3.5 (a)-(d) are listed without individual marks; only '(4 x 1) (4)' printed for the group, split here as 4 x 1. Section heading misprint 'GEOMORPHOLOGY2025' (stray '2025')."
+  },
+  {
+   "q": 2,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The main river A and its tributaries are referred to as a …"
+    },
+    {
+     "label": "2.1.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The ... in area B separates one stream from another."
+    },
+    {
+     "label": "2.1.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The area at C will have a ... infiltration rate."
+    },
+    {
+     "label": "2.1.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The river at D is a ... river."
+    },
+    {
+     "label": "2.1.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The confluence on the sketch is located at …"
+    },
+    {
+     "label": "2.1.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "... will increase in area G due to the steep slope."
+    },
+    {
+     "label": "2.1.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The stage of the river at H is the … course."
+    },
+    {
+     "label": "2.1.8",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch on drainage basins for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The water table at I will resemble … (options Y/Z are sketches)"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A river that has its water diverted into another river is referred to as a …"
+    },
+    {
+     "label": "2.2.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Rivers flowing over areas with a … are more likely to be the captor stream."
+    },
+    {
+     "label": "2.2.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Evidence that river capture has taken place in sketch B:"
+    },
+    {
+     "label": "2.2.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The cause of river capture, as shown in sketch B, is …"
+    },
+    {
+     "label": "2.2.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The part of the river that has less water after river capture is known as the … stream."
+    },
+    {
+     "label": "2.2.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "River X has more erosive power after river capture because of …"
+    },
+    {
+     "label": "2.2.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A, B on river capture for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The physical (natural) impact of river capture on the captor stream is that the … and …"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What is a longitudinal profile?"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "sketches of two longitudinal profiles + cross-profiles C, D for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the sketches above shows a graded longitudinal profile?"
+    },
+    {
+     "label": "2.3.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "sketches of two longitudinal profiles + cross-profiles C, D for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give evidence in the sketch to support your answer to QUESTION 2.3.2."
+    },
+    {
+     "label": "2.3.4",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "sketches of two longitudinal profiles + cross-profiles C, D for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Classify EACH of the temporary base levels in sketch A as either natural or human-made."
+    },
+    {
+     "label": "2.3.5",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketches of two longitudinal profiles + cross-profiles C, D for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is the sea indicated as the permanent base level?"
+    },
+    {
+     "label": "2.3.6",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketches of two longitudinal profiles + cross-profiles C, D for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Differentiate between the shapes of the cross-profiles at C and D."
+    },
+    {
+     "label": "2.3.7",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketches of two longitudinal profiles + cross-profiles C, D for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the main processes that give rise to the difference in the shape of cross-profiles C and D."
+    },
+    {
+     "label": "2.4.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Meanders are more likely to form in the (upper/lower) stage/course of a river."
+    },
+    {
+     "label": "2.4.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "photographs A, B (meanders) + cross-section E-F for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Account for the gentle gradient of the inner bank at C in photograph A."
+    },
+    {
+     "label": "2.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "photographs A, B (meanders) + cross-section E-F for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does the process of river rejuvenation lead to the formation of incised meanders?"
+    },
+    {
+     "label": "2.4.4",
+     "marks": 8,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "photographs A, B (meanders) + cross-section E-F for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Refer to photograph A. In a paragraph of approximately EIGHT lines, explain how an oxbow lake is formed."
+    },
+    {
+     "label": "2.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "extract + photograph: impact of settlements on river management for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the extract, why are dense settlements along rivers associated with pollution?"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "photo",
+     "figure_ref": "extract + photograph: impact of settlements on river management for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO reasons from the photograph to support your answer to QUESTION 2.5.1."
+    },
+    {
+     "label": "2.5.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "extract + photograph: impact of settlements on river management for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how the rise in the water level of the river will negatively affect the houses"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the negative impact of poor river management on the health of rivers."
+    },
+    {
+     "label": "2.5.5",
+     "marks": 6,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "extract + photograph: impact of settlements on river management for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest strategies that the municipality can put in place to ensure the sustainability"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 8
+    },
+    {
+     "label": "2.2",
+     "marks": 7
+    }
+   ],
+   "notes": "2.1.4 option Y misspelt 'permanant'. 2.1.8 options Y/Z are sketches. 2.4.1 is a choose upper/lower bracket item. TOTAL SECTION A: 120 printed."
+  },
+  {
+   "q": 3,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "3.1.1",
+     "marks": 2,
+     "type": "calculation",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Calculate the difference in height between trigonometrical station F in block C3 and"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The natural feature found at 33°58ꞌ29\"S; 18°54ꞌ15\"E is a …"
+    },
+    {
+     "label": "3.1.3",
+     "marks": 4,
+     "type": "calculation",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 3318DD 18 STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Calculate the average gradient from 6 in block E5 to 7 in block D5"
+    },
+    {
+     "label": "3.1.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B in 3.1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Match the average gradient (answer to QUESTION 3.1.3) with sketch A or B below."
+    },
+    {
+     "label": "3.1.5",
+     "marks": 1,
+     "type": "true_false",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Is L in block C2 visible from H in block C4 on the topographical map?"
+    },
+    {
+     "label": "3.1.6",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for your answer to QUESTION 3.1.5."
+    },
+    {
+     "label": "3.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "scenario_text",
+     "figure_ref": "general information on Stellenbosch (p15)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Stellenbosch has a … climate."
+    },
+    {
+     "label": "3.2.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Stellenbosch experiences seasonal rainfall. Give evidence from block A5"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 3318DD 18 STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why area 8 will experience lower temperatures than the surrounding built-up area."
+    },
+    {
+     "label": "3.2.4",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the general wind direction experienced in the area around J during the night."
+    },
+    {
+     "label": "3.2.5",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give evidence from the map to support your answer to QUESTION 3.2.4."
+    },
+    {
+     "label": "3.2.6",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Stellenboschberg is a watershed. Give evidence from the map to support this statement."
+    },
+    {
+     "label": "3.2.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph of a river in Stellenbosch + topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Will the river depicted on the photograph be located at K in block D1 or L in block C2?"
+    },
+    {
+     "label": "3.2.8",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for your answer to QUESTION 3.2.7."
+    },
+    {
+     "label": "3.3.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The number 310, labelled M on the main road in block A3"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 3318DD STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify a natural line feature in block A4 on the topographical map."
+    },
+    {
+     "label": "3.3.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 3318DD 18 STELLENBOSCH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Using data manipulation, explain how you would manipulate the scale at area 9"
+    },
+    {
+     "label": "3.3.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… refers to the clarity of an image."
+    },
+    {
+     "label": "3.3.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "images A and B of Danie Craven Stadium (from orthophoto D1/D2)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which photograph, A or B, has fewer pixels?"
+    },
+    {
+     "label": "3.3.6",
+     "marks": 2,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "images A and B of Danie Craven Stadium (from orthophoto D1/D2)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for your answer to QUESTION 3.3.5."
+    }
+   ],
+   "subtotals": [],
+   "notes": "No [30] bracket printed at the end of Q3; 'TOTAL SECTION B: 30', 'GRAND TOTAL: 150'. Leaves 3.1=10, 3.2=12, 3.3=8 (no group subtotals printed). Map sheets (3318DD STELLENBOSCH topo 1:50 000 + 3318DD 18 STELLENBOSCH orthophoto 1:10 000) are NOT in the folder. 3.1.3 gives VI = 60 m; HE must be measured on the orthophoto. 3.1.5 is a yes/no item (typed true_false)."
+  }
+ ]
+}

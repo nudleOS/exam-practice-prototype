@@ -1,0 +1,901 @@
+{
+ "file": "Life Sciences P1 Nov 2025 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL",
+   "questions": [
+    2,
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The hormone that prepares the body for an emergency is"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following are functions of the placenta?"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "table",
+     "figure_ref": "reaction-time table for 1.1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The table below shows the reaction time of four learners to a stimulus"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A high level of thyroxin in the blood will stimulate the"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagram of female reproductive system (P, Q, R, S) for 1.1.5-1.1.6",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following combinations is CORRECT for a normal pregnancy?"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagram of female reproductive system (P, Q, R, S) for 1.1.5-1.1.6",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "In which part does the zygote develop into a morula?"
+    },
+    {
+     "label": "1.1.7",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The following is a list of male reproductive parts: Prostate gland"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagram of a human sperm for 1.1.8",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The diagram below represents a human sperm. This sperm is NOT structurally suitable"
+    },
+    {
+     "label": "1.1.9",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The following is a list of growth responses in plants"
+    },
+    {
+     "label": "1.1.10",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following is CORRECT for a person who exercises on a hot day"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The ovarian hormone that is secreted by the corpus luteum"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The eye defect that is characterised by a cloudy lens"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The production of ova by meiosis"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The part of the retina that contains no rods and cones"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The release of an ovum from the ovary"
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The extra-embryonic membrane that plays a role in the formation of the placenta"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A plant hormone responsible for seed dormancy"
+    },
+    {
+     "label": "1.2.8",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The maintenance of a constant internal environment within narrow limits"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The hormone responsible for the development of secondary sexual characteristics"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Plays a role in the pupillary mechanism (A: Ciliary muscles, B: Radial muscles)"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A plant defence mechanism (A: Thorns, B: Chemicals)"
+    },
+    {
+     "label": "1.4.1(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams A, B, C for 1.4 (plant responses)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER(S) of the diagram(s) that represent a response due to abscisic acid"
+    },
+    {
+     "label": "1.4.1(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER(S) of the diagram(s) that represent a response due to auxins"
+    },
+    {
+     "label": "1.4.1(c)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER(S) of the diagram(s) that represent a response due to gibberellins"
+    },
+    {
+     "label": "1.4.2(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the growth response shown by the roots in diagram A"
+    },
+    {
+     "label": "1.4.2(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the growth response shown in diagram B"
+    },
+    {
+     "label": "1.4.3(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram B for 1.4 (sides X, Y)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Using X and Y in diagram B, state which side has the highest concentration of auxins"
+    },
+    {
+     "label": "1.4.3(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram B for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Using X and Y in diagram B, state which side has the highest rate of cell division"
+    },
+    {
+     "label": "1.5.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5 (A-F)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of neuron represented by the diagram"
+    },
+    {
+     "label": "1.5.2(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part B"
+    },
+    {
+     "label": "1.5.2(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part D"
+    },
+    {
+     "label": "1.5.2(c)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part E"
+    },
+    {
+     "label": "1.5.3(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER of the part that contains the genetic material of the neuron"
+    },
+    {
+     "label": "1.5.3(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER of the part that insulates the neuron"
+    },
+    {
+     "label": "1.5.3(c)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER of the part that makes synaptic contact with an interneuron"
+    },
+    {
+     "label": "1.5.4",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "neuron diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the disorder that is associated with the degeneration of part F"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 20
+    },
+    {
+     "label": "1.2",
+     "marks": 8
+    },
+    {
+     "label": "1.3",
+     "marks": 6
+    },
+    {
+     "label": "1.4",
+     "marks": 8
+    },
+    {
+     "label": "1.5",
+     "marks": 8
+    }
+   ],
+   "notes": "No [50] printed after Question 1; only 'TOTAL SECTION A: 50'. 1.1 (10 x 2) (20); 1.2 (8 x 1) (8); 1.3 (3 x 2) (6). Text layer on page 3 reads 'SECTION A2025' (stray text). 1.1.9 stem printed after its options in extraction order (layout)."
+  },
+  {
+   "q": 2,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 3,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "bird egg yolk table for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why we may conclude that ducks display precocial development"
+    },
+    {
+     "label": "2.1.2",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "bird egg yolk table for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the THREE bird types that would have a higher degree of parental care"
+    },
+    {
+     "label": "2.1.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "bird egg yolk table for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for your answer to QUESTION 2.1.2"
+    },
+    {
+     "label": "2.2.1(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2 (part of male reproductive system A, B, C)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and the NAME of the gland that secretes testosterone"
+    },
+    {
+     "label": "2.2.1(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and the NAME of the part that stores sperm until maturation"
+    },
+    {
+     "label": "2.2.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the role of the scrotum in sperm production"
+    },
+    {
+     "label": "2.2.3",
+     "marks": 5,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Name and describe the process of sperm production"
+    },
+    {
+     "label": "2.3.1(a)",
+     "marks": 3,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "endometrium thickness table for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Referring to ovarian hormones, explain the decrease in thickness from day 0 to day 7"
+    },
+    {
+     "label": "2.3.1(b)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "table for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Referring to ovarian hormones, explain the increase in thickness from day 7 to day 14"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe changes in the endometrium that cause it to become thicker"
+    },
+    {
+     "label": "2.3.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the significance of the change in endometrium thickness described in 2.3.2"
+    },
+    {
+     "label": "2.3.4",
+     "marks": 6,
+     "type": "graph_plot",
+     "figure": "table",
+     "figure_ref": "table for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a bar graph to show the results in the table"
+    },
+    {
+     "label": "2.4.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the part of the brain that controls thermoregulation"
+    },
+    {
+     "label": "2.4.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "arteriole diagrams X, Y, Z for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER of the diagram which represents the arteriole on a cold day"
+    },
+    {
+     "label": "2.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "arteriole diagrams for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain the significance of the change in the diameter of the arteriole to diagram Z"
+    },
+    {
+     "label": "2.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 2.5 (ISS growth hormone)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the dependent variable of this investigation"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "List THREE variables that were kept constant and which contributed to the validity"
+    },
+    {
+     "label": "2.5.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the purpose of Group B in this investigation"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 3,
+     "type": "calculation",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Calculate the daily amount of added human growth hormone given to a boy of 25 kg"
+    },
+    {
+     "label": "2.5.5",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a conclusion for this investigation"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 8
+    },
+    {
+     "label": "2.2",
+     "marks": 11
+    },
+    {
+     "label": "2.3",
+     "marks": 14
+    },
+    {
+     "label": "2.4",
+     "marks": 6
+    },
+    {
+     "label": "2.5",
+     "marks": 11
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "q": 3,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "3.1.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.1 (normal eye vs astigmatism, A, B, C)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify fluid A"
+    },
+    {
+     "label": "3.1.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part B"
+    },
+    {
+     "label": "3.1.1(c)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part C"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Describe the appearance of the cornea of an eye with astigmatism"
+    },
+    {
+     "label": "3.1.3",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how astigmatism affects vision"
+    },
+    {
+     "label": "3.1.4",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give ONE treatment for astigmatism"
+    },
+    {
+     "label": "3.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2 (nervous system parts A-E, spinal cord)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the branch of the nervous system represented by the parts shown"
+    },
+    {
+     "label": "3.2.2(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and NAME of the part responsible for balance and coordination"
+    },
+    {
+     "label": "3.2.2(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and NAME of the part responsible for control of breathing"
+    },
+    {
+     "label": "3.2.2(c)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and NAME of the part responsible for control of skeletal muscles"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 6,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe the pathway of an impulse from part D through the spinal cord to part E"
+    },
+    {
+     "label": "3.3",
+     "marks": 5,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe how the human eye ACCOMMODATES for distant vision"
+    },
+    {
+     "label": "3.4.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "ear diagram for 3.4 (A-E)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part A"
+    },
+    {
+     "label": "3.4.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "ear diagram for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part B"
+    },
+    {
+     "label": "3.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "ear diagram for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTERS of TWO parts that are normally filled with fluid"
+    },
+    {
+     "label": "3.4.3",
+     "marks": 5,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe how balance is restored when there is a change in speed and direction"
+    },
+    {
+     "label": "3.4.4(a)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "NIHL text for 3.4.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how damage to the hair cells in the organ of Corti can lead to hearing loss"
+    },
+    {
+     "label": "3.4.4(b)",
+     "marks": 3,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "NIHL text for 3.4.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how earplugs can prevent damage to the hair cells in the organ of Corti"
+    },
+    {
+     "label": "3.5.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the organ that secretes insulin"
+    },
+    {
+     "label": "3.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "insulin graph for 3.5 (persons A, B, C over 23 hours)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the number of meals that were eaten during the 23-hour period"
+    },
+    {
+     "label": "3.5.3",
+     "marks": 5,
+     "type": "table_complete",
+     "figure": "graph",
+     "figure_ref": "insulin graph for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Tabulate TWO differences between long-acting and rapid-acting insulin treatment"
+    },
+    {
+     "label": "3.5.4",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "insulin graph for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of insulin treatment that is similar to insulin secretion in a healthy person"
+    },
+    {
+     "label": "3.5.5",
+     "marks": 2,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why person B may experience a lack of energy after a rapid-acting injection"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "3.1",
+     "marks": 8
+    },
+    {
+     "label": "3.2",
+     "marks": 13
+    },
+    {
+     "label": "3.3",
+     "marks": 5
+    },
+    {
+     "label": "3.4",
+     "marks": 14
+    },
+    {
+     "label": "3.5",
+     "marks": 10
+    }
+   ],
+   "notes": "3.3 is a single 5-mark item with no sub-numbers. Section B total 100; grand total 150."
+  }
+ ]
+}

@@ -1,0 +1,156 @@
+{
+  "file": "Mathematics P1 Nov 2024 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [
+    {"name": "(no sections)", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+  ],
+  "notes": "Scanned, no text layer; read visually. Cover: MARKS 150, 9 pages + 1 information sheet (page 10, formulae; not questions, skipped). Instructions say 12 questions. TOTAL: 150 printed after Q12. Leaf sums = printed [totals] for every question; question totals sum to 150.",
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 27,
+      "items": [
+        {"label": "1.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Solve for x: x(x - 3) = 0"},
+        {"label": "1.1.2", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Solve for x: 2x^2 + 1 = 4x (correct to TWO decimal places)"},
+        {"label": "1.1.3", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Solve for x: x^2 - 2x - 3 > 0"},
+        {"label": "1.1.4", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Solve for x: 2^(2x) - 2^(x+2) - 32 = 0"},
+        {"label": "1.1.5", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Solve for x: sqrt(-2x + 4) - x = 2"},
+        {"label": "1.2", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Solve for x and y simultaneously: 2x + y = 3; y^2 + xy = 2"},
+        {"label": "1.3", "marks": 3, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Consider the product (1 + 1/2)(1 + 1/3)(1 + 1/4)... Determine ALL values of n for integer product"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+4+4+5+4+5+3 = 27 matches [27]."
+    },
+    {
+      "q": 2,
+      "printed_total": 14,
+      "items": [
+        {"label": "2.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The first term of an arithmetic series is 7 ... Calculate the sum of this series"},
+        {"label": "2.1.2", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The original arithmetic series is extended to 75 terms ... using sigma notation, write an equation"},
+        {"label": "2.2.1", "marks": 3, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "First differences of a quadratic pattern 1; 3; 5 ... If T99 = 9 632, calculate T98"},
+        {"label": "2.2.2", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "If the third term of the quadratic pattern is 32, determine the general term Tn"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+4+3+5 = 14 matches [14]."
+    },
+    {
+      "q": 3,
+      "printed_total": 10,
+      "items": [
+        {"label": "3.1", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "diagram of nested circles for Q3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the radius of the 3rd circle"},
+        {"label": "3.2", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "diagram of nested circles for Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the sum of the areas of the first 10 circles"},
+        {"label": "3.3", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "diagram of nested circles for Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Which circle has a diameter of 3/128 cm?"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+4+4 = 10 matches [10]."
+    },
+    {
+      "q": 4,
+      "printed_total": 9,
+      "items": [
+        {"label": "4.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Given f(x) = a^x - 1, B(2; -5/9) on f. Calculate the value of a"},
+        {"label": "4.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the range of f"},
+        {"label": "4.3", "marks": 3, "type": "graph_plot", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Sketch the graph of f. Clearly show the intercepts with the axes and asymptotes"},
+        {"label": "4.4", "marks": 3, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "C is a point on f at y = 19/8. Determine the coordinates of C'"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+1+3+3 = 9 matches [9]."
+    },
+    {
+      "q": 5,
+      "printed_total": 10,
+      "items": [
+        {"label": "5.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f and g for Q5", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the value of p"},
+        {"label": "5.2", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f and g for Q5", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the equation of the horizontal asymptote of f"},
+        {"label": "5.3", "marks": 2, "type": "calculation", "figure": "graph", "figure_ref": "graph of f and g for Q5", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the value of a"},
+        {"label": "5.4", "marks": 3, "type": "short_answer", "figure": "graph", "figure_ref": "graph of f and g for Q5", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "For which values of x is f(x) >= 0?"},
+        {"label": "5.5", "marks": 2, "type": "explain", "figure": "graph", "figure_ref": "graph of f and g for Q5", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Graph f undergoes a transformation to h ... Describe a possible transformation"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 1+2+2+3+2 = 10 matches [10]."
+    },
+    {
+      "q": 6,
+      "printed_total": 15,
+      "items": [
+        {"label": "6.1", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "graph of f and g for Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the coordinates of B, the turning point of f"},
+        {"label": "6.2", "marks": 3, "type": "proof", "figure": "graph", "figure_ref": "graph of f and g for Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Show that the equation of the line through A and C is g(x) = 2x + 2"},
+        {"label": "6.3", "marks": 4, "type": "calculation", "figure": "graph", "figure_ref": "graph of f and g for Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the maximum length of EH for f > g"},
+        {"label": "6.4", "marks": 5, "type": "calculation", "figure": "graph", "figure_ref": "graph of f and g for Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Given k(x) = f(x + m) ... Determine the value of m such that g is a tangent to k"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 3+3+4+5 = 15 matches [15]."
+    },
+    {
+      "q": 7,
+      "printed_total": 14,
+      "items": [
+        {"label": "7.1", "marks": 3, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Mary's grandparents deposited R5 000 into a savings account on the day she was born"},
+        {"label": "7.2", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "After 4 years, the value of a printer was half of its original value"},
+        {"label": "7.3.1", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "scenario for 7.3", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Tshepo was granted a loan of R100 000 ... Calculate the total interest he will pay"},
+        {"label": "7.3.2", "marks": 7, "type": "calculation", "figure": "scenario_text", "figure_ref": "scenario for 7.3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Tshepo paid R22 300,98 ... on 1 March 2024 ... How many months earlier will Tshepo repay"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 3+2+2+7 = 14 matches [14]."
+    },
+    {
+      "q": 8,
+      "printed_total": 18,
+      "items": [
+        {"label": "8.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine d/dx [3x - 5x^2]"},
+        {"label": "8.1.2", "marks": 4, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine g'(x) if g(x) = 2/x^2 - cube root of x^7"},
+        {"label": "8.2", "marks": 3, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine the equation of the tangent to f(x) = x^3 - 4x^2 + 2x + 3 at x = 2"},
+        {"label": "8.3.1", "marks": 5, "type": "proof", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Given f(x) = -6x^2. Determine f'(x) from first principles"},
+        {"label": "8.3.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down how you will restrict the domain of f such that f^-1 is a function"},
+        {"label": "8.3.3", "marks": 3, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine the equation of f^-1 for f^-1(x) <= 0. Write your answer as y = ..."}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+4+3+5+1+3 = 18 matches [18]."
+    },
+    {
+      "q": 9,
+      "printed_total": 8,
+      "items": [
+        {"label": "9.1", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "For which values of x is f decreasing?"},
+        {"label": "9.2", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the x-intercepts of f', the derivative of f"},
+        {"label": "9.3", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "For which values of x will f be concave up?"},
+        {"label": "9.4", "marks": 2, "type": "short_answer", "figure": "graph", "figure_ref": "graph of cubic f for Q9", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the value of k for which y = f(x) + k will have THREE positive x-intercepts"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+2+2+2 = 8 matches [8]."
+    },
+    {
+      "q": 10,
+      "printed_total": 8,
+      "items": [
+        {"label": "10.1", "marks": 3, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "A cyclist rode from town P ... Calculate the maximum speed that the cyclist reached"},
+        {"label": "10.2", "marks": 5, "type": "calculation", "figure": "scenario_text", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the distance between town P and town T"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 3+5 = 8 matches [8]. Stem gives speed as s'(t) = -3t^2 + 18t."
+    },
+    {
+      "q": 11,
+      "printed_total": 9,
+      "items": [
+        {"label": "11.1", "marks": 3, "type": "drawing", "figure": "scenario_text", "figure_ref": "bulleted data for Q11", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw a Venn diagram to represent ALL the learners sitting for these examinations"},
+        {"label": "11.2", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "bulleted data for Q11", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the probability that a learner ... will sit for examinations in at least TWO"},
+        {"label": "11.3", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": "bulleted data for Q11", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine if the events: sitting for Mathematics and sitting for Tourism are independent"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 3+2+4 = 9 matches [9]."
+    },
+    {
+      "q": 12,
+      "printed_total": 8,
+      "items": [
+        {"label": "12.1", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "code form box: letter digit letter digit", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine how many different codes can be formed if letters and digits may be repeated"},
+        {"label": "12.2", "marks": 4, "type": "calculation", "figure": "table", "figure_ref": "code form box: letter digit letter digit", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine how many different codes can be formed if: letters D, F, I, Q, U, V may NOT be used"},
+        {"label": "12.3", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "code form box: letter digit letter digit", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The company wishes to increase the number of codes ... Calculate the percentage increase"}
+      ],
+      "subtotals": [],
+      "notes": "Sum 2+4+2 = 8 matches [8]."
+    }
+  ]
+}

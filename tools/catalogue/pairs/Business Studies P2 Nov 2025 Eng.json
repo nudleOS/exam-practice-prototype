@@ -1,0 +1,554 @@
+{
+ "file": "Business Studies P2 Nov 2025 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL (COMPULSORY)",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer any TWO (only the first TWO answered are marked)",
+   "questions": [
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "name": "SECTION C",
+   "rule": "Answer any ONE (only the first answered is marked)",
+   "questions": [
+    5,
+    6
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Adriaan earned ... interest when he invested an amount of R30 000"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The term 'unlimited liability' means that the owner's ..."
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Jobe Bookkeeping educated their staff on the impact of fraud when dealing with"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Team members often experience power struggles for the position of team leader"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Catherine Textiles deals with HIV/Aids as a socio-economic issue by ..."
+    },
+    {
+     "label": "1.2.1",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Willem applies different leadership styles based on different circumstances."
+    },
+    {
+     "label": "1.2.2",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A ... company creates job opportunities and offers essential services"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Qama Electronics strategically places ... in the business as a visual aid"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Businesses implement the necessary changes after considering the driving and restraining"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Highway Stores focuses on ... as a triple bottom-line element"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Sole trader"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Cumulative preference shares"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Average clause"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Professional behaviour"
+    },
+    {
+     "label": "1.3.5",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Grievances"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 10
+    },
+    {
+     "label": "1.2",
+     "marks": 10
+    },
+    {
+     "label": "1.3",
+     "marks": 10
+    }
+   ],
+   "notes": "No [30] printed after Question 1; only 'TOTAL SECTION A: 30'. Each subquestion (5 x 2) (10). 1.1.1 is a simple-interest MCQ (R30 000, 12%, 3 years) needing a mental/calculator sum. 1.2 word list: force-field analysis; non-profit; situational; flip charts; planet; transformational; Delphi technique; posters; state-owned; people. 1.3 Column B option D prints 'seizes to exist' (sic, for 'ceases')."
+  },
+  {
+   "q": 2,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "2.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name any TWO factors that should be considered when making investment decisions."
+    },
+    {
+     "label": "2.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Elaborate on the meaning of excess as an insurance concept."
+    },
+    {
+     "label": "2.3",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain the functions of the Johannesburg Securities Exchange (JSE)."
+    },
+    {
+     "label": "2.4",
+     "marks": 6,
+     "type": "table_complete",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MABIZELA TECHNOLOGIES (MT) + guide table (leadership styles / motivations) for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Identify the leadership styles applicable to MT. Motivate your answer"
+    },
+    {
+     "label": "2.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the role of personal attitude in successful leadership."
+    },
+    {
+     "label": "2.6.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario STARLIGHT MARKETING (SM) for 2.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO aspects from the scenario above that Zintle considered"
+    },
+    {
+     "label": "2.6.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain other aspects that must be considered when designing a multimedia presentation."
+    },
+    {
+     "label": "2.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the impact of government/RSA Retail Savings Bonds as a form of investment."
+    },
+    {
+     "label": "2.8",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Advise businesses on how management as a criterion could contribute to the success"
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 2: BUSINESS VENTURES. 2.4 is one 6-mark item (scenario + guide table, no sub-numbers)."
+  },
+  {
+   "q": 3,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "3.1",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "List any FOUR problem-solving steps."
+    },
+    {
+     "label": "3.2",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Outline the benefits of diversity in the workplace."
+    },
+    {
+     "label": "3.3.1",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario JALEEL PHARMACY (JP) for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Identify the King Code principle applied by JP. Motivate your answer"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe any ONE other King Code principle that businesses can apply"
+    },
+    {
+     "label": "3.4",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss communication as a criterion for successful team performance."
+    },
+    {
+     "label": "3.5.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario KLIPLAND HARDWARE (KH) for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO causes of conflict at KH from the scenario above."
+    },
+    {
+     "label": "3.5.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how businesses should handle conflict in the workplace."
+    },
+    {
+     "label": "3.6",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the advantages of corporate social responsibility (CSR) on businesses."
+    },
+    {
+     "label": "3.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Evaluate the impact of the nominal group technique."
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 3: BUSINESS ROLES."
+  },
+  {
+   "q": 4,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "4.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give any TWO examples of non-insurable risks."
+    },
+    {
+     "label": "4.2.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "statements about Platinum Ltd (PL) for 4.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "PL raised additional capital by borrowing money from the public."
+    },
+    {
+     "label": "4.2.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "statements about Platinum Ltd (PL) for 4.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Employees of PL make monthly contributions to an informal savings scheme"
+    },
+    {
+     "label": "4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the difference between management and leadership."
+    },
+    {
+     "label": "4.4",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the advantages of a personal liability company."
+    },
+    {
+     "label": "4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise presenters on the factors that they should consider during a presentation."
+    },
+    {
+     "label": "4.6",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name the FOUR corporate social investment (CSI) focus areas."
+    },
+    {
+     "label": "4.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe the importance of team dynamic theories in improving team performance."
+    },
+    {
+     "label": "4.8.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario THANDOKAZI ATTORNEYS (TA) for 4.8",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO ways from the scenario above in which TA creates an environment"
+    },
+    {
+     "label": "4.8.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain other ways in which businesses can create an environment that promotes creative thinking"
+    },
+    {
+     "label": "4.9",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Recommend ways in which businesses can deal with the pricing of goods in rural areas"
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 4: MISCELLANEOUS TOPICS (4.1-4.5 Business Ventures; 4.6-4.9 Business Roles). 4.2 stem: identify the type of investment opportunity for Platinum Ltd in EACH statement; no group subtotal printed (4.2.1 (2) + 4.2.2 (2)). TOTAL SECTION B: 80."
+  },
+  {
+   "q": 5,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "5",
+     "marks": 40,
+     "type": "essay",
+     "figure": "scenario_text",
+     "figure_ref": "introductory paragraph for QUESTION 5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Write an essay on investment: insurance in which you include"
+    }
+   ],
+   "subtotals": [],
+   "notes": "Essay, BUSINESS VENTURES (INVESTMENT: INSURANCE): differences insurance vs assurance; THREE types of compulsory insurance; advantages of insurance; principles utmost good faith and insurable interest. No per-bullet marks printed."
+  },
+  {
+   "q": 6,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "6",
+     "marks": 40,
+     "type": "essay",
+     "figure": "scenario_text",
+     "figure_ref": "introductory paragraph for QUESTION 6",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Write an essay on human rights, inclusivity and environmental issues"
+    }
+   ],
+   "subtotals": [],
+   "notes": "Essay, BUSINESS ROLES (HUMAN RIGHTS, INCLUSIVITY AND ENVIRONMENTAL ISSUES): employer responsibilities for health and safety; dealing with any THREE human rights; strategies to protect environment and human health; diversity issues age and disability. No per-bullet marks printed. TOTAL SECTION C: 40; GRAND TOTAL: 150."
+  }
+ ]
+}

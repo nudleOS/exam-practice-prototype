@@ -1,0 +1,957 @@
+{
+ "file": "Life Sciences P2 Nov 2025 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL",
+   "questions": [
+    2,
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A gene is"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The significance of DNA replication is that the cells formed at the end of mitosis"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following statements is a feature of punctuated equilibrium?"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Haemophilia is"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following is an example of a heterozygous genotype?"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "DNA replication diagram (molecules 1-5) for 1.1.6-1.1.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following combinations CORRECTLY identifies molecules 1, 4 and 5?"
+    },
+    {
+     "label": "1.1.7",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "DNA replication diagram (molecules 1-5) for 1.1.6-1.1.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following combinations is CORRECT for molecules 2 and 3?"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "table",
+     "figure_ref": "dihybrid cross info + table (plants 1 and 2) for 1.1.8-1.1.9",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following represents the genotypes of plant 1 and plant 2?"
+    },
+    {
+     "label": "1.1.9",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "table",
+     "figure_ref": "dihybrid cross info + table (plants 1 and 2) for 1.1.8-1.1.9",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The number of possible different genotypes expected in the offspring from this cross"
+    },
+    {
+     "label": "1.1.10",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A rare form of rickets is caused by a dominant allele on the X-chromosome"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The bond formed between two amino acids during protein synthesis"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "An organelle that contains DNA which is used in tracing female ancestry"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Undifferentiated cells in animals that have the potential to become any type of tissue"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A change in the sequence of nitrogenous bases resulting in a different protein"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The natural shape of a DNA molecule"
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The permanent disappearance of a species from Earth"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A type of variation with a range of intermediate phenotypes"
+    },
+    {
+     "label": "1.2.8",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "An allele that is expressed in a phenotype in the heterozygous condition"
+    },
+    {
+     "label": "1.2.9",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The position of an allele on a chromosome"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The phase of meiosis during which non-disjunction can occur (A: Anaphase I"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A representation of the number, shape and arrangement of all the chromosomes"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The alleles of a gene separate into different gametes during meiosis"
+    },
+    {
+     "label": "1.4.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams V-Z with parts A, B, C for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part A"
+    },
+    {
+     "label": "1.4.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part B"
+    },
+    {
+     "label": "1.4.1(c)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part C"
+    },
+    {
+     "label": "1.4.2(a)",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which diagram (V, W, X, Y or Z) represents a cell during prophase of mitosis"
+    },
+    {
+     "label": "1.4.2(b)",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which diagram (V, W, X, Y or Z) represents a cell during metaphase I"
+    },
+    {
+     "label": "1.4.2(c)",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which diagram (V, W, X, Y or Z) represents a cell during prophase I"
+    },
+    {
+     "label": "1.4.3(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How many chromosomes will there be in each cell at the end of mitosis"
+    },
+    {
+     "label": "1.4.3(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "cell diagrams for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How many chromosomes will there be in each cell at the end of meiosis I"
+    },
+    {
+     "label": "1.5.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "translation diagram for 1.5 (codons 2-5, molecule 1, organelle Z, amino acids P-S)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the stage of protein synthesis represented"
+    },
+    {
+     "label": "1.5.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify molecule 1"
+    },
+    {
+     "label": "1.5.1(c)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify organelle Z"
+    },
+    {
+     "label": "1.5.2(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the sequence of nitrogenous bases on the DNA molecule for codon 3"
+    },
+    {
+     "label": "1.5.2(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the sequence of nitrogenous bases on the DNA molecule for codon 4"
+    },
+    {
+     "label": "1.5.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which amino acid (P, Q, R or S) is coded for by codon 5?"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 20
+    },
+    {
+     "label": "1.2",
+     "marks": 9
+    },
+    {
+     "label": "1.3",
+     "marks": 6
+    },
+    {
+     "label": "1.4",
+     "marks": 8
+    },
+    {
+     "label": "1.5",
+     "marks": 7
+    }
+   ],
+   "notes": "No [50] printed after Question 1; only 'TOTAL SECTION A: 50'. 1.1 (10 x 2) (20); 1.2 (9 x 1) (9); 1.3 (3 x 2) (6). Text layer on page 3 reads 'SECTION A2025' (stray text)."
+  },
+  {
+   "q": 2,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram of female sex chromosomes for 2.1 (A, region P)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify structure A"
+    },
+    {
+     "label": "2.1.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the biological term for the sex chromosomes"
+    },
+    {
+     "label": "2.1.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Describe how these chromosomes would differ in the somatic cells of a male"
+    },
+    {
+     "label": "2.1.4(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "An exchange of genetic material takes place at region P. Name the process"
+    },
+    {
+     "label": "2.1.4(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the phase during which the process named in 2.1.4(a) takes place"
+    },
+    {
+     "label": "2.1.4(c)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give ONE reason why the process named in 2.1.4(a) is important"
+    },
+    {
+     "label": "2.1.5",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how the structure of the chromosomes would differ at the end of meiosis II"
+    },
+    {
+     "label": "2.1.6",
+     "marks": 3,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "non-disjunction text in 2.1.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Non-disjunction of these chromosomes occurred during meiosis and a gamete with an extra"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "DNA analysis diagram for 2.2 (crime scene, victim, suspects 1 and 2)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the technique used in this criminal investigation"
+    },
+    {
+     "label": "2.2.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "DNA analysis diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the suspects (1 or 2) was at the crime scene?"
+    },
+    {
+     "label": "2.2.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "DNA analysis diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give ONE observable reason for your answer to QUESTION 2.2.2"
+    },
+    {
+     "label": "2.2.4",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO possible reasons why the suspect might NOT be convicted if only this evidence"
+    },
+    {
+     "label": "2.2.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how the technique named in QUESTION 2.2.1 is used in paternity testing"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "pedigree diagram for 2.3 (CADASIL, individuals 1-11)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of diagram represented above"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How many offspring do parents 3 and 4 have?"
+    },
+    {
+     "label": "2.3.3(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the phenotype of individual 10"
+    },
+    {
+     "label": "2.3.3(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the genotype of individual 5"
+    },
+    {
+     "label": "2.3.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Using evidence from the diagram, explain why individuals 1 and 2 are both heterozygous"
+    },
+    {
+     "label": "2.3.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What is the percentage chance of parents 7 and 8 having another child with CADASIL?"
+    },
+    {
+     "label": "2.4.1(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "blood group bar graph for 2.4 (ethnic groups 1 and 2)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which blood group is most common in both ethnic groups"
+    },
+    {
+     "label": "2.4.1(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "bar graph for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which blood group has a higher percentage in ethnic group 1 than in ethnic group 2"
+    },
+    {
+     "label": "2.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "bar graph for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State ALL the possible genotypes of 11% of the people in ethnic group 1"
+    },
+    {
+     "label": "2.4.3",
+     "marks": 2,
+     "type": "calculation",
+     "figure": "graph",
+     "figure_ref": "bar graph for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Ethnic group 1 had a population of 360 000 people in 2021. Which blood group had 39 600"
+    },
+    {
+     "label": "2.4.4",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the inheritance of blood group AB"
+    },
+    {
+     "label": "2.5.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "scenario_text",
+     "figure_ref": "palomino horse text for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of dominance displayed in the inheritance of coat colour in palomino horses"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "text for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain your answer to QUESTION 2.5.1"
+    },
+    {
+     "label": "2.5.3(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name this type of biotechnology"
+    },
+    {
+     "label": "2.5.3(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "text for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the TWO phenotypes of the horses that must be interbred for a 100% chance of palomino"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 6,
+     "type": "calculation",
+     "figure": "scenario_text",
+     "figure_ref": "text for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "A horse with a cream-coloured coat was crossed with a palomino horse. Use a genetic cross"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 11
+    },
+    {
+     "label": "2.2",
+     "marks": 9
+    },
+    {
+     "label": "2.3",
+     "marks": 9
+    },
+    {
+     "label": "2.4",
+     "marks": 9
+    },
+    {
+     "label": "2.5",
+     "marks": 12
+    }
+   ],
+   "notes": "2.3 sub-items extract out of order (2.3.3 before 2.3.1); page image confirms order 2.3.1..2.3.5 with marks 1,1,(1,1),4,1."
+  },
+  {
+   "q": 3,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "3.1.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State TWO characteristics related to vision that humans share with African apes"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe TWO differences between the jaws of humans and African apes"
+    },
+    {
+     "label": "3.1.3",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain the significance of the position of the foramen magnum, the shape of the spine"
+    },
+    {
+     "label": "3.2.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "brain volume table for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How many genera are represented in the table?"
+    },
+    {
+     "label": "3.2.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give TWO examples of fossils of Australopithecus africanus found in South Africa"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "table for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the average brain volume (ml) of the species that was the first to use tools"
+    },
+    {
+     "label": "3.2.4",
+     "marks": 3,
+     "type": "calculation",
+     "figure": "table",
+     "figure_ref": "table for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Calculate the percentage increase in the average brain volume between Homo habilis and Homo sapiens"
+    },
+    {
+     "label": "3.2.5",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "The brain decomposes after the organism dies. Explain how scientists are able to determine"
+    },
+    {
+     "label": "3.2.6",
+     "marks": 3,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "table for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the relationship between average brain volume and cultural evidence"
+    },
+    {
+     "label": "3.3.1(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State what is meant by a biological species"
+    },
+    {
+     "label": "3.3.1(b)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract for 3.3 (breeding months in ratites)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Using the information in the extract, explain why the ostrich and emu are considered different species"
+    },
+    {
+     "label": "3.3.1(c)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name TWO other reproductive isolation mechanisms that would have prevented the rhea and ostrich"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "map",
+     "figure_ref": "map of present-day distribution of ratites for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the evidence for evolution represented in the diagram"
+    },
+    {
+     "label": "3.3.3",
+     "marks": 5,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "map for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe how the evidence identified in QUESTION 3.3.2 supports the theory of evolution"
+    },
+    {
+     "label": "3.4.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.4 (fruit fly starvation resistance)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State the independent variable for this investigation"
+    },
+    {
+     "label": "3.4.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe how the dependent variable was measured"
+    },
+    {
+     "label": "3.4.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State ONE controlled variable that was considered when selecting the fruit flies"
+    },
+    {
+     "label": "3.4.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why the investigator gave the fruit flies the same type of food throughout"
+    },
+    {
+     "label": "3.4.5",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graphs for 3.4 (generation 1 vs generation 60)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the results obtained in this investigation"
+    },
+    {
+     "label": "3.4.6",
+     "marks": 6,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "graphs + investigation for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Using Darwin's theory of natural selection, explain the increase in starvation resistance"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "3.1",
+     "marks": 12
+    },
+    {
+     "label": "3.2",
+     "marks": 13
+    },
+    {
+     "label": "3.3",
+     "marks": 12
+    },
+    {
+     "label": "3.4",
+     "marks": 13
+    }
+   ],
+   "notes": "Question 3 has only four sub-questions (3.1-3.4). Hidden text 'Chart Title'/'Chagert Title' in the 3.4 graph objects is not visible on the page. Section B total 100; grand total 150."
+  }
+ ]
+}

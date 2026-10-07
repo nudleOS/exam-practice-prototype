@@ -1,0 +1,925 @@
+{
+ "file": "Life Sciences P1 Nov 2024 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL",
+   "questions": [
+    2,
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The hormone responsible for the regulation of salt content in the human body"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following is a stage in human embryonic development?"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "When the carbon dioxide level in the blood increases above normal, the"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following changes occurs under the influence of adrenalin?"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "scenario_text",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A girl is barefoot and steps onto a thorn, causing a reflex action"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagram of part of the eye (X, Y, Z) + table of options",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The diagram below represents a part of the human eye. A spectator"
+    },
+    {
+     "label": "1.1.7",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following is involved in thermoregulation?"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The following is a list of factors regarding a developing foetus"
+    },
+    {
+     "label": "1.1.9",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagram of part of the ear (A, B, C)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The diagram below shows a part of the human ear. Which ONE occurs"
+    },
+    {
+     "label": "1.1.10",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "diagrams of impulse transmission inner ear to brain (E-J)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The diagrams below represent the transmission of impulses from a structure in the inner ear"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The structure that connects the foetus to the placenta"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The part of the nervous system that consists of sympathetic and parasympathetic"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Receptors in the ear that detect changes in speed and direction of movement"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The ossicle that transfers vibrations to the oval window"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The growth reaction of a plant in response to gravity"
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The part in the inner ear where the organ of Corti is located"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A plant hormone that stimulates the germination of seeds"
+    },
+    {
+     "label": "1.2.8",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A structure in the head of a sperm cell that contains enzymes"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Acts as a micro-filter for the developing foetus (A: Placenta, B: Cervix)"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The part of the brain that controls heart rate (A: Corpus callosum"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The area on the retina where there are no rods or cones"
+    },
+    {
+     "label": "1.4.1(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4 (male reproductive system, A-E)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and NAME of the structure that forms part of both urinary and reproductive"
+    },
+    {
+     "label": "1.4.1(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and NAME of the structure that stores sperm temporarily"
+    },
+    {
+     "label": "1.4.1(c)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER and NAME of the structure that secretes testosterone"
+    },
+    {
+     "label": "1.4.2(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part A"
+    },
+    {
+     "label": "1.4.2(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the type of gametogenesis that takes place in part E"
+    },
+    {
+     "label": "1.5.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5 (homeostasis structures A-F)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Write the LETTERS of the parts that serve as endocrine glands only"
+    },
+    {
+     "label": "1.5.2",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give the LETTERS and NAMES of the parts responsible for the regulation of body temperature"
+    },
+    {
+     "label": "1.5.3(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the hormone secreted by part A (regulation of water content)"
+    },
+    {
+     "label": "1.5.3(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name target organ E (regulation of water content)"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 20
+    },
+    {
+     "label": "1.2",
+     "marks": 8
+    },
+    {
+     "label": "1.3",
+     "marks": 6
+    },
+    {
+     "label": "1.4",
+     "marks": 8
+    },
+    {
+     "label": "1.5",
+     "marks": 8
+    }
+   ],
+   "notes": "No [50] printed after Question 1; only 'TOTAL SECTION A: 50'. 1.1 printed as (10 x 2) (20); 1.2 as (8 x 1) (8); 1.3 as (3 x 2) (6). 1.3 is A only/B only/both/none."
+  },
+  {
+   "q": 2,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "2.1.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1 (female reproductive system A, B, C)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part A"
+    },
+    {
+     "label": "2.1.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part B"
+    },
+    {
+     "label": "2.1.2(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO characteristics of the endometrium that make it suitable for implantation"
+    },
+    {
+     "label": "2.1.2(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO visible reasons why there is an increased chance of fertilisation"
+    },
+    {
+     "label": "2.1.3",
+     "marks": 6,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Identify and describe the type of gametogenesis that leads to the formation of structure C"
+    },
+    {
+     "label": "2.1.4",
+     "marks": 3,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "In an ectopic pregnancy, the fertilised ovum can become implanted in part A"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "table for 2.2 (oestrogen/progesterone by day)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "On which day of this menstrual cycle is the level of progesterone the highest?"
+    },
+    {
+     "label": "2.2.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "table",
+     "figure_ref": "table for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the reproductive hormone that will begin to increase from day 24"
+    },
+    {
+     "label": "2.2.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "table for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Use data from the table to explain your answer to QUESTION 2.2.2"
+    },
+    {
+     "label": "2.2.4",
+     "marks": 3,
+     "type": "calculation",
+     "figure": "table",
+     "figure_ref": "table for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Calculate the percentage increase in the oestrogen level from day 8 to day 10"
+    },
+    {
+     "label": "2.2.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "table for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How would the progesterone level differ after day 20 if this female was pregnant?"
+    },
+    {
+     "label": "2.2.6",
+     "marks": 2,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "table for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain what causes the change in the progesterone level stated in QUESTION 2.2.5"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 2.3 (cataracts)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the passage, which type of cataract is associated with a disorder of the pancreas?"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 5,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Use information in the passage to explain why cataracts cause vision loss"
+    },
+    {
+     "label": "2.4.1",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "A man is long-sighted. Explain how the structure of his eyeball affects his vision"
+    },
+    {
+     "label": "2.4.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how wearing glasses with convex lenses will improve his vision"
+    },
+    {
+     "label": "2.5.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 2.5 (myelinated / unmyelinated neuron A, B, C)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the type of neuron shown in the diagrams"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give ONE visible reason for your answer to QUESTION 2.5.1"
+    },
+    {
+     "label": "2.5.3",
+     "marks": 3,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the function of the type of neuron identified in QUESTION 2.5.1"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Use the letters A, B and C to indicate the direction in which an impulse moves"
+    },
+    {
+     "label": "2.5.5",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the disorder associated with degeneration of the myelin sheaths of neurons"
+    },
+    {
+     "label": "2.6.1(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graphs for 2.6 (impulse speed vs axon diameter)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the axon diameter (in um) at which an impulse moves at 20 m/s in a myelinated neuron"
+    },
+    {
+     "label": "2.6.1(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graphs for 2.6",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the axon diameter at which an impulse moves at 20 m/s in an unmyelinated neuron"
+    },
+    {
+     "label": "2.6.2(a)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "graphs for 2.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Use the graphs to describe the difference in impulse speed for myelinated and unmyelinated"
+    },
+    {
+     "label": "2.6.2(b)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "graphs for 2.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Use the graphs to describe the relationship between axon diameter and impulse speed"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 15
+    },
+    {
+     "label": "2.2",
+     "marks": 10
+    },
+    {
+     "label": "2.3",
+     "marks": 6
+    },
+    {
+     "label": "2.4",
+     "marks": 5
+    },
+    {
+     "label": "2.5",
+     "marks": 8
+    },
+    {
+     "label": "2.6",
+     "marks": 6
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "q": 3,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "3.1.1(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.1 (vulture breeding)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give ONE reason from the passage why vultures are considered as oviparous"
+    },
+    {
+     "label": "3.1.1(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give ONE reason why vultures have a high survival rate even though few eggs are laid"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Fertilisation in vultures takes place internally. State TWO advantages of internal fertilisation"
+    },
+    {
+     "label": "3.1.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State TWO characteristics of chicks that display altricial development"
+    },
+    {
+     "label": "3.1.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why birds with altricial development would have short incubation periods"
+    },
+    {
+     "label": "3.2.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams A and B for 3.2 (pupillary mechanism)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part X"
+    },
+    {
+     "label": "3.2.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify part Y"
+    },
+    {
+     "label": "3.2.2",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why the pupillary mechanism is considered to be a reflex action"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the TWO effector muscles that are involved in the pupillary mechanism"
+    },
+    {
+     "label": "3.2.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagrams for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain the significance of the change in the diameter of part X from diagram A to B"
+    },
+    {
+     "label": "3.3.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.3 (insulin, groups X/Y) + table",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State the purpose of the control group in this investigation"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe TWO ways in which insulin decreases blood glucose levels"
+    },
+    {
+     "label": "3.3.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "table for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which group (X or Y) consists of healthy individuals?"
+    },
+    {
+     "label": "3.3.4",
+     "marks": 3,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "table for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Use data in the table to explain your answer to QUESTION 3.3.3"
+    },
+    {
+     "label": "3.4.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "flow diagram for 3.4 (thyroxin control)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the type of interaction represented by the diagram"
+    },
+    {
+     "label": "3.4.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "flow diagram for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify gland Y"
+    },
+    {
+     "label": "3.4.1(c)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "flow diagram for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the disorder that is characterised by the enlargement of gland Y"
+    },
+    {
+     "label": "3.4.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State ONE function of thyroxin"
+    },
+    {
+     "label": "3.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "flow diagram for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe the role of the pituitary gland in correcting the level of thyroxin at X"
+    },
+    {
+     "label": "3.4.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why a continuous undersecretion of thyroxin may lead to an increase in body mass"
+    },
+    {
+     "label": "3.5.1(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation + diagram for 3.5 (auxins, groups A-C)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "For this investigation give the independent variable"
+    },
+    {
+     "label": "3.5.1(b)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO variables that were controlled"
+    },
+    {
+     "label": "3.5.2(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the expected results of the plants in Group A"
+    },
+    {
+     "label": "3.5.2(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the expected results of the plants in Group C"
+    },
+    {
+     "label": "3.5.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How was the reliability of this investigation ensured?"
+    },
+    {
+     "label": "3.5.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagram for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "After 72 hours, the stems of the plants in group B bent towards the right-hand side"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "3.1",
+     "marks": 8
+    },
+    {
+     "label": "3.2",
+     "marks": 11
+    },
+    {
+     "label": "3.3",
+     "marks": 10
+    },
+    {
+     "label": "3.4",
+     "marks": 10
+    },
+    {
+     "label": "3.5",
+     "marks": 11
+    }
+   ],
+   "notes": "Section B total printed 100; grand total 150."
+  }
+ ]
+}

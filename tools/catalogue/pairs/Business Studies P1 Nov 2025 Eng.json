@@ -1,0 +1,574 @@
+{
+ "file": "Business Studies P1 Nov 2025 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL (COMPULSORY)",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer any TWO (only the first TWO answered are marked)",
+   "questions": [
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "name": "SECTION C",
+   "rule": "Answer any ONE (only the first answered is marked)",
+   "questions": [
+    5,
+    6
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "This Act requires businesses to display information of their products on packaging"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Smith Stores uses outdated computers which prevent access to online transactions."
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Highway Manufacturing operate in the ... sector as they produce office chairs"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The role of the interviewer during an interview is to ..."
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Top Limited implemented the ... step of the PDCA model by monitoring processes"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The ... Development Strategy aims to increase access to programmes"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Eezy Electronics are losing customers due to the high crime rate"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The component of the job analysis that outlines the duties and responsibilities"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Themba, the human resources manager, conducts background checks of applicants"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Blue Manufacturer developed new methods and techniques to improve the quality"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Black Economic Empowerment"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Horizontal integration"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Employment contract"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Purchasing function"
+    },
+    {
+     "label": "1.3.5",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Total quality management"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 10
+    },
+    {
+     "label": "1.2",
+     "marks": 10
+    },
+    {
+     "label": "1.3",
+     "marks": 10
+    }
+   ],
+   "notes": "No [30] printed after Question 1; only 'TOTAL SECTION A: 30'. Each subquestion (5 x 2) (10). 1.2 word list: selection; job specification; National Skills; management; threat; placement; weakness; performance; job description; Human Resources. 1.3 Column B A-J. Text layer scrambles label/mark order; pairing verified on page images."
+  },
+  {
+   "q": 2,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "2.1",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name any FOUR types of leave provisions as stipulated in the BCEA"
+    },
+    {
+     "label": "2.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Outline the role of SETAs in supporting the Skills Development Act (SDA)"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario BONA FRAMES (BF) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Identify the force of Porter's Five Forces model that is applicable to BF. Motivate"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 3,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe how businesses could apply ONE other force of Porter's Five Forces model"
+    },
+    {
+     "label": "2.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the steps in strategy evaluation."
+    },
+    {
+     "label": "2.5",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss any TWO types of intensive strategies."
+    },
+    {
+     "label": "2.6.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MEYER FURNITURE (MF) for 2.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO ways in which MF complies with the National Credit Act"
+    },
+    {
+     "label": "2.6.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Recommend other ways in which businesses can comply with the National Credit Act."
+    },
+    {
+     "label": "2.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain ways in which businesses can apply ownership as a pillar of the BBBEE Act"
+    },
+    {
+     "label": "2.8",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the advantages of diversification strategies."
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 2: BUSINESS ENVIRONMENTS. Label/mark pairing verified on page 6 image."
+  },
+  {
+   "q": 3,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "3.1",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give any FOUR examples of fringe benefits."
+    },
+    {
+     "label": "3.2",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Outline the placement procedure as a human resources activity."
+    },
+    {
+     "label": "3.3.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario FABRIC WHOLESALERS (FW) for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name the salary determination method applied by FW in the scenario above."
+    },
+    {
+     "label": "3.3.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the implications of the Labour Relations Act on the human resources function."
+    },
+    {
+     "label": "3.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the reasons for the termination of an employment contract."
+    },
+    {
+     "label": "3.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Outline the difference between quality control and quality assurance."
+    },
+    {
+     "label": "3.6.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario BILON MANUFACTURERS (BM) for 3.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO ways from the scenario above in which BM apply TQM"
+    },
+    {
+     "label": "3.6.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Discuss the impact of total quality management (TQM) if poorly implemented"
+    },
+    {
+     "label": "3.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe the advantages of monitoring and evaluation of quality processes as a TQM element"
+    },
+    {
+     "label": "3.8",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the quality indicators of the public relations function."
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 3: BUSINESS OPERATIONS. Pairing verified on page 7 image."
+  },
+  {
+   "q": 4,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "4.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name any TWO types of defensive strategies."
+    },
+    {
+     "label": "4.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Outline the strategic management process."
+    },
+    {
+     "label": "4.3.1",
+     "marks": 2,
+     "type": "table_complete",
+     "figure": "scenario_text",
+     "figure_ref": "scenario GLOBAL FARMS (GF) + guide table (challenges / business environments) for 4.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO challenges for GF from the scenario above."
+    },
+    {
+     "label": "4.3.2",
+     "marks": 2,
+     "type": "table_complete",
+     "figure": "scenario_text",
+     "figure_ref": "scenario GLOBAL FARMS (GF) + guide table (challenges / business environments) for 4.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Classify GF's challenges according to the business environments."
+    },
+    {
+     "label": "4.4",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the impact of the Compensation for Occupational Injuries and Diseases Amendment Act"
+    },
+    {
+     "label": "4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Recommend ways in which businesses can deal with the challenges posed by the social factor"
+    },
+    {
+     "label": "4.6",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Outline the purpose of induction."
+    },
+    {
+     "label": "4.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain the Unemployment Insurance Fund (UIF) as a benefit required by law."
+    },
+    {
+     "label": "4.8.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario FIBERNET LIMITED (FL) for 4.8",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name the total quality management (TQM) element applied by FL"
+    },
+    {
+     "label": "4.8.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the benefits of a good quality management system."
+    },
+    {
+     "label": "4.9",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the role of quality circles as part of continuous improvement"
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 4: MISCELLANEOUS TOPICS (4.1-4.5 Business Environments; 4.6-4.9 Business Operations). 4.3.1 and 4.3.2 share one guide table. Pairing verified on page 8 image. TOTAL SECTION B: 80."
+  },
+  {
+   "q": 5,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "5",
+     "marks": 40,
+     "type": "essay",
+     "figure": "scenario_text",
+     "figure_ref": "introductory paragraph for QUESTION 5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Write an essay on the Employment Equity Act in which you include"
+    }
+   ],
+   "subtotals": [],
+   "notes": "Essay, BUSINESS ENVIRONMENTS (LEGISLATION): Employment Equity Act - purpose; impact on businesses; ways to comply; penalties for non-compliance. No per-bullet marks printed."
+  },
+  {
+   "q": 6,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "6",
+     "marks": 40,
+     "type": "essay",
+     "figure": "scenario_text",
+     "figure_ref": "introductory paragraph for QUESTION 6",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Write an essay on the human resources function in which you include"
+    }
+   ],
+   "subtotals": [],
+   "notes": "Essay, BUSINESS OPERATIONS (HUMAN RESOURCES FUNCTION): recruitment procedure; impact of internal recruitment; role of the interviewer before the interview; legal requirements of an employment contract. No per-bullet marks printed. TOTAL SECTION C: 40; GRAND TOTAL: 150."
+  }
+ ]
+}

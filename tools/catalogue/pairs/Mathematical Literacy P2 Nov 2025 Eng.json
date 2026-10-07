@@ -1,0 +1,105 @@
+{
+  "file": "Mathematical Literacy P2 Nov 2025 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [ {"name": "ALL", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 28,
+      "items": [
+        {"label": "1.1.1", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1: Statements and definitions of concepts", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Elevation plan"},
+        {"label": "1.1.2", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Number scale"},
+        {"label": "1.1.3", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Volume"},
+        {"label": "1.1.4", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Distance"},
+        {"label": "1.1.5", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Perimeter"},
+        {"label": "1.2.1", "marks": 2, "type": "short_answer", "figure": "scenario_text", "figure_ref": "SAA flight information (1.2)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "State, in words, the arrival time of the flight using the 12-hour format."},
+        {"label": "1.2.2", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "SAA flight information (1.2)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Only 33 1/3 % of the maximum number of passengers were on board this flight."},
+        {"label": "1.2.3", "marks": 2, "type": "mcq", "figure": "scenario_text", "figure_ref": "SAA flight information (1.2)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down which ONE of the methods below is the CORRECT method to calculate the speed"},
+        {"label": "1.2.4", "marks": 2, "type": "short_answer", "figure": "scenario_text", "figure_ref": "SAA flight information (Wednesday 8 January 2025)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "State which day of the week was 26 December 2024."},
+        {"label": "1.3.1(a)", "marks": 1, "type": "match", "figure": "diagram", "figure_ref": "pictures P-U: steps to wrap the geyser in aerolite", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Cut out circles of the aerolite to be placed on both ends of the geyser."},
+        {"label": "1.3.1(b)", "marks": 1, "type": "match", "figure": "diagram", "figure_ref": "pictures P-U", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Apply glue to the circular pieces of the aerolite."},
+        {"label": "1.3.1(c)", "marks": 1, "type": "match", "figure": "diagram", "figure_ref": "pictures P-U", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "The strips of aerolite are wrapped around the pipes."},
+        {"label": "1.3.1(d)", "marks": 1, "type": "match", "figure": "diagram", "figure_ref": "pictures P-U", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Roll the aerolite around the lateral surface of the geyser."},
+        {"label": "1.3.1(e)", "marks": 1, "type": "match", "figure": "diagram", "figure_ref": "pictures P-U", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Use duct tape to secure the aerolite around the lateral surface."},
+        {"label": "1.3.1(f)", "marks": 1, "type": "match", "figure": "diagram", "figure_ref": "pictures P-U", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Attach the circular pieces of the aerolite to the geyser."},
+        {"label": "1.3.2", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Choose ONE of the following formulae that can be used to calculate how much aerolite is needed"},
+        {"label": "1.3.3", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "The length of the geyser is 1,2 m. Convert this measurement to mm."}
+      ],
+      "subtotals": [ {"label": "1.3.1", "marks": 6} ],
+      "notes": "Paper-level: scanned, read visually; 15 pages + SPECIAL ANSWER BOOK of 17 pages ('Answer ALL the questions ONLY in the SPECIAL ANSWER BOOK'); the answer book (present in folder) holds ANNEXURE A (tour bus route map, 2.2), B (floor plans, 2.3), C (flamingo GPS map, Q4) and D (bookcase diagrams, 5.1). Five questions; 28+34+32+30+26 = 150; 'TOTAL: 150' printed. Q1: 1.3.1(a)-(f) carry one group mark '(6)', split 1 each. 1.1 = 10, 1.2 = 8, 1.3 = 10; sum 28 matches [28]."
+    },
+    {
+      "q": 2,
+      "printed_total": 34,
+      "items": [
+        {"label": "2.1.1", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "seating plan of the tour bus (upper and lower deck)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the number of forward-facing passenger seats on this bus."},
+        {"label": "2.1.2", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "seating plan of the tour bus", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "The seats are numbered according to the following numbering system ... Write down the seat number which has the easiest access to the toilet."},
+        {"label": "2.1.3(a)", "marks": 1, "type": "fill_blank", "figure": "diagram", "figure_ref": "seating plan of the tour bus; word list aisle/second/left/right/first", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Move forward towards the front set of stairs on your (a) ..."},
+        {"label": "2.1.3(b)", "marks": 1, "type": "fill_blank", "figure": "diagram", "figure_ref": "seating plan of the tour bus", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Once on the upper deck, turn (b) ..."},
+        {"label": "2.1.3(c)", "marks": 1, "type": "fill_blank", "figure": "diagram", "figure_ref": "seating plan of the tour bus", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "and you will find your seat on the (c) ..."},
+        {"label": "2.1.3(d)", "marks": 1, "type": "fill_blank", "figure": "diagram", "figure_ref": "seating plan of the tour bus", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "in the (d) ... row from the stairs."},
+        {"label": "2.2.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A in the special answer book (tour bus route map, 18 stops)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the name of the southern-most stop on this route."},
+        {"label": "2.2.2", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the type of scale used on this map."},
+        {"label": "2.2.3", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "State whether the bus will be driving in a clockwise or an anticlockwise direction from stop 11 to stop 18."},
+        {"label": "2.2.4", "marks": 5, "type": "map_measure", "figure": "annexure", "figure_ref": "ANNEXURE A (bar scale)", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The distance of a round trip is 19,2 km. Use the given scale on the map to determine the map distance."},
+        {"label": "2.3.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE B in the special answer book (floor plans of Flat 1 and Flat 2)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "State whether the bathroom door opens to the (left/right) as you enter the bathroom."},
+        {"label": "2.3.2", "marks": 5, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Convert the longer dimension of the living room to centimetres."},
+        {"label": "2.3.3", "marks": 4, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Write down TWO differences between Flat 1 and Flat 2."},
+        {"label": "2.3.4", "marks": 2, "type": "explain", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Give ONE possible reason why Flat 1 does not have a balcony."},
+        {"label": "2.3.5", "marks": 2, "type": "explain", "figure": "annexure", "figure_ref": "ANNEXURE B", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Explain why there are no windows in the north- and south-facing walls of both plans."}
+      ],
+      "subtotals": [ {"label": "2.1.3", "marks": 4} ],
+      "notes": "2.1.3(a)-(d) carry one group mark '(4)', split 1 each. 2.1 = 8, 2.2 = 11, 2.3 = 15; sum 34 matches [34]."
+    },
+    {
+      "q": 3,
+      "printed_total": 32,
+      "items": [
+        {"label": "3.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Mrs Xulu took 3 hours and 27 minutes without any break to cut out the circles."},
+        {"label": "3.1.2", "marks": 3, "type": "calculation", "figure": "photo", "figure_ref": "picture of tree decoration", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "In Part A, there are seven rows of circles."},
+        {"label": "3.1.3", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "measurements of cardboard template (240 mm, base 28 cm)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate, in cm2, the area of Part A."},
+        {"label": "3.1.4", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "cardboard template Parts A, B, C", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The area of Part B is 30 240 mm2. The area of Part C is 1,6 times the area of Part B."},
+        {"label": "3.1.5", "marks": 4, "type": "calculation", "figure": "table", "figure_ref": "TABLE 2: Number of circles per colour", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Mrs Xulu placed all the coloured circles in a container as she cut them out."},
+        {"label": "3.2.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "diagram of the circles of one earring", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Determine, in mm, the radius of the small circle if it is 4/7 of the radius of the large circle."},
+        {"label": "3.2.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "diagram of the circles of one earring", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate, rounded to the nearest mm, the circumference of the large circle."},
+        {"label": "3.2.3", "marks": 9, "type": "calculation", "figure": "photo", "figure_ref": "picture of a pair of earrings + circle diagram", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Amanda decides to make 48 pairs of earrings using flower-patterned synthetic leather"}
+      ],
+      "subtotals": [],
+      "notes": "3.1 = 18, 3.2 = 14; sum 32 matches [32]."
+    },
+    {
+      "q": 4,
+      "printed_total": 30,
+      "items": [
+        {"label": "4.1.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C in the special answer book (flamingo GPS tracking map)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the closest town directly west of Colesberg."},
+        {"label": "4.1.2(a)", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "National roads are indicated with a number enclosed in a pentagon ... how many different national roads"},
+        {"label": "4.1.2(b)", "marks": 3, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the towns found on the N12."},
+        {"label": "4.1.3", "marks": 2, "type": "explain", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Hanover is a town in the Northern Cape ... Describe how the provincial borders are indicated on this map."},
+        {"label": "4.2.1", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "flamingo tracking dates (4.2)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the number of months the bird spent in area A."},
+        {"label": "4.2.2", "marks": 3, "type": "calculation", "figure": "scenario_text", "figure_ref": "flamingo tracking dates (4.2)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the bird's date and time of arrival at area E."},
+        {"label": "4.2.3", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the probability that the bird flew directly over Queenstown."},
+        {"label": "4.2.4", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": "flamingo tracking dates (4.2)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "The flight from area B to area E is 770 km. Calculate (in km/h) the average speed"},
+        {"label": "4.2.5", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The direct distance between area B and area E is 311,72 miles."},
+        {"label": "4.2.6", "marks": 5, "type": "calculation", "figure": "scenario_text", "figure_ref": "population facts (4.2.6)", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The biggest flamingo is 59 inches tall, which is approximately 5 feet."}
+      ],
+      "subtotals": [],
+      "notes": "4.1 = 9, 4.2 = 21; sum 30 matches [30]."
+    },
+    {
+      "q": 5,
+      "printed_total": 26,
+      "items": [
+        {"label": "5.1.1(a)", "marks": 2, "type": "match", "figure": "annexure", "figure_ref": "ANNEXURE D in the special answer book (DIAGRAM 1 and DIAGRAM 2, bookcase)", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Shelf"},
+        {"label": "5.1.1(b)", "marks": 2, "type": "match", "figure": "annexure", "figure_ref": "ANNEXURE D", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Back of bookcase"},
+        {"label": "5.1.2", "marks": 2, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE D", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the probability of randomly placing a book on a shelf with a height greater than 30 cm."},
+        {"label": "5.1.3(a)", "marks": 2, "type": "explain", "figure": "annexure", "figure_ref": "ANNEXURE D", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Explain why the dimensions of the hardboard is 60 cm by 90 cm."},
+        {"label": "5.1.3(b)", "marks": 6, "type": "drawing", "figure": "annexure", "figure_ref": "ANNEXURE D", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Draw a scaled diagram of the hardboard according to scale 1 : 20."},
+        {"label": "5.2", "marks": 6, "type": "calculation", "figure": "diagram", "figure_ref": "rectangular piece of wood 430 cm x 42 cm + ANNEXURE D", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The wooden pieces for two identical bookcases are cut from ONE complete rectangular piece of wood"},
+        {"label": "5.3", "marks": 6, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "The density of the wood is 0,75 g/cm3."}
+      ],
+      "subtotals": [],
+      "notes": "5.1 = 14, 5.2 = 6, 5.3 = 6; sum 26 matches [26]. 5.2 and 5.3 are unsubdivided leaves."
+    }
+  ]
+}

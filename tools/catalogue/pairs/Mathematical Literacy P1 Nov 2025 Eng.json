@@ -1,0 +1,99 @@
+{
+  "file": "Mathematical Literacy P1 Nov 2025 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [ {"name": "ALL", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 30,
+      "items": [
+        {"label": "1.1.1", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 1: Prices of some food items in three SA cities", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the city where the cost of white sugar is the highest."},
+        {"label": "1.1.2", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the cost of carrots, per kilogram, in Johannesburg."},
+        {"label": "1.1.3", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine, as a unit ratio rounded to THREE decimal places, the price of eggs in Cape Town"},
+        {"label": "1.1.4", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the total price of ALL the food items in Johannesburg."},
+        {"label": "1.2.1", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2: Definitions of terminology used in Mathematical Literacy", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Compound interest"},
+        {"label": "1.2.2", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Hire-purchase"},
+        {"label": "1.2.3", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Debit order"},
+        {"label": "1.2.4", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 2", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Organising data"},
+        {"label": "1.3.1", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 3: Population data for SA by population group and gender 2022", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the population group with the lowest number of females."},
+        {"label": "1.3.2", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "State whether the total number of people in the table above represents discrete data or continuous data."},
+        {"label": "1.3.3", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the type of instrument used to collect the data above."},
+        {"label": "1.3.4", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Identify the total number of the South African population for 2022."},
+        {"label": "1.3.5", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "The total number of black South Africans is forty-nine million seventy thousand eight hundred and nine."},
+        {"label": "1.3.6", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Express the number of white males as a percentage of the total number of males."}
+      ],
+      "subtotals": [],
+      "notes": "Paper-level: scanned, read visually; 13 pages + SPECIAL ANSWER BOOK of 17 pages ('Answer ALL the questions ONLY in the SPECIAL ANSWER BOOK'). The special answer book is MISSING from the folder; it also holds ANNEXURE A (PAYE table, Q2.1), ANSWER SHEET 3.2 (LTE graph, Q3.2) and ANNEXURE B (petrol price graph, Q5.2). Five questions; 30+32+30+28+30 = 150; 'TOTAL: 150' printed. Q1: 1.1 = 9, 1.2 = 8, 1.3 = 13; sum 30 matches [30]."
+    },
+    {
+      "q": 2,
+      "printed_total": 32,
+      "items": [
+        {"label": "2.1.1", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write the acronym UIF in words."},
+        {"label": "2.1.2", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the institution that collects tax on behalf of the government of South Africa."},
+        {"label": "2.1.3", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "salary slip extract (2.1)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the employer contribution towards the medical aid if the employer contributes one third"},
+        {"label": "2.1.4(a)", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A in the special answer book (monthly PAYE deduction table) - insert missing", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the missing value A from the monthly PAYE deduction table in ANNEXURE A."},
+        {"label": "2.1.4(b)", "marks": 2, "type": "calculation", "figure": "scenario_text", "figure_ref": "salary slip extract (2.1)", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the missing value B."},
+        {"label": "2.1.4(c)", "marks": 8, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE A (annual tax rates 2024/2025) - insert missing", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Muriel stated that she overpaid tax in the 2024/2025 tax year."},
+        {"label": "2.2.1", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 4: Information on the Metrobus service", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the percentage savings a pensioner receives per bus trip when compared to the amount paid by an adult"},
+        {"label": "2.2.2", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "TABLE 4", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Determine the amount Muriel will save per trip if she buys the monthly package"},
+        {"label": "2.2.3", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 4", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the probability of a 10-year old child purchasing a weekly package with 12 trips."},
+        {"label": "2.2.4", "marks": 4, "type": "calculation", "figure": "table", "figure_ref": "TABLE 4", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Johannesburg Metrobus introduced a compulsory card payment system."}
+      ],
+      "subtotals": [],
+      "notes": "2.1 = 18, 2.2 = 14; sum 32 matches [32]."
+    },
+    {
+      "q": 3,
+      "printed_total": 30,
+      "items": [
+        {"label": "3.1.1", "marks": 4, "type": "calculation", "figure": "table", "figure_ref": "TABLE 5: Use of social media platforms categorised by gender", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the median percentage for male social media users."},
+        {"label": "3.1.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 5", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine, as a decimal, the probability of randomly selecting a social media platform where the female users were fewer"},
+        {"label": "3.1.3(a)", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 5", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the total number of Snapchat users."},
+        {"label": "3.1.3(b)", "marks": 4, "type": "calculation", "figure": "table", "figure_ref": "TABLE 5", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Fezeka stated that the difference between the number of female and male Snapchat users was 61 300 000."},
+        {"label": "3.2.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANSWER SHEET 3.2 in the special answer book (LTE devices graph) - insert missing", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Name the type of graph drawn on ANSWER SHEET 3.2."},
+        {"label": "3.2.2(a)", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANSWER SHEET 3.2 - insert missing", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the names of TWO provinces that had the same number of LTE devices during 2021."},
+        {"label": "3.2.2(b)", "marks": 3, "type": "short_answer", "figure": "annexure", "figure_ref": "ANSWER SHEET 3.2 - insert missing", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine the number of LTE devices in Limpopo during 2022."},
+        {"label": "3.2.2(c)", "marks": 4, "type": "calculation", "figure": "annexure", "figure_ref": "ANSWER SHEET 3.2 - insert missing", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the range of LTE devices in the provinces during 2021."},
+        {"label": "3.2.3", "marks": 4, "type": "graph_plot", "figure": "annexure", "figure_ref": "ANSWER SHEET 3.2 - insert missing; data table for KZN and Mpumalanga 2023", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Use the data above to complete the graph on ANSWER SHEET 3.2."},
+        {"label": "3.2.4", "marks": 2, "type": "calculation", "figure": "annexure", "figure_ref": "ANSWER SHEET 3.2 - insert missing", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine, as a fraction, the probability of randomly selecting a province that has a total number of LTE devices less than 8 million"}
+      ],
+      "subtotals": [],
+      "notes": "3.1 = 13, 3.2 = 17; sum 30 matches [30]. All of 3.2 depends on ANSWER SHEET 3.2 inside the missing special answer book."
+    },
+    {
+      "q": 4,
+      "printed_total": 28,
+      "items": [
+        {"label": "4.1.1", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 6: Rental costs of trailers, with the deposit included", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Write down a formula to calculate the rental cost, including the deposit, of a large trailer"},
+        {"label": "4.1.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 6", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the missing value B."},
+        {"label": "4.1.3(a)", "marks": 6, "type": "calculation", "figure": "scenario_text", "figure_ref": "trailer rental costs (4.1)", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Monwabisi stated that his total income, after refunding the deposit, amounted to R4 550."},
+        {"label": "4.1.3(b)", "marks": 4, "type": "calculation", "figure": "scenario_text", "figure_ref": "repair quotation (4.1.3(b))", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "The following quotation for the repair and replacement of the rear light was received"},
+        {"label": "4.2.1", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 7: VAT payments by economic sector vendors 2023/2024", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Determine, rounded to the nearest thousand, the missing value V."},
+        {"label": "4.2.2", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 7", "answer_on": "special_answer_book", "phone_fit": "easy", "prompt": "Write down the sector that has the third largest number of vendors."},
+        {"label": "4.2.3", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 7", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate (in R million) the mean VAT payment amount per economic sector."},
+        {"label": "4.2.4(a)", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "TABLE 7", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Arrange the number of vendors in ascending order."},
+        {"label": "4.2.4(b)", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 7", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "The value of quartile 3 (Q3) for the number of vendors is 86 610."}
+      ],
+      "subtotals": [],
+      "notes": "4.1 = 15, 4.2 = 13; sum 28 matches [28]."
+    },
+    {
+      "q": 5,
+      "printed_total": 30,
+      "items": [
+        {"label": "5.1.1", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 8: Information on the car purchase options", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate the total maintenance cover for the payment period for OPTION B."},
+        {"label": "5.1.2(a)", "marks": 2, "type": "explain", "figure": "table", "figure_ref": "TABLE 8", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Give ONE possible reason why Candice chose OPTION A."},
+        {"label": "5.1.2(b)", "marks": 7, "type": "calculation", "figure": "table", "figure_ref": "TABLE 8", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate the total amount, including VAT, that she would have paid at the end of the payment period."},
+        {"label": "5.1.3", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "TABLE 9: Currency conversion factors", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Calculate, in Swiss franc (CHF), the deposit and first-month instalment for OPTION A."},
+        {"label": "5.2.1", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 10: Monthly inflation rates Jul-Oct 2024", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "The average inflation rate over the four-month period during 2024 was 2,1%. Calculate the missing value C."},
+        {"label": "5.2.2", "marks": 5, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B in the special answer book (average petrol price graph) - insert missing", "answer_on": "special_answer_book", "phone_fit": "hard", "prompt": "Candice stated that the difference in the cost of a full tank of petrol from Jul. 2024 to Aug. 2024"},
+        {"label": "5.2.3", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B + TABLE 10 - insert missing", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Calculate, in pounds per litre, the cost of petrol during Jun. 2024, if the petrol price from Jun. 2024 to Jul. 2024 changed in line with inflation."},
+        {"label": "5.2.4", "marks": 3, "type": "explain", "figure": "table", "figure_ref": "TABLE 10", "answer_on": "special_answer_book", "phone_fit": "medium", "prompt": "Describe the trend in the inflation rate for the period Jul. 2024 to Oct. 2024."}
+      ],
+      "subtotals": [],
+      "notes": "5.1 = 16, 5.2 = 14; sum 30 matches [30]."
+    }
+  ]
+}

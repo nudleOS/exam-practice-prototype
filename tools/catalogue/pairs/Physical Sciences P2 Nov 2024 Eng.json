@@ -1,0 +1,152 @@
+{
+  "file": "Physical Sciences P2 Nov 2024 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "notes": "Cover: MARKS 150, 17 pages + 4 data sheets (pages 18-21: constants/formulae, periodic table, Tables 4A/4B standard reduction potentials; not questions). NINE questions, answer ALL in the ANSWER BOOK. End prints TOTAL: 150.",
+  "sections": [ {"name": "(no sections)", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5, 6, 7, 8, 9]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 20,
+      "items": [
+        {"label": "1.1", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Which ONE of the following compounds has hydrogen bonds between its molecules?"},
+        {"label": "1.2", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Which ONE of the following is a CORRECT GENERAL FORMULA for the"},
+        {"label": "1.3", "marks": 2, "type": "mcq", "figure": "scenario_text", "figure_ref": "reactions 1 and 2 for 1.3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Study the reactions below. Reaction 1: CH3CH2CHOHCH3 ... Compound P"},
+        {"label": "1.4", "marks": 2, "type": "mcq", "figure": "graph", "figure_ref": "potential energy diagram for 1.4", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The potential energy diagram below is for the following hypothetical chemical"},
+        {"label": "1.5", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Initially, an equal number of moles of hydrogen gas, H2(g), and"},
+        {"label": "1.6", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Consider the following reaction at equilibrium: 2SO2(g) + O2(g)"},
+        {"label": "1.7", "marks": 2, "type": "mcq", "figure": "table", "figure_ref": "Ka table for 1.7", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The table below shows the ionisation constants, Ka, for two acids"},
+        {"label": "1.8", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Which ONE of the following pairs of acids and bases, all of"},
+        {"label": "1.9", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "Cd/Ag galvanic cell for 1.9", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A standard galvanic cell is set up, as shown below."},
+        {"label": "1.10", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "nickel electroplating cell for 1.10", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "An electrolytic cell is set up to electroplate an iron rod with"}
+      ],
+      "subtotals": [],
+      "notes": "Multiple choice, (2) each; [20]."
+    },
+    {
+      "q": 2,
+      "printed_total": 18,
+      "items": [
+        {"label": "2.1.1", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "table of compounds A-H, Q2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the LETTER that represents EACH of the following: An alcohol"},
+        {"label": "2.1.2", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "table of compounds A-H, Q2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A compound with a formyl group"},
+        {"label": "2.1.3", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "table of compounds A-H, Q2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "An unsaturated compound"},
+        {"label": "2.2.1", "marks": 3, "type": "short_answer", "figure": "table", "figure_ref": "table of compounds A-H, Q2 (B is a structural formula)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write down the IUPAC name of compound: B"},
+        {"label": "2.2.2", "marks": 3, "type": "short_answer", "figure": "table", "figure_ref": "table of compounds A-H, Q2", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "E"},
+        {"label": "2.3.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term functional isomer."},
+        {"label": "2.3.2", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "table of compounds A-H, Q2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the LETTERS that represent these functional isomers."},
+        {"label": "2.4.1", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "NAME or FORMULA of the catalyst"},
+        {"label": "2.4.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Type of reaction"},
+        {"label": "2.4.3", "marks": 2, "type": "drawing", "figure": "table", "figure_ref": "table of compounds A-H, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "STRUCTURAL FORMULA of compound F"},
+        {"label": "2.4.4", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "IUPAC name of compound X"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 3,
+      "printed_total": 11,
+      "items": [
+        {"label": "3.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term vapour pressure."},
+        {"label": "3.2.1", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "vapour pressure table A-E, Q3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the vapour pressure of compound C."},
+        {"label": "3.2.2", "marks": 3, "type": "explain", "figure": "table", "figure_ref": "vapour pressure table A-E, Q3", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Fully explain your answer to QUESTION 3.2.1."},
+        {"label": "3.3.1", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "vapour pressure table A-E, Q3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Which compound has the lower boiling point?"},
+        {"label": "3.3.2", "marks": 4, "type": "explain", "figure": "table", "figure_ref": "vapour pressure table A-E, Q3", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Fully explain the difference in the vapour pressures between compounds D and"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 4,
+      "printed_total": 22,
+      "items": [
+        {"label": "4.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term cracking reaction."},
+        {"label": "4.2", "marks": 2, "type": "explain", "figure": "diagram", "figure_ref": "flow diagram reactions I-V, Q4", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Is the product in reaction II a PRIMARY, SECONDARY or TERTIARY haloalkane?"},
+        {"label": "4.3.1", "marks": 3, "type": "drawing", "figure": "diagram", "figure_ref": "flow diagram reactions I-V, Q4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "STRUCTURAL FORMULA of compound W"},
+        {"label": "4.3.2", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "flow diagram reactions I-V, Q4", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "MOLECULAR formula of compound U"},
+        {"label": "4.4.1", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "flow diagram reactions I-V, Q4", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The NAME or FORMULA of the inorganic reactant"},
+        {"label": "4.4.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The type of reaction (Choose from SUBSTITUTION, ADDITION or ELIMINATION.)"},
+        {"label": "4.4.3", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "ONE reaction condition"},
+        {"label": "4.5", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "flow diagram redrawn on page 10, Q4", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the TYPE of elimination in reaction III."},
+        {"label": "4.6.1", "marks": 5, "type": "drawing", "figure": "diagram", "figure_ref": "flow diagram + reagent list, Q4.6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The balanced equation for reaction IV, using STRUCTURAL FORMULAE and the correct"},
+        {"label": "4.6.2", "marks": 3, "type": "drawing", "figure": "diagram", "figure_ref": "flow diagram + reagent list, Q4.6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The balanced equation for reaction V, using STRUCTURAL formulae and the"},
+        {"label": "4.6.3", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The IUPAC name of compound T"}
+      ],
+      "subtotals": [],
+      "notes": "Flow diagram printed on page 9 and redrawn on page 10."
+    },
+    {
+      "q": 5,
+      "printed_total": 17,
+      "items": [
+        {"label": "5.1.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term reaction rate."},
+        {"label": "5.1.2", "marks": 6, "type": "calculation", "figure": "graph", "figure_ref": "volume H2 vs time graph, Experiment I", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "For the time interval t = 0 to t = 5 minutes, the"},
+        {"label": "5.1.3", "marks": 4, "type": "explain", "figure": "graph", "figure_ref": "volume H2 vs time graph, Experiment I", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Use the collision theory to explain the change in the reaction rate"},
+        {"label": "5.1.4", "marks": 2, "type": "graph_plot", "figure": "graph", "figure_ref": "volume H2 vs time graph, Experiment I", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Redraw the above graph (NO numerical values need to be shown) in"},
+        {"label": "5.1.5", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "How will the volume of H2(g) produced in Experiment III compare to"},
+        {"label": "5.2.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "Maxwell-Boltzmann curves X and Y, Q5.2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "What change was made to obtain curve Y?"},
+        {"label": "5.2.2", "marks": 1, "type": "explain", "figure": "graph", "figure_ref": "Maxwell-Boltzmann curves X and Y, Q5.2", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give a reason for the answer to QUESTION 5.2.1."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 6,
+      "printed_total": 20,
+      "items": [
+        {"label": "6.1.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term chemical equilibrium."},
+        {"label": "6.1.2", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "concentration-time graph X, Y, Z, Q6.1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "At t1, oxygen, O2(g), was added to the container. Write down"},
+        {"label": "6.1.3", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "concentration-time graph X, Y, Z, Q6.1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "At t2, the pressure is adjusted by changing the volume of the"},
+        {"label": "6.1.4", "marks": 1, "type": "explain", "figure": "graph", "figure_ref": "concentration-time graph X, Y, Z, Q6.1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give a reason for the answer to QUESTION 6.1.3."},
+        {"label": "6.1.5", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "concentration-time graph X, Y, Z, Q6.1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the NAME or FORMULA of the gas that is represented"},
+        {"label": "6.1.6", "marks": 1, "type": "explain", "figure": "graph", "figure_ref": "concentration-time graph X, Y, Z, Q6.1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give a reason for the answer to QUESTION 6.1.5."},
+        {"label": "6.1.7", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "concentration-time graph X, Y, Z, Q6.1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "What change in temperature is made at t3? Choose between INCREASED"},
+        {"label": "6.1.8", "marks": 3, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Use Le Chatelier's principle to explain the answer to QUESTION 6.1.7."},
+        {"label": "6.2", "marks": 9, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Carbon monoxide gas, CO(g), reacts with water vapour, H2O(g), at T"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 7,
+      "printed_total": 17,
+      "items": [
+        {"label": "7.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term weak base."},
+        {"label": "7.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the formula of the conjugate acid of the carbonate ion"},
+        {"label": "7.3.1", "marks": 1, "type": "calculation", "figure": "table", "figure_ref": "titration results table, Q7", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Determine the value of: p"},
+        {"label": "7.3.2", "marks": 1, "type": "calculation", "figure": "table", "figure_ref": "titration results table, Q7", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "q"},
+        {"label": "7.4", "marks": 2, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "METHYL ORANGE is used as the indicator. Explain why methyl orange is"},
+        {"label": "7.5", "marks": 5, "type": "calculation", "figure": "table", "figure_ref": "titration results table, Q7", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the concentration of the K2CO3 solution."},
+        {"label": "7.6", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the value of x in the formula K2CO3.xH2O."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 8,
+      "printed_total": 12,
+      "items": [
+        {"label": "8.1.1", "marks": 2, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Use oxidation numbers for EACH of the reactants and explain why this"},
+        {"label": "8.1.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the FORMULA of the oxidising agent in this reaction."},
+        {"label": "8.1.3", "marks": 2, "type": "explain", "figure": "data_sheet", "figure_ref": "Table 4A/4B", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Explain this observation by referring to the relative strengths of the reducing"},
+        {"label": "8.1.4", "marks": 3, "type": "explain", "figure": "data_sheet", "figure_ref": "Table 4A/4B", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Will dilute nitric acid, HNO3(aq), react with copper, Cu(s), at 25"},
+        {"label": "8.2.1", "marks": 3, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write down the balanced net ionic equation for this cell."},
+        {"label": "8.2.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "How will this affect the initial emf of the cell? Choose from"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 9,
+      "printed_total": 13,
+      "items": [
+        {"label": "9.1", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "silver strip in Pb(NO3)2 beaker, Q9.1", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "A strip of silver is added to a 1 mol.dm-3 solution of"},
+        {"label": "9.2.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define an electrolyte."},
+        {"label": "9.2.2", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "electrolytic cell with concentrated NaCl, Q9.2", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write down the PREDOMINANT oxidation half-reaction that takes place in this cell."},
+        {"label": "9.2.3", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "electrolytic cell with concentrated NaCl, Q9.2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the NAMES or FORMULAE of the products formed at electrode"},
+        {"label": "9.2.4", "marks": 2, "type": "explain", "figure": "data_sheet", "figure_ref": "Table 4A/4B", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Explain the answer to QUESTION 9.2.3 by referring to the relative strengths"}
+      ],
+      "subtotals": [],
+      "notes": "Probable misprint in 9.1: the equation is printed '2Ag(s) + Pb2+(aq) -> 2Ag+(s) + Pb(s)' (Ag+ shown as (s), checked on the page image). Recorded as printed."
+    }
+  ]
+}

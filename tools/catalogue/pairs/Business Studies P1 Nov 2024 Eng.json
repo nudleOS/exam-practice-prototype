@@ -1,0 +1,554 @@
+{
+ "file": "Business Studies P1 Nov 2024 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL (COMPULSORY)",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer any TWO (only the first TWO answered are marked)",
+   "questions": [
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "name": "SECTION C",
+   "rule": "Answer any ONE (only the first answered is marked)",
+   "questions": [
+    5,
+    6
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "This Act prevents discrimination on the grounds of race, gender and disability"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Niemand Traders is experiencing a high employee turnover. This is classified"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Mabasa Enterprise has ... control over suppliers who increase the prices"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The role of the interviewee during an interview is to ..."
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Businesses utilise machinery and equipment optimally in the ... function."
+    },
+    {
+     "label": "1.2.1",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The ... has the right to embark on a legal strike"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Sizwe Bakery applied the ... integration strategy when they bought a wheat farm."
+    },
+    {
+     "label": "1.2.3",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Fazzel Hairdressing Salon operates in the ... sector as they specialise"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The employee's qualifications and skills are matched with the requirements of the job"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 2,
+     "type": "fill_blank",
+     "figure": "table",
+     "figure_ref": "word list for 1.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Monwa Plastics continuously revise their processes to improve the quality"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Learnership"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Compensation for Occupational Injuries and Diseases Amendment Act, 1997"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Recruitment"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Quality control"
+    },
+    {
+     "label": "1.3.5",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN A/COLUMN B table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Adequate financing and capacity"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 10
+    },
+    {
+     "label": "1.2",
+     "marks": 10
+    },
+    {
+     "label": "1.3",
+     "marks": 10
+    }
+   ],
+   "notes": "No [30] printed after Question 1; only 'TOTAL SECTION A: 30'. Each subquestion printed as (5 x 2) (10). 1.2 word list: employer; secondary; placement; backward vertical; plan; selection; forward vertical; act; employee; tertiary. 1.3 Column B has 10 options A-J."
+  },
+  {
+   "q": 2,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "2.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name any TWO types of diversification strategies."
+    },
+    {
+     "label": "2.2",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Outline the advantages of intensive strategies."
+    },
+    {
+     "label": "2.3.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MONDO MANUFACTURERS (MM) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name the PESTLE factor that is applicable to MM"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MONDO MANUFACTURERS (MM) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Recommend ways in which MM can deal with the challenges posed by the PESTLE factor"
+    },
+    {
+     "label": "2.4",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss any TWO types of defensive strategies."
+    },
+    {
+     "label": "2.5.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario LASS SUPPLIERS (LS) for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name the pillar of the BBBEE Act applied by LS"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the purpose of the Broad-Based Black Economic Empowerment Act (BBBEE)"
+    },
+    {
+     "label": "2.6",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain ways in which businesses can comply with the Consumer Protection Act"
+    },
+    {
+     "label": "2.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the impact of the Labour Relations Act (LRA), 1995 on businesses."
+    },
+    {
+     "label": "2.8",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the strategic management process."
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 2: BUSINESS ENVIRONMENTS. Choice question (Section B)."
+  },
+  {
+   "q": 3,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "3.1",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State any FOUR sources of internal recruitment."
+    },
+    {
+     "label": "3.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Outline the role of the interviewer before the interview."
+    },
+    {
+     "label": "3.3.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario TOBBI LOGISTICS (TL) for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO legal requirements of an employment contract from the scenario"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "scenario TOBBI LOGISTICS (TL) for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the reasons for the termination of an employment contract."
+    },
+    {
+     "label": "3.4",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the implications of the Employment Equity Act (EEA), 1998 on the HR function."
+    },
+    {
+     "label": "3.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Outline the benefits of a good quality management system."
+    },
+    {
+     "label": "3.6.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MOOSA LIMITED (ML) for 3.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Identify the business function that is applicable to ML"
+    },
+    {
+     "label": "3.6.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MOOSA LIMITED (ML) for 3.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain other quality indicators of the business function identified in QUESTION 3.6.1."
+    },
+    {
+     "label": "3.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Discuss the impact of total client/customer satisfaction as a TQM element on large businesses."
+    },
+    {
+     "label": "3.8",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Recommend ways in which TQM can reduce the cost of quality."
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 3: BUSINESS OPERATIONS. Choice question (Section B)."
+  },
+  {
+   "q": 4,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "4.1",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Name any FOUR provisions of the Basic Conditions of Employment Act (BCEA)"
+    },
+    {
+     "label": "4.2",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Outline the rights of consumers in terms of the National Credit Act (NCA)"
+    },
+    {
+     "label": "4.3.1",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "scenario SHOE BOUTIQUE (SB) for 4.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote TWO steps in strategy evaluation implemented by SB"
+    },
+    {
+     "label": "4.3.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "scenario SHOE BOUTIQUE (SB) for 4.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain other steps in strategy evaluation."
+    },
+    {
+     "label": "4.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on how they could apply the power of suppliers as a force"
+    },
+    {
+     "label": "4.5",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State any FOUR aspects that should be included in an employment contract."
+    },
+    {
+     "label": "4.6",
+     "marks": 6,
+     "type": "table_complete",
+     "figure": "scenario_text",
+     "figure_ref": "scenario MPHEMBA CONSTRUCTION (MC) + guide table (components / motivations) for 4.6",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Identify TWO components of a job analysis used by MC. Motivate"
+    },
+    {
+     "label": "4.7",
+     "marks": 6,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain the role of quality circles as part of continuous improvement"
+    },
+    {
+     "label": "4.8",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Advise businesses on the quality indicators of the general management function."
+    }
+   ],
+   "subtotals": [],
+   "notes": "QUESTION 4: MISCELLANEOUS TOPICS (4.1-4.4 Business Environments; 4.5-4.8 Business Operations). 4.6 has no scenario sub-number; one 6-mark item with a guide table. TOTAL SECTION B: 80."
+  },
+  {
+   "q": 5,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "5",
+     "marks": 40,
+     "type": "essay",
+     "figure": "scenario_text",
+     "figure_ref": "introductory paragraph for QUESTION 5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Write an essay on the Skills Development Act in which you include"
+    }
+   ],
+   "subtotals": [],
+   "notes": "Essay, BUSINESS ENVIRONMENTS (LEGISLATION): Skills Development Act - role of SETAs; purpose of SDA; impact on businesses; ways to comply. No per-bullet marks printed in the QP."
+  },
+  {
+   "q": 6,
+   "printed_total": 40,
+   "items": [
+    {
+     "label": "6",
+     "marks": 40,
+     "type": "essay",
+     "figure": "scenario_text",
+     "figure_ref": "introductory paragraph for QUESTION 6",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Write an essay on the human resources function in which you include"
+    }
+   ],
+   "subtotals": [],
+   "notes": "Essay, BUSINESS OPERATIONS (HUMAN RESOURCES FUNCTION): selection procedure; TWO salary determination methods; impact of fringe benefits; benefits of induction. No per-bullet marks printed. TOTAL SECTION C: 40; GRAND TOTAL: 150."
+  }
+ ]
+}

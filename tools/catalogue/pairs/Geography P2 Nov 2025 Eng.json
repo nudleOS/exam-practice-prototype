@@ -1,0 +1,871 @@
+{
+ "file": "Geography P2 Nov 2025 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Settlements are classified as rural, based on …"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The actual physical position where a rural settlement is located"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A loose grouping of farmsteads is called a …"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … has mostly rural functions and some urban functions."
+    },
+    {
+     "label": "1.1.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch in 1.1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The pattern of the settlement below is …"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch in 1.1.6",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The sketch below depicts a … settlement."
+    },
+    {
+     "label": "1.1.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketch in 1.1.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The shape of the settlement below is …"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph in 1.2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … trade and transport town/city is shown in the photograph below."
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "photograph of Plettenberg Bay in 1.2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Plettenberg Bay in the photograph below is classified as a/an … urban settlement"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … provides mostly low-order goods and services to the surrounding rural population."
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is the maximum distance that people will travel to buy goods or obtain services."
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… refers to the uncontrolled growth of urban areas."
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "cartoon",
+     "figure_ref": "cartoon in 1.2.6",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The cartoon below depicts the negative impact of …"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is a process whereby an increasing percentage of a country's population lives in urban"
+    },
+    {
+     "label": "1.2.8",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "table",
+     "figure_ref": "table: level and rate of urbanisation 2020-2024 in 1.2.8",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The level (%) of urbanisation in 2022 AND the rate (%) of urbanisation in 2024"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graph (% rural population 2017-2024) + extract on Moletele land restitution for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the graph, state the rural population percentage of South Africa for 2024."
+    },
+    {
+     "label": "1.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "graph (% rural population 2017-2024) + extract on Moletele land restitution for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the general trend in the rural population (percentages) as depicted between 2017 and 2024"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "graph (% rural population 2017-2024) + extract on Moletele land restitution for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the social impact that the general trend (answer to QUESTION 1.3.2) will have"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What is land restitution?"
+    },
+    {
+     "label": "1.3.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "graph (% rural population 2017-2024) + extract on Moletele land restitution for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the extract, which option (model) of land restitution applied to the Moletele community?"
+    },
+    {
+     "label": "1.3.6",
+     "marks": 6,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "graph (% rural population 2017-2024) + extract on Moletele land restitution for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest strategies that can be implemented after land restitution has taken place"
+    },
+    {
+     "label": "1.4.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What is an urban land-use zone?"
+    },
+    {
+     "label": "1.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "urban profile sketch (zones A-E) + photographs of land use for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name TWO urban land-use zones where commercial functions are mainly found."
+    },
+    {
+     "label": "1.4.3(a)",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "photo",
+     "figure_ref": "urban profile sketch (zones A-E) + photographs of land use for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give evidence that the land use in B2 is a high-income residential area."
+    },
+    {
+     "label": "1.4.3(b)",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "photo",
+     "figure_ref": "urban profile sketch (zones A-E) + photographs of land use for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Is the land use at A a heavy or a light industry?"
+    },
+    {
+     "label": "1.4.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "urban profile sketch (zones A-E) + photographs of land use for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain TWO economic reasons why this land use (answer to QUESTION 1.4.3 (b)) is located on the outskirts"
+    },
+    {
+     "label": "1.4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "urban profile sketch (zones A-E) + photographs of land use for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is the land use at B2 not located close to the land use at A?"
+    },
+    {
+     "label": "1.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "photo",
+     "figure_ref": "extract + photograph: urban blight in Wynberg for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What evidence in the photograph suggests that urban blight/decay has taken place?"
+    },
+    {
+     "label": "1.5.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State TWO social causes of urban blight/decay."
+    },
+    {
+     "label": "1.5.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract + photograph: urban blight in Wynberg for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Suggest possible reasons why the municipality of Cape Town has not attended to this issue"
+    },
+    {
+     "label": "1.5.4",
+     "marks": 8,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract + photograph: urban blight in Wynberg for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "In a paragraph of approximately EIGHT lines, explain the positive impact of urban renewal"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 7
+    },
+    {
+     "label": "1.2",
+     "marks": 8
+    }
+   ],
+   "notes": "1.1 is Y/Z completion (7 items) and 1.2 is MCQ (8 items) - reversed from the usual 8/7 split. Section A heading misprint 'GEOGRAPHY OF SOUTH AFRICA2025' (stray '2025'). 1.4.3(b) heavy/light choice typed mcq."
+  },
+  {
+   "q": 2,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is a positive social factor of sugar cane production in KwaZulu-Natal."
+    },
+    {
+     "label": "2.1.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is/are a negative economic factor hindering sugar cane farming in KwaZulu-Natal."
+    },
+    {
+     "label": "2.1.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "TWO advantages of sugar cane farming for the economy of South Africa is/are … and …"
+    },
+    {
+     "label": "2.1.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Climatic factors that favour KwaZulu-Natal as the highest producer of sugar cane"
+    },
+    {
+     "label": "2.1.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The province that produces the most gold in South Africa is …"
+    },
+    {
+     "label": "2.1.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "graph",
+     "figure_ref": "graph: people employed in gold mines 1995-2025 for 2.1.6-2.1.8",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The number of people employed in South African gold mines decreased the most between …"
+    },
+    {
+     "label": "2.1.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "graph",
+     "figure_ref": "graph: people employed in gold mines 1995-2025 for 2.1.6-2.1.8",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A physical (natural) factor causing employment numbers to decrease in South African gold mines"
+    },
+    {
+     "label": "2.1.8",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "graph",
+     "figure_ref": "graph: people employed in gold mines 1995-2025 for 2.1.6-2.1.8",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "An economic factor that has caused employment numbers to decrease from 2015 onwards"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "table of GDP contributions 2024 for 2.2.1-2.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is a secondary economic activity."
+    },
+    {
+     "label": "2.2.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "table of GDP contributions 2024 for 2.2.1-2.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Primary economic activities accounted for … of the gross domestic product (GDP)."
+    },
+    {
+     "label": "2.2.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "table of GDP contributions 2024 for 2.2.1-2.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… makes the largest contribution to the tertiary sector."
+    },
+    {
+     "label": "2.2.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "table of GDP contributions 2024 for 2.2.1-2.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The … sector was the greatest contributor to the gross domestic product (GDP) in 2024."
+    },
+    {
+     "label": "2.2.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "exports/imports sketch in 2.2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The sketch below illustrates …"
+    },
+    {
+     "label": "2.2.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A factor that advantages international trade"
+    },
+    {
+     "label": "2.2.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is an economic benefit of international trade."
+    },
+    {
+     "label": "2.3.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the concept food insecurity."
+    },
+    {
+     "label": "2.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "infographic food security (photographs, extract, bar graph of challenges) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the extract, what percentage of households suffered from food insecurity in 2024?"
+    },
+    {
+     "label": "2.3.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "photo",
+     "figure_ref": "infographic food security (photographs, extract, bar graph of challenges) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What evidence in the photograph on large-scale farming suggests that it would have a positive impact"
+    },
+    {
+     "label": "2.3.4",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "graph",
+     "figure_ref": "infographic food security (photographs, extract, bar graph of challenges) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Refer to the graph. Identify TWO economic challenges that small-scale farmers would more likely experience"
+    },
+    {
+     "label": "2.3.5",
+     "marks": 8,
+     "type": "explain",
+     "figure": "graph",
+     "figure_ref": "infographic food security (photographs, extract, bar graph of challenges) for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "In a paragraph of approximately EIGHT lines, explain how these economic challenges"
+    },
+    {
+     "label": "2.4.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "extract + map: Dube Trade Port IDZ for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "In which province is the Dube Trade Port (IDZ) located?"
+    },
+    {
+     "label": "2.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "extract + map: Dube Trade Port IDZ for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Quote evidence from the extract that indicates that the Dube Trade Port (IDZ) has a variety"
+    },
+    {
+     "label": "2.4.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract + map: Dube Trade Port IDZ for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "According to the extract, why is the Dube Trade Port classified as an industrial development zone"
+    },
+    {
+     "label": "2.4.4",
+     "marks": 4,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "extract + map: Dube Trade Port IDZ for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How did the proximity (distance) to the airport and harbour favour the location of the automotive plants"
+    },
+    {
+     "label": "2.4.5",
+     "marks": 6,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract + map: Dube Trade Port IDZ for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how the variety of manufacturing industries in the Dube Trade Port (IDZ) would have a positive impact"
+    },
+    {
+     "label": "2.5.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What is the informal sector?"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "photo",
+     "figure_ref": "infographic informal sector Richards Bay (photograph, table, extract) for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is the informal trader in the photograph found on the main road?"
+    },
+    {
+     "label": "2.5.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "photo",
+     "figure_ref": "infographic informal sector Richards Bay (photograph, table, extract) for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "State TWO challenges that this informal trader is likely to experience with the type of goods"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "table",
+     "figure_ref": "infographic informal sector Richards Bay (photograph, table, extract) for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Refer to the table. Account for the large number of informal traders during the month of December."
+    },
+    {
+     "label": "2.5.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "infographic informal sector Richards Bay (photograph, table, extract) for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How will the municipality of Richards Bay benefit by issuing permits to informal traders?"
+    },
+    {
+     "label": "2.5.6",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "infographic informal sector Richards Bay (photograph, table, extract) for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What can the municipality of Richards Bay provide to the informal traders with the money collected"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 8
+    },
+    {
+     "label": "2.2",
+     "marks": 7
+    }
+   ],
+   "notes": "2.2 is Y/Z completion. TOTAL SECTION A: 120 printed."
+  },
+  {
+   "q": 3,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "3.1.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "You would be driving in a/an … direction on the main road from F in block C3"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 4,
+     "type": "map_measure",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2529CC 15 eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Calculate the area of the demarcated feature 6 in blocks B4, C3 and C4 in m²."
+    },
+    {
+     "label": "3.1.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK) + orthophoto map 2529CC 15 eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is the measurement of the breadth on the topographical map smaller than that on the orthophoto map?"
+    },
+    {
+     "label": "3.1.4",
+     "marks": 3,
+     "type": "calculation",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Calculate the magnetic declination of eMalahleni (Witbank) for 2025."
+    },
+    {
+     "label": "3.1.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is it important to calculate the current magnetic declination?"
+    },
+    {
+     "label": "3.2.1(a)",
+     "marks": 1,
+     "type": "match",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2529CC 15 eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Match the information in COLUMN A with the features in COLUMN B: (a) 6"
+    },
+    {
+     "label": "3.2.1(b)",
+     "marks": 1,
+     "type": "match",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2529CC 15 eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Match the information in COLUMN A with the features in COLUMN B: (b) 7"
+    },
+    {
+     "label": "3.2.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2529CC 15 eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how this street pattern will create challenges for commuters"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the land-use zone in which the cemetery is located."
+    },
+    {
+     "label": "3.2.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why is this land-use zone (answer to QUESTION 3.2.3) a suitable location for the cemetery?"
+    },
+    {
+     "label": "3.2.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify ONE type of transport infrastructure found at the opencast mine."
+    },
+    {
+     "label": "3.2.6",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "general information on eMalahleni (p17) + topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What mineral is mined at the opencast mine?"
+    },
+    {
+     "label": "3.2.7",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State a physical (natural) factor that makes this a suitable location."
+    },
+    {
+     "label": "3.2.8",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What are the economic advantages of these industries for the local population?"
+    },
+    {
+     "label": "3.3.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What is data layering?"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "data-layering sketch (layers A, B, C) on p20 + topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the data layer at B (in the sketch above) as it is represented on the topographical map."
+    },
+    {
+     "label": "3.3.3",
+     "marks": 3,
+     "type": "drawing",
+     "figure": "diagram",
+     "figure_ref": "data-layering sketch (layers A, B, C) on p20 + topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Redraw layer C in the sketch above in your ANSWER BOOK. Apply the data layers of A and B"
+    },
+    {
+     "label": "3.3.4",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "topographical map 2529CC eMALAHLENI (WITBANK)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "The open space indicates that buffering is taking place in order to limit urban development."
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "3.2.1",
+     "marks": 2
+    }
+   ],
+   "notes": "No [30] bracket printed at the end of Q3; 'TOTAL SECTION B: 30', 'GRAND TOTAL: 150'. Leaves 3.1=10, 3.2=12, 3.3=8. 3.2.1(a)/(b) carry only a group '(2 x 1) (2)'. Map sheets (2529CC eMALAHLENI (WITBANK) topo 1:50 000 + 2529CC 15 orthophoto 1:10 000) are NOT in the folder. 3.1.2 gives breadth 1,8 cm; length to be measured. 3.1.4 gives 11 years, 5' W mean annual change; base declination read off the map. In the extracted text 3.2.1 appears before 3.1.2 - layout artefact; page image shows paper order 3.1.1-3.1.5 then 3.2."
+  }
+ ]
+}

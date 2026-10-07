@@ -1,0 +1,144 @@
+{
+  "file": "Physical Sciences P1 Nov 2025 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "notes": "Cover: MARKS 150, 16 pages + 3 data sheets (pages 17-19; not questions). TEN questions, answer ALL in the ANSWER BOOK. End prints TOTAL: 150. Q1 heading carries a tiny stray mark (extracts as 'QUESTIONS2025'), cosmetic only.",
+  "sections": [ {"name": "(no sections)", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 20,
+      "items": [
+        {"label": "1.1", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The net force acting on an object on a horizontal surface is always"},
+        {"label": "1.2", "marks": 2, "type": "mcq", "figure": "graph", "figure_ref": "four v-t graph options for 1.2", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A hot-air balloon is moving upwards at a constant velocity. A small"},
+        {"label": "1.3", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "motor lifting box for 1.3", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A motor fixed to the ground is used to lift a box"},
+        {"label": "1.4", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "objects P and Q for 1.4", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Objects P and Q, with masses m and 2m respectively, have the"},
+        {"label": "1.5", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "block with F = 18 N and fk = 6 N for 1.5", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A block moves along a rough horizontal surface while a horizontal force"},
+        {"label": "1.6", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A star's spectrum, observed from Earth, is red shifted. Which ONE of"},
+        {"label": "1.7", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "charges Q1, Q2, Q3 in a line for 1.7", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Three point charges, Q1, Q2 and Q3, are fixed in a straight"},
+        {"label": "1.8", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "circuit with bulbs X, Y, Z and switch S for 1.8", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Three identical light bulbs, X, Y and Z, are connected in a"},
+        {"label": "1.9", "marks": 2, "type": "mcq", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "How does the commutator in a DC motor ensure that the coil"},
+        {"label": "1.10", "marks": 2, "type": "mcq", "figure": "graph", "figure_ref": "four Ek(max) vs 1/lambda graph options for 1.10", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Light of different wavelengths is incident on a metal surface. Which ONE"}
+      ],
+      "subtotals": [],
+      "notes": "Multiple choice, (2) each; [20]."
+    },
+    {
+      "q": 2,
+      "printed_total": 17,
+      "items": [
+        {"label": "2.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "State Newton's Second Law of Motion in words."},
+        {"label": "2.2", "marks": 4, "type": "drawing", "figure": "diagram", "figure_ref": "5 kg block with F = 18 N at angle theta, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw a labelled free-body diagram showing ALL the forces acting on the"},
+        {"label": "2.3.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "5 kg block with F = 18 N at angle theta, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The horizontal component of force F is 15 N. Calculate: theta"},
+        {"label": "2.3.2", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "5 kg block with F = 18 N at angle theta, Q2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The coefficient of static friction"},
+        {"label": "2.4", "marks": 4, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Angle theta is decreased while the magnitude of force F remains constant."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 3,
+      "printed_total": 15,
+      "items": [
+        {"label": "3.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term free fall."},
+        {"label": "3.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "time vs magnitude of velocity table (p, q), Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Using EQUATIONS OF MOTION ONLY, calculate the value of p."},
+        {"label": "3.3", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "time vs magnitude of velocity table (p, q), Q3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate q."},
+        {"label": "3.4", "marks": 3, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Is the collision with the ground ELASTIC or INELASTIC? Explain the answer"},
+        {"label": "3.5", "marks": 4, "type": "graph_plot", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Sketch a velocity versus time graph for the motion of the ball"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 4,
+      "printed_total": 11,
+      "items": [
+        {"label": "4.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term impulse."},
+        {"label": "4.2.1", "marks": 3, "type": "calculation", "figure": "graph", "figure_ref": "final momentum vs contact time sketch graph, Q4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the: Average net force acting on the ball"},
+        {"label": "4.2.2", "marks": 4, "type": "calculation", "figure": "graph", "figure_ref": "final momentum vs contact time sketch graph, Q4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Magnitude of the initial velocity of the ball"},
+        {"label": "4.3", "marks": 2, "type": "graph_plot", "figure": "graph", "figure_ref": "final momentum vs contact time sketch graph, Q4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Redraw the graph in the ANSWER BOOK and label it as A."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 5,
+      "printed_total": 13,
+      "items": [
+        {"label": "5.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "State the work-energy theorem in words."},
+        {"label": "5.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "crate A-B-C on surface and 20 degree incline, Q5", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Using ENERGY PRINCIPLES ONLY, calculate the kinetic energy of the crate at"},
+        {"label": "5.3", "marks": 3, "type": "drawing", "figure": "diagram", "figure_ref": "crate A-B-C on surface and 20 degree incline, Q5", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw a free-body diagram showing ALL the forces acting on the crate"},
+        {"label": "5.4", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "crate A-B-C on surface and 20 degree incline, Q5", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Using ENERGY PRINCIPLES ONLY, determine whether the crate will pass point C."}
+      ],
+      "subtotals": [],
+      "notes": "Heading printed '(Start on a new page)' without full stop. 5.3 asks for a free-body diagram but, unlike 2.2, does not say 'labelled'."
+    },
+    {
+      "q": 6,
+      "printed_total": 12,
+      "items": [
+        {"label": "6.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "STATE the Doppler effect."},
+        {"label": "6.2.1", "marks": 1, "type": "short_answer", "figure": "graph", "figure_ref": "detected frequency vs ambulance velocity graph (Parts A and B), Q6", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "For this experiment, write down: The independent variable"},
+        {"label": "6.2.2", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A controlled variable"},
+        {"label": "6.3", "marks": 2, "type": "explain", "figure": "graph", "figure_ref": "detected frequency vs ambulance velocity graph (Parts A and B), Q6", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "What conclusion can be made for Part B of this experiment?"},
+        {"label": "6.4", "marks": 6, "type": "calculation", "figure": "graph", "figure_ref": "detected frequency vs ambulance velocity graph (Parts A and B), Q6", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the speed of sound in air."}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 7,
+      "printed_total": 15,
+      "items": [
+        {"label": "7.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Describe an electric field."},
+        {"label": "7.2", "marks": 2, "type": "drawing", "figure": "diagram", "figure_ref": "sphere X at A and point P, Q7", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Draw the electric field pattern due to the charge on sphere X."},
+        {"label": "7.3", "marks": 3, "type": "proof", "figure": "diagram", "figure_ref": "sphere X at A and point P, Q7", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Show, by means of a calculation, that r = 0,05 m."},
+        {"label": "7.4", "marks": 6, "type": "calculation", "figure": "diagram", "figure_ref": "spheres Y, X, Z in a line, Q7.4", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The NET FORCE acting on sphere X is 0,0427 N at point A."},
+        {"label": "7.5", "marks": 2, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Sphere Y is brought into contact with sphere X, and is placed"}
+      ],
+      "subtotals": [],
+      "notes": "7.5 is a choice (INCREASES/DECREASES/REMAINS THE SAME) worth (2), no reason asked."
+    },
+    {
+      "q": 8,
+      "printed_total": 20,
+      "items": [
+        {"label": "8.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term emf."},
+        {"label": "8.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "car circuit with L1, L2, starter motor M, S1, S2, A1, A2, V, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Switch S1 remains open while switch S2 is closed. The reading on"},
+        {"label": "8.3.1", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "car circuit, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the current passing through L1."},
+        {"label": "8.3.2", "marks": 1, "type": "short_answer", "figure": "diagram", "figure_ref": "car circuit, Q8", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the reading on ammeter A1."},
+        {"label": "8.4", "marks": 6, "type": "calculation", "figure": "diagram", "figure_ref": "car circuit, Q8", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Calculate the emf of the battery."},
+        {"label": "8.5", "marks": 5, "type": "explain", "figure": "diagram", "figure_ref": "car circuit, Q8", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Both switches are now closed. How will the reading on ammeter A1"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    },
+    {
+      "q": 9,
+      "printed_total": 13,
+      "items": [
+        {"label": "9.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term rms potential difference."},
+        {"label": "9.2", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "AC generator driving a fan, magnet pole Z, Q9", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "What is the polarity of the magnet at Z?"},
+        {"label": "9.3", "marks": 5, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The resistance of the fan is 60 ohm and the maximum potential"},
+        {"label": "9.4", "marks": 3, "type": "graph_plot", "figure": "graph", "figure_ref": "voltage vs time graph, Q9", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Redraw this graph in the ANSWER BOOK and label it as A."},
+        {"label": "9.5", "marks": 1, "type": "short_answer", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "State ONE way in which this generator can be changed to a"}
+      ],
+      "subtotals": [],
+      "notes": "9.2 polarity worth (2)."
+    },
+    {
+      "q": 10,
+      "printed_total": 14,
+      "items": [
+        {"label": "10.1.1", "marks": 2, "type": "term", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Define the term work function."},
+        {"label": "10.1.2", "marks": 1, "type": "short_answer", "figure": "table", "figure_ref": "metals/electrons emitted/max KE table, Q10.1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the threshold frequency of zinc."},
+        {"label": "10.1.3", "marks": 3, "type": "explain", "figure": "table", "figure_ref": "metals/electrons emitted/max KE table, Q10.1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "How does the work function of sodium compare to that of caesium?"},
+        {"label": "10.1.4", "marks": 2, "type": "explain", "figure": "table", "figure_ref": "metals/electrons emitted/max KE table, Q10.1", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Light of the same frequency, but with a higher intensity, is now"},
+        {"label": "10.2.1", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "energy level diagram E1-E3, Q10.2", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "An electron of this atom moves from E3 to E1. Photon X"},
+        {"label": "10.2.2", "marks": 2, "type": "explain", "figure": "diagram", "figure_ref": "energy level diagram E1-E3, Q10.2", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Is it possible for a photon with an energy of 2,5 x"}
+      ],
+      "subtotals": [],
+      "notes": ""
+    }
+  ]
+}

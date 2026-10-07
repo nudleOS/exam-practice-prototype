@@ -1,0 +1,857 @@
+{
+ "file": "Life Sciences P2 Nov 2024 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL",
+   "questions": [
+    1
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL",
+   "questions": [
+    2,
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following organelles is the site of protein synthesis?"
+    },
+    {
+     "label": "1.1.2",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "table",
+     "figure_ref": "options table (male/female gonosomes)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "In humans, the gonosomes determine the gender. Which combination below shows"
+    },
+    {
+     "label": "1.1.3",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "An organism has the genotype TT. The CORRECT term which describes"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Down syndrome is a genetic disorder where an individual has an extra copy"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A gradual change in the characteristics of a species over time is known as"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following is a reproductive isolation mechanism?"
+    },
+    {
+     "label": "1.1.7",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Analysis of mitochondrial DNA is an example of this line of evidence"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "table",
+     "figure_ref": "options table (mitosis vs meiosis)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which option in the table below shows the CORRECT comparison between mitosis and meiosis?"
+    },
+    {
+     "label": "1.1.9",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following scientists discovered the fossil Taung Child?"
+    },
+    {
+     "label": "1.1.10",
+     "marks": 2,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Which ONE of the following is produced at the end of translation?"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A nucleic acid that carries hereditary information"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The chromosome condition of a cell that has a single set of chromosomes"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The structure that holds the two chromatids of a chromosome together"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The type of RNA that carries specific amino acids to the site of protein synthesis"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The analysis of DNA samples to identify individuals or relationships"
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A representation of the number and structure of all the chromosomes"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A group of similar organisms that are able to interbreed to produce fertile offspring"
+    },
+    {
+     "label": "1.2.8",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The phase of meiosis where paired chromosomes are arranged at the equator"
+    },
+    {
+     "label": "1.2.9",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The biotechnological process that produces genetically identical organisms"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A source of variation in populations (A: Random fertilisation, B: Random mating)"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Discovery of the structure of the DNA molecule (A: Franklin and Wilkins"
+    },
+    {
+     "label": "1.3.3",
+     "marks": 2,
+     "type": "match",
+     "figure": "table",
+     "figure_ref": "COLUMN I / COLUMN II table for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Occurs during meiosis (A: Karyokinesis, B: Cytokinesis)"
+    },
+    {
+     "label": "1.4.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4 (DNA molecule, parts 1-5)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the process shown in the diagram"
+    },
+    {
+     "label": "1.4.1(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the chemical bond labelled 1"
+    },
+    {
+     "label": "1.4.2(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the collective name for the parts labelled 2, 3 and 4"
+    },
+    {
+     "label": "1.4.2(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the full name of the nitrogenous base labelled 5"
+    },
+    {
+     "label": "1.4.3",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "During which phase of the cell cycle does this process take place?"
+    },
+    {
+     "label": "1.4.4",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Where in the cell does this process occur?"
+    },
+    {
+     "label": "1.5.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "scenario_text",
+     "figure_ref": "butterfly dihybrid scenario for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of cross represented above"
+    },
+    {
+     "label": "1.5.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "butterfly scenario for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the dominant characteristic of EACH gene"
+    },
+    {
+     "label": "1.5.3(a)",
+     "marks": 4,
+     "type": "table_complete",
+     "figure": "table",
+     "figure_ref": "phenotype/genotype table for 1.5.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give ALL the possible genotypes at X"
+    },
+    {
+     "label": "1.5.3(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "table for 1.5.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the phenotype at Y"
+    },
+    {
+     "label": "1.5.3(c)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "table for 1.5.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the genotype of the gametes produced by a butterfly with grey spots and brown eyes"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 20
+    },
+    {
+     "label": "1.2",
+     "marks": 9
+    },
+    {
+     "label": "1.3",
+     "marks": 6
+    },
+    {
+     "label": "1.4",
+     "marks": 6
+    },
+    {
+     "label": "1.5",
+     "marks": 9
+    }
+   ],
+   "notes": "No [50] printed after Question 1; only 'TOTAL SECTION A: 50'. 1.1 (10 x 2) (20); 1.2 (9 x 1) (9); 1.3 (3 x 2) (6)."
+  },
+  {
+   "q": 2,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1 (protein synthesis stage, molecules X, Y, triplet Z)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify molecule Y"
+    },
+    {
+     "label": "2.1.2",
+     "marks": 6,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Describe the process that resulted in the formation of molecule Y"
+    },
+    {
+     "label": "2.1.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give ONE structural difference between molecule X and molecule Y"
+    },
+    {
+     "label": "2.1.4",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the sequence of bases at triplet Z on strand 2"
+    },
+    {
+     "label": "2.1.5",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "codon/amino acid table for 2.1.5 + diagram for 2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the first and last amino acids coded for by this section of molecule Y"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2 (phase of meiosis II, A and B)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the phase of meiosis shown"
+    },
+    {
+     "label": "2.2.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State ONE difference between the phase shown in the diagram above and the same phase in meiosis I"
+    },
+    {
+     "label": "2.2.3(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify structure A"
+    },
+    {
+     "label": "2.2.3(b)",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify structure B"
+    },
+    {
+     "label": "2.2.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the role of structure B during cell division"
+    },
+    {
+     "label": "2.2.5",
+     "marks": 5,
+     "type": "drawing",
+     "figure": "diagram",
+     "figure_ref": "diagram for 2.2",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a labelled diagram representing the cell above as it would have appeared in metaphase II"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "blood donor table for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the data, which is the most common blood group among the donors?"
+    },
+    {
+     "label": "2.3.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of dominance shown by the inheritance of blood group A"
+    },
+    {
+     "label": "2.3.3",
+     "marks": 5,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Explain how it is possible for a man with blood group A and a woman with blood group AB"
+    },
+    {
+     "label": "2.3.4",
+     "marks": 6,
+     "type": "graph_plot",
+     "figure": "table",
+     "figure_ref": "blood donor table for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Plot a bar graph to represent the data in the table"
+    },
+    {
+     "label": "2.4.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree diagram for 2.4 (muscular dystrophy, individuals 1-8)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How many offspring do individuals 1 and 2 have?"
+    },
+    {
+     "label": "2.4.2(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the phenotype of individual 1"
+    },
+    {
+     "label": "2.4.2(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the genotype of individual 2"
+    },
+    {
+     "label": "2.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why more males than females are likely to have muscular dystrophy"
+    },
+    {
+     "label": "2.4.4",
+     "marks": 6,
+     "type": "calculation",
+     "figure": "diagram",
+     "figure_ref": "pedigree for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Parents 5 and 6 plan to have another child. Use a genetic cross to show"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 12
+    },
+    {
+     "label": "2.2",
+     "marks": 12
+    },
+    {
+     "label": "2.3",
+     "marks": 13
+    },
+    {
+     "label": "2.4",
+     "marks": 13
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "q": 3,
+   "printed_total": 50,
+   "items": [
+    {
+     "label": "3.1.1",
+     "marks": 3,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.1 (Bt maize)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe how the Bt maize is genetically modified to be insect resistant"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.1",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain TWO reasons why farmers might want to grow Bt maize"
+    },
+    {
+     "label": "3.2.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "phylogenetic tree for 3.2 (P-V)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Give the LETTER representing the common ancestor for ALL the species"
+    },
+    {
+     "label": "3.2.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "phylogenetic tree for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the species that is most closely related to Old-world monkeys"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "phylogenetic tree for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for your answer to QUESTION 3.2.2"
+    },
+    {
+     "label": "3.2.4",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "phylogenetic tree for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify THREE species that share the common ancestor R"
+    },
+    {
+     "label": "3.2.5",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "phylogenetic tree for 3.2",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State THREE characteristics of the upper limbs that humans share with group P"
+    },
+    {
+     "label": "3.3.1(a)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation + results table for 3.3 (milk and height)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the independent variable"
+    },
+    {
+     "label": "3.3.1(b)",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the dependent variable"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name the type of variation displayed by the height of a person"
+    },
+    {
+     "label": "3.3.3",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State TWO planning steps that the researchers had to consider at the beginning"
+    },
+    {
+     "label": "3.3.4",
+     "marks": 3,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State THREE ways in which the validity of this investigation was ensured"
+    },
+    {
+     "label": "3.3.5",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State ONE factor that could have negatively affected the validity"
+    },
+    {
+     "label": "3.3.6",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "investigation for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "How did the researchers ensure the reliability of the results?"
+    },
+    {
+     "label": "3.3.7",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "table",
+     "figure_ref": "results table for 3.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State the conclusion for this investigation"
+    },
+    {
+     "label": "3.4.1",
+     "marks": 3,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.4 (Homo erectus)",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe how the fossils of Homo erectus are used to support the 'Out-of-Africa' hypothesis"
+    },
+    {
+     "label": "3.4.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe how all OTHER fossil evidence is used to support the 'Out-of-Africa' hypothesis"
+    },
+    {
+     "label": "3.4.3",
+     "marks": 5,
+     "type": "table_complete",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.4",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Use the information in the passage regarding Homo erectus and tabulate TWO differences"
+    },
+    {
+     "label": "3.4.4",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What observation of the skull of Homo erectus would have led scientists to conclude bipedal"
+    },
+    {
+     "label": "3.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What is a mutation?"
+    },
+    {
+     "label": "3.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.5 (Chernobyl wolves)",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "What effect does exposure to high radiation have on animals?"
+    },
+    {
+     "label": "3.5.3",
+     "marks": 7,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "passage for 3.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Use Darwin's theory of natural selection to explain the development of immunity to cancer"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "3.1",
+     "marks": 7
+    },
+    {
+     "label": "3.2",
+     "marks": 9
+    },
+    {
+     "label": "3.3",
+     "marks": 12
+    },
+    {
+     "label": "3.4",
+     "marks": 13
+    },
+    {
+     "label": "3.5",
+     "marks": 9
+    }
+   ],
+   "notes": "Section B total 100; grand total 150."
+  }
+ ]
+}

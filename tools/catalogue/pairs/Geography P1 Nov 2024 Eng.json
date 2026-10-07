@@ -1,0 +1,876 @@
+{
+ "file": "Geography P1 Nov 2024 Eng.pdf",
+ "kind": "QP",
+ "paper_total": 150,
+ "sections": [
+  {
+   "name": "SECTION A",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "SECTION B",
+   "rule": "Answer ALL THREE questions (paper-wide rule)",
+   "questions": [
+    3
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "q": 1,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "1.1.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Sketch A shows typical … conditions."
+    },
+    {
+     "label": "1.1.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The low-pressure system in sketch B forms due to … over the land."
+    },
+    {
+     "label": "1.1.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is the concept used to describe the elongation of the isobars"
+    },
+    {
+     "label": "1.1.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The anticyclones in sketch A and B change their positions seasonally"
+    },
+    {
+     "label": "1.1.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The South Indian anticyclone in sketch B is likely to feed more moisture"
+    },
+    {
+     "label": "1.1.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The low-pressure system in sketch A will move in a … direction."
+    },
+    {
+     "label": "1.1.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Berg winds are most likely to develop in sketch A because of"
+    },
+    {
+     "label": "1.1.8",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B (anticyclones) for 1.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The inversion layer that forms over the escarpment in sketch B will"
+    },
+    {
+     "label": "1.2.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B valley climates for 1.2.1-1.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Represents an anabatic wind"
+    },
+    {
+     "label": "1.2.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B valley climates for 1.2.1-1.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Cold air forces the warm air to rise which forms an inversion layer"
+    },
+    {
+     "label": "1.2.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B valley climates for 1.2.1-1.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Occurs during the day due to insolation"
+    },
+    {
+     "label": "1.2.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B valley climates for 1.2.1-1.2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Frost forms on the valley floor when the temperature drops below 0 °C"
+    },
+    {
+     "label": "1.2.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B pollution domes for 1.2.5-1.2.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Represents a pollution dome at night"
+    },
+    {
+     "label": "1.2.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B pollution domes for 1.2.5-1.2.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Pollutants are dispersed"
+    },
+    {
+     "label": "1.2.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches A and B pollution domes for 1.2.5-1.2.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Denser concentration of pollutants over the urban area"
+    },
+    {
+     "label": "1.3.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "cross-section of mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "In which general direction do mid-latitude cyclones move?"
+    },
+    {
+     "label": "1.3.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "cross-section of mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for your answer to QUESTION 1.3.1."
+    },
+    {
+     "label": "1.3.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "cross-section of mid-latitude cyclone for 1.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does front A give rise to the formation of cumulonimbus clouds?"
+    },
+    {
+     "label": "1.3.4",
+     "marks": 8,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "In a paragraph of approximately EIGHT lines, explain strategies that can be"
+    },
+    {
+     "label": "1.4.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "infographic Tropical Cyclone Filipo (path map + table) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State ONE condition that could have led to the development of"
+    },
+    {
+     "label": "1.4.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "map",
+     "figure_ref": "infographic Tropical Cyclone Filipo (path map + table) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give evidence from the map and table of information that Tropical Cyclone"
+    },
+    {
+     "label": "1.4.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "infographic Tropical Cyclone Filipo (path map + table) for 1.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give TWO reasons for the decrease in wind speed from 06:00 to"
+    },
+    {
+     "label": "1.4.4(a)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a labelled cross-section of Tropical Cyclone Filipo: Cross-section"
+    },
+    {
+     "label": "1.4.4(b)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a labelled cross-section ...: Cloud type"
+    },
+    {
+     "label": "1.4.4(c)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a labelled cross-section ...: Eye"
+    },
+    {
+     "label": "1.4.4(d)",
+     "marks": 1,
+     "type": "drawing",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Draw a labelled cross-section ...: Air movement in the eye"
+    },
+    {
+     "label": "1.4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Account for the lack of rainfall and clouds in the eye of the tropical"
+    },
+    {
+     "label": "1.5.1",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "source: line thunderstorms (extract + sketch) for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "According to the extract, in which season do line thunderstorms"
+    },
+    {
+     "label": "1.5.2",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "source: line thunderstorms (extract + sketch) for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the temperature and moisture content of wind A and wind B"
+    },
+    {
+     "label": "1.5.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "source: line thunderstorms (extract + sketch) for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain why the heaviest rainfall occurs closest to the moisture front,"
+    },
+    {
+     "label": "1.5.4",
+     "marks": 6,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "source: line thunderstorms (extract + sketch) for 1.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain the negative physical (natural) impact of line thunderstorms."
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "1.1",
+     "marks": 8
+    },
+    {
+     "label": "1.2",
+     "marks": 7
+    }
+   ],
+   "notes": "Subtotals for 1.1 and 1.2 are the printed (8 x 1) (8) and (7 x 1) (7) group marks; 1.3-1.5 print marks per item only (each sums to 15). 1.4 figure = path map + wind table."
+  },
+  {
+   "q": 2,
+   "printed_total": 60,
+   "items": [
+    {
+     "label": "2.1.1",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Area drained by a river and its tributaries"
+    },
+    {
+     "label": "2.1.2",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Promotes a rapid rise in the water table"
+    },
+    {
+     "label": "2.1.3",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The upper level of ground water"
+    },
+    {
+     "label": "2.1.4",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Seepage of water into the ground"
+    },
+    {
+     "label": "2.1.5",
+     "marks": 1,
+     "type": "match",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Causes reduction of surface run-off"
+    },
+    {
+     "label": "2.1.6",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches Y/Z in COLUMN B of 2.1.6",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The confluence is located at Y/Z"
+    },
+    {
+     "label": "2.1.7",
+     "marks": 1,
+     "type": "match",
+     "figure": "diagram",
+     "figure_ref": "sketches Y/Z in COLUMN B of 2.1.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "High-lying area separating two tributaries in the same river system"
+    },
+    {
+     "label": "2.2.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketch of river valley in 2.2.1",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "… is responsible for the shape of the river valley below."
+    },
+    {
+     "label": "2.2.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A … forms at the base of a waterfall."
+    },
+    {
+     "label": "2.2.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "sketch in 2.2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The fluvial landform/feature depicted in the sketch is a …"
+    },
+    {
+     "label": "2.2.4",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The flat, low-lying area along the banks of a river in the lower course"
+    },
+    {
+     "label": "2.2.5",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "meander sketch in 2.2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The slope at X on the inner bank of a meander is also referred to"
+    },
+    {
+     "label": "2.2.6",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "A/An … forms when the meander loop is cut off from the main"
+    },
+    {
+     "label": "2.2.7",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "diagram",
+     "figure_ref": "levee sketch in 2.2.7",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The benefit of natural levees is … on the flood plain."
+    },
+    {
+     "label": "2.2.8",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Deltas form at the river mouth when the following conditions occur:"
+    },
+    {
+     "label": "2.3.1",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "drainage patterns A and B for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify drainage pattern A."
+    },
+    {
+     "label": "2.3.2",
+     "marks": 2,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "drainage patterns A and B for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Determine the stream order of X in drainage pattern A."
+    },
+    {
+     "label": "2.3.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "drainage patterns A and B for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason for the direction in which streams flow in drainage"
+    },
+    {
+     "label": "2.3.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "drainage patterns A and B for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does the joining of the tributaries to the mainstream differ in"
+    },
+    {
+     "label": "2.3.5",
+     "marks": 4,
+     "type": "short_answer",
+     "figure": "diagram",
+     "figure_ref": "drainage patterns A and B for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "State TWO conditions associated with the underlying rock that"
+    },
+    {
+     "label": "2.3.6",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "drainage patterns A and B for 2.3",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why are human activities limited in areas where drainage"
+    },
+    {
+     "label": "2.4.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the term river rejuvenation."
+    },
+    {
+     "label": "2.4.2",
+     "marks": 1,
+     "type": "term",
+     "figure": "diagram",
+     "figure_ref": "sketch on river rejuvenation for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the feature at A."
+    },
+    {
+     "label": "2.4.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch on river rejuvenation for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does feature A indicate that river rejuvenation has taken place?"
+    },
+    {
+     "label": "2.4.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch on river rejuvenation for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Describe the change that river rejuvenation has made to the"
+    },
+    {
+     "label": "2.4.5",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch on river rejuvenation for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How do river terraces form?"
+    },
+    {
+     "label": "2.4.6",
+     "marks": 4,
+     "type": "explain",
+     "figure": "diagram",
+     "figure_ref": "sketch on river rejuvenation for 2.4",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why are some river terraces not suitable for farming?"
+    },
+    {
+     "label": "2.5.1",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "What is river management?"
+    },
+    {
+     "label": "2.5.2",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "scenario_text",
+     "figure_ref": "extract: management of catchment areas for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Name ONE human activity in the extract that has a negative impact"
+    },
+    {
+     "label": "2.5.3",
+     "marks": 4,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract: management of catchment areas for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does the human activity (answer to QUESTION 2.5.2) negatively"
+    },
+    {
+     "label": "2.5.4",
+     "marks": 8,
+     "type": "explain",
+     "figure": "scenario_text",
+     "figure_ref": "extract: management of catchment areas for 2.5",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "In a paragraph of approximately EIGHT lines, suggest sustainable"
+    }
+   ],
+   "subtotals": [
+    {
+     "label": "2.1",
+     "marks": 7
+    },
+    {
+     "label": "2.2",
+     "marks": 8
+    }
+   ],
+   "notes": "2.1 is Y/Z matching (COLUMN A vs B); 2.1.6/2.1.7 options Y/Z are sketches. TOTAL SECTION A: 120 printed."
+  },
+  {
+   "q": 3,
+   "printed_total": null,
+   "items": [
+    {
+     "label": "3.1.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The town closest to Ladysmith is …"
+    },
+    {
+     "label": "3.1.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The feature located at grid reference (coordinates) 28°31ʹ32ʺS and"
+    },
+    {
+     "label": "3.1.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The mean magnetic declination for the year … was 21°03ʹ west"
+    },
+    {
+     "label": "3.1.4",
+     "marks": 2,
+     "type": "calculation",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Determine the total annual change for 2024."
+    },
+    {
+     "label": "3.1.5",
+     "marks": 4,
+     "type": "map_measure",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "hard",
+     "prompt": "Calculate the area of the demarcated feature 6 in blocks A4/A5"
+    },
+    {
+     "label": "3.1.6",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give a reason why the expansion of the demarcated feature 6"
+    },
+    {
+     "label": "3.2.1(a)",
+     "marks": 1,
+     "type": "term",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The temperature at F in the centre of the town is 2 °C higher"
+    },
+    {
+     "label": "3.2.1(b)",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give ONE reason why the high density of buildings at F"
+    },
+    {
+     "label": "3.2.2",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Explain how aspect of slope determined the location of Rose Park"
+    },
+    {
+     "label": "3.2.3",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The dam wall indicates that the river is flowing in a … direction."
+    },
+    {
+     "label": "3.2.4",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "A weir is used to regulate (control) the flow of water in a river."
+    },
+    {
+     "label": "3.2.5",
+     "marks": 1,
+     "type": "term",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "Identify the fluvial landform/feature."
+    },
+    {
+     "label": "3.2.6",
+     "marks": 1,
+     "type": "short_answer",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Give evidence why this fluvial landform/feature (answer to QUESTION 3.2.5)"
+    },
+    {
+     "label": "3.2.7",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Why will more erosion take place at 11 than at 10?"
+    },
+    {
+     "label": "3.3.1",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The vertical aerial photograph used to make the orthophoto map has a (high/low)"
+    },
+    {
+     "label": "3.3.2",
+     "marks": 1,
+     "type": "mcq",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "easy",
+     "prompt": "The reference of the topographical map represents (spatial/attribute) data."
+    },
+    {
+     "label": "3.3.3",
+     "marks": 2,
+     "type": "explain",
+     "figure": "map",
+     "figure_ref": "topographical map 2829DB LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How does this data (answer to QUESTION 3.3.2) assist in identifying"
+    },
+    {
+     "label": "3.3.4",
+     "marks": 2,
+     "type": "term",
+     "figure": "none",
+     "figure_ref": null,
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "Define the term buffering."
+    },
+    {
+     "label": "3.3.5",
+     "marks": 2,
+     "type": "explain",
+     "figure": "orthophoto",
+     "figure_ref": "orthophoto map 2829DB 6 LADYSMITH",
+     "answer_on": "answer_book",
+     "phone_fit": "medium",
+     "prompt": "How would buffering at 12 protect the quality of the water in the"
+    }
+   ],
+   "subtotals": [],
+   "notes": "No [30] bracket printed at the end of Q3; only 'TOTAL SECTION B: 30' and 'GRAND TOTAL: 150'. Leaves sum to 30 (3.1=10, 3.2=12, 3.3=8, no subtotals printed). map/orthophoto sheet (2829DB LADYSMITH topo 1:50 000 + 2829DB 6 orthophoto 1:10 000) is NOT in the folder. 3.3.1/3.3.2 are choose-one-of-two-in-brackets items (typed as mcq). 3.1.5 gives length 3,0 cm; breadth must be measured on the orthophoto."
+  }
+ ]
+}

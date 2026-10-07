@@ -1,0 +1,99 @@
+{
+  "file": "Mathematical Literacy P2 Nov 2024 Eng.pdf",
+  "kind": "QP",
+  "paper_total": 150,
+  "sections": [ {"name": "ALL", "rule": "Answer ALL", "questions": [1, 2, 3, 4, 5]} ],
+  "questions": [
+    {
+      "q": 1,
+      "printed_total": 26,
+      "items": [
+        {"label": "1.1.1", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1: Explanations and definitions of concepts", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Capacity"},
+        {"label": "1.1.2", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "North elevation"},
+        {"label": "1.1.3", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Imperial system"},
+        {"label": "1.1.4", "marks": 2, "type": "match", "figure": "table", "figure_ref": "TABLE 1", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Area"},
+        {"label": "1.2.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "hexagonal paving brick sketch + dimensions (1.2)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Convert 220 mm to metres."},
+        {"label": "1.2.2", "marks": 2, "type": "mcq", "figure": "diagram", "figure_ref": "hexagonal paving brick (1.2)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Choose, from the options (A, B or C) below, the correct one that could be used to calculate the volume"},
+        {"label": "1.2.3", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "three bricks in a row (1.2)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the number of bricks needed for a single row along a length of 2 860 mm."},
+        {"label": "1.3.1", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "fold-up chair 3D sketch, side view, material list (1.3)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the total number of wooden items needed to assemble this chair."},
+        {"label": "1.3.2", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "fold-up chair 3D sketch + material list (1.3)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the number of crosspieces found on the seats of THREE chairs."},
+        {"label": "1.3.3", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "material list (1.3)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the item in the material list with the longest dimension."},
+        {"label": "1.3.4", "marks": 2, "type": "short_answer", "figure": "table", "figure_ref": "material list (1.3)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Identify which dimension of the chair support will represent the thickness of the wood."},
+        {"label": "1.3.5", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "side view of fold-up chair (1,27 cm spacing)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down, in millimetres, the length of the spacing between the crosspieces"}
+      ],
+      "subtotals": [],
+      "notes": "Paper-level: scanned, read visually; 13 pages + addendum with 3 annexures (A for 2.1, B for 2.2, C for Q5). The P2 Nov 2024 ADDENDUM IS MISSING from the folder, so 2.1, 2.2 and Q5.1/5.3 annexure items cannot be checked against their figures. Five questions, answer ALL; 26+31+31+29+33 = 150; 'TOTAL: 150' printed. Q1: 1.1 = 8, 1.2 = 7, 1.3 = 11; sum 26 matches [26]."
+    },
+    {
+      "q": 2,
+      "printed_total": 31,
+      "items": [
+        {"label": "2.1.1", "marks": 2, "type": "explain", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Explain what is meant by aerial view."},
+        {"label": "2.1.2", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE A (aerial view of Baviaanskloof Uitspan campsites) - insert missing", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the maximum number of campers that can be accommodated at Baviaanskloof Uitspan camping site."},
+        {"label": "2.1.3", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Determine the general direction of the dam from campsite 8."},
+        {"label": "2.1.4", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE A - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The description below is found on their website: 'This campsite is situated near the dam"},
+        {"label": "2.1.5", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE A - insert missing", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate, as a percentage, the probability of John and his family randomly selecting a hut"},
+        {"label": "2.1.6(a)", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "layout plan of the ablution facilities (2.1.6)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the total number of showers."},
+        {"label": "2.1.6(b)", "marks": 4, "type": "map_measure", "figure": "diagram", "figure_ref": "layout plan of the ablution facilities (8,2 m)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine, rounded to the nearest whole number, the scale of the plan."},
+        {"label": "2.1.6(c)", "marks": 2, "type": "explain", "figure": "diagram", "figure_ref": "layout plan of the ablution facilities", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give ONE suitable reason why benches are found in the ablution facilities."},
+        {"label": "2.2.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE B (Leopard Trail Run map + elevation map) - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the day during the run when you would pass Gabriel's Pools."},
+        {"label": "2.2.2", "marks": 2, "type": "mcq", "figure": "annexure", "figure_ref": "ANNEXURE B - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The descriptions of a part of the route on the brochure are as follows"},
+        {"label": "2.2.3", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE B elevation map - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Determine the number of kilometres John had run when he reached the highest point"},
+        {"label": "2.2.4", "marks": 2, "type": "explain", "figure": "annexure", "figure_ref": "ANNEXURE B elevation map - insert missing", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "John's best average speed (in km/h) for the run was his average speed from the 8 km mark"},
+        {"label": "2.2.5", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE B elevation map - insert missing", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "John stated that on Day 2, while he was running from the 17,5 km mark to the end"}
+      ],
+      "subtotals": [],
+      "notes": "2.1 = 20, 2.2 = 11; sum 31 matches [31]. 2.1.6(b) needs measuring the printed plan with a ruler (scanned copy may not be to original size). Annexures A and B missing from folder."
+    },
+    {
+      "q": 3,
+      "printed_total": 31,
+      "items": [
+        {"label": "3.1.1", "marks": 2, "type": "calculation", "figure": "none", "figure_ref": null, "answer_on": "answer_book", "phone_fit": "easy", "prompt": "The school day ends at 12:55. Tendani's father was late and only came to fetch him at 14:13."},
+        {"label": "3.1.2", "marks": 4, "type": "calculation", "figure": "photo", "figure_ref": "pillows in the bag + dimensions of the bag (30 x 46 x 48 cm)", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The height of one pillow is 11 cm. Determine the difference between the total height"},
+        {"label": "3.1.3", "marks": 5, "type": "calculation", "figure": "photo", "figure_ref": "dimensions of the bag (3.1)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The piping around the bottom edge of some of the bags for the pillows needs to be replaced."},
+        {"label": "3.2.1", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "picture and diagram of a circular wooden tag (8 cm)", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Determine, in cm, the circumference of the circular wooden tag."},
+        {"label": "3.2.2", "marks": 2, "type": "calculation", "figure": "diagram", "figure_ref": "circular wooden tag diagram", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Determine, in cm, the radius of ONE circular wooden tag."},
+        {"label": "3.2.3", "marks": 9, "type": "calculation", "figure": "diagram", "figure_ref": "circular wooden tag diagram", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The hardware store sells paint in 50 ml, 1 litre, 5 litre and 20 litre containers."},
+        {"label": "3.3.1", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "diagram and picture of a cube and cubic-shaped packet", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "The volume of the cubic-shaped packet is 2 744 cm3. Calculate the side length"},
+        {"label": "3.3.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 2: Number of sweets per colour", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "There are 35 different coloured sweets in each packet."}
+      ],
+      "subtotals": [],
+      "notes": "3.1 = 11, 3.2 = 13, 3.3 = 7; sum 31 matches [31]."
+    },
+    {
+      "q": 4,
+      "printed_total": 29,
+      "items": [
+        {"label": "4.1.1", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "cylindrical tower showing products and boiling temperatures", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Identify the crude oil product that will be third to boil."},
+        {"label": "4.1.2", "marks": 2, "type": "short_answer", "figure": "diagram", "figure_ref": "cylindrical tower diagram", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the product extracted at 150 C."},
+        {"label": "4.1.3", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "cylindrical tower diagram", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Convert the boiling point of diesel to degrees Fahrenheit."},
+        {"label": "4.1.4", "marks": 7, "type": "calculation", "figure": "diagram", "figure_ref": "diagram of a vertical cylindrical tower (54 m, 6 m)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The pipes leading in and out of the vertical, cylindrical tower take up 2,5% of the surface area"},
+        {"label": "4.2.1", "marks": 5, "type": "calculation", "figure": "diagram", "figure_ref": "incomplete brick-pattern diagram + side view of double-brick wall", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Determine the total number of pallets of bricks needed to replace both garage doors."},
+        {"label": "4.2.2", "marks": 7, "type": "calculation", "figure": "photo", "figure_ref": "picture of two doors to be replaced (4.2)", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "The opening of a garage door has dimensions of 2,13 m x 3 m."},
+        {"label": "4.2.3", "marks": 2, "type": "explain", "figure": "photo", "figure_ref": "bricks on a wooden pallet", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Give ONE suitable reason why the bricks have to be placed on a wooden pallet."}
+      ],
+      "subtotals": [],
+      "notes": "4.1 = 15, 4.2 = 14; sum 29 matches [29]."
+    },
+    {
+      "q": 5,
+      "printed_total": 33,
+      "items": [
+        {"label": "5.1.1", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C (map of Australia, distances/driving times, trip plan) - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Write down the names of the cities where the distance between them is 738 km."},
+        {"label": "5.1.2", "marks": 3, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the FOUR months when Chris and Boipelo will be in Western Australia."},
+        {"label": "5.1.3", "marks": 3, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE C - insert missing", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine the distance from Perth to Adelaide."},
+        {"label": "5.1.4", "marks": 2, "type": "short_answer", "figure": "annexure", "figure_ref": "ANNEXURE C - insert missing", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "Name the state where they plan to be during February."},
+        {"label": "5.1.5", "marks": 4, "type": "calculation", "figure": "annexure", "figure_ref": "ANNEXURE C - insert missing", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Calculate the average speed, in km/h, from Brisbane to Cairns."},
+        {"label": "5.2.1", "marks": 3, "type": "calculation", "figure": "diagram", "figure_ref": "height comparison diagram: Uluru vs tourist attractions", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine, rounded to THREE decimal places, the conversion factor from feet to metres"},
+        {"label": "5.2.2", "marks": 4, "type": "calculation", "figure": "diagram", "figure_ref": "height comparison diagram", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Write, as a simplified ratio, the heights of Uluru : Eiffel Tower : Big Ben."},
+        {"label": "5.3.1", "marks": 2, "type": "calculation", "figure": "table", "figure_ref": "TABLE 3: Area sizes of the mainland, islands and total", "answer_on": "answer_book", "phone_fit": "easy", "prompt": "A meteorite (rock from the sky) fell somewhere in Australia. Write down the probability"},
+        {"label": "5.3.2", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Show, with calculations, why it could be stated that the total area of the islands"},
+        {"label": "5.3.3(a)", "marks": 3, "type": "calculation", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "answer_book", "phone_fit": "medium", "prompt": "Determine, rounded to the nearest whole number, the population density of the Australian Capital Territory"},
+        {"label": "5.3.3(b)", "marks": 4, "type": "explain", "figure": "table", "figure_ref": "TABLE 3", "answer_on": "answer_book", "phone_fit": "hard", "prompt": "Give a suitable reason, with calculations, why this area is omitted from the percentage calculation"}
+      ],
+      "subtotals": [],
+      "notes": "5.1 = 14, 5.2 = 7, 5.3 = 12; sum 33 matches [33]. ANNEXURE C missing from folder (needed for 5.1; 5.3 also says 'refer to ANNEXURE C' but is answerable from TABLE 3)."
+    }
+  ]
+}
