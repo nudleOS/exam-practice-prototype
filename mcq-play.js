@@ -555,7 +555,7 @@
     function killWrong() { restoreGone(); [...RQA("#mq-tiles .tile")].filter(x => +x.dataset.i !== S.it.a && (opts.after === "panel" || !S.gone.has(+x.dataset.i)) && !x.classList.contains("dead"))
       .forEach((x, k) => { x.style.setProperty("--dd", (k * 0.12).toFixed(2) + "s"); x.classList.add("dead"); }); }
 
-    const RAISE_MS = 380;
+    const RAISE_MS = 260;   // (380 until 2026-10-08, with VERDICT_MS: the answer lands sooner, Murci "things need to be fast")
     // Raise the selected card: larger, on top, leaning 12% of the way toward the grid's middle. Returns when it is up (ms).
     // Measured on screenshot 2 (D, bottom-right, on a 355×96 card): its glass reached 73 px toward the middle, 41 px up over
     // B's lower strip, 13 px down, and pulled in 8 px on its outer side. Mirrored for the other corners; on one column it
@@ -578,7 +578,7 @@
       const L = oneCol ? oL : Math.min(h[0], r.left - g.left), R = oneCol ? oR : Math.min(h[1], g.right - r.right);
       [["--rl", -L], ["--rr", -R], ["--rt", -v[0]], ["--rb", -v[1]]].forEach(([k, px]) => t.style.setProperty(k, px + "px"));
       t.classList.add("raised"); return RAISE_MS; }
-    const VERDICT_MS = 440;                 // the green light shows this long before the right card moves
+    const VERDICT_MS = 300;                 // the green light shows this long before the right card moves (440 until 2026-10-08)
     // The right answer: a green hairline runs round the rim from the fingertip, both ways, meeting opposite, while green
     // light fills the glass from that point. (Perimeter position from the straight edges; the corners are small.)
     function verdictLight(t, hit, ok) { const face = t.querySelector(".face"), w = face.offsetWidth, h = face.offsetHeight, NS = "http://www.w3.org/2000/svg";
@@ -750,7 +750,7 @@
       const svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", "cracks"); svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
       const lo = document.createElementNS(NS, "g"), rd = document.createElementNS(NS, "g"), hi = document.createElementNS(NS, "g");
       rd.setAttribute("class", "redglow"); hi.setAttribute("class", "glow"); svg.append(lo, rd, hi);
-      const SPEED = 1.4;
+      const SPEED = 2;   // px per ms (1.4 until 2026-10-08: the answer lands sooner, Murci "things need to be fast")
       const draw = (pts, width, startDist, alpha = 1, lag = 0) => { const len = pts.reduce((m, q, k) => k ? m + Math.hypot(q.x - pts[k - 1].x, q.y - pts[k - 1].y) : 0, 0); if (len < 1) return;
         const d = "M" + pts.map(q => q.x.toFixed(1) + " " + q.y.toFixed(1)).join(" L");
         [[lo, "lo", width + 1.2, 0.7], [rd, "rd", width + 0.3, 0], [hi, "hi", Math.max(0.45, width * 0.42), 0]].forEach(([g, cls, sw, off]) => { const e = document.createElementNS(NS, "path"); e.setAttribute("class", cls); e.setAttribute("d", d);
@@ -760,7 +760,7 @@
       // It grows the way glass does: four main cracks shoot out first, the other seven follow (~0.2 s), the rings link them
       // as the rays pass, then forks, a third partial ring and short hairlines fill the web in. Only the 11 rays and 2 rings
       // cut pieces (33, as measured for frame rate); the rest is drawn on the glass.
-      const FIRST = new Set([0, 3, 6, 8]); rays.forEach((ry, k) => ry.d0 = FIRST.has(k) ? 0 : 170 + rnd(0, 90));
+      const FIRST = new Set([0, 3, 6, 8]); rays.forEach((ry, k) => ry.d0 = FIRST.has(k) ? 0 : 115 + rnd(0, 60));   // (170 + 0-90 until 2026-10-08)
       rays.forEach(ry => { draw(slice(ry, 0, ry.ring[0]), 1.7, 0, 1, ry.d0); draw(slice(ry, ry.ring[0], ry.ring[1]), 1.2, ry.ring[0], 1, ry.d0); draw(slice(ry, ry.ring[1], ry.len), 0.8, ry.ring[1], 1, ry.d0);
         [[0.8, 0.5, 0.75], [0.4, 0.3, 0.55]].forEach(([pr, lo, hi]) => { if (Math.random() > pr) return;                        // forks: most rays one, some two
           const t0 = ry.len * rnd(lo, hi), o = at(ry, t0); let a = ry.base + rnd(0.3, 0.5) * (Math.random() < 0.5 ? -1 : 1), q = o; const pts = [o];
@@ -778,7 +778,7 @@
       const fl = document.createElement("div"); fl.className = "impact"; fl.style.left = p.x + "px"; fl.style.top = p.y + "px"; face.appendChild(fl);
       fl.animate([{ opacity: 0, transform: "scale(0.3)" }, { opacity: 1, transform: "scale(1)", offset: 0.25 }, { opacity: 0, transform: "scale(1.4)" }], { duration: 300, easing: "ease-out", fill: "forwards" });
       tile.animate([{ translate: "0 0", rotate: "0deg" }, { translate: "-4px 0", rotate: "-0.5deg" }, { translate: "3px 0", rotate: "0.4deg" }, { translate: "0 0", rotate: "0deg" }], { duration: 200 });   // translate/rotate, not transform: it shudders ON the raised card instead of undoing its lift
-      const crackMs = Math.max(...rays.map(ry => ry.d0 + ry.len / SPEED)) + 160;   // until the last wave has drawn
+      const crackMs = Math.max(...rays.map(ry => ry.d0 + ry.len / SPEED)) + 100;   // until the last wave has drawn (+160 until 2026-10-08)
       // The pieces are built while the learner looks at the cracked glass (invisible), so the instant of breaking only
       // shows and moves them. Measured before: building 33 full-card clones at that instant dropped the fall to 19 fps.
       // Built 6 pieces a frame (measured: all 33 at once froze one frame for 326 ms, visible in the robot's hop).
