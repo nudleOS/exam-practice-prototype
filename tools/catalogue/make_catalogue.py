@@ -11,6 +11,7 @@ renders its page images). Every other paper is "preparing".
 
   python tools/catalogue/make_catalogue.py      (then python tools/catalogue/make_pages.py)
 """
+import hashlib
 import json
 import os
 import re
@@ -70,6 +71,8 @@ if __name__ == "__main__":
                 if pid in FINISHED:
                     assert os.path.exists(os.path.join(ROOT, "tools", "ingest", "out", pid, "paper.js")), pid + ": not ingested yet"
                     entry["status"] = "ready"
+                    # its content's fingerprint: the page loads paper.js?v=<rev>, so the browser keeps it until a re-ingest changes it
+                    entry["rev"] = hashlib.sha1(open(os.path.join(ROOT, "tools", "ingest", "out", pid, "paper.js"), "rb").read()).hexdigest()[:10]
                     entry["source_pdf"] = "uploads/" + FINISHED[pid][0]
                     # a paper played in part (Geography: its maps are not published, so Section B's map questions wait) shows the marks
                     # it plays; the cover's stays as printed_marks

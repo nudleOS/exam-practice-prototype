@@ -15,17 +15,21 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=3"></script>
+<script src="papers-catalogue.js?v=4"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
        finished paper. ?ingested=<id> still adds one more (a paper under review). The app waits until each has arrived (or failed). -->
   <script>(function () { if (window.__ingestWant != null) return;
-    var ids = ((window.NX_CATALOGUE || {}).papers || []).filter(function (p) { return p.status === "ready"; }).map(function (p) { return p.id; });
+    // each ready paper with its content's fingerprint (make_catalogue.py: rev): the browser keeps it until it changes (2026-10-08: a
+    // ?v=Date.now() was a new URL every load, and all 13 papers came down again each time the map opened)
+    var ready = ((window.NX_CATALOGUE || {}).papers || []).filter(function (p) { return p.status === "ready"; }), rev = {};
+    ready.forEach(function (p) { rev[p.id] = p.rev || ""; });
+    var ids = ready.map(function (p) { return p.id; });
     var m = /[?&]ingested=([\w.-]+)/.exec(location.search);
     if (m && m[1].indexOf("..") < 0 && ids.indexOf(m[1]) < 0) ids.push(m[1]);
     window.__ingestWant = ids.length;
-    ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + Date.now();
+    ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + (rev[id] || Date.now());   // (a paper under review, ?ingested=, is always fresh)
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
 <script src="papers-pages.js?v=2"></script>
   <script src="mcq-play.js?v=62"></script>
