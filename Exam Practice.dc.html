@@ -93,7 +93,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=265">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=51">
+  <link rel="stylesheet" href="nx-map.css?v=52">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -510,6 +510,9 @@
           <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><p class="pm-sheet-note">{{ pmSheetNote }}</p></sc-if>
           <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}">
             <button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button>
+          </sc-if>
+          <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}">
+            <button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake the paper<span>For marks only · no XP</span></button>
           </sc-if>
           <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}">
             <button type="button" class="pm-src" onClick="{{ pmSourceGo }}">View question paper</button>
@@ -2816,8 +2819,10 @@ class Component extends DCLogic {
           { label: "Questions", value: g ? (g.started || g.done ? g.closedN + " of " + g.missions.length : String(g.missions.length)) : String(p.missions || p.questions || "–") },
           { label: "Time", value: hrs(p.duration_minutes) }],
         pmHasBar: !!g && (g.started || g.done), pmBarPct: sel.pct + "%",
-        pmHasSheetNote: !g || !!g.local.note, pmSheetNote: !g ? "Nexera is still preparing this paper. It opens here when it's ready." : g.local.note,
+        pmHasSheetNote: !g, pmSheetNote: "Nexera is still preparing this paper. It opens here when it's ready.",   // (no ingestion line: Murci 2026-10-08)
         pmHasPrimary: !!go, pmPrimary: go ? go.label : "", pmPrimaryGo: () => { if (go) go.run(); },
+        pmHasRetake: !!(sel && g && (sel.state === "done" || sel.state === "going")),
+        pmRetakeGo: () => { if (g) this.setState({ pmOpen: null, paperId: g.local.id }, () => this.retakePaper()); },
         pmHasSource: !!p.source_pdf, pmSourceGo: () => this.setState({ pmOpen: null }, () => this.openPaperSource(p.id, 1)) } : {}),
     };
   }
@@ -3520,7 +3525,8 @@ class Component extends DCLogic {
         medal: medal || (answered ? (lost > 0 ? "none" : "done") : "open"), medalLabel: medal ? medal[0].toUpperCase() + medal.slice(1) : answered ? (draw ? "Drawn" : lost > 0 ? "No medal" : "Done") : "Not answered",
         marks: lost > 0 ? "−" + lost + " of " + q.marks : best + " / " + q.marks, lostSide: lost > 0,
         tries: tries || (medal === "gold" && answered ? "✓ Right on the first try" : answered ? "" : "Not answered yet"),
-        memo: (SERVER.memo[q.key] || []).map(String).join("\n") || "In the paper's memo",
+        memo: (q.response_mode === "mcq" && !q.ab ? (SERVER.memo[q.key] || []).map(t => { const o = (q.options || []).map(x => String(x).trim()), i = o.indexOf(String(t).trim());
+            return i >= 0 && !/^[A-Z]$/.test(o[i]) ? String.fromCharCode(65 + i) + " · " + o[i].replace(/\.$/, "") : String(t); }) : (SERVER.memo[q.key] || []).map(String)).join("\n") || "In the paper's memo",   // (a multiple-choice memo with its letter, as the tries show)
         canGo: lost > 0, goLabel: answered ? "Retake" : "Answer",
         aria: (answered ? "Retake " : "Answer ") + q.number + ", " + lost + " of " + q.marks + " marks to win" + (answered ? ", no XP" : ""),
         go: () => answered ? this.retakePart(mi, pi, "summary") : this.resetInputs({ screen: "play", mi: mi, pi: pi, revisit: true, revisitTo: "summary" }) }; }).filter(Boolean) }));
@@ -3573,6 +3579,19 @@ class Component extends DCLogic {
     const mb = q.response_mode === "mcq" ? this.mcqBook() : null;
     this._retakeSaved = { key: q.key, g: g, n: q.number, mb: mb ? mb[q.number] : undefined }; if (mb) delete mb[q.number];
     this.resetInputs({ screen: "play", mi: mi, pi: pi, prog: pp, revisit: true, revisitTo: back || "done" }); }
+  // The whole paper again, from scratch (Murci 2026-10-08, the map's paper sheet: "retake of the whole paper from scratch but only for
+  // marks and not XPs on the second try"): every question open with three fresh tries, as a single retake opens one (retakePart):
+  // a replay pays no XP, a higher mark replaces a lower one, the first attempt's mark is kept (the review's "First try"). Its
+  // answers start afresh for the review. The multiple-choice cards' record of finished questions goes, so they can be answered
+  // again. The presentation order (?demo=1) is off: a retake runs the whole paper.
+  retakePaper() {
+    const pp = Object.assign({}, this.state.prog), mb = this.mcqBook();
+    this.missions().forEach(m => m.parts.forEach(q => { const g = this.pg(q.key);
+      pp[q.key] = Object.assign({}, g, { tries: 0, closed: false, revealed: false, waiting: false, replay: true, retake: true, dead: [], att: [], first: g.first != null ? g.first : (g.best || 0) }); }));
+    Object.keys(mb).forEach(k => { delete mb[k]; });
+    this._retakeSaved = null; this._demoOrder = null;
+    this.resetInputs({ screen: "play", mi: 0, pi: 0, prog: pp, revisit: false, revisitTo: null, runLog: [], missionStart: { mi: 0, earned: this.earnedNow() } }); window.scrollTo(0, 0);
+  }
   // A retake left without a try (Next, Skip, the map): the part goes back to the result it had (found 2026-10-03: left untried it stayed
   // open, so the done screen said "IN PROGRESS · Mission 1.3 complete" and the part left "To revisit"). A tried retake stands.
   endRetake() { const r = this._retakeSaved; this._retakeSaved = null; if (!r) return; const now = this.pg(r.key); if (now.tries || now.closed) return;
