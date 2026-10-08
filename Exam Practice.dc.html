@@ -97,7 +97,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=268">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=52">
+  <link rel="stylesheet" href="nx-map.css?v=54">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1287,6 +1287,7 @@
 
   <sc-if value="{{ onSummary }}" hint-placeholder-val="{{ false }}">
     <main class="rv rc" data-review="true">
+      <div class="rc-side">
       <section class="rc-head" aria-label="Your result">
         <span class="rc-ringbox"><svg class="rc-ring" width="84" height="84" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="34" fill="none" stroke="rgba(129,177,255,0.16)" stroke-width="8"></circle><circle cx="42" cy="42" r="34" fill="none" stroke="{{ rcRing }}" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ rcDash }}" transform="rotate(-90 42 42)"></circle></svg><span class="rc-ringpct">{{ rcPct }}</span></span>
         <div class="rc-sum">
@@ -1302,6 +1303,8 @@
       <div class="rc-chips" role="group" aria-label="Show">
         <sc-for list="{{ rcChips }}" as="ch" hint-placeholder-count="2"><button type="button" class="rc-chip" aria-pressed="{{ ch.on }}" onClick="{{ ch.pick }}">{{ ch.label }}</button></sc-for>
       </div>
+      </div>
+      <div class="rc-main">
       <sc-if value="{{ rcEmpty }}" hint-placeholder-val="{{ false }}"><p class="rc-empty">{{ rcEmptyText }}</p></sc-if>
       <div class="rc-list">
         <sc-for list="{{ rcItems }}" as="r" hint-placeholder-count="4">
@@ -1326,6 +1329,7 @@
             </details>
           </sc-if>
         </sc-for>
+      </div>
       </div>
       <button type="button" class="rv-another" onClick="{{ rvAnother }}">Choose another paper</button>
     </main>

@@ -512,3 +512,37 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the whole paper again (the paper sheet, Murci 2026-10-08): the rule under its name */
 .pm-src.pm-retake { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
 .pm-src.pm-retake > span { font-size: 12px; font-weight: 600; color: #8fa0d6; }
+/* ==== Review my paper, wide (Murci 2026-10-08: "use the entire width of the page when on desktop ... with good spacing"): at
+   >= 900 px (a tablet held landscape, a laptop, a desktop) the summary is a column on the left that stays in view, the questions
+   wide rows on the right, up to 1440 px; under 900 px one column, as before. Sizes are fluid between the two ends of each range
+   (clamp), so a 1024 tablet and a 1920 desktop each get their own, not one fixed size. The DOM order is the reading order. ==== */
+.rc-side, .rc-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+@media (min-width: 900px) {
+  .rv.rc { display: grid; grid-template-columns: clamp(272px, 27vw, 360px) minmax(0, 1fr); align-items: start;
+    column-gap: clamp(24px, 3vw, 48px); row-gap: 18px; width: min(1440px, 100%);
+    padding: clamp(20px, 2.6vw, 40px) clamp(20px, 3.2vw, 56px) calc(56px + env(safe-area-inset-bottom)); }
+  .rc-side { grid-column: 1; grid-row: 1 / span 2; position: sticky; top: calc(var(--nx-headH, 65px) + 20px);   /* (the review header is 65 px tall at 900+, measured 2026-10-08) */ gap: 16px; }
+  .rc-main { grid-column: 2; grid-row: 1; }
+  .rv.rc > .rv-another { grid-column: 2; grid-row: 2; justify-self: start; margin-top: 4px; padding: 0 28px; }
+  /* the result, as a card: the ring beside the score, the paper's line under them, the medals in a row along the bottom */
+  .rc-side .rc-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 16px 18px; padding: clamp(18px, 1.8vw, 24px); }
+  .rc-side .rc-medals { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; gap: 8px 16px; padding-top: 14px; border-top: 1px solid rgba(129, 177, 255, 0.14); }
+  .rc-side .rv-score > b { font-size: clamp(38px, 3.4vw, 48px); }
+  .rc-side .rv-line { margin: 0; font-size: clamp(14.5px, 1.1vw, 16px); }
+  .rc-side .rc-chips { gap: 10px; }
+  .rc-side .rc-chip { flex: 1 1 0; min-height: 46px; }
+  /* the questions: wide rows, the stem on up to two lines (no ellipsis where there is room), the tries and the memo side by side */
+  .rc-main .rc-list { gap: 10px; }
+  .rc-main .rc-group { margin: 16px 0 2px; font-size: clamp(12.5px, 0.95vw, 14px); }
+  .rc-main .rc-group:first-child { margin-top: 0; }
+  .rc-main .rc-row > summary { min-height: 60px; gap: 14px; padding: 10px clamp(16px, 1.6vw, 24px); }
+  .rc-main .rc-num { min-width: 64px; font-size: clamp(15px, 1.1vw, 17px); }
+  .rc-main .rc-pill { font-size: 12.5px; padding: 4px 12px; }
+  .rc-main .rc-stem { font-size: clamp(14px, 1.05vw, 16px); line-height: 1.45; white-space: normal;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .rc-main .rc-row[open] .rc-stem { -webkit-line-clamp: unset; display: block; }
+  .rc-main .rc-marks { font-size: clamp(14px, 1.05vw, 16px); }
+  .rc-main .rc-body { gap: 14px clamp(18px, 2vw, 32px); padding: 4px clamp(16px, 1.6vw, 24px) clamp(16px, 1.6vw, 22px) calc(64px + 14px + clamp(16px, 1.6vw, 24px)); }
+  .rc-main .rc-k { font-size: 12px; }
+  .rc-main .rc-v { font-size: clamp(14px, 1.05vw, 16px); }
+}
