@@ -1981,7 +1981,8 @@ class Component extends DCLogic {
           let first = null;
           ms.forEach((m, mi) => m.parts.forEach((pt, pi) => { if (open.indexOf(pt.number) !== -1) { if (!first) first = { mi, pi }; return; }
             prog[pt.key] = { tries: 1, best: pt.marks || 0, closed: true, revealed: false, firstTryFull: true, waiting: false, medal: "gold" }; }));
-          this.setState({ prog }, () => { if (first) { this.openMission(first.mi); setTimeout(() => this.resetInputs({ pi: first.pi }), 0); } else this.forceUpdate(); }); });
+          this.setState({ prog }, () => { first = this.demoNext(null) || first;   // the presenting order's first, not the paper's
+            if (first) { this.openMission(first.mi); setTimeout(() => this.resetInputs({ pi: first.pi }), 0); } else this.forceUpdate(); }); });
         return; }
       if (playQ != null) this.setState({ paperId: paperQ }, () => { this.openMission(Math.max(0, parseInt(playQ, 10) || 0));   // ?play=N (design preview): straight into mission N, &part=K its part K (to review every response mode)
         const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0);
@@ -2938,12 +2939,16 @@ class Component extends DCLogic {
   // Skip on a mission's LAST open question (Murci, 2026-10-03: "Next mission"): it moves on to the next mission's first open question,
   // round from the start, so it stays open on the map and comes back; inside a mission Skip keeps the 2026-09-30 order (advance).
   // Next after an answer is not a skip: it still ends the mission on its done screen.
-  // ?demo=1: the next open part in the presenting order (the demo's own list), whatever the paper's order
-  demoNext() { const ms = this.missions();
-    for (const num of this._demoOrder || []) for (let i = 0; i < ms.length; i++) { const pi = ms[i].parts.findIndex(p => p.number === num);
-      if (pi >= 0) { const g = this.pg(ms[i].parts[pi].key); if (!g.closed && !g.waiting) return { mi: i, pi: pi }; } }
+  // ?demo=1: the next open part in the presenting order (the demo's own list), whatever the paper's order. From the top, or AFTER
+  // `after` (the part being played: Skip and Next move on from it, round the order, so a skipped one comes back after the last;
+  // never `after` itself, or Skip reopened the same question, 2026-10-08)
+  demoNext(after) { const ms = this.missions(), order = this._demoOrder || [], n = order.length, at = after ? order.indexOf(after) : -1;
+    for (let d = 1; d <= n; d++) { const num = order[(at + d) % n]; if (num === after) continue;
+      for (let i = 0; i < ms.length; i++) { const pi = ms[i].parts.findIndex(p => p.number === num);
+        if (pi >= 0) { const g = this.pg(ms[i].parts[pi].key); if (!g.closed && !g.waiting) return { mi: i, pi: pi }; } } }
     return null; }
-  nextMissionOpen() { if (this._demoOrder) return this.demoNext(); const ms = this.missions(), n = ms.length, mi = this.state.mi;
+  nextMissionOpen() { if (this._demoOrder) { const p = this.state.screen === "play" ? this.part() : null; return this.demoNext(p ? p.number : null); }
+    const ms = this.missions(), n = ms.length, mi = this.state.mi;
     for (let d = 1; d < n; d++) { const i = (mi + d) % n, pi = ms[i].parts.findIndex(p => { const g = this.pg(p.key); return !g.closed && !g.waiting; }); if (pi >= 0) return { mi: i, pi: pi }; }
     return null; }
   skipPart() { const s = this.state, m = this.mission(); if (s.drill || s.revisit || this.nextOpenPart(m) >= 0) return this.advance();
