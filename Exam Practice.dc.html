@@ -1206,9 +1206,17 @@
           <span data-donestat="marks" style="display:flex; flex-direction:column; gap:4px; padding:14px; border-radius:16px; border:1px solid var(--line2); background:rgba(var(--nx-c, 29,32,35), 0.82)">
             <span aria-hidden="true" style="font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1">{{ doneMarksShown }}</span>
             <span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ doneMarksText }}</span>
-            <span style="font-size:12px; font-weight:600; line-height:1.45; color:var(--text2)">marks in this mission</span>
+            <span style="font-size:12px; font-weight:600; line-height:1.45; color:var(--text2)">{{ doneMarksLabel }}</span>
           </span>
         </div>
+        <sc-if value="{{ donePaperDone }}" hint-placeholder-val="{{ false }}">
+          <div data-donemedals="true" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px 14px; padding:12px 14px; border-radius:16px; border:1px solid var(--line2); background:rgba(var(--nx-c, 29,32,35), 0.82); font-size:14px; font-weight:700">
+            <sc-for list="{{ doneMedals }}" as="dm" hint-placeholder-count="3">
+              <span style="display:inline-flex; align-items:center; gap:7px"><span aria-hidden="true" style="width:14px; height:14px; box-sizing:border-box; border-radius:50%; border:3px solid {{ dm.c }}"></span>{{ dm.n }} {{ dm.label }}</span>
+            </sc-for>
+            <span style="font-size:12.5px; font-weight:600; color:var(--text2)">{{ doneMedalsOf }}</span>
+          </div>
+        </sc-if>
         <sc-if value="{{ doneHasWaiting }}" hint-placeholder-val="{{ false }}">
           <span data-donewait="true" style="padding:10px 12px; border-radius:12px; border:1px solid rgba(224,161,15,0.4); background:rgba(224,161,15,0.08); font-size:12.5px; line-height:1.5; color:var(--warn)">{{ doneWaiting }}</span>
         </sc-if>
@@ -4026,7 +4034,16 @@ class Component extends DCLogic {
       .filter(x => x.p.marks && x.p.response_mode !== "draw" && !x.g.waiting && x.g.tries > 0 && (x.g.best || 0) < x.p.marks).slice(0, 3);   // (a drawing is not marked online: it never "missed" marks, and a retake cannot win them; found 2026-10-03, 3.6.4 "3 marks missed")
     const short = t => { const x = String(t || "").replace(/\s+/g, " ").trim(); return x.length > 64 ? x.slice(0, 61) + "…" : x; };
     const cnt = s.doneCount, word = n => n + (n === 1 ? " mark" : " marks");
+    // the paper finished (nothing left open): the end page is the PAPER's finish, not its last mission's (Murci 2026-10-08)
+    const fin = !nm, P0 = this.paper() || {}, md = fin ? medalPoints(P0, k => this.pg(k)) : null, ppct = total ? Math.round(100 * earned / total) : 0;
+    const TIER = { top: ["Top form", "gold", "#f3c14f"], solid: ["A solid finish", "silver", "#cfd4db"], finished: ["Paper complete", "bronze", "#d99a6c"] }, tr = md ? TIER[md.tier] : null;
+    const lostAll = fin ? missions.reduce((a, m, mi2) => a.concat(m.parts.map((p, pi) => ({ p: p, pi: pi, mi: mi2, g: this.pg(p.key) }))), [])
+      .filter(x => x.p.marks && x.p.response_mode !== "draw" && !x.g.waiting && x.g.tries > 0 && (x.g.best || 0) < x.p.marks)
+      .sort((a, b) => (b.p.marks - (b.g.best || 0)) - (a.p.marks - (a.g.best || 0))).slice(0, 3) : null;
     return {
+      donePaperDone: fin, doneMedals: md ? [{ n: md.gold, label: "gold", c: "#f3c14f" }, { n: md.silver, label: "silver", c: "#cfd4db" }, { n: md.bronze, label: "bronze", c: "#d99a6c" }] : [],
+      doneMedalsOf: md ? "of " + md.n + " questions" : "",
+      doneMarksLabel: fin ? "marks on the paper · " + ppct + "%" : "marks in this mission",
       doneMaxW: wide ? "780px" : "560px", donePad: wide ? "36px 28px 60px" : "16px 16px 48px", doneCols: wide ? "220px minmax(0, 1fr)" : "minmax(0, 1fr)", doneGap: wide ? "28px" : "12px",
       doneCompW: wide ? "220px" : "110px", doneCompH: wide ? "330px" : "160px", doneAlign: wide ? "flex-start" : "center", doneTextAlign: wide ? "left" : "center", doneH1: phone ? "24px" : "28px",
       doneModelOn: !s.reduced && !s.saveData, donePoster: !!(s.reduced || s.saveData), doneClip: clean || !nm ? "dance" : "greet",   // (the paper finished, it always dances: Murci 2026-10-08, "on the end page when the learner is finished with the exam the robot must be dancing")
@@ -4034,30 +4051,29 @@ class Component extends DCLogic {
       // the right arm is straight and out to the side 12.2-12.35 s, highest at 12.3 (the last frame, 12.79, has the arms bent in
       // front; 7.0 cut the dance short). "" = no hold, so the greeting just ends.
       doneHold: clean || !nm ? "12.3" : "",
-      doneRing: mSt.ring, doneGrade: waitingN ? (waitingN === 1 ? "1 part waiting for a marker" : waitingN + " parts waiting for a marker") : MEDAL[mSt.label] || mSt.label,
-      doneKicker: "Mission " + mission.id + " complete", doneTitle: mission.title,
-      doneXpShown: "+" + (cnt ? cnt.xp : xp), doneXpText: xp + " XP earned in this mission", doneXpWhy: why.join(" · "),
-      doneMarksShown: (cnt ? cnt.marks : mEarned) + "/" + mTotal, doneMarksText: mEarned + " of " + mTotal + " marks",
+      doneRing: tr ? tr[2] : mSt.ring, doneGrade: waitingN ? (waitingN === 1 ? "1 part waiting for a marker" : waitingN + " parts waiting for a marker") : tr ? tr[0] + " · " + tr[1] : MEDAL[mSt.label] || mSt.label,
+      doneKicker: fin ? "Paper complete" + (P0.sitting ? " · " + (P0.sitting.label || P0.sitting) : "") : "Mission " + mission.id + " complete", doneTitle: fin ? P0.title || mission.title : mission.title,
+      doneXpShown: "+" + (fin ? s.xp : cnt ? cnt.xp : xp), doneXpText: fin ? s.xp + " XP earned on this paper" : xp + " XP earned in this mission", doneXpWhy: fin ? "XP earned on this paper" : why.join(" · "),
+      doneMarksShown: fin ? earned + "/" + total : (cnt ? cnt.marks : mEarned) + "/" + mTotal, doneMarksText: fin ? earned + " of " + total + " marks on the paper" : mEarned + " of " + mTotal + " marks",
       // The streak is a count of first tries, not a multiplier: the multiplier is the server's to compute.
       // (measured 2026-09-30: "8 first tries" in the XP line beside "7 first tries in a row" read as a mismatch; both were true: the
       // mission's count, and the unbroken run now. The run is named as the run.)
       doneHasStreak: s.streak >= 2 && !!nm, doneStreak: "Your run now: " + s.streak + " first tries in a row, carried into " + (nm ? (/^Question/i.test(nm.id) ? nm.id : "Question " + nm.id) : ""),
       doneHasWaiting: waitingN > 0, doneWaiting: "Its marks land on the map when a marker has read it. You can keep going.",
-      donePaperText: before + " → " + earned + " of " + total + " banked",
+      donePaperText: fin ? earned + " of " + total + " banked · " + ppct + "%" : before + " → " + earned + " of " + total + " banked",
       donePaperAria: "The paper: " + before + " marks banked before this mission, " + earned + " now, of " + total,
       doneBeforePct: pct(before), doneGainPct: s.doneGrow ? pct(earned - before) : "0%", doneGainDur: s.reduced ? "0ms" : "900ms",
-      doneHasRevisit: revisit.length > 0,
-      doneRevisit: revisit.map(x => { const lost = x.p.marks - (x.g.best || 0);
+      doneHasRevisit: (lostAll || revisit).length > 0,
+      doneRevisit: (lostAll || revisit).map(x => { const lost = x.p.marks - (x.g.best || 0);
         return { number: x.p.number, lost: word(lost) + " missed", label: short(x.p.stem), aria: "Retake " + x.p.number + ", " + word(lost) + " missed. A first try on the retake wins marks back, no XP",   // marks are first-try only: a replay cannot find them
-          open: () => this.retakePart(s.mi, x.pi, "done") }; }),
+          open: () => this.retakePart(x.mi != null ? x.mi : s.mi, x.pi, "done") }; }),
       doneNextTitle: nm ? nm.id + " · " + nm.title : "Review my paper",
-      doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every mission is done. The finish line is next.",
-      doneContinueLabel: nm ? "Continue" : "Finish the paper",
+      doneNextSub: nm ? word(nm.parts.reduce((a, p) => a + (p.marks || 0), 0)) + (nm.tags && nm.tags.length ? " · " + nm.tags.join(" · ") : "") : "Every question, your answers and the memo, in one place.",
+      doneContinueLabel: nm ? "Continue" : "Review my paper",
       // No road to walk back to (2026-10-02): Continue opens the next question; the last one shows the finish card on the paper map.
       // (the finish lands on the finished paper's OWN subject: the map remembers the last subject chip, so it could celebrate a Life
       // Sciences paper over the Physical Sciences road, 2026-10-03)
-      doneContinue: () => { if (!nm) { const hp = HOME.papers.filter(x => x.id === this.state.selPaper)[0];
-        this.setState({ screen: "map", pmOpen: null, ...(hp && hp.subject ? { pmSubj: hp.subject } : {}) }, () => { window.scrollTo(0, 0); this.showFinishCard(); }); return; }
+      doneContinue: () => { if (!nm) { this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); return; }
         this.openMission(nextIdx); },
     };
   }
