@@ -1956,14 +1956,10 @@ body.nx-play main:not(#mq-stage) [data-figure] [data-figpad]::before { content:"
 body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest="true"] > p { margin-bottom:8px; }
 body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest="true"]::after { left:67px; bottom:27px; }
 body.nx-play.nx-compact:not(.nx-typing):not(.nx-kpstrip) .nx-typestrip[data-rest="true"]::before { left:75px; bottom:31px; }
-/* a docked bar (tablet / desktop) sits over the card's 32 px bottom padding, and a scrolling box shows its content through its own
-   padding: a long question (3.1.3's chart, measured at 1280x760) slid under Back and Skip. The card's last child is a sticky strip of
-   its own colour, pinned to the padding's bottom edge: 20 px of fade, then solid behind the bar. At the end of the scroll it sits after
-   the content, so the last line rests above it. (A mask would fade the card's own border.) */
-@media (min-width:601px) {
-  body.nx-play.nx-dock main:not(#mq-stage) [data-question]::after { content:""; position:sticky; bottom:-32px; z-index:2; flex:none; height:52px; margin-top:-14px; pointer-events:none;
-    background:linear-gradient(180deg, transparent, var(--nx-panel, #051c3b) 20px); }
-}
+/* (no fade strip at the card's bottom, Murci 2026-10-08: "at the bottom of it it looks like it has some blue shadow same color as it
+   is and when i scroll the content up ... the content get hidden ... the end of the parent card should be the bottom border of it
+   just like the top border of it is". The sticky strip of the card's colour, pinned over its bottom padding behind a docked bar,
+   is gone: the card ends at its border, top and bottom alike, and its content scrolls to that edge.) */
 
 /* An MCQ whose options are a TABLE (LS P1 Nov 2024 1.1.6, Murci 2026-10-05): one full-width card per row, a cell per column, the
    column heads over the cells (mcq-play.js alignHead() measures where). Full width at every fit level and on a phone: three cells
