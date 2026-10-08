@@ -4029,11 +4029,11 @@ class Component extends DCLogic {
     return {
       doneMaxW: wide ? "780px" : "560px", donePad: wide ? "36px 28px 60px" : "16px 16px 48px", doneCols: wide ? "220px minmax(0, 1fr)" : "minmax(0, 1fr)", doneGap: wide ? "28px" : "12px",
       doneCompW: wide ? "220px" : "110px", doneCompH: wide ? "330px" : "160px", doneAlign: wide ? "flex-start" : "center", doneTextAlign: wide ? "left" : "center", doneH1: phone ? "24px" : "28px",
-      doneModelOn: !s.reduced && !s.saveData, donePoster: !!(s.reduced || s.saveData), doneClip: clean ? "dance" : "greet",
+      doneModelOn: !s.reduced && !s.saveData, donePoster: !!(s.reduced || s.saveData), doneClip: clean || !nm ? "dance" : "greet",   // (the paper finished, it always dances: Murci 2026-10-08, "on the end page when the learner is finished with the exam the robot must be dancing")
       // Almost the whole dance plays, then it pauses on the hand pointed to the side (Murci, 2026-09-30): measured on the rig,
       // the right arm is straight and out to the side 12.2-12.35 s, highest at 12.3 (the last frame, 12.79, has the arms bent in
       // front; 7.0 cut the dance short). "" = no hold, so the greeting just ends.
-      doneHold: clean ? "12.3" : "",
+      doneHold: clean || !nm ? "12.3" : "",
       doneRing: mSt.ring, doneGrade: waitingN ? (waitingN === 1 ? "1 part waiting for a marker" : waitingN + " parts waiting for a marker") : MEDAL[mSt.label] || mSt.label,
       doneKicker: "Mission " + mission.id + " complete", doneTitle: mission.title,
       doneXpShown: "+" + (cnt ? cnt.xp : xp), doneXpText: xp + " XP earned in this mission", doneXpWhy: why.join(" · "),
