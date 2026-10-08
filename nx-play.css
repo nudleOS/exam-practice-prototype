@@ -1998,23 +1998,29 @@ body.nx-play [data-anscard] [data-lnbox] input { height:44px !important; }
 body.nx-play [data-lnbadge] { flex:none; width:28px; height:28px; border-radius:50%; display:grid; place-items:center;
   background:var(--nx-badge); color:var(--nx-badge-ink); font-size:12.5px; font-weight:800; }
 
-/* ==== Version C on a desktop: the figure BESIDE the question (nxPanelCap sets data-figside from NX_SIDE_MIN) ====
-   The figure's column is the wider one (it holds a diagram, the answers' column holds 42 px badges and a name box); the figure
-   stays in view while a long question scrolls in its own column. */
+/* ==== Version D on a desktop (Murci, 2026-10-08: "the questions are best left on top and span the whole card and just have the
+   answer options on the right side by side with a figure"; it replaces Version C, the figure beside the whole question). nxPanelCap
+   sets data-figside from NX_SIDE_MIN. The question (its head, lead line, shared information and the question itself) runs across
+   the panel; under it the figure on the left (the wider column: it holds a diagram) and the answers on the right.
+   The part's section joins the panel's grid (display:contents): its parts up to the question span both columns, the parts AFTER
+   the question ([data-stem] ~ *) are the answers. `order` places them: the question (0), then the figure (1), then the answers (2),
+   each answer a row of the right column beside the figure, which spans those rows. Rows have no gap (an empty row of the figure's
+   span would add one): the section's 12 px gap is each part's bottom margin. */
 body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] { display:grid !important; grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr);
-  column-gap:24px; align-items:start; }
-/* the frame runs the panel's full content height (Murci, 2026-10-05: "full height inside the bigger card ... not touch the edges";
-   its top is level with the question's first line), the image centred on the white sheet at its own shape (letter spots stay put).
-   nxPanelCap reads the frame's chrome from its padding, so the stretch never reads as room taken. */
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > [data-figure] { grid-column:1; grid-row:1; align-self:stretch !important;
+  column-gap:24px; row-gap:0 !important; align-items:start; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > section { display:contents !important; }   /* (its markup sets display:flex inline) */
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > section > * { grid-column:1 / -1; min-width:0; order:0; margin-bottom:12px; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > [data-figure] { grid-column:1; grid-row:span 12; order:1; align-self:start !important;
   display:flex; flex-direction:column; }
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > [data-figure] > [data-figpad] { flex:1; display:flex; flex-direction:column; justify-content:center; }
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > :not([data-figure]) { grid-column:2; grid-row:1; min-width:0; }
-/* one row (the panel's inline 14 px gap stays between the columns only); the docked bar's fade strip spans both columns, and only
-   while the panel scrolls (nxPanelCap: data-scrolls), so the frame reaches the panel's bottom padding */
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] { row-gap:0 !important; }
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"]::after { grid-column:1 / -1; grid-row:2; }
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"]:not([data-scrolls="true"])::after { display:none; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"] > section > [data-stem] ~ * { grid-column:2; order:2; }
+/* Version D below a laptop (a tablet, a narrow window; Murci 2026-10-08, "bigger figure, stacked"): one column, the question on
+   top, then the figure at a readable size (nxPanelCap: 260 px at least), then the answers; the panel scrolls. */
+body.nx-play main:not(#mq-stage) [data-question][data-figstack="true"] { display:grid !important; grid-template-columns:minmax(0, 1fr); row-gap:0 !important; }
+body.nx-play main:not(#mq-stage) [data-question][data-figstack="true"] > section { display:contents !important; }
+body.nx-play main:not(#mq-stage) [data-question][data-figstack="true"] > section > * { order:0; min-width:0; margin-bottom:12px; }
+body.nx-play main:not(#mq-stage) [data-question][data-figstack="true"] > [data-figure] { order:1; margin-bottom:12px; }
+body.nx-play main:not(#mq-stage) [data-question][data-figstack="true"] > section > [data-stem] ~ * { order:2; }
+
 
 /* ==== the result card spins in (feedSpin, Murci 2026-10-05: "like the MCQ cards") ====
    During the turn the card is two-sided: its own face (content and fill, their backs hidden) and .fd-back, the medal's colour, turned
@@ -2258,8 +2264,8 @@ html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-parthead] [data-aga
 /* ==== the figure beside the question stays put (Murci, 2026-10-06: "the image must not scroll"): only the question's column scrolls
    in the panel; the frame is sticky at the panel's visible content height (nxPanelCap: --nx-sideh), so it still runs to the panel's
    bottom padding (2026-10-05: "full height ... not touch the edges"). */
-body.nx-play main:not(#mq-stage) [data-question][data-figside="true"][data-scrolls="true"] > [data-figure] { position:sticky; top:0; align-self:start !important;
-  height:var(--nx-sideh, auto); box-sizing:border-box; }
+body.nx-play main:not(#mq-stage) [data-question][data-figside="true"][data-scrolls="true"] > [data-figure] { position:sticky; top:var(--nx-figtop, 0px); align-self:start !important;
+  box-sizing:border-box; }   /* Version D: pinned where it starts (nxPanelCap: --nx-figtop), sized to the room under the question */
 /* (the head wraps when the pill is there, the pill at the right of its row: beside the marks it pushed "2 marks" past the panel's
    edge in the side layout's narrow column, measured at 1348 x 648. The head's empty spacer goes (its gap alone wrapped the marks,
    2 px over). Measured: side column = row 1 the label, coins and marks, row 2 the pill; 360 px = row 2 the marks and the pill) */
@@ -2298,3 +2304,36 @@ html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-vlab="big"] { fill:
 /* the paper's own line breaks: a lead's second paragraph, statements (i) to (iv), a chemical equation on each line. Transcriptions
    write them as \n, and white-space:normal ran them together (PS P1 1.3, BS essays; PS P2 7.1's three equations) (2026-10-07) */
 body.nx-play [data-lead], body.nx-play [data-question] [data-stem], body.nx-play .mcqp h1 > span:not(.num), body.nx-play .mcqp .qdesc { white-space:pre-line; }
+
+/* ==== Version D in the multiple-choice card (Murci, 2026-10-08): a card with its own figure, on a desktop, runs its question
+   across the card (head, lead line, the question), the figure under it on the left and the options on the right, one per row;
+   the figure stays put while the card scrolls. Not with the paper open at the side (the card is narrower then: the page's rule
+   reads the same room, nxPanelCap). The card's Next row is fixed, outside the grid. A tap on the figure enlarges it across. */
+/* the card's figure bigger wider than a phone (Murci 2026-10-08: "they look small"; it was min(28svh, 210px)): 260 px at least,
+   up to 420; the card scrolls when it then runs long */
+@media (min-width:601px) {
+  body.nx-play .mcqp .stage > .qimg { max-width:none; }
+  body.nx-play .mcqp .stage > .qimg img { max-height:min(max(260px, 40svh), 420px); }
+}
+@media (min-width:1100px) {
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) { display:grid; grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr); column-gap:24px; align-items:start; }
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) > * { grid-column:1 / -1; min-width:0; }
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) > .qimg { grid-column:1; grid-row:span 6; position:sticky; top:var(--mq-figtop, 0px); max-width:none; margin:0; }
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) > .qimg ~ * { grid-column:2; }
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) > .qimg img { max-height:min(460px, max(220px, calc(var(--mq-figmax, 58svh) - 12px))); }
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) > .qimg.big { grid-column:1 / -1; position:static; }
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) .tiles { grid-template-columns:minmax(0, 1fr) !important; }
+  /* the options fill their column: the cards' faces are absolute, so the box's margin-right:auto (left-aligning it in the block
+     layout) shrank it to 0 px in the grid, measured */
+  body.nx-play:not(.pv-side) .mcqp .stage:has(> .qimg) > .tiles { width:100%; max-width:none; margin-right:0; }
+}
+/* the card's figure enlarged (a tap; mcq-play toggles .big; Murci 2026-10-08: "when i click on the image to view it in expanded
+   state it shows as small", then "large enough but not fill the entire screen"): over a dim, as the page's enlarged figure, the
+   image large at its own shape (78% of the screen's height, 88% of its width, 1100 px at most) (syncMcq's pin sets --ar), on white; a tap anywhere closes it. Above every size's own .qimg.big rule, and over the pin's
+   top in the two-column card (inset !important; the width counts the image's own 8 px padding). */
+body.nx-play .mcqp .stage > .qimg.big { position:fixed !important; inset:0 !important; z-index:90; box-sizing:border-box; width:auto; max-width:none !important; height:auto; margin:0 !important;
+  padding:16px; border-radius:0; background:rgba(var(--nx-s, 8,10,13), 0.88); display:grid !important; place-items:center; grid-column:auto !important; }
+/* (its z-index counts inside the card's own layer, z 3, under the play header's 22: the layer rises while a figure is enlarged) */
+body.nx-play .mcqp:has(.stage > .qimg.big) { z-index:95 !important; }
+body.nx-play .mcqp .stage > .qimg.big img { box-sizing:border-box; width:min(88vw, 1100px, calc((78dvh - 16px) * var(--ar, 1.3333) + 16px)); height:auto; max-height:none !important;
+  padding:8px; border-radius:12px; background:#fff; object-fit:contain; }

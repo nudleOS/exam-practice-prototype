@@ -92,7 +92,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=246">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=256">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -2199,7 +2199,14 @@ class Component extends DCLogic {
     // the figure BESIDE the question on a desktop (Murci, 2026-10-05, version C: "the figure bigger, careful of spacing"): the
     // left column is the figure at its own shape, the right the question and its answers (nx-play reads data-figside). Below
     // NX_SIDE_MIN (tablets, phones) it stays above the question.
-    const side = !phone && innerWidth >= NX_SIDE_MIN && !!fbx; if (q.dataset.figside !== String(side)) q.dataset.figside = String(side);
+    // (the room is the window less a paper open at the side: with a 560 px paper on a 1 366 px laptop the figure stayed beside a
+    // 495 px question and its letter balls ran under the paper, found on the platform 2026-10-08)
+    const pvs = document.body.classList.contains("pv-side") ? document.querySelector('.pv[data-layout="side"]') : null,
+      sideRoom = innerWidth - (pvs ? pvs.getBoundingClientRect().width + 24 : 0);
+    const side = !phone && sideRoom >= NX_SIDE_MIN && !!fbx; if (q.dataset.figside !== String(side)) q.dataset.figside = String(side);
+    // below a laptop (a tablet, a narrow window; Murci 2026-10-08, "bigger figure, stacked"): the question on top, then the figure,
+    // then the answers (nx-play reads data-figstack). A phone keeps its own layout (the figure above, folding away).
+    const stack = !phone && !side && !!fbx; if (q.dataset.figstack !== String(stack)) q.dataset.figstack = String(stack);
     // (beside, the panel's fade strip shows only while the panel scrolls: as a grid row it held the frame 52 px off the panel's bottom
     // padding, measured at 1100 x 680. Scrolling is judged WITHOUT the strip, so hiding it cannot flip the answer.)
     if (side) { const af = getComputedStyle(q, "::after"), strip = q.dataset.scrolls === "true" ? (parseFloat(af.height) || 0) + (parseFloat(af.marginTop) || 0) : 0,
@@ -2207,18 +2214,30 @@ class Component extends DCLogic {
       // the frame stays put while the question's column scrolls (Murci, 2026-10-06: "the image must not scroll"): sticky, at the
       // panel's visible content height (nx-play reads --nx-sideh)
       const qs1 = getComputedStyle(q), sideh = Math.max(0, q.clientHeight - (parseFloat(qs1.paddingTop) || 0) - (parseFloat(qs1.paddingBottom) || 0)) + "px";
-      if (q.style.getPropertyValue("--nx-sideh") !== sideh) q.style.setProperty("--nx-sideh", sideh); }
+      if (q.style.getPropertyValue("--nx-sideh") !== sideh) q.style.setProperty("--nx-sideh", sideh);
+      // Version D (2026-10-08): the figure stays exactly where it starts while the panel scrolls: sticky at its own starting offset,
+      // the row it shares with the first answer (that answer never sticks, so it is always where the row is; the panel's rise-in
+      // scale divided out, its scroll added back)
+      const ans = q.querySelector(":scope > section > [data-stem] ~ *");
+      if (ans) { const qr0 = q.getBoundingClientRect(), k0 = q.offsetHeight ? qr0.height / q.offsetHeight || 1 : 1,
+          row = Math.max(0, Math.round((ans.getBoundingClientRect().top - qr0.top) / k0 - (parseFloat(getComputedStyle(ans).marginTop) || 0) - q.clientTop + q.scrollTop));
+        q._nxFigRow = row; if (q.style.getPropertyValue("--nx-figtop") !== row + "px") q.style.setProperty("--nx-figtop", row + "px"); } }
     if (fbx && fbx.clientWidth) { const ar = parseFloat(getComputedStyle(fig).getPropertyValue("--fig-ar")) || 1.6, full = Math.round(((side ? fig : fig.parentElement || fig).clientWidth - 18) / ar);   // the frame hugs the image (2026-10-02): its own width follows --fig-h
       // (the panel's borders are inside its cap but outside its scroll box: measured, leaving them in kept a 2 px scroll)
       // (beside: only the frame and the panel's padding share the figure's column, not the question)
       const qs = getComputedStyle(q), pad = (parseFloat(qs.paddingTop) || 0) + (parseFloat(qs.paddingBottom) || 0);
       // (beside, the frame stretches to the panel's height, so its chrome is read from its padding and border, not its height)
       const fp = fbx.parentElement, fps = fp ? getComputedStyle(fp) : null, chrome = (fig.offsetHeight - fig.clientHeight) + (fps ? (parseFloat(fps.paddingTop) || 0) + (parseFloat(fps.paddingBottom) || 0) : 0);
-      const cur = fbx.offsetHeight, rest = side ? chrome + pad : q.scrollHeight - cur, room = Math.floor(cap - (q.offsetHeight - q.clientHeight) - rest),
+      // (Version D, 2026-10-08: beside the answers, UNDER the question, so the question's block above the figure is room taken too;
+      // read off the layout: the rects' difference, the panel's rise-in scale divided out, its scroll added back)
+      const headH = side && q._nxFigRow != null ? Math.max(0, q._nxFigRow - (parseFloat(qs.paddingTop) || 0)) : 0;
+      const cur = fbx.offsetHeight, rest = side ? chrome + pad + headH : q.scrollHeight - cur, room = Math.floor(cap - (q.offsetHeight - q.clientHeight) - rest),
         // a figure to read keeps a readable size (Murci, 2026-10-05: "i do want the figure to be bigger"; at 110 px 1.5's homeostasis
         // diagram was a smudge on the P30): 200 px on a phone, 160 on a tablet. A phone question that then runs long goes compact
         // (the page scrolls), as any long question does. (letters with chips to tap too: the figure is not the only input)
-        floor = fig.dataset.fighot !== "true" ? Math.min(full, phone ? 200 : 160) : q.querySelector('[data-chips="true"]') ? 120 : 150;
+        // (Murci 2026-10-08: "increase the figures/images heights ... they look small": 260 px at least wider than a phone, where
+        // the panel scrolls; beside the answers the figure then stays put)
+        floor = fig.dataset.fighot !== "true" ? Math.min(full, phone ? 200 : 260) : q.querySelector('[data-chips="true"]') ? 120 : 150;
       // compact (the page scrolls past the card): no reason to shrink the figure at all
       const h = compact && phone ? full : Math.max(floor, Math.min(full, room));
       if (Math.abs(h - cur) > 1) fig.style.setProperty("--fig-h", h + "px"); }
@@ -3668,7 +3687,24 @@ class Component extends DCLogic {
     return { correct: !!r.full, xp: reply.xp_awarded || 0, mult: reply.multiplier || 1, marks: marks, clue: reply.clue || "", closed: !!reply.closed,
       answer: reply.reveal && reply.reveal.answer != null ? reply.reveal.answer : null, replay: !!reply.replay || !!pr.replay };
   }
+  // Version D in the card (2026-10-08): its figure stays where it starts while the card scrolls (sticky at --mq-figtop, its row
+  // read off the first option row beside it, which never sticks) and is never taller than the card shows under the question
+  // (--mq-figmax). Only while the card lays out in two columns (a desktop); measured again after the cards deal in.
+  mcqPinFigure() {
+    const st = document.querySelector(".mcqp .stage"); if (!st) return;
+    const im = st.querySelector(":scope > .qimg"), nx = im && im.nextElementSibling;
+    // its shape, for the full-screen enlargement (nx-play: .qimg.big): the image's own width and height
+    const ig = im && im.querySelector("img"), iw = ig ? +ig.getAttribute("width") || ig.naturalWidth : 0, ih = ig ? +ig.getAttribute("height") || ig.naturalHeight : 0;
+    if (im && iw && ih && im.style.getPropertyValue("--ar") !== String(+(iw / ih).toFixed(4))) im.style.setProperty("--ar", String(+(iw / ih).toFixed(4)));
+    if (!im || !nx || getComputedStyle(st).display !== "grid") { st.style.removeProperty("--mq-figtop"); st.style.removeProperty("--mq-figmax"); return; }
+    const sr = st.getBoundingClientRect(), k = st.offsetHeight ? sr.height / st.offsetHeight || 1 : 1,
+      row = Math.max(0, Math.round((nx.getBoundingClientRect().top - sr.top) / k - (parseFloat(getComputedStyle(nx).marginTop) || 0) - st.clientTop + st.scrollTop)),
+      max = Math.max(0, Math.round(st.clientHeight - row - (parseFloat(getComputedStyle(st).paddingBottom) || 0)));
+    if (st.style.getPropertyValue("--mq-figtop") !== row + "px") st.style.setProperty("--mq-figtop", row + "px");
+    if (st.style.getPropertyValue("--mq-figmax") !== max + "px") st.style.setProperty("--mq-figmax", max + "px");
+  }
   syncMcq() {
+    if (this._mcq) { cancelAnimationFrame(this._pinRaf); clearTimeout(this._pinT); this._pinRaf = requestAnimationFrame(() => this.mcqPinFigure()); this._pinT = setTimeout(() => this.mcqPinFigure(), 450); }
     if (!this.mcqOn()) { if (this._mcq) { this._mcq.destroy(); this._mcq = null; this._mcqAt = null; this._mcqPending = 0; } return; }
     const s = this.state, m = this.mission(), part = this.part(), run = (s.drill ? "drill" : "m") + ":" + m.id, at = run + ":" + part.key;
     if (this._mcq && this._mcqRun === run) { if (this._mcqAt !== at) { this._mcqAt = at; this._mcq.go(part.number); } return; }
@@ -4101,7 +4137,7 @@ class Component extends DCLogic {
       figBoxTap: !hot ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, toggleFig: () => this.setState({ figHidden: !s.figHidden }),
       figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint,   // (the enlarged view's line)
       figBigOpen: s.figBig, openFigBig: () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }),
-      closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: Math.min(2 * 640, Math.round(F.w * 0.9)) + "px",
+      closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: "min(88vw, 1100px, calc((78dvh - 78px) * " + (F.w && F.h ? F.w / F.h : 4 / 3).toFixed(4) + " + 24px))",   /* large at its own shape, not the whole screen (Murci 2026-10-08: "large enough but not fill the entire screen"; 90% of the file's width had opened a 443 px crop 399 px wide) */
       figBigKeys: e => { if (e.key !== "Tab") return; const fs = [].slice.call(document.querySelectorAll("[data-figdialog] button:not([disabled])")); if (!fs.length) return;
         const first = fs[0], last = fs[fs.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } } };
