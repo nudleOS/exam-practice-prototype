@@ -100,8 +100,13 @@
       // the least level that fits; if none does, the one that comes closest (the rest scrolls). opts.fitMax() caps the level
       // (Exam Practice: a phone stops at fit-3, one readable column, and a longer question scrolls INSIDE its panel)
       const top_ = Math.min(FIT_MAX, opts.fitMax ? opts.fitMax() : FIT_MAX);
-      let best = -1, bestBy = Infinity; for (let k = 0; k <= top_; k++) { set(k); size(); const by = overBy(); if (by <= 0) { best = k; break; } if (by < bestBy) { bestBy = by; best = k; } }
-      set(best); size(); growTiles(); alignHead(); centreStage(); panelScroll(); }
+      // opts.onFit(stage): the host lays out its own parts of the card at each level BEFORE the level is measured, and once
+      // more at the end (Exam Practice: the card's figure pinned beside the options, sized to the room the level leaves). Run
+      // after, a host's layout raced the fit: closing the side paper refit the card with the figure unpinned and fit-4 stuck
+      // (measured on the platform, 2026-10-08).
+      const host = () => { if (opts.onFit) opts.onFit(stage); };
+      let best = -1, bestBy = Infinity; for (let k = 0; k <= top_; k++) { set(k); size(); host(); const by = overBy(); if (by <= 0) { best = k; break; } if (by < bestBy) { bestBy = by; best = k; } }
+      set(best); size(); host(); growTiles(); alignHead(); centreStage(); panelScroll(); host(); }
     // a table's column heads sit over the cards' cells: measured off the first card (its letter and padding change with the fit
     // level and the screen), in layout terms (offsets, not client rects: the cards deal in and lift with transforms)
     function alignHead() { const hd = PAGE.querySelector("#mq-tblhead"), c = PAGE.querySelector("#mq-tiles .tile .cells"), g = PAGE.querySelector("#mq-tiles"); if (!hd || !c || !g) return;
