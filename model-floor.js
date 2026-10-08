@@ -74,7 +74,9 @@ class ModelFloor extends HTMLElement {
     // Never let the camera drop under the floor the model is standing on.
     controls.maxPolarAngle = Math.PI * 0.495;
     // still: a pose, not a toy: no drag-rotate, no zoom (and the page scrolls through it; see playClip for the pose)
-    if (this.hasAttribute("still")) controls.enabled = false;
+    // nodrag (Murci 2026-10-08: "the robot ... seems to move with the cursor ... the robot should face the user"): no
+    // drag-rotate or zoom either, the animation kept (still also freezes the pose)
+    if (this.hasAttribute("still") || this.hasAttribute("nodrag")) controls.enabled = false;
     this._controls = controls;
 
     const pivot = new THREE.Group();

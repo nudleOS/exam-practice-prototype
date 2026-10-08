@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
-  <script type="module" src="model-floor.js?v=22"></script>
+  <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
 <script src="papers-catalogue.js?v=3"></script>
@@ -28,7 +28,7 @@
     ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + Date.now();
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
 <script src="papers-pages.js?v=2"></script>
-  <script src="mcq-play.js?v=60"></script>
+  <script src="mcq-play.js?v=62"></script>
   <script src="build-play.js?v=17"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
@@ -92,7 +92,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=256">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=259">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -578,7 +578,7 @@
       <aside aria-label="Your companion" style="position:{{ coachPos }}; top:{{ coachTop }}; align-self:start; z-index:2; display:flex; flex-direction:{{ coachDir }}; align-items:{{ coachAlign }}; gap:{{ coachGap }}; margin-bottom:{{ coachMb }}">
         <div aria-hidden="true" style="position:relative; width:{{ coachW }}; height:{{ coachH }}; flex:none">
           <sc-if value="{{ coachModelOn }}" hint-placeholder-val="{{ false }}">
-            <model-floor src="assets/companion-robot.glb" clip="{{ playClip }}" from="{{ playFrom }}" hold="{{ playHold }}" loop="{{ playLoop }}" inplace="" autorotate="off" face="user" floor="none" fit="{{ coachFit }}" style="position:absolute; inset:0 0 4px 0"></model-floor>
+            <model-floor nodrag="" src="assets/companion-robot.glb" clip="{{ playClip }}" from="{{ playFrom }}" hold="{{ playHold }}" loop="{{ playLoop }}" inplace="" autorotate="off" face="user" floor="none" fit="{{ coachFit }}" style="position:absolute; inset:0 0 4px 0"></model-floor>
           </sc-if>
           <sc-if value="{{ coachPoster }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0; width:100%; height:100%">
@@ -1179,7 +1179,7 @@
     <main data-done="true" style="box-sizing:border-box; max-width:{{ doneMaxW }}; margin:0 auto; padding:{{ donePad }}; display:grid; grid-template-columns:{{ doneCols }}; gap:{{ doneGap }}; align-items:center; animation:rise 420ms cubic-bezier(0.22,0.61,0.36,1) both">
       <div aria-hidden="true" data-donecomp="true" style="position:relative; width:{{ doneCompW }}; height:{{ doneCompH }}; justify-self:center">
         <sc-if value="{{ doneModelOn }}" hint-placeholder-val="{{ false }}">
-          <model-floor src="assets/companion-robot.glb" clip="{{ doneClip }}" loop="once" hold="{{ doneHold }}" autorotate="off" face="user" floor="none" fit="0.85" style="position:absolute; inset:0 0 6px 0"></model-floor>
+          <model-floor nodrag="" src="assets/companion-robot.glb" clip="{{ doneClip }}" loop="once" hold="{{ doneHold }}" autorotate="off" face="user" floor="none" fit="0.85" style="position:absolute; inset:0 0 6px 0"></model-floor>
         </sc-if>
         <sc-if value="{{ donePoster }}" hint-placeholder-val="{{ true }}">
           <svg viewBox="0 0 100 225" preserveAspectRatio="xMidYMax meet" style="position:absolute; inset:0 0 6px 0; width:100%; height:calc(100% - 6px)">
@@ -1935,6 +1935,15 @@ class Component extends DCLogic {
     document.documentElement.dataset.nx = new URLSearchParams(location.search).get("theme") === "light" ? "light" : "dark";   // the play look's theme: dark (the app's), ?theme=light to review
     const qs = new URLSearchParams(location.search), playQ = qs.get("play"), paperQ = qs.get("paper") || "ls";   // aet, ls, or an ingested paper's id
     const ready = () => { this.papers = buildPapers(); this.setState({ bus: busRead() });
+      // ?demo=1 (the presentation, Murci 2026-10-08): the paper opens with every part closed on Gold except the ones to present,
+      // straight into the first of them; each is the only open part of its question, so finishing it shows the end page
+      if (qs.get("demo")) { const open = (qs.get("open") || "1.1.1,1.4.1(a),1.5.1,1.3.1").split(","); this._demoOrder = open;
+        this.setState({ paperId: paperQ }, () => { const ms = this.missions(), prog = {};
+          let first = null;
+          ms.forEach((m, mi) => m.parts.forEach((pt, pi) => { if (open.indexOf(pt.number) !== -1) { if (!first) first = { mi, pi }; return; }
+            prog[pt.key] = { tries: 1, best: pt.marks || 0, closed: true, revealed: false, firstTryFull: true, waiting: false, medal: "gold" }; }));
+          this.setState({ prog }, () => { if (first) { this.openMission(first.mi); setTimeout(() => this.resetInputs({ pi: first.pi }), 0); } else this.forceUpdate(); }); });
+        return; }
       if (playQ != null) this.setState({ paperId: paperQ }, () => { this.openMission(Math.max(0, parseInt(playQ, 10) || 0));   // ?play=N (design preview): straight into mission N, &part=K its part K (to review every response mode)
         const k = parseInt(qs.get("part"), 10); if (k > 0) setTimeout(() => this.resetInputs({ pi: Math.min(k, ((this.mission() || {}).parts || [1]).length - 1) }), 0);
         if (qs.get("done")) setTimeout(() => this.setState({ screen: "done" }), 0); });   // &done=1: the mission's done screen (design preview)
@@ -2874,7 +2883,12 @@ class Component extends DCLogic {
   // Skip on a mission's LAST open question (Murci, 2026-10-03: "Next mission"): it moves on to the next mission's first open question,
   // round from the start, so it stays open on the map and comes back; inside a mission Skip keeps the 2026-09-30 order (advance).
   // Next after an answer is not a skip: it still ends the mission on its done screen.
-  nextMissionOpen() { const ms = this.missions(), n = ms.length, mi = this.state.mi;
+  // ?demo=1: the next open part in the presenting order (the demo's own list), whatever the paper's order
+  demoNext() { const ms = this.missions();
+    for (const num of this._demoOrder || []) for (let i = 0; i < ms.length; i++) { const pi = ms[i].parts.findIndex(p => p.number === num);
+      if (pi >= 0) { const g = this.pg(ms[i].parts[pi].key); if (!g.closed && !g.waiting) return { mi: i, pi: pi }; } }
+    return null; }
+  nextMissionOpen() { if (this._demoOrder) return this.demoNext(); const ms = this.missions(), n = ms.length, mi = this.state.mi;
     for (let d = 1; d < n; d++) { const i = (mi + d) % n, pi = ms[i].parts.findIndex(p => { const g = this.pg(p.key); return !g.closed && !g.waiting; }); if (pi >= 0) return { mi: i, pi: pi }; }
     return null; }
   skipPart() { const s = this.state, m = this.mission(); if (s.drill || s.revisit || this.nextOpenPart(m) >= 0) return this.advance();
@@ -3017,16 +3031,38 @@ class Component extends DCLogic {
     const cp = document.createElementNS(NS, "clipPath"), cpp = document.createElementNS(NS, "path"), id = "nxv-clip-" + Date.now();
     cp.id = id; cpp.setAttribute("d", reg ? reg.getAttribute("d") : ""); cpp.setAttribute("clip-rule", "evenodd"); cp.appendChild(cpp); lay.appendChild(cp);
     const g = document.createElementNS(NS, "g"); g.setAttribute("clip-path", "url(#" + id + ")"); lay.appendChild(g);
-    const N = 6 + Math.floor(Math.random() * 4);
-    for (let n = 0; n < N; n++) { const a = (n + Math.random() * 0.7) / N * Math.PI * 2, L = 40 + Math.random() * 46, pts = [C];
+    const N = 6 + Math.floor(Math.random() * 4), angles = [];
+    for (let n = 0; n < N; n++) { const a = (n + Math.random() * 0.7) / N * Math.PI * 2, L = 40 + Math.random() * 46, pts = [C]; angles.push(a);
       for (let s = 1; s <= 3; s++) { const j = (Math.random() - 0.5) * 0.55; pts.push([C[0] + Math.cos(a + j) * L * s / 3, C[1] + Math.sin(a + j) * L * s / 3]); }
       const pl = document.createElementNS(NS, "polyline"); pl.setAttribute("points", pts.map(q => q[0].toFixed(1) + "," + q[1].toFixed(1)).join(" "));
       pl.setAttribute("fill", "none"); pl.setAttribute("stroke", "#ffe1e1"); pl.setAttribute("stroke-width", "1.6"); pl.setAttribute("stroke-linejoin", "round"); g.appendChild(pl);
       const len = L * 1.15; pl.style.strokeDasharray = len; pl.style.strokeDashoffset = len;
       pl.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 200, delay: 480 + n * 22, easing: "ease-out", fill: "forwards" }); }
     document.body.appendChild(lay);
-    setTimeout(() => { this.sparkle(X, Y, 12, ["#ff8a8a", "#ffd0d0", "#c0393f"], 34); lay.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }); }, NX_GLASS_BREAK);
-    setTimeout(() => lay.remove(), NX_GLASS_BREAK + 420);
+    // the break (Murci 2026-10-08, "the Glass break on what was wrongly selected"): the region's glass, cut along its own cracks into
+    // an inner ring of wedges and an outer ring, flashes white, then each shard falls and turns away (the ones nearest the hit
+    // first), each still the region's shape (its own clip moves with it). About a second, then gone.
+    setTimeout(() => {
+      const P2 = (a, d) => (C[0] + Math.cos(a) * d).toFixed(1) + "," + (C[1] + Math.sin(a) * d).toFixed(1), Rf = 170;
+      g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: "forwards" });
+      const fl = document.createElementNS(NS, "path"); fl.setAttribute("d", reg ? reg.getAttribute("d") : ""); fl.setAttribute("fill", "#ffffff"); fl.setAttribute("fill-rule", "evenodd");
+      lay.appendChild(fl); fl.animate([{ opacity: 0.55 }, { opacity: 0 }], { duration: 260, easing: "ease-out", fill: "forwards" });
+      angles.forEach((a0, n) => { const a1 = n + 1 < N ? angles[n + 1] : angles[0] + Math.PI * 2, r1 = 22 + Math.random() * 22;
+        [["M" + C[0] + "," + C[1] + " L" + P2(a0, r1) + " L" + P2((a0 + a1) / 2, r1 * 1.08) + " L" + P2(a1, r1) + "Z", 0],
+         ["M" + P2(a0, r1) + " L" + P2(a0, Rf) + " L" + P2(a1, Rf) + " L" + P2(a1, r1) + " L" + P2((a0 + a1) / 2, r1 * 1.08) + "Z", 1]].forEach(([d, ring]) => {
+          const outer = document.createElementNS(NS, "g"), inner = document.createElementNS(NS, "g"), sh = document.createElementNS(NS, "path");
+          inner.setAttribute("clip-path", "url(#" + id + ")"); sh.setAttribute("d", d);
+          sh.setAttribute("fill", ring ? "rgba(150,185,255,0.30)" : "rgba(205,222,255,0.42)"); sh.setAttribute("stroke", "rgba(255,255,255,0.85)"); sh.setAttribute("stroke-width", "1.1"); sh.setAttribute("stroke-linejoin", "round");
+          inner.appendChild(sh); outer.appendChild(inner); lay.appendChild(outer);
+          outer.style.transformBox = "fill-box"; outer.style.transformOrigin = "center";
+          const mid = (a0 + a1) / 2, push = 6 + ring * 10 + Math.random() * 8, dx = Math.cos(mid) * push + (Math.random() - 0.5) * 10, rot = (Math.random() - 0.5) * (ring ? 70 : 40);
+          outer.animate([{ transform: "translate(0px, 0px) rotate(0deg)", opacity: 1 },
+            { transform: "translate(" + (dx * 0.5).toFixed(1) + "px, " + (Math.sin(mid) * push * 0.5 - 4).toFixed(1) + "px) rotate(" + (rot * 0.2).toFixed(1) + "deg)", opacity: 1, offset: 0.18 },
+            { transform: "translate(" + dx.toFixed(1) + "px, " + (90 + ring * 40 + Math.random() * 40).toFixed(1) + "px) rotate(" + rot.toFixed(1) + "deg)", opacity: 0 }],
+            { duration: 820 + Math.random() * 260, delay: ring * 60 + Math.random() * 50, easing: "cubic-bezier(0.45, 0, 0.8, 0.6)", fill: "forwards" }); }); });
+      this.sparkle(X, Y, 10, ["#ffffff", "#cfe0ff", "#ff9a9a"], 30);
+    }, NX_GLASS_BREAK);
+    setTimeout(() => lay.remove(), NX_GLASS_BREAK + 1300);
   }
   // ---- 2.5.4: an order of letters on a nerve track (Murci, 2026-10-06, the approved sketch) ----
   seqOn(part) { const o = (part && part.options) || []; return !!part && part.response_mode === "order" && o.length > 1 && o.every(x => /^[A-Z]$/.test(String(x).trim())); }
@@ -3722,7 +3758,7 @@ class Component extends DCLogic {
       onNext: () => { const p = this.part(), g = p ? this.pg(p.key) : null; if (g && !g.closed && !g.waiting) this.skipPart(); else this.advance(); },   // an open question moved on from = a Skip
       seed: s.drill ? {} : this.mcqBook(),
       noWave: false,   // its robot waves once, in place, and holds the hand-out frame (Murci, 2026-09-30)
-      centreY: 0.4,   // the panel at the optical centre
+      centreY: 0.5, centreMax: 400,   // the panel and its Back / Next row centred on the page (Murci 2026-10-08: "up close to the navbar ... bringing it down a bit"; it was 0.4, at most 160 px down)
       canBack: () => this.canBack(), onBack: () => this.prevPart(),   // Back under the panel's left edge
       onScore: r => { if (!s.drill) this.mcqBook()[r.n] = { got: r.marks, of: r.item.marks, tier: r.tier, gone: r.gone || [], tries: r.tries, ok: r.ok, a: r.item.a }; },
       onMap: () => this.setState({ screen: "map" }),
@@ -3872,6 +3908,7 @@ class Component extends DCLogic {
       return { label: "Not started", ring: "#363b41", bg: "rgba(255,255,255,0.05)", color: "#a4a9ae" };
   }
   nextMissionIdx(mi) {
+    if (this._demoOrder) { const d = this.demoNext(); return d ? d.mi : -1; }
     const ms = this.missions(), done = m => m.parts.every(p => { const g = this.pg(p.key); return g.closed || g.waiting; });
     for (let i = mi + 1; i < ms.length; i++) if (!done(ms[i])) return i;
     for (let i = 0; i < mi; i++) if (!done(ms[i])) return i;

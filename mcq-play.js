@@ -123,7 +123,7 @@
     function centreStage() { const st = $("stage"); if (!st || opts.centreY == null) return; st.style.removeProperty("margin-top"); if (innerWidth <= 600) return;
       const top = el => { let y = 0; for (let e = el; e && e !== PAGE && e !== document.body; e = e.offsetParent) y += e.offsetTop; return y; };
       const H = opts.screen ? PAGE.clientHeight : innerHeight, off = parseFloat(getComputedStyle(st).getPropertyValue("--cap-off")) || 0, base = parseFloat(getComputedStyle(st).marginTop) || 0;
-      const spare = H - (off - base) - (top(st) + st.offsetHeight), extra = Math.max(0, Math.min(160, Math.round(spare * opts.centreY)));
+      const spare = H - (off - base) - (top(st) + st.offsetHeight), extra = Math.max(0, Math.min(opts.centreMax || 160, Math.round(spare * opts.centreY)));   // opts.centreMax: the most it comes down (160 px)
       if (extra) st.style.marginTop = (base + extra) + "px"; }
     // The panel (the host caps its height) scrolls inside when its question is longer than the room: "scrolls" shows the fade
     // at its bottom edge, "atend" drops it once the end is in view (so the fade never covers the last card).
@@ -419,7 +419,7 @@
     const PAL = { el: null, x: 0, anim: null, timer: 0, down: false, hurt: false, sweeping: false, cleaning: false, queued: null, cleanT: 0 };
     function palMake() { const body = $("palBody"); if (NOPAL) { PAGE.classList.add("nopal"); LAYERS.classList.add("nopal"); return; } if (!BUDDY_3D) { buddyStill(body); return; }
       const mf = document.createElement("model-floor");
-      [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "none"], ["fit", "0.8"], ["inplace", ""]].forEach(([k, v]) => mf.setAttribute(k, v));   // inplace: it stays centred in its box and turns about itself
+      [["src", BUDDY.src], ["autorotate", "off"], ["face", "user"], ["floor", "none"], ["fit", "0.8"], ["inplace", ""], ["nodrag", ""]].forEach(([k, v]) => mf.setAttribute(k, v));   // inplace: it stays centred in its box and turns about itself
       mf.addEventListener("failed", () => { PAL.el = null; buddyStill(body); }); body.appendChild(mf); PAL.el = mf; palGreet(); }
     // Play a clip: clear the play options, set this one's, then ask for "" then the clip (so the same clip restarts).
     function palClip(clip, o = {}) { const m = PAL.el; if (!m) return;
