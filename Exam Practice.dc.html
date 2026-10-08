@@ -3842,6 +3842,11 @@ class Component extends DCLogic {
     // 2026-09-30); the done screen comes once none is open (measured: answering the skipped part, Next went on to the closed 1.1.4).
     // Answered parts are revisited with Back or the map.
     const k = this.nextOpenPart(m); if (k >= 0) { this.resetInputs({ pi: k }); return; }
+    // the end page only when the whole paper is finished (Murci 2026-10-08: "an end page on a question always pops up after you
+    // done with a question, now i want that removed for when the entire paper is finished"): a question done, Next goes straight
+    // on to the next one with a part still open (round from the start, so a skipped part comes back; ?demo=1: the presenting
+    // order); none left anywhere, the end page, its next step Review my paper
+    const nx = this.nextMissionOpen(); if (nx) { this.openMission(nx.mi, nx.pi); return; }
     this.setState({ screen: "done" });
   }
 
