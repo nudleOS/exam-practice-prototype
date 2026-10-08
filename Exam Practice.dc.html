@@ -92,7 +92,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=259">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=264">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=49">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -846,17 +846,17 @@
           <sc-if value="{{ hasVenn }}" hint-placeholder-val="{{ false }}">
             <div data-venn="true">
               <div data-vennitems="true"><span data-vitem="a"><b aria-hidden="true">A</b>{{ vennA }}</span><span data-vitem="b"><b aria-hidden="true">B</b>{{ vennB }}</span></div>
-              <svg data-vennsvg="true" viewBox="0 0 320 224" role="radiogroup" aria-label="{{ vennGroupAria }}">
+              <div data-vennframe="true"><svg data-vennsvg="true" viewBox="0 0 320 224" role="radiogroup" aria-label="{{ vennGroupAria }}">
                 <defs><pattern id="nxv-crack" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#262d3b"></rect><path d="M0 9 L7 12 L11 6 L22 10 M7 12 L9 22 M11 6 L15 0" fill="none" stroke="#3d4659" stroke-width="1.2"></path></pattern></defs>
-                <path data-vr="3" data-state="{{ vennS3 }}" d="M6 6 H314 V218 H6Z M160 58.84 A72 72 0 1 0 160 181.16 A72 72 0 1 0 160 58.84Z" role="radio" aria-checked="{{ vennC3 }}" aria-label="{{ vennAria3 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap3 }}" onKeyDown="{{ vennKey3 }}"></path>
+                <path data-vr="3" data-state="{{ vennS3 }}" d="M20 6 H300 A14 14 0 0 1 314 20 V204 A14 14 0 0 1 300 218 H20 A14 14 0 0 1 6 204 V20 A14 14 0 0 1 20 6Z M160 58.84 A72 72 0 1 0 160 181.16 A72 72 0 1 0 160 58.84Z" role="radio" aria-checked="{{ vennC3 }}" aria-label="{{ vennAria3 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap3 }}" onKeyDown="{{ vennKey3 }}"></path>
                 <path data-vr="0" data-state="{{ vennS0 }}" d="M160 58.84 A72 72 0 1 0 160 181.16 A72 72 0 0 1 160 58.84Z" role="radio" aria-checked="{{ vennC0 }}" aria-label="{{ vennAria0 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap0 }}" onKeyDown="{{ vennKey0 }}"></path>
                 <path data-vr="1" data-state="{{ vennS1 }}" d="M160 58.84 A72 72 0 1 1 160 181.16 A72 72 0 0 0 160 58.84Z" role="radio" aria-checked="{{ vennC1 }}" aria-label="{{ vennAria1 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap1 }}" onKeyDown="{{ vennKey1 }}"></path>
                 <path data-vr="2" data-state="{{ vennS2 }}" d="M160 58.84 A72 72 0 0 1 160 181.16 A72 72 0 0 1 160 58.84Z" role="radio" aria-checked="{{ vennC2 }}" aria-label="{{ vennAria2 }}" tabIndex="{{ vennTab }}" onClick="{{ vennTap2 }}" onKeyDown="{{ vennKey2 }}"></path>
                 <circle data-vring="true" cx="122" cy="120" r="72"></circle><circle data-vring="true" cx="198" cy="120" r="72"></circle>
                 <text data-vlab="big" x="84" y="86" text-anchor="middle">A</text><text data-vlab="big" x="236" y="86" text-anchor="middle">B</text>
-                <text data-vlab="true" x="94" y="126" text-anchor="middle">A only</text><text data-vlab="true" x="160" y="124" text-anchor="middle">Both</text>
-                <text data-vlab="true" x="226" y="126" text-anchor="middle">B only</text><text data-vlab="true" x="290" y="208" text-anchor="middle">None</text>
-              </svg>
+                <text data-vlab="true" data-for="0" x="94" y="126" text-anchor="middle">A only</text><text data-vlab="true" data-for="2" x="160" y="124" text-anchor="middle">Both</text>
+                <text data-vlab="true" data-for="1" x="226" y="126" text-anchor="middle">B only</text><text data-vlab="true" data-for="3" x="290" y="208" text-anchor="middle">None</text>
+              </svg><span data-vennedge="true" aria-hidden="true"></span></div>
             </div>
           </sc-if>
 
@@ -2250,6 +2250,16 @@ class Component extends DCLogic {
       // compact (the page scrolls past the card): no reason to shrink the figure at all
       const h = compact && phone ? full : Math.max(floor, Math.min(full, room));
       if (Math.abs(h - cur) > 1) fig.style.setProperty("--fig-h", h + "px"); }
+    // the Venn fits the card (Murci 2026-10-08: "the venn diagram box gets hidden under the parent box"): wider than a phone, its
+    // drawing (320 x 224) is as wide as the room under the question lets it stand, 260-600 px (nx-play reads --nx-vennw). The
+    // room: the panel's cap less its borders, the drawing's top in the panel (its rise-in scale out, its scroll back) and the
+    // bottom padding. The width does not move the drawing's top, so this settles in one pass.
+    const vn = q.querySelector("[data-venn]"), vsv = vn && vn.querySelector("[data-vennsvg]");
+    if (vsv && !phone && !compact) { const qr2 = q.getBoundingClientRect(), k2 = q.offsetHeight ? qr2.height / q.offsetHeight || 1 : 1,
+        vtop = (vsv.getBoundingClientRect().top - qr2.top) / k2 - q.clientTop + q.scrollTop,
+        vroom = cap - (q.offsetHeight - q.clientHeight) - vtop - (parseFloat(getComputedStyle(q).paddingBottom) || 0) - 4,
+        vw = Math.max(260, Math.min(600, Math.floor(vroom * 320 / 224))) + "px";
+      if (vn.style.getPropertyValue("--nx-vennw") !== vw) vn.style.setProperty("--nx-vennw", vw); }
     // A phone whose question does not fit beside the robot (the figure at its floor, or a long question): the robot steps into the
     // strip and the page scrolls (Murci, 2026-10-02: "Robot steps into strip"; the robot stepping back smaller still left 59-221 px
     // scrolling inside the card). Kept for the rest of that question (no flicker as the figure then grows); cleared when it changes.
@@ -3040,27 +3050,59 @@ class Component extends DCLogic {
       pl.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 200, delay: 480 + n * 22, easing: "ease-out", fill: "forwards" }); }
     document.body.appendChild(lay);
     // the break (Murci 2026-10-08, "the Glass break on what was wrongly selected"): the region's glass, cut along its own cracks into
-    // an inner ring of wedges and an outer ring, flashes white, then each shard falls and turns away (the ones nearest the hit
-    // first), each still the region's shape (its own clip moves with it). About a second, then gone.
+    // an inner ring of wedges and an outer ring, flashes white, then each shard falls and turns away, each still the region's shape.
+    // Each shard is an HTML box the size of its piece holding a static SVG of it, clipped to the region: the BOX moves, so the fall
+    // runs on the compositor ("smooth, does not have to glitch": an SVG <g> moved on the main thread, and the re-render at the
+    // burst stalled it, a 135 ms frame measured 2026-10-08). The region's label falls with them, an HTML piece too.
     setTimeout(() => {
-      const P2 = (a, d) => (C[0] + Math.cos(a) * d).toFixed(1) + "," + (C[1] + Math.sin(a) * d).toFixed(1), Rf = 170;
+      const PT = (a, d) => [C[0] + Math.cos(a) * d, C[1] + Math.sin(a) * d], Rf = 170, rd = reg ? reg.getAttribute("d") : "";
+      const rb = reg && reg.getBBox ? reg.getBBox() : { x: 0, y: 0, width: 320, height: 224 }, pieces = [], landed = [];
+      // the floor, as the term glass's (termBreak): the screen's bottom, or a phone's action bar; the pieces lie there until swept
+      const fbar = innerWidth <= 600 && !document.body.classList.contains("nx-typing") && document.querySelector("[data-footer]"),
+        ground = (fbar ? Math.round(fbar.getBoundingClientRect().top) : innerHeight) - 26, GR = 2600;
+      const layer = document.createElement("div"); layer.setAttribute("aria-hidden", "true"); layer.dataset.termshards = "true"; document.body.appendChild(layer);
+      // out from the break, a little up, then gravity; it lands, bounces once and lies there (termBreak's fall)
+      const fall = (el, cx, cy, vx, vy, spin, reach, delay) => {
+        const drop = Math.max(10, ground - 6 - Math.random() * 18 - cy), tl = (-vy + Math.sqrt(vy * vy + 2 * GR * drop)) / GR, kf = [{ offset: 0, transform: "none" }];
+        for (let q = 1; q <= 10; q++) { const t = tl * q / 10; kf.push({ offset: 0.74 * q / 10, transform: "translate(" + (vx * t).toFixed(1) + "px," + (vy * t + GR * t * t / 2).toFixed(1) + "px) rotate(" + (spin * t).toFixed(1) + "deg)" }); }
+        const xl = vx * tl, yl = vy * tl + GR * tl * tl / 2, rl = spin * tl, rest = Math.round(rl / 180) * 180 + (Math.random() - 0.5) * 30;
+        kf.push({ offset: 0.84, transform: "translate(" + (xl + vx * 0.04).toFixed(1) + "px," + (yl - 10).toFixed(1) + "px) rotate(" + ((rl + rest) / 2).toFixed(1) + "deg)" },
+          { offset: 0.93, transform: "translate(" + (xl + vx * 0.06).toFixed(1) + "px," + yl.toFixed(1) + "px) rotate(" + rest.toFixed(1) + "deg)" },
+          { offset: 1, transform: "translate(" + (xl + vx * 0.06).toFixed(1) + "px," + yl.toFixed(1) + "px) rotate(" + rest.toFixed(1) + "deg)" });
+        el.dataset.x = (cx + xl + vx * 0.06).toFixed(0); el.dataset.reach = reach.toFixed(0);
+        landed.push(el.animate(kf, { duration: Math.round(tl * 1000 / 0.74 + 160), delay: delay, easing: "linear", fill: "both" }).finished); };
       g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: "forwards" });
-      const fl = document.createElementNS(NS, "path"); fl.setAttribute("d", reg ? reg.getAttribute("d") : ""); fl.setAttribute("fill", "#ffffff"); fl.setAttribute("fill-rule", "evenodd");
+      const fl = document.createElementNS(NS, "path"); fl.setAttribute("d", rd); fl.setAttribute("fill", "#ffffff"); fl.setAttribute("fill-rule", "evenodd");
       lay.appendChild(fl); fl.animate([{ opacity: 0.55 }, { opacity: 0 }], { duration: 260, easing: "ease-out", fill: "forwards" });
-      angles.forEach((a0, n) => { const a1 = n + 1 < N ? angles[n + 1] : angles[0] + Math.PI * 2, r1 = 22 + Math.random() * 22;
-        [["M" + C[0] + "," + C[1] + " L" + P2(a0, r1) + " L" + P2((a0 + a1) / 2, r1 * 1.08) + " L" + P2(a1, r1) + "Z", 0],
-         ["M" + P2(a0, r1) + " L" + P2(a0, Rf) + " L" + P2(a1, Rf) + " L" + P2(a1, r1) + " L" + P2((a0 + a1) / 2, r1 * 1.08) + "Z", 1]].forEach(([d, ring]) => {
-          const outer = document.createElementNS(NS, "g"), inner = document.createElementNS(NS, "g"), sh = document.createElementNS(NS, "path");
-          inner.setAttribute("clip-path", "url(#" + id + ")"); sh.setAttribute("d", d);
-          sh.setAttribute("fill", ring ? "rgba(150,185,255,0.30)" : "rgba(205,222,255,0.42)"); sh.setAttribute("stroke", "rgba(255,255,255,0.85)"); sh.setAttribute("stroke-width", "1.1"); sh.setAttribute("stroke-linejoin", "round");
-          inner.appendChild(sh); outer.appendChild(inner); lay.appendChild(outer);
-          outer.style.transformBox = "fill-box"; outer.style.transformOrigin = "center";
-          const mid = (a0 + a1) / 2, push = 6 + ring * 10 + Math.random() * 8, dx = Math.cos(mid) * push + (Math.random() - 0.5) * 10, rot = (Math.random() - 0.5) * (ring ? 70 : 40);
-          outer.animate([{ transform: "translate(0px, 0px) rotate(0deg)", opacity: 1 },
-            { transform: "translate(" + (dx * 0.5).toFixed(1) + "px, " + (Math.sin(mid) * push * 0.5 - 4).toFixed(1) + "px) rotate(" + (rot * 0.2).toFixed(1) + "deg)", opacity: 1, offset: 0.18 },
-            { transform: "translate(" + dx.toFixed(1) + "px, " + (90 + ring * 40 + Math.random() * 40).toFixed(1) + "px) rotate(" + rot.toFixed(1) + "deg)", opacity: 0 }],
-            { duration: 820 + Math.random() * 260, delay: ring * 60 + Math.random() * 50, easing: "cubic-bezier(0.45, 0, 0.8, 0.6)", fill: "forwards" }); }); });
+      angles.forEach((a0, n) => { const a1 = n + 1 < N ? angles[n + 1] : angles[0] + Math.PI * 2, r1 = 22 + Math.random() * 22, mid = (a0 + a1) / 2;
+        [[[C, PT(a0, r1), PT(mid, r1 * 1.08), PT(a1, r1)], 0], [[PT(a0, r1), PT(a0, Rf), PT(a1, Rf), PT(a1, r1), PT(mid, r1 * 1.08)], 1]].forEach(([pts, ring]) => {
+          const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+          const x0 = Math.max(rb.x, Math.min.apply(null, xs)) - 2, x1 = Math.min(rb.x + rb.width, Math.max.apply(null, xs)) + 2,
+            y0 = Math.max(rb.y, Math.min.apply(null, ys)) - 2, y1 = Math.min(rb.y + rb.height, Math.max.apply(null, ys)) + 2;
+          if (x1 - x0 < 4 || y1 - y0 < 4) return;
+          const el = document.createElement("div"), cid = id + "-" + pieces.length; el.setAttribute("aria-hidden", "true");
+          el.className = "ts-piece vn-piece";
+          el.style.cssText = "left:" + (r.left + x0 * k).toFixed(1) + "px; top:" + (r.top + y0 * k).toFixed(1) + "px; width:" + ((x1 - x0) * k).toFixed(1) + "px; height:" + ((y1 - y0) * k).toFixed(1) + "px";
+          el.innerHTML = '<svg viewBox="' + x0.toFixed(1) + " " + y0.toFixed(1) + " " + (x1 - x0).toFixed(1) + " " + (y1 - y0).toFixed(1) + '" width="100%" height="100%" style="display:block; overflow:visible">'
+            + '<defs><clipPath id="' + cid + '"><path clip-rule="evenodd" d="' + rd + '"></path></clipPath></defs><path clip-path="url(#' + cid + ')" d="M' + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L") + 'Z"'
+            + ' fill="' + (ring ? "rgba(150,185,255,0.30)" : "rgba(205,222,255,0.42)") + '" stroke="rgba(255,255,255,0.85)" stroke-width="1.1" stroke-linejoin="round"></path></svg>';
+          layer.appendChild(el); pieces.push(el);
+          const w = (x1 - x0) * k, h = (y1 - y0) * k, cx = r.left + x0 * k + w / 2, cy = r.top + y0 * k + h / 2, sp = 70 + ring * 60 + Math.random() * 70;
+          fall(el, cx, cy, Math.cos(mid) * sp, Math.sin(mid) * sp * 0.6 - 110 - Math.random() * 60, (Math.random() - 0.5) * (ring ? 420 : 260), Math.max(w, h) / 2, ring * 50 + Math.random() * 40); }); });
+      const lab = sv.querySelector('[data-vlab="true"][data-for="' + i + '"]');
+      if (lab) { const lr = lab.getBoundingClientRect(), cs = getComputedStyle(lab), el = document.createElement("div"); el.setAttribute("aria-hidden", "true"); el.textContent = lab.textContent;
+        el.className = "ts-piece vn-piece vn-label";
+        el.style.cssText = "left:" + lr.left.toFixed(1) + "px; top:" + lr.top.toFixed(1) + "px; width:" + lr.width.toFixed(1) + "px; height:" + lr.height.toFixed(1) + "px; line-height:" + lr.height.toFixed(1)
+          + "px; text-align:center; white-space:nowrap; font-family:" + cs.fontFamily + "; font-weight:" + cs.fontWeight + "; font-size:" + (parseFloat(cs.fontSize) * k).toFixed(1) + "px; color:" + cs.fill;
+        layer.appendChild(el); pieces.push(el); lab.style.opacity = "0";
+        fall(el, lr.left + lr.width / 2, lr.top + lr.height / 2, (Math.random() - 0.5) * 80, -120, (Math.random() - 0.5) * 200, lr.width / 2, 30); }
       this.sparkle(X, Y, 10, ["#ffffff", "#cfe0ff", "#ff9a9a"], 30);
+      // (the inline hide is lifted with the shards: by then the region is dead and nx-play keeps its label hidden; inline, it
+      // would outlive this part on the next one, the template reusing the element)
+      if (lab) setTimeout(() => { lab.style.opacity = ""; }, 1300);
+      // the pieces STAY on the floor until the robot sweeps them, as the term glass does; landed, they lie behind the robot and its hint
+      (this._shards = this._shards || []).push(layer);
+      Promise.all(landed).then(() => { layer.style.zIndex = "0"; }, () => {});
     }, NX_GLASS_BREAK);
     setTimeout(() => lay.remove(), NX_GLASS_BREAK + 1300);
   }
@@ -3154,10 +3196,10 @@ class Component extends DCLogic {
     dead.forEach(d => { const b = this.ballEl(Object.assign({}, d)) || document.querySelector('[data-question] [data-ball="true"][data-letter="' + d.L + '"][data-dead="breaking"]');
       const track = b && b.closest('[data-track="true"]'); if (!track) return; const x = b.getBoundingClientRect().left;
       track.animate([{ translate: "0 0" }, { translate: "0 2px" }, { translate: "0 -1px" }, { translate: "0 0" }], { duration: 260, easing: "ease-out" });
-      [...track.querySelectorAll('[data-ball="true"]')].filter(o => o !== b && o.offsetWidth && o.dataset.dead === "false").forEach(o => {
-        const ox = o.getBoundingClientRect().left, dir = ox < x ? -1 : 1, k = Math.round(Math.abs(ox - x) / (o.offsetWidth + 6)), dist = Math.max(1.5, 8 - (k - 1) * 2.5);
-        o.animate([{ translate: "0 0" }, { translate: (dir * dist).toFixed(1) + "px -2px", offset: 0.25 }, { translate: (-dir * dist * 0.25).toFixed(1) + "px 0", offset: 0.6 }, { translate: "0 0" }],
-          { duration: 460, easing: "ease-out" }); }); });
+      // (the balls beside it no longer jolt away from the gap: that 460 ms push ran against rollGaps pulling them into it, and the
+      // line stood still with a hole in it for ~300 ms, measured 2026-10-08; Murci: "the others flow seamlessly to the space of
+      // the one broken". The tray's bump stays; the roll is the balls' reaction.)
+      void x; });
   }
   // The right balls celebrate (Murci, 2026-10-05): each hops in turn, squashing as it lands, its disc spinning once, a burst of
   // light; on a full mark the balls not picked step back (they dim and sink), so the right ones stand out
@@ -3177,6 +3219,23 @@ class Component extends DCLogic {
   ballSpots() { const m = new Map(); document.querySelectorAll('[data-question] [data-ball="true"]').forEach(b => { if (b.offsetWidth) m.set(b, b.getBoundingClientRect().left); }); return m; }
   // The balls left of a gap stay; the ones after it ROLL into place (Murci, 2026-10-05: "the balls need to roll to place for the ones
   // dropped naturally"): each from where it stood, slowing by friction, its disc turning by the distance, the nearest first.
+  // The balls after a broken one roll into its place BEFORE it leaves the line (Murci 2026-10-08: "flow seamlessly to the space of
+  // the one broken"): each by the room the broken ones before it held (their width and the gap), slowing by friction, its disc
+  // turning by the distance, the nearest first. Transforms only, held at the end (fill forwards) until the commit cancels them.
+  rollAhead() {
+    const list = []; let dur = 0;
+    const groups = new Set([...document.querySelectorAll('[data-question] [data-ball="true"][data-dead="breaking"]')].map(b => b.parentElement));
+    groups.forEach(g => { const bs = [...g.querySelectorAll(':scope > [data-ball="true"]')].filter(b => b.offsetWidth || b.dataset.dead === "breaking");
+      let lost = 0, n = 0;
+      bs.forEach((b, i) => { if (b.dataset.dead === "breaking") { const nx = bs[i + 1]; lost += nx ? nx.getBoundingClientRect().left - b.getBoundingClientRect().left : 0; return; }
+        if (!lost || b.dataset.dead !== "false") return;
+        const T = Math.round(Math.max(260, Math.sqrt(2 * lost / 1600) * 1000)), delay = 45 * n++, rad = b.offsetWidth / 2 || 18;
+        list.push(b.animate([{ transform: "translateX(0px)" }, { transform: "translateX(" + (-lost).toFixed(1) + "px)" }], { duration: T, delay: delay, easing: "cubic-bezier(0.25, 0.7, 0.35, 1)", fill: "forwards" }));
+        const f = b.querySelector('[data-ballf], :scope > span:nth-child(2)');
+        if (f) list.push(f.animate([{ transform: "rotate(0deg)" }, { transform: "rotate(" + (-lost / rad * 57.2958).toFixed(1) + "deg)" }], { duration: T, delay: delay, easing: "cubic-bezier(0.25, 0.7, 0.35, 1)", fill: "forwards" }));
+        dur = Math.max(dur, T + delay); }); });
+    return { list: list, dur: dur };
+  }
   rollGaps(before) {
     if (this.state.reduced || !before || !before.size) return; const DECEL = 1600; let n = 0;
     before.forEach((x0, b) => { if (!b.isConnected || !b.offsetWidth) return; const dx = x0 - b.getBoundingClientRect().left; if (dx < 0.5) return;
@@ -3667,7 +3726,7 @@ class Component extends DCLogic {
       const flinch = !closed && !result.full && !draw;
       // a wrong answer that breaks glass (the term's capsule, a letter ball) hurts the robot when the glass BURSTS, not when it is marked
       // (Murci, 2026-10-06: "the robot animates before the glasses break"); nothing to break: at once
-      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || !!(seqR && seqR.snap) || (!!part.ab && dead.length > 0)), hurtAt = glass ? NX_GLASS_BREAK : 0;
+      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || !!(seqR && seqR.snap) || (!!part.ab && dead.length > 0)), hurtAt = glass ? NX_GLASS_BREAK + 140 : 0;   // (140 ms after the burst, a reaction's time: the robot's re-render (~180 ms, measured 2026-10-08) landed on the burst's own frame and stalled the shards as they started; begun first, they run on the compositor through it)
       clearTimeout(this._glassT);
       if (!quiet) { const go = () => this.react(draw ? "greet" : result.full ? "dance" : "defeat", flinch ? NX_FLINCH : undefined);
         if (hurtAt) this._glassT = setTimeout(() => { const q = this.part(); if (q && q.key === part.key) go(); }, hurtAt); else go(); }
@@ -3684,7 +3743,12 @@ class Component extends DCLogic {
       const okL = !quiet && !draw ? this.okLetters(part, mode, answer, result) : [];
       if (okL.length && !this.state.reduced) setTimeout(() => this.ballsCheer(okL, !!result.full), 80);   // the right balls celebrate
       // ...and the letter leaves the row as it breaks apart (termBreak's CRACK_AT, 700 ms), not before: until then its place is held
-      clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => { const before = this.ballSpots(); this.setState({ deadFresh: [] }, () => this.rollGaps(before)); },
+      clearTimeout(this._dfT); if (deadL.length) this._dfT = setTimeout(() => {
+          // roll first (transforms), commit after: the line closes while nothing re-renders (rollAhead), then the broken ball
+          // leaves it and the transforms go in the same commit (the balls already stand where the layout puts them)
+          const ra = this.state.reduced ? null : this.rollAhead();
+          if (!ra || !ra.list.length) { const before = this.ballSpots(); this.setState({ deadFresh: [] }, () => this.rollGaps(before)); return; }
+          this._dfT = setTimeout(() => this.setState({ deadFresh: [] }, () => ra.list.forEach(a => a.cancel())), ra.dur); },
         this.state.reduced || !(chipSnaps.length || part.ab) ? 0 : NX_GLASS_BREAK + 20);
       return reply;
     };

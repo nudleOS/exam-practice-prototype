@@ -2346,6 +2346,9 @@ body.nx-play .mcqp .stage > .qimg.big img { box-sizing:border-box; width:min(88v
    (it was 400 px from the left edge), up to 600 px wide; the items spread evenly over the circles */
 @media (min-width:601px) {
   body.nx-play main:not(#mq-stage) [data-venn] { max-width:min(600px, 100%); margin-left:auto; margin-right:auto; }
+  /* the drawing itself as wide as the room under the question lets it stand (nxPanelCap: --nx-vennw), centred; the two items
+     keep the full row above it (sized with the drawing, they stacked and cost it a row) */
+  body.nx-play main:not(#mq-stage) [data-vennframe] { width:100%; max-width:min(var(--nx-vennw, 600px), 100%); margin-left:auto; margin-right:auto; }
   body.nx-play main:not(#mq-stage) [data-vennitems] { justify-content:space-around; }
 }
 /* Back, Skip and Next in colour (Murci 2026-10-08: "for those next back button i think they need color"): Next, the step
@@ -2360,3 +2363,31 @@ body.nx-play .mcqp .after .next.skip, body.nx-play .mcqp .after .prevq, body.nx-
   padding-left:20px !important; padding-right:20px !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
 body.nx-play .mcqp .after .next.skip:hover, body.nx-play .mcqp .after .prevq:hover, body.nx-play [data-footer] :is([data-skip], [data-back]):hover { filter:brightness(1.12); }
 body.nx-play .mcqp .after .next .arr { background:rgba(255,255,255,0.18) !important; }
+/* the Venn's box: a slim rim with the answer cards' turning shine (Murci 2026-10-08: "not thick though, slim and rotating shine
+   like ... our current MCQ answer cards"). A ring-masked span over the box (the None region's rounded rect, 6 units in from
+   the 320 x 224 drawing, 14-unit corners), its own faint rim as its background, the arc a conic gradient TURNED inside it (the
+   compositor, as the cards' .edge: no style work per frame). */
+body.nx-play main:not(#mq-stage) [data-vennframe] { position:relative; }
+body.nx-play main:not(#mq-stage) [data-vennedge] { position:absolute; left:1.875%; right:1.875%; top:2.679%; bottom:2.679%; border-radius:4.545% / 6.604%;
+  padding:1px; pointer-events:none; overflow:hidden; container-type:size; background:rgba(129,177,255,0.32);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+body.nx-play main:not(#mq-stage) [data-vennedge]::before { content:""; position:absolute; left:50%; top:50%; aspect-ratio:1; translate:-50% -50%;
+  width:200%; width:calc(hypot(100cqw, 100cqh) + 4px);
+  background:conic-gradient(transparent 0deg 300deg, rgba(170,205,255,0.95) 330deg, transparent 350deg); animation:nx-vennSpin 6s linear infinite; }
+@keyframes nx-vennSpin { to { rotate:360deg; } }
+@media (prefers-reduced-motion: reduce) { body.nx-play main:not(#mq-stage) [data-vennedge]::before { animation:none; } }
+/* a broken region's label is gone with its glass (it fell with the shards) */
+body.nx-play main:not(#mq-stage) [data-vennsvg]:has([data-vr="0"][data-state="dead"]) [data-vlab][data-for="0"],
+body.nx-play main:not(#mq-stage) [data-vennsvg]:has([data-vr="1"][data-state="dead"]) [data-vlab][data-for="1"],
+body.nx-play main:not(#mq-stage) [data-vennsvg]:has([data-vr="2"][data-state="dead"]) [data-vlab][data-for="2"],
+body.nx-play main:not(#mq-stage) [data-vennsvg]:has([data-vr="3"][data-state="dead"]) [data-vlab][data-for="3"] { opacity:0; }
+/* the Venn's glass on the floor (its pieces are the term glass's .ts-piece, for the sweep): a blue rim, not the term's red */
+[data-termshards] .vn-piece { filter:drop-shadow(0 0 0.7px rgba(200,220,255,0.95)) drop-shadow(0 6px 8px rgba(0,0,0,0.35)); }
+[data-termshards] .vn-label { filter:drop-shadow(0 2px 4px rgba(0,0,0,0.45)); }
+/* the Venn's two items are the question's own words, not buttons (Murci 2026-10-08: "do not make the following like they are
+   button cause they are part of a question so write them as such"): "A: Oestrogen", the letter bold, no pill, no badge */
+body.nx-play main:not(#mq-stage) [data-vitem] { background:none !important; border:0 !important; box-shadow:none !important; padding:0 !important; min-height:0 !important;
+  border-radius:0 !important; gap:6px !important; font-size:15px; font-weight:600; color:var(--nx-text); }
+body.nx-play main:not(#mq-stage) [data-vitem] > b { width:auto !important; height:auto !important; border-radius:0 !important; background:none !important; box-shadow:none !important;
+  display:inline !important; color:var(--nx-h1, #fff); font-weight:800; font-size:inherit !important; line-height:inherit !important; }
+body.nx-play main:not(#mq-stage) [data-vitem] > b::after { content:":"; }
