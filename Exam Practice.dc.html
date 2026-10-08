@@ -4173,7 +4173,7 @@ class Component extends DCLogic {
       donePaperText: fin ? earned + " of " + total + " banked · " + ppct + "%" : before + " → " + earned + " of " + total + " banked",
       donePaperAria: "The paper: " + before + " marks banked before this mission, " + earned + " now, of " + total,
       doneBeforePct: pct(before), doneGainPct: s.doneGrow ? pct(earned - before) : "0%", doneGainDur: s.reduced ? "0ms" : "900ms",
-      doneHasRevisit: (lostAll || revisit).length > 0,
+      doneHasRevisit: !fin && revisit.length > 0,   // (not on the paper's finish: Murci 2026-10-08, the marks missed "can be a lot and it will overflow"; they are on Review my paper)
       doneRevisit: (lostAll || revisit).map(x => { const lost = x.p.marks - (x.g.best || 0);
         return { number: x.p.number, lost: word(lost) + " missed", label: short(x.p.stem), aria: "Retake " + x.p.number + ", " + word(lost) + " missed. A first try on the retake wins marks back, no XP",   // marks are first-try only: a replay cannot find them
           open: () => this.retakePart(x.mi != null ? x.mi : s.mi, x.pi, "done") }; }),
