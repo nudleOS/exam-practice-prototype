@@ -2354,14 +2354,15 @@ body.nx-play .mcqp .stage > .qimg.big img { box-sizing:border-box; width:min(88v
 /* Back, Skip and Next in colour (Murci 2026-10-08: "for those next back button i think they need color"): Next, the step
    forward, in the brand's cobalt to violet; Back and Skip a solid cobalt with a light rim; white text on both (5:1 and up).
    The card's row (mcq-play: .next, .next.skip, .prevq) and the page's footer (data-bar-primary, data-skip, data-back). */
-body.nx-play .mcqp .after .next:not(.skip), body.nx-play [data-footer] [data-bar-primary] {
+body.nx-play .mcqp .after .next:not(.skip), html body.nx-play.nx-play [data-bar-primary][data-bar-primary][data-bar-primary] {
   background:linear-gradient(135deg, #2f5bff, #6c3cff) !important; color:#fff !important; border:0 !important;
   box-shadow:0 12px 26px -12px rgba(70,80,255,0.85), inset 0 1px 1px rgba(255,255,255,0.35) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
-body.nx-play .mcqp .after .next.skip, body.nx-play .mcqp .after .prevq, body.nx-play [data-footer] [data-skip], body.nx-play [data-footer] [data-back] {
+body.nx-play .mcqp .after .next.skip, body.nx-play .mcqp .after .prevq, html body.nx-play.nx-play [data-skip][data-skip][data-skip], html body.nx-play.nx-play [data-back][data-back][data-back] {   /* (wherever they stand: on a tablet or desktop the page's row is the docked bar, not [data-footer], and its Skip stayed glass, 2026-10-08) */
   background:linear-gradient(180deg, #2b4fc0, #1f3a91) !important; color:#fff !important; border:1px solid rgba(160,190,255,0.5) !important;
   box-shadow:0 10px 22px -12px rgba(30,60,200,0.75), inset 0 1px 1px rgba(255,255,255,0.22) !important; text-decoration:none !important;
   padding-left:20px !important; padding-right:20px !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
-body.nx-play .mcqp .after .next.skip:hover, body.nx-play .mcqp .after .prevq:hover, body.nx-play [data-footer] :is([data-skip], [data-back]):hover { filter:brightness(1.12); }
+body.nx-play .mcqp .after .next.skip:hover, body.nx-play .mcqp .after .prevq:hover, body.nx-play :is([data-skip], [data-back]):hover { filter:brightness(1.12); }
+/* (html + the class and the attribute repeated: above the older glass rule body.nx-play.nx-play [data-footer] [data-skip][data-skip] (0,5,1, !important), so one Skip everywhere: Murci 2026-10-08, "we should not have different buttons") */
 body.nx-play .mcqp .after .next .arr { background:rgba(255,255,255,0.18) !important; }
 /* the Venn's box: a slim rim with the answer cards' turning shine (Murci 2026-10-08: "not thick though, slim and rotating shine
    like ... our current MCQ answer cards"). A ring-masked span over the box (the None region's rounded rect, 6 units in from

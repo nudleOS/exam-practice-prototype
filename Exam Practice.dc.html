@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=265">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=268">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=52">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -2825,7 +2825,7 @@ class Component extends DCLogic {
         pmHasBar: !!g && (g.started || g.done), pmBarPct: sel.pct + "%",
         pmHasSheetNote: !g, pmSheetNote: "Nexera is still preparing this paper. It opens here when it's ready.",   // (no ingestion line: Murci 2026-10-08)
         pmHasPrimary: !!go, pmPrimary: go ? go.label : "", pmPrimaryGo: () => { if (go) go.run(); },
-        pmHasRetake: !!(sel && g && (sel.state === "done" || sel.state === "going")),
+        pmHasRetake: !!(sel && g && sel.state === "done"),   // (only a FINISHED paper, Murci 2026-10-08: Continue or Start is the way into its questions)
         pmRetakeGo: () => { if (g) this.setState({ pmOpen: null, paperId: g.local.id }, () => this.retakePaper()); },
         pmHasSource: !!p.source_pdf, pmSourceGo: () => this.setState({ pmOpen: null }, () => this.openPaperSource(p.id, 1)) } : {}),
     };
