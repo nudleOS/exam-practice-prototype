@@ -237,7 +237,6 @@
               <span class="pm-sheet-titles"><h2 id="lv-title" tabIndex="-1">Select your study level</h2></span>
               <button type="button" class="pm-x" onClick="{{ lvClose }}" aria-label="Close">×</button>
             </div>
-            <sc-if value="{{ lvManyQuals }}" hint-placeholder-val="{{ false }}">
             <label class="lv-field">
               <span class="pm-kicker" id="lv-qual-label">Qualification</span>
               <span class="lv-select-wrap">
@@ -250,7 +249,6 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
               </span>
             </label>
-            </sc-if>
             <sc-if value="{{ lvHasLevels }}" hint-placeholder-val="{{ false }}">
               <div class="lv-group" role="radiogroup" aria-label="{{ lvLevelLabel }}">
                 <span class="pm-kicker">{{ lvLevelLabel }}</span>
@@ -2613,7 +2611,6 @@ class Component extends DCLogic {
       lvKeys: e => { if (e.key === "Escape") { e.preventDefault(); close(); } },
       lvOpenGo: () => this.setState({ lvOpen: true, lvDraft: cur, lvErr: "" }, () => { const h = document.getElementById("lv-title"); if (h) h.focus({ preventScroll: true }); }),
       lvQual: d.qualification || "", lvQuals: [{ id: "high_school", label: "High school" }, { id: "ncv", label: "TVET college · NC(V)" }].filter(q => shownQual(q.id)),
-      lvManyQuals: SHOW_TVET,   /* one qualification (TVET hidden): no dropdown of one, the grades are the choice */
       // one level only (high school: Grade 12 for now) is picked for the learner; NC(V) asks
       lvQualPick: e => { const q = e.target.value, ls = SERVICE_LEVELS[q] || [];
         this.setState({ lvDraft: { qualification: q, level: ls.length === 1 ? ls[0] : null }, lvErr: "" }); },
