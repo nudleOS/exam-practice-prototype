@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=5"></script>
+<script src="papers-catalogue.js?v=7"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=269">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=270">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -974,6 +974,16 @@
                   <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:700">{{ coachShape }}</span><span style="font-size:12.5px; color:var(--text2)">{{ coachAim }}</span></span>
                 </div>
               </sc-if>
+              <sc-if value="{{ isTable }}" hint-placeholder-val="{{ false }}">
+                <div data-tabulate="true" role="group" aria-label="Your table">
+                  <div data-thead="true"><span aria-hidden="true"></span><sc-for list="{{ tableHeads }}" as="th" hint-placeholder-count="2"><b>{{ th.label }}</b></sc-for></div>
+                  <sc-for list="{{ tableRows }}" as="tr" hint-placeholder-count="2">
+                    <div data-trow="true"><span data-slotn="true" aria-hidden="true">{{ tr.n }}</span>
+                      <sc-for list="{{ tr.cells }}" as="tc" hint-placeholder-count="2"><textarea id="{{ tc.id }}" data-field="true" data-tcell="true" rows="2" aria-label="{{ tc.label }}" value="{{ tc.value }}" onChange="{{ tc.onChange }}" disabled="{{ locked }}" autoCorrect="off" spellCheck="false" maxLength="300"></textarea></sc-for>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
               <sc-if value="{{ rubricBox }}" hint-placeholder-val="{{ true }}">
                 <textarea value="{{ written }}" onChange="{{ onWritten }}" disabled="{{ locked }}" aria-label="Your answer" autoCorrect="off" spellCheck="false" maxLength="2500" rows="5" style="min-height:130px; padding:12px 14px; border-radius:14px; border:1px solid var(--line2); background:var(--field); color:var(--text); font-size:16px; line-height:1.6; resize:vertical; outline:none"></textarea>
                 <span style="align-self:flex-end; font-size:12px; color:var(--text3)">{{ writtenCount }}</span>
@@ -1601,6 +1611,16 @@ const levelCode = d => { const m = /\b(N|LEVEL|L|GRADE|G)\s*(\d{1,2})\b/.exec(St
 // never "didn't answer", so the skip lives with the client.
 const SERVICE_LEVELS = { ncv: ["L2", "L3", "L4"], high_school: ["G10", "G11", "G12"] };
 const fold = t => String(t || "").split(/\s+/).join(" ").trim();
+// A "Tabulate" answer as the marker reads it (2026-10-09): the table with its column headings (the memo's table mark: the learner
+// tabulated), then each filled cell under its column's OWN words ("Long-acting" / "Rapid-acting": the words the headings do not
+// share). The full heading repeated per cell gave the keyword stand-in its words for free ("insulin", "treatment"): "It is blue |
+// It is red" scored 5 of 5. Empty until a cell is filled, so an untouched table cannot be checked.
+const tableText = (H, w) => { const rows = String(w || "").split("\n").map(r => r.split("\t")).filter(c => c.some(x => String(x || "").trim()));
+  if (!rows.length) return "";
+  const words = h => String(h).toLowerCase().split(/\s+/), label = H.map((h, i) => { const others = new Set(H.filter((_, j) => j !== i).flatMap(words));
+    const own = String(h).split(/\s+/).filter(x => !others.has(x.toLowerCase())); return own.length ? own.join(" ") : h; });
+  return "Table with column headings: " + label.join(" | ") + ". " + rows.map(c => label.map((l, j) => String(c[j] || "").trim() ? l + ": " + String(c[j]).trim() : "")
+    .filter(Boolean).join(". ")).join(". "); };
 const STUDIES_API = {
   get() { try { return JSON.parse(localStorage.getItem("exam.studies") || "null"); } catch (e) { return null; } },
   asked() { try { return localStorage.getItem("exam.studiesAsked") === "1"; } catch (e) { return false; } },
@@ -1854,7 +1874,7 @@ function buildPapers() {
           // must: the COMPULSORY points' indexes (2.1.3, "Compulsory mark * (1) + Any (5)"); the memo marks them as the paper's memo does
           SERVER.memo[key] = (q.bullets || []).map((b, i) => (q.must || []).indexOf(i) !== -1 ? b + " *" : b);
           SERVER.keys[key] = { rubric: q.bullets || [], each: q.each || 1, must: q.must || [] };   // each: a memo point's marks (2.5.7 and 3.1.2: one point worth 2)
-          return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria" });
+          return Object.assign(base, { response_mode: "rubric", marking_mode: "criteria", table: Array.isArray(q.table) && q.table.length > 1 ? q.table.slice() : null });
         });
         // the paper's extract (the case text, the results table, "study the information below") is the question's shared information:
         // it was dropped here (context ""), so 2.2, 2.5, 3.1, 3.3 and 3.6 asked about text the learner never saw (found 2026-10-03)
@@ -2310,7 +2330,11 @@ class Component extends DCLogic {
         // (the page scrolls), as any long question does. (letters with chips to tap too: the figure is not the only input)
         // (Murci 2026-10-08: "increase the figures/images heights ... they look small": 260 px at least wider than a phone, where
         // the panel scrolls; beside the answers the figure then stays put)
-        floor = fig.dataset.fighot !== "true" ? Math.min(full, phone ? 200 : 260) : q.querySelector('[data-chips="true"]') ? 120 : 150;
+        // (Murci 2026-10-09, "smaller figure": STACKED above the answers wider than a phone, the 260 px floor pushed the answer field
+        // out of the card on a short screen (LS P1 Nov 2025 3.4.1(a) on a 1024 x 768 tablet: shared information + the ear left the
+        // field and Check below the card's edge). Stacked, the figure now shrinks to the room that keeps the answer in view, down to
+        // a readable 160 px; it still opens full size on a tap. Beside the answers it keeps 260: the answers sit next to it.)
+        floor = fig.dataset.fighot !== "true" ? Math.min(full, phone ? 200 : side ? 260 : 160) : q.querySelector('[data-chips="true"]') ? 120 : 150;
       // compact (the page scrolls past the card): no reason to shrink the figure at all
       const h = compact && phone ? full : Math.max(floor, Math.min(full, room));
       if (Math.abs(h - cur) > 1) fig.style.setProperty("--fig-h", h + "px"); }
@@ -3799,7 +3823,7 @@ class Component extends DCLogic {
       : mode === "match" ? part.match.left.map((_, l) => ui.matchPairs[l] != null ? ui.matchPairs[l] : null)
       : mode === "mcq" ? ui.pick : mode === "pickn" ? ui.picks.slice() : mode === "order" ? ui.orderSeq.slice()
       : mode === "lettername" ? { letter: ui.letter, name: ui.lname } : mode === "letternames" ? Array.from({ length: part.count || 1 }, (_, k) => ({ letter: ((ui.lrows || [])[k] || {}).letter || "", name: ((ui.lrows || [])[k] || {}).name || "" })) : mode === "term" ? ui.term : mode === "num" ? ui.numVal
-      : mode === "build" ? JSON.parse(JSON.stringify(ui.build || {})) : mode === "draw" ? !!ui.drawn : ui.written;
+      : mode === "build" ? JSON.parse(JSON.stringify(ui.build || {})) : mode === "draw" ? !!ui.drawn : part.table ? tableText(part.table, ui.written) : ui.written;
   }
   // `given` (from mcq-play): { answer, quiet } — the answer passed in (a setState'd pick would not be read yet), and
   // quiet = no verdict bar and no focus move (the component shows the verdict). Returns the reply.
@@ -4486,6 +4510,14 @@ class Component extends DCLogic {
     const count = part.count || 4;
     const NUMW = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
     const lineN = mode === "rubric" ? (m => m ? NUMW[m[1]] : 0)(String(part.stem || "").match(/\b(?:State|Name|Give|List|Mention)\b[^.?]*?\b(ONE|TWO|THREE|FOUR|FIVE)\b/)) : 0;
+    // a "Tabulate" answer (part.table: the paper's column headings; 2026-10-09 polish, LS P1 Nov 2025 3.5.3): one row per difference
+    // the question asks for ("TWO differences": two rows), a field per heading; kept in `written` as a line per row, cells split by a tab
+    const tableOn = mode === "rubric" && !!part.table;
+    const tRows = tableOn ? (m => m ? NUMW[m[1]] : 2)(String(part.stem || "").match(/\b(ONE|TWO|THREE|FOUR|FIVE)\b/)) : 0;
+    const tVals = String(s.written || "").split("\n").map(r => r.split("\t"));
+    const setCell = (r, c, v) => { const H = part.table, w = String(this.state.written || "").split("\n").map(x => x.split("\t"));
+      while (w.length < tRows) w.push([]); while (w[r].length < H.length) w[r].push(""); w[r][c] = String(v).replace(/[\t\n]/g, " ");
+      this.setState({ written: w.slice(0, tRows).map(x => H.map((_, j) => x[j] || "").join("\t")).join("\n") }); };
     const slotN = mode === "list" ? count : lineN;
     const slotVals = mode === "list" ? s.list : lineN ? String(s.written || "").split("\n") : [];
     const setSlot = (i, v) => { const st = this.state; v = String(v).replace(/\n/g, " ");
@@ -4579,11 +4611,18 @@ class Component extends DCLogic {
       onNumFocus: () => { if (touch && !locked && this.state.kp !== "num") this.kpOpenFor("num"); },
       numHasStamp: !!numSp, numStamp: numSp ? numSp.t : "", numStampBg: numSp ? numSp.bg : "", numStampColor: numSp ? numSp.c : "",
       numInputMode: touch ? "none" : "decimal",
-      isSlots: slotN > 0, slots: slots, slotsAria: slotN + (slotN === 1 ? " answer" : " answers"), rubricBox: mode === "rubric" && !lineN,
+      isSlots: slotN > 0, slots: slots, slotsAria: slotN + (slotN === 1 ? " answer" : " answers"), rubricBox: mode === "rubric" && !lineN && !tableOn,
       slotsFootOn: slotN > 1, slotsFoot: filled + " of " + slotN + (mode === "list" ? " named" : " written"),
       isRubric: mode === "rubric", written: s.written, onWritten: e => this.setState({ written: e.target.value }),
-      hasCoach: mode === "rubric" && !!cmd && !lineN, coachCmd: cmd,   // numbered lines already say how many and how short coachShape: SHAPE[cmd] || "",
-      coachAim: part.marks > 1 ? part.marks + " marks: aim for " + part.marks + " separate points." : "1 mark: one clear point.",
+      isTable: tableOn, tableHeads: tableOn ? part.table.map(h => ({ label: h })) : [],
+      tableRows: Array.from({ length: tRows }, (_, r) => ({ n: String(r + 1), cells: part.table.map((h, c) => ({ id: "tcell-" + r + "-" + c,
+        label: h + ", difference " + (r + 1), value: (tVals[r] || [])[c] || "", onChange: e => setCell(r, c, e.target.value) })) })),
+      // (numbered lines already say how many and how short.) coachShape sat INSIDE that comment until 2026-10-09, so no written
+      // answer ever showed its shape line ("A point, then because …"); a table says how its rows are marked
+      hasCoach: mode === "rubric" && !!cmd && !lineN, coachCmd: cmd,
+      coachShape: tableOn ? "One difference in each row: fill both sides." : SHAPE[cmd] || "",
+      coachAim: tableOn && part.marks > tRows && (part.marks - 1) % tRows === 0 ? part.marks + " marks: 1 for the table, " + (part.marks - 1) / tRows + " for each difference (both sides)."
+        : part.marks > 1 ? part.marks + " marks: aim for " + part.marks + " separate points." : "1 mark: one clear point.",
       writtenCount: s.written.length + " / 2 500 characters",
       showCalcBtn: mode === "steps" && !locked && !kpOn, numCalcOn: mode === "num" && !locked && !kpOn,   // a number's calculator sits beside its box
       numArrowOn: mode === "num" && !locked && !(reply && reply.waiting),

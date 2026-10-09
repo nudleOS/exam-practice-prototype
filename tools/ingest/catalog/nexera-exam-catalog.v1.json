@@ -858,6 +858,13 @@
       "type": "integer",
       "description": "Marks per point when one point is worth more than 1"
      },
+     "table": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Tabulate: the table's column headings (the things compared, in the paper's order); the answer is played as that table, one row per difference the question asks for"
+     },
      "must": {
       "type": "array",
       "items": {

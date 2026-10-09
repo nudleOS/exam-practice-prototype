@@ -99,6 +99,7 @@ COMPONENTS = {
     "rubric": component("rubric", "A written answer marked against the memo's points (Explain / Describe / State ...).", {
         "bullets": {**STRS, "description": "The memo's marking points, one per mark (or per 'each'). An alternative answer starts 'OR — '"},
         "each": {"type": "integer", "description": "Marks per point when one point is worth more than 1"},
+        "table": {**STRS, "description": "Tabulate: the table's column headings (the things compared, in the paper's order); the answer is played as that table, one row per difference the question asks for"},
         "must": {**INTS, "description": "0-based indexes of COMPULSORY points (the memo's 'Compulsory mark * (1) + Any (5)'): each earns its own "
                  "mark, and the other points together earn at most marks minus the compulsory ones"}}, ["bullets"]),
     "draw": component("draw", "No catalogue type fits (a drawing, a graph to plot, a structured essay ...): the learner answers on paper and self-checks against the memo's criteria. Flag it no_fit.", {

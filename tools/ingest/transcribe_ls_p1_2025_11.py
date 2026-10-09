@@ -286,8 +286,11 @@ q35 = [
          "Long-acting: a lower concentration of insulin (10 units)", "Rapid-acting: a higher concentration of insulin (30 units)",
          "Long-acting: the concentration remains constant for long periods (20 hours)", "Rapid-acting: the concentration fluctuates",
          "Long-acting: a long-lasting effect", "Rapid-acting: lasts a shorter amount of time",   # the memo's 5th row (2026-10-09 polish: was missing)
-         "Long-acting: takes 1 hour to reach its peak", "Rapid-acting: takes 2 hours to reach its peak"],
-        ["Compare person C's line with person B's.", "Count the injections, see when they are given, and how high and steady each line is."]),
+         # the memo's own words (2026-10-09): "takes 1 hour to reach its peak" had one long word, so the keyword stand-in awarded it on
+         # the column's "acting" alone ("It is blue | It is red" scored these two)
+         "Long-acting: the insulin concentration takes 1 hour to increase to its peak", "Rapid-acting: the insulin concentration takes 2 hours to increase to its peak"],
+        ["Compare person C's line with person B's.", "Count the injections, see when they are given, and how high and steady each line is."],
+        table=["Long-acting insulin treatment", "Rapid-acting insulin treatment"]),   # played as the table it asks for (2026-10-09 polish)
     term("3.5.4", "Name the type of insulin treatment that is similar to insulin secretion in a healthy person.",
          ["rapid-acting insulin", "rapid-acting", "rapid acting insulin", "rapid acting", "rapid-acting insulin treatment"],
          ["Which treated line rises and falls like person A's?", "It is given before each meal."]),
@@ -363,7 +366,6 @@ paper = {
     "paper": {"subject": "Life Sciences", "title": "Life Sciences P1", "sitting": "November 2025", "total_marks": 150, "time": "2½ hours"},
     "sections": [{"title": "Section A", "total": 50, "missions": missions}, {"title": "Section B", "total": 100, "missions": missions_b}],
     "flags": [
-        {"n": "3.5.3", "kind": "no_fit", "detail": "Tabulate TWO differences: the memo gives 1 mark for the table and 2 x 2 for the differences (both sides each). Played as a written answer; a two-column table input is the right layout (2025 survey, item 11)."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
     ],
 }
