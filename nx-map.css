@@ -94,6 +94,17 @@
 .pm-bar span { display: block; height: 100%; border-radius: 3px; background: #5b8cff; }
 .pm-sheet-note { margin: 0; font-size: 13.5px; line-height: 1.5; color: #b8c4ea; }
 .pm-go { min-height: 54px; border: none; border-radius: 16px; background: #1e46ff; color: #fff; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; }
+/* A level with no papers yet (Grade 10 and 11, 2026-10-09): one honest card, never a blank map. Theme variables with the dark
+   map's own values as fallbacks. */
+.pm-empty { box-sizing: border-box; max-width: 520px; margin: clamp(24px, 9vh, 80px) auto 0; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px);
+  border: 1px solid var(--nx-card-line, #1a3052); border-radius: 22px; background: var(--nx-card, #0c1c36); text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: 0 30px 60px -32px rgba(0, 0, 0, 0.6); }
+.pm-empty-ico { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: rgba(30, 70, 255, 0.18); color: #81b1ff; }
+.pm-empty h2 { margin: 4px 0 0; font-size: clamp(20px, 2.6vw, 24px); font-weight: 800; line-height: 1.25; color: var(--nx-h1, #ffffff); }
+.pm-empty p { margin: 0; max-width: 38ch; font-size: clamp(14.5px, 1.6vw, 16px); line-height: 1.5; color: var(--nx-text2, #b3c3e0); }
+.pm-empty-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; margin-top: 8px; }
+.pm-empty-acts button { flex: 1 1 200px; padding: 0 20px; }   /* descendant: the main button sits inside an sc-if */
+.pm-empty-acts .pm-go { box-shadow: 0 12px 30px rgba(30, 70, 255, 0.32); }
 .pm-src { min-height: 48px; border: 1px solid rgba(129, 177, 255, 0.3); border-radius: 14px; background: transparent; color: #c9d2ff;
   font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 
