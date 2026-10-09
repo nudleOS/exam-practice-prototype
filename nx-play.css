@@ -1663,6 +1663,10 @@ body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
    note under the image; the image (white, opaque) covers it once it lands. The figures are palette PNGs now (852 -> 375 KB). */
 body.nx-play [data-figbox]::before { content:"Loading the diagram…"; position:absolute; inset:0; display:grid; place-items:center;
   font-size:13px; font-weight:600; color:#7a869e; pointer-events:none; }
+/* a figure that failed to load (2026-10-09): the note says so and a tap retries; the broken image is hidden from sight (its alt text
+   drew under the note) but stays for a screen reader */
+body.nx-play [data-figbox][data-figfail="true"]::before { content:"The diagram didn't load. Tap to try again."; color:#3b5bd6; cursor:pointer; }
+body.nx-play [data-figbox][data-figfail="true"] img { opacity:0; }
 /* typing on a phone: room under the field inside the capped card, so it can scroll fully clear of the card's edge (measured at
    360x702 with a 250 px keyboard and a two-line hint: the field was the card's last item, flush with its bottom, 11 px cut) */
 @media (max-width:600px) { body.nx-play.nx-typing main:not(#mq-stage) [data-question] { padding-bottom:14px !important; } }

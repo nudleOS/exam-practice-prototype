@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=270">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=271">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -705,7 +705,7 @@
           <div data-scene="true" data-figure="true" data-fighot="{{ figHot }}" data-fighidden="{{ figHiddenAttr }}" style="--fig-ar:{{ figAr }}; border-radius:18px; border:1px solid transparent; background:var(--scene-bg, linear-gradient(180deg, #1c2130, #161a23)) padding-box, linear-gradient(135deg, rgba(129,177,255,0.45), rgba(103,29,255,0.22) 60%, rgba(255,255,255,0.05)) border-box; overflow:hidden">
             <div data-figpad="true" style="position:relative; padding:8px">
               <div data-figbox="true" onClick="{{ figBoxTap }}" style="position:relative; width:100%; aspect-ratio:{{ figAspect }}; border-radius:12px; background:#ffffff; overflow:hidden; touch-action:pinch-zoom">
-                <img src="{{ figSrc }}" alt="{{ figAlt }}" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:fill; user-select:none" />
+                <img src="{{ figSrc }}" alt="{{ figAlt }}" onError="{{ figFail }}" draggable="false" style="position:absolute; inset:0; width:100%; height:100%; object-fit:fill; user-select:none" />
                 <sc-for list="{{ figSpots }}" as="fs" hint-placeholder-count="5">
                   <button data-hotspot="{{ fs.letter }}" onClick="{{ fs.tap }}" aria-label="{{ fs.aria }}" aria-pressed="{{ fs.pressed }}" disabled="{{ fs.disabled }}" style="position:absolute; left:{{ fs.x }}; top:{{ fs.y }}; transform:translate(-50%, -50%); width:{{ figSpotSize }}; height:{{ figSpotSize }}; padding:0; border-radius:50%; border:{{ fs.border }}; background:{{ fs.bg }}; box-shadow:{{ fs.shadow }}; cursor:pointer">
                     <sc-if value="{{ fs.hasBadge }}" hint-placeholder-val="{{ false }}">
@@ -4421,7 +4421,13 @@ class Component extends DCLogic {
       // the frame holds the figure and nothing else (Murci, 2026-10-01: "never has text inside it": no caption, no hint, no Enlarge);
       // Hide sits on the figure, folded it is one "Show figure" button. A tap on a figure to read still opens it big.
       figFrameOn: !hidden, figShowOn: hidden,
-      figBoxTap: !hot ? () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }) : () => {}, toggleFig: () => this.setState({ figHidden: !s.figHidden }),
+      // a figure that failed to load (a dropped connection; 2026-10-09: its alt text sat under "Loading the diagram…" for good):
+      // the box says so, and a tap tries it again instead of opening a blank zoom
+      figFail: e => { const b = e.target.closest("[data-figbox]"); if (b) b.dataset.figfail = "true"; },
+      figBoxTap: e => { const b = e && e.currentTarget, im = b && b.dataset.figfail === "true" ? b.querySelector("img") : null;
+        if (im) { delete b.dataset.figfail; const u = String(im.getAttribute("src") || "").replace(/[?&]retry=\d+$/, ""); im.src = u + (u.indexOf("?") === -1 ? "?" : "&") + "retry=" + Date.now(); return; }
+        if (!hot) this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }); },
+      toggleFig: () => this.setState({ figHidden: !s.figHidden }),
       figAlt: "Diagram: " + F.caption + " Parts are labelled " + letters + ".", figHint: hint,   // (the enlarged view's line)
       figBigOpen: s.figBig, openFigBig: () => this.setState({ figBig: true }, () => { const c = document.querySelector("[data-figclose]"); if (c) c.focus(); }),
       closeFigBig: () => this.closeFigBig(), figBigAria: "Figure, enlarged: " + F.caption, figBigW: "min(88vw, 1100px, calc((78dvh - 78px) * " + (F.w && F.h ? F.w / F.h : 4 / 3).toFixed(4) + " + 24px))",   /* large at its own shape, not the whole screen (Murci 2026-10-08: "large enough but not fill the entire screen"; 90% of the file's width had opened a 443 px crop 399 px wide) */
