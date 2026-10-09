@@ -93,13 +93,15 @@ q13 = [
     abq("1.3.3", "A plant defence mechanism", "Thorns", "Chemicals", 2,
         ["Plants defend themselves physically and chemically.", "Is each one a way to stop an animal eating the plant?"]),
 ]
+# 1.4.1 keeps the paper's own "LETTER(S) of the diagram(s)" (2026-10-09 polish): "LETTER" / "LETTERS" told the learner how
+# many diagrams to give, which the exam deliberately does not
 LETS3 = ["A", "B", "C"]
 q14 = [
-    mcq1("1.4.1(a)", "Give the LETTER of the diagram that represents a response due to abscisic acid", LETS3, 2,
+    mcq1("1.4.1(a)", "Give the LETTER(S) of the diagram(s) that represent a response due to abscisic acid", LETS3, 2,
          ["Abscisic acid is linked to leaves falling.", "Which diagram shows a leaf dropping off?"]),
-    {"t": "pickn", "n": "1.4.1(b)", "marks": 2, "q": "Give the LETTERS of the diagrams that represent a response due to auxins",
+    {"t": "pickn", "n": "1.4.1(b)", "marks": 2, "q": "Give the LETTER(S) of the diagram(s) that represent a response due to auxins",
      "clues": ["Auxins cause bending growth: towards light, and of roots downwards.", "Two diagrams show a part bending."], "opts": LETS3, "pool": [0, 1], "count": 2},
-    mcq1("1.4.1(c)", "Give the LETTER of the diagram that represents a response due to gibberellins", LETS3, 0,
+    mcq1("1.4.1(c)", "Give the LETTER(S) of the diagram(s) that represent a response due to gibberellins", LETS3, 0,
          ["Gibberellins break seed dormancy.", "Which diagram shows seeds starting to grow?"]),
     term("1.4.2(a)", "Identify the growth response shown by the roots in diagram A", ["geotropism", "gravitropism", "positive geotropism", "positive gravitropism"],
          ["The roots respond to a force that pulls downwards.", "'Geo' means earth."]),
@@ -283,6 +285,7 @@ q35 = [
          "Long-acting: the injection is given at 23:00", "Rapid-acting: an injection is given before every meal",
          "Long-acting: a lower concentration of insulin (10 units)", "Rapid-acting: a higher concentration of insulin (30 units)",
          "Long-acting: the concentration remains constant for long periods (20 hours)", "Rapid-acting: the concentration fluctuates",
+         "Long-acting: a long-lasting effect", "Rapid-acting: lasts a shorter amount of time",   # the memo's 5th row (2026-10-09 polish: was missing)
          "Long-acting: takes 1 hour to reach its peak", "Rapid-acting: takes 2 hours to reach its peak"],
         ["Compare person C's line with person B's.", "Count the injections, see when they are given, and how high and steady each line is."]),
     term("3.5.4", "Name the type of insulin treatment that is similar to insulin secretion in a healthy person.",
