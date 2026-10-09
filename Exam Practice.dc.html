@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=271">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=272">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -540,6 +540,7 @@
   <sc-if value="{{ onPlay }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}">
     <div class="nx-bg" aria-hidden="true"><div class="nx-doodles"></div><div class="nx-fill nx-fill-1"><i class="fa l"></i><i class="fa m"></i><i class="fb r"></i></div><div class="nx-fill nx-fill-2"><i class="fb l"></i><i class="fb m"></i><i class="fa r"></i></div><div class="nx-rocks nx-rocks-m"></div><div class="nx-rocks nx-rocks-l"></div><div class="nx-rocks nx-rocks-r"></div></div>   <!-- the boss's design: subtle doodles, rocks and plants (nx-play.css) -->
+    <div class="nx-ground" aria-hidden="true"><div class="nx-rocks nx-rocks-l"></div><div class="nx-rocks nx-rocks-r"></div></div>   <!-- the same ground over a long question on a phone (2026-10-09) -->
     </sc-if>
     <div aria-hidden="true" style="position:fixed; inset:0; z-index:0; pointer-events:none">
       <span style="position:absolute; inset:0; background:radial-gradient(900px 520px at 50% -12%, rgba(0,104,248,0.13), transparent 70%); opacity:{{ glowBase }}; transition:opacity 900ms ease"></span>

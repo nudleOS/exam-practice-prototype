@@ -1659,6 +1659,20 @@ body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
     background:linear-gradient(180deg, rgba(var(--nx-c, 25,27,30), 0), rgba(var(--nx-c, 25,27,30), 0.96) 55%, rgb(var(--nx-c, 25,27,30))); }
   body.nx-play.nx-compact .nx-typestrip { z-index:25; }
 }
+/* The ground stays on a long question too (Murci, 2026-10-09: "sometimes we see our grass floor and the stones but at times we do
+   not": compact faded the scenery and painted the bar solid blue, so Back, Next and the robot sat on a blue band). The same two
+   rocks, in the same place (the same rules, the same viewport-bottom box), drawn ABOVE the scrolling question and under the strip
+   and the bar, over a base that fades into the scene's floor colour: the words scrolling under it never show through, so the bar
+   is see-through again. Not while typing: the keyboard has the bottom then. */
+.nx-ground { display:none; }
+@media (max-width:600px) {
+  body.nx-play.nx-compact:not(.nx-typing) .nx-ground { display:block; position:fixed; left:0; right:0; bottom:0; height:calc(var(--nx-rh) * 1.15);
+    z-index:20; pointer-events:none; overflow:hidden; }
+  body.nx-play.nx-compact:not(.nx-typing) .nx-ground::before { content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 0%, var(--nx-bot) 42%, var(--nx-bot) 100%); }
+  body.nx-play.nx-compact:not(.nx-typing) [data-footer]:not(:has([data-keypad])) { background:transparent !important; }
+  body.nx-play.nx-compact:not(.nx-typing) [data-footer]:not(:has([data-keypad]))::before { display:none; }
+}
 /* the figure while it downloads (Murci's P30 lite, 2026-10-03: a blank white box over the tunnel, the diagram seconds later): a quiet
    note under the image; the image (white, opaque) covers it once it lands. The figures are palette PNGs now (852 -> 375 KB). */
 body.nx-play [data-figbox]::before { content:"Loading the diagram…"; position:absolute; inset:0; display:grid; place-items:center;
