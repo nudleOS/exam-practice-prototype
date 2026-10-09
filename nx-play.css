@@ -1667,9 +1667,14 @@ body.nx-play.mcqp-on .nx-typestrip { display:none !important; }
 .nx-ground { display:none; }
 @media (max-width:600px) {
   body.nx-play.nx-compact:not(.nx-typing) .nx-ground { display:block; position:fixed; left:0; right:0; bottom:0; height:calc(var(--nx-rh) * 1.15);
-    z-index:20; pointer-events:none; overflow:hidden; }
-  body.nx-play.nx-compact:not(.nx-typing) .nx-ground::before { content:""; position:absolute; inset:0;
-    background:linear-gradient(180deg, transparent 0%, var(--nx-bot) 42%, var(--nx-bot) 100%); }
+    z-index:20; pointer-events:none; }
+  /* the base under the rocks is the scene's OWN background (Murci, 2026-10-09: a flat floor colour read as "some part of the blue
+     background now down on the grass and rocks"): the same gradient and doodles in the same box (fixed, inset 0: exactly .nx-bg's,
+     so the doodles line up), kept only near the bottom by a mask that fades out above the rocks */
+  body.nx-play.nx-compact:not(.nx-typing) .nx-ground-sky { position:fixed; inset:0; overflow:hidden; color:var(--nx-doodle);
+    background:linear-gradient(180deg, var(--nx-top), var(--nx-bot));
+    -webkit-mask:linear-gradient(0deg, #000 0, #000 calc(var(--nx-rh) * 0.6), transparent calc(var(--nx-rh) * 1.1));
+    mask:linear-gradient(0deg, #000 0, #000 calc(var(--nx-rh) * 0.6), transparent calc(var(--nx-rh) * 1.1)); }
   body.nx-play.nx-compact:not(.nx-typing) [data-footer]:not(:has([data-keypad])) { background:transparent !important; }
   body.nx-play.nx-compact:not(.nx-typing) [data-footer]:not(:has([data-keypad]))::before { display:none; }
 }
