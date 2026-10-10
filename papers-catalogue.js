@@ -444,7 +444,7 @@ window.NX_CATALOGUE = {
    "missions": 44,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "2789b680b4",
+   "rev": "24b31094cb",
    "source_pdf": "uploads/Mathematics P2 Nov 2024 Eng.pdf"
   },
   {

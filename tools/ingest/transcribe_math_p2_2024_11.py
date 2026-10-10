@@ -11,15 +11,18 @@ and diagrams: everything was read from the page IMAGES (1,5x).
 
 How the memo's shapes map (as Mathematics P2 Nov 2025: the phone has a number keypad, multiple choice, short text and self-checked
 drawings, no algebra input):
-  a number the memo calculates (a, b, a prediction, a quartile, a gradient, a length, a ratio, an angle, a coordinate) -> steps,
-  each step ONE number the method produces, its formula and substitution marks riding on that number; tolerances cover the memo's
-  rounding (its answers are two-decimal roundings: 0,006 for a value keyed at two decimals, 0,011 for one the memo prints to two
-  decimals from a longer calculation, 0,005 for a fraction typed as a decimal, 1/3 -> 0,33); a coordinate is two steps (x, y);
-  an equation of a line or an asymptote -> its numbers as steps (m and c; x = k), because the strict term compares letters and
-  digits only and y = −⅓x + 10 / y = ⅓x + 10 would be one answer; a read-off -> num;
+  every calculation the memo works (a, b, a prediction, a quartile, a percentage, a gradient, an equation of a line, a length, a
+  ratio, an area ratio, a coordinate, a trig value, a solved equation, a maximum, a distance, "Calculate, with a reason" an angle)
+  -> authored multiple choice, `work` (Murci, 2026-10-10): the memo's FIRST working line by line, its result last, and three
+  workings built from real errors (a wrong formula, a sign slip, the wrong root rejected, a misread value, a ratio upside down,
+  rounding too early, the wrong quadrant, a wrong reason), each ending in a confident result; 0 or full marks. 4.1's memo gives
+  the coordinates only, so its working (the midpoint) is ours. A form the memo also accepts (2.5's 35 employees, 8.2's sine
+  rule or EB̂C = 32°) is never a wrong option;
+  a one-value read-off or write-down (1.2 r, 1.4 the mean, 2.1 the median, 2.2 Q₁, 6.3.2, 7.1 the asymptote's x = 90°, 7.3.1
+  the period) -> num, its tolerance covering the memo's rounding (0,006 for a value keyed at two decimals);
   "How does ... influence the standard deviation" -> term (its phrasings, 'increases' / 'decreases' rejected);
-  "Calculate, with a reason" an angle -> steps (the reason mark rides on the number);
   "Draw a box and whisker diagram / the graph of g" -> draw with the memo's criteria (self-checked, flagged no_fit).
+  A part whose options or criteria show an earlier part's answer opens only once that part is answered (`after`).
   Authored multiple choice (Murci, 2026-10-10) for every part a word or number marker cannot score: an interval (7.2), an expression
   in p (5.2), a general solution with working (7.4), "Show that" (3.3, 4.3, 4.4, 6.1.2), a derivation (6.1.1) and the proofs (4.6,
   9.2, 10.1, 10.2.1, 11.1-11.4). The stem gets "Choose the correct answer." (a short answer) or "Choose the correct working." (a
@@ -27,7 +30,7 @@ drawings, no algebra input):
   solution, the wrong theorem or reason, a converse, a circular reason, a flawed step that still claims the result). Options are
   laid out AS THE MEMO: one step per line ("\n"), a proof's [reason] at the END of its line, a fraction {numerator}/{denominator}
   (drawn stacked); every option of a part has the same number of lines and [reasons], so the layout never points at the answer;
-  the right option sits at A, B, C and D four times each. Each keeps its marks (0 or full).
+  the right option sits at A, B, C and D ten times each over the paper (proofs and calculations). Each keeps its marks (0 or full).
 A mission is a question with its stem and diagram; a question whose stem changes part-way is two or three missions (5, 6, 10). A
 single-line MCQ in a figure mission carries the figure itself (the MCQ stage shows an item's own figure only); a working MCQ plays
 on the page, under the mission's figure.
@@ -61,35 +64,51 @@ def mcq(n, q, opts, a, clues, marks=1, **kw):
 
 term = lambda n, q, a, clues, marks=1, strict=False, reject=None: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
                                                                   **({"strict": True} if strict else {}), **({"reject": reject} if reject else {})}
-num = lambda n, q, a, tol, unit, clues, marks=1: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
-draw = lambda n, q, marks, criteria, clues, memo="": {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
-                                                     "criteria": [{"text": t, "marks": m} for t, m in criteria], **({"memo": memo} if memo else {})}
-
-
-def steps(n, q, marks, sts, clues):
-    """sts: (label, marks, answer, tolerance, the memo's working)."""
-    s = [{"id": "s%d" % (i + 1), "label": lab, "marks": m, "a": a, "tol": tol, "memo": memo} for i, (lab, m, a, tol, memo) in enumerate(sts)]
-    assert sum(x["marks"] for x in s) == marks, n
-    return {"t": "steps", "n": n, "marks": marks, "q": q, "clues": clues, "steps": s}
+num = lambda n, q, a, tol, unit, clues, marks=1, **kw: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol,
+                                                        "unit": unit, **kw}
+draw = lambda n, q, marks, criteria, clues, memo="", **kw: {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
+                                                           "criteria": [{"text": t, "marks": m} for t, m in criteria],
+                                                           **({"memo": memo} if memo else {}), **kw}
 
 
 ANS, WORK = "\n\nChoose the correct answer.", "\n\nChoose the correct working."
-EXACT, DP2, MEMO2, FRAC = 0.001, 0.006, 0.011, 0.005   # exact; keyed at two decimals; printed to two decimals; a fraction as a decimal
+DP2 = 0.006   # a value keyed at two decimals
+AUTHORED = []   # the typed calculations played as authored multiple choice (work), in paper order
+
+
+def shape(o):
+    """(lines, trailing [reasons]): every option of one part must match, so the layout never points at the answer."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+def work(n, q, marks, opts, a, clues, **kw):
+    """A typed calculation as authored multiple choice (Murci, 2026-10-10): opts are the memo's FIRST working and three workings
+    built from common errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing."""
+    assert len(opts) == 4 and len(set(opts)) == 4, (n, "four distinct options")
+    assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
+    assert 0 <= a <= 3, (n, a)
+    AUTHORED.append(n)
+    return mcq(n, q + WORK, opts, a, clues, marks=marks, **kw)
 
 # ---- QUESTION 1, the question paper page 3 and the memo page 3 ----
 q1 = [
-    steps("1.1", "Determine the equation of the least squares regression line for the data.", 3, [
-        ("a, the y-intercept of ŷ = a + bx", 1, 39.46, DP2, "a = 39,456001… ✓ a = 39,46"),
-        ("b, the gradient of ŷ = a + bx", 2, -0.59, DP2, "b = −0,590018… ✓ b = −0,59; ŷ = 39,46 − 0,59x ✓ (equation). CORRECT ANSWER ONLY: FULL MARKS")],
+    work("1.1", "Determine the equation of the least squares regression line for the data.", 3, [
+        "a = 55,584360…\nb = −1,079146…\nŷ = 55,58 − 1,08x",          # the push-ups entered as x and the weights as y
+        "a = 39,456001…\nb = −0,797945…\nŷ = 39,46 − 0,80x",          # r (−0,797945…) read off the screen as b
+        "a = 39,456001…\nb = −0,590018…\nŷ = 39,46 − 0,59x",          # the memo (correct answer only: full marks)
+        "a = 39,710937…\nb = −0,594769…\nŷ = 39,71 − 0,59x"], 2,      # 14 pairs: the last pair (31 ; 20) left out
         ["Put the weights in as x and the push-ups as y in your calculator's linear regression (STAT, A + BX) mode.",
          "The heavier players did fewer push-ups: which sign must b have?"]),
     num("1.2", "Write down the correlation coefficient.", -0.8, DP2, "",
         ["Find r on your calculator, with the same data as in 1.1.", "The points fall from left to right: which sign does r have?"]),
-    steps("1.3", "The coach uses the least squares regression line to set the target for the minimum number of push-ups by each team member "
-          "according to their weight. Predict the number of push-ups that a member of the team, who weighs 29 kg, should do to meet the target.", 2, [
-        ("Predicted number of push-ups per minute", 2, 22.35, MEMO2, "y = 39,46 − 0,59(29) ✓ (substitution); y = 22,35 ✓ (OR y = 22,35 on the "
-                                                                    "calculator ✓✓)")],
-        ["Substitute the weight into your equation from 1.1.", "x is the weight in kg."]),
+    work("1.3", "The coach uses the least squares regression line to set the target for the minimum number of push-ups by each team member "
+         "according to their weight. Predict the number of push-ups that a member of the team, who weighs 29 kg, should do to meet the target.", 2, [
+        "y = 39,46 − 0,59(29)\ny = 22,35",                # the memo (OR 22,35 on the calculator)
+        "y = 39,46 − 0,8(29)\ny = 16,26",                 # r = −0,8 used as the gradient
+        "y = (39,46 − 0,59)(29)\ny = 1 127,23",           # subtracts before it multiplies
+        "y = 39 − 0,6(29)\ny = 21,6"], 0,                 # a and b rounded too early
+        ["Substitute the weight into your equation from 1.1.", "x is the weight in kg."], after=["1.1"]),
     num("1.4", "Write down the mean number of push-ups for the given data.", 18.33, DP2, "push-ups",
         ["Use the y-values only.", "Your calculator gives ȳ in the same statistics mode."]),
     term("1.5", "The players trained hard during the season. At the end of the season, the coach reported that each player was able to do 5 more "
@@ -103,14 +122,17 @@ q1 = [
                                                                                           "data: does it spread it out?"],
         reject=["It increases", "Increases", "It increases by 5", "It decreases", "Decreases", "An influence", "It has an influence",
                 "It changes", "Changes"]),
-    steps("1.6", "At the beginning of the season, the coach used the least squares regression line as the minimum target for a player to aim "
-          "for. Determine the maximum possible increase in the number of push-ups that a team member must obtain to reach the minimum target.", 2, [
-        ("Push-ups per minute of the player furthest below the line", 1, 6, 0, "6 is the furthest y-value below the least squares regression "
-                                                                               "line ✓"),
-        ("Maximum possible increase (push-ups)", 1, 10, 0, "An increase of 10 push-ups will get the team member to (40 ; 16), the minimum number "
-                                                           "of push-ups for a player weighing 40 kg ✓ (difference is 10)")],
+    work("1.6", "At the beginning of the season, the coach used the least squares regression line as the minimum target for a player to aim "
+         "for. Determine the maximum possible increase in the number of push-ups that a team member must obtain to reach the minimum target.", 2, [
+        "Furthest point below the line: (40 ; 6)\nŷ = 39,46 − 0,59(40) = 15,86\nThe target at 40 kg: 15 push-ups\n"
+        "Increase = 15 − 6 = 9 push-ups",                   # rounds 15,86 down: 15 push-ups miss the target
+        "Furthest point below the line: (40 ; 6)\nȳ = 18,33\nThe target: 18 push-ups\nIncrease = 18 − 6 = 12 push-ups",   # the mean as the target
+        "Furthest point below the line: (40 ; 6)\nŷ = 39,46 − 0,59(6) = 35,92\nThe target: 36 push-ups\n"
+        "Increase = 36 − 6 = 30 push-ups",                  # the push-ups put in for x
+        "Furthest point below the line: (40 ; 6)\nŷ = 39,46 − 0,59(40) = 15,86\nThe target at 40 kg: 16 push-ups\n"
+        "Increase = 16 − 6 = 10 push-ups"], 3,              # the memo: 6 is furthest below; up to (40 ; 16), a difference of 10
         ["Find the point that lies furthest BELOW the regression line on the scatter plot.", "Read the line's value at that weight, in whole "
-                                                                                             "push-ups."]),
+                                                                                             "push-ups."], after=["1.1", "1.4"]),
 ]
 
 # ---- QUESTION 2, the question paper page 4 and the memo page 4 ----
@@ -120,10 +142,12 @@ q2 = [
     num("2.2", "Estimate the lower quartile.", 44, 0.5, "minutes",
         ["The lower quartile is a quarter of the way through the data.", "A quarter of 60 employees: read the time at that cumulative "
                                                                           "frequency."]),
-    steps("2.3", "Estimate the interquartile range.", 2, [
-        ("Upper quartile, Q₃ (minutes)", 1, 84, 0.5, "Q₃ = 84 ✓"),
-        ("Interquartile range (minutes)", 1, 40, 0.5, "IQR = 84 − 44 = 40 ✓")],
-        ["Find the upper quartile the same way: three quarters of 60.", "IQR = Q₃ − Q₁."]),
+    work("2.3", "Estimate the interquartile range.", 2, [
+        "Q₃ = 84\nIQR = 84 − 65\n= 19",              # the median taken away, not Q₁
+        "Q₃ = 84\nIQR = 84 − 44\n= 40",              # the memo
+        "Q₃ = 45\nIQR = 45 − 44\n= 1",               # the cumulative frequency 45 written as Q₃
+        "Q₃ = 84\nIQR = 120 − 5\n= 115"], 1,         # the range, not the interquartile range
+        ["Find the upper quartile the same way: three quarters of 60.", "IQR = Q₃ − Q₁."], after=["2.1", "2.2"]),
     draw("2.4", "The minimum and maximum times taken for an employee to travel to work are 5 and 120 minutes respectively. On the scaled line "
          "in the ANSWER BOOK, draw a box and whisker diagram to indicate the distribution of the data as represented in the ogive above.", 2, [
         ["Box: from the lower quartile (44) to the upper quartile (84), with the median (65) inside", 1],
@@ -131,77 +155,94 @@ q2 = [
         ["You need five numbers: the minimum, Q₁, the median, Q₃ and the maximum.", "The box runs between the quartiles; the whiskers reach the "
                                                                                      "smallest and largest times."],
         memo="The answer book gives a scaled line from 0 to 120 minutes (labels every 10, ticks every 5). Five-number summary: 5 ; 44 ; 65 ; "
-             "84 ; 120."),
-    steps("2.5", "The company manager decided that all employees who travel for an hour or more will be allowed to work from home for part of "
-          "the day. What percentage of the employees will be allowed to work from home for part of the day?", 2, [
-        ("Number of employees who travel for an hour or more", 1, 34.5, 0.51, "Number of employees who qualify = 34 ✓ (OR 35 ✓)"),
-        ("Percentage of the employees (%)", 1, 57.5, 0.84, "% of employees who qualify = 34/60 × 100 = 56,67% of the employees ✓ (OR 35/60 × 100 "
-                                                            "= 58,33% ✓)")],
-        ["Read the cumulative frequency at 60 minutes: that many travel for less than an hour.", "Take them away from 60, then write the "
-                                                                                                 "answer as a percentage of 60."]),
-    steps("2.6", "Employees work 8 hours in a normal working day. The manager decided on the following rule for time to work from home:\n"
-          "• An employee is allowed to work half an hour from home for each time interval of 20 minutes, or part thereof, above an hour taken "
-          "to travel to work.\nOn a certain day, an employee takes 110 minutes to travel to work. Calculate the number of minutes that this "
-          "employee will be allowed to work from home on this day.", 2, [
-        ("Number of 20-minute intervals (or part thereof) above an hour", 1, 3, 0, "Number of intervals = 3 ✓"),
-        ("Minutes allowed to work from home", 1, 90, 0, "Time allowed to work from home = 3(30 minutes) = 90 minutes OR 1,5 hours ✓")],
-        ["How many minutes above an hour is 110 minutes?", "A part of an interval counts as a whole interval."]),
+             "84 ; 120.", after=["2.1", "2.2", "2.3"]),
+    work("2.5", "The company manager decided that all employees who travel for an hour or more will be allowed to work from home for part of "
+         "the day. What percentage of the employees will be allowed to work from home for part of the day?", 2, [
+        "Number of employees who qualify = 34\n% of employees who qualify = {34}/{60} × 100\n= 56,67% of the employees",   # the memo (OR 35, 58,33%)
+        "Number of employees who qualify = 26\n% of employees who qualify = {26}/{60} × 100\n= 43,33% of the employees",   # those UNDER an hour
+        "Number of employees who qualify = 34\n% of employees who qualify = {34}/{65} × 100\n= 52,31% of the employees",   # the axis top, 65, as all
+        "Number of employees who qualify = 3\n% of employees who qualify = {3}/{60} × 100\n= 5% of the employees"], 0,     # an hour read at 100 minutes
+        ["Read the cumulative frequency at 60 minutes: that many travel for less than an hour.",
+         "An hour or more: count the employees who are not included up to 60 minutes."]),
+    work("2.6", "Employees work 8 hours in a normal working day. The manager decided on the following rule for time to work from home:\n"
+         "• An employee is allowed to work half an hour from home for each time interval of 20 minutes, or part thereof, above an hour taken "
+         "to travel to work.\nOn a certain day, an employee takes 110 minutes to travel to work. Calculate the number of minutes that this "
+         "employee will be allowed to work from home on this day.", 2, [
+        "Number of intervals = 2\nTime allowed to work from home = 2(30 minutes)\n= 60 minutes",      # the 10 minutes left over not counted
+        "Number of intervals = 6\nTime allowed to work from home = 6(30 minutes)\n= 180 minutes",     # counts from 0 minutes, not above an hour
+        "Number of intervals = 3\nTime allowed to work from home = 3(30 minutes)\n= 90 minutes",      # the memo (OR 1,5 hours)
+        "Number of intervals = 2,5\nTime allowed to work from home = 2,5(30 minutes)\n= 75 minutes"], 2,   # a part interval counted as a half
+        ["How many minutes above an hour is 110 minutes?", "Each interval earns half an hour: 30 minutes."]),
 ]
 
 # ---- QUESTION 3, the question paper page 5 and the memo pages 5-7 ----
 q3 = [
-    steps("3.1", "Calculate the gradient of DC.", 2, [
-        ("Gradient of DC", 2, -0.75, EXACT, "m(DC) = (−9 − 0)/(3 − (−9)) ✓ (correct substitution of D(3 ; −9) and C(−9 ; 0) into the gradient "
-                                            "formula); m(DC) = −3/4 ✓")],
-        ["m = (y₂ − y₁)/(x₂ − x₁) with D and C.", "Type a fraction as a decimal."]),
-    steps("3.2", "Determine the equation of DC in the form y = mx + c.", 2, [
-        ("m, the gradient in y = mx + c", 1, -0.75, EXACT, "0 = −3/4(−9) + c ✓ (correct substitution of C(−9 ; 0) or D(3 ; −9) into the equation "
-                                                           "of the line; OR y − 0 = −3/4(x − (−9)))"),
-        ("c, the y-intercept in y = mx + c", 1, -6.75, EXACT, "c = −27/4 or −6 3/4: y = −3/4 x − 27/4 ✓ (answer)")],
-        ["You have the gradient from 3.1.", "Substitute C or D into y = mx + c to find c."]),
+    work("3.1", "Calculate the gradient of DC.", 2, [
+        "m(DC) = {3 − (−9)}/{−9 − 0}\nm(DC) = −{4}/{3}",          # x over y: the formula upside down
+        "m(DC) = {−9 − 0}/{3 − (−9)}\nm(DC) = −{3}/{4}",          # the memo
+        "m(DC) = {−9 − 0}/{3 + (−9)}\nm(DC) = {3}/{2}",           # a sign slip: 3 − (−9) taken as 3 + (−9)
+        "m(DC) = {−9 − 0}/{−9 − 3}\nm(DC) = {3}/{4}"], 1,         # D first on top, C first below
+        ["m = (y₂ − y₁)/(x₂ − x₁) with D and C.", "Watch the signs when you subtract a negative coordinate."]),
+    work("3.2", "Determine the equation of DC in the form y = mx + c.", 2, [
+        "0 = −{3}/{4}(−9) + c\nc = {27}/{4}\ny = −{3}/{4}x + {27}/{4}",      # a sign slip taking 27/4 across
+        "−9 = −{3}/{4}(0) + c\nc = −9\ny = −{3}/{4}x − 9",                   # C's coordinates swapped: (0 ; −9)
+        "0 = −{4}/{3}(−9) + c\nc = −12\ny = −{4}/{3}x − 12",                 # the upside-down gradient −4/3
+        "0 = −{3}/{4}(−9) + c\nc = −{27}/{4}\ny = −{3}/{4}x − {27}/{4}"], 3, # the memo (c = −27/4 or −6 3/4)
+        ["You have the gradient from 3.1.", "Substitute C or D into y = mx + c to find c."], after=["3.1"]),
     mcq("3.3", "Show that k = −6." + WORK, [
         "k = −{3}/{4}(−1) − {27}/{4}\nk = −{3}/{4} − {27}/{4}\nk = −6",
         "−1 = −{3}/{4}k − {27}/{4}\n{3}/{4}k = −{23}/{4}\nk = −6",
         "k = −{3}/{4}(−1) − {27}/{4}\nk = {3}/{4} − {27}/{4}\nk = −6",
         "k = −6 gives B(−1 ; −6)\n−6 = −{3}/{4}(−1) − {27}/{4}\n−6 = −6, so k = −6"], 2,
-        ["B lies on DC: its coordinates satisfy the equation from 3.2.", "Substitute x = −1 (not the answer) and watch the sign of −3/4 × −1."]),
-    steps("3.4", "Calculate the length of DC.", 2, [
-        ("Length of DC (units)", 2, 15, EXACT, "DC = √((3 + 9)² + (−9 − 0)²) ✓ (correct substitution of D(3 ; −9) and C(−9 ; 0) into the distance "
-                                               "formula); DC = 15 units ✓")],
+        ["B lies on DC: its coordinates satisfy the equation from 3.2.", "Substitute B's x-coordinate: a 'show that' may not start from the value it must show."],
+        after=["3.2"]),
+    work("3.4", "Calculate the length of DC.", 2, [
+        "DC = √((3 + 9)² + (−9 − 0)²)\nDC = 15 units",            # the memo
+        "DC = √((3 − 9)² + (−9 − 0)²)\nDC = 10,82 units",         # a sign slip: 3 − (−9) taken as 3 − 9
+        "DC = (3 + 9)² + (−9 − 0)²\nDC = 225 units",              # the square root left off
+        "DC = √((3 + 9)² − (−9 − 0)²)\nDC = 7,94 units"], 0,      # the squares subtracted
         ["Use the distance formula with D and C.", "d = √((x₂ − x₁)² + (y₂ − y₁)²)."]),
-    steps("3.5", "Calculate the ratio of DB/DC.", 2, [
-        ("Length of DB (units)", 1, 5, EXACT, "DB = √((3 − (−1))² + (−9 − (−6))²); DB = 5 ✓"),
-        ("DB/DC", 1, 0.3333, FRAC, "∴ DB/DC = 5/15 = 1/3 ✓")],
-        ["B is (−1 ; −6), from 3.3.", "Find DB with the distance formula, then divide by DC from 3.4."]),
-    steps("3.6", "If M is a point on AD such that AC ∥ MB, calculate the ratio of Area △MBD / Area △ACD.", 4, [
-        ("DM/DA", 1, 0.3333, FRAC, "DM/DA = DB/DC = 1/3 ✓ (DM/DA = DB/DC; MB ∥ AC)"),
-        ("Area △MBD ÷ area △ACD", 3, 0.1111, FRAC, "Area △MBD / Area △ACD = [½(DM)(DB) sin D̂] / [½(DA)(DC) sin D̂] ✓ (correct use of the area rule) "
-                                                   "= 1/3 × 1/3 ✓ (substitution for BD/DC and DM/DA into the correct formula) = 1/9 ✓")],
+    work("3.5", "Calculate the ratio of DB/DC.", 2, [
+        "DB = (3 − (−1))² + (−9 − (−6))²\nDB = 25\n∴ {DB}/{DC} = {25}/{15} = {5}/{3}",            # the square root left off
+        "DB = √((3 − 1)² + (−9 − (−6))²)\nDB = √13 = 3,61\n∴ {DB}/{DC} = {3,61}/{15} = 0,24",    # B's x taken as 1, not −1
+        "DB = √((3 − (−1))² + (−9 − (−6))²)\nDB = 5\n∴ {DB}/{DC} = {5}/{15} = {1}/{3}",          # the memo
+        "DB = √((3 − (−1))² + (−9 − (−6))²)\nDB = 5\n∴ {DB}/{DC} = {5²}/{15²} = {1}/{9}"], 2,    # squares the lengths (an area ratio)
+        ["B is (−1 ; −6), from 3.3.", "Find DB with the distance formula, then divide by DC from 3.4."], after=["3.4"]),
+    work("3.6", "If M is a point on AD such that AC ∥ MB, calculate the ratio of Area △MBD / Area △ACD.", 4, [
+        "{DM}/{MA} = {DB}/{BC} = {1}/{2}\n{Area △MBD}/{Area △ACD} = {½(DM)(DB) sin D̂}/{½(MA)(BC) sin D̂}\n= {1}/{2} × {1}/{2}\n"
+        "= {1}/{4}",                                                                               # the parts MA and BC, not the sides DA and DC
+        "{DM}/{DA} = {DB}/{DC} = {1}/{3}\n{Area △MBD}/{Area △ACD} = {½(DA)(DC) sin D̂}/{½(DM)(DB) sin D̂}\n= 3 × 3\n= 9",   # upside down
+        "{DM}/{DA} = {DB}/{DC} = {1}/{3}\n{Area △MBD}/{Area △ACD} = {½(DB) × h}/{½(DC) × h}\n= {5}/{15}\n= {1}/{3}",   # a common height they lack
+        "{DM}/{DA} = {DB}/{DC} = {1}/{3}\n{Area △MBD}/{Area △ACD} = {½(DM)(DB) sin D̂}/{½(DA)(DC) sin D̂}\n= {1}/{3} × {1}/{3}\n"
+        "= {1}/{9}"], 3,                                                                           # the memo
         ["MB is parallel to AC in △ACD: a line parallel to one side divides the other two sides in proportion.",
-         "Both triangles share the angle D: area = ½ × side × side × sin D̂."]),
-    steps("3.7", "If it is further given that the gradient of AD is −4 and the length of AD is √612 units, calculate the coordinates of A.", 6, [
-        ("c, the y-intercept of AD", 1, 3, EXACT, "y = −4x + c; −9 = −4(3) + c ✓ (correct substitution of m(AD) = −4 and D(3 ; −9)); c = 3: "
-                                                  "y = −4x + 3"),
-        ("x-coordinate of A", 4, -3, EXACT, "(x − 3)² + (y + 9)² = 612 ✓; (x − 3)² + (−4x + 3 + 9)² = (√612)² ✓ (substitution of equation AD into "
-                                            "the distance formula); x² − 6x + 9 + 16x² − 96x + 144 = 612; 17x² − 102x − 459 = 0; x² − 6x − 27 = 0 "
-                                            "✓ (standard form); (x − 9)(x + 3) = 0; x = 9 (N/A) or x = −3 ✓ (x values with rejection)"),
-        ("y-coordinate of A", 1, 15, EXACT, "y = −4(−3) + 3; y = 15: A(−3 ; 15) ✓. OR N(0 ; 3) ✓ (the y-intercept of AD); ND = √((3 − 0)² + "
-                                            "(−9 − 3)²) = 3√17 ✓; AD = 6√17, ND = ½AD ✓: N is the midpoint of AD, A(−3 ; 15) ✓ x-value ✓ y-value")],
+         "Both triangles share the angle D: area = ½ × side × side × sin D̂."], after=["3.5"]),
+    work("3.7", "If it is further given that the gradient of AD is −4 and the length of AD is √612 units, calculate the coordinates of A.", 6, [
+        "−9 = −4(3) + c\nc = 3, ∴ y = −4x + 3\n(x − 3)² + (y + 9)² = 612\n(x − 3)² + (−4x + 3 + 9)² = (√612)²\n17x² − 102x − 459 = 0\n"
+        "x² − 6x − 27 = 0\n(x + 9)(x − 3) = 0\nx = −9 or x = 3 (N/A)\ny = −4(−9) + 3 = 39\nA(−9 ; 39)",       # the factors' signs swapped
+        "−9 = −4(3) + c\nc = 3, ∴ y = −4x + 3\n(x − 3)² + (y + 9)² = 612\n(x − 3)² + (−4x + 3 + 9)² = (√612)²\n17x² − 102x − 459 = 0\n"
+        "x² − 6x − 27 = 0\n(x − 9)(x + 3) = 0\nx = 9 (N/A) or x = −3\ny = −4(−3) + 3 = 15\nA(−3 ; 15)",       # the memo
+        "−9 = −4(3) + c\nc = 3, ∴ y = −4x + 3\n(x − 3)² + (y + 9)² = 612\n(x − 3)² + (−4x + 3 + 9)² = (√612)²\n17x² − 102x − 459 = 0\n"
+        "x² − 6x − 27 = 0\n(x − 9)(x + 3) = 0\nx = 9 or x = −3 (N/A)\ny = −4(9) + 3 = −33\nA(9 ; −33)",       # the wrong root rejected
+        "−9 = 4(3) + c\nc = −21, ∴ y = 4x − 21\n(x − 3)² + (y + 9)² = 612\n(x − 3)² + (4x − 21 + 9)² = (√612)²\n17x² − 102x − 459 = 0\n"
+        "x² − 6x − 27 = 0\n(x − 9)(x + 3) = 0\nx = 9 (N/A) or x = −3\ny = 4(−3) − 21 = −33\nA(−3 ; −33)"], 1,   # the gradient's sign lost
         ["Find the equation of AD from its gradient and D.", "A lies on AD at a distance √612 from D: solve the two together; A is in the "
                                                              "second quadrant."]),
 ]
 
 # ---- QUESTION 4, the question paper page 6 and the memo pages 8-11 ----
 q4 = [
-    steps("4.1", "Write down the coordinates of L.", 2, [
-        ("x-coordinate of L", 1, -1, EXACT, "L(−1 ; −3): x = −1 ✓"),
-        ("y-coordinate of L", 1, -3, EXACT, "y = −3 ✓")],
+    work("4.1", "Write down the coordinates of L.", 2, [   # the memo gives L(−1 ; −3) only: the working (the midpoint) is ours
+        "M(1 ; 3) is the midpoint of PL\n{3 + x}/{2} = 1, ∴ x = −1\n{9 + y}/{2} = 3, ∴ y = −3\nL(−1 ; −3)",     # the memo's L
+        "O(0 ; 0) is the midpoint of PL\n{3 + x}/{2} = 0, ∴ x = −3\n{9 + y}/{2} = 0, ∴ y = −9\nL(−3 ; −9)",     # O taken as the centre
+        "M(1 ; 3) is the midpoint of PL\n{3 + x}/{2} = 1, ∴ x = −2\n{9 + y}/{2} = 3, ∴ y = −6\nL(−2 ; −6)",     # never multiplies by 2
+        "M(1 ; 3) is the midpoint of PL\n{3 + x}/{2} = 1, ∴ x = −1\n{9 + y}/{2} = 3, ∴ y = 3\nL(−1 ; 3)"], 0,  # a sign slip: 6 − 9 = 3
         ["PL passes through the centre M: it is a diameter.", "M is the midpoint of PL."]),
-    steps("4.2", "Determine the equation of tangent ST to the circle at P.", 4, [
-        ("Gradient of radius MP", 1, 3, EXACT, "m(MP) = (9 − 3)/(3 − 1); m(MP) = 3 ✓"),
-        ("Gradient of tangent ST", 1, -0.3333, FRAC, "m(ST) = −1/3 ✓ (m(ST) = −1/m(MP))"),
-        ("c, the y-intercept of ST", 2, 10, EXACT, "9 = −1/3(3) + c ✓ (substitution of m(ST) and P(3 ; 9) into the equation of a line; OR y − 9 = "
-                                                   "−1/3(x − 3)); c = 10: y = −1/3 x + 10 ✓ (equation of tangent ST)")],
+    work("4.2", "Determine the equation of tangent ST to the circle at P.", 4, [
+        "m(MP) = {9 − 3}/{3 − 1} = 3\nm(ST) = 3\n9 = 3(3) + c\nc = 0\ny = 3x",                                      # the radius's gradient kept
+        "m(MP) = {9 − 3}/{3 − 1} = 3\nm(ST) = −3\n9 = −3(3) + c\nc = 18\ny = −3x + 18",                             # the sign changed, not inverted
+        "m(MP) = {9 − 3}/{3 − 1} = 3\nm(ST) = {1}/{3}\n9 = {1}/{3}(3) + c\nc = 8\ny = {1}/{3}x + 8",                # inverted, the sign kept
+        "m(MP) = {9 − 3}/{3 − 1} = 3\nm(ST) = −{1}/{3}\n9 = −{1}/{3}(3) + c\nc = 10\ny = −{1}/{3}x + 10"], 3,     # the memo
         ["A tangent is perpendicular to the radius at the point of contact.", "Then put P into y = mx + c."]),
     mcq("4.3", "Show that the equation of the circle with centre M is x² + y² − 2x − 6y − 30 = 0." + WORK, [
         "(x + 1)² + (y + 3)² = r²\n(3 + 1)² + (9 + 3)² = r²\nr² = 160\n(x + 1)² + (y + 3)² = 160\nx² + 2x + 1 + y² + 6y + 9 = 160\n"
@@ -219,42 +260,47 @@ q4 = [
         "d² + (1)² − 2d − 6(1) − 30 = 0\nd² − 2d − 35 = 0\nd² − 2d = 35\nd(d − 2) = 35\n∴ d = 7",
         "d² + (1)² − 2d − 6(1) − 30 = 0\nd² − 2d − 35 = 0\n(d − 7)(d + 5) = 0\nd = 7 or d = −5\n∴ d = 7"], 3,
         ["R(d ; 1) is on the circle: substitute it into the equation from 4.3.", "A 'show that' may not start from the answer; d > 0."], marks=2),
-    steps("4.5", "Calculate the size of L̂.", 5, [
-        ("PÔV, the angle of inclination of PL (degrees)", 2, 71.57, MEMO2, "m(PO) = 3, ∴ tan PÔV = 3 ✓ (tan PÔV = m(PO)); PÔV = 71,565…° ✓"),
-        ("Gradient of RL", 1, 0.5, EXACT, "m(RL) = (1 − (−3))/(7 − (−1)) = 1/2 ✓ (using R(7 ; 1) and L)"),
-        ("RV̂N, the angle of inclination of RL (degrees)", 1, 26.57, MEMO2, "tan RV̂N = 1/2; RV̂N = 26,565…° ✓"),
-        ("L̂ (degrees)", 1, 45, MEMO2, "L̂ = 71,565…° − 26,565…° [ext ∠ of △]; L̂ = 45° ✓. OR R̂ = 90° [∠ in semi-circle] ✓, PR = √80 = 4√5 ✓, "
-                                       "PL = √160 = 4√10 OR RL = √80 = 4√5 ✓, sin L̂ = 4√5/4√10 OR cos L̂ = 4√5/4√10 OR tan L̂ = 4√5/4√5 ✓, "
-                                       "L̂ = 45° ✓. OR PL, PR and LR ✓✓✓, cos L = (80 + 160 − 80)/(2√80 × √160) ✓ (cosine rule) = √2/2, "
-                                       "L̂ = 45° ✓")],
+    work("4.5", "Calculate the size of L̂.", 5, [
+        "m(PO) = 3, ∴ tan PÔV = 3\nPÔV = 71,565…°\nm(RL) = {1 − (−3)}/{7 − (−1)} = {1}/{2}\ntan RV̂N = {1}/{2}, ∴ RV̂N = 26,565…°\n"
+        "L̂ = 71,565…° + 26,565…° [ext ∠ of △]\nL̂ = 98,13°",                     # adds the angles
+        "m(PO) = 3, ∴ tan PÔV = 3\nPÔV = 71,565…°\nm(RL) = {1 + 3}/{7 − 1} = {2}/{3}\ntan RV̂N = {2}/{3}, ∴ RV̂N = 33,690…°\n"
+        "L̂ = 71,565…° − 33,690…° [ext ∠ of △]\nL̂ = 37,87°",                     # a sign slip: 7 − (−1) taken as 7 − 1
+        "m(PO) = 3, ∴ tan PÔV = 3\nPÔV = 71,565…°\nm(RL) = {1 − (−3)}/{7 − (−1)} = {1}/{2}\ntan RV̂N = {1}/{2}, ∴ RV̂N = 26,565…°\n"
+        "L̂ = 71,565…° − 26,565…° [ext ∠ of △]\nL̂ = 45°",                        # the memo
+        "m(PO) = 3, ∴ tan PÔV = 3\nPÔV = 71,565…°\nm(RL) = {1 − (−3)}/{7 − (−1)} = {1}/{2}\ntan RV̂N = {1}/{2}, ∴ RV̂N = 26,565…°\n"
+        "L̂ = 180° − 71,565…° − 26,565…° [sum of ∠s in △]\nL̂ = 81,87°"], 2,     # both taken as interior angles of △OVL
         ["The gradients of PL and RL give their angles of inclination with the x-axis.",
-         "In △OVL, the angle at O's side is an exterior angle: use the exterior angle of a triangle."]),
+         "In △OVL, the angle at O's side is an exterior angle: use the exterior angle of a triangle."], after=["4.1"]),
     mcq("4.6", "TR is a tangent to the circle at R. Prove that PT ⊥ RT." + WORK, [
         "m(RM) = {1 − 3}/{7 − 1} = −{1}/{3}\nm(RT) = 3 [tan ⊥ rad]\nm(PT) = −{1}/{3}\nm(RT) × m(PT) = −1\n∴ PT ⊥ RT",
         "m(RM) = {1 − 3}/{7 − 1} = −{1}/{3}\nm(RT) = 3 [tan-chord theorem]\nm(PT) = −{1}/{3}\nm(RT) × m(PT) = −1\n∴ PT ⊥ RT",
         "m(RM) = {1 − 3}/{7 − 1} = {1}/{3}\nm(RT) = −3 [tan ⊥ rad]\nm(PT) = −{1}/{3}\nm(RT) × m(PT) = −1\n∴ PT ⊥ RT",
         "m(RM) = {1 − 3}/{7 − 1} = −{1}/{3}\nm(RT) = 3 [PT ⊥ RT]\nm(PT) = −{1}/{3}\nm(RT) × m(PT) = −1\n∴ PT ⊥ RT"], 0,
         ["RT is a tangent at R: it is perpendicular to the radius MR.", "PT lies on tangent ST (4.2); perpendicular gradients multiply to −1."],
-        marks=3),
+        marks=3, after=["4.2"]),
 ]
 
 # ---- QUESTION 5, the question paper page 7 and the memo pages 12-13 ----
 q51 = [
-    steps("5.1.1", "cos A", 2, [
-        ("r, the length of OP", 1, 5, EXACT, "r = 5 ✓"),
-        ("cos A", 1, -0.6, EXACT, "cos A = −3/5 ✓")],
-        ["Use Pythagoras with x = −3 and y = −4.", "cos A = x/r."]),
-    steps("5.1.2", "cos 2A", 2, [
-        ("cos 2A", 2, -0.28, EXACT, "cos 2A = 2cos² A − 1 = 2(−3/5)² − 1 ✓ (substitution of cos A into the double angle formula) = −7/25 ✓. "
-                                    "OR cos² A − sin² A = (−3/5)² − (−4/5)² = −7/25; OR 1 − 2sin² A = 1 − 2(−4/5)² = −7/25")],
-        ["Choose a double angle formula for cos 2A.", "Use your cos A from 5.1.1 (sin A = −4/5)."]),
-    steps("5.1.3", "sin(A − B), if it is further given that sin B = 4/5 and 90° < B < 360°", 4, [
-        ("x, the x-coordinate of B's point (x ; 4) with r = 5", 1, -3, EXACT, "x = −3 ✓ (sin B > 0 with 90° < B < 360°: B is in the second "
-                                                                             "quadrant)"),
-        ("sin(A − B)", 3, 0.96, EXACT, "sin(A − B) = sin A cos B − cos A sin B = (−4/5)(−3/5) − (−3/5)(4/5) ✓✓ (substitution into the compound "
-                                       "angle formula) = 12/25 + 12/25 = 24/25 ✓")],
+    work("5.1.1", "cos A", 2, [
+        "r = √((−3)² + (−4)²) = 5\ncos A = −{4}/{5}",          # y over r: that is sin A
+        "r = √((−3)² + (−4)²) = 5\ncos A = −{3}/{5}",          # the memo
+        "r = √((−3)² + (−4)²) = 5\ncos A = {3}/{5}",           # the sign lost: A ends in the third quadrant
+        "r = (−3)² + (−4)² = 25\ncos A = −{3}/{25}"], 1,       # the square root left off
+        ["Use Pythagoras with x = −3 and y = −4.", "P is in the third quadrant: which sign does cos A have there?"]),
+    work("5.1.2", "cos 2A", 2, [
+        "cos 2A = 2cos² A − 1\n= 2(−{3}/{5})² − 1\n= −{43}/{25}",     # (−3/5)² taken as −9/25
+        "cos 2A = 2cos A\n= 2(−{3}/{5})\n= −{6}/{5}",                 # cos 2A taken as 2 cos A
+        "cos 2A = 1 − 2cos² A\n= 1 − 2(−{3}/{5})²\n= {7}/{25}",       # cos in the 1 − 2sin² A form
+        "cos 2A = 2cos² A − 1\n= 2(−{3}/{5})² − 1\n= −{7}/{25}"], 3,  # the memo
+        ["Choose a double angle formula for cos 2A.", "Use your cos A from 5.1.1 (sin A = −4/5)."], after=["5.1.1"]),
+    work("5.1.3", "sin(A − B), if it is further given that sin B = 4/5 and 90° < B < 360°", 4, [
+        "x = −3\nsin(A − B) = sin A cos B − cos A sin B\n= (−{4}/{5})(−{3}/{5}) − (−{3}/{5})({4}/{5})\n= {12}/{25} + {12}/{25}\n= {24}/{25}",  # memo
+        "x = 3\nsin(A − B) = sin A cos B − cos A sin B\n= (−{4}/{5})({3}/{5}) − (−{3}/{5})({4}/{5})\n= −{12}/{25} + {12}/{25}\n= 0",  # B in quad 1
+        "x = −3\nsin(A − B) = sin A − sin B\n= (−{4}/{5}) − ({4}/{5})\n= −{4}/{5} − {4}/{5}\n= −{8}/{5}",       # sin shared out over A − B
+        "x = −3\nsin(A − B) = cos A cos B − sin A sin B\n= (−{3}/{5})(−{3}/{5}) − (−{4}/{5})({4}/{5})\n= {9}/{25} + {16}/{25}\n= 1"], 0,  # cos(A+B)'s
         ["sin B is positive between 90° and 360° only in the second quadrant: draw B there.", "Expand sin(A − B) with the compound angle "
-                                                                                            "formula."]),
+                                                                                            "formula."], after=["5.1.1"]),
 ]
 q52 = [
     mcq("5.2", "If cos α = p, express the following expression in terms of p:\n(cos(α/2 − 45°).sin(α/2 − 45°))/2" + WORK, [
@@ -262,7 +308,7 @@ q52 = [
         "{cos(α/2 − 45°).sin(α/2 − 45°)}/{2}\n= {sin 2(α/2 − 45°)}/{2}\n= {sin(α − 90°)}/{2}\n= {−cos α}/{2}\n= {−p}/{2}",
         "{cos(α/2 − 45°).sin(α/2 − 45°)}/{2}\n= {2 cos(α/2 − 45°).sin(α/2 − 45°)}/{2.2}\n= {sin(α − 90°)}/{4}\n= {−cos α}/{4}\n= {−p}/{4}",
         "{cos(α/2 − 45°).sin(α/2 − 45°)}/{2}\n= {2 cos(α/2 − 45°).sin(α/2 − 45°)}/{2.2}\n= {sin(α − 45°)}/{4}\n= {−cos α}/{4}\n= {−p}/{4}"], 2,
-        ["2 sin θ cos θ = sin 2θ: multiply the numerator and the denominator by 2.", "sin(α − 90°) = −sin(90° − α): use the co-function."],
+        ["2 sin θ cos θ = sin 2θ: multiply the numerator and the denominator by 2.", "Then write sin(α − 90°) in terms of cos α: which sign does it take?"],
         marks=4),
 ]
 
@@ -274,7 +320,7 @@ q61 = [
         "cos(x + y) = cos(x − (−y))\n= cos x cos(−y) + sin x sin(−y)\n= cos x cos y − sin x sin y",
         "cos(x + y) = cos(x − (−y))\n= cos x cos(−y) + sin x sin(−y)\n= −cos x cos y − sin x sin y",
         "cos(x + y) = −cos(x − y)\n= −(cos x cos y + sin x sin y)\n= cos x cos y − sin x sin y"], 1,
-        ["Write x + y as x − (−y), then use the identity given.", "cos(−y) = cos y, but sin(−y) = −sin y."], marks=2),
+        ["Write x + y as x − (−y), then use the identity given.", "Which of cos(−y) and sin(−y) changes sign?"], marks=2),
     mcq("6.1.2", "Hence, or otherwise, show that:\n(" + N6 + ")/(" + D6 + ") = tan(x + y)" + WORK, [
         "LHS = {" + N6 + "}/{" + D6 + "}\n= {(sin x)cos y + (−sin y)(cos x)}/{cos x(cos y) + (−sin x)sin y}\n"
         "= {sin x cos y − cos x sin y}/{cos x cos y − sin x sin y}\n= {sin(x + y)}/{cos(x + y)}\n= tan(x + y)\n= RHS",
@@ -285,37 +331,45 @@ q61 = [
         "LHS = {" + N6 + "}/{" + D6 + "}\n= {(sin x)cos y + (−sin y)(−cos x)}/{cos x(cos y) + (−sin x)sin y}\n"
         "= {sin x cos y + cos x sin y}/{cos x cos y − sin x sin y}\n= {sin(x + y)}/{cos(x + y)}\n= tan(x + y)\n= RHS"], 3,
         ["Reduce each angle first: cos(90° − x), sin(−y), cos(180° + x), cos(360° + y), sin(360° − x).",
-         "The numerator and the denominator are then compound angle expansions."], marks=6),
+         "The numerator and the denominator are then compound angle expansions."], marks=6, after=["6.1.1"]),
 ]
 q62 = [
-    steps("6.2", "Given: f(x) = √(6 sin² x − 11 cos(90° + x) + 7)\nSolve for x in the interval x ∈ (0° ; 360°) if f(x) = 2.", 6, [
-        ("sin x, from the factor that gives solutions", 4, -0.3333, FRAC,
-         "6 sin² x − 11 cos(90° + x) + 7 = 4 ✓ (squaring both sides); 6 sin² x − 11(−sin x) + 7 = 4 ✓ (cos(90° + x) = −sin x); 6 sin² x + 11 sin x "
-         "+ 3 = 0; (3 sin x + 1)(2 sin x + 3) = 0 ✓ (factors); sin x = −1/3 OR sin x = −3/2 ✓ (both equations), the second with no solution"),
-        ("Smaller solution, x (degrees)", 1, 199.47, MEMO2, "ref ∠ = 19,47°; x = 199,47° ✓"),
-        ("Larger solution, x (degrees)", 1, 340.53, MEMO2, "x = 340,53° ✓")],
-        ["Square both sides, then reduce cos(90° + x).", "Factorise the quadratic in sin x; sin x is negative in the third and fourth quadrants."]),
+    work("6.2", "Given: f(x) = √(6 sin² x − 11 cos(90° + x) + 7)\nSolve for x in the interval x ∈ (0° ; 360°) if f(x) = 2.", 6, [
+        "√(6 sin² x − 11 cos(90° + x) + 7) = 2\n6 sin² x − 11 cos(90° + x) + 7 = 4\n6 sin² x − 11(sin x) + 7 = 4\n6 sin² x − 11 sin x + 3 = 0\n"
+        "(3 sin x − 1)(2 sin x − 3) = 0\nsin x = {1}/{3} or sin x = {3}/{2} (no solution)\nref ∠ = 19,47°\nx = 19,47° or x = 160,53°",
+        # cos(90° + x) taken as + sin x
+        "√(6 sin² x − 11 cos(90° + x) + 7) = 2\n6 sin² x − 11 cos(90° + x) + 7 = 2\n6 sin² x − 11(−sin x) + 7 = 2\n6 sin² x + 11 sin x + 5 = 0\n"
+        "(6 sin x + 5)(sin x + 1) = 0\nsin x = −{5}/{6} or sin x = −1\nref ∠ = 56,44°\nx = 236,44° ; 270° or 303,56°",
+        # the root dropped without squaring the 2
+        "√(6 sin² x − 11 cos(90° + x) + 7) = 2\n6 sin² x − 11 cos(90° + x) + 7 = 4\n6 sin² x − 11(−sin x) + 7 = 4\n6 sin² x + 11 sin x + 3 = 0\n"
+        "(3 sin x + 1)(2 sin x + 3) = 0\nsin x = −{1}/{3} or sin x = −{3}/{2} (no solution)\nref ∠ = 19,47°\nx = 199,47° or x = 340,53°",
+        # the memo
+        "√(6 sin² x − 11 cos(90° + x) + 7) = 2\n6 sin² x − 11 cos(90° + x) + 7 = 4\n6 sin² x − 11(−sin x) + 7 = 4\n6 sin² x + 11 sin x + 3 = 0\n"
+        "(3 sin x + 1)(2 sin x + 3) = 0\nsin x = −{1}/{3} or sin x = −{3}/{2} (no solution)\nref ∠ = 19,47°\nx = 160,53° or x = 199,47°"], 2,
+        # the second and third quadrants, not the third and fourth
+        ["Square both sides, then reduce cos(90° + x).", "Factorise the quadratic in sin x: one of the two factors gives no solution."]),
 ]
 q63 = [
-    steps("6.3.1", "Calculate the maximum value of g.", 3, [
-        ("Maximum value of g", 3, 1.3333, FRAC, "g(x) = 4(1 − 2sin² x)/3 ✓ (factors) = 4cos 2x/3 ✓; maximum value of cos 2x is 1: ∴ maximum value "
-                                                "of g(x) = 4/3 ✓. OR 4 − 8sin² x is a maximum when sin² x is a minimum: min of sin² x = 0 ✓, "
-                                                "g(x) = (4 − 8(0))/3 ✓ = 4/3 ✓. OR sin x = −(0)/(2(−8/3)) ✓, sin x = 0 ✓, g(x) = 4/3 ✓")],
+    work("6.3.1", "Calculate the maximum value of g.", 3, [
+        "g(x) = {4(1 − 2sin² x)}/{3}\n= {4 cos 2x}/{3}\nMaximum value of cos 2x is 1\n∴ maximum value of g(x) = 4",              # the ÷ 3 dropped
+        "g(x) = {4(1 − 2sin² x)}/{3}\n= {4 cos 2x}/{3}\nMaximum value of cos 2x is 1\n∴ maximum value of g(x) = {4}/{3}",        # the memo
+        "g(x) = {4(1 − 2sin² x)}/{3}\n= {4 cos 2x}/{3}\nMaximum value of cos 2x is 2\n∴ maximum value of g(x) = {8}/{3}",        # the 2 in 2x as the amplitude
+        "g(x) = {4(1 − 2sin² x)}/{3}\n= {4 cos 2x}/{3}\ng is a maximum when sin² x = 1, cos 2x = −1\n∴ maximum value of g(x) = −{4}/{3}"], 1,
+        # the LARGEST sin² x taken
         ["Take out the common factor 4: 1 − 2sin² x is a double angle.", "Or: g is largest when sin² x is smallest."]),
     num("6.3.2", "Write down the smallest possible value of x for which g will have a maximum value in the interval x ∈ (0° ; 360°].", 180, 0, "°",
-        ["g is a maximum where sin x = 0 (cos 2x = 1).", "The interval leaves out 0°."]),
+        ["g is a maximum where sin x = 0 (cos 2x = 1).", "The interval leaves out 0°."], after=["6.3.1"]),
 ]
 
 # ---- QUESTION 7, the question paper page 9 and the memo page 16 ----
 F7 = ("The graph of f(x) = tan x for x from −180° to 180°, with y marked from −3 to 3: dashed asymptotes at x = −90° and x = 90°; f passes "
       "through (−180° ; 0), (0 ; 0) and (180° ; 0), each of its three branches rising from left to right.")
 q7 = [
-    steps("7.1", "Write down the equation of the asymptote of f in the interval x ∈ [0° ; 180°].", 1, [
-        ("k, in the asymptote's equation x = k (degrees)", 1, 90, 0, "x = 90° ✓")],
+    num("7.1", "Write down the equation of the asymptote of f in the interval x ∈ [0° ; 180°].", 90, 0, "°",
         ["An asymptote of tan x is a vertical dashed line.", "Find the one between 0° and 180°."]),
     mcq("7.2", "Write down the values of x in the interval x ∈ [−180° ; 0°] for which f(x) ≤ 0." + ANS, [
         "x = −180° or −90° < x ≤ 0°", "−90° < x ≤ 0°", "x = −180° or −90° ≤ x ≤ 0°", "−180° ≤ x < −90°"], 0,
-        ["Look for where the graph is on or below the x-axis between −180° and 0°.", "f is undefined at its asymptote, and f(x) = 0 counts too."],
+        ["Look for where the graph is on or below the x-axis between −180° and 0°.", "Check each end point of your interval on the graph."],
         marks=2, figure=fig("Q7", F7)),
     num("7.3.1", "Given: g(x) = cos 2x + 1\nWrite down the period of g.", 180, 0, "°",
         ["The period is the length of one full wave.", "cos 2x repeats twice as fast as cos x."]),
@@ -324,7 +378,7 @@ q7 = [
         ["Turning points on the x-axis: x = −90° ; 90°", 1], ["Shape", 1], ["Turning point on the y-axis at (0 ; 2)", 1]],
         ["cos 2x has period 180° and lies between −1 and 1.", "The + 1 lifts the whole graph one unit up."],
         memo="The answer book's grid repeats the paper's graph of f(x) = tan x. g runs from (−180° ; 2) down to (−90° ; 0), up to (0 ; 2), "
-             "down to (90° ; 0) and up to (180° ; 2)."),
+             "down to (90° ; 0) and up to (180° ; 2).", after=["7.3.1"]),
     mcq("7.4", "Use the graphs to determine the general solution of 2cos³ x − sin x = 0." + WORK, [
         "2cos³ x − sin x = 0\n2cos³ x = sin x\n2cos² x = {sin x}/{cos x}\n2cos² x = tan x\n2cos² x − 1 = tan x − 1\ncos 2x + 1 = tan x\n"
         "x = 45° + k.360° ; k ∈ Z",
@@ -334,39 +388,49 @@ q7 = [
         "x = 45° + k.180° ; k ∈ Z",
         "2cos³ x − sin x = 0\n2cos³ x = sin x\n2cos² x = {cos x}/{sin x}\n2cos² x = tan x\n2cos² x − 1 = tan x − 1\ncos 2x + 1 = tan x\n"
         "x = 45° + k.180° ; k ∈ Z"], 1,
-        ["Divide by cos x to bring in tan x, then make the left side cos 2x + 1.", "g and f meet once in every 180°: where?"], marks=4),
+        ["Divide by cos x to bring in tan x, then make the left side cos 2x + 1.", "Where do the graphs of g and f meet on the grid?"], marks=4),
 ]
 
 # ---- QUESTION 8, the question paper page 10 and the memo pages 17-18 ----
 q8 = [
-    steps("8.1", "Calculate the length of AC, the distance between the observer at A and the foot of the building.", 2, [
-        ("AC (m)", 2, 15, MEMO2, "tan DÂC = DC/AC; AC = 16/tan 46,85° ✓ (correct substitution into the trig ratio); AC = 15 m ✓")],
-        ["△ACD has a right angle at C.", "You know the side opposite the 46,85° angle; AC is adjacent to it."]),
-    steps("8.2", "Calculate how far the painter at E is from the top of the building.", 7, [
-        ("BC (m)", 4, 8.30, MEMO2, "(AB)² = (BC)² + (AC)² − 2(BC)(AC) cos BĈA; (19)² = x² + (15)² − 2x(15) cos 105,61° ✓ (correct substitution into "
-                                   "the cosine rule); x² + 8,07x − 136 = 0 ✓ (quadratic equation in standard form); x = [−8,07 ± √((8,07)² − "
-                                   "4(1)(−136))]/(2(1)) ✓ (correct substitution into the quadratic formula); x = 8,30 m or x ≠ −16,38 m ✓ (length "
-                                   "of BC). OR sin 105,61°/19 = sin CB̂A/15 ✓ (sine rule); CB̂A = 49,5°; BÂC = 24,89° ✓; BC/sin 24,89° = "
-                                   "19/sin 105,61° ✓; BC = 8,3 m ✓"),
-        ("BÊC (degrees)", 1, 58, 0, "BÊC = 58° ✓ (OR EB̂C = 32°)"),
-        ("EC (m)", 1, 5.19, MEMO2, "tan BÊC = BC/EC; EC = 8,3/tan 58° (OR tan EB̂C = EC/BC, EC = 8,3 tan 32°); EC = 5,19 m ✓"),
-        ("DE (m)", 1, 10.81, MEMO2, "DE = 10,81 m ✓")],
+    work("8.1", "Calculate the length of AC, the distance between the observer at A and the foot of the building.", 2, [
+        "tan DÂC = {AC}/{DC}\nAC = 16 tan 46,85°\nAC = 17,07 m",            # tan as adjacent over opposite
+        "sin DÂC = {DC}/{AC}\nAC = {16}/{sin 46,85°}\nAC = 21,93 m",        # AC taken as the hypotenuse
+        "tan DÂC = {DC}/{AC}\nAC = {19}/{tan 46,85°}\nAC = 17,81 m",        # AB's 19 m read as the height
+        "tan DÂC = {DC}/{AC}\nAC = {16}/{tan 46,85°}\nAC = 15 m"], 3,       # the memo
+        ["△ACD has a right angle at C.", "Which trig ratio links the side opposite the 46,85° angle with the side next to it?"]),
+    work("8.2", "Calculate how far the painter at E is from the top of the building.", 7, [
+        "(AB)² = (BC)² + (AC)² − 2(BC)(AC) cos BĈA\n(19)² = x² + (15)² − 2x(15) cos 105,61°\nx² + 8,07x − 136 = 0\n"
+        "x = {−8,07 ± √((8,07)² − 4(1)(−136))}/{2(1)}\nx = 8,30 m or x ≠ −16,38 m\nBÊC = 58°\ntan BÊC = {BC}/{EC}, ∴ EC = {8,3}/{tan 58°}\n"
+        "EC = 5,19 m\nDE = 16 − 5,19 = 10,81 m",                                                       # the memo (cosine rule, BÊC)
+        "(AB)² = (BC)² + (AC)² − 2(BC)(AC) cos BĈA\n(19)² = x² + (15)² + 2x(15) cos 105,61°\nx² − 8,07x − 136 = 0\n"
+        "x = {8,07 ± √((−8,07)² − 4(1)(−136))}/{2(1)}\nx = 16,38 m or x ≠ −8,30 m\nBÊC = 58°\ntan BÊC = {BC}/{EC}, ∴ EC = {16,38}/{tan 58°}\n"
+        "EC = 10,24 m\nDE = 16 − 10,24 = 5,76 m",                                                      # a sign slip in the cosine rule
+        "(AB)² = (BC)² + (AC)² − 2(BC)(AC) cos BĈA\n(19)² = x² + (15)² − 2x(15) cos 105,61°\nx² + 8,07x − 136 = 0\n"
+        "x = {−8,07 ± √((8,07)² − 4(1)(−136))}/{2(1)}\nx = 8,30 m or x ≠ −16,38 m\nBÊC = 58°\ntan BÊC = {EC}/{BC}, ∴ EC = 8,3 tan 58°\n"
+        "EC = 13,28 m\nDE = 16 − 13,28 = 2,72 m",                                                      # tan upside down in △BCE
+        "(AB)² = (BC)² + (AC)² − 2(BC)(AC) cos BĈA\n(19)² = x² + (15)² − 2x(15) cos 105,61°\nx² + 8,07x − 136 = 0\n"
+        "x = {−8,07 ± √((8,07)² − 4(1)(−136))}/{2(1)}\nx = 8,30 m or x ≠ −16,38 m\nBÊC = 58°\ntan BÊC = {BC}/{EC}, ∴ EC = {8,3}/{tan 58°}\n"
+        "EC = 5,19 m\nDistance from the top = EC = 5,19 m"], 0,                                        # EC, the distance from the FOOT
         ["In △ABC you know AB, AC and the angle C: the cosine rule gives a quadratic in BC.",
-         "BÊC is on a straight line with DÊB; then use △BCE (right-angled at C) for EC, and DE = DC − EC."]),
+         "BÊC is on a straight line with DÊB; then use △BCE (right-angled at C) for EC, and DE = DC − EC."], after=["8.1"]),
 ]
 
 # ---- QUESTION 9, the question paper page 11 and the memo page 19 ----
 q9 = [
-    steps("9.1", "Calculate, with a reason, the value of Â₁.", 2, [
-        ("Â₁ (degrees)", 2, 40, 0, "Â₁ = 40° ✓ S [ext ∠ of a cyclic quad] ✓ R")],
-        ["Ĉ₁ is an exterior angle of the cyclic quadrilateral ABCD.", "It equals the interior opposite angle, DÂB = Â₁ + Â₂."]),
+    work("9.1", "Calculate, with a reason, the value of Â₁.", 2, [
+        "Â₁ = Ĉ₁ [ext ∠ of a cyclic quad]\n∴ Â₁ = 86°",                           # Â₂ left out of the opposite angle DÂB
+        "Â₁ + 46° + 86° = 180° [opp ∠s of cyclic quad]\n∴ Â₁ = 48°",              # Ĉ₁ taken as the opposite interior angle
+        "Â₁ + 46° = 86° [ext ∠ of a cyclic quad]\n∴ Â₁ = 40°",                   # the memo: Â₁ = 40° [ext ∠ of a cyclic quad]
+        "Â₁ + 46° = 86° [ext ∠ of △]\n∴ Â₁ = 40°"], 2,                           # the right sum, the wrong reason (the R mark)
+        ["Ĉ₁ lies outside ABCD, on the produced side BCE.", "Which angle of ABCD is opposite BĈD? Â₂ is part of it."]),
     mcq("9.2", "Hence, prove that AD = DC." + WORK, [
         "B̂ = 80° [Â₁ = ½B̂]\nD̂ = 100° [opp ∠s of cyclic quad]\n∴ Ĉ₂ = 40° [∠s opp equal sides]\n∴ Ĉ₂ = Â₁ = 40°\n∴ AD = DC [sides opp = ∠s]",
         "B̂ = 80° [Â₁ = ½B̂]\nD̂ = 100° [ext ∠ of cyclic quad]\n∴ Ĉ₂ = 40° [sum of ∠s in △]\n∴ Ĉ₂ = Â₁ = 40°\n∴ AD = DC [sides opp = ∠s]",
         "B̂ = 80° [Â₁ = ½B̂]\nD̂ = 100° [opp ∠s of cyclic quad]\n∴ Ĉ₂ = 40° [sum of ∠s in △]\n∴ Ĉ₂ = Â₁ = 40°\n∴ AD = DC [sides opp = ∠s]",
         "B̂ = 80° [Â₁ = ½B̂]\nD̂ = 100° [opp ∠s of cyclic quad]\n∴ Ĉ₂ = 40° [sum of ∠s in △]\n∴ Ĉ₂ = Â₁ = 40°\n∴ AD = DC [∠s opp equal sides]"], 2,
         ["Find B̂ from Â₁ = ½B̂, then D̂ in the cyclic quadrilateral.", "Show that the two angles of △ADC opposite AD and DC are equal."],
-        marks=4),
+        marks=4, after=["9.1"]),
 ]
 
 # ---- QUESTION 10, the question paper page 12 and the memo pages 20-22 ----
@@ -393,11 +457,16 @@ q102 = [
         "PR = RS [midpt theorem]\nPO = OW [radii]\n∴ OR = {1}/{2}WS [line from centre ⊥ to chord]\n∴ OR : WS = 1 : 2"], 0,
         ["OR is drawn from the centre perpendicular to the chord PS: what does it do to PS?", "R and O are then midpoints of two sides of △PSW."],
         marks=5),
-    steps("10.2.2", "Calculate the length of PT if ST = 15 units.", 4, [
-        ("RS (units)", 2, 5, EXACT, "OV/VT = RS/ST = 1/3 ✓ S/R [prop theorem; RO ∥ SW]; RS/15 = 1/3; RS = 5 units ✓ S"),
-        ("PR (units)", 1, 5, EXACT, "PR = RS = 5 units ✓ S [line from centre ⊥ to chord]"),
-        ("PT (units)", 1, 25, EXACT, "∴ PT = 25 units ✓")],
-        ["OV : OT = 1 : 4, so OV : VT = 1 : 3; in △ORT, VS is parallel to OR.", "PT = PR + RS + ST."]),
+    work("10.2.2", "Calculate the length of PT if ST = 15 units.", 4, [
+        "{OV}/{OT} = {RS}/{ST} = {1}/{4} [prop theorem; RO ∥ SW]\n{RS}/{15} = {1}/{4}\nRS = 3,75 units\n"
+        "PR = RS = 3,75 units [line from centre ⊥ to chord]\n∴ PT = 22,5 units",                     # OT paired with ST, not VT
+        "{OV}/{VT} = {RS}/{ST} = {1}/{3} [prop theorem; RO ∥ SW]\n{RS}/{15} = {1}/{3}\nRS = 5 units\n"
+        "PR = RS = 5 units [line from centre ⊥ to chord]\n∴ PT = 25 units",                          # the memo
+        "{OV}/{VT} = {ST}/{RS} = {1}/{3} [prop theorem; RO ∥ SW]\n{15}/{RS} = {1}/{3}\nRS = 45 units\n"
+        "PR = RS = 45 units [line from centre ⊥ to chord]\n∴ PT = 105 units",                        # the ratio upside down
+        "{OV}/{VT} = {RS}/{ST} = {1}/{3} [prop theorem; RO ∥ SW]\n{RS}/{15} = {1}/{3}\nRS = 5 units\n"
+        "PR = RS = 5 units [line from centre ⊥ to chord]\n∴ PT = 20 units"], 1,                      # PR left out of PT
+        ["OV : OT = 1 : 4, so OV : VT = 1 : 3; in △ORT, VS is parallel to OR.", "PT = PR + RS + ST."], after=["10.2.1"]),
 ]
 
 # ---- QUESTION 11, the question paper page 13 and the memo pages 23-25 ----
@@ -419,13 +488,14 @@ q11 = [
         "D̂₁ = AF̂G = x\n∴ DC ∥ FG [alt ∠s =]\n{AG}/{AC} = {AF}/{AD} [prop theorem; DC ∥ FG]\n∴ AG.AD = AC.AF",
         "D̂₁ = AF̂G = x\n∴ DC ∥ FG [corresp ∠s =]\n{AG}/{AC} = {AF}/{AD} [prop theorem; DC ∥ FG]\n∴ AG.AD = AC.AF"], 3,
         ["From 11.1, D̂₁ and AF̂G are equal: what does that make DC and FG?", "Then a line parallel to one side of △AGF divides the other sides "
-                                                                              "in proportion."], marks=4),
+                                                                              "in proportion."], marks=4, after=["11.1"]),
     mcq("11.3", "Prove that △AGF ||| △ABC" + WORK, [
         "In △AGF and △ABC\nĜ = B̂₂ [∠s in the same seg]\nAF̂G = Ĉ₁ = x [proved in 11.1]\nÂ₃ = Â₂ [sum of ∠s in △]\n△AGF ||| △ABC [∠∠∠]",
         "In △AGF and △ABC\nĜ = B̂₂ [tan-chord theorem]\nAF̂G = Ĉ₁ = x [proved in 11.1]\nÂ₃ = Â₂ [sum of ∠s in △]\n△AGF ||| △ABC [∠∠∠]",
         "In △AGF and △ABC\nĜ = B̂₂ [∠s in the same seg]\nAF̂G = Ĉ₄ = x [proved in 11.1]\nÂ₃ = Â₂ [sum of ∠s in △]\n△AGF ||| △ABC [∠∠∠]",
         "In △AGF and △ABC\nĜ = B̂₂ [∠s in the same seg]\nAF̂G = Ĉ₁ = x [proved in 11.1]\nÂ₃ = Â₂ [sum of ∠s in △]\n△AGF ||| △ABC [sides in prop]"], 0,
-        ["Ĝ and B̂₂ both stand on the chord AF of the larger circle.", "Use an angle equal to x from 11.1 that lies inside △ABC."], marks=4),
+        ["Ĝ and B̂₂ both stand on the chord AF of the larger circle.", "Use an angle equal to x from 11.1 that lies inside △ABC."], marks=4,
+        after=["11.1"]),
     mcq("11.4", "Prove that GF² = (BC.FC.AF)/AD" + WORK, [
         "\n".join([GF1, GF2, SIM, MID, INV, LAST]),
         "\n".join([GF0, GF2, SIMx, MID, INV, LAST]),
@@ -512,83 +582,91 @@ missions = [
                    "F, 1 between FA and FC, 2 between FC and FG."), "items": q11},
 ]
 
-AUTHORED = ["3.3", "4.3", "4.4", "4.6", "5.2", "6.1.1", "6.1.2", "7.2", "7.4", "9.2", "10.1", "10.2.1", "11.1", "11.2", "11.3", "11.4"]
+PROOFS = ["3.3", "4.3", "4.4", "4.6", "5.2", "6.1.1", "6.1.2", "7.2", "7.4", "9.2", "10.1", "10.2.1", "11.1", "11.2", "11.3", "11.4"]
+# every part that played as typed steps before 2026-10-10 (7.1, one number read off, plays as num), now authored multiple choice
+assert tuple(AUTHORED) == ("1.1", "1.3", "1.6", "2.3", "2.5", "2.6", "3.1", "3.2", "3.4", "3.5", "3.6", "3.7", "4.1", "4.2", "4.5", "5.1.1",
+                           "5.1.2", "5.1.3", "6.2", "6.3.1", "8.1", "8.2", "9.1", "10.2.2"), AUTHORED
+ITEMS = [i for m in missions for i in m["items"]]
+assert not [i["n"] for i in ITEMS if i["t"] == "steps"], "a typed calculation is left"
+PROOF_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in PROOFS)
+AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Mathematics", "title": "Mathematics P2", "sitting": "November 2024", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Mathematics", "total": 150, "missions": missions}],
     "flags": [
-        {"n": "3.3", "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): " + ", ".join(AUTHORED) + " ask for written "
+        {"n": "3.3", "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): " + ", ".join(PROOFS) + " ask for written "
                                                  "working or an answer a word marker cannot read (an interval, an expression in p, a general "
                                                  "solution, a 'show that', a derivation, a proof); each is played as four options, the memo's "
-                                                 "answer or first method and three built from common errors, and keeps its marks (63 marks, "
-                                                 "all or nothing)."},
+                                                 "answer or first method and three built from common errors, and keeps its marks (%d marks, "
+                                                 "all or nothing)." % PROOF_MARKS},
+        {"n": AUTHORED[0], "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): every typed calculation plays as the memo's "
+                                                       "working plus three built from common errors, 0 or full marks: " + ", ".join(AUTHORED)
+                                                       + " (%d parts, %d marks). The right option is the memo's FIRST method line by line; "
+                                                         "4.1's memo gives the coordinates only (L(−1 ; −3)), so its working (M the midpoint of "
+                                                         "PL) is ours, and 9.1's single line (Â₁ = 40° [ext ∠ of a cyclic quad]) is written as "
+                                                         "Â₁ + 46° = 86°. A form the memo also accepts is never a wrong option (1.3's calculator "
+                                                         "answer, 2.5's 35 employees, 2.6's 1,5 hours, 8.2's sine rule and EB̂C = 32°)."
+                                                       % (len(AUTHORED), AUTHORED_MARKS)},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 11), hand-transcribed from the page IMAGES: the question "
                                                            "paper and answer book are scans with no text layer, and the memo's text layer garbles "
                                                            "fractions, roots and diagrams; no API call."},
         {"n": "1", "kind": "no_fit", "detail": "The paper prints the data table ACROSS (the 15 weights in one row, the push-ups in the next); it is "
                                                "typed as 15 rows of (x ; y) pairs, the same data in the same order."},
-        {"n": "1.1", "kind": "no_fit", "detail": "Calculations play as steps: each step is the number the memo's method produces, its formula, "
-                                                 "substitution and equation marks riding on that number (the phone sees numbers, not working)."},
         {"n": "1.5", "kind": "no_fit", "detail": "The influence on the standard deviation is a term listing the memo's two answers (no influence OR "
                                                  "the standard deviation stays the same) in common phrasings, with 'increases' and 'decreases' "
                                                  "rejected; another wording is marked wrong."},
-        {"n": "1.6", "kind": "low_confidence", "detail": "The memo keys the increase as 10 (from (40 ; 6) up to the target (40 ; 16), the line's "
-                                                         "15,86 taken as 16 whole push-ups); 9,86 is marked wrong."},
-        {"n": "2.1", "kind": "low_confidence", "detail": "Ogive read-offs (2.1 median 65, 2.2 Q₁ 44, 2.3 Q₃ 84 and IQR 40) are keyed as the memo "
-                                                         "prints them with a tolerance of half a minute: the memo gives one value and no range, "
-                                                         "so a reading of 64 or 66 is marked wrong."},
+        {"n": "1.6", "kind": "low_confidence", "detail": "The memo keys the increase as 10 (from (40 ; 6) up to the target (40 ; 16)); the right "
+                                                         "working shows the line's 15,86 at 40 kg taken up to 16 whole push-ups, which the memo "
+                                                         "leaves unwritten, and no option ends in 9,86."},
+        {"n": "2.1", "kind": "low_confidence", "detail": "Ogive read-offs (2.1 median 65, 2.2 Q₁ 44) are keyed as the memo prints them with a "
+                                                         "tolerance of half a minute: the memo gives one value and no range, so a reading of 64 "
+                                                         "or 66 is marked wrong."},
         {"n": "2.4", "kind": "no_fit", "detail": "Drawings (2.4 box and whisker diagram, 7.3.2 graph of g) are done on paper and self-checked "
                                                  "against the memo's criteria; the answer book's scaled line and grid are described in each "
                                                  "draw's memo."},
-        {"n": "2.5", "kind": "no_fit", "detail": "The memo accepts two readings (34 employees, 56,67%; OR 35 employees, 58,33%): each step's "
-                                                 "tolerance spans both (34,5 ± 0,51; 57,5 ± 0,84), so a value between them also passes."},
-        {"n": "3.2", "kind": "no_fit", "detail": "Line equations (3.2 y = −3/4 x − 27/4, 4.2 y = −1/3 x + 10) play as their numbers m and c, and 7.1's "
-                                                 "asymptote x = 90° as k in x = k: the strict term compares letters and digits only, so a sign "
-                                                 "would be lost. Coordinates (3.7 A, 4.1 L) play as x and y steps; fractions are typed as decimals "
-                                                 "(−3/4 -> −0,75; 1/3 -> 0,33)."},
-        {"n": "4.5", "kind": "low_confidence", "detail": "Steps follow the memo's first method (the angles of inclination PÔV and RV̂N); its other "
-                                                         "methods (R̂ = 90° with a trig ratio, the cosine rule) reach the same 45° but not the step "
-                                                         "values, and are listed in the last step's memo."},
-        {"n": "6.2", "kind": "no_fit", "detail": "The equation plays as steps: sin x = −1/3 carries the memo's four method marks (squaring, the "
-                                                 "reduction, the factors, both equations; sin x = −3/2 has no solution and is in the step's memo), "
-                                                 "then the two solutions 199,47° and 340,53°."},
-        {"n": "8.2", "kind": "low_confidence", "detail": "The memo accepts BÊC = 58° OR EB̂C = 32° for one mark; the step asks for BÊC, so a learner "
-                                                         "who works with EB̂C must type 58 there. BC follows the memo's cosine-rule route (8,30); "
-                                                         "its sine-rule route (8,3) passes the same tolerance."},
-        {"n": "9.1", "kind": "no_fit", "detail": "'Calculate, with a reason' an angle (9.1) plays as steps: the R (reason) mark rides on the number; "
-                                                 "the reason is in the step's memo."},
+        {"n": "2.5", "kind": "no_fit", "detail": "The memo accepts two readings (34 employees, 56,67%; OR 35 employees, 58,33%): the right option "
+                                                 "uses its first; no option uses the second."},
+        {"n": "7.1", "kind": "no_fit", "detail": "The asymptote x = 90° plays as the number 90 on the keypad (unit °): the keypad takes no letters, "
+                                                 "and a typed term compares letters and digits only, so x = −90° would pass as x = 90°."},
+        {"n": "4.5", "kind": "no_fit", "detail": "The working follows the memo's first method (the angles of inclination PÔV and RV̂N); its other "
+                                                 "methods (R̂ = 90° with a trig ratio, the cosine rule) reach the same 45° and are not options."},
+        {"n": "8.2", "kind": "no_fit", "detail": "The working follows the memo's cosine-rule route with BÊC = 58°; its sine-rule route (BC = 8,3 m) "
+                                                 "and EB̂C = 32° reach the same DE = 10,81 m and are not options."},
+        {"n": "9.1", "kind": "no_fit", "detail": "'Calculate, with a reason' an angle (9.1) plays as a working: the S and R marks go together "
+                                                 "(0 or 2), so a right sum with a wrong reason is a wrong option."},
         {"n": "11.1", "kind": "low_confidence", "detail": "The memo accepts more than one set of four angles (its OR method reaches Ĉ₁ through "
                                                           "EA = EC [tans from common pt] and Ĉ₁ = EÂG [∠s opp equal sides]); the right option is "
                                                           "its first set, and each wrong option changes one line (a wrong reason or a wrong angle)."},
     ],
 }
-out = Path(__file__).parent / "out" / "math-p2-2024-11"
-out.mkdir(parents=True, exist_ok=True)
-(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper, memo and answer book PDFs' page images (no API call)",
-                                                        "scope": "Questions 1 to 11 (the whole paper)"}, "paper": paper}, indent=1, ensure_ascii=False),
-                                   encoding="utf-8")
-
-
-def shape(o):
-    """(lines, trailing [reasons]): every option of one part must match, so the layout never points at the answer."""
-    lines = o.split("\n")
-    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
-
 
 QTOTAL = {"1": 10, "2": 10, "3": 19, "4": 20, "5": 12, "6": 18, "7": 11, "8": 9, "9": 6, "10": 15, "11": 20}   # the paper's [n] per question
 per_q, at = {}, []
+NUMS = {i["n"] for i in ITEMS}
 for m in missions:
     got = sum(i["marks"] for i in m["items"])
     assert got == m["marks"], (m["id"], got, m["marks"])
     per_q[m["id"].split(".")[0]] = per_q.get(m["id"].split(".")[0], 0) + got
     for i in m["items"]:
+        assert set(i.get("after", [])) <= NUMS, (i["n"], i["after"])
         if i["t"] == "mcq":
             assert len({shape(o) for o in i["opts"]}) == 1, (i["n"], [shape(o) for o in i["opts"]])
             assert len(set(i["opts"])) == len(i["opts"]), (i["n"], "two options are the same")
             at.append("ABCD"[i["a"]])
     print(m["id"], "parts:", len(m["items"]), "marks:", got)
 assert per_q == QTOTAL, per_q
-assert sorted(i["n"] for m in missions for i in m["items"] if i["t"] == "mcq") == sorted(AUTHORED)
-print("right options:", {k: at.count(k) for k in "ABCD"})
-print("total:", sum(i["marks"] for m in missions for i in m["items"]))
+assert sorted(i["n"] for i in ITEMS if i["t"] == "mcq") == sorted(PROOFS + AUTHORED)
+# the right letter, spread evenly over A-D across the paper (proofs and calculations)
+spread = {k: at.count(k) for k in "ABCD"}
+assert max(spread.values()) - min(spread.values()) <= 1, spread
+print("right options, the paper:", spread, "calculations:", {k: ["ABCD"[i["a"]] for i in ITEMS if i["n"] in AUTHORED].count(k) for k in "ABCD"})
+total = sum(i["marks"] for i in ITEMS)
+assert total == 150, total
+print("authored calculations:", len(AUTHORED), "parts,", AUTHORED_MARKS, "marks; proofs:", len(PROOFS), "parts,", PROOF_MARKS, "marks")
+print("total:", total)
+out = Path(__file__).parent / "out" / "math-p2-2024-11"   # written only once every check above has passed
+out.mkdir(parents=True, exist_ok=True)
+(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper, memo and answer book PDFs' page images (no API call)",
+                                                        "scope": "Questions 1 to 11 (the whole paper)"}, "paper": paper}, indent=1, ensure_ascii=False),
+                                   encoding="utf-8")
