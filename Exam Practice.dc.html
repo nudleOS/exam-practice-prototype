@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=279">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=280">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -4537,9 +4537,9 @@ class Component extends DCLogic {
         // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
         aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + o) + (sp ? ", " + sp.t : ""),
         tab: mode === "mcq" ? ((s.pick == null ? i === 0 : sel) ? "0" : "-1") : "0",
-        border: sp ? sp.b : sel ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: sel ? "rgba(0,104,248,0.16)" : "rgba(32,35,39,0.78)",
+        border: sp ? sp.b : sel ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: sel ? "rgba(0,104,248,0.16)" : "var(--nx-tile, rgba(32,35,39,0.78))",   /* the theme's (nx-play.css): in the light theme the card was dark grey under dark text, measured 2026-10-10 */
         shadow: sel ? "0 0 0 3px rgba(0,104,248,0.18)" : "none",
-        badgeBg: sel ? "#81b1ff" : "rgba(255,255,255,0.06)", badgeColor: sel ? "#0b1a33" : "var(--text2)",
+        badgeBg: sel ? "#81b1ff" : "var(--nx-tilebadge, rgba(255,255,255,0.06))", badgeColor: sel ? "#0b1a33" : "var(--text2)",
         pick: () => {
           if (locked) return;
           const st0 = this.state;

@@ -2463,3 +2463,6 @@ body.nx-play main:not(#mq-stage) [data-vennitems] { flex-direction:column !impor
 [data-ctx-table] [data-pin="true"] { position: sticky; left: 0; z-index: 1; background: var(--tbl-pin); box-shadow: 1px 0 0 var(--line); }
 [data-ctx-table] [role="table"] > [role="row"]:first-child [data-pin="true"] { background: linear-gradient(rgba(255,255,255,0.05), rgba(255,255,255,0.05)), var(--tbl-pin); }
 [data-tbl-scroll]:focus-visible { outline: 3px solid #81b1ff; outline-offset: -3px; }
+/* a page MCQ card's resting colours by theme (Exam Practice layer2Vals: var(--nx-tile) / var(--nx-tilebadge), dark fallbacks there).
+   Measured 2026-10-10: in the light theme every word card on the page was rgba(32,35,39,0.78) under the theme's dark navy text. */
+html[data-nx="light"] body.nx-play { --nx-tile:#ffffff; --nx-tilebadge:rgba(10,30,70,0.07); }
