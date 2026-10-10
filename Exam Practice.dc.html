@@ -3846,7 +3846,8 @@ class Component extends DCLogic {
       // or with one of its shorter alternatives standing whole ("fuel" in fuel/diesel/petrol, "Al" in Al/aluminium). A point needs min(2, its keywords) slots hit;
       // keywords sharing their starts are one ("nucleotides ... nucleoplasm"). Found by the memo self-test and a learner-style probe: the
       // memo's own words could not pass 34 parts, and a learner writing one alternative failed 60 points. A point with NO keyword is matched
-      // on its own words: a one-word choice (yes / no / a letter) must open the answer; otherwise each slot of 3+ letter words, less the
+      // on its own words: a one-word choice (yes / no / a letter / an option the question offers) must open the answer, any other word of
+      // up to 3 letters (a term: "GST") stand whole anywhere; otherwise each slot of 3+ letter words, less the
       // list rule's stop words, must stand in the answer whole ("to form mRNA"). The service's keyword marker reads points the same way.
       // THE QUESTION'S OWN WORDS ARE NO EVIDENCE (2026-10-10, "question demoting", Mohler, Bunescu & Mihalcea, ACL 2011): a keyword the
       // question contains is left out of a point's keywords, so restating the question earns nothing. Before, the question alone scored
@@ -3869,7 +3870,10 @@ class Component extends DCLogic {
           const own = ks.filter(k => !asked2.some(x => hit(k, x))), use = own.length ? own : ks, need = own.length ? Math.min(2, own.length) : ks.length;
           const got = use.filter(k => words.some(x => hit(k, x))).length;
           return got >= need ? [...new Set(words.filter(x => use.some(k => hit(k, x))))] : null; }
-        if (slots.length === 1 && slots[0].length === 1 && slots[0][0].length <= 3) return words[0] === slots[0][0] ? slots[0] : null;
+        // a one-word CHOICE (yes / no, a letter, or one of the options a question offers: "Aℓ³⁺ or Zn²⁺") opens the answer; a short
+        // TERM in a list ("GST", ML P1 Nov 2024 5.1.4) stands whole anywhere in it (2026-10-10: "Corporation tax. GST. ..." lost its GST)
+        if (slots.length === 1 && slots[0].length === 1 && slots[0][0].length <= 3) { const w0 = slots[0][0], choice = w0.length === 1 || w0 === "yes" || w0 === "no" || asked.indexOf("or") !== -1;
+          return (choice ? words[0] === w0 : words.indexOf(w0) !== -1) ? slots[0] : null; }
         const sig = slots.map(sl => sl.filter(x => x.length >= 3 && !LEAD_STOP.has(x))).filter(sl => sl.length);
         return sig.length && sig.every(sl => sl.some(x => words.indexOf(x) !== -1)) ? sig.map(sl => sl.find(x => words.indexOf(x) !== -1)) : null; };
       // "ACCEPT" (or "Accept:") is the memo's notation for other wordings; a lowercase "accept" is the memo's prose ("(accept examples)",
