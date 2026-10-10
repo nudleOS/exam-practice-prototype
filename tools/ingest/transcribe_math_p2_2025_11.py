@@ -142,12 +142,7 @@ q3 = [
 q4 = [
     num("4.1", "Write down the value of p.", -6, 0, "",
         ["MC is parallel to the y-axis and passes through E.", "Every point on a vertical line has the same x-coordinate."]),
-    rub("4.2", "Show that q = 4.", 4, [
-        "AM = ME = q + 1 [radii] (from E(−6 ; −1) up to M(−6 ; q))",
-        "MD = q (MD̂B = 90°, as MC ∥ y-axis)",
-        "Substitution into Pythagoras: AM² = AD² + MD², so (q + 1)² = (q − 1)² + q²",
-        "Standard form: q² − 4q = 0, so q(q − 4) = 0 and q = 4 (q ≠ 0)"],
-        ["Write the radius, AD and MD in terms of q.", "△AMD has a right angle at D: use Pythagoras."]),
+    mcq("4.2", "Show that q = 4." + "\n\nChoose the correct working.", ['AM = ME = q [radii]\nAD = q − 1, MD = q + 1\nq² = (q − 1)² + (q + 1)² [Pythagoras]\nq = 4', 'AM = ME = q + 1 [radii]\nAD = q − 1, MD = q\n(q + 1)² = (q − 1)² − q² [Pythagoras]\nq² + 4q = 0, so q = 4', 'AM = ME = q + 1 [radii]\nAD = q − 1, MD = q\n(q + 1)² = (q − 1)² + q² [Pythagoras]\nq² − 4q = 0, so q = 4 (q ≠ 0)', 'AM = ME = q + 1 [radii]\nAD = q − 1, MD = q\nq + 1 = (q − 1) + q [Pythagoras]\nq = 4'], 2, ["Write the radius, AD and MD in terms of q.", "△AMD has a right angle at D: use Pythagoras."], marks=4),
     steps("4.3", "Determine the equation of the circle in the form (x − a)² + (y − b)² = r².", 2, [
         ("a, in (x − a)² + (y − b)² = r²", 1, -6, 0.001, "The centre is M(−6 ; 4) (b = q = 4, shown in 4.2): (x + 6)² + (y − 4)² ✓ (LHS)"),
         ("r², the right-hand side", 1, 25, 0.001, "AM = q + 1 = 5 units: = 25 ✓ (RHS). (x + 6)² + (y − 4)² = 25")],
@@ -285,19 +280,8 @@ q8 = [
 
 # ---- QUESTION 9, the question paper pages 10-11 and the memo pages 19-20 ----
 q91 = [
-    rub("9.1", "Use the diagram above to prove the theorem which states that the angle subtended by a chord (or arc) at the centre of the circle is "
-        "equal to twice the angle subtended by the same chord (or arc) at the circumference, that is prove that TÔP = 2 TK̂P.", 5, [
-        "Construction: draw KO produced, forming Ô₁ and Ô₂ at O and K̂₁ and K̂₂ at K",
-        "K̂₁ = T̂ [∠s opp equal sides] (OK = OT, radii)",
-        "Ô₁ = K̂₁ + T̂ [ext ∠ of △], so Ô₁ = 2K̂₁",
-        "Ô₂ = K̂₂ + P̂ [ext ∠ of △] and K̂₂ = P̂ [∠s opp equal sides], so Ô₂ = 2K̂₂",
-        "Ô₁ + Ô₂ = 2K̂₁ + 2K̂₂ = 2(K̂₁ + K̂₂), so TÔP = 2 TK̂P",
-        "OR — Construction: draw KO, forming K̂₁ and K̂₂ at K",
-        "T̂ = K̂₁ [∠s opp equal sides]",
-        "KÔT = 180° − 2K̂₁ [sum of ∠s of △]",
-        "P̂ = K̂₂ [∠s opp equal sides], so KÔP = 180° − 2K̂₂ [sum of ∠s of △]",
-        "TÔP = 360° − (KÔT + KÔP) [∠s around a point] = 2K̂₁ + 2K̂₂ = 2(K̂₁ + K̂₂) = 2 TK̂P"],
-        ["Draw the line from K through O: it splits the figure into two isosceles triangles.", "OK, OT and OP are radii; use the exterior angle of each triangle."]),
+    mcq("9.1", "Use the diagram above to prove the theorem which states that the angle subtended by a chord (or arc) at the centre of the circle is "
+        "equal to twice the angle subtended by the same chord (or arc) at the circumference, that is prove that TÔP = 2 TK̂P." + "\n\nChoose the correct working.", ['Construction: draw TP\nK̂ = T̂ = P̂ [∠s in the same segment]\nTÔP = 2 TK̂P [∠ at centre = 2 × ∠ at circumference]', 'Construction: draw KO produced\nK̂₁ = T̂ [OK = OT]\nÔ₁ = 180° − 2K̂₁ [ext ∠ of △]\nlikewise Ô₂ = 180° − 2K̂₂ [ext ∠ of △]\n∴ TÔP = 2 TK̂P', 'Construction: draw KO produced\nÔ₁ = K̂₁ and Ô₂ = K̂₂ [vert opp ∠s]\n∴ TÔP = K̂₁ + K̂₂ = 2 TK̂P', 'Construction: draw KO produced\nK̂₁ = T̂ [∠s opp equal sides]\nÔ₁ = K̂₁ + T̂ = 2K̂₁ [ext ∠ of △]\nlikewise Ô₂ = 2K̂₂ [ext ∠ of △]\n∴ TÔP = 2(K̂₁ + K̂₂) = 2 TK̂P'], 3, ["Draw the line from K through O: it splits the figure into two isosceles triangles.", "OK, OT and OP are radii; use the exterior angle of each triangle."], marks=5),
 ]
 q92 = [
     steps("9.2.1", "Calculate, with reasons, the size of Ô₂.", 2, [
@@ -349,10 +333,7 @@ q111 = [
         ["Both triangles share the angle C: area = ½ × side × side × sin Ĉ.", "GFDA is △ACD with △GCF taken away."]),
 ]
 q112 = [
-    rub("11.2.1", "PR = PW.QR/QE", 2, [
-        "QE/QR = PW/PR, so PR = PW.QR/QE",
-        "[prop theorem; PQ ∥ WE / line ∥ one side of △]"],
-        ["In △PQR, WE is parallel to PQ.", "Write the proportion, then make PR the subject."]),
+    mcq("11.2.1", "PR = PW.QR/QE" + "\n\nChoose the correct working.", ['{QE}/{QR} = {PW}/{PR} [line ∥ one side of △]\nPR = {PW.QE}/{QR}', '{QE}/{QR} = {PW}/{PR} [prop theorem; PQ ∥ WE]\nPR = {PW.QR}/{QE}', '{QE}/{QR} = {PR}/{PW} [prop theorem; PQ ∥ WE]\nPR = {PW.QR}/{QE}', '{QE}/{QR} = {PW}/{PR} [corresp ∠s; PQ ∥ WE]\nPR = {PW.QR}/{QE}'], 1, ["In △PQR, WE is parallel to PQ.", "Write the proportion, then make PR the subject."], marks=2),
     rub("11.2.2", "If △PQZ ||| △RQP, then PQ² = RQ.QZ", 1, [
         "PQ/RQ = QZ/QP [△PQZ ||| △RQP], so PQ² = RQ.QZ"],
         ["Similar triangles have sides in proportion: match the sides in the order of the letters.", "Then cross-multiply."]),
@@ -361,17 +342,8 @@ q112 = [
         "Ŝ₁ = R̂₂ [tan chord theorem]",
         "Ẑ₁ = QŜR [3rd ∠ of △], OR △QSZ ||| △QRS [∠∠∠]"],
         ["The two triangles share an angle at Q.", "QS is a tangent: the angle between a tangent and a chord equals the angle in the alternate segment."]),
-    rub("11.2.4", "PQ = QS", 3, [
-        "QS/QR = QZ/QS [△QSZ ||| △QRS]",
-        "QS² = QZ.QR",
-        "But PQ² = RQ.QZ [proved in 11.2.2], so PQ = QS"],
-        ["Use the similar triangles of 11.2.3 to write QS² as a product.", "Compare it with PQ² from 11.2.2."]),
-    rub("11.2.5", "PW = QE.PZ/√(QR.QZ)", 4, [
-        "PR = QR.PZ/PQ (PQ/RQ = PZ/PR, △PQZ ||| △RQP)",
-        "PW.QR/QE = QR.PZ/PQ (with PR from 11.2.1)",
-        "PW = QE.PZ/PQ",
-        "PQ = √(RQ.QZ) [proved in 11.2.2], so PW = QE.PZ/√(QR.QZ)"],
-        ["Write PR in two ways: from 11.2.1 and from △PQZ ||| △RQP.", "Set them equal, then replace PQ using 11.2.2."]),
+    mcq("11.2.4", "PQ = QS" + "\n\nChoose the correct working.", ['{QS}/{QR} = {QZ}/{QS} [△QSZ ||| △QRS]\nQS² = QZ.QR\nbut PQ² = RQ.QZ [11.2.2]\n∴ PQ = QS', '{QS}/{QR} = {QZ}/{QS} [tan chord theorem]\nQS² = QZ.QR\nbut PQ² = RQ.QZ [11.2.2]\n∴ PQ = QS', '{QS}/{QR} = {QZ}/{QS} [△QSZ ||| △QRS]\nQS = QZ.QR\nbut PQ = RQ.QZ [11.2.2]\n∴ PQ = QS', '{QS}/{QR} = {SZ}/{QS} [△QSZ ||| △QRS]\nQS² = SZ.QR\nbut PQ² = RQ.QZ [11.2.2]\n∴ PQ = QS'], 0, ["Use the similar triangles of 11.2.3 to write QS² as a product.", "Compare it with PQ² from 11.2.2."], marks=3),
+    mcq("11.2.5", "PW = QE.PZ/√(QR.QZ)" + "\n\nChoose the correct working.", ['PR = {PQ.PZ}/{QR} [△PQZ ||| △RQP]\nPR = {PW.QR}/{QE} [11.2.1]\nPW = {PQ.PZ.QE}/{QR²}\nPQ² = RQ.QZ [11.2.2]\n∴ PW = {QE.PZ}/{√(QR.QZ)}', 'PR = {QR.PZ}/{PQ} [△PQZ ||| △RQP]\nPR = {PW.QR}/{QE} [11.2.1]\nPW = {QE.PZ}/{PQ}\nPQ = RQ.QZ [11.2.2]\n∴ PW = {QE.PZ}/{√(QR.QZ)}', 'PR = {QR.PZ}/{PQ} [△PQZ ||| △RQP]\nPR = {PW.QR}/{QE} [11.2.1]\nPW = {QE.PZ}/{PQ}\nPQ = √(RQ.QZ) [11.2.2]\n∴ PW = {QE.PZ}/{√(QR.QZ)}', 'PR = {QR.PZ}/{PQ} [△PQZ ||| △RQP]\nPR = {PW.QE}/{QR} [11.2.1]\nPW = {QR².PZ}/{QE.PQ}\nPQ = √(RQ.QZ) [11.2.2]\n∴ PW = {QE.PZ}/{√(QR.QZ)}'], 2, ["Write PR in two ways: from 11.2.1 and from △PQZ ||| △RQP.", "Set them equal, then replace PQ using 11.2.2."], marks=4),
 ]
 
 CARS = {"head": ["AGE OF CAR (IN YEARS)", "SELLING PRICE OF CAR (IN RAND)"],
@@ -455,6 +427,7 @@ paper = {
     "paper": {"subject": "Mathematics", "title": "Mathematics P2", "sitting": "November 2025", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Mathematics", "total": 150, "missions": missions}],
     "flags": [
+        {"n": "4.2", "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): 4.2, 9.1, 11.2.1, 11.2.4, 11.2.5 ask for written working or an answer a word marker cannot read (an inequality, an interval, a coordinate, a proof); each is played as four options, the memo's answer or working and three built from common errors, and keeps its marks."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 11), hand-transcribed from the page IMAGES: the question paper "
                                                            "and answer book are scans with no text layer, and the memo's text layer garbles fractions "
                                                            "and diagrams; no API call."},

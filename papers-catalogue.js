@@ -374,7 +374,7 @@ window.NX_CATALOGUE = {
    "missions": 37,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "4fba07ce9e",
+   "rev": "fc61d962b9",
    "source_pdf": "uploads/Mathematics P1 Nov 2025 Eng.pdf"
   },
   {
@@ -396,7 +396,7 @@ window.NX_CATALOGUE = {
    "missions": 41,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "b28c937ddb",
+   "rev": "23b2f19c4c",
    "source_pdf": "uploads/Mathematics P2 Nov 2025 Eng.pdf"
   },
   {

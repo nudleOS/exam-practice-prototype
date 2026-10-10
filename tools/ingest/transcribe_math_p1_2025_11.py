@@ -45,6 +45,10 @@ def rub(n, q, marks, bullets, clues, each=None, must=None):
             **({"must": must} if must else {})}
 
 
+def mcq(n, q, opts, a, clues, marks=1, **kw):
+    return {"t": "mcq", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
+
+
 term = lambda n, q, a, clues, marks=1, strict=False, reject=None: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
                                                                   **({"strict": True} if strict else {}), **({"reject": reject} if reject else {})}
 num = lambda n, q, a, tol, unit, clues, marks=1: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
@@ -71,12 +75,7 @@ q11 = [
         ("Smaller solution, x", 2, -1.54, DP2, "5x² + 9x + 2 = 0 ✓ (standard form); x = (−9 ± √41)/10; x = −1,54 ✓"),
         ("Larger solution, x", 2, -0.26, DP2, "x = [−9 ± √(9² − 4(5)(2))]/(2(5)) ✓ (substitution into the correct formula); x = −0,26 ✓")],
         ["Bring every term to one side first: ax² + bx + c = 0.", "It does not factorise neatly: use the quadratic formula."]),
-    rub("1.1.3", "8x² > 2x", 4, [
-        "Standard form: 8x² − 2x > 0",
-        "Critical values / factors: 2x(4x − 1) > 0, critical values 0 and 1/4",
-        "Answer: x < 0 …",
-        "… or x > 1/4 (the answer's second mark)"],
-        ["Move everything to one side and factorise.", "Sketch the parabola: where is it ABOVE the x-axis?"]),
+    mcq("1.1.3", "8x² > 2x" + "\n\nChoose the correct answer.", ['0 < x < {1}/{4}', 'x < 0 or x > {1}/{4}', 'x > {1}/{4}', 'x < 0 or x > 4'], 0, ["Move everything to one side and factorise.", "Sketch the parabola: where is it ABOVE the x-axis?"], marks=4),
     steps("1.1.4", "2·2²ˣ − 9·2ˣ + 4 = 0", 4, [
         ("Smaller solution, x", 2, -1, EXACT, "(2·2ˣ − 1)(2ˣ − 4) = 0 ✓ (factors; OR let k = 2ˣ: 2k² − 9k + 4 = 0, (2k − 1)(k − 4) = 0); "
                                              "2ˣ = 1/2 = 2⁻¹; x = −1 ✓"),
@@ -130,11 +129,7 @@ q3 = [
         ("Depth at the end of 4 seconds (m)", 1, 135, EXACT, "36 ; 71 ; 104 ; 135 ; 164: first differences 35 ; 33 ; 31 ; 29 ✓, second difference −2"),
         ("Depth at the end of 5 seconds (m)", 1, 164, EXACT, "T₅ = 164 ✓")],
         ["Find the first differences: 35, 33, …", "The second difference is constant: keep the pattern going."]),
-    rub("3.2", "Show that the depth of the torpedo at the end of n seconds was Tₙ = −n² + 38n − 1", 3, [
-        "2a = −2, so a = −1",
-        "3(−1) + b = 35, so b = 38",
-        "−1 + 38 + c = 36, so c = −1"],
-        ["Tₙ = an² + bn + c, where 2a is the second difference.", "3a + b is the first first difference; a + b + c is T₁."]),
+    mcq("3.2", "Show that the depth of the torpedo at the end of n seconds was Tₙ = −n² + 38n − 1" + "\n\nChoose the correct working.", ['a = −2 (the second difference)\n3a + b = 35, so b = 41\na + b + c = 36, so c = −3', '2a = −2, so a = −1\na + b = 35, so b = 36\na + b + c = 36, so c = 1', '2a = −2, so a = −1\n3a + b = 35, so b = 38\na + b + c = 36, so c = −1', '2a = 2, so a = 1\n3a + b = 35, so b = 32\na + b + c = 36, so c = 3'], 2, ["Tₙ = an² + bn + c, where 2a is the second difference.", "3a + b is the first first difference; a + b + c is T₁."], marks=3),
     steps("3.3", "Calculate the maximum depth that the torpedo reached.", 3, [
         ("Time of the maximum depth, n (seconds)", 2, 19, EXACT, "n = −38/(2(−1)) ✓ (method; OR Tₙ′ = −2n + 38 = 0) = 19 ✓"),
         ("Maximum depth (m)", 1, 360, EXACT, "T₁₉ = −(19)² + 38(19) − 1 = 360 ✓")],
@@ -166,14 +161,10 @@ q4 = [
 
 # ---- QUESTION 5, the question paper page 6 and the memo pages 9-10 ----
 q5 = [
-    rub("5.1", "Write down the domain of g.", 1, ["x ∈ ℝ, x ≠ 3"],
-        ["g is undefined where its denominator is zero.", "That x-value is its vertical asymptote."]),
-    rub("5.2", "Write down the range of f.", 1, ["y ≤ 8"],
-        ["f opens downwards, so its turning point is its highest point.", "P is also where g's asymptotes cross."]),
-    rub("5.3.1", "Determine the values of x for which: g(x) ≤ f(x)", 2, ["3 < x ≤ 5, or x ∈ (3 ; 5]"],
-        ["Find where the graph of g is on or below the graph of f.", "Look between g's vertical asymptote and the intersection D."], each=2),
-    rub("5.3.2", "Determine the values of x for which: f(x) < 6", 2, ["x < 1, or x ∈ (−∞ ; 1)", "x > 5, or x ∈ (5 ; ∞)"],
-        ["f is symmetric about x = 3, and f(5) = 6.", "Where is the parabola BELOW the line y = 6?"]),
+    mcq("5.1", "Write down the domain of g." + "\n\nChoose the correct answer.", ['x ∈ ℝ', 'y ∈ ℝ, y ≠ 8', 'x ∈ ℝ, x ≠ 8', 'x ∈ ℝ, x ≠ 3'], 3, ["g is undefined where its denominator is zero.", "That x-value is its vertical asymptote."], marks=1),
+    mcq("5.2", "Write down the range of f." + "\n\nChoose the correct answer.", ['y ≤ 8', 'y ≥ 8', 'x ≤ 3', 'y < 8'], 0, ["f opens downwards, so its turning point is its highest point.", "P is also where g's asymptotes cross."], marks=1),
+    mcq("5.3.1", "Determine the values of x for which: g(x) ≤ f(x)" + "\n\nChoose the correct answer.", ['3 ≤ x ≤ 5', 'x < 3 or x ≥ 5', '3 < x ≤ 5', '3 < x < 5'], 2, ["Find where the graph of g is on or below the graph of f.", "Look between g's vertical asymptote and the intersection D."], marks=2),
+    mcq("5.3.2", "Determine the values of x for which: f(x) < 6" + "\n\nChoose the correct answer.", ['x < 1 or x > 5', '1 < x < 5', 'x ≤ 1 or x ≥ 5', 'x > 5 only'], 0, ["f is symmetric about x = 3, and f(5) = 6.", "Where is the parabola BELOW the line y = 6?"], marks=2),
     rub("5.4", "Show that the equation of the parabola is f(x) = −½x² + 3x + 7/2", 3, [
         "p and q values: y = a(x − 3)² + 8",
         "Substitution of (5 ; 6): 6 = a(5 − 3)² + 8, so −2 = 4a and a = −½",
@@ -192,8 +183,7 @@ q5 = [
 
 # ---- QUESTION 6, the question paper page 7 and the memo pages 11-12 ----
 q6 = [
-    rub("6.1", "Write down the coordinates of the x-intercept of g in terms of p.", 1, ["(−p ; 0)"],
-        ["The vertical asymptote of f is x = −p.", "g cuts the x-axis exactly there."]),
+    mcq("6.1", "Write down the coordinates of the x-intercept of g in terms of p." + "\n\nChoose the correct answer.", ['(p ; 0)', '(0 ; −p)', '(−p ; 0)', '(0 ; p)'], 2, ["The vertical asymptote of f is x = −p.", "g cuts the x-axis exactly there."], marks=1),
     steps("6.2", "Graph g intersects the horizontal asymptote of graph f at x = 1 and the graph f at x = 3. Graphs f and g also intersect on the "
           "y-axis. Determine the equation of f.", 5, [
         ("Value of p", 3, -2, EXACT, "g(x) = x + c, so c = p; q = 1 + c ✓; f(x) = a/(x + c) + 1 + c ✓; point (0 ; c): c = a/(0 + c) + 1 + c, a = −c; "
@@ -248,16 +238,7 @@ q73 = [
 
 # ---- QUESTION 8, the question paper page 8 and the memo page 15 ----
 q81 = [
-    rub("8.1", "Determine f′(x) from first principles if it is given that f(x) = −2x + 3.", 4, [
-        "f(x + h) = −2(x + h) + 3",
-        "Substitution: f′(x) = lim (h→0) [−2(x + h) + 3 − (−2x + 3)]/h",
-        "Simplification: = lim (h→0) (−2h)/h = lim (h→0) (−2)",
-        "Answer: f′(x) = −2",
-        "OR — f(x + h) = −2(x + h) + 3",
-        "Simplification: f(x + h) − f(x) = −2x − 2h + 3 + 2x − 3 = −2h",
-        "Substitution: f′(x) = lim (h→0) (−2h)/h = lim (h→0) (−2)",
-        "Answer: f′(x) = −2"],
-        ["f′(x) = lim (h→0) [f(x + h) − f(x)]/h.", "Write f(x + h) first and simplify before taking the limit."])]
+    mcq("8.1", "Determine f′(x) from first principles if it is given that f(x) = −2x + 3." + "\n\nChoose the correct working.", ['f(x + h) = −2x + h + 3\nf′(x) = lim(h→0) {−2x + h + 3 − (−2x + 3)}/{h}\n= lim(h→0) {h}/{h}\n= 1', 'f(x + h) = −2(x + h) + 3\nf′(x) = lim(h→0) {−2(x + h) + 3 − (−2x − 3)}/{h}\n= lim(h→0) {6 − 2h}/{h}\n(no limit)', 'f(x + h) = −2(x + h) + 3\nf′(x) = lim(h→0) {−2(x + h) + 3}/{h}\n= lim(h→0) (−2)\n= −2', 'f(x + h) = −2(x + h) + 3\nf′(x) = lim(h→0) {−2(x + h) + 3 − (−2x + 3)}/{h}\n= lim(h→0) {−2h}/{h}\n= −2'], 3, ["f′(x) = lim (h→0) [f(x + h) − f(x)]/h.", "Write f(x + h) first and simplify before taking the limit."], marks=4)]
 q82 = [
     steps("8.2.1", "g′(x) if g(x) = −3x⁴ + 2x", 2, [
         ("g′(x): the coefficient of x³", 1, -12, EXACT, "g′(x) = −12x³ + 2: −12x³ ✓"),
@@ -274,14 +255,7 @@ q9 = [
         ("x-coordinate of E", 3, 5, EXACT, "f′(x) = 3x² − 16x + 5 ✓; f′(x) = 0 ✓; (3x − 1)(x − 5) = 0; x = 1/3 or x = 5 ✓ (x-value)"),
         ("y-coordinate of E", 1, -36, EXACT, "E(5 ; −36) ✓ (y-value)")],
         ["At a turning point f′(x) = 0.", "E is the turning point on the right: put its x into f."]),
-    rub("9.2", "For which values of x is f concave down?", 3, [
-        "f″(x) = 6x − 16",
-        "f″(x) < 0",
-        "Answer: x < 8/3",
-        "OR — Midpoint of the turning points: x = (1/3 + 5)/2 = 8/3",
-        "f″(x) < 0",
-        "Answer: x < 8/3"],
-        ["Concave down means f″(x) < 0.", "The point of inflection lies halfway between the turning points."]),
+    mcq("9.2", "For which values of x is f concave down?" + "\n\nChoose the correct answer.", ['f″(x) = 6x − 16 > 0, so x > {8}/{3}', 'f″(x) = 6x − 16 < 0, so x < {8}/{3}', 'f′(x) = 3x² − 16x + 5 < 0, so {1}/{3} < x < 5', 'f″(x) = 6x − 8 < 0, so x < {4}/{3}'], 1, ["Concave down means f″(x) < 0.", "The point of inflection lies halfway between the turning points."], marks=3),
     rub("9.3", "The coordinates of B are (2 ; 0). Use the graph to determine the values of x for which f(x) · f″(x) < 0", 4, [
         "x-intercept of f: (−1 ; 0)",
         "x-intercept of f: (7 ; 0)",
@@ -289,22 +263,11 @@ q9 = [
         "Second interval: 8/3 < x < 7"],
         ["Divide f(x) by (x − 2) to find A and C.", "The product is negative where f and f″ have opposite signs; f″ changes sign at the point of "
                                                     "inflection."]),
-    rub("9.4", "For which values of t will y = −11x + t intersect f at 3 distinct points?", 6, [
-        "Equating: 3x² − 16x + 5 = −11 (OR x³ − 8x² + 5x + 14 = −11x + t, so t = x³ − 8x² + 16x + 14)",
-        "x-values: 3x² − 16x + 16 = 0, (x − 4)(3x − 4) = 0, x = 4 or x = 4/3",
-        "At x = 4: (4)³ − 8(4)² + 5(4) + 14 = −11(4) + t, t = 14",
-        "At x = 4/3: t = 634/27 = 23 13/27 = 23,48",
-        "Answer: 14 < t < 634/27 …",
-        "… with both ends excluded (the answer's second mark)"],
-        ["Find where the tangent to f has gradient −11: f′(x) = −11.", "Those two tangents give the boundary values of t; the line lies between them."])]
+    mcq("9.4", "For which values of t will y = −11x + t intersect f at 3 distinct points?" + "\n\nChoose the correct working.", ['f′(x) = 3x² − 16x + 5 = −11\n(x − 4)(3x − 4) = 0, so x = 4 or x = {4}/{3}\nx = 4: t = 14; x = {4}/{3}: t = {634}/{27}\n14 ≤ t ≤ {634}/{27}', 'f′(x) = 3x² − 16x + 5 = −11\n(x − 4)(3x − 4) = 0, so x = 4 or x = {4}/{3}\nt lies between the two x-values\n{4}/{3} < t < 4', 'f′(x) = 3x² − 16x + 5 = −11\n(x − 4)(3x − 4) = 0, so x = 4 or x = {4}/{3}\nx = 4: t = 14; x = {4}/{3}: t = {634}/{27}\nt < 14 or t > {634}/{27}', 'f′(x) = 3x² − 16x + 5 = −11\n(x − 4)(3x − 4) = 0, so x = 4 or x = {4}/{3}\nx = 4: t = 14; x = {4}/{3}: t = {634}/{27}\n14 < t < {634}/{27}'], 3, ["Find where the tangent to f has gradient −11: f′(x) = −11.", "Those two tangents give the boundary values of t; the line lies between them."], marks=6)]
 
 # ---- QUESTION 10, the question paper page 10 and the memo page 18 ----
 q10 = [
-    rub("10.1", "Show that the volume of the cylinder is given by V = 25x²/(4π) − x³/(4π)", 3, [
-        "2x + 2h = 50, so h = 25 − x",
-        "2πr = x, so r = x/(2π)",
-        "Substitution: V = πr²h = π(x/(2π))²(25 − x) = πx²/(4π²) (25 − x) = 25x²/(4π) − x³/(4π)"],
-        ["The side x rolls into the circumference: 2πr = x.", "Use the perimeter to write h in terms of x, then V = πr²h."]),
+    mcq("10.1", "Show that the volume of the cylinder is given by V = 25x²/(4π) − x³/(4π)" + "\n\nChoose the correct working.", ['2x + 2h = 50\nh = 25 − x\n2πr = x\nr = {x}/{2π}\nV = πr²h = π({x}/{2π})²(25 − x)\nV = {25x²}/{4π} − {x³}/{4π}', 'x + h = 50\nh = 50 − x\n2πr = x\nr = {x}/{2π}\nV = πr²h\nV = {25x²}/{4π} − {x³}/{4π}', '2x + 2h = 50\nh = 25 − x\n2πr = h\nr = {25 − x}/{2π}\nV = πr²x\nV = {25x²}/{4π} − {x³}/{4π}', '2x + 2h = 50\nh = 25 − x\n2πr = x\nr = {x}/{2π}\nV = 2πrh = x(25 − x)\nV = {25x²}/{4π} − {x³}/{4π}'], 0, ["The side x rolls into the circumference: 2πr = x.", "Use the perimeter to write h in terms of x, then V = πr²h."], marks=3),
     steps("10.2", "Calculate the value of x that will maximise the volume of the cylinder.", 3, [
         ("x (units)", 3, 16.67, DP2, "V′(x) = 50x/(4π) − 3x²/(4π) ✓; V′(x) = 0 ✓; 50x − 3x² = 0; x(50 − 3x) = 0; x ≠ 0 or x = 50/3; x = 50/3 = 16,67 ✓ "
                                      "(answer with selection)")],
@@ -312,11 +275,7 @@ q10 = [
 
 # ---- QUESTION 11, the question paper page 11 and the memo pages 19-21 ----
 q111 = [
-    rub("11.1.1", "The events male and preferring juice are independent. Show that e = 84.", 3, [
-        "P(M and J) = P(M) × P(J)",
-        "P(M and J) = 36/210",
-        "P(Male) = 90/210: 36/210 = (90/210) × (e/210), so e = 84"],
-        ["Independent events: P(A and B) = P(A) × P(B).", "Work out f, the number of males, first."]),
+    mcq("11.1.1", "The events male and preferring juice are independent. Show that e = 84." + "\n\nChoose the correct working.", ['P(M or J) = P(M) × P(J)\n{36}/{210} = {90}/{210} × {e}/{210}\ne = 84', 'P(M and J) = P(M) × P(J)\n{36}/{210} = {90}/{210} × {e}/{210}\ne = 84', 'P(M and J) = P(M) × P(J)\n{36}/{90} = {90}/{210} × {e}/{210}\ne = 84', 'P(M and J) = P(M) + P(J) − 1\n{36}/{210} = {90}/{210} + {e}/{210} − 1\ne = 84'], 1, ["Independent events: P(A and B) = P(A) × P(B).", "Work out f, the number of males, first."], marks=3),
     steps("11.1.2", "Calculate the probability that a female learner, chosen at random from the group, will like energy drinks.", 3, [
         ("b, the number of females who like energy drinks", 2, 72, EXACT, "d = 210 − 84 = 126 ✓ (d-value); b = 126 − 54 = 72 ✓ (b-value). "
                                                                           "OR c = 120 ✓ (c-value); b = 72 ✓"),
@@ -402,6 +361,7 @@ paper = {
     "paper": {"subject": "Mathematics", "title": "Mathematics P1", "sitting": "November 2025", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Mathematics", "total": 150, "missions": missions}],
     "flags": [
+        {"n": "1.1.3", "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): 1.1.3, 3.2, 5.1, 5.2, 5.3.1, 5.3.2, 6.1, 8.1, 9.2, 9.4, 10.1, 11.1.1 ask for written working or an answer a word marker cannot read (an inequality, an interval, a coordinate, a proof); each is played as four options, the memo's answer or working and three built from common errors, and keeps its marks."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 11), hand-transcribed from a SCANNED question paper (no "
                                                            "text layer) and the memo's page images (its text layer garbles fractions and powers); "
                                                            "no API call."},
