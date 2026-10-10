@@ -1568,6 +1568,14 @@ const busRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const
   return d && d.v === 1 && Array.isArray(d.assignments) && Array.isArray(d.submissions) ? d : busEmpty(); } catch (e) { return busEmpty(); } };
 const busWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(BUS_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
 const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY); } catch (e) {} };
+// PROGRESS (Murci 2026-10-10: learners "keep coming back to continue where they are left off"): the prototype's stand-in for the
+// service's attempt, which already keeps a learner's answers on the platform. One versioned key: the learner's XP and best streak,
+// the last paper, and per catalogue paper its parts (prog, paid) and its place (mission, part). Guarded like the bus.
+const PROG_KEY = "nexera.progress.v1";
+const progEmpty = () => ({ v: 1, xp: 0, bestStreak: 0, last: null, papers: {} });
+const progRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const d = JSON.parse(localStorage.getItem(PROG_KEY) || "null");
+  return d && d.v === 1 && d.papers && typeof d.papers === "object" ? d : progEmpty(); } catch (e) { return progEmpty(); } };
+const progWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(PROG_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
 // Brief 20: pass marks with their sources. A paper without one gets no pass wording (a practice mark is not an exam result).
 // Brief 22: the vortex map's ground (one step lighter than the page's --bg #191b1e). The map, the colour its dots fade
 // into, the header and the preview strip on the map all take it from here.
@@ -2191,6 +2199,7 @@ class Component extends DCLogic {
     this._bp.sync({ value: s.build, locked: locked, items: items, itemsFor: items && this._lastAns && this._lastAns.key === part.key ? this._lastAns.v : null }); }
   componentDidUpdate() {
     this.buildSync();
+    this.progSync();
     // the report card opens its lost questions (the template drops a bare `open`): once per paper and filter, after the render
     if (this.state.screen === "summary") { const k = (this.state.paperId || "") + ":" + (this.state.rcFilter || "");
       if (this._rcOpen !== k) { this._rcOpen = k; requestAnimationFrame(() => document.querySelectorAll('details.rc-row[data-lost="true"]').forEach(d => { d.open = true; })); } }
@@ -2625,6 +2634,38 @@ class Component extends DCLogic {
       studyResetGo: () => { STUDIES_API.reset(); this.setState({ studies: null, studiesAsked: false, srLive: "Your studies will be asked again." }); } } };
   }
   earnedNow() { return this.paperMarks(this.paper(), p => this.pg(p.key).best); }
+  // Progress kept between visits (PROG_KEY). On opening a catalogue paper with nothing of it in memory, its saved parts come back;
+  // after that every change is written (debounced). A design preview never reads or writes it: a seeded map (mapMode), a drill
+  // (its own backup), the presentation (?demo), ?nostorage, the design sample and the fixture papers (not catalogue papers).
+  progSync() {
+    const st = this.state, pid = st.paperId, live = pid && !this._demoOrder && !st.drill && !st.mapMode && !BUS_BLOCKED
+      && (window.PAPERS_INGESTED || []).some(p => p.id === pid);
+    if (!live) { this._progPid = null; return; }
+    const mine = o => Object.keys(o || {}).filter(k => k.indexOf(pid + ":") === 0);
+    if (this._progPid !== pid) { this._progPid = pid; this._progRef = null;
+      const d = progRead(), saved = d.papers[pid];
+      if (saved && !mine(st.prog).length && mine(saved.prog).length) {   // back where they left off
+        this.setState({ prog: Object.assign({}, st.prog, saved.prog), paid: Object.assign({}, st.paid, saved.paid || {}),
+          xp: Math.max(st.xp || 0, d.xp || 0), bestStreak: Math.max(st.bestStreak || 0, d.bestStreak || 0) }); return; } }
+    const sig = [st.prog, st.paid, st.xp, st.mi, st.pi, st.screen].map(x => typeof x === "object" ? x : String(x));
+    if (this._progRef && sig.every((x, i) => x === this._progRef[i])) return;
+    this._progRef = sig; clearTimeout(this._progT);
+    this._progT = setTimeout(() => { const s = this.state; if (s.paperId !== pid) return;
+      const d = progRead(), pick = o => Object.fromEntries(mine(o).map(k => [k, o[k]]));
+      d.papers[pid] = { prog: pick(s.prog), paid: pick(s.paid), mi: s.mi || 0, pi: s.pi || 0, at: Date.now() };
+      d.xp = Math.max(d.xp || 0, s.xp || 0); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid; progWrite(d); }, 350);
+  }
+  // The home page's "continue" from what was really saved (the last catalogue paper with work in it), or null for the design's
+  // own returning learner (HOME.resume). Next up: the first mission with a part still open; finished when none is.
+  realResume() {
+    const d = progRead(), pid = d.last, paper = pid && (this.papers || []).filter(p => p.id === pid)[0], saved = pid && d.papers[pid];
+    if (!paper || !saved || !Object.keys(saved.prog || {}).length) return null;
+    const ms = paper.sections.reduce((a, sec) => a.concat(sec.missions), []), g = k => (saved.prog || {})[k] || {};
+    const total = ms.reduce((a, m) => a + m.parts.reduce((b, q) => b + (q.marks || 0), 0), 0), earned = ms.reduce((a, m) => a + m.parts.reduce((b, q) => b + (g(q.key).best || 0), 0), 0);
+    const nextI = ms.findIndex(m => m.parts.some(q => !g(q.key).closed)), nm = nextI >= 0 ? ms[nextI] : null;
+    return { local: true, paper_id: pid, paper: paper, next_index: nextI, next_mission: nm ? { id: nm.id, number: nm.id, title: nm.title } : null,   /* (never its kind: a kind can name an answer, the sweep found) */
+      marks_earned: earned, total_marks: total, finished: !nm };
+  }
   // Map preview seeds. "progress" is the home page's returning learner: 21 of 100, next up 1.4.
   seedMap(kind, after) {
     const paper = this.paper() || (this.papers || []).filter(x => x.id === HOME_TO_LOCAL[HOME.resume.paper_id])[0]; if (!paper) return;
@@ -3064,7 +3105,7 @@ class Component extends DCLogic {
     this._nd = setTimeout(() => this.setState({ homeClip: "greet" }), 60);
   }
   countUp() {
-    const rs = this.state.home === "finished" ? HOME.resume_finished : HOME.resume;
+    const real = this.realResume(), rs = real || (this.state.home === "finished" ? HOME.resume_finished : HOME.resume);
     const to = { xp: HOME.me.xp_total, marks: rs.marks_earned, days: HOME.me.days_practised_this_week };
     cancelAnimationFrame(this._cu);
     if (this.state.reduced) { this.setState({ disp: to }); return; }
@@ -5242,11 +5283,11 @@ class Component extends DCLogic {
 
     // ── home
     const home = s.home || "first";
-    const finished = home === "finished";
+    const real = this.realResume(), finished = real ? real.finished : home === "finished";   // the learner's own saved paper first (realResume)
     const returning = home !== "first" && s.screen === "pick";
     const picking = returning && s.picking;
     const showPicker = !returning || picking;
-    const rs = finished ? HOME.resume_finished : HOME.resume;
+    const rs = real || (finished ? HOME.resume_finished : HOME.resume);
     const glow = Math.min(7, HOME.me.days_practised_this_week);
     const modelOn = !s.reduced && !s.saveData;
     // Every subject Nexera knows: the ones with a paper first, then the rest, honestly tagged.
@@ -5297,7 +5338,7 @@ class Component extends DCLogic {
       : finished ? "Every mission is done. You banked " + rs.marks_earned + " of " + rs.total_marks + ". Let's look at what cost you marks."
       : "Question " + rs.next_mission.number + " is waiting. You've banked " + rs.marks_earned + " of " + rs.total_marks + ".";
     const onSubjSheet = s.sheet === "subj";
-    const resumePaper = HOME.papers.filter(p => p.id === rs.paper_id)[0];
+    const resumePaper = HOME.papers.filter(p => p.id === rs.paper_id)[0] || (rs.local ? { subject: rs.paper.title, sitting: rs.paper.sitting } : null);
     const resumeName = resumePaper ? subjectName(resumePaper) : "";
     const hours = p => (p.duration_minutes / 60) + " hours";
     const sourcePaper = this.pmAllPapers().filter(p => p.id === s.paperSourceId)[0] || null;
@@ -5312,7 +5353,7 @@ class Component extends DCLogic {
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
       // the first visit's XP rules line went (Murci, 2026-10-02): the title alone
       hasHomeSub: false,
-      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. Three first tries in a row triple the third." : resumeName + " · " + rs.next_mission.title,
+      homeSub: showPicker ? "100 XP a question. Nail it first try. Miss and it drops to 60, 20, zero. Three first tries in a row triple the third." : resumeName + " · " + (rs.next_mission ? rs.next_mission.title : "every mission done"),
       homeH1: phone ? "30px" : "clamp(32px, 3.6vw, 44px)", homeSubSize: phone ? "13px" : "14px",
       homeMinH: phone ? "560px" : tabletLand ? "560px" : "640px",
       headPad: phone ? "8px 18px 0" : tabletLand ? "0 32px 10px 8px" : "clamp(8px, 2vh, 20px) 20px 0",
@@ -5368,8 +5409,11 @@ class Component extends DCLogic {
       resumeKicker: resumeName + (resumePaper ? " · " + resumePaper.sitting : ""),
       homeMoreOn: false,
       practiseLabel: returning ? "Practise another paper" : "Practise a paper instead",
-      hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + rs.next_mission.title,
-      continueGo: () => { const go = () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
+      hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + (rs.next_mission ? rs.next_mission.title : "every mission done"),
+      continueGo: () => { if (rs.local) { const d = progRead(), sv = d.papers[rs.paper_id] || {}; this._progPid = rs.paper_id; this._progRef = null;   // back to their own paper, its work restored first
+          this.setState({ paperId: rs.paper_id, prog: Object.assign({}, this.state.prog, sv.prog || {}), paid: Object.assign({}, this.state.paid, sv.paid || {}), xp: Math.max(this.state.xp || 0, d.xp || 0) },
+            () => rs.finished ? this.setState({ screen: "summary" }) : this.openMission(Math.max(0, rs.next_index))); return; }
+        const go = () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
           const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
           const i = ms ? ms.sections.reduce((acc, sec) => acc.concat(sec.missions), []).findIndex(m => m.id === rs.next_mission.number) : 0;
           this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id] }, () => this.openMission(Math.max(0, i))); };
