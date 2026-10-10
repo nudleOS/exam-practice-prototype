@@ -64,8 +64,10 @@ window.NX_CATALOGUE = {
    "duration_minutes": 120,
    "questions": 6,
    "missions": 29,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2024"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2024",
+   "rev": "13590b23b6",
+   "source_pdf": "uploads/Business Studies P1 Nov 2024 Eng.pdf"
   },
   {
    "id": "bs-p2-2024-11",
