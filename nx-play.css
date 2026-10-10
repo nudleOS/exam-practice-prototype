@@ -2157,6 +2157,15 @@ body.nx-play main:not(#mq-stage) .nx-preroll [data-ball="true"] { visibility:hid
 }
 /* a pair's balls are 36 px (six plus the number on one line beside a figure, 322 px) */
 body.nx-play main:not(#mq-stage) [data-lnrow] [data-tile][data-ball="true"]:not(#nx-none) { width:36px !important; min-width:36px !important; height:36px !important; min-height:36px !important; }
+/* eight balls on a phone rail (2026-10-10, PS P2 Nov 2024 Q2: letters A to H): 8 x 38 px and 6 px gaps need 354 px of a 286 px rail, so
+   H rolled past the card's edge, out of reach. With eight or more, the balls shrink to 32 px on 4 px gaps (still over the 24 px
+   target); nine or more wrap to a second row rather than spill */
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-track="true"]:has(> [data-ball="true"]:nth-child(8)):not(#nx-none) { gap:4px !important; padding:5px 6px; }
+  body.nx-play main:not(#mq-stage) [data-track="true"]:has(> [data-ball="true"]:nth-child(8)) > [data-tile][data-ball="true"]:not(#nx-none) {
+    width:32px !important; min-width:32px !important; height:32px !important; min-height:32px !important; }
+  body.nx-play main:not(#mq-stage) [data-track="true"]:has(> [data-ball="true"]:nth-child(9)):not(#nx-none) { flex-wrap:wrap !important; justify-content:center; border-radius:22px; }
+}
 /* a ball that broke off stays gone: the ball rule above sets display with the same weight and comes later (one more attribute wins) */
 body.nx-play main:not(#mq-stage) [data-tile][data-dead="true"][data-ball]:not(#nx-none) { display:none !important; }
 
