@@ -4227,10 +4227,13 @@ class Component extends DCLogic {
   // A working option drawn as the memo sets it: a line per "\n", a line's trailing "[reason]" in its own column (a proof's statement
   // and reason) and "{a}/{b}" a stacked fraction. The option's text itself is unchanged (the service holds it; the answer is its index).
   isRich(o) { return /\n|\{[^{}]*\}\/\{[^{}]*\}/.test(String(o)); }
+  // glue (drawing only): a line never breaks inside a number's thousands groups ("11 000 000") or between a trig/log name and its
+  // argument, or inside a product "a · b" (Maths P2 Nov 2025 5.1.3 at 360 px, measured: "= sin 50° cos 40° + cos 50° sin" ended a line and "40°" began the next)
   workLines(o) {
+    const glue = t => t.replace(/(\d) (?=\d{3}(?!\d))/g, "$1\u00a0").replace(/\b(sin|cos|tan|cosec|sec|cot|log|ln)\s+(?=\S)/g, "$1\u00a0").replace(/ ([·×]) /g, "\u00a0$1\u00a0");
     const segs = s => { const out = [], re = /\{([^{}]*)\}\/\{([^{}]*)\}/g; let at = 0, m;
-      while ((m = re.exec(s))) { if (m.index > at) out.push({ frac: false, txt: true, t: s.slice(at, m.index), n: "", d: "" }); out.push({ frac: true, txt: false, t: "", n: m[1], d: m[2] }); at = re.lastIndex; }
-      if (at < s.length) out.push({ frac: false, txt: true, t: s.slice(at), n: "", d: "" }); return out; };
+      while ((m = re.exec(s))) { if (m.index > at) out.push({ frac: false, txt: true, t: glue(s.slice(at, m.index)), n: "", d: "" }); out.push({ frac: true, txt: false, t: "", n: glue(m[1]), d: glue(m[2]) }); at = re.lastIndex; }
+      if (at < s.length) out.push({ frac: false, txt: true, t: glue(s.slice(at)), n: "", d: "" }); return out; };
     return String(o).split("\n").map((line, k) => { const m = line.match(/^(.*?)\s*\[([^\[\]]+)\]\s*$/);
       return { k: String(k), segs: segs(m ? m[1] : line), hasReason: !!m, reason: m ? "[" + m[2] + "]" : "" }; }); }
   // the same option as text: fracPlain writes a fraction "x/(2π)" (its lines kept: the report card's memo); plainWork makes it one line,
