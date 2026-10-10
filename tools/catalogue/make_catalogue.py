@@ -41,6 +41,7 @@ FINISHED = {
     "ps-p2-2024-11": ("Physical Sciences P2 Nov 2024 Eng.pdf", "Physical Sciences P2 Nov 2024 MG Afr & Eng.pdf"),
     "geo-p1-2025-11": ("Geography P1 Nov 2025 Eng.pdf", "Geography P1 Nov 2025 MG Eng.pdf"),
     "geo-p2-2025-11": ("Geography P2 Nov 2025 Eng.pdf", "Geography P2 Nov 2025 MG Eng.pdf"),
+    "geo-p1-2024-11": ("Geography P1 Nov 2024 Eng.pdf", "Geography P1 Nov 2024 MG Eng.pdf"),
     "ml-p1-2025-11": ("Mathematical Literacy P1 Nov 2025 Eng.pdf", "Mathematical Literacy P1 Nov 2025 MG Afr & Eng.pdf"),
     "ml-p2-2025-11": ("Mathematical Literacy P2 Nov 2025 Eng.pdf", "Mathematical Literacy P2 Nov 2025 MG Afr & Eng.pdf"),
     "math-p1-2025-11": ("Mathematics P1 Nov 2025 Eng.pdf", "Mathematics P1 Nov 2025 MG Afr & Eng.pdf"),
