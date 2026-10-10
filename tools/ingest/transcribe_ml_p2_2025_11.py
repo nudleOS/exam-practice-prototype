@@ -16,15 +16,18 @@ How the memo's shapes map (Mathematical Literacy):
   "Write only the letter" of ONE right method/formula/piece -> mcq; a choice the paper names with no explanation (clockwise or
   anticlockwise, left/right) -> mcq; a word, a name, a seat number, a probability, a time -> term (a time or date in every common
   written form, all or nothing where the memo splits MA and A); "Name / Write down TWO ..." -> list, and a one-line reason the
-  memo marks as a fact (the ground floor, a broken line) -> list of one; "Calculate / Determine / Convert" -> steps, each step ONE
-  number the memo's method produces (unit in the label's brackets), the memo's SF/MA/C marks riding on the number they lead to;
-  "Verify the statement" -> steps for the numbers, the memo's conclusion (VALID / INVALID / CORRECT, the O mark) folded into the
-  last step; an explanation (O marks) -> rubric; "Draw a scaled diagram" -> draw with the memo's criteria (self-checked).
-  A memo RANGE -> its centre with a tolerance covering it; the memo's NPR rule (no penalty for rounding if the first decimal is
-  correct) widens the tolerance of a non-money answer that must be rounded to cover its one-decimal rounding.
+  memo marks as a fact (the ground floor, a broken line) -> list of one; an explanation (O marks) -> rubric; "Draw a scaled
+  diagram" -> draw with the memo's criteria (self-checked).
+  Every number the learner would type ("Calculate / Determine / Convert", "Verify the statement", a count or a number read off
+  the page) -> authored multiple choice, `work` (Murci, 2026-10-10): the memo's FIRST working line by line, its result last (a
+  verify part ends in the memo's conclusion), and three workings built from real errors (a wrong operation, the wrong base, a
+  unit slip, a scale misread, radius vs diameter, rounding too early, a wrong conclusion), each ending in a confident result;
+  0 or full marks. Where the memo gives the answer only (4.1.2(a), 4.2.1) the working is ours. A form the memo also accepts
+  (a second unit, the other end of a range, another method's total) is never a wrong option.
 Figure boxes are measured in PDF points (both scans 595.2 x 841.68) from the page images, set so that ingest's 1% pad keeps the
 drawings and leaves out the "[Adapted from ...]" lines and the text around them, and checked on a contact sheet."""
 import json
+import re
 from pathlib import Path
 
 W, H = 595.2, 841.68
@@ -52,19 +55,31 @@ def rub(n, q, marks, bullets, clues, each=None, must=None):
 
 term = lambda n, q, a, clues, marks=2, strict=False: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
                                                       **({"strict": True} if strict else {})}
-num = lambda n, q, a, tol, unit, clues, marks=2: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
-lst = lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
+lst =lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
 match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "marks": len(left) * each, "q": q, "clues": clues, "left": left,
                                                          "right": right, "a": a, **({"each": each} if each > 1 else {}), **kw}
 draw = lambda n, q, marks, criteria, clues, memo="": {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
                                                      "criteria": [{"text": t, "marks": m} for t, m in criteria], **({"memo": memo} if memo else {})}
 
 
-def steps(n, q, marks, sts, clues):
-    """sts: (label, marks, answer, tolerance, the memo's working)."""
-    s = [{"id": "s%d" % (i + 1), "label": lab, "marks": m, "a": a, "tol": tol, "memo": memo} for i, (lab, m, a, tol, memo) in enumerate(sts)]
-    assert sum(x["marks"] for x in s) == marks, n
-    return {"t": "steps", "n": n, "marks": marks, "q": q, "clues": clues, "steps": s}
+WORK = "\n\nChoose the correct working."
+AUTHORED = []   # the typed calculations played as authored multiple choice, in paper order
+
+
+def shape(o):
+    """An option's layout: its line count and how many lines end in a [reason]."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+def work(n, q, marks, opts, a, clues):
+    """A typed calculation as authored multiple choice (Murci, 2026-10-10): opts are the memo's FIRST working and three workings
+    built from common errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing."""
+    assert len(opts) == 4 and len(set(opts)) == 4, (n, "four distinct options")
+    assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
+    assert 0 <= a <= 3, (n, a)
+    AUTHORED.append(n)
+    return mcq(n, q + WORK, opts, a, clues, marks=marks)
 
 
 def times(hh, mm):
@@ -89,9 +104,12 @@ q12 = [
     rub("1.2.1", "State, in words, the arrival time of the flight using the 12-hour format.", 2, [
         "Quarter past two (1).", "In the afternoon (1).", "OR — Fifteen minutes after two (1).", "In the afternoon (1)."],
         ["The flight lands at 14:15 on the 24-hour clock.", "In words: how many minutes past which hour, and which part of the day?"]),
-    steps("1.2.2", "Only 33⅓% of the maximum number of passengers were on board this flight. Calculate the number of passengers on this flight.", 2,
-          [("Number of passengers on this flight", 2, 63, 0.01, "Number of passengers = 33⅓% × 189 ✓MA = 63 ✓A (OR ⅓ × 189 ✓MA = 63 ✓A)")],
-          ["33⅓% is the same as one third.", "Take that part of the maximum number of passengers, 189."]),
+    work("1.2.2", "Only 33⅓% of the maximum number of passengers were on board this flight. Calculate the number of passengers on this flight.", 2, [
+        "Number of passengers = 33% × 189\n≈ 62",                  # rounds 33⅓% to 33% too early
+        "Number of passengers = 33⅓ × 189\n= 6 300",               # drops the %: multiplies by 33⅓, not 33⅓ ÷ 100
+        "Number of passengers = 189 − 33⅓% × 189\n= 126",          # subtracts: the EMPTY seats
+        "Number of passengers = 33⅓% × 189\n= 63"], 3,             # the memo
+        ["33⅓% is the same as one third.", "Take that part of the maximum number of passengers, 189."]),
     mcq("1.2.3", "Write down which ONE of the methods below is the CORRECT method to calculate the speed in km/h of the aircraft. Write only the "
         "letter (A–C) next to the question number (1.2.3).", ["1 278 ÷ 14:15", "1 278 ÷ 2", "2 ÷ 1 278"], 1,
         ["Speed = distance ÷ time, with the time in hours.", "How long is the flight from 12:15 to 14:15?"]),
@@ -110,15 +128,21 @@ q13 = [
         ["π × radius² × height + 2 × π × radius", "π × radius × height + length × width", "2 × π × radius × height + 2 × π × radius²",
          "½ base × height"], 2,
         ["A geyser is a cylinder: a curved side and two circular ends.", "Surface area adds the AREAS of all the faces: every term must be an area."]),
-    steps("1.3.3", "The length of the geyser is 1,2 m. Convert this measurement to mm.", 2,
-          [("Length of the geyser in millimetres (mm)", 2, 1200, 0.01, "Length of geyser = 1,2 m × 1 000 ✓MA = 1 200 mm ✓A")],
-          ["1 m = 1 000 mm.", "To a smaller unit: multiply."])]
+    work("1.3.3", "The length of the geyser is 1,2 m. Convert this measurement to mm.", 2, [
+        "Length of geyser = 1,2 m × 1 000\n= 1 200 mm",              # the memo
+        "Length of geyser = 1,2 m × 100\n= 120 mm",                  # the m-to-cm factor
+        "Length of geyser = 1,2 m ÷ 1 000\n= 0,0012 mm",             # divides going to a smaller unit
+        "Length of geyser = 1,2 m × 10\n= 12 mm"], 0,                # the cm-to-mm factor
+        ["1 m = 1 000 mm.", "To a smaller unit: multiply."])]
 
 # ---- QUESTION 2, the question paper pages 6-7, ANNEXURES A and B (the answer book pages 4 and 6) and the memo pages 5-6 ----
 q21 = [
-    steps("2.1.1", "Determine the number of forward-facing passenger seats on this bus.", 2,
-          [("Forward-facing passenger seats (seats)", 2, 77, 0.01, "Number of seats = 59 + 22 − 4 ✓MA = 77 seats ✓A. AO")],
-          ["Each deck's seat total is printed above its plan.", "Compare each seat's drawing with the KEY's forward-facing seat: some face another way."]),
+    work("2.1.1", "Determine the number of forward-facing passenger seats on this bus.", 2, [
+        "Number of seats = 59 + 22\n= 81 seats",                   # counts the 4 backward-facing seats too
+        "Number of seats = 59 + 22 + 1 − 4\n= 78 seats",           # counts the driver seat as a passenger seat
+        "Number of seats = 59 + 22 − 2\n= 79 seats",               # counts each backward-facing PAIR as one seat
+        "Number of seats = 59 + 22 − 4\n= 77 seats"], 3,           # the memo
+        ["Each deck's seat total is printed above its plan.", "Compare each seat's drawing with the KEY's forward-facing seat: some face another way."]),
     term("2.1.2", "The seats are numbered according to the following numbering system:\n• A to F is for the lower deck.\n• G to V is for the upper "
          "deck.\n• The seats are numbered 1 to 4 from right to left if you are facing the back of the bus.\nWrite down the seat number which has "
          "the easiest access to the toilet.", ["F2"],
@@ -140,21 +164,20 @@ q22 = [
     mcq("2.2.3", "State whether the bus will be driving in a clockwise or an anticlockwise direction from stop 11 to stop 18.",
         ["Clockwise", "Anticlockwise"], 0,
         ["Follow the numbers 11, 12, 13, 14 ... on the map.", "Picture a clock's hands over the map: do they turn the same way?"]),
-    steps("2.2.4", "The distance of a round trip is 19,2 km. Use the given scale on the map to determine the map distance.", 5, [
-        ("Length of the 500 m scale bar on the printed map (mm)", 1, 12.5, 0.55, "13 mm ✓A (accept 12 mm – 13 mm)"),
-        ("Real distance of the round trip in metres (m)", 1, 19200, 0.01, "19,2 km = 19 200 m ✓C"),
-        ("Map distance of the round trip (mm)", 3, 480, 19.25, "13 mm = 500 m ✓RT; map distance = 19 200 ÷ 500 × 13 ✓MCA = 499,2 mm ✓CA "
-         "(OR 1,3 cm = 0,5 km: 19,2 km × 1,3 cm ÷ 0,5 km = 49,92 cm; OR the scale 1 : 38 461,53846: 19,2 km ÷ 38 461,53846 = 0,0004992 km "
-         "= 499,2 mm). Accept 460,8 mm for 12 mm.")],
+    work("2.2.4", "The distance of a round trip is 19,2 km. Use the given scale on the map to determine the map distance.", 5, [
+        "13 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 13 × 500\n= 738 461,54 mm",     # inverts the ratio
+        "13 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 500 × 13\n= 499,2 mm",          # the memo
+        "13 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 500\n= 38,4 mm",                # never multiplies by the bar's 13 mm
+        "10 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 500 × 10\n= 384 mm"], 1,       # takes the bar as 1 cm, unmeasured
         ["The scale bar's printed length stands for 500 m (the caption gives it).", "Change 19,2 km to metres, then count how many 500 m lengths that is."])]
 q23 = [
     mcq("2.3.1", "State whether the bathroom door opens to the (left/right) as you enter the bathroom.", ["Left", "Right"], 1,
         ["Stand in the dining room facing the bathroom door.", "Which side of the doorway is the door hinged on?"]),
-    steps("2.3.2", "Convert the longer dimension of the living room to centimetres.", 5, [
-        ("The feet of the longer dimension in centimetres (cm)", 3, 365.76, 0.005, "Longer dimension = 12'8\" ✓RT; length in cm: 12' × 30,48 ✓MCA "
-         "= 365,76 cm ✓C"),
-        ("The inches of the longer dimension in centimetres (cm)", 1, 20.32, 0.005, "8\" × 2,54 = 20,32 cm ✓C"),
-        ("Longer dimension of the living room (cm)", 1, 386.08, 0.005, "Total = 365,76 + 20,32 = 386,08 cm ✓CA (OR (12 × 30,48 cm) + (8 × 2,54 cm) = 386,08 cm)")],
+    work("2.3.2", "Convert the longer dimension of the living room to centimetres.", 5, [
+        "Longer dimension = 12'7\"\n12' × 30,48\n= 365,76 cm\n7\" × 2,54\n= 17,78 cm\nTotal = 365,76 + 17,78\n= 383,54 cm",    # the SHORTER side
+        "Longer dimension = 12'8\"\n12' × 2,54\n= 30,48 cm\n8\" × 30,48\n= 243,84 cm\nTotal = 30,48 + 243,84\n= 274,32 cm",    # swaps the factors
+        "Longer dimension = 12'8\"\n12' × 30,48\n= 365,76 cm\n8\" × 2,54\n= 20,32 cm\nTotal = 365,76 + 20,32\n= 386,08 cm",   # the memo
+        "Longer dimension = 12'8\"\n12' × 30,48\n= 365,76 cm\n8\" ÷ 2,54\n= 3,15 cm\nTotal = 365,76 + 3,15\n= 368,91 cm"], 2,  # divides the inches
         ["Read the living room's two dimensions: which is the longer?", "Change the feet and the inches separately (the NOTE), then add."]),
     lst("2.3.3", "Write down TWO differences between Flat 1 and Flat 2.", 2, [["Living room", "Bedroom"], ["Balcony"]],
         ["Compare the room in the north-east corner of each flat.", "Look along the east wall of Flat 2."], 4),
@@ -169,56 +192,73 @@ q31 = [
     term("3.1.1", "Mrs Xulu took 3 hours and 27 minutes without any break to cut out the circles. She finished at 13:12. Determine the time at "
          "which Mrs Xulu started cutting out the circles.", times(9, 45) + ["Quarter to ten in the morning", "Quarter to ten"],
          ["Count back 3 hours from 13:12 first.", "Then take away the 27 minutes: borrow an hour if you need to."]),
-    steps("3.1.2", "In Part A, there are seven rows of circles. The first row consists of one circle at the top and thereafter, each successive row "
-          "has an additional circle added to complete the rest of the rows. Calculate the total number of circles in Part A.", 3,
-          [("Total number of circles in Part A", 3, 28, 0.01, "Number = 1 + 2 + 3 + 4 + 5 + 6 + 7 ✓RT ✓MA = 28 ✓CA (OR 7(1 + 7) ÷ 2 = 7 × 4 = 28). AO")],
-          ["Row 1 has 1 circle, row 2 has 2 circles ...", "Add the circles of all seven rows."]),
-    steps("3.1.3", "Calculate, in cm², the area of Part A. You may use the following formula:\nArea of triangle = ½ base × height", 4, [
-        ("Height of Part A in centimetres (cm)", 1, 24, 0.01, "Height in cm = 240 mm = 24 cm ✓C"),
-        ("Area of Part A (cm²)", 3, 336, 0.01, "Area = ½(28 cm ✓RT × 24 cm) ✓SF = 336 cm² ✓CA (OR ½ × 280 mm × 240 mm = 33 600 mm² = 336 cm²)")],
+    work("3.1.2", "In Part A, there are seven rows of circles. The first row consists of one circle at the top and thereafter, each successive row "
+         "has an additional circle added to complete the rest of the rows. Calculate the total number of circles in Part A.", 3, [
+        "Number = 1 + 2 + 3 + 4 + 5 + 6 + 7\n= 28",                 # the memo
+        "Number = 1 + 2 + 3 + 4 + 5 + 6\n= 21",                     # stops at the sixth row
+        "Number = 7 × 7\n= 49",                                     # every row as full as the last
+        "Number = 7 × (1 + 7)\n= 56"], 0,                           # the series formula without its ÷ 2
+        ["Row 1 has 1 circle, row 2 has 2 circles ...", "Add the circles of all seven rows."]),
+    work("3.1.3", "Calculate, in cm², the area of Part A. You may use the following formula:\nArea of triangle = ½ base × height", 4, [
+        "Height in cm = 240 mm\n= 2,4 cm\nArea = {1}/{2} (28 cm × 2,4 cm)\n= 33,6 cm²",       # mm to cm ÷ 100
+        "Height = 240 mm\nBase = 28 cm\nArea = {1}/{2} (28 × 240)\n= 3 360 cm²",                # mixes cm and mm
+        "Height in cm = 240 mm\n= 24 cm\nArea = 28 cm × 24 cm\n= 672 cm²",                     # leaves out the ½
+        "Height in cm = 240 mm\n= 24 cm\nArea = {1}/{2} (28 cm × 24 cm)\n= 336 cm²"], 3,       # the memo
         ["The base is given in cm (28 cm), the height in mm: convert first.", "Area = ½ × base × height."]),
-    steps("3.1.4", "The area of Part B is 30 240 mm². The area of Part C is 1,6 times the area of Part B. Calculate, in mm², the total area of the "
-          "cardboard template.", 5, [
-        ("Area of Part C (mm²)", 2, 48384, 0.01, "Area of C = 30 240 mm² × 1,6 ✓MA = 48 384 mm² ✓CA"),
-        ("Area of Part A in square millimetres (mm²)", 1, 33600, 0.01, "336 cm² = 33 600 mm² ✓C (CA from 3.1.3)"),
-        ("Total area of the cardboard template (mm²)", 2, 112224, 0.01, "Total area = 48 384 mm² + 30 240 mm² + 33 600 mm² ✓MCA = 112 224 mm² ✓CA "
-         "(OR in cm²: 302,4 + 483,84 + 336 = 1 122,24 cm² = 112 224 mm²)")],
+    work("3.1.4", "The area of Part B is 30 240 mm². The area of Part C is 1,6 times the area of Part B. Calculate, in mm², the total area of the "
+         "cardboard template.", 5, [
+        "Area of C = 30 240 mm² ÷ 1,6\n= 18 900 mm²\nTotal area = 18 900 mm² + 30 240 mm² + 33 600 mm²\n= 82 740 mm²",   # divides by 1,6
+        "Area of C = 30 240 mm² × 1,6\n= 48 384 mm²\nTotal area = 48 384 mm² + 30 240 mm² + 33 600 mm²\n= 112 224 mm²",  # the memo
+        "Area of C = 30 240 mm² × 1,6\n= 48 384 mm²\nTotal area = 48 384 mm² + 30 240 mm² + 3 360 mm²\n= 81 984 mm²",    # 336 cm² × 10
+        "Area of C = 30 240 mm² × 1,6\n= 48 384 mm²\nTotal area = 48 384 mm² + 30 240 mm² + 336 mm²\n= 78 960 mm²"], 1,  # Part A left in cm²
         ["Part C = 1,6 × Part B.", "Part A from 3.1.3 is in cm², and 1 cm² = 100 mm²."])]
 q315 = [
-    steps("3.1.5", "Determine, as a percentage, the probability of randomly choosing a green circle or a red circle from the container.", 4, [
-        ("Total number of circles in the container", 1, 74, 0.01, "9 + 7 + 28 + 8 + 22 = 74 ✓A"),
-        ("Probability of a green or a red circle (%)", 3, 21.62, 0.025, "P = 16/74 ✓MA × 100% ✓MA ≈ 21,62% ✓CA (OR P(red) = 9/74 × 100% = 12,16%, "
-         "P(green) = 7/74 × 100% = 9,46%; 12,16% + 9,46% = 21,62%)")],
+    work("3.1.5", "Determine, as a percentage, the probability of randomly choosing a green circle or a red circle from the container.", 4, [
+        "9 + 7 + 28 + 8 + 22 = 74\nP = {16}/{74} × 100%\n≈ 21,62%",                # the memo
+        "9 + 7 + 28 + 8 + 22 = 74\nP = {9}/{74} × {7}/{74} × 100%\n≈ 1,15%",       # multiplies: 'and', not 'or'
+        "28 + 8 + 22 = 58\nP = {16}/{58} × 100%\n≈ 27,59%",                        # divides by the OTHER circles (odds)
+        "Number of colours = 5\nP = {2}/{5} × 100%\n= 40%"], 0,                    # every colour taken as equally likely
         ["Add all the circles first: that is the bottom of the fraction.", "Green or red: add the green and the red circles for the top."])]
 q32 = [
-    steps("3.2.1", "Determine, in mm, the radius of the small circle if it is 4/7 of the radius of the large circle.", 2,
-          [("Radius of the small circle (mm)", 2, 8, 0.01, "Radius of small circle = 4/7 × 14 mm ✓MA = 8 mm ✓A. AO")],
-          ["Find one seventh of 14 mm first.", "Then take four of those sevenths."]),
-    steps("3.2.2", "Calculate, rounded to the nearest mm, the circumference of the large circle. You may use the following formula:\n"
-          "Circumference of circle = 3,142 × 2 × radius", 3, [
-        ("Circumference of the large circle (mm)", 2, 87.976, 0.005, "Circumference = 3,142 × 2 × 14 mm ✓SF = 87,976 mm ✓CA"),
-        ("Circumference rounded to the nearest mm (mm)", 1, 88, 0.01, "≈ 88 mm ✓R")],
+    work("3.2.1", "Determine, in mm, the radius of the small circle if it is 4/7 of the radius of the large circle.", 2, [
+        "Radius of small circle = {4}/{7} × 28 mm\n= 16 mm",                 # the diameter, not the radius
+        "Radius of small circle = {7}/{4} × 14 mm\n= 24,5 mm",               # the fraction upside down
+        "Radius of small circle = {4}/{7} × 14 mm\n= 8 mm",                  # the memo
+        "Radius of small circle = 14 mm − {4}/{7} × 14 mm\n= 6 mm"], 2,      # takes 4/7 away
+        ["Find one seventh of 14 mm first.", "Then take four of those sevenths."]),
+    work("3.2.2", "Calculate, rounded to the nearest mm, the circumference of the large circle. You may use the following formula:\n"
+         "Circumference of circle = 3,142 × 2 × radius", 3, [
+        "Circumference = 3,142 × 14 mm\n= 43,988 mm\n≈ 44 mm",              # leaves out the × 2
+        "Circumference = 3,142 × 2 × 14 mm\n= 87,976 mm\n≈ 88 mm",          # the memo
+        "Circumference = 3,142 × 2 × 14 mm\n= 87,976 mm\n≈ 87 mm",          # cuts the decimals off instead of rounding
+        "Circumference = 3,142 × 2 × 28 mm\n= 175,952 mm\n≈ 176 mm"], 1,    # the diameter as the radius
         ["Use 3,142 as the formula says, and the radius of the LARGE circle.", "Nearest mm: look at the first decimal."]),
-    steps("3.2.3", "Amanda decides to make 48 pairs of earrings using flower-patterned synthetic leather for the large circles. Both sides of the "
-          "large circle are covered using synthetic leather, while the small circle is painted black.\n\nThe radius of one large circle is 1,4 cm."
-          "\n\nThe synthetic leather is sold in rolls with a width of 1,37 m. Amanda buys 30 cm of the synthetic leather.\n\nShe states that after "
-          "cutting the leather for ALL the large circles, the remaining synthetic leather will have an area of less than 3 000 cm².\n\nVerify her "
-          "statement, showing ALL calculations. You may use the following formulae:\nArea of rectangle = length × width\n"
-          "Area of circle = 3,142 × radius²", 9, [
-        ("Area of the synthetic leather bought (cm²)", 3, 4110, 0.01, "Area of material = 30 cm × 137 cm ✓C ✓SF = 4 110 cm² ✓CA"),
-        ("Area of leather for ALL the large circles, both sides (cm²)", 4, 1182.40, 0.01, "Total area of all circles = 3,142 × (1,4 cm)² ✓SF × 48 ✓MA "
-         "× 2 × 2 ✓MA = 1 182,40 cm² ✓CA (OR one circle 3,142 × (1,4 cm)² = 6,15832 cm²; 48 × 2 = 96 circles, × 2 sides = 192; "
-         "6,15832 cm² × 192 = 1 182,39744 cm²)"),
-        ("Area of the remaining leather (cm²)", 2, 2927.60, 0.01, "Area of off-cuts = 4 110 cm² − 1 182,40 cm² = 2 927,60 cm² ✓CA. "
-         "Her statement is CORRECT ✓O (2 927,60 cm² is less than 3 000 cm²)")],
+    work("3.2.3", "Amanda decides to make 48 pairs of earrings using flower-patterned synthetic leather for the large circles. Both sides of the "
+         "large circle are covered using synthetic leather, while the small circle is painted black.\n\nThe radius of one large circle is 1,4 cm."
+         "\n\nThe synthetic leather is sold in rolls with a width of 1,37 m. Amanda buys 30 cm of the synthetic leather.\n\nShe states that after "
+         "cutting the leather for ALL the large circles, the remaining synthetic leather will have an area of less than 3 000 cm².\n\nVerify her "
+         "statement, showing ALL calculations. You may use the following formulae:\nArea of rectangle = length × width\n"
+         "Area of circle = 3,142 × radius²", 9, [
+        "Area of material = 30 cm × 137 cm\n= 4 110 cm²\nTotal area of all circles = 3,142 × (1,4 cm)² × 48 × 2\n= 591,20 cm²\n"
+        "Area of off-cuts = 4 110 cm² − 591,20 cm²\n= 3 518,80 cm²\nHer statement is INCORRECT",                   # one side of each circle only
+        "Area of material = 30 cm × 137 cm\n= 4 110 cm²\nTotal area of all circles = 3,142 × (0,7 cm)² × 48 × 2 × 2\n= 295,60 cm²\n"
+        "Area of off-cuts = 4 110 cm² − 295,60 cm²\n= 3 814,40 cm²\nHer statement is INCORRECT",                   # 1,4 cm taken as the diameter
+        "Area of material = 30 cm × 137 cm\n= 4 110 cm²\nTotal area of all circles = 3,142 × 1,4 cm × 2 × 48 × 2 × 2\n= 1 689,14 cm²\n"
+        "Area of off-cuts = 4 110 cm² − 1 689,14 cm²\n= 2 420,86 cm²\nHer statement is CORRECT",                   # radius × 2 for radius²
+        "Area of material = 30 cm × 137 cm\n= 4 110 cm²\nTotal area of all circles = 3,142 × (1,4 cm)² × 48 × 2 × 2\n= 1 182,40 cm²\n"
+        "Area of off-cuts = 4 110 cm² − 1 182,40 cm²\n= 2 927,60 cm²\nHer statement is CORRECT"], 3,               # the memo
         ["Work in cm: the roll is 1,37 m wide and she buys 30 cm of it.", "48 PAIRS of earrings, and BOTH sides of each large circle are covered."])]
 
 # ---- QUESTION 4, the question paper pages 12-13, ANNEXURE C (the answer book page 10) and the memo pages 10-11 ----
 q41 = [
     term("4.1.1", "Name the closest town directly west of Colesberg.", ["De Aar"],
          ["Find Colesberg, then move straight left (west) on the map.", "Which town do you reach first?"]),
-    num("4.1.2(a)", "National roads are indicated with a number enclosed in a pentagon, e.g. a pentagon with 1. Write down how many different "
-        "national roads are shown on this map.", 8, 0.01, "roads",
+    work("4.1.2(a)", "National roads are indicated with a number enclosed in a pentagon, e.g. a pentagon with 1. Write down how many different "
+         "national roads are shown on this map.", 2, [   # the memo gives 8 only: the working is ours (18 shields on the map)
+        "Road numbers: 1, 2, 5, 6, 8, 9, 10, 12\nNumber of national roads = 8",                                    # the memo's 8
+        "Road numbers: 1, 2, 5, 6, 8, 9, 10, 12, A2\nNumber of national roads = 9",                                # A2 is not in a pentagon
+        "Road numbers: 1, 1, 2, 5, 6, 6, 6, 6, 8, 8, 8, 9, 9, 10, 10, 10, 12, 12\nNumber of national roads = 18",  # every shield, repeats too
+        "Road numbers: 1 + 2 + 5 + 6 + 8 + 9 + 10 + 12\nNumber of national roads = 53"], 0,                      # adds the numbers
         ["Look for the numbers in pentagon shields.", "The same road can appear more than once: count each number once."]),
     lst("4.1.2(b)", "Name the towns found on the N12.", 2, [["Kimberley", "Kimberly"], ["Britstown"]],
         ["Find the 12 shields: there are two on the map.", "Follow the road through each shield to the nearest town."], 3),
@@ -228,34 +268,51 @@ q41 = [
 ARRIVE = [f"{d}{j}{t}" if dfirst else f"{t}{j}{d}" for dfirst, joins in ((True, (" at ", " ")), (False, (" on ", " ")))
           for j in joins for d in ("16 June 2023", "16 June") for t in times(9, 25)]
 q42 = [
-    num("4.2.1", "Write down the number of months the bird spent in area A.", 17, 0.01, "months",
+    work("4.2.1", "Write down the number of months the bird spent in area A.", 2, [   # the memo gives 17 months only: the working is ours
+        "13 January 2022 to 13 January 2023 = 12 months\nJanuary 2023 to June 2023 = 6 months\nTotal = 12 + 6 = 18 months",   # counts Jan AND June
+        "2022 and 2023 = 2 years = 24 months\n13 January to 13 June = 5 months\nTotal = 24 + 5 = 29 months",                 # two full years
+        "13 January 2022 to 13 January 2023 = 12 months\n13 January 2023 to 13 June 2023 = 5 months\nTotal = 12 + 5 = 17 months",
+        "13 January 2022 to 13 January 2023 = 1 year\n13 January 2023 to 13 June 2023 = 5 months\nTotal = 1 + 5 = 6 months"], 2,  # adds a year as 1
         ["From 13 January 2022 to 13 January 2023 is 12 months.", "Then count on to 13 June 2023."]),
     term("4.2.2", "Determine the bird's date and time of arrival at area E.", ARRIVE,
          ["19:00 to midnight is 5 hours: how much flying time is left?", "After midnight it is the next day."], marks=3),
     term("4.2.3", "Write down the probability that the bird flew directly over Queenstown.", ["0", "0%", "Impossible", "Zero"],
          ["Find Queenstown and the flight line on the map.", "Does the line pass over it?"]),
-    steps("4.2.4", "The flight from area B to area E is 770 km. Calculate (in km/h) the average speed of the bird as it flew from area B to area E. "
-          "You may use this formula: Distance = speed × time", 4, [
-        ("Flying time in hours (h)", 1, 14.4167, 0.02, "14 hours 25 min = 14,4166… hours ✓C"),
-        ("Average speed of the bird (km/h)", 3, 53.41, 0.065, "770 km = speed × 14 hours 25 min ✓SF; speed = 770 km ÷ 14 hours 25 min ✓S "
-         "= 770 km ÷ 14,4166… hours ≈ 53,41 km/h ✓CA")],
+    work("4.2.4", "The flight from area B to area E is 770 km. Calculate (in km/h) the average speed of the bird as it flew from area B to area E. "
+         "You may use this formula: Distance = speed × time", 4, [
+        "Distance = speed × time\n770 km = speed × 14 hours 25 min\nSpeed = 770 km × 14 hours 25 min\n= 770 km × 14,4166… hours\n"
+        "≈ 11 100,83 km/h",                                                                           # multiplies: subject changed wrongly
+        "Distance = speed × time\n770 km = speed × 14 hours 25 min\nSpeed = {770 km}/{14 hours 25 min}\n= {770 km}/{14,4166… hours}\n"
+        "≈ 53,41 km/h",                                                                               # the memo
+        "Distance = speed × time\n770 km = speed × 14 hours 25 min\nSpeed = {770 km}/{14 hours 25 min}\n= {770 km}/{14,25 hours}\n"
+        "≈ 54,04 km/h",                                                                               # 25 min written as 0,25 h
+        "Distance = speed × time\n770 km = speed × 14 hours 25 min\nSpeed = {770 km}/{14 hours 25 min}\n= {770 km}/{865 minutes}\n"
+        "≈ 0,89 km/h"], 1,                                                                            # time left in minutes
         ["Change the 25 minutes to hours: divide by 60.", "Speed = distance ÷ time."]),
-    steps("4.2.5", "The direct distance between area B and area E is 311,72 miles. The person tracking the bird's GPS stated that the bird flew an "
-          "extra distance of 268,13 km when compared to the direct distance.\n1 mile = 1,60934 km\nVerify, with calculations, whether this "
-          "statement is VALID.", 5, [
-        ("Direct distance in kilometres (km)", 2, 501.6635, 0.04, "311,72 miles × 1,60934 km ✓MA = 501,6634… km ✓A"),
-        ("Extra distance the bird flew (km)", 3, 268.3365, 0.04, "Extra distance = 770 km − 501,6634… km ✓MCA = 268,336… km ✓CA. INVALID ✓O "
-         "(OR total distance = 501,6634… km + 268,13 km ✓MCA = 769,7934… km ✓CA, not 770 km: INVALID ✓O)")],
+    work("4.2.5", "The direct distance between area B and area E is 311,72 miles. The person tracking the bird's GPS stated that the bird flew an "
+         "extra distance of 268,13 km when compared to the direct distance.\n1 mile = 1,60934 km\nVerify, with calculations, whether this "
+         "statement is VALID.", 5, [
+        "1 mile = 1,60934 km\n311,72 miles = ? km\n? = 311,72 ÷ 1,60934 km\n= 193,6943… km\nExtra distance = 770 km − 193,6943… km\n"
+        "= 576,3056… km\nINVALID",                                                                    # divides by the conversion factor
+        "1 mile = 1,60934 km\n311,72 miles = ? km\n? = 311,72 × 1,61 km\n= 501,8692 km\nExtra distance = 770 km − 501,8692 km\n"
+        "= 268,1308 km\nVALID",                                                                       # rounds 1,60934 to 1,61 too early
+        "1 mile = 1,60934 km\n311,72 miles = ? km\n? = 311,72 × 1,60934 km\n= 501,6634… km\nExtra distance = 770 km − 501,6634… km\n"
+        "= 268,336… km\nVALID",                                                                       # 268,34 km is close, not 268,13 km
+        "1 mile = 1,60934 km\n311,72 miles = ? km\n? = 311,72 × 1,60934 km\n= 501,6634… km\nExtra distance = 770 km − 501,6634… km\n"
+        "= 268,336… km\nINVALID"], 3,                                                                 # the memo
         ["Change the miles to km first: multiply by 1,60934.", "The bird flew 770 km: how much more is that than the direct distance?"]),
-    steps("4.2.6", "The biggest flamingo is 59 inches tall, which is approximately 5 feet. Some interesting facts about a country where flamingos "
-          "are common:\n• Approximately 10% of this country's women are shorter than 5 feet.\n• Women make up 50% of this country's population.\n"
-          "• This country has a total population of 333 million people.\n• 78% of this country's population are adults.\nCalculate, rounded to "
-          "the nearest million, the number of adult women shorter than 5 feet in this country.", 5, [
-        ("Number of adults (million)", 1, 259.74, 0.005, "Number of adults = 78% × 333 million ✓MA = 259,74 million"),
-        ("Number of adult women (million)", 1, 129.87, 0.005, "Number of adult women = 50% × 259,74 million ✓MA = 129,87 million"),
-        ("Adult women shorter than 5 feet (million)", 2, 12.987, 0.015, "10% × 129,87 million ✓MA = 12,987 million ✓CA"),
-        ("Rounded to the nearest million (million)", 1, 13, 0.01, "≈ 13 million ✓R (OR women first: 50% × 333 000 000 = 166 500 000; adults "
-         "78% × 166 500 000 = 129 870 000; 10% × 129 870 000 = 12 987 000 ≈ 13 000 000)")],
+    work("4.2.6", "The biggest flamingo is 59 inches tall, which is approximately 5 feet. Some interesting facts about a country where flamingos "
+         "are common:\n• Approximately 10% of this country's women are shorter than 5 feet.\n• Women make up 50% of this country's population.\n"
+         "• This country has a total population of 333 million people.\n• 78% of this country's population are adults.\nCalculate, rounded to "
+         "the nearest million, the number of adult women shorter than 5 feet in this country.", 5, [
+        "Number of adults = 78% × 333 million\n= 259,74 million\nNumber of adult women = 50% × 333 million\n= 166,5 million\n"
+        "Number shorter than flamingo = 10% × 166,5 million\n= 16,65 million\n≈ 17 million",          # 50% of EVERYONE: the adults step lost
+        "Number of adults = 78% × 333 million\n= 259,74 million\nNumber of adult women = 50% × 259,74 million\n= 129,87 million\n"
+        "Number shorter than flamingo = 10% × 259,74 million\n= 25,974 million\n≈ 26 million",        # 10% of all adults, not adult women
+        "Number of adults = 78% × 333 million\n= 259,74 million\nNumber of adult women = 50% × 259,74 million\n= 129,87 million\n"
+        "Number shorter than flamingo = 10% × 129,87 million\n= 12,987 million\n≈ 13 million",        # the memo
+        "Number of adults = 78% × 333 million\n= 259,74 million\nNumber of adult women = 50% × 259,74 million\n= 129,87 million\n"
+        "Number shorter than flamingo = 10% × 129,87 million\n= 12,987 million\n≈ 12 million"], 2,    # cuts the decimals off
         ["Take the percentages one after another: 78% of everyone, then 50% of those, then 10%.", "Work in millions, and round only at the end."])]
 
 # ---- QUESTION 5, the question paper pages 14-15, ANNEXURE D (the answer book page 14, typed) and the memo pages 12-15 ----
@@ -278,21 +335,28 @@ q51 = [
         ["Divide each real measurement by 20.", "Draw a rectangle with those two sides and label them."],
         memo="Dimensions: width = 60 cm ÷ 20 = 3 cm; height = 90 cm ÷ 20 = 4,5 cm; a rectangle 3 cm wide and 4,5 cm high, its sides labelled.")]
 q52 = [
-    steps("5.2", "Determine the area of the remaining part of the wood after cutting the required material. You may use the following formula:\n"
-          "Area of rectangle = length × breadth", 6, [
-        ("Area of the complete piece of wood (cm²)", 2, 18060, 0.01, "Area of complete piece of wood = 42 cm × 430 cm ✓SF = 18 060 cm² ✓A"),
-        ("Area of the wooden pieces for ONE bookcase (cm²)", 2, 8240, 0.01, "= (90 + 60 + 56) cm × (20 + 20) cm ✓MA = 8 240 cm² ✓CA (OR E & D: "
-         "60 cm × 20 cm × 2 = 2 400 cm²; F & G: 56 cm × 20 cm × 2 = 2 240 cm²; A & B: 90 cm × 20 cm × 2 = 3 600 cm²; total 8 240 cm²)"),
-        ("Area of the remaining wood (cm²)", 2, 1580, 0.01, "Area of unused wood = 18 060 − 2(8 240) ✓MCA = 1 580 cm² ✓CA (OR one bookcase's "
-         "pieces laid end to end: 2(90) + 2(60) + 2(56) = 412 cm; 430 − 412 = 18 cm left; 18 cm × 40 cm + 2 × 430 = 1 580 cm²)")],
+    work("5.2", "Determine the area of the remaining part of the wood after cutting the required material. You may use the following formula:\n"
+         "Area of rectangle = length × breadth", 6, [
+        "Area of complete piece of wood = 42 cm × 430 cm\n= 18 060 cm²\nArea of pieces of one bookcase = (90 + 60 + 56) cm × (20 + 20) cm\n"
+        "= 8 240 cm²\nArea of unused wood = 18 060 − 2(8 240)\n= 1 580 cm²",                         # the memo
+        "Area of complete piece of wood = 42 cm × 430 cm\n= 18 060 cm²\nArea of pieces of one bookcase = (90 + 60 + 56) cm × (20 + 20) cm\n"
+        "= 8 240 cm²\nArea of unused wood = 18 060 − 8 240\n= 9 820 cm²",                            # cuts ONE bookcase, not two
+        "Area of complete piece of wood = 42 cm × 430 cm\n= 18 060 cm²\nArea of pieces of one bookcase = (90 + 60 + 60) cm × (20 + 20) cm\n"
+        "= 8 400 cm²\nArea of unused wood = 18 060 − 2(8 400)\n= 1 260 cm²",                         # shelves read as 60 cm, not 56 cm
+        "Area of complete piece of wood = 42 cm × 430 cm\n= 18 060 cm²\nArea of pieces of one bookcase = (90 + 60) cm × (20 + 20) cm\n"
+        "= 6 000 cm²\nArea of unused wood = 18 060 − 2(6 000)\n= 6 060 cm²"], 0,                     # leaves out the shelves F and G
         ["One bookcase needs the six pieces in DIAGRAM 2, each 20 cm wide.", "Two bookcases: take twice their area from the whole piece."])]
 q53 = [
-    steps("5.3", "Simon states that it will take more than three months to accumulate one ton of unused wood. Verify his statement, showing ALL "
-          "calculations. You may use the following formula:\nDensity = mass ÷ volume", 6, [
-        ("Volume of unused wood per month (cm³)", 1, 400000, 0.5, "Volume of wood per month = 0,4 m³ × 100³ = 400 000 cm³ ✓C"),
-        ("Mass of unused wood per month (kg)", 2, 300, 0.01, "Mass per month = 0,75 g/cm³ × 400 000 cm³ ✓MA = 300 000 g ÷ 1 000 = 300 kg ✓CA"),
-        ("Months to accumulate one ton of unused wood (months)", 3, 3.33, 0.035, "1 ton = 1 000 kg ✓C; number of months = 1 000 kg ÷ 300 kg "
-         "= 3,33 ✓CA. VALID ✓O (OR 0,3 ton a month × 3 = 0,9 ton < 1 ton; OR 1,2 m³ in 3 months = 900 kg < 1 000 kg: his statement is correct)")],
+    work("5.3", "Simon states that it will take more than three months to accumulate one ton of unused wood. Verify his statement, showing ALL "
+         "calculations. You may use the following formula:\nDensity = mass ÷ volume", 6, [
+        "Volume of wood per month = 0,4 m³ × 100³ = 400 000 cm³\nMass per month = 400 000 cm³ ÷ 0,75 g/cm³\n= 533 333,33 g ÷ 1 000\n"
+        "= 533,33 kg\n1 ton = 1 000 kg\nNumber of months to accumulate one ton = 1 000 kg ÷ 533,33 kg = 1,88\nINVALID",   # mass = volume ÷ density
+        "Volume of wood per month = 0,4 m³ × 100² = 4 000 cm³\nMass per month = 0,75 g/cm³ × 4 000 cm³\n= 3 000 g ÷ 1 000\n"
+        "= 3 kg\n1 ton = 1 000 kg\nNumber of months to accumulate one ton = 1 000 kg ÷ 3 kg = 333,33\nVALID",           # m³ to cm³ by 100²
+        "Volume of wood per month = 0,4 m³ × 100³ = 400 000 cm³\nMass per month = 0,75 g/cm³ × 400 000 cm³\n= 300 000 g ÷ 1 000\n"
+        "= 300 kg\n1 ton = 1 000 kg\nNumber of months to accumulate one ton = 1 000 kg ÷ 300 kg ≈ 3\nINVALID",            # rounds 3,33 to 3, then compares
+        "Volume of wood per month = 0,4 m³ × 100³ = 400 000 cm³\nMass per month = 0,75 g/cm³ × 400 000 cm³\n= 300 000 g ÷ 1 000\n"
+        "= 300 kg\n1 ton = 1 000 kg\nNumber of months to accumulate one ton = 1 000 kg ÷ 300 kg = 3,33\nVALID"], 3,       # the memo
         ["1 m³ = 100 × 100 × 100 cm³.", "Mass = density × volume, and 1 ton = 1 000 kg."])]
 
 FLIGHT = {"head": ["South African Airways", "Wednesday 8 January 2025"],
@@ -401,27 +465,36 @@ missions = [
      "lead": "The density of the wood is 0,75 g/cm³.\n\nA volume of approximately 0,4 m³ unused wood is accumulated each month.", "items": q53},
 ]
 
+# every part that played as typed steps or num before 2026-10-10, now authored multiple choice
+assert tuple(AUTHORED) == ("1.2.2", "1.3.3", "2.1.1", "2.2.4", "2.3.2", "3.1.2", "3.1.3", "3.1.4", "3.1.5", "3.2.1", "3.2.2", "3.2.3",
+                           "4.1.2(a)", "4.2.1", "4.2.4", "4.2.5", "4.2.6", "5.2", "5.3"), AUTHORED
+ITEMS = [i for m in missions for i in m["items"]]
+assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "num")], "a typed calculation is left"
+AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Mathematical Literacy", "title": "Mathematical Literacy P2", "sitting": "November 2025", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Mathematical Literacy", "total": 150, "missions": missions}],
     "flags": [
+        {"n": AUTHORED[0], "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): every typed calculation plays as the memo's "
+                                                       "working plus three built from common errors, 0 or full marks: " + ", ".join(AUTHORED)
+                                                       + " (%d parts, %d marks). The right option is the memo's FIRST method line by line; "
+                                                         "4.1.2(a) and 4.2.1 give the answer only (8; 17 months), so their working is ours. A "
+                                                         "form the memo also accepts is never a wrong option (2.2.4's 12 mm / 460,8 mm, "
+                                                         "49,92 cm and 0,0004992 km; 4.2.5's total-distance check; 5.3's 0,9 ton, 900 kg and "
+                                                         "3,3 months)." % (len(AUTHORED), AUTHORED_MARKS)},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 5), hand-transcribed from the page images of the question "
                                                            "paper and the answer book (both scans, no text layer) and from the memo; no API call."},
         {"n": "1.3.1", "kind": "no_fit", "detail": "Statements matched to pictures P-U play as a match: the app letters its right column A-F, so each "
                                                    "item carries the picture's own letter ('Picture P'); the memo marks letters P-U."},
         {"n": "2.2.4", "kind": "no_fit", "detail": "The memo's first mark is for MEASURING the printed scale bar (13 mm; accept 12-13 mm). A phone "
                                                    "shows the map at another size, so the figure caption gives the printed length (measured on the "
-                                                   "PDF: 36,7 pt = 12,9 mm) and the mark becomes a read-off. The map distance range 460,8-499,2 mm "
-                                                   "plays as its centre 480 ± 19,25 (the memo's 499,2 mm is in the working)."},
+                                                   "PDF: 36,7 pt = 12,9 mm) and the mark becomes a read-off: the right working uses the memo's "
+                                                   "13 mm (499,2 mm)."},
         {"n": "2.1.2", "kind": "no_fit", "detail": "Terms the memo marks in parts play all or nothing: 2.1.2 (row 1 + seat 1), 3.1.1 (MA + A), "
                                                    "4.2.2 (MA + date + time) and 5.1.2 (numerator + denominator). A time or date is typed (09:45, "
                                                    "9h45, 9:45 am ...; 4.2.2 '16 June 2023 at 09:25' in its common written orders), never on a keypad."},
-        {"n": "1.2.2", "kind": "no_fit", "detail": "Calculations play as steps: each step is the number the memo's method produces, its SF/MA/C marks "
-                                                   "riding on that number. 'Verify the statement' parts (3.2.3, 4.2.5, 5.3) fold the memo's "
-                                                   "conclusion (CORRECT / INVALID / VALID, the O mark) into the last step's number. The memo's NPR "
-                                                   "rule (first decimal correct) widens the tolerance where an answer must be rounded (3.1.5, 4.2.4, "
-                                                   "4.2.5, 4.2.6, 5.3); 4.2.4's speed also takes 53,47 km/h (CA from 14,4 h)."},
         {"n": "4.1.2(b)", "kind": "no_fit", "detail": "The two towns on the N12 play as a list of two, 1,5 marks each; the memo gives 2 for the first "
                                                       "correct town and 1 for the second."},
         {"n": "5.1.3(b)", "kind": "no_fit", "detail": "The scaled diagram of the hardboard is drawn on paper and self-checked against the memo's criteria."},
@@ -435,14 +508,26 @@ paper = {
                                                        "1 182,39744 cm² (its answer 2 927,60 cm² is right)."},
     ],
 }
-out = Path(__file__).parent / "out" / "ml-p2-2025-11"
+QTOTAL = {"1": 28, "2": 34, "3": 32, "4": 30, "5": 26}   # the memo's [n] per question
+per_q = {}
+for m in missions:
+    got = sum(i["marks"] for i in m["items"])
+    assert got == m["marks"], (m["id"], got, m["marks"])
+    per_q[m["id"].split(".")[0]] = per_q.get(m["id"].split(".")[0], 0) + got
+    print(m["id"], "parts:", len(m["items"]), "marks:", got)
+assert per_q == QTOTAL, per_q
+# the right letter, spread evenly over A-D across the paper (its own A-C / two-way choices included)
+at = ["ABCD"[i["a"]] for i in ITEMS if i["t"] == "mcq" and i["a"] < 4]
+spread = {k: at.count(k) for k in "ABCD"}
+assert max(spread.values()) - min(spread.values()) <= 1, spread
+print("right options, the paper:", spread, "authored:", {k: ["ABCD"[i["a"]] for i in ITEMS if i["n"] in AUTHORED].count(k) for k in "ABCD"})
+total = sum(i["marks"] for i in ITEMS)
+assert total == 150, total
+print("authored:", len(AUTHORED), "parts,", AUTHORED_MARKS, "marks")
+print("total:", total)
+out = Path(__file__).parent / "out" / "ml-p2-2025-11"   # written only once every check above has passed
 out.mkdir(parents=True, exist_ok=True)
 (out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper, answer book and memo PDFs and their page "
                                                                        "images (no API call)",
                                                         "scope": "Questions 1 to 5 (the whole paper)"}, "paper": paper}, indent=1, ensure_ascii=False),
                                    encoding="utf-8")
-for m in missions:
-    got = sum(i["marks"] for i in m["items"])
-    assert got == m["marks"], (m["id"], got, m["marks"])
-    print(m["id"], "parts:", len(m["items"]), "marks:", got)
-print("total:", sum(i["marks"] for m in missions for i in m["items"]))
