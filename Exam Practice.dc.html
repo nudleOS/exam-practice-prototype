@@ -3565,7 +3565,7 @@ class Component extends DCLogic {
       const mx = pts.reduce((m, p) => m + p[0], 0) / pts.length, my = pts.reduce((m, p) => m + p[1], 0) / pts.length;
       const outer = document.createElement("div"), inner = document.createElement("div"), txt = document.createElement("span");
       outer.className = "ts-piece"; outer.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px; transform-origin:" + mx.toFixed(1) + "px " + my.toFixed(1) + "px";
-      inner.className = "ts-glass" + (snap.ball ? " ts-ball" : ""); inner.style.cssText = "border-radius:" + snap.radius + "; clip-path:polygon(" + pts.map(p => p[0].toFixed(1) + "px " + p[1].toFixed(1) + "px").join(",") + ")";
+      inner.className = "ts-glass" + (snap.ball ? " ts-ball" : "") + (snap.wrap ? " ts-wrap" : ""); inner.style.cssText = "border-radius:"   /* (the pieces wrap as the whole did: a statement's or a match card's lines, 2026-10-10) */ + snap.radius + "; clip-path:polygon(" + pts.map(p => p[0].toFixed(1) + "px " + p[1].toFixed(1) + "px").join(",") + ")";
       txt.textContent = snap.text; txt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : ""); inner.appendChild(txt); outer.appendChild(inner); outer.style.visibility = "hidden"; layer.appendChild(outer); pieces.push(outer);
       // the fall: out from the crack, a little up, then gravity; it lands where its centre meets the ground, bounces once, lies there
       const ux = mx - cx, uy = my - cy, ul = Math.hypot(ux, uy) || 1, v = 90 + Math.random() * 140;
