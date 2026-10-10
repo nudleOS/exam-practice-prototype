@@ -33,8 +33,9 @@ def mcq(n, q, opts, a, clues, marks=2, **kw):
     return {"t": "mcq", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
 
 
-rub = lambda n, q, marks, bullets, clues, each=None: {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets,
-                                                     **({"each": each} if each else {})}
+# notes: the memo's marking notes that are NOT points (key phrases, "per unit time" only in context): never scored, never shown
+rub = lambda n, q, marks, bullets, clues, each=None, notes=None: {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets,
+                                                                 **({"each": each} if each else {}), **({"notes": notes} if notes else {})}
 term = lambda n, q, a, clues, marks=1, strict=False: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
                                                       **({"strict": True} if strict else {})}
 pick = lambda n, q, opts, pool, marks, clues: {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "pool": pool,
@@ -191,9 +192,9 @@ q4a = [
          ["W to T removes HBr: elimination.", "The base must be strong and NOT dilute."])]
 q4b = [
     rub("4.2.1", "Define the term cracking.", 2, [
-        "The chemical process/reaction in which longer chain hydrocarbon/alkane molecules are broken down to shorter (more useful) molecules. (2)",
-        "Key phrases: longer chain hydrocarbon/alkane molecules; broken down; shorter molecules. A key phrase omitted (in the correct context): deduct 1."],
-        ["It splits big molecules.", "Long-chain alkanes become ..."]),
+        "The chemical process/reaction in which longer chain hydrocarbon/alkane molecules are broken down to shorter (more useful) molecules. (2)"],
+        ["It splits big molecules.", "Long-chain alkanes become ..."], each=2,
+        notes=["Key phrases: longer chain hydrocarbon/alkane molecules; broken down; shorter molecules. A key phrase omitted (in the correct context): deduct 1."]),
     term("4.2.2", "State ONE change, besides a change in temperature, that will be observed when the mixture is bubbled in Br₂(aq).", [
         "Decolourisation", "The colour fades", "Becomes lighter in colour", "Colourless", "Decolourises", "The bromine water decolourises",
         "Turns colourless", "The bromine water becomes colourless", "Decolorisation", "The brown colour fades", "The orange colour fades"],
@@ -202,7 +203,7 @@ q4b = [
         ["Correct functional group: a C=C double bond", 1], ["Whole structure correct: propene, CH₂=CH–CH₃, every atom and bond shown", 1]],
         ["Balance the atoms: C₁₀H₂₂ − C₄H₁₀ leaves 2X.", "X is C₃H₆, with one double bond."]),
     rub("4.2.4", "Which compound, X or C₄H₁₀, reacts faster with Br₂(aq)? Explain the answer.", 3, [
-        "X / C₃H₆ / propene. (1)", "X is unsaturated / has a double bond / is an alkene. (1)",
+        "X OR propene OR C3H6 (C₃H₆). (1)", "X is unsaturated / has a double bond / is an alkene. (1)",
         "ANY ONE: X undergoes addition / alkenes are more reactive than alkanes / unsaturated compounds react faster than saturated compounds / "
         "an addition reaction is faster than substitution / an addition reaction does not need UV/light. (1)"],
         ["One product is an alkene, the other an alkane.", "In the dark, an alkane hardly reacts with bromine."])]
@@ -212,8 +213,9 @@ q5a = [
     rub("5.1", "Define the term reaction rate.", 2, [
         "ANY ONE: the change in concentration of products/reactants per (unit) time; the change in amount/number of moles/volume/mass of products or "
         "reactants per (unit) time; the amount/number of moles/volume/mass of products formed/reactants used per (unit) time; the rate of change in "
-        "concentration/amount/number of moles/volume/mass. (2 or 0)", "Give the mark for 'per unit time' only in the context of reaction rate."],
-        ["How quickly something changes.", "A change in amount or concentration, divided by time."], each=2),
+        "concentration/amount/number of moles/volume/mass. (2 or 0)"],
+        ["How quickly something changes.", "A change in amount or concentration, divided by time."], each=2,
+        notes=["Give the mark for 'per unit time' only in the context of reaction rate."]),
     mcq("5.2.1", "At which time, 10 s or 30 s, is the reaction rate higher?", ["10 s", "30 s"], 0,
         ["The rate is the steepness of the curve.", "Where is the graph steeper?"], marks=1),
     steps("5.2.2", "The reaction takes place in a 3 dm³ container. Calculate the average rate (in mol·s⁻¹) at which CO₂(g) is formed in the first 10 s.", 5, [
@@ -234,9 +236,9 @@ q5b = [
     mcq("5.3.1", "Was there a net release or net absorption of energy during the REVERSE reaction?", ["Net release", "Net absorption"], 1,
         ["ΔH < 0: the forward reaction is exothermic.", "The reverse reaction does the opposite."], marks=1),
     rub("5.3.2", "Define the term activated complex.", 2, [
-        "Unstable (high energy) transition state from reactants to products. ACCEPT: between reactants and products. (2)",
-        "Key phrases: unstable (high energy); transition state; from reactants to products. A key phrase omitted (in the correct context): deduct 1."],
-        ["It exists only at the top of the energy barrier.", "A short-lived state between reactants and products."]),
+        "Unstable (high energy) transition state from reactants to products. ACCEPT: between reactants and products. (2)"],
+        ["It exists only at the top of the energy barrier.", "A short-lived state between reactants and products."], each=2,
+        notes=["Key phrases: unstable (high energy); transition state; from reactants to products. A key phrase omitted (in the correct context): deduct 1."]),
     rub("5.3.3", "A catalyst, vanadium pentoxide, is added to the reaction. Explain, in terms of the collision theory, why the rate of the reaction "
         "will increase.", 3, [
         "The catalyst provides an alternative path with a lower activation energy / lowers the activation energy. (1)",
@@ -257,10 +259,10 @@ q5b = [
 q6a = [
     rub("6.1.1", "State Le Chatelier's principle.", 2, [
         "When the equilibrium in a closed system is disturbed, the system will re-instate a new equilibrium by favouring the reaction that will "
-        "cancel/oppose the disturbance. (2)",
-        "Key phrases: equilibrium in a closed system disturbed; re-instate a new equilibrium; favouring the reaction that cancels/opposes the "
-        "disturbance. A key phrase omitted (in the correct context): deduct 1."],
-        ["It is about a closed system at equilibrium being disturbed.", "The system responds to oppose the change."]),
+        "cancel/oppose the disturbance. (2)"],
+        ["It is about a closed system at equilibrium being disturbed.", "The system responds to oppose the change."], each=2,
+        notes=["Key phrases: equilibrium in a closed system disturbed; re-instate a new equilibrium; favouring the reaction that cancels/opposes the "
+               "disturbance. A key phrase omitted (in the correct context): deduct 1."]),
     mcq("6.1.2", "A few drops of concentrated hydrochloric acid, HCℓ(conc.), are added to the equilibrium mixture. What effect does this addition "
         "have on the mass of Ca(OH)₂(s)? Choose from INCREASES, DECREASES or REMAINS THE SAME.", CHANGE, 1,
         ["H⁺ from the acid reacts with OH⁻.", "Less OH⁻: which way does the equilibrium shift?"], marks=1),
@@ -294,7 +296,7 @@ q6b = [
 # ---- QUESTION 7, the question paper page 14 and the memo pages 17-20 ----
 q7a = [
     rub("7.1.1", "Which one is the stronger acid, H₂PO₄⁻ or HPO₄²⁻? Give a reason for the answer by referring to the data above.", 2, [
-        "H₂PO₄⁻. (1)", "The Ka of H₂PO₄⁻ is greater/higher than the Ka of HPO₄²⁻. ACCEPT: the Ka of H₂PO₄⁻ is greater. (1)"],
+        "H₂PO₄⁻ OR H2PO4-. (1)", "The Ka of H₂PO₄⁻ is greater/higher than the Ka of HPO₄²⁻. ACCEPT: the Ka of H₂PO₄⁻ is greater. (1)"],
         ["A stronger acid ionises more.", "Compare the Ka values of the second and third steps."]),
     term("7.1.2", "Write down the FORMULA for the conjugate base of H₂PO₄⁻(aq).", ["HPO4 2−", "HPO4^2-", "HPO42-", "HPO4(2-)"],
          ["A conjugate base is the acid less one H⁺.", "Take away one H and add one negative charge."], strict=True),
@@ -304,12 +306,14 @@ q7a = [
     mcq("7.1.4", "Sodium hydrogen phosphate, Na₂HPO₄(s), is dissolved in water. Will the resulting solution be ACIDIC or BASIC?", ["Acidic", "Basic"], 1,
         ["HPO₄²⁻ gives up H⁺ very little (its Ka is tiny), but it can also take H⁺.", "If it takes H⁺ from water, which ion is left?"], marks=1),
     rub("7.1.5", "Sodium hydrogen phosphate, Na₂HPO₄(s), is dissolved in water. Write a balanced equation to explain the answer to QUESTION 7.1.4.", 3, [
-        "Reactants: HPO₄²⁻(aq) + H₂O(ℓ), or Na₂HPO₄(aq) + H₂O(ℓ). (1)",
-        "Products: H₂PO₄⁻(aq) + OH⁻(aq), or NaH₂PO₄(aq) + NaOH(aq), or H₂PO₄⁻(aq) + 2Na⁺(aq) + OH⁻(aq). (1)",
-        "Balancing: HPO₄²⁻(aq) + H₂O(ℓ) ⇌ H₂PO₄⁻(aq) + OH⁻(aq). Ignore → and phases (marking rule 6.3.10). (1)",
-        "OR — Reactants: HPO₄²⁻(aq) + 2H₂O(ℓ), or Na₂HPO₄(aq) + 2H₂O(ℓ). (1)",
-        "Products: H₃PO₄(aq) + 2OH⁻(aq), or H₃PO₄(aq) + 2Na⁺(aq) + 2OH⁻(aq), or H₃PO₄(aq) + 2NaOH(aq). (1)",
-        "Balancing: HPO₄²⁻(aq) + 2H₂O(ℓ) ⇌ H₃PO₄(aq) + 2OH⁻(aq). (1)"],
+        # an equation as a phone types it (2026-10-10): the labels "Reactants:" / "Products:" were required words and the subscripts
+        # normalised away, so "HPO4 2- + H2O <=> H2PO4- + OH-" scored 0 / 3; the labels sit in brackets, each species in ASCII too
+        "(Reactants) HPO4/HPO₄²⁻ + H2O/H₂O, OR Na2HPO4/Na₂HPO₄ + H2O. (1)",
+        "(Products) H2PO4/H₂PO₄⁻ + OH/OH⁻, OR NaH2PO4/NaH₂PO₄ + NaOH. (1)",
+        "(Balanced) HPO4 + H2O ⇌ H2PO4 + OH (HPO₄²⁻(aq) + H₂O(ℓ) ⇌ H₂PO₄⁻(aq) + OH⁻(aq)). (1)",
+        "OR — (Reactants) HPO4/HPO₄²⁻ + 2H2O/2H₂O, OR Na2HPO4/Na₂HPO₄ + 2H2O. (1)",
+        "(Products) H3PO4/H₃PO₄ + 2OH/2OH⁻, OR H3PO4 + 2NaOH. (1)",
+        "(Balanced) HPO4 + 2H2O ⇌ H3PO4 + 2OH (HPO₄²⁻(aq) + 2H₂O(ℓ) ⇌ H₃PO₄(aq) + 2OH⁻(aq)). (1)"],
         ["HPO₄²⁻ acts as a base here: it takes H⁺ from water.", "Which ion is left over that makes the solution basic?"])]
 q7b = [
     steps("7.2.1", "Calculate the final concentration of the hydroxide ions in the flask.", 4, [
@@ -337,7 +341,7 @@ q8 = [
         "(through the movement of ions); a substance that dissociates to form ions in water/in the molten state. (2 or 0)"],
         ["It is about ions.", "Dissolved or molten, it conducts because of ..."], each=2),
     rub("8.2", "Which ion concentration, Aℓ³⁺(aq) or Zn²⁺(aq), will increase? Give a reason for the answer.", 2, [
-        "Aℓ³⁺ / the aluminium ion. (1)", "Aℓ is oxidised OR Aℓ is a stronger reducing agent. (1)"],
+        "Al3+ OR Aℓ³⁺ OR the aluminium ion. (1)", "Al/Aℓ/aluminium is oxidised OR Al/Aℓ/aluminium is a stronger reducing agent. (1)"],
         ["Table 4 of the data sheets: Aℓ (−1,66 V) against Zn (−0,76 V).", "The metal that is oxidised forms more of its ions."]),
     term("8.3", "Write down the cell notation for this cell.", [
         "Al(s) | Al3+(aq) || Zn2+(aq) | Zn(s)", "Al | Al3+ || Zn2+ | Zn", "Al(s) | Al3+ || Zn2+ | Zn(s)", "Al | Al3+(aq) || Zn2+(aq) | Zn",
@@ -361,8 +365,8 @@ q9 = [
         ["The impure copper's zinc is oxidised too.", "Zn²⁺ is a weaker oxidising agent than Cu²⁺: is it reduced at the cathode?"], marks=1),
     rub("9.2.2", "Will the amount of Cu²⁺(aq) ions INCREASE or DECREASE? Explain the answer in terms of the relative strengths of the oxidising agents "
         "present.", 3, [
-        "Decrease. (1)", "More copper(II) ions/Cu²⁺ are reduced than formed / only copper(II) ions/Cu²⁺ are reduced. (1)",
-        "The copper(II) ion/Cu²⁺ is a stronger oxidising agent than the zinc(II) ion/Zn²⁺ OR Zn²⁺ is a weaker oxidising agent than Cu²⁺. (1)"],
+        "Decrease. (1)", "More Cu2+/Cu²⁺/copper ions are reduced than formed OR only Cu2+/Cu²⁺/copper ions are reduced. (1)",
+        "Cu2+/Cu²⁺/copper(II) is a stronger oxidising agent than Zn2+/Zn²⁺/zinc(II) OR Zn2+/Zn²⁺ is a weaker oxidising agent than Cu2+/Cu²⁺. (1)"],
         ["At the anode both Cu and Zn are oxidised; at the cathode only one ion is reduced.", "Which ion, Cu²⁺ or Zn²⁺, is the stronger oxidising agent?"]),
     steps("9.2.3", "Calculate the change in mass of electrode R after T hours.", 6, [
         ("Moles of Zn²⁺ formed (mol)", 1, 0.05, 0.001, "n(Cu²⁺) : n(Zn²⁺) = 1 : 1 ✓ (a): n(Zn²⁺) = n(Cu²⁺) = 0,05 mol"),
@@ -448,6 +452,7 @@ paper = {
     "paper": {"subject": "Physical Sciences", "title": "Physical Sciences P2", "sitting": "November 2025", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Chemistry", "total": 150, "missions": missions}],
     "flags": [
+        {"n": "7.1.5", "kind": "no_fit", "detail": "A balanced equation is a written answer: the keyword stand-in checks that the memo's species are named (in ASCII too: HPO4, H2O, H2PO4), not the balancing, the arrow or which side each species is on; a wrong equation with the same species scores. An equation control, or model marking, would mark it properly (2026-10-10)."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 9), hand-transcribed from the paper and memo PDFs and their "
                                                            "page images (structural formulae and charges are images); no API call."},
         {"n": "2.1.2", "kind": "no_fit", "detail": "Two letters for one mark (2.1.2, 2.1.3) play as a pick of two, half a mark each; the memo gives "

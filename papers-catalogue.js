@@ -470,7 +470,7 @@ window.NX_CATALOGUE = {
    "missions": 34,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "14247ceca4",
+   "rev": "6fc27f5221",
    "source_pdf": "uploads/Physical Sciences P2 Nov 2025 Eng.pdf"
   },
   {
