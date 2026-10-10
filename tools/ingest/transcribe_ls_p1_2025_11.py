@@ -7,8 +7,15 @@ the figure captions (alt text) are ours. No API call: the transcription is the s
   python tools/ingest/ingest.py "<...>/Life Sciences P1 Nov 2025 Eng.pdf" "<...>/Life Sciences P1 Nov 2025 MG Eng.pdf" --id ls-p1-2025-11 --from-json
   then open Exam Practice.dc.html?ingested=ls-p1-2025-11&paper=ls-p1-2025-11&play=0
 
-Figure boxes are measured in PDF points on the A4 page (595 x 842) and stored as fractions."""
+Figure boxes are measured in PDF points on the A4 page (595 x 842) and stored as fractions.
+
+The written answers (rubrics) are the source only: the bottom block plays each as statements (STATEMENTS) or, where the memo weighs two
+sides (3.5.3, long- against rapid-acting insulin), a sort (SORTS); the one typed calculation (2.5.4) plays as a choice of the whole
+working (`work`). This paper has no Section C essay (Section B is 100 marks). Parts whose cards show an earlier part's answer carry
+`after` (AFTER) (Murci's rollout rulings, 2026-10-10)."""
 import json
+import random
+import re
 from pathlib import Path
 
 W, H = 595.0, 842.0
@@ -24,11 +31,31 @@ AB = ["A only", "B only", "Both A and B", "None"]
 # Column I / Column II (1.3): the description is the stem, COLUMN II's two items are `ab` (the Venn layout draws them as its two circles)
 abq = lambda n, q, a_item, b_item, a, clues: mcq(n, q, AB, a, clues, ab={"a": a_item, "b": b_item})
 
+WORK = "\n\nChoose the correct working."
+AUTHORED = []   # the typed calculations played as authored multiple choice, in paper order
+
+
+def shape(o):
+    """An option's layout: its line count and how many lines end in a [reason]."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+def work(n, q, marks, opts, a, clues):
+    """A typed calculation as authored multiple choice (Murci, 2026-10-10): opts are the memo's FIRST working and three workings
+    built from common errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing."""
+    assert len(opts) == 4 and len(set(opts)) == 4, (n, "four distinct options")
+    assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
+    assert 0 <= a <= 3, (n, a)
+    AUTHORED.append(n)
+    return {"t": "mcq", "n": n, "marks": marks, "q": q + WORK, "clues": clues, "opts": opts, "a": a}
+
+
 FEMALE = fig(4, (202, 125, 442, 351), "The female reproductive system, front view. P labels the tube curving out to the upper right; S the "
              "hollow middle of the pear-shaped organ; Q, two lines to the thick wall lining it; R the narrow passage at the bottom.")
 q11 = [
     mcq("1.1.1", "The hormone that prepares the body for an emergency is …", ["aldosterone.", "progesterone.", "adrenalin.", "prolactin."], 2,
-        ["Think of the 'fight or flight' response.", "It comes from the adrenal glands and speeds up the heart."]),
+        ["Think of the 'fight or flight' response.", "It is secreted when you are frightened, and it speeds up the heart."]),
     mcq("1.1.2", "Which ONE of the following are functions of the placenta?",
         ["Excretion and nutrition", "Gaseous exchange and protection against mechanical injury", "Nutrition and temperature regulation",
          "Temperature regulation and excretion"], 0,
@@ -71,10 +98,10 @@ q11 = [
 ]
 q12 = [
     term("1.2.1", "The ovarian hormone that is secreted by the corpus luteum", ["progesterone"],
-         ["It keeps the uterus lining ready for pregnancy.", "Its name means 'for gestation'."]),
+         ["It keeps the uterus lining ready for pregnancy.", "Its level stays high throughout a pregnancy."]),
     term("1.2.2", "The eye defect that is characterised by a cloudy lens", ["cataracts", "cataract"],
          ["It is common in older people.", "The lens turns milky."]),
-    term("1.2.3", "The production of ova by meiosis", ["oogenesis"], ["Gametogenesis, named after the female gamete.", "'Oo' means egg."]),
+    term("1.2.3", "The production of ova by meiosis", ["oogenesis"], ["It is a kind of gametogenesis.", "It takes place in the ovaries."]),
     term("1.2.4", "The part of the retina that contains no rods and cones", ["blind spot"],
          ["The optic nerve leaves the eye here.", "An image falling here is not seen."]),
     term("1.2.5", "The release of an ovum from the ovary", ["ovulation"], ["It happens around day 14 of the cycle.", "The follicle bursts."]),
@@ -83,7 +110,7 @@ q12 = [
     term("1.2.7", "A plant hormone responsible for seed dormancy", ["abscisic acid", "ABA"],
          ["It is the plant's 'stress' and 'wait' hormone.", "It also makes leaves fall."]),
     term("1.2.8", "The maintenance of a constant internal environment within narrow limits", ["homeostasis"],
-         ["'Homeo' means the same.", "It keeps temperature, glucose and water steady."]),
+         ["Negative feedback mechanisms help to achieve it.", "It keeps temperature, glucose and water steady."]),
 ]
 q13 = [
     abq("1.3.1", "The hormone responsible for the development of secondary sexual characteristics during puberty", "Oestrogen", "Testosterone", 2,
@@ -104,9 +131,9 @@ q14 = [
     mcq1("1.4.1(c)", "Give the LETTER(S) of the diagram(s) that represent a response due to gibberellins", LETS3, 0,
          ["Gibberellins break seed dormancy.", "Which diagram shows seeds starting to grow?"]),
     term("1.4.2(a)", "Identify the growth response shown by the roots in diagram A", ["geotropism", "gravitropism", "positive geotropism", "positive gravitropism"],
-         ["The roots respond to a force that pulls downwards.", "'Geo' means earth."]),
+         ["The roots respond to a force that pulls downwards.", "A growth response is named after the stimulus it responds to."]),
     term("1.4.2(b)", "Identify the growth response shown in diagram B", ["phototropism", "positive phototropism"],
-         ["The stem grows towards the gap where light comes in.", "'Photo' means light."]),
+         ["The stem grows towards the gap where light comes in.", "Name the response after the stimulus that causes it."]),
     mcq1("1.4.3(a)", "Using X and Y in diagram B, state which side of the stem has the highest concentration of auxins", ["X", "Y"], 0,
          ["Light moves auxins away from the lit side.", "Which side is in the shade?"]),
     mcq1("1.4.3(b)", "Using X and Y in diagram B, state which side of the stem has the highest rate of cell division", ["X", "Y"], 0,
@@ -126,7 +153,7 @@ q15 = [
     mcq1("1.5.3(c)", "Give the LETTER of the part that makes synaptic contact with an interneuron", LETS6, 0,
          ["A synapse is where the impulse leaves this neuron.", "Follow the arrow to the end the impulse reaches."]),
     term("1.5.4", "Name the disorder that is associated with the degeneration of part F.", ["multiple sclerosis", "MS"],
-         ["Part F is attacked and scars form.", "Its name means 'many scars'."]),
+         ["Part F is attacked and scars form.", "The impulses slow down or stop, so movement and coordination suffer."]),
 ]
 missions = [
     {"id": "1.1", "title": "Question 1.1", "kind": "Multiple choice", "marks": 20,
@@ -157,10 +184,10 @@ q21 = [
          "making it more independent"],
         ["Find the duck's yolk percentage in the table: high or low?", "What does a lot of yolk let the chick become before it hatches?"], must=[0]),
     lst("2.1.2", "Name the THREE bird types that would have a higher degree of parental care.", 3, 3, [["eagle"], ["vulture"], ["pigeon"]],
-        ["More parental care goes with less developed chicks.", "Look for the three lowest yolk percentages."]),
+        ["More parental care goes with less developed chicks.", "Use the yolk percentages in the table."]),
     rub("2.1.3", "Give a reason for your answer to QUESTION 2.1.2.", 2,
         ["The eggs have a lower percentage of yolk", "therefore the hatchlings will not be fully developed"],
-        ["Compare their yolk percentages with the others'.", "Less yolk: how developed is the chick when it hatches?"]),
+        ["Compare their yolk percentages with the others'.", "How developed is a chick that hatches from such an egg?"]),
 ]
 q22 = [
     ln("2.2.1(a)", "Give the LETTER and the NAME of the gland that secretes testosterone", ["A", "B", "C"], "C", ["testis", "testes", "testicle"],
@@ -170,11 +197,11 @@ q22 = [
     rub("2.2.2", "Explain the role of the scrotum in sperm production.", 2,
         ["It maintains the temperature of the testes lower than body temperature", "to ensure the production of good quality / quantity of sperm",
          "OR — It protects the testes from mechanical injury", "to ensure the production of good quality / quantity of sperm"],
-        ["Why do the testes hang outside the body?", "Sperm are made best a little below body temperature."]),
+        ["Why do the testes hang outside the body?", "Think about the conditions sperm need to develop well."]),
     rub("2.2.3", "Name and describe the process of sperm production.", 5,
         ["Spermatogenesis", "under the influence of testosterone", "diploid cells", "in the seminiferous tubules / testes", "undergo meiosis",
          "to form haploid sperm cells"],
-        ["Name the process first: gametogenesis named after the male gamete.", "Then: which hormone, which cells, where, which division, what forms."], must=[0]),
+        ["Name the process first, then describe it.", "Then: which cells, where, which division, what forms."], must=[0]),
 ]
 q23 = [
     rub("2.3.1(a)", "Referring to ovarian hormones, explain the decrease in thickness of the endometrium from day 0 to day 7", 3,
@@ -184,7 +211,7 @@ q23 = [
         ["The Graafian follicle secretes", "oestrogen, which increases the endometrium thickness"],
         ["A new follicle is growing in this part of the cycle.", "Which hormone does it make, and what does it do to the lining?"]),
     rub("2.3.2", "Describe changes in the endometrium that cause it to become thicker.", 2, ["It becomes more vascular", "and more glandular"],
-        ["Think of what grows into the lining.", "Blood vessels, and what else?"]),
+        ["Think of what grows into the lining as it thickens.", "What would an embryo need from the lining?"]),
     rub("2.3.3", "State the significance of the change in endometrium thickness described in QUESTION 2.3.2.", 1,
         ["It allows for implantation of the embryo / the development of the placenta / increased blood supply to nourish the embryo"],
         ["Why does the uterus prepare a thick lining?", "What might arrive and sink into it?"]),
@@ -211,7 +238,7 @@ q24 = [
     rub("2.4.3", "Explain the significance of the change in the diameter of the arteriole from normal conditions to the condition in diagram Z.", 4,
         ["The arteriole dilates / vasodilation takes place", "more blood flows to the surface of the skin", "and more heat is lost / more radiation occurs",
          "to decrease / regulate the body temperature"],
-        ["Did the arteriole get wider or narrower from Y to Z?", "More blood near the skin: what happens to the body's heat?"]),
+        ["Did the arteriole get wider or narrower from Y to Z?", "What happens to the blood flow near the skin, and then to the body's heat?"]),
 ]
 q25 = [
     lst("2.5.1", "State the dependent variable of this investigation.", 1, 1, [["height (of the boys)"]],
@@ -222,11 +249,15 @@ q25 = [
         ["What did all the participants have in common?", "Think of who they were, what condition they had, how old, and for how long."]),
     rub("2.5.3", "Explain the purpose of Group B in this investigation.", 2,
         ["To prove that it is the added growth hormone that caused the change in height and not any other factor"],
-        ["Group B is the control.", "A control lets you say what caused the difference."], each=2),
-    {"t": "steps", "n": "2.5.4", "marks": 3,
-     "q": "Calculate the daily amount of added human growth hormone that was given to a boy with a mass of 25 kg. Show ALL your working, INCLUDING the correct unit.",
-     "clues": ["The dosage is per kg of body weight.", "Multiply the dosage by the boy's mass."],
-     "steps": [{"id": "s1", "label": "Daily amount of growth hormone (mg)", "marks": 3, "a": 0.7, "tol": 0.005, "memo": "25 × 0,028 ✓ = 0,7 ✓ mg ✓"}]},
+        ["Group B is the control.", "Without Group B, what could the scientists not be sure of?"], each=2),
+    # the memo's (25 x 0,028) = 0,7 mg, its 3 ticks (working, value, unit) played as ONE choice of the whole working (2026-10-10)
+    work("2.5.4", "Calculate the daily amount of added human growth hormone that was given to a boy with a mass of 25 kg. Show ALL your working, "
+         "INCLUDING the correct unit.", 3, [
+             "Daily amount = 25 ÷ 0,028\n≈ 892,86 mg",      # divides instead of multiplying
+             "Daily amount = 25 × 0,28\n= 7 mg",            # misreads the dosage 0,028 as 0,28
+             "Daily amount = 25 × 0,028\n= 0,7 mg",         # the memo
+             "Daily amount = 25 × 0,028\n= 0,7 kg"], 2,     # takes the unit of the boy's mass, not of the dosage
+         ["The dosage is per kg of body weight.", "How many kilograms does the boy have, and which unit is the dosage given in?"]),
     rub("2.5.5", "Give a conclusion for this investigation.", 2, ["Added growth hormone causes an increase in height of children with ISS"],
         ["A conclusion answers the aim.", "What did the growth hormone do to the boys' height?"], each=2),
 ]
@@ -235,19 +266,19 @@ q31 = [
     term("3.1.1(b)", "Identify part B", ["pupil"], ["It is the opening in front of the lens.", "Light passes through it."]),
     term("3.1.1(c)", "Identify part C", ["iris"], ["It surrounds the opening.", "Its muscles change the opening's size."]),
     rub("3.1.2", "Describe the appearance of the cornea of an eye with astigmatism.", 1, ["It is not evenly curved / rounded"],
-        ["Compare the two corneas.", "Is the curve the same all round?"]),
+        ["Compare the outline of the two corneas in the diagram.", "Trace the front of the eye with astigmatism from top to bottom."]),
     rub("3.1.3", "Explain how astigmatism affects vision.", 3,
         ["The light is refracted unevenly / in different directions", "and does not focus on the retina", "forming a blurred image"],
-        ["The cornea bends light.", "If its curve is uneven, where does the light go?"]),
+        ["The cornea bends (refracts) light as it enters the eye.", "Where does the light end up, and what kind of image forms?"]),
     lst("3.1.4", "Give ONE treatment for astigmatism.", 1, 1, [["laser"], ["surgery", "operation"], ["glasses", "spectacles", "lenses", "contact"]],
         ["It can be corrected, not cured by medicine.", "Think of what an optometrist offers."]),
 ]
 LETS5 = ["A", "B", "C", "D", "E"]
 q32 = [
     term("3.2.1", "Name the branch of the nervous system represented by the parts shown.", ["central nervous system", "CNS"],
-         ["The brain and the spinal cord together.", "It is the central branch."]),
+         ["The brain and the spinal cord together.", "The other branch is made of the nerves that run out to the rest of the body."]),
     ln("3.2.2(a)", "Give the LETTER and NAME of the part responsible for balance and coordination", LETS5, "B", ["cerebellum"],
-       ["It is at the back, below the large folded part.", "Its name means 'little brain'."]),
+       ["It is at the back, below the large folded part.", "Damage to it makes a person walk unsteadily."]),
     ln("3.2.2(b)", "Give the LETTER and NAME of the part responsible for control of breathing", LETS5, "C", ["medulla oblongata", "medulla"],
        ["It joins the brain to the spinal cord.", "It controls what you do without thinking: heart rate, breathing."]),
     ln("3.2.2(c)", "Give the LETTER and NAME of the part responsible for control of skeletal muscles", LETS5, "A", ["cerebrum"],
@@ -255,7 +286,7 @@ q32 = [
     rub("3.2.3", "Describe the pathway of an impulse from part D through the spinal cord to part E, to bring about a reflex action.", 6,
         ["The impulse is transmitted by the sensory neuron", "via the dorsal root of the spinal nerve", "to the interneuron", "and to the motor neuron",
          "by synaptic contact", "It is then transmitted via the ventral root of the spinal nerve", "to the effector, which brings about the reflex action"],
-        ["Follow the arrows: in at D, out at E.", "Sensory, then inter, then motor neuron: through which roots?"]),
+        ["Follow the arrows: in at D, out at E.", "Which neurons carry the impulse, and through which roots does it enter and leave the cord?"]),
 ]
 q34 = [
     term("3.4.1(a)", "Identify part A", ["pinna", "auricle"], ["It is the outer flap.", "It collects sound."]),
@@ -269,11 +300,11 @@ q34 = [
         ["Speed and direction changes are sensed in the semicircular canals.", "Receptor, nerve, brain, then muscles."]),
     rub("3.4.4(a)", "Explain how damage to the hair cells in the organ of Corti can lead to hearing loss", 2,
         ["Fewer / no stimuli will be converted into impulses", "Fewer / no impulses will be sent to the cerebrum to be interpreted"],
-        ["The hair cells are the hearing receptors.", "No receptor, no impulse: where would it have gone?"]),
+        ["The hair cells are the hearing receptors.", "What does a receptor do with a stimulus, and where does the message go next?"]),
     rub("3.4.4(b)", "Explain how earplugs can prevent damage to the hair cells in the organ of Corti", 3,
         ["The earplugs limit the sound waves in the auditory canal / reaching the tympanic membrane", "Fewer vibrations are formed in the middle ear",
          "Fewer pressure waves are formed in the cochlea to prevent damage"],
-        ["Follow the sound in: canal, eardrum, bones, cochlea.", "Less sound in means less of what at each step?"]),
+        ["Follow the sound in: canal, eardrum, bones, cochlea.", "What does an earplug do to the sound, and what follows at each step?"]),
 ]
 q35 = [
     term("3.5.1", "Name the organ that secretes insulin.", ["pancreas"], ["It also makes digestive juices.", "Its islets of Langerhans make the hormone."]),
@@ -293,11 +324,11 @@ q35 = [
         table=["Long-acting insulin treatment", "Rapid-acting insulin treatment"]),   # played as the table it asks for (2026-10-09 polish)
     term("3.5.4", "Name the type of insulin treatment that is similar to insulin secretion in a healthy person.",
          ["rapid-acting insulin", "rapid-acting", "rapid acting insulin", "rapid acting", "rapid-acting insulin treatment"],
-         ["Which treated line rises and falls like person A's?", "It is given before each meal."]),
+         ["Which treated line rises and falls like person A's?", "A healthy pancreas releases insulin each time a meal is eaten."]),
     rub("3.5.5", "Explain why person B may experience a lack of energy after receiving a rapid-acting insulin injection if NO meal is taken.", 2,
         ["The insulin will reduce the glucose level even further / glucose is converted to glycogen / cells take up more glucose",
          "There is less glucose available for cellular respiration"],
-        ["Insulin lowers blood glucose.", "With no meal, what is left for respiration?"]),
+        ["What does insulin do to the blood glucose level?", "With no meal, what is left for cellular respiration?"]),
 ]
 missions_b = [
     {"id": "2.1", "title": "Question 2.1", "kind": "Bird eggs", "marks": 8, "lead": "In bird eggs, the yolk is the main source of energy for the developing embryo.",
@@ -332,7 +363,8 @@ missions_b = [
      "lead": "The diagrams below represent the structure of a normal eye and that of an eye with astigmatism.", "items": q31,
      "figure": fig(13, (150, 152, 475, 356), "Two eyes in section, a normal eye on the left and an eye with astigmatism on the right. On the normal "
                    "eye, A points to the fluid-filled space at the front, behind the cornea; B to a bracket at the opening in front of the lens; C to "
-                   "the part around that opening. The cornea of the eye with astigmatism has an irregular, uneven curve.")},
+                   "the part around that opening. The eye with astigmatism has the same parts, but the outline of its cornea is drawn "
+                   "differently from the normal eye's.")},   # 2026-10-10: was "an irregular, uneven curve", 3.1.2's answer
     {"id": "3.2", "title": "Question 3.2", "kind": "The nervous system", "marks": 13, "lead": "The diagrams below show parts of the human nervous system.",
      "items": q32,
      "figure": fig(14, (105, 114, 524, 437), "Left: the brain in section. A labels the large folded upper part; B the smaller folded part at the "
@@ -342,7 +374,7 @@ missions_b = [
      "items": [rub("3.3", "Describe how the human eye ACCOMMODATES for distant vision.", 5,
                    ["The ciliary muscles relax", "The suspensory ligaments become taut / tension on the lens increases", "The lens becomes less convex",
                     "causing light to be refracted less", "to form a clear image on the retina"],
-                   ["Start with the muscles round the lens.", "For a distant object the lens must bend light less."])]},
+                   ["Start with the muscles round the lens.", "How much do the rays from a distant object need to be bent?"])]},
     {"id": "3.4", "title": "Question 3.4", "kind": "The ear", "marks": 14, "lead": "The diagram below shows the structure of the human ear.", "items": q34,
      "figure": fig(15, (107, 111, 529, 389), "The human ear. A labels the outer flap on the left; the auditory canal (labelled) runs inward from it; "
                    "B, three lines to the small bones behind the eardrum; C, a bracket beside the three loops at the top right; D, the spiral at the "
@@ -360,6 +392,140 @@ missions_b = [
                    "40 at 20:00, falling to about 10 between them and to 4 by 3:00. Person B (dashed line): about 1 most of the time, with peaks of 30 at "
                    "8:00, 15:00 and 22:00. Person C (dotted line): steady at 10 all day, dipping to about 4 at 23:00 and back to 10 after 0:00.")},
 ]
+
+# ---- Written answers as STATEMENTS (Murci 2026-10-10, the rollout rulings) ----
+# A written part plays as picking statements: the memo's own points (right, tidied to one reading of its "/" alternatives) and
+# CLEARLY wrong ones (the opposite, or a confusion with another structure or hormone; never a true point the memo leaves out). The
+# learner picks marks/each of them, any right one counts (the memo's "any N"), each right pick earns `each` (1 a tick here; 2.5.3
+# and 2.5.5 are one point the memo ticks twice); the cards are shuffled the same way every run. The rubrics above stay as the source.
+# A COMPULSORY point (2.1.1, 2.2.3: "Compulsory mark * 1 + Any N") cannot be forced in a pick, so those parts carry exactly as many
+# right statements as the count, the compulsory one among them: full marks then need it, as in the memo (one "any" point left out).
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("ls-p1-2025-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # compulsory: the high yolk (*); "(more) independent" is the "any" point left out (see above)
+    "2.1.1": (1, ["The duck's egg has a high percentage of yolk.", "The egg therefore contains more energy and nutrients.",
+                  "The hatchling will therefore be well developed."],
+                 ["The duck's egg has a low percentage of yolk.", "The hatchling is blind, naked and helpless when it hatches.",
+                  "A high percentage of yolk means that the hatchling needs more parental care."]),
+    "2.1.3": (1, ["Their eggs have a lower percentage of yolk.", "Their hatchlings will therefore not be fully developed."],
+                 ["Their eggs have a higher percentage of yolk than the other birds' eggs.",
+                  "Their hatchlings are fully developed and can feed themselves at once.",
+                  "Their eggs contain more energy, so the chicks need no help from their parents."]),
+    # the memo's first answer (temperature + its result); its OR answer (protection from injury + the same result) is not a card: a
+    # learner picking both roles would earn 2 where the memo gives 1 for either answer's role
+    "2.2.2": (1, ["It keeps the testes at a temperature lower than body temperature.", "It ensures the production of good quality sperm."],
+                 ["It keeps the testes at a temperature higher than body temperature.", "It produces the fluid in which the sperm swim.",
+                  "It secretes testosterone, which forms the sperm."]),
+    # compulsory: spermatogenesis (*); "under the influence of testosterone" is the "any" point left out (see above)
+    "2.2.3": (1, ["The process is called spermatogenesis.", "It starts with diploid cells.", "It takes place in the seminiferous tubules of the testes.",
+                  "The cells undergo meiosis.", "Haploid sperm cells are formed."],
+                 ["The process is called oogenesis.", "Haploid cells undergo mitosis to form diploid sperm cells.", "It takes place in the prostate gland."]),
+    "2.3.1(a)": (1, ["The corpus luteum degenerates.", "The progesterone level therefore decreases.",
+                     "The endometrium is no longer maintained, and menstruation occurs."],
+                    ["The corpus luteum grows and secretes more progesterone.", "Oestrogen from the Graafian follicle breaks down the endometrium.",
+                     "High levels of progesterone cause the endometrium to be shed."]),
+    "2.3.1(b)": (1, ["The Graafian follicle secretes oestrogen.", "Oestrogen increases the thickness of the endometrium."],
+                    ["The corpus luteum secretes progesterone, which thickens the endometrium from day 7 to day 14.",
+                     "Oestrogen causes the endometrium to break down.", "FSH secreted by the ovary thickens the endometrium."]),
+    "2.3.2": (1, ["It becomes more vascular.", "It becomes more glandular."],
+                 ["It loses its blood vessels.", "Its glands disappear.", "It becomes thinner and drier."]),
+    "2.3.3": (1, ["It allows for the implantation of the embryo.", "It allows for the development of the placenta.",
+                  "It increases the blood supply for the nutrition of the developing embryo."],
+                 ["It allows the ovum to be released from the ovary.", "It prevents the embryo from attaching to the uterus wall.",
+                  "It stops sperm from reaching the ovum."]),
+    "2.4.3": (1, ["The arteriole dilates (vasodilation).", "More blood flows to the surface of the skin.", "More heat is lost from the body.",
+                  "The body temperature decreases back to normal."],
+                 ["The arteriole constricts (vasoconstriction).", "Less blood flows to the surface of the skin.",
+                  "Less heat is lost, so the body temperature rises."]),
+    "2.5.3": (2, ["To prove that it is the added growth hormone that caused the change in height, and not any other factor."],
+                 ["To give Group B a higher dosage of the growth hormone than Group A.", "To make sure that all the boys reached the same height.",
+                  "To show that malnutrition causes ISS.", "To increase the number of boys who received the growth hormone."]),
+    "2.5.5": (2, ["Added growth hormone causes an increase in height of children with ISS."],
+                 ["Added growth hormone has no effect on the height of children with ISS.",
+                  "Added growth hormone causes a decrease in height of children with ISS.", "Malnutrition causes ISS in children.",
+                  "The height of children with ISS cannot be changed by any treatment."]),
+    "3.1.2": (1, ["It is not evenly curved."],
+                 ["It is cloudy, so light cannot pass through it.", "It is perfectly round and evenly curved.", "It is completely flat.",
+                  "It has a hole in its centre."]),
+    "3.1.3": (1, ["The light is refracted unevenly.", "The light does not focus on the retina.", "A blurred image is formed."],
+                 ["The light is refracted evenly and focuses on the retina.", "A clear, sharp image is formed.",
+                  "The lens becomes cloudy, so no light reaches the retina."]),
+    # the memo's seven points, "Any" six
+    "3.2.3": (1, ["The impulse is transmitted by the sensory neuron.", "It enters the spinal cord via the dorsal root of the spinal nerve.",
+                  "It is passed on to the interneuron.", "It is then passed on to the motor neuron.",
+                  "It passes from one neuron to the next by synaptic contact.", "It leaves the spinal cord via the ventral root of the spinal nerve.",
+                  "It reaches the effector, which brings about the reflex action."],
+                 ["The brain must interpret the impulse before the effector can respond."]),
+    "3.3": (1, ["The ciliary muscles relax.", "The suspensory ligaments become taut.", "The lens becomes less convex.", "Light is refracted less.",
+                "A clear image forms on the retina."],
+               ["The ciliary muscles contract.", "The suspensory ligaments slacken.", "The lens becomes more convex."]),
+    "3.4.3": (1, ["The cristae are stimulated.", "The stimulus is converted into an impulse.", "The impulse is sent via the auditory nerve.",
+                  "The impulse goes to the cerebellum for interpretation.", "Impulses are then sent to the skeletal muscles to restore balance."],
+                 ["The organ of Corti in the cochlea is stimulated.", "The impulse is sent via the optic nerve.",
+                  "Impulses are sent to the tympanic membrane to restore balance."]),
+    "3.4.4(a)": (1, ["Fewer stimuli are converted into impulses.", "Fewer impulses are sent to the cerebrum to be interpreted."],
+                    ["The damaged hair cells repair themselves and send more impulses.", "More impulses are sent to the cerebrum.",
+                     "Sound waves can no longer enter the auditory canal."]),
+    "3.4.4(b)": (1, ["The earplugs limit the sound waves in the auditory canal.", "Fewer vibrations are formed in the middle ear.",
+                     "Fewer pressure waves are formed in the cochlea, which prevents damage."],
+                    ["The earplugs make the ossicles vibrate more strongly.", "The earplugs repair the damaged hair cells.",
+                     "More pressure waves are formed in the cochlea."]),
+    # the memo's first point read one way (its "/" readings are one tick), then the second
+    "3.5.5": (1, ["The insulin lowers the blood glucose level even further.", "There is less glucose available for cellular respiration."],
+                 ["The insulin raises the blood glucose level.", "Insulin converts glycogen into glucose.",
+                  "More glucose is available for cellular respiration."]),
+}
+# A written part whose memo weighs two sides plays as a SORT: each statement dragged to its side, or to "Not true", 1 mark a statement.
+# 3.5.3 (Tabulate TWO differences: table 1 + 2 x 2) sorts two of the memo's differences, both sides each (4), and one row true of
+# neither treatment: placing every row in its column is the table, the fifth mark.
+SORTS = {
+    "3.5.3": (["Long-acting insulin treatment", "Rapid-acting insulin treatment", "Not true"], [
+        ("The injection causes a lower concentration of insulin (10 international units).", 0),
+        ("The concentration of insulin in the blood remains constant for long periods of time.", 0),
+        ("The injection causes a higher concentration of insulin (30 international units).", 1),
+        ("The concentration of insulin in the blood fluctuates: it increases and drops.", 1),
+        ("An injection is given only once a week.", 2)]),
+}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("ls-p1-2025-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+# Gates: a part whose cards show an earlier part's answer opens once that part is answered (same mission only: the player's gate)
+AFTER = {"2.1.3": ["2.1.2"],          # its cards give 2.1.2's reasoning (the lowest yolk percentages)
+         "2.2.2": ["2.2.1(a)"],       # its cards name the testes (2.2.1(a)'s name)
+         "2.2.3": ["2.2.1(a)"],
+         "2.3.3": ["2.3.2"],          # its cards (blood supply) show 2.3.2's change
+         "3.1.3": ["3.1.2"],          # its cards (light refracted unevenly) show 3.1.2's uneven cornea
+         "3.4.3": ["3.2.2(a)"]}       # a right card names the cerebellum, 3.2.2(a)'s answer (a gate works across questions: gateOpen)
+for _m in missions + missions_b:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+        if _it["n"] in AFTER:
+            _m["items"][_k]["after"] = AFTER[_it["n"]]
+assert not [i["n"] for m in missions + missions_b for i in m["items"] if i["t"] in ("rubric", "steps")], "a written part or typed steps left"
+assert sorted(AFTER) == sorted(i["n"] for m in missions + missions_b for i in m["items"] if i.get("after"))
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
