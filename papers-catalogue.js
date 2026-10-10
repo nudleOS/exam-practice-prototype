@@ -246,7 +246,7 @@ window.NX_CATALOGUE = {
    "missions": 16,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "b84437b1bc",
+   "rev": "384e133b97",
    "source_pdf": "uploads/Life Sciences P1 Nov 2024 Eng.pdf"
   },
   {
