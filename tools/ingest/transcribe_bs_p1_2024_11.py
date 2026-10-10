@@ -13,7 +13,9 @@ The memo's shapes map as in Business Studies P1 Nov 2025 (transcribe_bs_p1_2025_
     marker never requires;
   - only an alternative answer's FIRST point starts with "OR" (each "OR" opens a new alternative, and only the best one counts);
   - in an essay the memo's "OPTION 1 ... OR ... OPTION 2" for one aspect is the same steps worded twice: each option-2 wording is an
-    "ACCEPT:" of its option-1 step (an "OR" inside an essay would make the rest of the essay the alternative)."""
+    "ACCEPT:" of its option-1 step (an "OR" inside an essay would make the rest of the essay the alternative).
+Those rubrics stay as the source; the bottom block (Murci's rulings of 2026-10-10) plays every written part as statements to pick
+(`stmt`) or, where the memo weighs two sides, as a sort (`sort_`), and each essay as sections (one per memo heading) plus insight."""
 import json
 from pathlib import Path
 
@@ -77,7 +79,8 @@ q12 = [
     term("1.2.4", "The employee's qualifications and skills are matched with the requirements of the job during the ... procedure.", ["placement"],
          ["Selection chooses the person; what puts them in the right position?", "Skills matched with the job's requirements."]),
     term("1.2.5", "Monwa Plastics continuously revise their processes to improve the quality of their products. This is known as the ... step "
-         "in the PDCA model.", ["act"], ["Plan, Do, Check, Act.", "Revising processes to improve them comes last."]),
+         "in the PDCA model.", ["act"], ["PDCA is a cycle of improving quality: which step is about changing how the work is done?",
+                                         "Which step takes what was learned and makes it the new, better way of working?"]),
 ]
 COL_B = ["process of finding potential candidates for available vacancies",
          "large businesses may prevent effective training due to poor communication",
@@ -123,7 +126,7 @@ q22 = [rub("2.2", "Outline the advantages of intensive strategies.", 6, [
      "What does the business gain: sales, loyalty, market share, control over prices?"], each=2)]
 q23 = [
     term("2.3.1", "Name the PESTLE factor that is applicable to MM in the scenario above.", ["Environmental", "Environmental factor", "Environment"],
-         ["What is MM doing to the river?", "PESTLE: political, economic, social, technological, legal, environmental."]),
+         ["What is MM doing to the river?", "Think about what the dumping damages, not about the money it saves."]),
     rub("2.3.2", "Recommend ways in which MM can deal with the challenges posed by the PESTLE factor named in QUESTION 2.3.1.", 4, [
         "Chemicals/Ingredients should be clearly indicated on labels/packaging to inform customers about possible side effects/correct use of products.",
         "MM/Businesses implemented cost effective measures to dispose of waste.",
@@ -152,7 +155,8 @@ q24 = [rub("2.4", "Discuss any TWO types of defensive strategies.", 6, [
 q25 = [
     term("2.5.1", "Name the pillar of the Broad-Based Black Economic Empowerment Act (BBBEE), 2003 (Act 53 of 2003) applied by LS in the "
          "scenario above.", ["Management control", "Management and control"],
-         ["Sandile now sits on the board of directors.", "BBBEE pillars: ownership, management control, skills development, ..."]),
+         ["Sandile now sits on the board of directors.",
+          "Which pillar is about who runs the business and makes its decisions, not who owns its shares?"]),
     rub("2.5.2", "Describe the purpose of the Broad-Based Black Economic Empowerment Act (BBBEE), 2003 (Act 53 of 2003).", 4, [
         "BBBEE Act enables wealth to be spread more broadly across all population groups.",
         "Outlines areas that would give the government a platform for bringing equitable spread of wealth.",
@@ -345,7 +349,7 @@ missions_q3 = [
      "lead": "Read the scenario below and answer the questions that follow.", "extract": "TOBBI LOGISTICS (TL)\n\n" + TL, "items": q33},
     {"id": "3.4", "title": "Question 3.4", "kind": "Employment Equity Act", "marks": 6, "items": q34},
     {"id": "3.5", "title": "Question 3.5", "kind": "Quality management", "marks": 4, "items": q35},
-    {"id": "3.6", "title": "Question 3.6", "kind": "The financial function", "marks": 6,
+    {"id": "3.6", "title": "Question 3.6", "kind": "Quality indicators", "marks": 6,
      "lead": "Read the scenario below and answer the questions that follow.", "extract": "MOOSA LIMITED (ML)\n\n" + ML, "items": q36},
     {"id": "3.7", "title": "Question 3.7", "kind": "Client satisfaction", "marks": 6, "items": q37},
     {"id": "3.8", "title": "Question 3.8", "kind": "Cost of quality", "marks": 4, "items": q38},
@@ -364,7 +368,8 @@ q41 = [lst("4.1", "Name any FOUR provisions of the Basic Conditions of Employmen
             ["Particulars of employment and remuneration", "Particulars of employment", "Remuneration"],
             ["Termination of employment", "Termination"],
             ["Prohibition of employment of children and forced labour", "Prohibition of child labour", "Child labour", "Forced labour"]],
-           ["The BCEA sets the minimum conditions of employment.", "Working time, leave, pay details, ending employment, child labour."])]
+           ["The BCEA sets the minimum conditions of employment.",
+            "Think of the minimum rights every employee has, from their first day at work to their last."])]
 q42 = [rub("4.2", "Outline the rights of consumers in terms of the National Credit Act (NCA), 2005 (Act 34 of 2005).", 6, [
     "Apply for credit and to be free from discrimination.", "Obtain reasons for credit being refused.",
     "Receive pre-agreement documentation/credit quote that is valid for 7 days before concluding any credit transaction.",
@@ -379,7 +384,8 @@ q42 = [rub("4.2", "Outline the rights of consumers in terms of the National Cred
     each=2)]
 q43 = [
     pick("4.3.1", "Quote TWO steps in strategy evaluation implemented by SB from the scenario above.", sentences(SB), [2, 3],
-         ["Which sentences describe how SB checked its strategy?", "The first sentences only set the scene."]),
+         ["Which sentences describe how SB checked its strategy?",
+          "Look for sentences that describe a specific check on the strategy, not just the fact that it was evaluated."]),
     rub("4.3.2", "Explain other steps in strategy evaluation.", 4, [
         "Look forward and backwards into the implementation process.", "Compare the expected performance with the actual performance.",
         "Determine the reasons for deviations and analyse these reasons.", "Take corrective action so that deviations may be corrected.",
@@ -413,7 +419,8 @@ q45 = [lst("4.5", "State any FOUR aspects that should be included in an employme
             ["Probation period", "Probation"], ["Signatures of both the employer and employee", "Signatures"],
             ["List of documents that form part of the contract", "Code of conduct", "Code of ethics", "Appointment letter"],
             ["Disciplinary policy", "Disciplinary procedure", "Rules"]],
-           ["An employment contract sets out who, what, where, when and for how much.", "The two parties, the job, pay, hours, leave, signatures."])]
+           ["An employment contract sets out who, what, where, when and for how much.",
+            "Imagine reading your first job offer: what would you want it to say before you agree to it?"])]
 q46 = [rub("4.6", "Identify TWO components of a job analysis used by MC. Motivate your answer by quoting from the scenario above.", 6, [
     "Job specification.", QUOTE + "'MC indicated that applicants must have a diploma in construction.'",
     "Job description.", QUOTE + "'The successful candidate will compile progress reports on assigned projects.'"],
@@ -464,19 +471,20 @@ missions_q4 = [
 ]
 
 # ---- Section C: the essays (answer any ONE), the question paper page 9 and the memo pages 21-28 ----
-# Each essay is one rubric part (as printed: one question of 40): the memo's points under its own headings and sub-maxima (facts
-# capped at 32), and insight (8). Every point earns 1 here, as in the Nov 2025 essays: the keyword stand-in cannot judge sub-maxima,
-# repetition or insight, so an essay's mark waits for model marking.
+# Each essay is first transcribed as one rubric (as printed: one question of 40): the memo's points under its own headings and
+# sub-maxima (facts capped at 32), and insight (8). That rubric stays as the SOURCE; the block at the bottom plays each essay as
+# SECTIONS (one part per memo heading, then an insight part), as in transcribe_bs_p2_2025_11.py.
 INSIGHT = ["Insight (8), 2 each: Layout (an introduction, paragraphs and a conclusion, the words INTRODUCTION and CONCLUSION stated and "
            "explained); Analysis and interpretation (all headings addressed; interpreted correctly); Synthesis (only relevant facts); "
            "Originality (an example in any TWO of the four aspects, based on recent information, current trends and developments, not "
            "older than two years)."]
 ESSAY_NOTES = ["Facts are capped at 32 of the 40; no marks for content repeated from the introduction or the conclusion."]
-q5 = [rub("5", "The basic aim of the Skills Development Act (SDA), 1998 (Act 97 of 1998) is to expand on the knowledge and competencies of the "
-          "labour force. SETAs were established to facilitate the implementation of the SDA. Businesses are expected to oblige with this Act and "
-          "be fully conversant with its requirements.\n\nWrite an essay on the Skills Development Act in which you include the following aspects:\n"
-          "• Outline the role of SETAs in supporting the Skills Development Act.\n• Explain the purpose of the Skills Development Act.\n"
-          "• Discuss the impact of the Skills Development Act on businesses.\n• Recommend ways in which businesses can comply with this Act.", 40, [
+Q5_STEM = ("The basic aim of the Skills Development Act (SDA), 1998 (Act 97 of 1998) is to expand on the knowledge and competencies of the "
+           "labour force. SETAs were established to facilitate the implementation of the SDA. Businesses are expected to oblige with this Act and "
+           "be fully conversant with its requirements.\n\nWrite an essay on the Skills Development Act in which you include the following aspects:\n"
+           "• Outline the role of SETAs in supporting the Skills Development Act.\n• Explain the purpose of the Skills Development Act.\n"
+           "• Discuss the impact of the Skills Development Act on businesses.\n• Recommend ways in which businesses can comply with this Act.")
+q5 = [rub("5", Q5_STEM, 40, [
     "Introduction (any 2 x 1): a SETA is a vocational skills training organisation that identifies skills shortages that are needed in "
     "different industries; the Skills Development Act was introduced to redress the imbalances of the past; the SDA enables South Africans to "
     "gain access to skills training opportunities that have long-term benefits; businesses that comply with the SDA are able to create a good "
@@ -536,12 +544,13 @@ q5 = [rub("5", "The basic aim of the Skills Development Act (SDA), 1998 (Act 97 
     ["Plan four headings, one per bullet in the question, between an introduction and a conclusion.",
      "SETAs: what they do. Purpose: what the Act sets out to do. Impact: good AND bad for a business. Compliance: what a business must do."],
     notes=ESSAY_NOTES)]
-q6 = [rub("6", "Businesses that follow the correct selection procedures are able to identify suitable and qualified candidates for vacant positions. "
-          "They also use different salary determination methods to ensure that their employees are remunerated correctly. Businesses offering "
-          "fringe benefits and inducting new employees are more likely to have a productive workforce.\n\nWrite an essay on the human resources "
-          "function in which you include the following aspects:\n• Outline the selection procedure as a human resources activity.\n"
-          "• Explain the TWO salary determination methods.\n• Discuss the impact of fringe benefits on businesses.\n"
-          "• Advise businesses on the benefits of induction.", 40, [
+Q6_STEM = ("Businesses that follow the correct selection procedures are able to identify suitable and qualified candidates for vacant positions. "
+           "They also use different salary determination methods to ensure that their employees are remunerated correctly. Businesses offering "
+           "fringe benefits and inducting new employees are more likely to have a productive workforce.\n\nWrite an essay on the human resources "
+           "function in which you include the following aspects:\n• Outline the selection procedure as a human resources activity.\n"
+           "• Explain the TWO salary determination methods.\n• Discuss the impact of fringe benefits on businesses.\n"
+           "• Advise businesses on the benefits of induction.")
+q6 = [rub("6", Q6_STEM, 40, [
     "Introduction (any 2 x 1): the human resources manager is responsible for selecting and appointing qualified and competent employees to "
     "avoid fruitless expenditure; businesses use different salary determination methods to appropriately compensate their employees according "
     "to the kind of work done or tasks they perform; employees receive fringe benefits over and above their normal salaries and wages, which "
@@ -613,13 +622,335 @@ q6 = [rub("6", "Businesses that follow the correct selection procedures are able
     "for new employees to gain a better understanding of the requirements of the new job.",
     "Any other relevant answer under each heading."] + INSIGHT,
     ["Plan four headings, one per bullet in the question, between an introduction and a conclusion.",
-     "Selection: the steps in order. Salary: piecemeal and time-related. Fringe benefits: good AND bad. Induction: what it gives the business."],
+     "Selection: the steps in order. Salary: compare a worker paid for each item finished with one paid a fixed rate on a salary scale; "
+     "name and explain each method. Fringe benefits: good AND bad. Induction: what it gives the business."],
     notes=["The selection procedure may be in any order; the memo's two options are the same steps worded differently.",
            "Salary determination methods: mark the first TWO only."] + ESSAY_NOTES)]
 missions_c = [
     {"id": "5", "title": "Question 5", "kind": "Essay: the Skills Development Act", "marks": 40, "items": q5},
     {"id": "6", "title": "Question 6", "kind": "Essay: the human resources function", "marks": 40, "items": q6},
 ]
+
+# ---- Written answers as STATEMENTS (Murci 2026-10-10, as in transcribe_bs_p2_2025_11.py) ----
+# A written part plays as picking statements: the memo's own points (right, tidied to one reading of its "/" alternatives) and
+# CLEARLY wrong ones (never a true point the memo leaves out: its "any other relevant answer" would make that right). The learner
+# picks marks/each of them, any right one counts (the memo's "any N"), each right pick earns `each`; the cards are shuffled the same
+# way every run. The memo points above stay as the source.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("bs-p1-2024-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    "2.2": (2, ["Increase in sales due to a variety of advertising campaigns.", "Gain customer loyalty through effective promotion campaigns.",
+                "Businesses can have more control over the prices of products.",
+                "Increased market share reduces the business's vulnerability to actions of competitors."],
+               ["Spread the business's risk by adding new products that are unrelated to its current products.",
+                "Raise cash by selling off divisions that are no longer profitable.",
+                "Guarantee that the business will never face any competition again."]),
+    "2.3.2": (2, ["Implement cost-effective measures to dispose of waste.", "Implement recycling measures to prevent pollution of the environment.",
+                  "Engage in environmentally sustainable practices, such as conserving natural resources.",
+                  "Clearly indicate chemicals on labels to inform customers about the correct use of products."],
+                 ["Keep dumping the waste in the river, as this saves the business money.",
+                  "Move the dumping to a river further away from the town.", "Dump the waste at night so that nobody sees it."]),
+    # a name and its discussion (Strategy 2 + Discussion 1): one card each, 3 a card; the wrong cards pair a name with another's meaning
+    "2.4": (3, ["Divestiture: selling off assets or divisions that are no longer profitable.",
+                "Retrenchment: letting go of employees for operational reasons, to reduce costs.",
+                "Liquidation: selling all assets and ending the business activities to pay creditors."],
+               ["Divestiture: terminating employment contracts to reduce costs.",
+                "Retrenchment: selling the entire business to pay shareholders a fair price for their shares.",
+                "Liquidation: selling off a product line with slow growth potential."]),
+    "2.5.2": (2, ["It enables wealth to be spread more broadly across all population groups.",
+                  "It establishes the Black Economic Empowerment Advisory Council, which addresses matters related to black empowerment.",
+                  "It aims at targeting inequality in the South African economy.",
+                  "It increases the number of black people that manage and control South African businesses."],
+                 ["It sets the minimum wage that every business must pay its workers.", "It protects consumers who buy goods on credit.",
+                  "It allows businesses to ignore the Codes of Good Practice."]),
+    "2.6": (2, ["Disclose the prices of all products on sale.", "Provide adequate training to staff on the CPA.",
+                "All agreements must provide for a five-day cooling-off period.",
+                "Display the name of the business on all business documents, such as invoices."],
+               ["Charge customers a fee every time they complain.", "Show the prices only when the customer reaches the till.",
+                "Refuse to tell customers what a product contains."]),
+    "2.8": (2, ["Have a clear vision, mission statement and realistic objectives in place.",
+                "Identify strengths, weaknesses, opportunities and threats by conducting environmental scanning.",
+                "Formulate alternative strategies to respond to the challenges.",
+                "Continuously evaluate and monitor strategies in order to take corrective action."],
+               ["Implement a strategy before deciding on the business's vision and mission.", "Never review a strategy once it has been implemented.",
+                "Ignore the external environment and focus only on last year's results."]),
+    "3.2": (2, ["Book and prepare the venue for the interview.", "Inform all shortlisted candidates about the date and place of the interview.",
+                "Develop a core set of questions based on the skills required.",
+                "Check the CV of every candidate for anything that may need to be explained."],
+               ["Ask the candidates to find and book a venue for their own interviews.", "Decide on the successful candidate before reading any CVs.",
+                "Make up the questions on the spot during each interview."]),
+    "3.3.2": (2, ["The employer may dismiss an employee for a valid reason, such as misconduct.",
+                  "Employees may resign voluntarily for better job opportunities.",
+                  "An employee may have reached the pre-determined age for retirement.",
+                  "The duration of the employment contract comes to an end."],
+                 ["The employer may end the contract because the employee joined a trade union.",
+                  "The employer may end the contract because the employee is pregnant.",
+                  "The contract ends automatically when the employee takes annual leave."]),
+    "3.4": (2, ["Offer equal pay for work of equal value.",
+                "Compile employment equity plans that indicate how affirmative action will be implemented.",
+                "Retrain and develop designated groups through skills development programmes.",
+                "Report to the Department of Labour on the progress in implementing the equity plan."],
+               ["Pay men and women differently for the same work.",
+                "Keep the employment equity plan secret from employees and the Department of Labour.",
+                "Appoint new staff without any clear appointment process."]),
+    "3.5": (2, ["Effective customer services are rendered, resulting in increased customer satisfaction.", "Time and resources are used efficiently.",
+                "A business has a competitive advantage over its competitors.", "It improves the business image, as there are fewer defects and returns."],
+               ["Customers no longer need to be asked about their needs.", "The business can stop training its employees.",
+                "The number of defects and returns increases."]),
+    "3.6.2": (2, ["Obtain capital from the most suitable sources.", "Draw up budgets to ensure sufficient application of monetary resources.",
+                  "Implement financial control measures to prevent fraud.",
+                  "Avoid over- and under-capitalisation so that financial resources are used effectively."],
+                 ["Borrow money at the highest interest rate available.", "Draw up financial statements only once every five years.",
+                  "Grant credit to every customer without checking whether they can pay."]),
+    "3.8": (2, ["Introduce quality circles to discuss ways of improving the quality of work.",
+                "Train employees at all levels so that everyone understands their roles in quality management.",
+                "Work closely with suppliers to improve the quality of raw materials.",
+                "Implement pro-active maintenance programmes for machinery to reduce breakdowns."],
+               ["Buy the cheapest raw materials, whatever their quality.", "Repair machines only after they break down.",
+                "Make quality the responsibility of the inspectors alone."]),
+    "4.2": (2, ["The right to apply for credit and to be free from discrimination.", "The right to obtain reasons for credit being refused.",
+                "The right to receive information in plain and understandable language.",
+                "The right to access and challenge credit records and information."],
+               ["The right to receive credit even if they cannot afford to repay it.", "The right to have their debts cancelled whenever they ask.",
+                "The right to keep goods bought on credit without paying for them."]),
+    "4.3.2": (2, ["Compare the expected performance with the actual performance.", "Determine the reasons for deviations and analyse these reasons.",
+                  "Take corrective action so that deviations may be corrected.", "Set specific dates for control and follow up."],
+                 ["Ignore any deviations, as the strategy has already been implemented.",
+                  "Evaluate the strategy only after the business has closed down.",
+                  "Change the expected results so that they match the actual results."]),
+    "4.4": (2, ["Assess the power of the suppliers in influencing prices.",
+                "Suppliers that deliver high quality, unique or scarce products may have power over the business.",
+                "The more powerful the suppliers, the less control the business has over them.",
+                "The smaller the number of suppliers, the more powerful they may be."],
+               ["The more suppliers there are to choose from, the more powerful each supplier becomes.",
+                "Suppliers of common products that anyone can supply have the most power.",
+                "Suppliers have no influence on the prices a business pays."]),
+    # a component and its quote (Component sub max 4 + Motivation sub max 2): one card each, 3 a card
+    "4.6": (3, ["Job specification: 'MC indicated that applicants must have a diploma in construction.'",
+                "Job description: 'The successful candidate will compile progress reports on assigned projects.'"],
+               ["Job description: 'MC indicated that applicants must have a diploma in construction.'",
+                "Job specification: 'The successful candidate will compile progress reports on assigned projects.'",
+                "Job evaluation: 'Mphemba Construction compiled a job analysis for the vacant position of a project manager.'"]),
+    "4.7": (2, ["Solve problems related to quality and implement improvements.", "Investigate problems and suggest solutions to management.",
+                "Make suggestions for improving processes and systems in the workplace.",
+                "Increase employees' morale to boost the team spirit in achieving organisational goals."],
+               ["Discipline employees who make mistakes on the production line.", "Replace management in making all the decisions of the business.",
+                "Inspect finished products only after production is complete."]),
+    "4.8": (2, ["Develop, implement and monitor effective strategic plans.", "Effectively communicate the shared vision, mission and values.",
+                "Set direction and establish priorities for the business.", "Ensure that all departments meet their deadlines and targets."],
+               ["Leave each department to set its own direction without any overall plan.",
+                "Expect employees to behave ethically while managers set a poor example.", "Ignore changes in the business environment."]),
+}
+# A written part whose memo weighs two sides (positive / negative impact) plays as a SORT instead (variety, Murci 2026-10-10): each
+# statement dragged to its side, or to "Not true" (the clearly wrong ones), 1 mark a statement; a grouped match.
+SORTS = {
+    "2.7": (["Positive impact", "Negative impact", "Not true"], [
+        ("It promotes a healthy relationship between the employer and employees.", 0),
+        ("Labour disputes are settled quicker and are less expensive.", 0),
+        ("Costs of labour increase because of legal strikes.", 1),
+        ("Employers may not dismiss employees at will, as procedures have to be followed.", 1),
+        ("It allows employers to dismiss workers who take part in a protected strike.", 2),
+        ("It bans trade unions from the workplace.", 2)]),
+    "3.7": (["Positive impact", "Negative impact", "Not true"], [
+        ("Large businesses use market research to monitor customer satisfaction and analyse customers' needs.", 0),
+        ("It may lead to higher customer loyalty, so businesses may be able to charge higher prices.", 0),
+        ("Large businesses that become complacent with existing customer satisfaction may have limited long-term growth.", 1),
+        ("Employees who seldom come into contact with customers often do not know what will satisfy their needs.", 1),
+        ("Once clients are satisfied, a large business no longer needs to ask them for feedback.", 2),
+        ("A large business that satisfies its clients will never face competition again.", 2)]),
+}
+# Clues for the pick: a typed answer's clue that listed the memo's key words ("Prices, labels, cooling-off periods ...") would point
+# straight at the right cards, so those clues become hints about the idea (brief rule 4: no clue may point to an answer).
+PICK_CLUES = {
+    "2.2": ["Intensive strategies push harder with the products and markets a business already has.",
+            "Intensive strategies are market penetration, market development and product development."],
+    "2.3.2": ["How could MM stop harming the river and the environment?",
+              "Think about what happens to the waste, and to the resources the business uses."],
+    "2.4": ["Defensive strategies protect a business that is struggling.",
+            "Each card pairs a name with a meaning: check that the two belong together."],
+    "2.5.2": ["Why would a law be needed to change who shares in the economy?", "Think of the Act's name: broad-based empowerment."],
+    "2.6": ["The CPA protects people who buy goods and services.", "Which ways keep customers informed and treat them fairly?"],
+    "2.7": ["The LRA deals with unions, strikes, lockouts, disputes and dismissals.",
+            "Some cards help the business, some cost it, and some are not what the Act says."],
+    "2.8": ["It starts with where the business wants to go.", "The process runs from planning, through action, to checking."],
+    "3.2": ["Before the interview: arrangements and preparation.", "What must be ready before the first candidate walks in?"],
+    "3.3.2": ["A contract can end because of the employer, the employee, or time.",
+              "A reason must be fair and lawful: labour law protects some choices an employee makes."],
+    "3.4": ["The EEA is about fair treatment and fair representation at work.", "Which actions promote fairness and openness in the workplace?"],
+    "3.5": ["A system that keeps quality high helps customers, staff and profits.",
+            "Picture a business where quality is checked at every step: what improves?"],
+    "3.6.2": ["How would you SEE that a finance function is working well?", "Which cards show money being raised, used and protected wisely?"],
+    "3.8": ["The cost of quality: inspections, waste, rework, breakdowns.", "Which ways prevent problems before they happen?"],
+    "4.2": ["The NCA protects people who borrow money or buy on credit.",
+            "Think about what a borrower should be told, and how a borrower should be treated."],
+    "4.3.2": ["Strategy evaluation checks whether a strategy is working.", "Which steps would help a business learn from its results?"],
+    "4.8": ["General management leads the business as a whole.", "Think of what a well-run business's top managers do every day."],
+}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("bs-p1-2024-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+for _m in missions_q2 + missions_q3 + missions_q4:
+    for _k, _it in enumerate(_m["items"]):
+        _clues = PICK_CLUES.get(_it["n"], _it["clues"])
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            assert _it["marks"] == len(_rows), _it["n"]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _clues)
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _clues, _each)
+assert not [i["n"] for m in missions_q2 + missions_q3 + missions_q4 for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
+
+# ---- The essays as SECTIONS (Murci 2026-10-10): the memo's headings, each played as statements or a sort, their facts summing to the
+# memo's cap of 32, then an INSIGHT part (LASO, 8) worked out from the picks (Layout: introduction + conclusion right; Analysis: every
+# heading answered; Synthesis: every section right first time; Originality: the example statements picked). The essay's own wording
+# goes to the mission's extract; the memo points above stay as the source.
+def essay(nums, parts, examples, insight_clues):
+    ex = [[n, next(p for p in parts if p["n"] == n)["opts"].index(t)] for n, t in examples]
+    assert sum(p["marks"] for p in parts) == 32, [p["marks"] for p in parts]
+    return parts + [{"t": "insight", "n": nums, "marks": 8, "q": "Insight: your essay's layout, analysis, synthesis and originality, worked out "
+                     "from your picks.", "clues": insight_clues, "of": [p["n"] for p in parts], "intro": parts[0]["n"], "conclusion": parts[-1]["n"],
+                     "examples": ex}]
+
+
+INSIGHT_CLUES = ["Insight is earned from how you answered the sections.", "Right first time, every heading answered, and the examples picked."]
+SORT_ASK = "Ask of each card: does it help the business, cost it, or is it simply not true?"
+
+Q5_EX = ["For example, a retail chain displays a summary of the SDA in its staff room, where all employees can see it.",
+         "For example, a factory assesses its machine operators' skills and sends those who need it on a learnership."]
+q5_parts = essay("5.7", [
+    stmt("5.1", "Introduction: pick the TWO statements that introduce this essay on the Skills Development Act.", 2,
+         ["A SETA is a vocational skills training organisation that identifies the skills shortages in different industries.",
+          "The Skills Development Act was introduced to redress the imbalances of the past.",
+          "The SDA enables South Africans to gain access to skills training opportunities that have long-term benefits."],
+         ["The Skills Development Act was introduced to reduce the number of workers that businesses employ.",
+          "The SDA applies only to government departments, not to businesses.", "SETAs were set up to collect VAT for the government."],
+         ["An introduction says what the essay is about and why it matters.", "Which cards say something true about the Act and SETAs?"], 1),
+    stmt("5.2", "Outline the role of SETAs in supporting the Skills Development Act.", 8,
+         ["Promote and establish learnerships.", "Collect levies and pay out grants as required.",
+          "Approve workplace skills plans and annual training reports.", "Monitor and evaluate the actual training by service providers.",
+          "Develop sector skills plans in line with the National Skills Development Strategy."],
+         ["Collect income tax from employees on behalf of SARS.", "Set the minimum wage for each economic sector.",
+          "Hire and fire employees on behalf of businesses."],
+         ["SETAs are Sector Education and Training Authorities.", "What would a body that runs training for a whole sector do?"], 2),
+    stmt("5.3", "Explain the purpose of the Skills Development Act.", 6,
+         ["Develops the skills of people in South Africa in order to improve productivity.",
+          "Improves the chances of getting a job for previously disadvantaged people.",
+          "Encourages workers to participate in learning programmes.", "Redresses the imbalances of the past through education and training."],
+         ["Sets the maximum number of hours employees may work each week.", "Protects consumers against unfair prices and poor-quality goods.",
+          "Prevents businesses from employing anyone without a university degree."],
+         ["Why did government pass a law about skills?", "Think of the workforce, productivity and fairness."], 2),
+    sort_("5.4", "Discuss the impact of the Skills Development Act on businesses.", 8, ["Positive impact", "Negative impact", "Not true"], [
+        ("It increases the number of skilled employees in areas where these skills are scarce.", 0),
+        ("Businesses may claim back some of the costs of training as a refund from the relevant SETA.", 0),
+        ("Businesses could become more competitive globally.", 0),
+        ("The Skills Development Levy could be an extra burden to financially struggling businesses.", 1),
+        ("The SDA requires a large amount of paperwork, which can cost time and money.", 1),
+        ("The time and money spent on training are wasted if the employees leave the business.", 1),
+        ("Businesses that train their workers no longer have to pay any tax.", 2),
+        ("The SDA forbids businesses from training employees during work hours.", 2)],
+        ["The SDA brings skills, but also costs and paperwork.", SORT_ASK]),
+    stmt("5.5", "Recommend ways in which businesses can comply with this Act.", 6,
+         ["Businesses with more than 50 employees must appoint a skills development facilitator.",
+          "Employers should submit a workplace skills plan and provide evidence that it was implemented.",
+          "One per cent (1%) of an employer's payroll must be paid over to the SETA through SARS."] + Q5_EX,
+         ["Businesses must pay 10% of their profits to the SETA every month.", "Businesses comply by training their managers only.",
+          "Businesses that train their own staff do not need to register with a SETA."],
+         ["Compliance means doing what the Act requires.", "Think of registering, paying the levy and planning the training."], 2),
+    stmt("5.6", "Conclusion: pick the statement that concludes this essay.", 2,
+         ["The Skills Development Act plays an important role in ensuring that the South African workforce is skilled.",
+          "Businesses are encouraged to comply with this Act to avoid penalties and an increased financial burden."],
+         ["The SDA is optional, so businesses can ignore it without any consequences.",
+          "SETAs only make it harder for businesses to train their workers.",
+          "Skills development is the responsibility of employees alone, not of businesses."],
+         ["A conclusion sums up why it all matters.", "Which card would a business agree with after reading your essay?"], 2),
+], [("5.5", Q5_EX[0]), ("5.5", Q5_EX[1])], INSIGHT_CLUES)
+
+Q6_EX = ["For example, a new cashier is shown around the store and introduced to her supervisor on her first day.",
+         "For example, a new factory worker is taken through the safety rules before he operates any machine."]
+q6_parts = essay("6.7", [
+    stmt("6.1", "Introduction: pick the TWO statements that introduce this essay on the human resources function.", 2,
+         ["The human resources manager is responsible for selecting and appointing qualified and competent employees.",
+          "Businesses use different salary determination methods to compensate employees according to the work they do.",
+          "The induction of new employees provides introductory training for a smooth transition into the new work environment."],
+         ["Businesses should appoint the first applicant to avoid wasting time on selection.",
+          "Fringe benefits are paid instead of normal salaries and wages.",
+          "Induction is only for employees who have worked at the business for many years."],
+         ["An introduction says what the essay is about and why it matters.",
+          "Which cards say something true about selection, pay, fringe benefits or induction?"], 1),
+    stmt("6.2", "Outline the selection procedure as a human resources activity.", 8,
+         ["Determine fair assessment criteria on which selection will be based.",
+          "Screen the applications to determine which meet the minimum job requirements.",
+          "Check references to verify the work experience and qualifications on the CV.",
+          "Invite shortlisted candidates for an interview.", "Make a written offer to the selected candidate."],
+         ["Appoint a candidate before checking any references or qualifications, to save time.",
+          "Shortlist every applicant, whether or not they meet the minimum job requirements.",
+          "Make the offer verbally only, so that the candidate has nothing in writing."],
+         ["Selection is how a business chooses the best person from the applicants.",
+          "A fair procedure checks every applicant against the same requirements."], 2),
+    # the finding of 2026-10-10: a clue must not name the two methods (each name is worth 2 in the memo) nor use the word "time"
+    sort_("6.3", "Explain the TWO salary determination methods.", 6, ["Piecemeal", "Time-related", "Not true"], [
+        ("Workers are paid according to the number of items or units they produce.", 0),
+        ("Workers are not paid for the hours they work, however long it takes them to make the items.", 0),
+        ("Workers are paid according to the amount of time they spend at work or on a task.", 1),
+        ("Workers with the same experience and qualifications are paid on salary scales, regardless of the amount of work done.", 1),
+        ("Workers are paid only after the products they made have been sold to customers.", 2),
+        ("Workers are paid according to their age, whatever their work or hours.", 2)],
+        ["Compare a worker paid for each item finished with one paid a fixed rate on a salary scale.",
+         "Ask of each card: is the pay linked to output, to hours, or to neither?"]),
+    sort_("6.4", "Discuss the impact of fringe benefits on businesses.", 8, ["Positive impact", "Negative impact", "Not true"], [
+        ("Attractive fringe benefit packages may reduce employee turnover.", 0),
+        ("It attracts qualified and skilled employees who contribute towards the business goals.", 0),
+        ("Businesses save money, as benefits are tax deductible.", 0),
+        ("Fringe benefits are additional costs that may result in cash flow problems.", 1),
+        ("It can create conflict if benefits are allocated unfairly.", 1),
+        ("Administrative costs increase, as benefits must be correctly recorded for tax purposes.", 1),
+        ("Fringe benefits replace the salary, so the business pays no wages.", 2),
+        ("Offering fringe benefits frees the business from following labour laws.", 2)],
+        ["Fringe benefits are extras on top of a salary, such as a car allowance or medical aid.", SORT_ASK]),
+    stmt("6.5", "Advise businesses on the benefits of induction.", 6,
+         ["It allows new employees to settle in quickly and work effectively.",
+          "It ensures that new employees understand the rules and restrictions in the business.",
+          "It reduces the staff turnover, as new employees have been inducted properly."] + Q6_EX,
+         ["It replaces the need for an employment contract.", "It increases new employees' anxiety, so they work harder.",
+          "It keeps the business's rules and policies hidden from new employees."],
+         ["Induction welcomes new employees and shows them how the business works.",
+          "What does the business gain when new staff settle in well?"], 2),
+    stmt("6.6", "Conclusion: pick the statement that concludes this essay.", 2,
+         ["Competent employees who have been selected with prescribed requirements and criteria will add value to businesses.",
+          "A well-designed induction programme allows new employees to gain a better understanding of the requirements of the new job."],
+         ["Selection procedures waste time, as any applicant can do any job.",
+          "Paying employees according to salary determination methods causes more disputes.",
+          "Induction should be skipped so that new employees can start working sooner."],
+         ["A conclusion sums up why it all matters.", "Which card would a business agree with after reading your essay?"], 2),
+], [("6.5", Q6_EX[0]), ("6.5", Q6_EX[1])], INSIGHT_CLUES)
+
+for _m, _parts, _stem in ((missions_c[0], q5_parts, Q5_STEM), (missions_c[1], q6_parts, Q6_STEM)):
+    _m["items"] = _parts
+    _m["lead"] = "Build the essay section by section, then see your insight."
+    _m["extract"] = "QUESTION " + _m["id"] + ": THE ESSAY\n\n" + _stem   # (the essay's wording in the shared-information card)
+assert not [i["n"] for m in missions_c for i in m["items"] if i["t"] == "rubric"], "an essay left as rubric"
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
