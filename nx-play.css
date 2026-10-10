@@ -656,6 +656,15 @@ body.nx-app [data-donestreak] { justify-content:center; text-align:center; }
 /* the header on one line, as the MCQ panel's: "Question 1", the part's chip, the marks on the right; no "Try 1 of 3" (it did not
    count up; the robot and the feedback say where a learner is) */
 body.nx-play main:not(#mq-stage) [data-parthead] { flex-wrap:nowrap !important; gap:10px !important; }
+/* On a phone it did not fit (2026-10-10, 360 px): every multi-mark header ("QUESTION 3", the medals, "5 marks · first try only") ran
+   up to 9 px past the card. The empty spacer still took a gap and the marks a 14 px margin; the marks keep to the right with an auto
+   margin instead, as tight as the MCQ panel's header. Where even that cannot fit ("QUESTION 10", "10 marks") the marks drop to a
+   line of their own rather than spill out. */
+@media (max-width:600px) {
+  body.nx-play main:not(#mq-stage) [data-parthead] { flex-wrap:wrap !important; row-gap:6px !important; }
+  body.nx-play main:not(#mq-stage) [data-parthead] > span:empty { display:none; }
+  body.nx-play main:not(#mq-stage) [data-parthead] [data-partmarks] { margin-left:auto !important; }
+}
 body.nx-play main:not(#mq-stage) [data-qlabel] { flex:none; white-space:nowrap; font-size:17px; font-weight:500; color:var(--nx-text); }
 body.nx-play main:not(#mq-stage) [data-parthead] [data-partmarks] { order:5; flex:none; white-space:nowrap; }
 body.nx-play main:not(#mq-stage) [data-parthead] [data-try] { display:none; }
