@@ -2551,5 +2551,19 @@ body.nx-play [data-mdone] { font-size:12.5px; color:var(--text2); }
 body.nx-mdrag, body.nx-mdrag * { cursor:grabbing !important; }
 @media (max-width:600px) { body.nx-play [data-mrow] { grid-template-columns:minmax(0, 0.75fr) minmax(0, 1.25fr); }
   body.nx-play :is([data-mcard], [data-mlab]) { font-size:13.5px; } }
+/* a SORT (a grouped match whose cards are a few short groups: positive / negative / not true; Murci 2026-10-10, variety beyond the
+   MCQ): the statement takes the row's width and the slot holds a short group; the groups sit in one row, and on a phone the tray
+   stays in reach above the dock while the statements scroll (tap a group, then a statement, or drag) */
+body.nx-play [data-match][data-mgroups="true"] [data-mrow] { grid-template-columns:minmax(0, 1fr) minmax(118px, 0.42fr); }
+body.nx-play [data-match][data-mgroups="true"] [data-mlab] { font-weight:500; line-height:1.45; }
+body.nx-play [data-match][data-mgroups="true"] [data-mtray] { flex-direction:row; flex-wrap:wrap; align-items:stretch; }
+body.nx-play [data-match][data-mgroups="true"] [data-mtray] > [data-mhead] { flex:1 1 100%; }
+body.nx-play [data-match][data-mgroups="true"] [data-mtray] > [data-mcard] { flex:1 1 0; min-width:0; width:auto; min-height:46px; align-items:center;
+  gap:8px; padding:8px 10px; font-size:13px; line-height:1.25; }
+body.nx-play [data-match][data-mgroups="true"] [data-mtray] > [data-mcard] [data-mletter] { width:24px; height:24px; min-width:24px; font-size:12px; }
+@media (max-width:759px) {
+  body.nx-play [data-match][data-mgroups="true"] [data-mtray] { position:sticky; bottom:calc(var(--nx-dockH, 0px) + 8px); z-index:4; padding:10px;
+    border-radius:18px; border:1px solid var(--nx-panel-line); background:var(--nx-panel); box-shadow:0 -10px 26px -18px rgba(0,0,0,0.6); }
+  body.nx-play [data-match][data-mgroups="true"] [data-mrow] { grid-template-columns:minmax(0, 1fr) 118px; } }
 /* a match card breaks with its lines kept (termBreak snap.wrap) */
 [data-termshards] .ts-glass.ts-wrap { white-space:normal; align-items:flex-start; padding:10px 12px !important; line-height:1.4; }
