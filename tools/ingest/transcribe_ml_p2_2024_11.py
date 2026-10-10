@@ -1,44 +1,60 @@
-"""Mathematical Literacy P2 Nov 2024: every part playable from the question paper (115 of the paper's 150 marks), hand-transcribed into
-the catalogue format (as if Claude had produced it), then run through `ingest.py --from-json` like any ingested paper. Stems, options,
-marks, answers and the memo's working are the paper's and the memo's own (its English); clues and figure captions are ours. No API
-call: the transcription is the source, kept in git (out/ is not). The question paper is a SCAN (no text layer): read from its page
-images; the memo has a text layer, checked against its page images.
+"""Mathematical Literacy P2 Nov 2024, the whole paper (Questions 1 to 5, 150 marks), hand-transcribed into the catalogue format (as if
+Claude had produced it), then run through `ingest.py --from-json` like any ingested paper. Stems, options, marks, answers and the
+memo's working are the paper's and the memo's own (its English); clues and figure captions are ours. No API call: the transcription
+is the source, kept in git (out/ is not). The question paper and its ADDENDUM are SCANS (no text layer): read from their page images;
+the memo has a text layer, checked against its page images.
 
   python tools/ingest/transcribe_ml_p2_2024_11.py
-  python tools/ingest/ingest.py "<...>/Mathematical Literacy P2 Nov 2024 Eng.pdf" "<...>/Mathematical Literacy P2 Nov 2024 MG Afr & Eng.pdf" --id ml-p2-2024-11 --from-json
+  python tools/ingest/ingest.py "<...>/Mathematical Literacy P2 Nov 2024 Eng.pdf" "<...>/Mathematical Literacy P2 Nov 2024 MG Afr & Eng.pdf" \
+      --id ml-p2-2024-11 --from-json --answer-book "<...>/Mathematical Literacy P2 Nov 2024 Addendum Eng.pdf"
 
-The paper reads three ANNEXURES printed in an ADDENDUM that is not on disk: A (an aerial view of the camp) for 2.1.2-2.1.5, B (the
-trail-run map and its elevation map) for 2.2 and C (a map of Australia and the trip plan) for 5.1. Those 35 marks wait for the
-addendum; the paper totals the 115 marks that can be played. 5.3 says "refer to ANNEXURE C" but every part reads only TABLE 3.
+The paper reads three ANNEXURES printed in the ADDENDUM (a 4-page scan; page 1 is its cover): A (page 2, an aerial view of the camp
+with a table of campsites and campers) for 2.1.1-2.1.5, B (page 3, the trail-run route map and its elevation maps) for 2.2 and C
+(page 4, a map of Australia beside the trip plan) for 5.1. Their figures are cropped from the addendum, passed to ingest.py as
+--answer-book (figure source "answer_book", page = the addendum's page); A and C are landscape pages printed on their side (their
+text reads bottom to top), so their figures carry rotate 90. A's table is typed as the mission's table. B is split in two: the route
+map on 2.2 (2.2.1-2.2.2) and the elevation maps on 2.2.3 (2.2.3-2.2.5), each on the mission that reads it. C is one figure: 5.1's
+parts read the map and the trip plan in turn (5.1.2 both). 5.3 says "refer to ANNEXURE C" but every part reads only TABLE 3.
 
 The memo's shapes map as in Mathematical Literacy P2 Nov 2025 (transcribe_ml_p2_2025_11.py):
   matching concepts to TABLE 1's definitions (A-G) -> match (2 marks a pair); "Choose ... (A, B or C)" -> mcq; a name, a product, a
-  duration, a probability read off a table, a simplified ratio -> term (every spelling the memo accepts; all or nothing where the memo
-  splits the marks); a count read off a figure -> num; "Calculate / Determine / Convert" -> steps, each step ONE number the memo's
-  method produces (unit in the label's brackets), the memo's SF/MA/RT/C marks riding on the number they lead to; "Verify" -> steps,
-  the memo's conclusion (the O mark) folded into the last step; an explanation or a reason (A/O marks) -> rubric, each memo
-  alternative one 2-mark point.
+  duration, a direction, a probability read off a table, a simplified ratio -> term (every spelling the memo accepts; all or nothing
+  where the memo splits the marks; `reject` for a wrong direction a spelling slip away); the names of several things the memo marks
+  one by one (two cities, four months) -> list; a count read off a figure -> num; "Calculate / Determine / Convert" -> steps, each
+  step ONE number the memo's method produces (unit in the label's brackets), the memo's SF/MA/RT/C marks riding on the number they
+  lead to; "Verify" / "Show ... whether or not he is correct" -> steps, the memo's conclusion (the O mark) folded into the last step;
+  an explanation or a reason (A/O marks) -> rubric, each memo alternative one 2-mark point.
   A memo RANGE or two accepted methods -> a tolerance spanning them; the memo's NPR rule (no penalty for rounding if the first
   decimal is correct) widens the tolerance of an answer that must be rounded to cover its one-decimal rounding.
-Figure boxes are measured in PDF points (the scan is 595.2 x 841.68) with ink profiles of the page (scratchpad ml2_24_tools/ink.py),
+Figure boxes are measured in PDF points (both scans are 595.2 x 841.68) with ink profiles of the page (scratchpad ml2_24_tools/ink.py),
 set so that ingest's 1% pad keeps each drawing and its frame and leaves out the "[Adapted from ...]" / "[Source: ...]" lines, the
 text around it and the question's outer box; `inset` where a printed heading touches the crop's top-left corner (the page's Hide
-button sits there). Checked on the rendered crops."""
+button sits there). An addendum box is in the page's OWN (unrotated) coordinates: ingest crops it, then turns it upright. B's two
+boxes sit inside the annexure's frame (its title bars named in the captions), between each drawing and the source line printed
+inside that frame. One exception: C's "[Adapted from www.wilmap.com.au]" sits inside the map's frame at the height of the map's Key
+and below Tasmania, so no box can leave it out without clipping the Key or Tasmania; C's crop is the whole annexure frame, the line
+included. Checked on the rendered crops."""
 import json
 from pathlib import Path
 
-W, H = 595.2, 841.68
+W, H = 595.2, 841.68   # the question paper's page and the addendum's page alike
 FIGS = {  # [page, x0, y0, x1, y1] in points (the question paper)
     "1.2": [3, 113.5, 458.6, 530.8, 580.0], "1.3": [4, 111.5, 125.2, 521.0, 510.5], "2.1.6": [5, 160.0, 503.0, 501.0, 653.5],
     "3.1": [7, 111.5, 228.6, 516.5, 402.8], "3.2": [8, 107.9, 264.2, 520.7, 412.0], "3.3": [9, 107.5, 127.0, 500.0, 306.0],
     "4.1": [10, 111.5, 162.5, 513.0, 418.5], "4.2": [11, 108.9, 113.6, 507.3, 474.0], "5.2": [12, 92.0, 528.0, 530.5, 681.5]}
-INSET = {"1.2": 40, "1.3": 40, "2.1.6": 40, "3.1": 40, "3.2": 40, "3.3": 40, "4.1": 40, "4.2": 40}
+ADDENDUM = {  # [page, x0, y0, x1, y1] in points of the ADDENDUM's page as scanned (A and C lie on their side)
+    "2.1": [2, 120.0, 94.6, 493.3, 752.2], "2.2": [3, 66.0, 172.0, 546.0, 396.0], "2.2.3": [3, 66.0, 476.0, 524.0, 669.0],
+    "5.1": [4, 118.5, 40.0, 515.0, 806.0]}
+ROTATE = {"2.1": 90, "5.1": 90}   # clockwise degrees that turn the crop upright: A's and C's text reads bottom to top
+INSET = {"1.2": 40, "1.3": 40, "2.1": 40, "2.1.6": 40, "2.2.3": 40, "3.1": 40, "3.2": 40, "3.3": 40, "4.1": 40, "4.2": 40, "5.1": 40}
 
 
 def fig(name, caption):
-    p, x0, y0, x1, y1 = FIGS[name]
+    book = name in ADDENDUM   # an annexure: cropped from the addendum, given to ingest.py as --answer-book
+    p, x0, y0, x1, y1 = (ADDENDUM if book else FIGS)[name]
     return {"page": p, "bbox": [round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)], "caption": caption,
-            **({"inset": INSET[name]} if name in INSET else {})}
+            **({"source": "answer_book"} if book else {}), **({"inset": INSET[name]} if name in INSET else {}),
+            **({"rotate": ROTATE[name]} if name in ROTATE else {})}
 
 
 def mcq(n, q, opts, a, clues, marks=2, **kw):
@@ -51,8 +67,8 @@ def rub(n, q, marks, bullets, clues, each=None, must=None, notes=None, worth=Non
             **({"must": must} if must else {}), **({"notes": notes} if notes else {}), **({"worth": worth} if worth else {})}
 
 
-term = lambda n, q, a, clues, marks=2, strict=False: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
-                                                      **({"strict": True} if strict else {})}
+term = lambda n, q, a, clues, marks=2, strict=False, reject=None: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
+                                                                   **({"strict": True} if strict else {}), **({"reject": reject} if reject else {})}
 num = lambda n, q, a, tol, unit, clues, marks=2: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
 lst = lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
 match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "marks": len(left) * each, "q": q, "clues": clues, "left": left,
@@ -110,12 +126,31 @@ q13 = [
         ("Spacing in millimetres (mm)", 1, 12.7, 0.01, "Space = 1,27 × 10 mm = 12,7 mm ✓MCA (NPU)")],
           ["The side view labels the spacing between the crosspieces of the chair back.", "1 cm = 10 mm."])]
 
-# ---- QUESTION 2, the question paper page 5 and the memo pages 4-5 (2.1.2-2.1.5 and 2.2 read the ADDENDUM's ANNEXURES A and B) ----
+# ---- QUESTION 2, the question paper pages 5-6, the memo pages 4-6 and the ADDENDUM pages 2-3 (ANNEXURES A and B) ----
 q21 = [
     rub("2.1.1", "Explain what is meant by aerial view.", 2, [
         "View from the top (2).", "OR — View of the landscape from a certain height above ground like from a satellite or drone (2).",
         "OR — View from an elevated height (2).", "OR — Birds-eye view (2)."],
-        ["The word 'aerial' comes from 'air'.", "Where would you have to be to see the whole camp like a map?"], each=2)]
+        ["The word 'aerial' comes from 'air'.", "Where would you have to be to see the whole camp like a map?"], each=2),
+    steps("2.1.2", "Calculate the maximum number of campers that can be accommodated at Baviaanskloof Uitspan camping site.", 3, [
+        ("Maximum number of campers at the camping site", 3, 118, 0.01, "Number of campers = 6 + 15 + 4 + 15 + 4 + 4 + 5 + 15 + 8 + 10 + 6 + 6 "
+         "+ 20 ✓RT ✓MCA = 118 ✓CA (OR = 20 + 15(3) + 10 + 8 + 6(3) + 5 + 4(3) = 118). AO")],
+          ["Add the campers of EVERY hut in the table, the B and C huts included.", "Where the table gives a range (4 – 6), the maximum is "
+           "its bigger number."]),
+    term("2.1.3", "Determine the general direction of the dam from campsite 8.", ["South West", "SW", "Southwest"],
+         ["Find campsite 8 and the dam on the aerial view; the arrow marked N points north.", "Stand at campsite 8: which way is the dam? "
+          "Combine two compass directions."], reject=["South East", "Southeast", "North West", "Northwest"]),
+    term("2.1.4", "The description below is found on their website:\n\n'This campsite is situated near the dam and can accommodate a maximum "
+         "of 19 campers.'\n\nWrite down which campsite is being described. Write down only the number of the campsite.", ["2", "Campsite 2"],
+         ["Which numbered campsites are close to the dam on the aerial view?", "Add the campers of all the huts at each of them: which "
+          "totals 19?"]),
+    steps("2.1.5", "Calculate, as a percentage, the probability of John and his family randomly selecting a hut that can exactly accommodate "
+          "the whole family.", 3, [
+        ("Number of huts that can exactly accommodate the whole family", 1, 3, 0.01, "3 ✓A"),
+        ("Number of huts at the camping site", 1, 13, 0.01, "13 ✓A"),
+        ("Probability, as a percentage (%)", 1, 23.076923, 0.025, "3/13 × 100% = 23,076923% ✓CA. NPR")],
+          ["How many people are in John's family group? Find the huts whose number of campers is exactly that (a range counts when the "
+           "number is in it).", "Each row of the table is one hut: probability = huts that fit ÷ all the huts, × 100%."])]
 q216 = [
     num("2.1.6(a)", "Write down the total number of showers.", 9, 0.01, "showers",
         ["Use the KEY: which symbol is a shower?", "Count those cubicles in the plan."]),
@@ -131,6 +166,31 @@ q216 = [
         "OR — To place your clothes or belongings on while you are showering (2).",
         "OR — To sit while you change your outfit, or getting dressed or apply body lotion or for baby nappy change (2)."],
         ["Who uses the ablutions at a busy camp, and what might they have to wait for?", "What do you do with your clothes while you shower?"], each=2)]
+q22 = [
+    term("2.2.1", "Write down the day during the run when you would pass Gabriel's Pools.", ["Day 2", "Day two", "2", "The second day"],
+         ["Find Gabriel's Pools on the route map.", "Which loop, Day 1 or Day 2, does it lie on?"]),
+    mcq("2.2.2", "The descriptions of a part of the route on the brochure are as follows:\n\n• Run for 5,5 km along Rhebok Valley.\n• Continue "
+        "down the other side to the Reflection Pools for a swim and drinking water.\n• Then return to the home base.\n\nChoose the route "
+        "described above and match it with A, B, C or D. Write only the letter next to the question number (2.2.2).",
+        ["Leopard Trail Run – Day 1 (Part 1)", "Leopard Trail Run – Day 1 (Part 2)", "Leopard Trail Run – Day 2 (Part 1)",
+         "Leopard Trail Run – Day 2 (Part 2)"], 3,
+        ["Rhebok Valley and the Reflection Pools lie on the same loop: which day is it?", "The description ends back at the home base: is it "
+         "the first or the second part of that day's run?"])]
+q223 = [
+    num("2.2.3", "Determine the number of kilometres John had run when he reached the highest point above sea level on Day 2.", 12.5, 0.01, "km",
+        ["Use the TRAIL RUN – DAY 2 elevation map.", "Find the curve's highest peak and read the distance straight below it."]),
+    rub("2.2.4", "John's best average speed (in km/h) for the run was his average speed from the 8 km mark up to the 18 km mark on Day 1.\n\n"
+        "Use the elevation map to explain why this was the case.", 2, [
+        "The part shows a continuous downward slope, it is downhill (2).", "OR — That part does not have many uphills (2)."],
+        ["Find 8 km and 18 km on the TRAIL RUN – DAY 1 elevation map.", "Between them, does the curve go up or down, and how does that "
+         "change a runner's speed?"], each=2),
+    steps("2.2.5", "John stated that on Day 2, while he was running from the 17,5 km mark to the end of the trail, he had moved more than 100 "
+          "metres closer to sea level.\n\nShow, by means of calculations, whether or not he is correct.", 3, [
+        ("Height above sea level at the 17,5 km mark (m)", 1, 1050, 0.01, "1 050 m ✓RT"),
+        ("Height above sea level at the end of the trail (m)", 1, 900, 0.01, "900 m ✓RT"),
+        ("How much closer to sea level he moved (m)", 1, 150, 0.01, "Difference = 1 050 m − 900 m = 150 m: He is CORRECT ✓O")],
+          ["On the DAY 2 elevation map, read the height at the 17,5 km line and at the end of the trail from the heights labelled on the "
+           "left.", "Subtract the two heights and compare the difference with 100 m."])]
 
 # ---- QUESTION 3, the question paper pages 7-9 and the memo pages 7-11 ----
 q31 = [
@@ -234,7 +294,28 @@ q42 = [
         "OR — It makes counting easier (2).", "OR — To protect the bricks from damage (2).", "OR — To keep it tight and compact (2)."],
         ["How is a heavy stack of bricks moved from a truck to a building site?", "What could happen to loose bricks stacked on the ground?"], each=2)]
 
-# ---- QUESTION 5, the question paper pages 12-13 and the memo pages 16-17 (5.1 reads the ADDENDUM's ANNEXURE C) ----
+# ---- QUESTION 5, the question paper pages 12-13, the memo pages 16-17 and the ADDENDUM page 4 (ANNEXURE C) ----
+q51 = [
+    lst("5.1.1", "Write down the names of the cities where the distance between them is 738 km.", 2, [["Adelaide"], ["Melbourne"]],
+        ["Find 738 km on the map of Australia.", "Its bracket joins two cities: name both."], 2),
+    lst("5.1.2", "Name the FOUR months when Chris and Boipelo will be in Western Australia.", 4,
+        [["Aug", "August"], ["Sep", "September"], ["Oct", "October"], ["Nov", "November"]],
+        ["Find Western Australia on the map, then the same part of the country on the trip plan.", "Name the months whose labels lie in "
+         "that part."], 3),
+    steps("5.1.3", "Determine the distance from Perth to Adelaide.", 3, [
+        ("Total of the other distances along the A1 on the map (km)", 1, 11959, 0.01, "738 + 1 062 + 922 + 1 705 + 2 850 + 1 871 + 2 811 ✓RT "
+         "= 11 959 km"),
+        ("Distance from Perth to Adelaide (km)", 2, 2696, 0.01, "14 655 – (738 + 1 062 + 922 + 1 705 + 2 850 + 1 871 + 2 811) = 14 655 – 11 959 "
+         "✓MCA = 2 696 km ✓CA. AO")],
+          ["The A1 goes right round Australia (14 655 km); Perth to Adelaide is the one stretch the map gives no distance for.",
+           "Add the distances printed along the A1, then take the total away from 14 655 km."]),
+    term("5.1.4", "Name the state where they plan to be during February.", ["Tasmania"],
+         ["Find FEB on the trip plan.", "Which state does the map show in the same place?"]),
+    steps("5.1.5", "Calculate the average speed, in km/h, from Brisbane to Cairns.\n\nYou may use the following formula: Distance = speed × time", 4, [
+        ("Driving time from Brisbane to Cairns in hours (h)", 2, 20.67, 0.01, "1 705 km = s × 20 h 40 min ✓SF; 1 705 km = s × 20,67 h ✓C"),
+        ("Average speed from Brisbane to Cairns (km/h)", 2, 82.5, 0.02, "Speed = 1 705 km ÷ 20,67 h ✓S = 82,5 km/h ✓CA")],
+          ["Read the distance and the driving time between Brisbane and Cairns on the map.", "Change the minutes to hours (÷ 60), then "
+           "speed = distance ÷ time."])]
 q52 = [
     steps("5.2.1", "Determine, rounded to THREE decimal places, the conversion factor from feet to metres used in this diagram, in the form "
           "1 foot = … m.", 3, [
@@ -270,6 +351,11 @@ q53 = [
 MATERIALS = {"title": "MATERIAL LIST", "head": ["#", "Wooden Item", "Dimensions (in cm)"],
              "rows": [["4", "Chair supports", "1,9 × 3,8 × 66"], ["13", "Crosspieces", "1,9 × 3,8 × 36"], ["1", "Seat back, bottom crosspiece", "1,9 × 3,8 × 32"]],
              "after": "NOTE:\n• The thickness of the wood is the smallest dimension.\n• # is the number of item(s)."}
+CAMPERS = {"head": ["", "Number of campers"],   # the table printed on ANNEXURE A's aerial view (its first column has no heading)
+           "rows": [["Campsite 1", "6"], ["Campsite 2A", "15"], ["2B", "4"], ["Campsite 3A", "15"], ["3B", "4"], ["3C", "4"],
+                    ["Campsite 4", "5"], ["Campsite 5A", "15"], ["5B", "8"], ["Campsite 6", "10"], ["Campsite 7", "4 – 6"],
+                    ["Campsite 8", "4 – 6"], ["Campsite 9", "20"]],
+           "after": "NOTE: The bigger the hut, the more expensive it is."}
 SWEETS = {"title": "TABLE 2: NUMBER OF SWEETS PER COLOUR", "head": ["COLOUR OF SWEETS", "NUMBER OF SWEETS"],
           "rows": [["Blue", "4"], ["Purple", "5"], ["Pink", "8"], ["Orange", "11"], ["Yellow", "7"]]}
 AREAS = {"title": "TABLE 3: AREA SIZES OF THE MAINLAND, ISLANDS AND TOTAL FOR EACH STATE OR TERRITORY",
@@ -301,10 +387,17 @@ missions = [
                    "with six raised blocks (its crosspieces) along its top. Below them the MATERIAL LIST (typed in the table) and a photo: "
                    "ASSEMBLED CHAIR AND FOLDED-UP CHAIR, the slatted chair standing open and, beside it, a second chair folded flat."),
      "items": q13},
-    {"id": "2.1", "title": "Question 2.1", "kind": "Aerial view", "marks": 2,
+    {"id": "2.1", "title": "Question 2.1", "kind": "Aerial view", "marks": 12,
      "lead": "John and five other family members decided to participate in the Baviaanskloof Leopard Trail Run. They decided to camp at the "
              "Baviaanskloof Uitspan camping site.\n\nANNEXURE A shows an aerial view of Baviaanskloof Uitspan with campsites and the number of "
-             "campers allowed. Some campsites have one hut and others have more than one hut, labelled A, B and C.", "items": q21},
+             "campers allowed. Some campsites have one hut and others have more than one hut, labelled A, B and C.", "table": CAMPERS,
+     "figure": fig("2.1", "ANNEXURE A, AERIAL VIEW OF BAVIAANSKLOOF UITSPAN WITH CAMPSITES AND NUMBER OF CAMPERS: an aerial photo of the camp "
+                   "in a valley. Top left, an arrow marked N points up the picture (north); beside it a label, Houtkloof mountains, lies "
+                   "across rocky slopes that fill the upper left. Numbered circles mark the campsites. Lower left: campsite 1 at the left "
+                   "edge of a dark pond labelled Dam, campsite 2 at its right edge and campsite 9 just below them. Upper middle: campsite 8 "
+                   "where the rocky slopes end. To the lower right of 8, a cluster: 7, then 6 and 5 to its right, and below them 3 and 4, "
+                   "with the label Ablution between them. Lower right: a building labelled Main house. In the top right corner, the table "
+                   "of campsites and numbers of campers (typed in the table)."), "items": q21},
     {"id": "2.1.6", "title": "Question 2.1.6", "kind": "Layout plan and scale", "marks": 8,
      "lead": "The layout plan below shows the ablution facilities (toilets and showers) in the middle of campsites 3, 4, 5 and 6.\n\nThe actual "
              "length of the ablution facilities is 8,2 metres.",
@@ -314,6 +407,30 @@ missions = [
                    "cubicles. In the bottom left corner, an L-shaped bench: one part up the left wall, one part along the bottom wall. A door "
                    "in the right wall. KEY: Shower (a cubicle with a shower head), Toilet (a cubicle with a toilet), Bench (a striped strip)."),
      "items": q216},
+    {"id": "2.2", "title": "Question 2.2", "kind": "Trail run route map", "marks": 4,
+     "lead": "The Leopard Trail Run is a two-day event, run on the outskirts of the camp, starting and ending at the Cedar Falls Home Base.\n\n"
+             "ANNEXURE B shows the map as well as the elevation map of the Leopard Trail Run in the Baviaanskloof situated close to "
+             "Willowmore.\n\nVisitors to the Baviaanskloof can also do a four-day hike, starting at the Cedar Falls Home Base.\n\nNOTE:\n"
+             "• Day 1 of the trail run is Days 3 and 4 of the hike.\n• Day 2 of the trail run is Days 1 and 2 of the hike.\n• Trail (path "
+             "through the natural landscape)",
+     "figure": fig("2.2", "ANNEXURE B, MAP OF THE LEOPARD TRAIL RUN ROUTE: two loops of trail meet at the Cedar Falls Home Base, a pin under "
+                   "a dark label box in the middle. The smaller loop on the left is labelled Day 2: Rhebok Valley along its far left end, "
+                   "Gabriel's Pools marked on its upper side and Reflection Pools on its lower side. The larger loop on the right is "
+                   "labelled Day 1: The Cauldron along its upper side near the home base, Fond Farewell and Birdsong Valley (with arrows) up "
+                   "its long arm to the north, and Honeybush Hill and Inconvenient Truth along its lower side."), "items": q22},
+    {"id": "2.2.3", "title": "Question 2.2.3", "kind": "Elevation map", "marks": 7,
+     "lead": "The Leopard Trail Run is a two-day event, run on the outskirts of the camp, starting and ending at the Cedar Falls Home Base.\n\n"
+             "ANNEXURE B shows the map as well as the elevation map of the Leopard Trail Run in the Baviaanskloof situated close to "
+             "Willowmore.",
+     "figure": fig("2.2.3", "ANNEXURE B, ELEVATION MAP OF THE LEOPARD TRAIL RUN ROUTE: two graphs of the height above sea level along the "
+                   "route, distance run across the bottom. TRAIL RUN – DAY 1: distance marks at 5, 10, 15, 20, 25 and 30,5 km; heights "
+                   "721 m, 1 000 m and 1 183 m marked up the side. The curve starts near 860 m, climbs to three sharp peaks near 1 183 m "
+                   "between about 4 and 8 km, slopes steadily down to its lowest, about 721 m, near 18,5 km, climbs again to peaks above "
+                   "1 000 m between about 23 and 27 km and ends at 861 m. TRAIL RUN – DAY 2: distance marks every 2,5 km up to 20 km, then "
+                   "21,9 km; heights 864 m, 900 m, 975 m, 1 050 m and 1 173 m marked up the side, each with a dashed line across. The curve "
+                   "starts at 864 m, climbs to about 1 050 m near 1 km, wanders down between about 900 m and 1 000 m to 10 km, climbs to "
+                   "its highest point, 1 173 m, at the 12,5 km line, drops to about 1 050 m, rises to a second peak near 16,5 km, comes down "
+                   "through the 1 050 m line at the 17,5 km line and finishes near the 900 m line at 21,9 km."), "items": q223},
     {"id": "3.1", "title": "Question 3.1", "kind": "Time and perimeter", "marks": 11,
      "lead": "Mrs Kgomo is a Grade 2 teacher at Happy Valley Primary School.\n\nShe has a reading corner at the back of her classroom. Learners who "
              "wait for their transport after school, usually sit there and read a book.\n\nMrs Kgomo stores pillows in bags (see pictures below). "
@@ -358,6 +475,24 @@ missions = [
                    "nine whole bricks and a half brick (the lower row starts with the half brick, the upper row ends with it); above them, a "
                    "staircase of rows up the right-hand edge shows the pattern to the top, 20 rows in all. SIDE VIEW OF THE DOUBLE-BRICK "
                    "WALL: the end of the wall, two bricks thick and 20 rows high."), "items": q42},
+    {"id": "5.1", "title": "Question 5.1", "kind": "Map and trip plan", "marks": 14,
+     "lead": "Chris and Boipelo are planning a year-long trip, mostly along the A1 motorway, around Australia. It is the world's longest "
+             "continuous road of 14 655 km that passes through every state and connects seven of its eight capitals.\n\nANNEXURE C is a map "
+             "of Australia and the distances and driving times between the major cities and the states or territories. Next to it is the "
+             "plan of their trip.",
+     "figure": fig("5.1", "ANNEXURE C, two panels side by side. Left, MAP OF AUSTRALIA SHOWING THE A1 MOTORWAY, DISTANCES, DRIVING TIMES AND "
+                   "STATES OR TERRITORIES: the A1 drawn as a thick line right round the mainland near the coast; KEY: STATE a triangle, City "
+                   "a dot. Distances and driving times beside the road, clockwise from the north: Darwin to Cairns 2 850 km, 33 h 55 min; "
+                   "Cairns to Brisbane 1 705 km, 20 h 40 min; Brisbane to Sydney 922 km, 10 h 30 min; Sydney to Melbourne 1 062 km, "
+                   "13 h 40 min; Melbourne to Adelaide 738 km, 9 h 6 min; PERTH TO ADELAIDE 29 hours (no distance); Perth to Broome "
+                   "2 811 km, 30 hours; Broome to Darwin 1 871 km, 21 h 13 min. Across the middle: DARWIN TO ADELAIDE 3 027 km 35 HOURS. "
+                   "The states, with thin borders: Western Australia (the whole west), Northern Territory (the middle of the north), South "
+                   "Australia (the middle of the south), Queensland (the north-east), New South Wales (the south-east), Victoria (the "
+                   "south-east corner) and, across the sea to the south, Tasmania with Hobart. Right, PLANNED TRIP ALONG THE A1 MOTORWAY "
+                   "AND OTHER ROADS: an outline of Australia with no borders, month labels joined by arrows: JAN in the south-east, FEB on "
+                   "Tasmania, MAR on the south-east coast, APR up the east coast, MAY in the north-east, JUN in the middle of the north "
+                   "(an arrow up to the north coast), JUL at the top, AUG in the north-west, SEP and OCT down the west coast, NOV in the "
+                   "south-west and DEC in the middle of the south coast, an arrow from it pointing east."), "items": q51},
     {"id": "5.2", "title": "Question 5.2", "kind": "Conversion and ratio", "marks": 7,
      "lead": "Chris and Boipelo plan to visit Uluru. This oval-shaped big rock rises 1 142 feet above the surrounding desert plain.\n\nThe diagram "
              "below shows a comparison of the height of Uluru and some other tourist attractions around the world.",
@@ -371,21 +506,23 @@ missions = [
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
-    "paper": {"subject": "Mathematical Literacy", "title": "Mathematical Literacy P2", "sitting": "November 2024", "total_marks": 115, "time": "3 hours"},
-    "sections": [{"title": "Mathematical Literacy", "total": 115, "missions": missions}],
+    "paper": {"subject": "Mathematical Literacy", "title": "Mathematical Literacy P2", "sitting": "November 2024", "total_marks": 150, "time": "3 hours"},
+    "sections": [{"title": "Mathematical Literacy", "total": 150, "missions": missions}],
     "flags": [
-        {"n": "paper", "kind": "low_confidence", "detail": "Every part playable from the question paper (Questions 1, 3 and 4 whole; 2.1.1, 2.1.6, 5.2 "
-                                                           "and 5.3), hand-transcribed from scanned page images of the question paper (no text layer) "
-                                                           "and from the memo's text and page images; no API call."},
-        {"n": "2.1", "kind": "no_fit", "detail": "2.1.2 (3), 2.1.3 (2), 2.1.4 (2) and 2.1.5 (3), 10 marks, read ANNEXURE A (the aerial view of "
-                                                 "Baviaanskloof Uitspan) in the ADDENDUM, which is not on disk: left out. 2.1.1 (what an aerial "
-                                                 "view is) and 2.1.6 (the layout plan printed in the paper) are played."},
-        {"n": "2.2", "kind": "no_fit", "detail": "2.2.1 (2), 2.2.2 (2), 2.2.3 (2), 2.2.4 (2) and 2.2.5 (3), 11 marks, all read ANNEXURE B (the map "
-                                                 "and the elevation map of the Leopard Trail Run) in the ADDENDUM, which is not on disk: left out."},
-        {"n": "5.1", "kind": "no_fit", "detail": "5.1.1 (2), 5.1.2 (3), 5.1.3 (3), 5.1.4 (2) and 5.1.5 (4), 14 marks, all read ANNEXURE C (the map "
-                                                 "of Australia and the trip plan) in the ADDENDUM, which is not on disk: left out. With 2.1 and 2.2, "
-                                                 "35 marks wait for the addendum; the paper totals the 115 marks that can be played (the printed "
-                                                 "paper: 150; per question 26, 10 of 31, 31, 29, 19 of 33)."},
+        {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 5, 150 marks; per question 26, 31, 31, 29, 33), "
+                                                           "hand-transcribed from scanned page images of the question paper and its ADDENDUM (no text "
+                                                           "layer; ANNEXURES A, B and C) and from the memo's text and page images; no API call."},
+        {"n": "5.1.2", "kind": "no_fit", "detail": "The memo marks the four months 1 + 1 + 1 (the first right month, the second, then ALL four). "
+                                                   "Played as a list of four months worth 3 marks, each right month scores ¾: four right = 3, as "
+                                                   "the memo; one right = ¾ (memo 1), two = 1½ (memo 2), three = 2¼ (memo 2)."},
+        {"n": "5.1", "kind": "no_fit", "detail": "ANNEXURE C's '[Adapted from www.wilmap.com.au]' line is printed inside the map's frame, level "
+                                                 "with the map's Key and just below Tasmania: a box that left it out would clip the Key or cut "
+                                                 "Tasmania off, so the crop keeps the whole annexure frame, that line included."},
+        {"n": "2.2.5", "kind": "memo_issue", "detail": "The memo reads the end of Day 2 as 900 m (the labelled height line); on the scan the curve "
+                                                       "ends a little below that line (about 890 m, measured between the 900 m and 864 m lines), "
+                                                       "which gives about 160 m. The conclusion (more than 100 m: CORRECT) holds either way. "
+                                                       "Transcribed as printed: the steps take the memo's 1 050 m (the curve does cross the "
+                                                       "1 050 m line at the 17,5 km line), 900 m and 150 m."},
         {"n": "2.1.6(b)", "kind": "no_fit", "detail": "The memo's first mark is for MEASURING the printed plan (90 mm; accept ± 1 mm). A phone "
                                                       "shows the plan at another size, so the figure caption gives the printed length (measured on "
                                                       "the scan: 253,4 pt = 89,4 mm) and the mark becomes a read-off; the scale's steps take the "
@@ -393,11 +530,12 @@ paper = {
         {"n": "3.1.1", "kind": "no_fit", "detail": "Terms the memo marks in parts play all or nothing: 3.1.1 (MA + A; the duration in every common "
                                                    "written form) and 5.2.2 (RT + A order + 2 CA; the simplified ratio as a strict term)."},
         {"n": "1.2.1", "kind": "no_fit", "detail": "Calculations play as steps: each step is the number the memo's method produces, its SF/MA/RT/C "
-                                                   "marks riding on that number. 'Verify' parts (3.2.3, 4.2.2) fold the memo's conclusion (VALID / "
-                                                   "Not VALID, the O mark) into the last step's number; 5.3.3(b)'s reason ('rounds off to zero') is "
-                                                   "played as the percentage rounded to the table's one decimal place (0). The memo's NPR rule "
-                                                   "widens the tolerance where an answer must be rounded (3.2.1, 3.3.2, 4.1.4) and of 5.3.3(a)'s "
-                                                   "unrounded density (192,7 to 192,75)."},
+                                                   "marks riding on that number. 'Verify' parts (3.2.3, 4.2.2) and 2.2.5 ('Show ... whether or not "
+                                                   "he is correct') fold the memo's conclusion (VALID / Not VALID / CORRECT, the O mark) into the "
+                                                   "last step's number; 5.3.3(b)'s reason ('rounds off to zero') is played as the percentage "
+                                                   "rounded to the table's one decimal place (0). The memo's NPR rule widens the tolerance where an "
+                                                   "answer must be rounded (2.1.5, 3.2.1, 3.3.2, 4.1.4) and of 5.3.3(a)'s unrounded density "
+                                                   "(192,7 to 192,75)."},
         {"n": "4.2.2", "kind": "no_fit", "detail": "The memo accepts the area rounded up to 13 m² (labour R6 500, total R15 272,50) as well as "
                                                    "12,78 m² (R6 390, R15 162,50): the labour and total steps take tolerances spanning both."},
         {"n": "5.2", "kind": "no_fit", "detail": "The picture of Uluru beside the lead is a photo only (no data) and is not cropped; its sentence "
@@ -417,13 +555,20 @@ paper = {
 }
 out = Path(__file__).parent / "out" / "ml-p2-2024-11"
 out.mkdir(parents=True, exist_ok=True)
-(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the scanned question paper and the memo PDF and their page "
-                                                                       "images (no API call)",
-                                                        "scope": "Questions 1, 3 and 4 whole; 2.1.1, 2.1.6, 5.2 and 5.3 (2.1.2-2.1.5, 2.2 and 5.1 "
-                                                                 "read the addendum's annexures, not on disk)"}, "paper": paper},
+(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the scanned question paper, its scanned addendum and the "
+                                                                       "memo PDF and their page images (no API call)",
+                                                        "scope": "the whole paper, Questions 1 to 5 (2.1, 2.2 and 5.1 read the addendum's "
+                                                                 "ANNEXURES A, B and C)"}, "paper": paper},
                                               indent=1, ensure_ascii=False), encoding="utf-8")
 for m in missions:
     got = sum(i["marks"] for i in m["items"])
     assert got == m["marks"], (m["id"], got, m["marks"])
     print(m["id"], "parts:", len(m["items"]), "marks:", got)
-print("total:", sum(i["marks"] for m in missions for i in m["items"]))
+total = sum(i["marks"] for m in missions for i in m["items"])
+print("total:", total)
+# the totals the paper prints: [26] [31] [31] [29] [33] under its questions, 150 on its cover
+per_q = {}
+for m in missions:
+    per_q[m["id"].split(".")[0]] = per_q.get(m["id"].split(".")[0], 0) + sum(i["marks"] for i in m["items"])
+assert per_q == {"1": 26, "2": 31, "3": 31, "4": 29, "5": 33}, per_q
+assert total == paper["paper"]["total_marks"] == paper["sections"][0]["total"] == 150, total

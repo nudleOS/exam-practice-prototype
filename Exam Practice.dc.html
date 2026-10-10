@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=35"></script>
+<script src="papers-catalogue.js?v=36"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -31,7 +31,7 @@
     window.__ingestWant = ids.length;
     ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + (rev[id] || Date.now());   // (a paper under review, ?ingested=, is always fresh)
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
-<script src="papers-pages.js?v=10"></script>
+<script src="papers-pages.js?v=11"></script>
   <script src="mcq-play.js?v=66"></script>
   <script src="build-play.js?v=19"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
   <style>

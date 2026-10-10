@@ -350,15 +350,14 @@ window.NX_CATALOGUE = {
    "sitting": "November 2024",
    "year": 2024,
    "month": 11,
-   "total_marks": 115,
+   "total_marks": 150,
    "duration_minutes": 180,
    "questions": 5,
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "167315c271",
-   "source_pdf": "uploads/Mathematical Literacy P2 Nov 2024 Eng.pdf",
-   "printed_marks": 150
+   "rev": "ee41d0a27a",
+   "source_pdf": "uploads/Mathematical Literacy P2 Nov 2024 Eng.pdf"
   },
   {
    "id": "math-p1-2025-11",
