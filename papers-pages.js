@@ -1285,6 +1285,70 @@ window.NX_PAGES = {
    }
   }
  },
+ "ml-p1-2024-11": {
+  "qp": {
+   "pages": 14,
+   "src": "assets/papers/ml-p1-2024-11/qp-",
+   "pdf": "uploads/Mathematical Literacy P1 Nov 2024 Eng.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {}
+  },
+  "mg": {
+   "pages": 18,
+   "src": "uploads/papers/ml-p1-2024-11/mg-",
+   "pdf": "uploads/Mathematical Literacy P1 Nov 2024 MG Afr & Eng.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 2,
+    "1.2": 3,
+    "1.3": 4,
+    "2.1": 5,
+    "2.2": 6,
+    "2.3": 8,
+    "3.1": 9,
+    "3.2": 10,
+    "4.1": 11,
+    "4.2": 13,
+    "5.1": 15,
+    "5.2": 16,
+    "5.3": 17
+   }
+  }
+ },
+ "ml-p2-2024-11": {
+  "qp": {
+   "pages": 13,
+   "src": "assets/papers/ml-p2-2024-11/qp-",
+   "pdf": "uploads/Mathematical Literacy P2 Nov 2024 Eng.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {}
+  },
+  "mg": {
+   "pages": 17,
+   "src": "uploads/papers/ml-p2-2024-11/mg-",
+   "pdf": "uploads/Mathematical Literacy P2 Nov 2024 MG Afr & Eng.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 2,
+    "1.2": 2,
+    "1.3": 3,
+    "2.1": 4,
+    "2.2": 5,
+    "3.1": 7,
+    "3.2": 8,
+    "3.3": 11,
+    "4.1": 12,
+    "4.2": 13,
+    "5.1": 16,
+    "5.2": 16,
+    "5.3": 17
+   }
+  }
+ },
  "math-p1-2025-11": {
   "qp": {
    "pages": 12,
