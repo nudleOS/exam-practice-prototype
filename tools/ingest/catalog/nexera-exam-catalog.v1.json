@@ -862,6 +862,13 @@
       "type": "integer",
       "description": "Marks per point when one point is worth more than 1"
      },
+     "notes": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "The memo's marking NOTES that are not points (key-word rules, 'X defined: 0/2', ACCEPT limits, criteria): never scored and never shown to the learner; a note in bullets would be a point a learner earns"
+     },
      "table": {
       "type": "array",
       "items": {

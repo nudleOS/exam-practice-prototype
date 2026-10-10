@@ -13,6 +13,9 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 
+# a memo marking NOTE, not a point: key words / phrases, criteria, an ACCEPT limit, "X defined: 0/2", "deduct 1"
+NOTE_RE = re.compile(r"^(OR\s*[—-]\s*)?(Key (words?|phrases?)|Criteria|ACCEPT \(max)|:\s*0/\d|\bdeduct \d", re.I)
+
 
 def schema_errors(paper):
     try:
@@ -115,6 +118,9 @@ def semantic_issues(paper):
                     if len(pool) < i.get("count", 0): add(n, "error", "fewer memo parts than the count asked")
                     if any(p.get("letter") not in (i.get("letters") or []) for p in pool): add(n, "error", "a memo letter is not one of the letters")
                     if i.get("marks") != 2 * i.get("count", 0): add(n, "warn", "a letter + name is 2 marks per part: marks are not 2 x count")
+                if t == "rubric":   # a memo NOTE in bullets is a point a learner earns ("Threshold frequency defined: 0/2" scored, 2026-10-10)
+                    notey = [b for b in i.get("bullets") or [] if NOTE_RE.search(b)]
+                    if notey: add(n, "warn", "a marking note in bullets, which a learner would earn: move it to notes: " + notey[0][:60])
                 if t == "genotype":
                     al, pool = i.get("alleles") or [], i.get("pool") or []
                     if len(pool) < i.get("count", 0): add(n, "error", "fewer memo genotypes than the count asked")
