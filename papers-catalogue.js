@@ -44,7 +44,7 @@ window.NX_CATALOGUE = {
    "missions": 29,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "d2b8590062",
+   "rev": "f1ca26ac43",
    "source_pdf": "uploads/Business Studies P2 Nov 2025 Eng.pdf"
   },
   {
@@ -88,7 +88,7 @@ window.NX_CATALOGUE = {
    "missions": 27,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "708577cb87",
+   "rev": "654a99cbdd",
    "source_pdf": "uploads/Business Studies P2 Nov 2024  Eng.pdf"
   },
   {

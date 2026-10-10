@@ -8,7 +8,9 @@ paper's and the memo's own; the clues are ours. No API call: the transcription i
 The memo's shapes map as for P1 (transcribe_bs_p1_2025_11.py's docstring): mcq, a word from the list as term, COLUMN A to B as
 match (2 a pair), Name/Give/List any N as list, "Quote ... from the scenario" as pickn over its sentences, "Identify ... and
 motivate by quoting" as rubric (the force/style/principle 2, the quote 1), explain/discuss/describe/advise/evaluate as rubric with
-the memo's points, the essays as one rubric each (headings, sub-maxima, insight). Section B answer any TWO, C any ONE."""
+the memo's points, the essays as one rubric each (headings, sub-maxima, insight). Section B answer any TWO, C any ONE.
+Those rubrics are the source only: the bottom block plays every written part as statements (STATEMENTS) or a sort (SORTS), and
+both essays (5 and 6) as sections, one per memo heading, plus an insight part (2026-10-10)."""
 import json
 from pathlib import Path
 
@@ -51,7 +53,7 @@ q11 = [
         ["Unlimited: there is no limit on what the owner can lose.", "If the business cannot pay its debts, where does the money come from?"]),
     mcq("1.1.3", "Jobe Bookkeeping educated their staff on the impact of fraud when dealing with … as a type of unprofessional business practice.",
         ["the unauthorised use of workplace funds and resources", "the abuse of work time", "unfair advertising", "sexual harassment"], 0,
-        ["Fraud is about money and property.", "A bookkeeper handles the business's funds."]),
+        ["Fraud is about money and property.", "A bookkeeper looks after the books, not the adverts or the staff's conduct."]),
     mcq("1.1.4", "Team members often experience power struggles for the position of team leader during the … stage of team development.",
         ["forming", "storming", "performing", "adjourning"], 1,
         ["Forming, storming, norming, performing, adjourning.", "Which stage is about conflict?"]),
@@ -60,26 +62,29 @@ q11 = [
          "supporting poverty alleviation programmes that are offered by the government.",
          "rolling out antiretroviral treatment programmes for all infected employees.",
          "creating job opportunities for unemployed community members."], 2,
-        ["Only one option is about HIV/Aids itself.", "Treatment for the people who are infected."]),
+        ["Several options are good deeds, but only one deals with this particular issue.",
+         "Think about what employees living with the virus need from their employer."]),
 ]
 WORDS = "force-field analysis;  non-profit;  situational;  flip charts;  planet;  transformational;  Delphi technique;  posters;  state-owned;  people"
 q12 = [
     term("1.2.1", "Willem applies different leadership styles based on different circumstances. This is known as the … leadership theory.",
-         ["situational"], ["The style changes with the situation.", "Which word in the list describes circumstances?"]),
+         ["situational"], ["The leader reads what is happening around him and adjusts his style.", "Which word in the list describes circumstances?"]),
     term("1.2.2", "A … company creates job opportunities and offers essential services to the majority of citizens.", ["state-owned", "state owned"],
-         ["Who provides essential services such as electricity and transport?", "A company owned by the government is ..."]),
+         ["Who provides essential services such as electricity and transport?",
+          "Which kind of company belongs to the government rather than to private shareholders?"]),
     term("1.2.3", "Qama Electronics strategically places … in the business as a visual aid to attract customers.", ["posters"],
-         ["Visual aids hang on walls to be seen by passing customers.", "Not flip charts: those are for a presentation."]),
+         ["Visual aids hang on walls to be seen by passing customers.", "Which visual aid works without a presenter standing next to it?"]),
     term("1.2.4", "Businesses implement the necessary changes after considering the driving and restraining aspects. This refers to … as a "
          "problem-solving technique.", ["force-field analysis", "force field analysis"],
-         ["Driving and restraining FORCES.", "A technique from the list that weighs forces for and against a change."]),
+         ["Picture two sides pushing against each other: one for the change, one against it.",
+          "Which technique from the list weighs the pushes for and against before deciding?"]),
     term("1.2.5", "Highway Stores focuses on … as a triple bottom-line element when they support eco-friendly production methods.", ["planet"],
-         ["The triple bottom line: profit, people and ...", "Eco-friendly is about the environment."]),
+         ["The triple bottom line has three parts; one of them is about the natural world.", "Eco-friendly is about the environment."]),
 ]
 COL_B = ["occur when employees lodge complaints with management in the workplace",
          "applies when assets are insured for more than their market value",
          "focuses on developing a moral compass for decision-making",
-         "has limited continuity as the business seizes to exist upon resignation of the owner",
+         "has limited continuity as the business ceases to exist upon resignation of the owner",
          "occur when there are clashes of opinions between two or more parties in the workplace",
          "focuses on upholding the reputation of the business",
          "investors receive higher dividends when the company makes profits",
@@ -108,7 +113,8 @@ SM = ("Zintle, the financial manager of Starlight Marketing, considered various 
 q21 = [lst("2.1", "Name any TWO factors that should be considered when making investment decisions.", 2,
            [["Return on investment", "ROI"], ["Risk"], ["Investment term", "Investment period", "Term", "Period"], ["Inflation rate", "Inflation"],
             ["Taxation", "Tax"], ["Liquidity"]],
-           ["What would you ask before putting your money somewhere?", "How much will it earn, how safe is it, how long is it locked in ..."])]
+           ["What would you ask before putting your money somewhere?",
+            "Some factors are about the investment itself, others about the economy around it."])]
 q22 = [rub("2.2", "Elaborate on the meaning of excess as an insurance concept.", 4, [
     "Excess is the amount that the insured agrees to pay upfront when he/she takes out an insurance policy/the amount the insured agrees to "
     "pay upfront as stipulated in the insurance policy.",
@@ -153,10 +159,11 @@ q25 = [rub("2.5", "Describe the role of personal attitude in successful leadersh
     "Successful leaders have a constant desire to work and achieve personal/professional success.",
     "Leaders with a positive attitude know that there is always more to learn/space to grow.",
     "Any other relevant answer related to the role of personal attitude in successful leadership."],
-    ["How does a leader's attitude spread to the team?", "Think example, atmosphere, strengths and weaknesses, never giving up."], each=2)]
+    ["How does a leader's attitude spread to the team?", "Think about what the team sees in its leader, and what follows from it."], each=2)]
 q26 = [
     pick("2.6.1", "Quote TWO aspects from the scenario above that Zintle considered when she designed her multimedia presentation.",
-         sentences(SM), [1, 3], ["Which sentences are about the SLIDES themselves?", "Checking up on the audience is not about designing slides."]),
+         sentences(SM), [1, 3], ["Which sentences are about the SLIDES themselves?",
+                                 "Design aspects are choices about how the slides look and what is on them."]),
     rub("2.6.2", "Explain other aspects that must be considered when designing a multimedia presentation.", 4, [
         "Start with the heading/text which forms the basis of the presentation.", "Select the background to complement/enhance the text.",
         "Choose images that may help to communicate the message.", "Include/Create graphics to assist the information which is conveyed.",
@@ -166,7 +173,7 @@ q26 = [
         "Use bright colours to increase visibility.",
         "Structure information in a logical sequence so that the audience can easily follow the content of the presentation.",
         "Any other relevant answer related to aspects that should be considered when designing a multimedia presentation."],
-        ["Think of a slide: heading, background, images, font, colour, order.", "Each aspect, then why it helps the audience."], each=2,
+        ["Think about what helps an audience take in a slide at a glance.", "Each aspect, then why it helps the audience."], each=2,
         notes=["No marks for the aspects quoted in 2.6.1."]),
 ]
 q27 = [rub("2.7", "Discuss the impact of government/RSA Retail Savings Bonds as a form of investment.", 6, [
@@ -187,7 +194,8 @@ q27 = [rub("2.7", "Discuss the impact of government/RSA Retail Savings Bonds as 
     "Negative: investors need to have valid SA identification/should be older than 18 years which may discourage foreigners/young people to invest.",
     "Negative: penalties are charged for early withdrawals, if the savings is less than 12 months old.",
     "Any other relevant answer related to the positive and/or negative impact of Government/RSA Retail Savings Bonds as a form of investment."],
-    ["You lend the government money and it pays you interest.", "Good: safe, fixed interest, cheap. Bad: minimums, penalties, cannot be ceded."], each=2)]
+    ["You lend the government money and it pays you interest.",
+     "Weigh how safe and how flexible this investment is, and what it costs to get in and out."], each=2)]
 q28 = [rub("2.8", "Advise businesses on how management as a criterion could contribute to the success and/or failure of a public company.", 6, [
     "Success: managed by a board of competent highly skilled directors, which results in better decision-making.",
     "Success: the management of the company can improve since directors are accountable to shareholders.",
@@ -228,7 +236,8 @@ q31 = [lst("3.1", "List any FOUR problem-solving steps.", 4,
             ["Evaluate alternative solutions"], ["Choose the most appropriate solution", "Select the most appropriate alternative", "Choose the best solution"],
             ["Develop an action plan"], ["Implement the suggested solution", "Implement the action plan"],
             ["Monitor the implementation of the solution", "Monitor the action plan"], ["Evaluate the implemented solution"]],
-           ["Start where a problem starts: noticing it.", "Find it, define it, look for solutions, choose, act, check."])]
+           ["Start where a problem starts: noticing it.",
+            "What must happen before a problem can be solved, and what comes after a solution is picked?"])]
 q32 = [rub("3.2", "Outline the benefits of diversity in the workplace.", 6, [
     "Diversity in the workforce improves morale/motivation amongst employees.",
     "Businesses with a diverse workforce are more likely to have a good public image and attract more customers.",
@@ -243,7 +252,8 @@ q32 = [rub("3.2", "Outline the benefits of diversity in the workplace.", 6, [
     "Diverse businesses ensure that their policies/practices empower every employee to perform at his/her full potential.",
     "Stakeholders increasingly evaluate businesses on how they manage diversity in the workplace.",
     "Any other relevant answer related to the benefits of diversity in the workplace."],
-    ["People from different backgrounds bring different ideas.", "Think morale, image, customers, problem-solving."], each=2)]
+    ["How does a mix of people help the business, inside and in the market?",
+     "Weigh each card: does it describe diversity correctly, and is the benefit real?"], each=2)]
 q33 = [
     rub("3.3.1", "Identify the King Code principle applied by JP. Motivate your answer by quoting from the scenario above.", 3, [
         "Responsibility.",
@@ -266,7 +276,8 @@ q33 = [
         "disclosure are motivated/proper/accurate and implemented effectively; businesses should be accountable/responsible for their "
         "decisions/actions; businesses should present accurate annual reports to shareholders at the AGM; top management should ensure that other "
         "levels of management are clear about their roles and responsibilities to improve accountability."],
-        ["Not responsibility (that was 3.3.1).", "Name the principle, then describe what a business does to apply it."], worth=[2, 1, 2, 1],
+        ["Choose a principle different from the one JP applied in 3.3.1.", "Name the principle, then describe what a business does to apply it."],
+        worth=[2, 1, 2, 1],
         notes=["Mark the first ONE only; no marks for responsibility (3.3.1's principle)."]),
 ]
 q34 = [rub("3.4", "Discuss communication as a criterion for successful team performance.", 6, [
@@ -275,10 +286,12 @@ q34 = [rub("3.4", "Discuss communication as a criterion for successful team perf
     "Open/Honest discussions lead to effective solutions of problems.",
     "Continuous review of team progress ensures that team members can rectify mistakes/act pro-actively to ensure that goals/targets are reached.",
     "Any other relevant answer related to communication as a criterion for successful team performance."],
-    ["How does talking well together help a team work well together?", "Roles, decisions, feedback, honest discussion, reviewing progress."], each=2)]
+    ["How does talking well together help a team work well together?",
+     "Think about what a team gains when everyone knows what is going on and can speak up."], each=2)]
 q35 = [
     pick("3.5.1", "Quote TWO causes of conflict at KH from the scenario above.", sentences(KH), [1, 2],
-         ["Conflict at work comes from how people work together.", "An employee's own debt is not a workplace cause."]),
+         ["Conflict at work comes from how people work together.",
+          "Ask of each sentence: does it describe a cause, and is that cause in the workplace?"]),
     rub("3.5.2", "Explain how businesses should handle conflict in the workplace.", 4, [
         "Acknowledge that there is conflict between employers/employees/parties in the workplace.",
         "Identify the cause of the conflict to get clarity on its nature.",
@@ -294,7 +307,8 @@ q35 = [
         "Provide opportunities for parties to agree on the best solution.", "Evaluate/Follow up on the implementation of the solution(s).",
         "Monitor progress to ensure that the conflict has been resolved.", "Source experts on handling conflict from outside the business.",
         "Any other relevant answer related to how businesses should handle conflict in the workplace."],
-        ["First admit there is a conflict, then find out why.", "Bring the parties together, hear both, agree on a solution, follow up."], each=2),
+        ["Handling conflict is a process: which cards move it toward a fair solution?",
+         "Would each step make the conflict smaller, or bigger?"], each=2),
 ]
 q36 = [rub("3.6", "Discuss the advantages of corporate social responsibility (CSR) on businesses.", 6, [
     "May attract experienced employees/increase the pool of skilled labour which could increase productivity.",
@@ -308,7 +322,8 @@ q36 = [rub("3.6", "Discuss the advantages of corporate social responsibility (CS
     "It helps to retain staff/lower staff turnover as employees' health and safety are considered.",
     "Improves the health of its employees through focused CSR projects.", "Attracts investors when the business is included in the JSE SRI.",
     "Any other relevant answer related to the advantages of CSR on businesses."],
-    ["CSR: a business looking after its people and its community.", "What does the business get back? Image, loyalty, staff, tax, investors."], each=2)]
+    ["CSR: a business looking after its people and its community.",
+     "Ask of each card: is it a real gain, or a promise too good to be true?"], each=2)]
 q37 = [rub("3.7", "Evaluate the impact of the nominal group technique.", 6, [
     "Positive: it provides time to think about the question in silence before responding.",
     "Positive: voting on the ideas is anonymous and may be more reliable/honest.", "Positive: strong technique for preventing conformity to group pressure.",
@@ -345,7 +360,8 @@ q41 = [lst("4.1", "Give any TWO examples of non-insurable risks.", 2,
             ["Possible failure of a business", "Business failure"], ["Shoplifting during business hours", "Shoplifting"],
             ["Loss of income if stock is not received in time", "Time that elapses between the ordering and delivery of goods"],
             ["Losses/damages incurred because of illegal marketing malpractices", "Illegal marketing activities"]],
-           ["An insurer will not cover a risk it cannot measure or one the business causes itself.", "Think war, fashion, bad debts, shoplifting ..."])]
+           ["An insurer will not cover a risk it cannot measure or one the business causes itself.",
+            "Think of losses no insurer can predict or price, or losses caused by the market or by the business's own decisions."])]
 q42 = [
     term("4.2.1", "PL raised additional capital by borrowing money from the public.", ["Debentures", "Debenture"],
          ["Borrowing from the public, not selling shares.", "A long-term loan certificate a company issues."]),
@@ -368,7 +384,8 @@ q43 = [rub("4.3", "Explain the difference between management and leadership.", 4
     "energizing/motivating/encouraging employees; leadership is people orientated and focuses on building relationships/morale/development; leads "
     "by example/trust/respect; leadership 'does the right things' by focusing on the vision and strategies; leadership asks 'what' and 'why' to "
     "foster a deeper understanding for improvement."],
-    ["A manager gets tasks done; a leader inspires people.", "Give one point for each side so the difference is clear."], each=2,
+    ["Think about what each one focuses on, and how each one gets people to act.",
+     "A difference is only right when BOTH halves are right: check each side."], each=2,
     notes=["Not necessarily a table, and the two need not link, but the difference must be clear: a maximum of 2 if it is not, or if only one "
            "side is given."])]
 q44 = [rub("4.4", "Discuss the advantages of a personal liability company.", 6, [
@@ -384,7 +401,8 @@ q44 = [rub("4.4", "Discuss the advantages of a personal liability company.", 6, 
     "Can improve their management since directors are accountable to shareholders.",
     "Directors are personally liable if they knowingly participate in carrying out business in a reckless/fraudulent manner.",
     "Any other relevant answer related to the advantages of a personal liability company."],
-    ["A personal liability company (Inc.) is a company, often of professionals.", "Think legal person, continuity, tax, capital, directors."], each=2)]
+    ["A personal liability company (Inc.) is a company, often of professionals.",
+     "Compare it with a sole trader: what does being a registered company give it?"], each=2)]
 q45 = [rub("4.5", "Advise presenters on the factors that they should consider during a presentation.", 4, [
     "Establish credibility by introducing yourself as the presenter at the start.", "Mention/Show the most important information first.",
     "Make the purpose/main points of the presentation clear at the start of the presentation.", "Use suitable section titles/headings/sub-headings/bullets.",
@@ -399,10 +417,12 @@ q45 = [rub("4.5", "Advise presenters on the factors that they should consider du
     "Keep the presentation short and simple.", "Conclude/End with a strong/striking ending that will be remembered.",
     "Ensure that the audience will leave with specific information.", "Manage time effectively to allow time for questions.",
     "Any other relevant answer related to the factors to be considered by the presenter while presenting."],
-    ["DURING the presentation: how you stand, speak and hold the audience.", "Eye contact, voice, pace, time for questions."], each=2)]
+    ["DURING the presentation: how you stand, speak and hold the audience.",
+     "Ask of each card: would it keep the audience with you, or lose them?"], each=2)]
 q46 = [lst("4.6", "Name the FOUR corporate social investment (CSI) focus areas.", 4,
            [["Community"], ["Rural development"], ["Employees"], ["Environment"]],
-           ["Where does a business invest to do good?", "People inside the business, people around it, rural areas, nature."])]
+           ["Where does a business invest to do good?",
+            "Think of who and what a business's social investment can benefit, inside and outside the business."])]
 q47 = [rub("4.7", "Describe the importance of team dynamic theories in improving team performance.", 6, [
     "Team dynamic theories explain how effective teams work/operate.", "Businesses are able to allocate tasks according to the roles of team members.",
     "Team members can maximise performance as tasks are allocated according to their abilities/skills/attributes/personalities.",
@@ -413,7 +433,8 @@ q47 = [rub("4.7", "Describe the importance of team dynamic theories in improving
     ["Theories such as Belbin's describe the roles people play in a team.", "Knowing the roles, how can a leader use them?"], each=2)]
 q48 = [
     pick("4.8.1", "Quote TWO ways from the scenario above in which TA creates an environment that promotes creative thinking.", sentences(TA), [1, 3],
-         ["Which sentences help people think creatively?", "Fewer breaks do not help creativity."]),
+         ["Which sentences help people think creatively?",
+          "Ask of each sentence: is it something TA does, and would it help new ideas to flow?"]),
     rub("4.8.2", "Explain other ways in which businesses can create an environment that promotes creative thinking in the workplace.", 4, [
         "Emphasise the importance of creative thinking to ensure that all staff know that management wants to hear their ideas.",
         "Make time for brainstorming sessions to generate new ideas such as regular workshops/generate more ideas/build on one another's ideas.",
@@ -423,7 +444,8 @@ q48 = [
         "Respond enthusiastically to all ideas and never let anyone feel less important.",
         "Reward creativity by offering employees reward schemes/introduce incentives for staff members who come up with useful creative ideas.",
         "Any other relevant answer related to other ways in which businesses can create an environment that promotes creative thinking."],
-        ["How can a business show that it wants new ideas?", "Brainstorming, suggestion boxes, training, rewards."], each=2,
+        ["How can a business show that it wants new ideas?",
+         "Ask of each card: would staff feel safe and keen to share an idea?"], each=2,
         notes=["No marks for the ways quoted in 4.8.1."]),
 ]
 q49 = [rub("4.9", "Recommend ways in which businesses can deal with the pricing of goods in rural areas as a type of unethical business practice in the workplace.", 4, [
@@ -699,7 +721,7 @@ STATEMENTS = {
                   "Confidentiality: 'JP developed a remedial programme to reduce air pollution levels and to protect the environment.'"]),
     "3.3.2": (3, ["Transparency: decisions and actions must be clear to all stakeholders, and reports must be accurate and available to shareholders.",
                   "Accountability: businesses should be responsible for their decisions and actions, and present accurate annual reports to shareholders at the AGM."],
-                 ["Responsibility: JP reduces air pollution levels to protect the environment.",
+                 ["Accountability: directors do not have to explain their decisions to shareholders.",
                   "Secrecy: business deals should be kept hidden from shareholders to protect the directors.",
                   "Transparency: directors may leave the negative impacts on the community out of their reports."]),
     "3.4": (2, ["A clear set of procedures for teamwork ensures that every team member understands his/her role.",
@@ -717,7 +739,8 @@ STATEMENTS = {
                 "It may give the business tax advantages, such as tax rebates."],
                ["CSR projects immediately double the business's profits.", "CSR allows the business to ignore labour legislation.",
                 "CSR means the business no longer has to pay its employees' salaries."]),
-    "4.3": (2, ["Management guides human behaviour, whereas leadership influences human behaviour.",
+    # 4 a difference: the memo's management submax 2 + leadership submax 2 make ONE clear difference worth the whole 4 (MG p17-18)
+    "4.3": (4, ["Management guides human behaviour, whereas leadership influences human behaviour.",
                 "Management focuses on the short to medium term, whereas leadership focuses on the long term.",
                 "Management is task orientated, whereas leadership is people orientated."],
                ["Management inspires staff to trust each other, whereas leadership enforces rules on subordinates.",
@@ -820,7 +843,7 @@ q5_parts = essay("5.7", [
          ["Insurance is only needed by businesses that have already suffered a loss.",
           "Businesses can choose to ignore compulsory insurance if they have enough savings.",
           "Insurance guarantees that a business will never suffer any loss at all."],
-         ["An introduction says why the topic matters to a business.", "Risks, the law and protection."], 1),
+         ["An introduction says why the topic matters to a business.", "Pick statements that are true and set up the whole essay."], 1),
     sort_("5.2", "Outline the differences between insurance and assurance.", 8, ["Insurance", "Assurance", "Not true"], [
         ("It is based on the principle of indemnity.", 0),
         ("The insured transfers the cost of a possible loss to the insurer for a premium.", 0),
@@ -830,7 +853,8 @@ q5_parts = essay("5.7", [
         ("It applies to long-term policies such as life insurance, endowments and retirement annuities.", 1),
         ("It pays out more than the value of the loss, so the insured makes a profit.", 2),
         ("It covers only events that happened before the policy was taken out.", 2)],
-        ["Insurance: something MAY happen. Assurance: something WILL happen.", "Short-term cover against loss, or long-term cover for life."]),
+        ["Ask of each row: is the event only possible, or bound to happen sooner or later?",
+         "Then think about how long each kind of policy usually runs."]),
     sort_("5.3", "Explain the THREE types of compulsory insurance.", 8, ["UIF", "COIDA", "RAF", "Not true"], [
         ("It provides short-term benefits to workers who become unemployed.", 0),
         ("Employers and employees each contribute 1% of the employee's basic wage every month.", 0),
@@ -840,14 +864,14 @@ q5_parts = essay("5.7", [
         ("It insures road users against the negligence of other road users.", 2),
         ("Employees must pay for their own work injuries before any claim can be made.", 3),
         ("Only businesses with more than 1 000 employees have to register for it.", 3)],
-        ["Losing your job, getting hurt at work, a road accident.", "Who pays in: the employer, the worker, the fuel buyer?"]),
+        ["Spell out each fund's full name: it tells you what it covers.", "Who pays in: the employer, the worker, the fuel buyer?"]),
     stmt("5.4", "Discuss the advantages of insurance.", 6,
          ["It transfers the risk from the business to the insurer.",
           "The business is compensated for insurable losses, such as property destroyed by fire.",
           "It protects the business against claims by members of the public for damages it is responsible for."] + Q5_EX,
          ["Insurance allows a business to claim twice for the same loss.", "It removes the need for the business to look after its assets.",
           "Insurance premiums are paid back in full at the end of every year."],
-         ["What does the business get for its premium?", "Risk moves to the insurer; losses are compensated."], 2),
+         ["What does the business get for its premium?", "Think about who carries the cost when something goes wrong."], 2),
     sort_("5.5", "Advise businesses on the principles of insurance: utmost good faith and insurable interest.", 6,
           ["Utmost good faith", "Insurable interest", "Not true"], [
         ("The insured must be honest when giving details to take out the policy.", 0),
@@ -856,18 +880,87 @@ q5_parts = essay("5.7", [
         ("The insured must have a legal relationship with the insured object.", 1),
         ("The insured may hide facts that would make the premium higher.", 2),
         ("Anyone may insure any object, even one they have no link to.", 2)],
-        ["Good faith is about honesty; insurable interest is about who loses.", "Could you insure your neighbour's car?"]),
+        ["Read each principle's name slowly: what does it ask of the insured?", "Ask of each row: would an insurer accept this?"]),
     stmt("5.6", "Conclusion: pick the statement that concludes this essay.", 2,
          ["Insurance protects a business against the risks it is exposed to during its operations.",
           "Principles such as utmost good faith and insurable interest must be kept so that the insurance contract stays valid."],
          ["Insurance is unnecessary for any business that is well managed.", "Compulsory insurance can be ignored once a business makes a profit.",
           "Breaking the principles of insurance makes a claim pay out faster."],
-         ["A conclusion sums up why it all matters.", "Protection, and keeping the contract valid."], 2),
+         ["A conclusion sums up why it all matters.", "Pick the statement that is true and ties the essay together."], 2),
 ], [("5.4", Q5_EX[0]), ("5.4", Q5_EX[1])],
     ["Insight is earned from how you answered the sections.", "Right first time, every heading answered, and the examples picked."])
 missions_c[0]["items"] = q5_parts
 missions_c[0]["lead"] = "Build the essay section by section, then see your insight."
 missions_c[0]["extract"] = "QUESTION 5: THE ESSAY\n\n" + Q5_STEM   # (the essay's wording in the shared-information card: on a phone it folds away)
+
+# Essay 6 the same way: the memo's six headings (6.1-6.6, MG p27-32), the facts 2 + 6 + 8 + 6 + 8 + 2 = 32, then the insight (8).
+# 6.3 sorts THREE of the memo's six rights (privacy, equity, freedom of speech and expression: their ways do not overlap 6.2's
+# health-and-safety points the way 'safety, security and protection of life' would); the examples sit in 6.4 (strategies).
+Q6_EX = ["For example, a factory that switches to solar power and recycles its packaging cuts its pollution and its waste.",
+         "For example, a clothing factory that improves the lighting and ventilation on its floor protects its workers' health."]
+q6_parts = essay("6.7", [
+    stmt("6.1", "Introduction: pick the TWO statements that introduce this essay on human rights, inclusivity and environmental issues.", 2,
+         ["Businesses have a responsibility to ensure that employees work in a safe and healthy environment.",
+          "Businesses that protect the environment and human health receive support from customers.",
+          "Businesses are encouraged to promote diversity issues such as age and disability to improve productivity."],
+         ["Health and safety in the workplace is the responsibility of the employees alone.",
+          "Human rights apply to employees only outside working hours.",
+          "Protecting the environment is the government's job, so businesses need not be involved."],
+         ["An introduction says why the topic matters to a business.", "Pick statements that are true and set up the whole essay."], 1),
+    stmt("6.2", "Outline the responsibilities of employers in promoting human health and safety in the workplace.", 6,
+         ["Provide and maintain equipment that is safe for employees to use in their work.",
+          "Reduce or remove dangers to workers and provide personal protective clothing.",
+          "Inform, instruct and supervise workers to limit potential dangers to them.",
+          "Comply with safety laws and protocols that promote a healthy working environment."],
+         ["Make workers buy their own protective clothing before they may start work.",
+          "Leave machines unguarded, as workers are responsible for their own safety.",
+          "Let untrained workers use dangerous equipment without supervision to save time."],
+         ["What must an employer provide, check and enforce so that work does not harm workers?",
+          "Think of the workplace, the equipment and the people who use it."], 2),
+    sort_("6.3", "Explain how businesses can deal with any THREE human rights in the workplace.", 8,
+          ["Privacy", "Equity", "Freedom of speech and expression", "Not true"], [
+        ("Do not give employees' personal information to anyone else.", 0),
+        ("Keep confidential the HIV/Aids status or chronic illness that an employee has disclosed.", 0),
+        ("Ensure that workers receive equal pay for work of equal value.", 1),
+        ("Do not discriminate against employees based on gender, race, religion or sexual orientation; give them equal opportunities.", 1),
+        ("Allow employees to express their opinions without being punished for voicing them.", 2),
+        ("Give employees a platform, such as workplace representatives, to raise grievances without victimisation.", 2),
+        ("Managers may read employees' private e-mails whenever they like, without telling them.", 3),
+        ("Pay women less than men for the same work if the women agree to it.", 3)],
+        ["Read each row and ask which right it protects.", "Remember that some rows describe what a business must never do."]),
+    stmt("6.4", "Discuss strategies businesses may use to protect the environment and human health.", 6,
+         ["Have a policy to minimise pollution and actively reuse, recycle and reduce waste.",
+          "Alter production techniques in favour of cleaner and greener technologies to protect the environment.",
+          "Service and maintain all machines regularly to reduce accidents in the workplace."] + Q6_EX,
+         ["Dump toxic waste in a nearby river to save on disposal costs.",
+          "Ignore environmental laws as long as the business makes a profit.",
+          "Stop health check-ups for employees, as they take time away from production."],
+         ["Strategies look after the environment AND the people who work in it.", "Which actions would an inspector praise, not fine?"], 2),
+    sort_("6.5", "Suggest ways in which businesses could deal with the following diversity issues: age and disability.", 8,
+          ["Age", "Disability", "Not true"], [
+        ("Link promotions to a specific set of skills, not to age.", 0),
+        ("Encourage older employees to help young employees develop their potential.", 0),
+        ("Advise young employees to respect and learn from older employees.", 0),
+        ("Provide ramps for wheelchairs and other assistive devices.", 1),
+        ("Train employees on how to deal with colleagues with disabilities.", 1),
+        ("Focus on the skills and work performance of the worker rather than on the disability.", 1),
+        ("Employ children under 15 years of age if their parents agree.", 2),
+        ("Keep workers with special needs out of workplace activities for their own safety.", 2)],
+        ["Sort by the issue each row deals with, then ask whether the way it suggests is fair and legal.",
+         "Inclusion means adapting the workplace, never shutting people out."]),
+    stmt("6.6", "Conclusion: pick the statement that concludes this essay.", 2,
+         ["Businesses that adhere to their responsibilities are able to create a safe and healthy work environment for their employees.",
+          "Businesses that address diversity issues create a more inclusive environment that helps to prevent discrimination in the workplace."],
+         ["Human rights in the workplace become optional when a business is under financial pressure.",
+          "Environmental laws stop businesses from making any profit at all.",
+          "Diversity issues disappear on their own once a business employs enough people."],
+         ["A conclusion sums up why it all matters.", "Pick the statement that is true and ties the essay together."], 2),
+], [("6.4", Q6_EX[0]), ("6.4", Q6_EX[1])],
+    ["Insight is earned from how you answered the sections.", "Right first time, every heading answered, and the examples picked."])
+missions_c[1]["items"] = q6_parts
+missions_c[1]["lead"] = "Build the essay section by section, then see your insight."
+missions_c[1]["extract"] = "QUESTION 6: THE ESSAY\n\n" + Q6_STEM
+assert not [i["n"] for m in missions_c for i in m["items"] if i["t"] == "rubric"], "an essay left as rubric"
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
@@ -879,7 +972,7 @@ paper = {
     ],
     "flags": [
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 6), hand-transcribed from the paper and memo PDFs; no API call."},
-        {"n": "1.3", "kind": "memo_issue", "detail": "COLUMN B (D) prints 'the business seizes to exist' (ceases); transcribed as printed."},
+        {"n": "1.3", "kind": "memo_issue", "detail": "COLUMN B (D) prints 'the business seizes to exist'; transcribed 'ceases to exist' (the paper's typo)."},
         {"n": "5", "kind": "memo_issue", "detail": "5.5.2 prints 'if the ensured object is damaged'; transcribed 'insured object' (the memo's typo)."},
         {"n": "6", "kind": "memo_issue", "detail": "6.5.2 prints 'Businesses should bel informed'; transcribed 'be informed' (the memo's typo)."},
         {"n": "2.6.1", "kind": "no_fit", "detail": "Quote items (2.6.1, 3.5.1, 4.8.1) are played by picking the scenario's sentences: the memo awards "
