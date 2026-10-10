@@ -49,6 +49,7 @@ FINISHED = {
     "ml-p2-2024-11": ("Mathematical Literacy P2 Nov 2024 Eng.pdf", "Mathematical Literacy P2 Nov 2024 MG Afr & Eng.pdf"),
     "math-p1-2025-11": ("Mathematics P1 Nov 2025 Eng.pdf", "Mathematics P1 Nov 2025 MG Afr & Eng.pdf"),
     "math-p2-2025-11": ("Mathematics P2 Nov 2025 Eng.pdf", "Mathematics P2 Nov 2025 MG Afr & Eng.pdf"),
+    "math-p1-2024-11": ("Mathematics P1 Nov 2024 Eng.pdf", "Mathematics P1 Nov 2024 MG Afr & Eng.pdf"),
 }
 
 
