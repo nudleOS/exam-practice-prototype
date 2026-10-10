@@ -173,12 +173,15 @@ window.NX_CATALOGUE = {
    "sitting": "November 2024",
    "year": 2024,
    "month": 11,
-   "total_marks": 150,
+   "total_marks": 128,
    "duration_minutes": 180,
    "questions": 3,
    "missions": 13,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2024"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2024",
+   "rev": "fa42f6e669",
+   "source_pdf": "uploads/Geography P2 Nov 2024 Eng.pdf",
+   "printed_marks": 150
   },
   {
    "id": "ls-p1-2025-11",
