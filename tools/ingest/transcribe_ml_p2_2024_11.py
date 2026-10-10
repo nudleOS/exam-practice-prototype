@@ -20,12 +20,15 @@ The memo's shapes map as in Mathematical Literacy P2 Nov 2025 (transcribe_ml_p2_
   matching concepts to TABLE 1's definitions (A-G) -> match (2 marks a pair); "Choose ... (A, B or C)" -> mcq; a name, a product, a
   duration, a direction, a probability read off a table, a simplified ratio -> term (every spelling the memo accepts; all or nothing
   where the memo splits the marks; `reject` for a wrong direction a spelling slip away); the names of several things the memo marks
-  one by one (two cities, four months) -> list; a count read off a figure -> num; "Calculate / Determine / Convert" -> steps, each
-  step ONE number the memo's method produces (unit in the label's brackets), the memo's SF/MA/RT/C marks riding on the number they
-  lead to; "Verify" / "Show ... whether or not he is correct" -> steps, the memo's conclusion (the O mark) folded into the last step;
-  an explanation or a reason (A/O marks) -> rubric, each memo alternative one 2-mark point.
-  A memo RANGE or two accepted methods -> a tolerance spanning them; the memo's NPR rule (no penalty for rounding if the first
-  decimal is correct) widens the tolerance of an answer that must be rounded to cover its one-decimal rounding.
+  one by one (two cities, four months) -> list; an explanation or a reason (A/O marks) -> rubric, each memo alternative one 2-mark
+  point.
+  Every number the learner would TYPE (a count read off a figure, "Calculate / Determine / Convert", "Verify" / "Show ... whether
+  or not he is correct") -> authored whole-working mcq (Murci, 2026-10-10; the layout of transcribe_math_p1_2025_11.py): the stem
+  plus "Choose the correct working.", four workings with one step a line ("{a}/{b}" a fraction, numbers the memo's way): the memo's
+  FIRST method as it works it, and three built from real errors (a wrong operation or base, a unit slip, a value read from the
+  wrong row, radius for diameter, a wrong rounding; in a verify part an error that turns the conclusion), each ending in a
+  confident result; every option of a part has the same number of lines; the part keeps its marks, all or nothing. A value the
+  memo ALSO accepts (2.1.6(b)'s 89-91 mm measurement, 4.2.1's 20 bricks a row, 4.2.2's 13 m²) never appears in a wrong option.
 Figure boxes are measured in PDF points (both scans are 595.2 x 841.68) with ink profiles of the page (scratchpad ml2_24_tools/ink.py),
 set so that ingest's 1% pad keeps each drawing and its frame and leaves out the "[Adapted from ...]" / "[Source: ...]" lines, the
 text around it and the question's outer box; `inset` where a printed heading touches the crop's top-left corner (the page's Hide
@@ -35,6 +38,7 @@ inside that frame. One exception: C's "[Adapted from www.wilmap.com.au]" sits in
 and below Tasmania, so no box can leave it out without clipping the Key or Tasmania; C's crop is the whole annexure frame, the line
 included. Checked on the rendered crops."""
 import json
+import re
 from pathlib import Path
 
 W, H = 595.2, 841.68   # the question paper's page and the addendum's page alike
@@ -61,6 +65,18 @@ def mcq(n, q, opts, a, clues, marks=2, **kw):
     return {"t": "mcq", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
 
 
+WORK = "\n\nChoose the correct working."
+
+
+def work(n, q, marks, a, right, wrong, clues):
+    """An authored whole-working MCQ (Murci, 2026-10-10): `right` is the memo's FIRST method, put at index a (0-3); `wrong` are the
+    three workings built from common errors, filling the other places in order. One step a line ("\\n")."""
+    assert len(wrong) == 3 and 0 <= a <= 3, n
+    opts = list(wrong)
+    opts.insert(a, right)
+    return mcq(n, q + WORK, opts, a, clues, marks=marks)
+
+
 # notes: the memo's marking instructions that are NOT points: never scored, never shown. worth: each point's own marks where they differ.
 def rub(n, q, marks, bullets, clues, each=None, must=None, notes=None, worth=None):
     return {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets, **({"each": each} if each else {}),
@@ -69,19 +85,11 @@ def rub(n, q, marks, bullets, clues, each=None, must=None, notes=None, worth=Non
 
 term = lambda n, q, a, clues, marks=2, strict=False, reject=None: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
                                                                    **({"strict": True} if strict else {}), **({"reject": reject} if reject else {})}
-num = lambda n, q, a, tol, unit, clues, marks=2: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
-lst = lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
+lst =lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
 match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "marks": len(left) * each, "q": q, "clues": clues, "left": left,
                                                          "right": right, "a": a, **({"each": each} if each > 1 else {}), **kw}
 draw = lambda n, q, marks, criteria, clues, memo="": {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
                                                      "criteria": [{"text": t, "marks": m} for t, m in criteria], **({"memo": memo} if memo else {})}
-
-
-def steps(n, q, marks, sts, clues):
-    """sts: (label, marks, answer, tolerance, the memo's working)."""
-    s = [{"id": "s%d" % (i + 1), "label": lab, "marks": m, "a": a, "tol": tol, "memo": memo} for i, (lab, m, a, tol, memo) in enumerate(sts)]
-    assert sum(x["marks"] for x in s) == marks, n
-    return {"t": "steps", "n": n, "marks": marks, "q": q, "clues": clues, "steps": s}
 
 
 def times(hh, mm):
@@ -101,30 +109,48 @@ q11 = [match("1.1", "Use TABLE 1 above and match an explanation or a definition 
               "Capacity is the word used for containers such as bottles and tanks; area is measured in square units."],
              heads=["CONCEPT", "TABLE 1: EXPLANATIONS AND DEFINITIONS OF CONCEPTS"])]
 q12 = [
-    steps("1.2.1", "Convert 220 mm to metres.", 2,
-          [("The width in metres (m)", 2, 0.22, 0.001, "220 mm ÷ 1 000 ✓MA = 0,22 m ✓A")],
-          ["1 m = 1 000 mm.", "To a bigger unit: divide."]),
+    work("1.2.1", "Convert 220 mm to metres.", 2, 2,
+         "220 mm ÷ 1 000\n= 0,22 m", [
+             "220 mm ÷ 100\n= 2,2 m",
+             "220 mm × 1 000\n= 220 000 m",
+             "220 mm ÷ 10\n= 22 m"],
+         ["1 m = 1 000 mm.", "To a bigger unit: divide."]),
     mcq("1.2.2", "Choose, from the options (A, B or C) below, the correct one that could be used to calculate the volume of the hexagonal paving brick.",
         ["Volume = 6 × area of triangle × height", "Volume = side length + height + width", "Volume = 6 × perimeter × height"], 0,
         ["Volume = area of the top face × height.", "The top face is made up of 6 equal triangles: which option uses an AREA?"]),
-    steps("1.2.3", "Calculate the number of bricks needed for a single row along a length of 2 860 mm.", 3,
-          [("Number of bricks in the single row", 3, 13, 0.01, "Number of bricks = 2 860 mm ✓RT ÷ 220 mm ✓MA = 13 ✓A")],
-          ["In THREE BRICKS IN A ROW, which dimension lies along the row?", "Divide the length of the row by that dimension."])]
+    work("1.2.3", "Calculate the number of bricks needed for a single row along a length of 2 860 mm.", 3, 0,
+         "Number of bricks = 2 860 mm ÷ 220 mm\n= 13", [
+             "Number of bricks = 2,86 m ÷ 220 mm\n= 0,013",
+             "Number of bricks = 2 860 mm ÷ 90 mm\n= 31,78",
+             "Number of bricks = 2 860 mm ÷ 22 cm\n= 130"],
+         ["In THREE BRICKS IN A ROW, which dimension lies along the row?", "Divide the length of the row by that dimension."])]
 q13 = [
-    num("1.3.1", "Write down the total number of wooden items needed to assemble this chair.", 18, 0.01, "items",
-        ["The # column gives how many of each item.", "Add the numbers of all the items in the material list."]),
-    steps("1.3.2", "Determine the number of crosspieces found on the seats of THREE chairs.", 3, [
-        ("Crosspieces on the seat of ONE chair", 1, 6, 0.01, "6 ✓RT"),
-        ("Crosspieces on the seats of THREE chairs", 2, 18, 0.01, "Number of crosspieces = 6 × 3 ✓A = 18 ✓A")],
-          ["Count the crosspieces across the SEAT only (not the back): the side view shows them as blocks.", "Then multiply by the number of chairs."]),
+    work("1.3.1", "Write down the total number of wooden items needed to assemble this chair.", 2, 3,
+         "4 + 13 + 1\n= 18 items", [
+             "4 + 13\n= 17 items",
+             "4 × 13 × 1\n= 52 items",
+             "1 + 1 + 1\n= 3 items"],
+         ["The # column gives how many of each item.", "Add the numbers of all the items in the material list."]),
+    work("1.3.2", "Determine the number of crosspieces found on the seats of THREE chairs.", 3, 1,
+         "Number of crosspieces = 6 × 3\n= 18", [
+             "Number of crosspieces = 13 × 3\n= 39",
+             "Number of crosspieces = 6 + 3\n= 9",
+             "Number of crosspieces = 5 × 3\n= 15"],
+         ["Count the crosspieces across the SEAT only (not the back): the side view shows them as blocks.", "Then multiply by the number of chairs."]),
     term("1.3.3", "Name the item in the material list with the longest dimension.", ["Chair support", "Chair supports"],
          ["Each item's dimensions are given as thickness × width × length.", "Find the biggest of the lengths and read that item's name."]),
-    num("1.3.4", "Identify which dimension of the chair support will represent the thickness of the wood.", 1.9, 0.01, "cm",
-        ["Read the NOTE under the material list.", "Find the smallest of the chair support's three dimensions."]),
-    steps("1.3.5", "Write down, in millimetres, the length of the spacing between the crosspieces of the back of the chair.", 2, [
-        ("Spacing shown on the side view (cm)", 1, 1.27, 0.005, "1,27 cm ✓RT"),
-        ("Spacing in millimetres (mm)", 1, 12.7, 0.01, "Space = 1,27 × 10 mm = 12,7 mm ✓MCA (NPU)")],
-          ["The side view labels the spacing between the crosspieces of the chair back.", "1 cm = 10 mm."])]
+    work("1.3.4", "Identify which dimension of the chair support will represent the thickness of the wood.", 2, 0,
+         "Smallest of 1,9 cm, 3,8 cm and 66 cm\n= 1,9 cm", [
+             "Largest of 1,9 cm, 3,8 cm and 66 cm\n= 66 cm",
+             "Middle of 1,9 cm, 3,8 cm and 66 cm\n= 3,8 cm",
+             "1,9 cm + 3,8 cm + 66 cm\n= 71,7 cm"],
+         ["Read the NOTE under the material list.", "Find the smallest of the chair support's three dimensions."]),
+    work("1.3.5", "Write down, in millimetres, the length of the spacing between the crosspieces of the back of the chair.", 2, 2,
+         "Space = 1,27 × 10 mm\n= 12,7 mm", [
+             "Space = 1,27 ÷ 10 mm\n= 0,127 mm",
+             "Space = 1,27 × 100 mm\n= 127 mm",
+             "Space = 1,27 × 1 000 mm\n= 1 270 mm"],
+         ["The side view labels the spacing between the crosspieces of the chair back.", "1 cm = 10 mm."])]
 
 # ---- QUESTION 2, the question paper pages 5-6, the memo pages 4-6 and the ADDENDUM pages 2-3 (ANNEXURES A and B) ----
 q21 = [
@@ -132,11 +158,13 @@ q21 = [
         "View from the top (2).", "OR — View of the landscape from a certain height above ground like from a satellite or drone (2).",
         "OR — View from an elevated height (2).", "OR — Birds-eye view (2)."],
         ["The word 'aerial' comes from 'air'.", "Where would you have to be to see the whole camp like a map?"], each=2),
-    steps("2.1.2", "Calculate the maximum number of campers that can be accommodated at Baviaanskloof Uitspan camping site.", 3, [
-        ("Maximum number of campers at the camping site", 3, 118, 0.01, "Number of campers = 6 + 15 + 4 + 15 + 4 + 4 + 5 + 15 + 8 + 10 + 6 + 6 "
-         "+ 20 ✓RT ✓MCA = 118 ✓CA (OR = 20 + 15(3) + 10 + 8 + 6(3) + 5 + 4(3) = 118). AO")],
-          ["Add the campers of EVERY hut in the table, the B and C huts included.", "Where the table gives a range (4 – 6), the maximum is "
-           "its bigger number."]),
+    work("2.1.2", "Calculate the maximum number of campers that can be accommodated at Baviaanskloof Uitspan camping site.", 3, 1,
+         "Number of campers = 6 + 15 + 4 + 15 + 4 + 4 + 5 + 15 + 8 + 10 + 6 + 6 + 20\n= 118", [
+             "Number of campers = 6 + 15 + 4 + 15 + 4 + 4 + 5 + 15 + 8 + 10 + 4 + 4 + 20\n= 114",
+             "Number of campers = 6 + 15 + 15 + 5 + 15 + 10 + 6 + 6 + 20\n= 98",
+             "Number of campers = 6 + 15 + 4 + 15 + 4 + 4 + 5 + 15 + 8 + 10 + 5 + 5 + 20\n= 116"],
+         ["Add the campers of EVERY hut in the table, the B and C huts included.", "Where the table gives a range (4 – 6), the maximum is "
+          "its bigger number."]),
     term("2.1.3", "Determine the general direction of the dam from campsite 8.", ["South West", "SW", "Southwest"],
          ["Find campsite 8 and the dam on the aerial view; the arrow marked N points north.", "Stand at campsite 8: which way is the dam? "
           "Combine two compass directions."], reject=["South East", "Southeast", "North West", "Northwest"]),
@@ -144,23 +172,28 @@ q21 = [
          "of 19 campers.'\n\nWrite down which campsite is being described. Write down only the number of the campsite.", ["2", "Campsite 2"],
          ["Which numbered campsites are close to the dam on the aerial view?", "Add the campers of all the huts at each of them: which "
           "totals 19?"]),
-    steps("2.1.5", "Calculate, as a percentage, the probability of John and his family randomly selecting a hut that can exactly accommodate "
-          "the whole family.", 3, [
-        ("Number of huts that can exactly accommodate the whole family", 1, 3, 0.01, "3 ✓A"),
-        ("Number of huts at the camping site", 1, 13, 0.01, "13 ✓A"),
-        ("Probability, as a percentage (%)", 1, 23.076923, 0.025, "3/13 × 100% = 23,076923% ✓CA. NPR")],
-          ["How many people are in John's family group? Find the huts whose number of campers is exactly that (a range counts when the "
-           "number is in it).", "Each row of the table is one hut: probability = huts that fit ÷ all the huts, × 100%."])]
+    work("2.1.5", "Calculate, as a percentage, the probability of John and his family randomly selecting a hut that can exactly accommodate "
+         "the whole family.", 3, 3,
+         "{3}/{13} × 100%\n= 23,076923%", [
+             "{1}/{13} × 100%\n= 7,692308%",
+             "{3}/{9} × 100%\n= 33,333333%",
+             "{9}/{13} × 100%\n= 69,230769%"],
+         ["How many people are in John's family group? Find the huts whose number of campers is exactly that (a range counts when the "
+          "number is in it).", "Each row of the table is one hut: probability = huts that fit ÷ all the huts, × 100%."])]
 q216 = [
-    num("2.1.6(a)", "Write down the total number of showers.", 9, 0.01, "showers",
-        ["Use the KEY: which symbol is a shower?", "Count those cubicles in the plan."]),
-    steps("2.1.6(b)", "Determine, rounded to the nearest whole number, the scale of the plan.", 4, [
-        ("Length of the plan measured on the printed page (mm)", 1, 90, 1.05, "90 mm ✓A (accept ± 1 mm deviation on the measurement)"),
-        ("Actual length of the ablution facilities (mm)", 1, 8200, 0.01, "90 mm = 8,2 m; 8,2 m = 8 200 mm ✓C"),
-        ("Scale before rounding, 1 : …", 1, 91.11, 1.03, "8 200 mm ÷ 90 ✓M = 91,11: 1 : 91,11 (OR 9 cm : 8,2 m = 9 cm : 820 cm = 1 : 91,11..)"),
-        ("Scale rounded to the nearest whole number, 1 : …", 1, 91, 1.01, "1 : 91 ✓R (90 or 92 from a measurement of 91 mm or 89 mm)")],
-          ["Measure the plan's length on the paper (the figure's caption gives it) and change 8,2 m to the same unit.",
-           "Scale = 1 : actual length ÷ plan length; round to a whole number."]),
+    work("2.1.6(a)", "Write down the total number of showers.", 2, 2,
+         "Shower cubicles along the top wall: 9\nTotal number of showers = 9", [
+             "Toilet cubicles along the bottom wall: 6\nTotal number of showers = 6",
+             "Cubicles along both walls: 9 + 6\nTotal number of showers = 15",
+             "Shower symbols in the plan and the key: 9 + 1\nTotal number of showers = 10"],
+         ["Use the KEY: which symbol is a shower?", "Count those cubicles in the plan."]),
+    work("2.1.6(b)", "Determine, rounded to the nearest whole number, the scale of the plan.", 4, 0,
+         "90 mm = 8,2 m\n90 mm = 8 200 mm (÷ 90)\n1 : 91,11\n1 : 91", [
+             "90 mm = 8,2 m\n90 mm = 820 mm (÷ 90)\n1 : 9,11\n1 : 9",
+             "9 cm = 8,2 m\n9 cm = 8 200 mm (÷ 9)\n1 : 911,11\n1 : 911",
+             "90 mm = 8,2 m\n8 200 mm = 90 mm (÷ 90)\n91,11 : 1\n91 : 1"],
+         ["Measure the plan's length on the paper (the figure's caption gives it) and change 8,2 m to the same unit.",
+          "Scale = 1 : actual length ÷ plan length; round to a whole number."]),
     rub("2.1.6(c)", "Give ONE suitable reason why benches are found in the ablution facilities.", 2, [
         "To allow people to sit while waiting for a toilet or shower to become available (2).",
         "OR — To place your clothes or belongings on while you are showering (2).",
@@ -177,20 +210,25 @@ q22 = [
         ["Rhebok Valley and the Reflection Pools lie on the same loop: which day is it?", "The description ends back at the home base: is it "
          "the first or the second part of that day's run?"])]
 q223 = [
-    num("2.2.3", "Determine the number of kilometres John had run when he reached the highest point above sea level on Day 2.", 12.5, 0.01, "km",
-        ["Use the TRAIL RUN – DAY 2 elevation map.", "Find the curve's highest peak and read the distance straight below it."]),
+    work("2.2.3", "Determine the number of kilometres John had run when he reached the highest point above sea level on Day 2.", 2, 1,
+         "Highest point on the DAY 2 map: 1 173 m\nDistance run at that point = 12,5 km", [
+             "Highest point on the DAY 2 map: 1 173 m\nDistance run = 21,9 km − 12,5 km = 9,4 km",
+             "Highest point on the DAY 2 map: 1 173 m\nDistance run = 1 173 m ÷ 1 000 = 1,173 km",
+             "Highest point on the DAY 1 map: 1 183 m\nDistance run at that point = 7 km"],
+         ["Use the TRAIL RUN – DAY 2 elevation map.", "Find the curve's highest peak and read the distance straight below it."]),
     rub("2.2.4", "John's best average speed (in km/h) for the run was his average speed from the 8 km mark up to the 18 km mark on Day 1.\n\n"
         "Use the elevation map to explain why this was the case.", 2, [
         "The part shows a continuous downward slope, it is downhill (2).", "OR — That part does not have many uphills (2)."],
         ["Find 8 km and 18 km on the TRAIL RUN – DAY 1 elevation map.", "Between them, does the curve go up or down, and how does that "
          "change a runner's speed?"], each=2),
-    steps("2.2.5", "John stated that on Day 2, while he was running from the 17,5 km mark to the end of the trail, he had moved more than 100 "
-          "metres closer to sea level.\n\nShow, by means of calculations, whether or not he is correct.", 3, [
-        ("Height above sea level at the 17,5 km mark (m)", 1, 1050, 0.01, "1 050 m ✓RT"),
-        ("Height above sea level at the end of the trail (m)", 1, 900, 0.01, "900 m ✓RT"),
-        ("How much closer to sea level he moved (m)", 1, 150, 0.01, "Difference = 1 050 m − 900 m = 150 m: He is CORRECT ✓O")],
-          ["On the DAY 2 elevation map, read the height at the 17,5 km line and at the end of the trail from the heights labelled on the "
-           "left.", "Subtract the two heights and compare the difference with 100 m."])]
+    work("2.2.5", "John stated that on Day 2, while he was running from the 17,5 km mark to the end of the trail, he had moved more than 100 "
+         "metres closer to sea level.\n\nShow, by means of calculations, whether or not he is correct.", 3, 3,
+         "Difference = 1 050 m − 900 m\n= 150 m\nHe is CORRECT.", [
+             "Difference = 975 m − 900 m\n= 75 m\nHe is NOT correct.",
+             "Difference = 1 050 m − 900 m\n= 150 m = 0,15 km\n0,15 is less than 100: he is NOT correct.",
+             "Difference = 1 173 m − 900 m\n= 273 m\nHe is CORRECT."],
+         ["On the DAY 2 elevation map, read the height at the 17,5 km line and at the end of the trail from the heights labelled on the "
+          "left.", "Subtract the two heights and compare the difference with 100 m."])]
 
 # ---- QUESTION 3, the question paper pages 7-9 and the memo pages 7-11 ----
 q31 = [
@@ -198,54 +236,70 @@ q31 = [
          "the reading corner.", ["1 hour 18 minutes", "1 hour and 18 minutes", "1 hour 18 min", "1 hr 18 min", "1 hr 18 mins", "1 h 18 min",
                                  "1h18min", "1h18", "1 h 18", "1:18", "01:18", "78 minutes", "78 min", "78 mins", "1,3 hours", "1,3 h", "1,3 hrs"],
          ["From 12:55 to 13:00 is 5 minutes.", "Then count on from 13:00 to 14:13."]),
-    steps("3.1.2", "The height of one pillow is 11 cm.\n\nDetermine the difference between the total height of the pillows in ONE bag and the height "
-          "of the bag.", 4, [
-        ("Total height of the pillows in ONE bag (cm)", 2, 44, 0.01, "Total height of 4 pillows = 11 cm × 4 ✓MA = 44 cm ✓CA"),
-        ("Difference between the height of the bag and the pillows' total height (cm)", 2, 4, 0.01, "Difference = 48 cm ✓RT − 44 cm = 4 cm ✓CA "
-         "(OR Difference = 48 cm − 11 cm − 11 cm − 11 cm − 11 cm = 4 cm). AO")],
-          ["Count the pillows stacked in ONE bag in the picture.", "Add up their heights and compare with the bag's height."]),
-    steps("3.1.3", "The piping around the bottom edge of some of the bags for the pillows needs to be replaced. The store sells the piping in half-metre "
-          "lengths.\n\nCalculate the total length of piping she will have to purchase to replace the piping around the bottom edges of FOUR bags.\n\n"
-          "You may use the following formula:\nPerimeter = 2 (length + width)", 5, [
-        ("Perimeter of the bottom edge of ONE bag (cm)", 2, 152, 0.01, "Perimeter = 2 (46 cm + 30 cm) ✓SF = 2 (76 cm) = 152 cm ✓CA"),
-        ("Piping for FOUR bags (cm)", 1, 608, 0.01, "Total length for 4 bags = 152 × 4 ✓MA = 608 cm"),
-        ("Piping for FOUR bags in metres (m)", 1, 6.08, 0.005, "608 cm ÷ 100 = 6,08 m ✓C (OR in metres from the start: 2(0,3 m + 0,46 m) = "
-         "1,52 m; 1,52 m × 4 = 6,08 m)"),
-        ("Length of piping she must buy (m)", 1, 6.5, 0.01, "She must buy 6,5 m ✓R (OR ½ m = 50 cm; 608 cm ÷ 50 cm = 12,16 ≈ 13 half-metre lengths)")],
-          ["The bottom edge of a bag is a rectangle 46 cm by 30 cm.", "Four bags, and the piping is sold only in half-metre lengths: round UP."])]
+    work("3.1.2", "The height of one pillow is 11 cm.\n\nDetermine the difference between the total height of the pillows in ONE bag and the height "
+         "of the bag.", 4, 1,
+         "Total height of 4 pillows = 11 cm × 4\n= 44 cm\nDifference = 48 cm − 44 cm\n= 4 cm", [
+             "Total height of 4 pillows = 11 cm × 4\n= 44 cm\nDifference = 46 cm − 44 cm\n= 2 cm",
+             "Total height of 3 pillows = 11 cm × 3\n= 33 cm\nDifference = 48 cm − 33 cm\n= 15 cm",
+             "Total height of 4 pillows = 11 cm × 4\n= 44 cm\nDifference = 44 cm − 30 cm\n= 14 cm"],
+         ["Count the pillows stacked in ONE bag in the picture.", "Add up their heights and compare with the bag's height."]),
+    work("3.1.3", "The piping around the bottom edge of some of the bags for the pillows needs to be replaced. The store sells the piping in half-metre "
+         "lengths.\n\nCalculate the total length of piping she will have to purchase to replace the piping around the bottom edges of FOUR bags.\n\n"
+         "You may use the following formula:\nPerimeter = 2 (length + width)", 5, 2,
+         "Perimeter = 2 (46 cm + 30 cm) = 2 (76 cm)\n= 152 cm\nTotal length for 4 bags = 152 × 4\n= 608 cm\n= {608}/{100} = 6,08 m\n"
+         "She must buy 6,5 m", [
+             "Perimeter = 46 cm + 30 cm\n= 76 cm\nTotal length for 4 bags = 76 × 4\n= 304 cm\n= {304}/{100} = 3,04 m\nShe must buy 3,5 m",
+             "Perimeter = 2 (46 cm + 48 cm) = 2 (94 cm)\n= 188 cm\nTotal length for 4 bags = 188 × 4\n= 752 cm\n= {752}/{100} = 7,52 m\n"
+             "She must buy 8 m",
+             "Perimeter = 2 (46 cm + 30 cm) = 2 (76 cm)\n= 152 cm\nTotal length for 4 bags = 152 × 4\n= 608 cm\n= {608}/{100} = 6,08 m\n"
+             "She must buy 6 m"],
+         ["The bottom edge of a bag is a rectangle 46 cm by 30 cm.", "Four bags, and the piping is sold only in half-metre lengths: round UP."])]
 q32 = [
-    steps("3.2.1", "Determine, in cm, the circumference of the circular wooden tag.\n\nYou may use the following formula:\n"
-          "Circumference of a circle = 3,142 × diameter", 2,
-          [("Circumference of the tag (cm)", 2, 25.136, 0.04, "Circumference = 3,142 × 8 cm ✓SF = 25,136 cm ✓A (NPR). AO")],
-          ["The diameter of the tag is printed on the diagram.", "Use 3,142, as the formula says."]),
-    steps("3.2.2", "Determine, in cm, the radius of ONE circular wooden tag.", 2,
-          [("Radius of ONE tag (cm)", 2, 4, 0.01, "Radius = 8 cm ÷ 2 ✓MA = 4 cm ✓A (NPU). AO")],
-          ["The radius runs from the centre of the circle to its edge.", "How does it compare with the diameter?"]),
-    steps("3.2.3", "The hardware store sells paint in 50 mℓ, 1 litre, 5 litre and 20 litre containers.\n\nMrs Kgomo claims that a 50 mℓ can of paint "
-          "will be sufficient to paint ONE side of 36 circular wooden tags.\n\nVerify her statement. Show ALL calculations.\n\nUse the following "
-          "formula:\nArea of a circle = 3,142 × radius²", 9, [
-        ("Area of the front of ONE tag, hole included (cm²)", 3, 50.272, 0.005, "Area of a circle = 3,142 × (4 cm)² ✓SF = 3,142 × 16 cm² ✓MCA "
-         "= 50,272 cm² ✓CA (CA from 3.2.2)"),
-        ("Area to be painted on ONE tag (cm²)", 1, 49.9578, 0.005, "Area = 50,272 − 0,3142 = 49,9578 cm² ✓CA"),
-        ("Area to be painted on ONE side of the 36 tags (cm²)", 1, 1798.4808, 0.09, "Total area = 36 × 49,9578 cm² = 1 798,4808 cm² ✓MCA"),
-        ("Area to be painted on the 36 tags in square metres (m²)", 1, 0.179848, 0.0005, "Total area in m² = 1 798,4808 ÷ 100² = 0,179848 m² ✓C"),
-        ("Paint needed for the 36 tags (mℓ)", 3, 29.97468, 0.035, "Paint: 6 m² with 1 ℓ, so 0,17984808 m² with n ℓ: n = 0,17984808 ÷ 6 ℓ ✓MCA "
-         "= 0,02997466 ℓ ≈ 30 mℓ ✓CA: VALID ✓O (OR 6 m² = 1 ℓ = 1 000 mℓ, so 50 mℓ paints 0,3 m² ✓MA; 0,3 m² > 0,179848 m² ✓CA: 50 mℓ will be "
-         "more than sufficient ✓O; OR 6 m² : 1 ℓ = 60 000 cm² : 1 000 mℓ; paint for one tag = 49,9578 × 1 000 ÷ 60 000 = 0,83263 mℓ; × 36 = "
-         "29,97 mℓ: VALID)")],
-          ["Area to paint on one tag = the tag's area minus the hole's area.", "6 m² per litre: change cm² to m² (÷ 10 000) and find the mℓ for 36 tags."])]
+    work("3.2.1", "Determine, in cm, the circumference of the circular wooden tag.\n\nYou may use the following formula:\n"
+         "Circumference of a circle = 3,142 × diameter", 2, 0,
+         "Circumference = 3,142 × 8 cm\n= 25,136 cm", [
+             "Circumference = 3,142 × 4 cm\n= 12,568 cm",
+             "Circumference = 2 × 3,142 × 8 cm\n= 50,272 cm",
+             "Circumference = 3,142 × (8 cm)²\n= 201,088 cm"],
+         ["The diameter of the tag is printed on the diagram.", "Use 3,142, as the formula says."]),
+    work("3.2.2", "Determine, in cm, the radius of ONE circular wooden tag.", 2, 3,
+         "Radius = {8 cm}/{2}\n= 4 cm", [
+             "Radius = 8 cm × 2\n= 16 cm",
+             "Radius = {25,136 cm}/{3,142}\n= 8 cm",
+             "Radius = {8 cm}/{3,142}\n= 2,546 cm"],
+         ["The radius runs from the centre of the circle to its edge.", "How does it compare with the diameter?"]),
+    work("3.2.3", "The hardware store sells paint in 50 mℓ, 1 litre, 5 litre and 20 litre containers.\n\nMrs Kgomo claims that a 50 mℓ can of paint "
+         "will be sufficient to paint ONE side of 36 circular wooden tags.\n\nVerify her statement. Show ALL calculations.\n\nUse the following "
+         "formula:\nArea of a circle = 3,142 × radius²", 9, 2,
+         "Area of a circle = 3,142 × (4 cm)² = 3,142 × 16 cm² = 50,272 cm²\nArea to be painted = 50,272 − 0,3142 = 49,9578 cm²\n"
+         "Total area = 36 × 49,9578 cm² = 1 798,4808 cm²\nTotal area in m² = 1 798,4808 ÷ 100² = 0,179848 m²\n"
+         "6 m² = 1 ℓ = 1 000 mℓ, so 0,3 m² = 50 mℓ\n0,3 m² > 0,179848 m²\nTherefore 50 mℓ will be more than sufficient.", [
+             "Area of a circle = 3,142 × (8 cm)² = 3,142 × 64 cm² = 201,088 cm²\nArea to be painted = 201,088 − 0,3142 = 200,7738 cm²\n"
+             "Total area = 36 × 200,7738 cm² = 7 227,8568 cm²\nTotal area in m² = 7 227,8568 ÷ 100² = 0,722786 m²\n"
+             "6 m² = 1 ℓ = 1 000 mℓ, so 0,3 m² = 50 mℓ\n0,3 m² < 0,722786 m²\nTherefore 50 mℓ will not be sufficient.",
+             "Area of a circle = 3,142 × (4 cm)² = 3,142 × 16 cm² = 50,272 cm²\nArea to be painted = 50,272 − 0,3142 = 49,9578 cm²\n"
+             "Total area = 36 × 49,9578 cm² = 1 798,4808 cm²\nTotal area in m² = 1 798,4808 ÷ 100 = 17,984808 m²\n"
+             "6 m² = 1 ℓ = 1 000 mℓ, so 0,3 m² = 50 mℓ\n0,3 m² < 17,984808 m²\nTherefore 50 mℓ will not be sufficient.",
+             "Area of a circle = 3,142 × (4 cm)² = 3,142 × 16 cm² = 50,272 cm²\nArea to be painted = 50,272 + 0,3142 = 50,5862 cm²\n"
+             "Total area = 36 × 50,5862 cm² = 1 821,1032 cm²\nTotal area in m² = 1 821,1032 ÷ 100² = 0,182110 m²\n"
+             "6 m² = 1 ℓ = 1 000 mℓ, so 0,3 m² = 50 mℓ\n0,3 m² > 0,182110 m²\nTherefore 50 mℓ will be more than sufficient."],
+         ["Area to paint on one tag = the tag's area minus the hole's area.", "6 m² per litre (1 000 mℓ): what area does 50 mℓ cover? Change "
+          "the tags' cm² to m² (÷ 10 000) and compare."])]
 q33 = [
-    steps("3.3.1", "The volume of the cubic-shaped packet is 2 744 cm³.\n\nCalculate the side length of the cubic-shaped packet.\n\nYou may use the "
-          "following formula:\nVolume of a cube = side × side × side", 4,
-          [("Side length of the packet (cm)", 4, 14, 0.01, "2 744 cm³ = side × side × side ✓SF ✓SF; (side)³ = 2 744 cm³ ✓MA; 14 × 14 × 14 = 2 744; "
-            "Side = 14 cm ✓CA")],
-          ["Which number multiplied by itself three times gives 2 744?", "Use the cube root key, or try whole numbers between 10 and 20."])]
+    work("3.3.1", "The volume of the cubic-shaped packet is 2 744 cm³.\n\nCalculate the side length of the cubic-shaped packet.\n\nYou may use the "
+         "following formula:\nVolume of a cube = side × side × side", 4, 1,
+         "2 744 cm³ = side × side × side\n(side)³ = 2 744 cm³\n14 × 14 × 14 = 2 744\nSide = 14 cm", [
+             "2 744 cm³ = side × side × side\n(side)³ = 2 744 cm³\nside = 2 744 ÷ 3 = 914,67\nSide = 914,67 cm",
+             "2 744 cm³ = side × side\n(side)² = 2 744 cm³\nside = √2 744 = 52,38\nSide = 52,38 cm",
+             "2 744 cm³ = side × side × side\n2 744 cm³ ÷ 1 000 = 2,744\n1,4 × 1,4 × 1,4 = 2,744\nSide = 1,4 cm"],
+         ["Which number multiplied by itself three times gives 2 744?", "Use the cube root key, or try whole numbers between 10 and 20."])]
 q332 = [
-    steps("3.3.2", "Determine the probability, as a decimal, of randomly choosing a pink or a yellow sweet from the packet.", 3, [
-        ("Number of sweets that are pink or yellow", 1, 15, 0.01, "8 + 7 = 15 ✓A"),
-        ("Number of sweets in the packet", 1, 35, 0.01, "35 ✓A"),
-        ("Probability, as a decimal", 1, 0.43, 0.03, "P = 15/35 = 0,42857… ≈ 0,43 ✓CA (OR P = 8/35 + 7/35 = 0,22857… + 0,2 = 0,42857… ≈ 0,43). NPR")],
-          ["Add the pink and the yellow sweets.", "Divide by all the sweets in the packet, and write it as a decimal."])]
+    work("3.3.2", "Determine the probability, as a decimal, of randomly choosing a pink or a yellow sweet from the packet.", 3, 0,
+         "8 + 7 = 15\nP = {15}/{35} = 0,42857…\n≈ 0,43", [
+             "8 + 11 = 19\nP = {19}/{35} = 0,54285…\n≈ 0,54",
+             "8 + 7 = 15\nP = {15}/{35 − 15} = {15}/{20}\n= 0,75",
+             "8 × 7 = 56\nP = {56}/{35 × 35} = 0,04571…\n≈ 0,05"],
+         ["Add the pink and the yellow sweets.", "Divide by all the sweets in the packet, and write it as a decimal."])]
 
 # ---- QUESTION 4, the question paper pages 10-11 and the memo pages 12-15 ----
 q41 = [
@@ -254,41 +308,51 @@ q41 = [
          ["The lower its boiling temperature, the sooner a product boils.", "Order the products from the lowest temperature: which is third?"]),
     term("4.1.2", "Write down the product extracted at 150 °C.", ["Gasoline", "Petrol", "Gasoline (petrol)", "Gasoline or petrol"],
          ["Find 150 °C on the tower.", "Follow the extractor pipe below that section to the product's name."]),
-    steps("4.1.3", "Convert the boiling point of diesel to degrees Fahrenheit.\nUse the formula: °C = (°F − 32)/1,8", 4, [
-        ("Boiling point of diesel (°C)", 1, 300, 0.01, "300 °C ✓RT"),
-        ("Boiling point of diesel in degrees Fahrenheit (°F)", 3, 572, 0.01, "300 °C = (°F − 32)/1,8 ✓SF; °F = 1,8 × 300 + 32 ✓S = 572 ✓CA. AO")],
-          ["Read the temperature at which diesel is extracted.", "Put it in place of °C and solve for °F: multiply by 1,8, then add 32."]),
-    steps("4.1.4", "The pipes leading in and out of the vertical, cylindrical tower take up 2,5% of the surface area of part B of the cylindrical tower."
-          "\n\nCalculate the total surface area of the vertical, cylindrical tower, excluding the area taken up by the pipes.\n\nUse the formula:\n"
-          "Surface area of an open cylinder = 3,142 × diameter × height", 7, [
-        ("Surface area of part B (m²)", 2, 1018.008, 0.005, "Surface area of an open cylinder = 3,142 × 6 m × 54 m ✓SF = 1 018,008 m² ✓CA"),
-        ("Area taken up by the pipes (m²)", 2, 25.4502, 0.005, "Area of pipes = 2,5/100 × 1 018,008 ✓MCA = 25,4502 m² ✓CA"),
-        ("Total surface area of the tower, excluding the pipes (m²)", 3, 1143.3738, 0.03, "Total surface area = 1 018,008 m² − 25,4502 m² ✓MCA "
-         "+ 150,816 m² ✓MA = 1 143,3738 m² ✓CA (OR excluding the pipes: 97,5/100 × 1 018,008 = 992,5578 m²; 992,5578 m² + 150,816 m² = "
-         "1 143,3738 m²). NPR")],
-          ["Part B is an open cylinder 6 m wide and 54 m high: use the formula.", "Take away 2,5% of part B for the pipes, then add the area of "
-           "A + C from the NOTE."])]
+    work("4.1.3", "Convert the boiling point of diesel to degrees Fahrenheit.\nUse the formula: °C = (°F − 32)/1,8", 4, 3,
+         "300 °C = {°F − 32}/{1,8}\n°F = 1,8 × 300 + 32\n= 572", [
+             "370 °C = {°F − 32}/{1,8}\n°F = 1,8 × 370 + 32\n= 698",
+             "300 °C = {°F − 32}/{1,8}\n°F = 300 ÷ 1,8 + 32\n= 198,67",
+             "300 °C = {°F − 32}/{1,8}\n°F = 1,8 × 300 − 32\n= 508"],
+         ["Read the temperature at which diesel is extracted.", "Put it in place of °C and solve for °F: multiply by 1,8, then add 32."]),
+    work("4.1.4", "The pipes leading in and out of the vertical, cylindrical tower take up 2,5% of the surface area of part B of the cylindrical tower."
+         "\n\nCalculate the total surface area of the vertical, cylindrical tower, excluding the area taken up by the pipes.\n\nUse the formula:\n"
+         "Surface area of an open cylinder = 3,142 × diameter × height", 7, 1,
+         "Surface area = 3,142 × 6 m × 54 m\n= 1 018,008 m²\nArea of pipes = {2,5}/{100} × 1 018,008\n= 25,4502 m²\n"
+         "Total surface area = 1 018,008 m² − 25,4502 m² + 150,816 m²\n= 1 143,3738 m²", [
+             "Surface area = 3,142 × 3 m × 54 m\n= 509,004 m²\nArea of pipes = {2,5}/{100} × 509,004\n= 12,7251 m²\n"
+             "Total surface area = 509,004 m² − 12,7251 m² + 150,816 m²\n= 647,0949 m²",
+             "Surface area = 3,142 × 6 m × 54 m\n= 1 018,008 m²\nArea of pipes = {2,5}/{100} × 1 018,008\n= 25,4502 m²\n"
+             "Total surface area = 1 018,008 m² − 25,4502 m²\n= 992,5578 m²",
+             "Surface area = 3,142 × 6 m × 54 m\n= 1 018,008 m²\nArea of pipes = {2,5}/{100} × 1 018,008\n= 25,4502 m²\n"
+             "Total surface area = 1 018,008 m² + 25,4502 m² + 150,816 m²\n= 1 194,2742 m²"],
+         ["Part B is an open cylinder 6 m wide and 54 m high: use the formula.", "Take away 2,5% of part B for the pipes, then add the area of "
+          "A + C from the NOTE."])]
 q42 = [
-    steps("4.2.1", "Determine the total number of pallets of bricks needed to replace both garage doors.", 5, [
-        ("Bricks in one row of the double-brick wall", 2, 19.5, 0.55, "19 ✓✓RT (OR one single row 10 bricks ✓RT, 20 rows high ✓RT)"),
-        ("Bricks for ONE garage door", 1, 390, 10.5, "Number of bricks for 1 garage door = 19 × 20 ✓A = 380 (OR single line wall = 20 × 10 = 200 "
-         "bricks; double line wall = 2 × 200 = 400 bricks ✓CA)"),
-        ("Bricks for BOTH garage doors", 1, 780, 20.5, "Total number of bricks needed = 380 × 2 ✓MCA = 760 (OR 2 × 400 = 800 ✓MCA)"),
-        ("Pallets of bricks needed", 1, 2, 0.01, "2 pallets of bricks ✓R")],
-          ["Count the bricks in one row and the rows up the wall; the side view shows the wall is two bricks thick.",
-           "There are two doors, and bricks are sold only in whole pallets of 525."]),
-    steps("4.2.2", "The opening of a garage door has dimensions of 2,13 m × 3 m.\n\nOther costs to build the double-brick wall:\n• Material, other "
-          "than bricks, cost R2 000,00\n• Labour is R500,00 per square metre\n\nThe owner states that the total cost to replace both garage doors "
-          "with walls would be R15 200,00.\n\nVerify her statement by means of calculations.\n\nYou may use the following formula: Area = length × width", 7, [
-        ("Area of the openings of BOTH garage doors (m²)", 3, 12.78, 0.005, "Area of 2 doors = 2 ✓MA × 2,13 × 3 ✓SF = 12,78 m² ✓A (OR one door: "
-         "2,13 m × 3 m = 6,39 m²)"),
-        ("Labour cost (R)", 1, 6445, 55.01, "Labour cost = 12,78 m² × R500 = R6 390 ✓CA (OR for one door R3 195, for two R6 390; OR 12,78 m² ≈ "
-         "13 m² (cost per m²): 13 × R500 = R6 500 ✓CA)"),
-        ("Cost of the bricks (R)", 1, 6772.50, 0.005, "Brick cost = 2 × 525 × R6,45 = R6 772,50 ✓CA (CA pallets from 4.2.1)"),
-        ("Total cost to replace both garage doors (R)", 2, 15217.50, 55.01, "Total cost = R2 000 + R6 390 + R6 772,50 = R15 162,50 ✓CA: Not VALID ✓O "
-         "(OR R6 500 + R6 772,50 + R2 000 = R15 272,50 ✓CA: Not VALID ✓O)")],
-          ["Area of both openings = 2 × length × width; labour is R500 per square metre.",
-           "Bricks: the pallets from 4.2.1 × 525 × R6,45; add the R2 000 material and compare with R15 200."]),
+    work("4.2.1", "Determine the total number of pallets of bricks needed to replace both garage doors.", 5, 2,
+         "Bricks in 1 row of a double-brick wall = 19\nBricks for 1 garage door = 19 × 20 = 380\nTotal number of bricks needed = 380 × 2 = 760\n"
+         "∴ 760 ÷ 525 = 1,45: 2 pallets of bricks", [
+             "Bricks in 1 row of a double-brick wall = 19\nBricks for 1 garage door = 19 × 20 = 380\nTotal number of bricks needed = 380 × 2 = 760\n"
+             "∴ 760 ÷ 525 = 1,45: 1 pallet of bricks",
+             "Bricks in 1 row of a double-brick wall = 19 × 2 = 38\nBricks for 1 garage door = 38 × 20 = 760\n"
+             "Total number of bricks needed = 760 × 2 = 1 520\n∴ 1 520 ÷ 525 = 2,90: 3 pallets of bricks",
+             "Bricks in 1 row of a double-brick wall = 19\nBricks for 1 garage door = 19 × 20 = 380\nTotal number of bricks needed = 380\n"
+             "∴ 380 ÷ 525 = 0,72: 1 pallet of bricks"],
+         ["Count the bricks in one row and the rows up the wall; the side view shows the wall is two bricks thick.",
+          "There are two doors, and bricks are sold only in whole pallets of 525."]),
+    work("4.2.2", "The opening of a garage door has dimensions of 2,13 m × 3 m.\n\nOther costs to build the double-brick wall:\n• Material, other "
+         "than bricks, cost R2 000,00\n• Labour is R500,00 per square metre\n\nThe owner states that the total cost to replace both garage doors "
+         "with walls would be R15 200,00.\n\nVerify her statement by means of calculations.\n\nYou may use the following formula: Area = length × width",
+         7, 3,
+         "Area of 2 doors = 2 × 2,13 × 3 = 12,78 m²\nLabour cost = 12,78 m² × R500 = R6 390\nBrick cost = 2 × 525 × R6,45 = R6 772,50\n"
+         "Total cost = R2 000 + R6 390 + R6 772,50 = R15 162,50\nNot VALID", [
+             "Area of 2 doors = 2 × 2,13 × 3 = 12,78 m²\nLabour cost = 12,78 m² × R500 = R6 390\nBrick cost = 2 × 525 × R6,45 = R6 772,50\n"
+             "Total cost = R2 000 + R6 390 + R6 772,50 = R15 162,50\nVALID",
+             "Area of 2 doors = 2 × 2,13 × 3 = 12,78 m²\nLabour cost = 12,78 m² × R500 = R6 390\nBrick cost = 760 × R6,45 = R4 902\n"
+             "Total cost = R2 000 + R6 390 + R4 902 = R13 292\nNot VALID",
+             "Area of 2 doors = 2 × (2,13 + 3) = 10,26 m²\nLabour cost = 10,26 m² × R500 = R5 130\nBrick cost = 2 × 525 × R6,45 = R6 772,50\n"
+             "Total cost = R2 000 + R5 130 + R6 772,50 = R13 902,50\nNot VALID"],
+         ["Area of both openings = 2 × length × width; labour is R500 per square metre.",
+          "Bricks: the pallets from 4.2.1 × 525 × R6,45; add the R2 000 material and compare with R15 200."]),
     rub("4.2.3", "Give ONE suitable reason why the bricks have to be placed on a wooden pallet.", 2, [
         "To be easily lifted by a fork lift (2).", "OR — Storage / loading / transportation are made easier (2).", "OR — It keeps them from breaking (2).",
         "OR — It makes counting easier (2).", "OR — To protect the bricks from damage (2).", "OR — To keep it tight and compact (2)."],
@@ -302,51 +366,57 @@ q51 = [
         [["Aug", "August"], ["Sep", "September"], ["Oct", "October"], ["Nov", "November"]],
         ["Find Western Australia on the map, then the same part of the country on the trip plan.", "Name the months whose labels lie in "
          "that part."], 3),
-    steps("5.1.3", "Determine the distance from Perth to Adelaide.", 3, [
-        ("Total of the other distances along the A1 on the map (km)", 1, 11959, 0.01, "738 + 1 062 + 922 + 1 705 + 2 850 + 1 871 + 2 811 ✓RT "
-         "= 11 959 km"),
-        ("Distance from Perth to Adelaide (km)", 2, 2696, 0.01, "14 655 – (738 + 1 062 + 922 + 1 705 + 2 850 + 1 871 + 2 811) = 14 655 – 11 959 "
-         "✓MCA = 2 696 km ✓CA. AO")],
-          ["The A1 goes right round Australia (14 655 km); Perth to Adelaide is the one stretch the map gives no distance for.",
-           "Add the distances printed along the A1, then take the total away from 14 655 km."]),
+    work("5.1.3", "Determine the distance from Perth to Adelaide.", 3, 0,
+         "14 655 − (738 + 1 062 + 922 + 1 705 + 2 850 + 1 871 + 2 811)\n= 14 655 − 11 959\n= 2 696 km", [
+             "14 655 − (1 062 + 922 + 1 705 + 2 850 + 1 871 + 2 811)\n= 14 655 − 11 221\n= 3 434 km",
+             "14 655 − (738 + 1 062 + 922 + 1 705 + 3 027 + 1 871 + 2 811)\n= 14 655 − 12 136\n= 2 519 km",
+             "14 655 − (738 + 1 062 + 922 + 1 705 + 2 850 + 1 871)\n= 14 655 − 9 148\n= 5 507 km"],
+         ["The A1 goes right round Australia (14 655 km); Perth to Adelaide is the one stretch the map gives no distance for.",
+          "Add the distances printed along the A1, then take the total away from 14 655 km."]),
     term("5.1.4", "Name the state where they plan to be during February.", ["Tasmania"],
          ["Find FEB on the trip plan.", "Which state does the map show in the same place?"]),
-    steps("5.1.5", "Calculate the average speed, in km/h, from Brisbane to Cairns.\n\nYou may use the following formula: Distance = speed × time", 4, [
-        ("Driving time from Brisbane to Cairns in hours (h)", 2, 20.67, 0.01, "1 705 km = s × 20 h 40 min ✓SF; 1 705 km = s × 20,67 h ✓C"),
-        ("Average speed from Brisbane to Cairns (km/h)", 2, 82.5, 0.02, "Speed = 1 705 km ÷ 20,67 h ✓S = 82,5 km/h ✓CA")],
-          ["Read the distance and the driving time between Brisbane and Cairns on the map.", "Change the minutes to hours (÷ 60), then "
-           "speed = distance ÷ time."])]
+    work("5.1.5", "Calculate the average speed, in km/h, from Brisbane to Cairns.\n\nYou may use the following formula: Distance = speed × time", 4, 2,
+         "1 705 km = s × 20 h 40 min\n1 705 km = s × 20,67 h\nSpeed = {1 705 km}/{20,67 h}\n= 82,5 km/h", [
+             "1 705 km = s × 20 h 40 min\n1 705 km = s × 20,4 h\nSpeed = {1 705 km}/{20,4 h}\n= 83,58 km/h",
+             "1 705 km = s × 20 h 40 min\n1 705 km = s × 1 240 min\nSpeed = {1 705 km}/{1 240 min}\n= 1,38 km/h",
+             "922 km = s × 10 h 30 min\n922 km = s × 10,5 h\nSpeed = {922 km}/{10,5 h}\n= 87,81 km/h"],
+         ["Read the distance and the driving time between Brisbane and Cairns on the map.", "Change the minutes to hours (÷ 60), then "
+          "speed = distance ÷ time."])]
 q52 = [
-    steps("5.2.1", "Determine, rounded to THREE decimal places, the conversion factor from feet to metres used in this diagram, in the form "
-          "1 foot = … m.", 3, [
-        ("Height of Uluru in feet (feet)", 1, 1142, 0.01, "1 142 feet ✓RT"),
-        ("Height of Uluru in metres, from the diagram (m)", 1, 348, 0.01, "= 348 m ✓RT"),
-        ("Conversion factor rounded to THREE decimal places: 1 foot = … m", 1, 0.305, 0.0004, "1 foot = 348/1 142 = 0,304728546; 1 foot ≈ 0,305 m ✓A")],
-          ["Uluru's height is given in feet in the text and in metres on the diagram.", "1 foot = metres ÷ feet; round to three decimal places."]),
+    work("5.2.1", "Determine, rounded to THREE decimal places, the conversion factor from feet to metres used in this diagram, in the form "
+         "1 foot = … m.", 3, 1,
+         "1 142 feet = 348 m\n1 foot = {348}/{1 142}\n= 0,304728546\n1 foot ≈ 0,305 m", [
+             "1 142 feet = 348 m\n1 foot = {1 142}/{348}\n= 3,281609195\n1 foot ≈ 3,282 m",
+             "1 142 feet = 324 m\n1 foot = {324}/{1 142}\n= 0,283712785\n1 foot ≈ 0,284 m",
+             "1 142 feet = 34 800 cm\n1 foot = {34 800}/{1 142}\n= 30,472854641\n1 foot ≈ 30,473 m"],
+         ["Uluru's height is given in feet in the text and in metres on the diagram.", "1 foot = metres ÷ feet; round to three decimal places."]),
     term("5.2.2", "Write, as a simplified ratio, the heights of Uluru : Eiffel Tower : Big Ben.", ["29 : 27 : 8", "29:27:8"],
          ["Read the three heights in metres, in the order the question asks.", "Divide all three by their highest common factor."], marks=4, strict=True)]
 q53 = [
     term("5.3.1", "A meteorite (rock from the sky) fell somewhere in Australia.\n\nWrite down the probability that it randomly fell in Queensland.",
          ["22,5%", "22,5", "22,50%", "0,225", "0,2250", "0,224986", "0,22499", "22,4986%", "1 729 742/7 688 220", "1 729 742 ÷ 7 688 220"],
          ["The chance of landing in a state depends on its share of the total area.", "TABLE 3 gives each state's percentage of the total area."]),
-    steps("5.3.2", "Show, with calculations, why it could be stated that the total area of the islands of Australia is approximately half of the area "
-          "of the mainland area of Tasmania.", 3, [
-        ("Total area of the islands of Australia (km²)", 1, 32159, 0.01, "32 159 ✓RT"),
-        ("Mainland area of Tasmania (km²)", 1, 64519, 0.01, "64 519 ✓RT"),
-        ("Islands' area as a fraction of Tasmania's mainland area (a decimal)", 1, 0.4984, 0.0017, "Area of island = 32 159/64 519 = 0,498 ≈ 0,5 ✓CA "
-         "(OR half of Tasmania = 64 519 × ½ = 32 259,5 km², islands = 32 159 km²; OR 64 519 : 32 159 ≈ 2 : 1)")],
-          ["Find the islands' TOTAL and Tasmania's MAINLAND area in TABLE 3.", "Divide the islands' area by Tasmania's mainland area: how close is it to ½?"]),
-    steps("5.3.3(a)", "The Australian Capital Territory has a population of 454 499.\n\nDetermine, rounded to the nearest whole number, the population "
-          "density of the Australian Capital Territory as people per square km.", 3, [
-        ("Population density before rounding (people per km²)", 2, 192.7476, 0.05, "Population density = 454 499 ✓RT ÷ 2 358 ✓RT = 192,74…"),
-        ("Population density rounded to the nearest whole number (people per km²)", 1, 193, 0.01, "≈ 193 ✓R")],
-          ["Population density = number of people ÷ area.", "Use the Australian Capital Territory's total area in TABLE 3; round to a whole number."]),
-    steps("5.3.3(b)", "The Australian Capital Territory has a population of 454 499.\n\nGive a suitable reason, with calculations, why this area is "
-          "omitted from the percentage calculation in the table.", 4, [
-        ("The Australian Capital Territory's area as a percentage of the total area (%)", 3, 0.03067, 0.0008, "Land % area = 2 358 ✓RT ÷ "
-         "7 688 220 ✓RT × 100% = 0,0306..% ✓CA"),
-        ("That percentage rounded to one decimal place, as in the table (%)", 1, 0, 0.01, "Rounds off to zero ✓O")],
-          ["Work out its share of Australia's total area as a percentage.", "Compare the size of that percentage with the others in the table."])]
+    work("5.3.2", "Show, with calculations, why it could be stated that the total area of the islands of Australia is approximately half of the area "
+         "of the mainland area of Tasmania.", 3, 3,
+         "Area of island = {32 159}/{64 519}\n= 0,498 ≈ 0,5", [
+             "Area of island = {3 882}/{64 519}\n= 0,060 ≈ 0,1",
+             "Area of island = {32 159}/{7 656 061}\n= 0,004 ≈ 0",
+             "Area of island = {32 159}/{68 401}\n= 0,470 ≈ 0,47"],
+         ["Find the islands' TOTAL and Tasmania's MAINLAND area in TABLE 3.", "Divide the islands' area by Tasmania's mainland area: how close is it to ½?"]),
+    work("5.3.3(a)", "The Australian Capital Territory has a population of 454 499.\n\nDetermine, rounded to the nearest whole number, the population "
+         "density of the Australian Capital Territory as people per square km.", 3, 0,
+         "Population density = {454 499}/{2 358}\n= 192,74…\n≈ 193", [
+             "Population density = {454 499}/{2 358}\n= 192,74…\n≈ 192",
+             "Population density = {2 358}/{454 499}\n= 0,0051…\n≈ 0",
+             "Population density = {454 499}/{68 401}\n= 6,64…\n≈ 7"],
+         ["Population density = number of people ÷ area.", "Use the Australian Capital Territory's total area in TABLE 3; round to a whole number."]),
+    work("5.3.3(b)", "The Australian Capital Territory has a population of 454 499.\n\nGive a suitable reason, with calculations, why this area is "
+         "omitted from the percentage calculation in the table.", 4, 2,
+         "Land % area = {2 358}/{7 688 220} × 100%\n= 0,0306…%\nRounds off to zero.", [
+             "Land % area = {2 358}/{7 688 220}\n= 0,000306…%\nRounds off to zero.",
+             "Land % area = {2 358}/{32 159} × 100%\n= 7,3323…%\nRounds off to 7,3%.",
+             "Island % area = {0}/{32 159} × 100%\n= 0%\nIt has no islands, so it has no percentage."],
+         ["Work out its share of Australia's total area as a percentage.", "Compare the size of that percentage with the others in the table."])]
 
 MATERIALS = {"title": "MATERIAL LIST", "head": ["#", "Wooden Item", "Dimensions (in cm)"],
              "rows": [["4", "Chair supports", "1,9 × 3,8 × 66"], ["13", "Crosspieces", "1,9 × 3,8 × 36"], ["1", "Seat back, bottom crosspiece", "1,9 × 3,8 × 32"]],
@@ -504,11 +574,23 @@ missions = [
              "the mainland, islands and total for each state or territory on a website. Some values have been omitted.", "table": AREAS, "items": q53},
 ]
 
+# every part that played as typed steps or num until Murci's ruling of 2026-10-10, now an authored whole-working mcq
+CALC = ["1.2.1", "1.2.3", "1.3.1", "1.3.2", "1.3.4", "1.3.5", "2.1.2", "2.1.5", "2.1.6(a)", "2.1.6(b)", "2.2.3", "2.2.5", "3.1.2", "3.1.3",
+        "3.2.1", "3.2.2", "3.2.3", "3.3.1", "3.3.2", "4.1.3", "4.1.4", "4.2.1", "4.2.2", "5.1.3", "5.1.5", "5.2.1", "5.3.2", "5.3.3(a)",
+        "5.3.3(b)"]
+CALC_MARKS = sum(i["marks"] for m in missions for i in m["items"] if i["n"] in CALC)
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Mathematical Literacy", "title": "Mathematical Literacy P2", "sitting": "November 2024", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Mathematical Literacy", "total": 150, "missions": missions}],
     "flags": [
+        {"n": CALC[0], "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): every typed calculation plays as the memo's "
+                                                   "working plus three built from common errors, 0 or full marks: " + ", ".join(CALC) +
+                                                   f" ({len(CALC)} parts, {CALC_MARKS} marks). The right option is the memo's FIRST method; a "
+                                                   "value the memo also accepts never appears in a wrong option: 2.1.6(b) takes the memo's "
+                                                   "90 mm measurement (1 : 90 and 1 : 92, from 91 or 89 mm inside its ± 1 mm, are not offered); "
+                                                   "4.2.1 takes 19 bricks a row (20 a row, 400 and 800 bricks are not offered); 4.2.2 takes "
+                                                   "12,78 m² (R6 500 and R15 272,50, from 13 m², are not offered)."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 5, 150 marks; per question 26, 31, 31, 29, 33), "
                                                            "hand-transcribed from scanned page images of the question paper and its ADDENDUM (no text "
                                                            "layer; ANNEXURES A, B and C) and from the memo's text and page images; no API call."},
@@ -521,23 +603,10 @@ paper = {
         {"n": "2.2.5", "kind": "memo_issue", "detail": "The memo reads the end of Day 2 as 900 m (the labelled height line); on the scan the curve "
                                                        "ends a little below that line (about 890 m, measured between the 900 m and 864 m lines), "
                                                        "which gives about 160 m. The conclusion (more than 100 m: CORRECT) holds either way. "
-                                                       "Transcribed as printed: the steps take the memo's 1 050 m (the curve does cross the "
-                                                       "1 050 m line at the 17,5 km line), 900 m and 150 m."},
-        {"n": "2.1.6(b)", "kind": "no_fit", "detail": "The memo's first mark is for MEASURING the printed plan (90 mm; accept ± 1 mm). A phone "
-                                                      "shows the plan at another size, so the figure caption gives the printed length (measured on "
-                                                      "the scan: 253,4 pt = 89,4 mm) and the mark becomes a read-off; the scale's steps take the "
-                                                      "range a 89-91 mm measurement gives (1 : 90 to 1 : 92)."},
+                                                       "Transcribed as printed: the right option takes the memo's 1 050 m (the curve does cross "
+                                                       "the 1 050 m line at the 17,5 km line), 900 m and 150 m, and no wrong option uses 890 m."},
         {"n": "3.1.1", "kind": "no_fit", "detail": "Terms the memo marks in parts play all or nothing: 3.1.1 (MA + A; the duration in every common "
                                                    "written form) and 5.2.2 (RT + A order + 2 CA; the simplified ratio as a strict term)."},
-        {"n": "1.2.1", "kind": "no_fit", "detail": "Calculations play as steps: each step is the number the memo's method produces, its SF/MA/RT/C "
-                                                   "marks riding on that number. 'Verify' parts (3.2.3, 4.2.2) and 2.2.5 ('Show ... whether or not "
-                                                   "he is correct') fold the memo's conclusion (VALID / Not VALID / CORRECT, the O mark) into the "
-                                                   "last step's number; 5.3.3(b)'s reason ('rounds off to zero') is played as the percentage "
-                                                   "rounded to the table's one decimal place (0). The memo's NPR rule widens the tolerance where an "
-                                                   "answer must be rounded (2.1.5, 3.2.1, 3.3.2, 4.1.4) and of 5.3.3(a)'s unrounded density "
-                                                   "(192,7 to 192,75)."},
-        {"n": "4.2.2", "kind": "no_fit", "detail": "The memo accepts the area rounded up to 13 m² (labour R6 500, total R15 272,50) as well as "
-                                                   "12,78 m² (R6 390, R15 162,50): the labour and total steps take tolerances spanning both."},
         {"n": "5.2", "kind": "no_fit", "detail": "The picture of Uluru beside the lead is a photo only (no data) and is not cropped; its sentence "
                                                  "'A picture of Uluru is shown alongside.' is left out of the lead. The figure is the height "
                                                  "comparison diagram the parts read."},
@@ -547,8 +616,9 @@ paper = {
         {"n": "4.2.1", "kind": "memo_issue", "detail": "The memo's two methods count different bricks: 19 a row of the double-brick wall × 20 rows "
                                                        "= 380 a door (760 for both), or 10 a row of a single wall × 20 rows = 200, 400 for the double "
                                                        "wall (800 for both); both give 2 pallets. The face diagram shows each row as nine whole "
-                                                       "bricks and a half brick, so 19 counts the halves as halves and 20 as whole bricks. The steps' "
-                                                       "tolerances span both (19-20, 380-400, 760-800)."},
+                                                       "bricks and a half brick, so 19 counts the halves as halves and 20 as whole bricks. The "
+                                                       "multiple choice's right option is the memo's first method (19, 380, 760, 2 pallets); 20 a "
+                                                       "row, 400 and 800 appear in no option."},
         {"n": "3.2.3", "kind": "memo_issue", "detail": "The memo's fourth method writes the hole's area as 0,3142 ÷ 10 000 = 0,0000314 m², then "
                                                        "subtracts 0,00003142 m² (its result 0,00499578 m² and its answer 29,97 mℓ are right)."},
     ],
@@ -560,10 +630,28 @@ out.mkdir(parents=True, exist_ok=True)
                                                         "scope": "the whole paper, Questions 1 to 5 (2.1, 2.2 and 5.1 read the addendum's "
                                                                  "ANNEXURES A, B and C)"}, "paper": paper},
                                               indent=1, ensure_ascii=False), encoding="utf-8")
+def shape(o):
+    """(lines, trailing [reasons]): every option of one part must match, so the layout never points at the answer."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+at = []
 for m in missions:
     got = sum(i["marks"] for i in m["items"])
     assert got == m["marks"], (m["id"], got, m["marks"])
+    for i in m["items"]:
+        assert i["t"] not in ("steps", "num"), (i["n"], "a typed number: Murci's 2026-10-10 ruling makes it an authored mcq")
+        if i["n"] in CALC:   # an authored whole-working mcq: 4 distinct options, one shape, the right index in 0-3, a working of 2+ lines
+            assert i["t"] == "mcq" and i["q"].endswith(WORK), i["n"]
+            assert len(i["opts"]) == 4 and len(set(i["opts"])) == 4, (i["n"], "4 distinct options")
+            assert len({shape(o) for o in i["opts"]}) == 1, (i["n"], [shape(o) for o in i["opts"]])
+            assert shape(i["opts"][0])[0] >= 2 and 0 <= i["a"] <= 3, i["n"]
+            at.append("ABCD"[i["a"]])
     print(m["id"], "parts:", len(m["items"]), "marks:", got)
+assert sorted(i["n"] for m in missions for i in m["items"] if i["n"] in CALC) == sorted(CALC) and len(at) == len(CALC), "a CALC part is missing"
+print("authored right options:", {k: at.count(k) for k in "ABCD"}, "over", len(at), "parts,", CALC_MARKS, "marks")
+assert max(at.count(k) for k in "ABCD") - min(at.count(k) for k in "ABCD") <= 1, "spread the right letter evenly over A-D"
 total = sum(i["marks"] for m in missions for i in m["items"])
 print("total:", total)
 # the totals the paper prints: [26] [31] [31] [29] [33] under its questions, 150 on its cover
