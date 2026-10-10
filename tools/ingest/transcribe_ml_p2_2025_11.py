@@ -16,8 +16,10 @@ How the memo's shapes map (Mathematical Literacy):
   "Write only the letter" of ONE right method/formula/piece -> mcq; a choice the paper names with no explanation (clockwise or
   anticlockwise, left/right) -> mcq; a word, a name, a seat number, a probability, a time -> term (a time or date in every common
   written form, all or nothing where the memo splits MA and A); "Name / Write down TWO ..." -> list, and a one-line reason the
-  memo marks as a fact (the ground floor, a broken line) -> list of one; an explanation (O marks) -> rubric; "Draw a scaled
-  diagram" -> draw with the memo's criteria (self-checked).
+  memo marks as a fact (the ground floor, a broken line) -> list of one; an explanation (O marks) or a time "in words" ->
+  statements (STATEMENTS at the bottom, Murci 2026-10-10: the memo's own points, each of its OR forms a right card, and clearly
+  wrong ones; pick marks/each); "Draw a scaled diagram" -> draw with the memo's criteria (self-checked). No memo here weighs two
+  sides, so no part plays as a sort. A part whose stem or options show an earlier part's answer opens only after it ("after").
   Every number the learner would type ("Calculate / Determine / Convert", "Verify the statement", a count or a number read off
   the page) -> authored multiple choice, `work` (Murci, 2026-10-10): the memo's FIRST working line by line, its result last (a
   verify part ends in the memo's conclusion), and three workings built from real errors (a wrong operation, the wrong base, a
@@ -72,14 +74,15 @@ def shape(o):
     return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
 
 
-def work(n, q, marks, opts, a, clues):
+def work(n, q, marks, opts, a, clues, **kw):
     """A typed calculation as authored multiple choice (Murci, 2026-10-10): opts are the memo's FIRST working and three workings
-    built from common errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing."""
+    built from common errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing.
+    kw: catalogue extras, e.g. after=[...] when the options show an earlier part's answer."""
     assert len(opts) == 4 and len(set(opts)) == 4, (n, "four distinct options")
     assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
     assert 0 <= a <= 3, (n, a)
     AUTHORED.append(n)
-    return mcq(n, q + WORK, opts, a, clues, marks=marks)
+    return mcq(n, q + WORK, opts, a, clues, marks=marks, **kw)
 
 
 def times(hh, mm):
@@ -146,7 +149,8 @@ q21 = [
     term("2.1.2", "The seats are numbered according to the following numbering system:\n• A to F is for the lower deck.\n• G to V is for the upper "
          "deck.\n• The seats are numbered 1 to 4 from right to left if you are facing the back of the bus.\nWrite down the seat number which has "
          "the easiest access to the toilet.", ["F2"],
-         ["The toilet is on the lower deck, next to row F.", "Face the back of the bus: the seats run 1 to 4 from your right."], strict=True),
+         ["Find the toilet in the KEY, then on the plan: which row of seats is closest to it?",
+          "Face the back of the bus: the seats run 1 to 4 from your right."], strict=True),
     match("2.1.3", "Complete the following paragraph with the directions to move from seat C2 to seat J3 by using the words provided in the list "
           "below. Write only the word next to the question numbers (2.1.3(a) to 2.1.3(d)).\n\nMove forward towards the front set of stairs on "
           "your (a) … Use this set of stairs to get to the upper deck. Once on the upper deck, turn (b) … and you will find your seat on the "
@@ -169,7 +173,7 @@ q22 = [
         "13 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 500 × 13\n= 499,2 mm",          # the memo
         "13 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 500\n= 38,4 mm",                # never multiplies by the bar's 13 mm
         "10 mm = 500 m\n19,2 km = 19 200 m\nMap distance = 19 200 ÷ 500 × 10\n= 384 mm"], 1,       # takes the bar as 1 cm, unmeasured
-        ["The scale bar's printed length stands for 500 m (the caption gives it).", "Change 19,2 km to metres, then count how many 500 m lengths that is."])]
+        ["The scale's printed length stands for 500 m (the caption gives it).", "Change 19,2 km to metres, then count how many 500 m lengths that is."])]
 q23 = [
     mcq("2.3.1", "State whether the bathroom door opens to the (left/right) as you enter the bathroom.", ["Left", "Right"], 1,
         ["Stand in the dining room facing the bathroom door.", "Which side of the doorway is the door hinged on?"]),
@@ -181,8 +185,9 @@ q23 = [
         ["Read the living room's two dimensions: which is the longer?", "Change the feet and the inches separately (the NOTE), then add."]),
     lst("2.3.3", "Write down TWO differences between Flat 1 and Flat 2.", 2, [["Living room", "Bedroom"], ["Balcony"]],
         ["Compare the room in the north-east corner of each flat.", "Look along the east wall of Flat 2."], 4),
-    lst("2.3.4", "Give ONE possible reason why Flat 1 does not have a balcony.", 1, [["Ground floor"]],
-        ["Which floor is Flat 1 on?", "A balcony stands out from an upper floor."], 2),
+    {**lst("2.3.4", "Give ONE possible reason why Flat 1 does not have a balcony.", 1, [["Ground floor"]],
+           ["Which floor is Flat 1 on?", "A balcony stands out from an upper floor."], 2),
+     "after": ["2.3.3"]},   # its stem names a difference 2.3.3 asks for (the balcony)
     rub("2.3.5", "Explain why there are no windows in the north- and south-facing walls of both plans.", 2, [
         "There must be more flats adjacent to it (2)."],
         ["The flats form part of a block of flats.", "What would a north or a south window look into?"], each=2)]
@@ -211,7 +216,8 @@ q31 = [
         "Area of C = 30 240 mm² × 1,6\n= 48 384 mm²\nTotal area = 48 384 mm² + 30 240 mm² + 33 600 mm²\n= 112 224 mm²",  # the memo
         "Area of C = 30 240 mm² × 1,6\n= 48 384 mm²\nTotal area = 48 384 mm² + 30 240 mm² + 3 360 mm²\n= 81 984 mm²",    # 336 cm² × 10
         "Area of C = 30 240 mm² × 1,6\n= 48 384 mm²\nTotal area = 48 384 mm² + 30 240 mm² + 336 mm²\n= 78 960 mm²"], 1,  # Part A left in cm²
-        ["Part C = 1,6 × Part B.", "Part A from 3.1.3 is in cm², and 1 cm² = 100 mm²."])]
+        ["Part C = 1,6 × Part B.", "Part A from 3.1.3 is in cm², and 1 cm² = 100 mm²."],
+        after=["3.1.3"])]   # the options show Part A's area, 3.1.3's answer
 q315 = [
     work("3.1.5", "Determine, as a percentage, the probability of randomly choosing a green circle or a red circle from the container.", 4, [
         "9 + 7 + 28 + 8 + 22 = 74\nP = {16}/{74} × 100%\n≈ 21,62%",                # the memo
@@ -373,14 +379,10 @@ BOOKCASE = ("ANNEXURE D, DIAGRAM 1: TOP, BOTTOM, SIDES AND SHELVES OF BOOKCASE A
             "spaces, 27 cm, 27 cm and 32 cm high from the top down.\n\nNOTE:\n• The back of this bookcase is made of a thin hardboard.\n• The top "
             "and bottom pieces of wood extend right across the bookcase.\n• The shelves are fitted in between the side pieces, so they are "
             "slightly shorter than the top and bottom pieces.")
-MAP_C = ("ANNEXURE C, a road map of the central interior of South Africa, north up (an arrow N at the top right). The flamingo's tracked flight "
-         "is a line with arrows through five marked areas: A just north of Bloemfontein; B just west of Bloemfontein; south, east of Colesberg, "
-         "to C beside Middelburg; south-east to D; east, north of Makhanda, then south past Port Alfred and west to E on the coast. Towns: "
-         "Kimberley, Douglas, Bloemfontein, Botshabelo, Orania, Britstown, De Aar, Colesberg, Aliwal North, Hanover, Middelburg, Nieu-Bethesda, "
-         "Graaff-Reinet, Queenstown (east of the flight line), Makhanda, Port Alfred. Britstown, De Aar and Colesberg lie in a west-to-east row. "
-         "National road numbers in pentagons: 12 (north of Kimberley, and west of Orania towards Britstown), 8 (west and east of Bloemfontein), "
-         "1, 6, 5, 10, 9 and 2. Provincial borders are broken (dotted) lines: south from Kimberley past Orania, east past Colesberg to Aliwal "
-         "North, and between Hanover and Middelburg, on past Nieu-Bethesda and Graaff-Reinet.")
+# (the caption shows under the figure: it names no answer of 4.1.1-4.1.3 or 4.2.3, so no road list, border style or Queenstown side)
+MAP_C = ("ANNEXURE C, MAP WITH THE TRACKED FLIGHT OF THE FLAMINGO: a road map of the central interior of South Africa, north up (an arrow N at "
+         "the top right), with its towns, national roads, provincial borders and the coast. The flamingo's tracked flight is a line with arrows "
+         "from A, near Bloemfontein, through B, C and D to E on the coast.")
 missions = [
     {"id": "1.1", "title": "Question 1.1", "kind": "Concepts and definitions", "marks": 10,
      "lead": "TABLE 1 below contains a list of statements and definitions of concepts used in Mathematical Literacy.", "items": q11},
@@ -391,11 +393,9 @@ missions = [
      "lead": "One way to save money during winter is to wrap the geyser and waterpipes with a geyser blanket. A geyser blanket is made of aerolite "
              "which can easily be cut.\n\nThe pictures below show the steps to wrap the geyser in aerolite.\n\nNOTE: Aerolite is insulating "
              "material that allows heat to stay in an object.",
-     "figure": fig("1.3", "Six line drawings of a man wrapping a geyser, joined by arrows: P, Q, R along the top row from left to right, then down "
-                   "to S, T, U along the bottom row from right to left. P: the man behind a geyser lying on its side, spreading a sheet over its "
-                   "curved side. Q: he pulls a strip of tape around the sheet on the geyser. R: he kneels on a flat sheet and traces a circle "
-                   "on it (a curved arrow beside him). S: he holds a small brush or tube over a round piece standing on its edge. T: he presses a "
-                   "round piece against the end of the geyser. U: hands wrapping strips around a pipe."), "items": q13},
+     "figure": fig("1.3", "Six line drawings of a man wrapping a geyser and its pipes in aerolite, joined by arrows: P, Q, R along the top row "
+                   "from left to right, then down to S, T, U along the bottom row from right to left."), "items": q13},   # (no per-picture
+                   # action: those words would match 1.3.1's statements for the learner)
     {"id": "2.1", "title": "Question 2.1", "kind": "Seating plan", "marks": 8,
      "lead": "The seating plan for a tourist bus that travels around Cape Town is shown below.",
      "figure": fig("2.1", "The seating plan of a double-decker bus seen from above, the front on the right. UPPER DECK, 59 SEATS: a back row of "
@@ -407,24 +407,19 @@ missions = [
     {"id": "2.2", "title": "Question 2.2", "kind": "Route map and scale", "marks": 11,
      "lead": "ANNEXURE A in the ANSWER BOOK shows a route map of a round trip and the 18 stops made by a tour bus.",
      "figure": fig("2.2", "ANNEXURE A, ROUTE MAP OF A ROUND TRIP AND THE 18 STOPS MADE BY THE TOUR BUS: a street map of Cape Town, north up (an "
-                   "arrow N, top left). The route is a line through 18 numbered stops: 1 and 2 at the V&A Waterfront (top right), 3 at De "
-                   "Waterkant, 4 to 12 in the city centre, then down to 13 at the Table Mountain Cableway (lower middle), 14 at Camps Bay (lower "
-                   "left, above the label Bakoven), and up the Atlantic coast through 15, 16 (Sea Point), 17 and 18 (Green Point, top). The key: "
-                   "1. Two Oceans Aquarium; 2. The Clock Tower; 3. CTICC; 4. Cape Town Tourism; 5. St George's Cathedral; 6. South African Museum; "
-                   "7. Mount Nelson Hotel; 8. SA Jewish Museum; 9. District Six Museum; 10. Castle of Good Hope; 11. Gold Museum; 12. Jewel "
-                   "Africa; 13. Table Mountain Cableway; 14. Camps Bay; 15. President Hotel; 16. Sea Point; 17. Winchester Mansions; 18. Green "
-                   "Point Light House. Scale (bottom right): a bar labelled 500 m, printed 13 mm long on the A4 answer book (on a screen it "
-                   "shows at another size)."), "items": q22},
+                   "arrow N, top left), the bus route drawn through 18 numbered stops. The key: 1. Two Oceans Aquarium; 2. The Clock Tower; "
+                   "3. CTICC; 4. Cape Town Tourism; 5. St George's Cathedral; 6. South African Museum; 7. Mount Nelson Hotel; 8. SA Jewish Museum; "
+                   "9. District Six Museum; 10. Castle of Good Hope; 11. Gold Museum; 12. Jewel Africa; 13. Table Mountain Cableway; 14. Camps "
+                   "Bay; 15. President Hotel; 16. Sea Point; 17. Winchester Mansions; 18. Green Point Light House. The Scale (bottom right) is "
+                   "labelled 500 m and printed 13 mm long on the A4 answer book (on a screen it shows at another size)."), "items": q22},
+                   # (no stop positions or route direction, and the scale's type unnamed: 2.2.1-2.2.3 ask for them)
     {"id": "2.3", "title": "Question 2.3", "kind": "Floor plans", "marks": 15,
      "lead": "John lives in a flat in Cape Town. ANNEXURE B in the ANSWER BOOK shows the floor plans of two flats in John's block of flats. Flat 1 "
              "is on the ground floor and Flat 2 is on the first floor, which forms part of a block of flats.",
-     "figure": fig("2.3", "ANNEXURE B, PLAN OF A GROUND-FLOOR FLAT AND A FIRST-FLOOR FLAT, north up (arrow N on the left). FLOOR PLAN OF FLAT 1: "
-                   "two BEDROOMS 13'0\" x 10'0\" on the west side, with WINDOWS in the west wall; BATH 6'6\" x 5'0\" and KITCHEN 6'6\" x 7'8\" "
-                   "along the north wall in the middle; DINING ROOM 13'4\" x 13'1\" in the middle; LIVING ROOM 12'8\" x 12'7\" in the north-east "
-                   "corner, a window in its east wall; the STAIRS in the south-east corner. The bathroom door, in the bathroom's south wall, is "
-                   "hinged on the east (right-hand) side of the doorway and swings into the bathroom. FLOOR PLAN OF FLAT 2: the same, except "
-                   "that the north-east room is a BEDROOM 12'8\" x 12'7\" with a BALCONY along its east wall. No windows in the north or south "
-                   "walls. NOTE: 22'6\" = 22 feet and 6 inches; 1 foot = 30,48 cm; 1 inch = 2,54 cm."), "items": q23},
+     "figure": fig("2.3", "ANNEXURE B, PLAN OF A GROUND-FLOOR FLAT AND A FIRST-FLOOR FLAT, north up (arrow N on the left): the FLOOR PLAN OF "
+                   "FLAT 1 above the FLOOR PLAN OF FLAT 2, each room labelled with its name and its dimensions in feet and inches, the doors, "
+                   "the WINDOWS and the STAIRS drawn in. NOTE: 22'6\" = 22 feet and 6 inches; 1 foot = 30,48 cm; 1 inch = 2,54 cm."),
+     "items": q23},   # (no door swing and no room-by-room comparison of the flats: 2.3.1 and 2.3.3 ask for them)
     {"id": "3.1", "title": "Question 3.1", "kind": "Area and number patterns", "marks": 14,
      "lead": "Mrs Xulu used different recycled materials to make a tree decoration to hang on the wall, as shown in the picture below. She cut out "
              "different coloured circles to form the tree pattern.\n\nShe made a tree-shaped template using cardboard to form the backing for the "
@@ -465,11 +460,75 @@ missions = [
      "lead": "The density of the wood is 0,75 g/cm³.\n\nA volume of approximately 0,4 m³ unused wood is accumulated each month.", "items": q53},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10; the helpers are the Business Studies P2 2025 reference's) ----
+# A written part plays as picking statements: the memo's own points (right; each of its OR forms its own card, tidied to one
+# reading) and CLEARLY wrong ones (never a true point the memo leaves out: its "any other relevant answer" would make that right).
+# The learner picks marks/each of them, any right one counts, each right pick earns `each`; the cards are shuffled the same way
+# every run. The rubric bullets above stay as the source.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("ml-p2-2025-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # 1RT time in words + 1A time of day, one 2-mark answer: the memo's two forms are right; the wrong ones misread the clock
+    # (morning for afternoon, quarter to for quarter past, the 12:15 departure, the 24-hour hour kept)
+    "1.2.1": (2, ["Quarter past two in the afternoon.", "Fifteen minutes after two in the afternoon."],
+                 ["Quarter past two in the morning.", "Quarter to two in the afternoon.", "Quarter past twelve in the afternoon.",
+                  "Quarter past fourteen in the afternoon."]),
+    # 2O, one reason: the memo's only point; the wrong ones are false or contradict the plan (the living room has an east window)
+    "2.3.5": (2, ["There must be more flats adjacent to these flats."],
+                 ["Building regulations do not allow windows in north- or south-facing walls.",
+                  "North- and south-facing walls never receive any sunlight.",
+                  "There are no other flats next to these flats in the block.",
+                  "Windows may only be fitted in the walls of bedrooms."]),
+    # 2O, either OR form: DIAGRAM 1 shows the bookcase 60 cm wide, 90 cm high, 20 cm deep, its shelves 56 cm x 20 cm
+    "5.1.3(a)": (2, ["The length of the bookcase is 60 cm and the height of the bookcase is 90 cm.",
+                     "The hardboard covers the entire back of the bookcase."],
+                    ["The depth of the bookcase is 60 cm and the height of the bookcase is 90 cm.",
+                     "The hardboard covers only the space between the two shelves.",
+                     "The hardboard is the same size as the top and bottom pieces of wood.",
+                     "60 cm by 90 cm is the size of each shelf."]),
+}
+# A memo that weighs two sides (advantages / disadvantages, for / against) would play as a SORT; none in this paper does (its
+# written parts are one time, one reason and one explanation with an OR), so SORTS stays empty and sort_ is kept for parity.
+SORTS = {}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("ml-p2-2025-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+for _m in missions:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+assert not [i["n"] for m in missions for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
 # every part that played as typed steps or num before 2026-10-10, now authored multiple choice
 assert tuple(AUTHORED) == ("1.2.2", "1.3.3", "2.1.1", "2.2.4", "2.3.2", "3.1.2", "3.1.3", "3.1.4", "3.1.5", "3.2.1", "3.2.2", "3.2.3",
                            "4.1.2(a)", "4.2.1", "4.2.4", "4.2.5", "4.2.6", "5.2", "5.3"), AUTHORED
 ITEMS = [i for m in missions for i in m["items"]]
-assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "num")], "a typed calculation is left"
+assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "num", "rubric")], "a typed calculation or a written answer is left"
+assert {i["n"]: i.get("after") for i in ITEMS if i.get("after")} == {"2.3.4": ["2.3.3"], "3.1.4": ["3.1.3"]}
 AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 
 paper = {
@@ -497,6 +556,9 @@ paper = {
                                                    "9h45, 9:45 am ...; 4.2.2 '16 June 2023 at 09:25' in its common written orders), never on a keypad."},
         {"n": "4.1.2(b)", "kind": "no_fit", "detail": "The two towns on the N12 play as a list of two, 1,5 marks each; the memo gives 2 for the first "
                                                       "correct town and 1 for the second."},
+        {"n": "1.2.1", "kind": "no_fit", "detail": "The written answers play as statements (pick one of six cards, 2 marks): 1.2.1 (the time in "
+                                                   "words: the memo's two forms are right, its 1RT + 1A become all or nothing), 2.3.5 and "
+                                                   "5.1.3(a) (2O each; 5.1.3(a)'s two OR explanations are both right cards)."},
         {"n": "5.1.3(b)", "kind": "no_fit", "detail": "The scaled diagram of the hardboard is drawn on paper and self-checked against the memo's criteria."},
         {"n": "5.1", "kind": "no_fit", "detail": "ANNEXURE D is printed sideways on the answer book's page 14, so a crop would lie on its side: its "
                                                  "DIAGRAM 2 (the six pieces of wood and the hardboard) is typed as a table, shown on 5.1 and again on "
@@ -506,6 +568,8 @@ paper = {
         {"n": "3.1.5", "kind": "memo_issue", "detail": "The memo's third method writes 7/74 = 0,945945…; it is 0,0945945… (its sum 0,216216… is right)."},
         {"n": "3.2.3", "kind": "memo_issue", "detail": "The memo's second method writes 4 110 − 1 182,439744; the area of the circles is "
                                                        "1 182,39744 cm² (its answer 2 927,60 cm² is right)."},
+        {"n": "5.3", "kind": "memo_issue", "detail": "The memo's first method writes 0,75 g/ × 400 000 cm³ (the density's unit cut short); "
+                                                     "transcribed 0,75 g/cm³ × 400 000 cm³."},
     ],
 }
 QTOTAL = {"1": 28, "2": 34, "3": 32, "4": 30, "5": 26}   # the memo's [n] per question
