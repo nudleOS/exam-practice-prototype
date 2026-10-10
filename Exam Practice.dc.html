@@ -3795,20 +3795,29 @@ class Component extends DCLogic {
       // memo's own words could not pass 34 parts, and a learner writing one alternative failed 60 points. A point with NO keyword is matched
       // on its own words: a one-word choice (yes / no / a letter) must open the answer; otherwise each slot of 3+ letter words, less the
       // list rule's stop words, must stand in the answer whole ("to form mRNA"). The service's keyword marker reads points the same way.
+      // THE QUESTION'S OWN WORDS ARE NO EVIDENCE (2026-10-10, "question demoting", Mohler, Bunescu & Mihalcea, ACL 2011): a keyword the
+      // question contains is left out of a point's keywords, so restating the question earns nothing. Before, the question alone scored
+      // on 96 of the 272 written parts, full marks on 43 ("Diversification strategies have advantages for businesses." 4 / 4 on BS P1
+      // 2025 2.8: "advantage" + "businesses" hit a point). A point whose keywords are ALL the question's needs every one of them.
+      // The memo's catch-all ("Any other relevant answer related to ...") is never scored here: its words are the question's, and an
+      // unlisted answer needs a marker's judgement, not a word match.
+      const asked = norm(part.stem).split(" ").filter(Boolean);
       const slotsOf = w => w.replace(/\([^)]*\)/g, " ").split(/\s+/).map(tok => [...new Set(tok.split("/").flatMap(x => norm(x).split(" ")).filter(Boolean))]).filter(sl => sl.length);
       const hitOf = w => { const slots = slotsOf(w), ks = [];
         slots.forEach(sl => { const pf = [...new Set(sl.filter(x => x.length > 5).map(x => x.slice(0, 5)))].sort(); if (!pf.length) return;
           const short = sl.filter(x => x.length >= 2 && x.length <= 5 && !LEAD_STOP.has(x)), k = ks.find(q => q.pf.join() === pf.join());
           if (k) short.forEach(x => k.short.indexOf(x) === -1 && k.short.push(x)); else ks.push({ pf: pf, short: short }); });
         if (ks.length) { const hit = (k, x) => (x.length > 4 && k.pf.indexOf(x.slice(0, 5)) !== -1) || k.short.indexOf(x) !== -1;
-          const got = ks.filter(k => words.some(x => hit(k, x))).length;
-          return got >= Math.min(2, ks.length) ? [...new Set(words.filter(x => ks.some(k => hit(k, x))))] : null; }
+          const own = ks.filter(k => !asked.some(x => hit(k, x))), use = own.length ? own : ks, need = own.length ? Math.min(2, own.length) : ks.length;
+          const got = use.filter(k => words.some(x => hit(k, x))).length;
+          return got >= need ? [...new Set(words.filter(x => use.some(k => hit(k, x))))] : null; }
         if (slots.length === 1 && slots[0].length === 1 && slots[0][0].length <= 3) return words[0] === slots[0][0] ? slots[0] : null;
         const sig = slots.map(sl => sl.filter(x => x.length >= 3 && !LEAD_STOP.has(x))).filter(sl => sl.length);
         return sig.length && sig.every(sl => sl.some(x => words.indexOf(x) !== -1)) ? sig.map(sl => sl.find(x => words.indexOf(x) !== -1)) : null; };
       const wordingsOf = pt => { const s = String(pt).replace(/^OR\s*[—–-]\s*/, ""), m = s.match(/\bACCEPT\b:?/i), main = m ? s.slice(0, m.index) : s, acc = m ? s.slice(m.index + m[0].length) : "";
         return main.split(/\s+OR\s+/).concat(acc.trim() ? acc.split(/\s+OR\s+/) : []).filter(x => slotsOf(x).length); };
-      const items = key.rubric.map((pt, i) => { let ev = null; for (const w of wordingsOf(pt)) { ev = hitOf(w); if (ev) break; } const ok = !!ev;
+      const catchAll = pt => /^any other\b/i.test(String(pt).replace(/^OR\s*[—–-]\s*/, ""));
+      const items = key.rubric.map((pt, i) => { let ev = null; if (!catchAll(pt)) for (const w of wordingsOf(pt)) { ev = hitOf(w); if (ev) break; } const ok = !!ev;
         return { key: "p" + i, awarded: ok ? key.each || 1 : 0, available: key.each || 1, verdict: ok ? "correct" : answer.trim() ? "incorrect" : "missing",
           evidence: ok ? ev.join(", ") : "" }; });
       // a memo "OR" starts an ALTERNATIVE answer (2.2.3): score each alternative on its own and keep the best, so points from two
