@@ -16,8 +16,12 @@ How the memo's shapes map (Mathematical Literacy):
   the part keeps its marks, all or nothing (`work`). A value the memo also accepts in another form (R8,28; 750 million) or from
   another method or reading (5.1.3's other conversions; 5.2.2's graph reading 1,41 – 1,43) never stands as a wrong option. A word
   read-off -> term; "discrete or continuous" -> mcq; terminology matched to definitions -> match; "arrange in ascending order" -> order;
-  a formula -> strict term with the forms a learner types; "complete the graph" -> draw, self-checked."""
+  a formula -> strict term with the forms a learner types; "complete the graph" -> draw, self-checked.
+  A written answer (O / A marks: 5.1.2(a) a reason, 5.2.4 a trend) -> statements (`stmt`, Murci 2026-10-10): the memo's own points
+  and clearly false ones, pick marks/each of them (the bottom block; the rubric stays as the source). No memo in this paper weighs
+  two sides, so there is no sort. A part whose options show an earlier part's answer carries "after" (AFTER, the bottom block)."""
 import json
+import random
 import re
 from pathlib import Path
 
@@ -119,14 +123,15 @@ q13 = [
              "TOTAL row, NUMBER OF FEMALES column\n= 30 980 110",
              "5 339 919 + 1 554 996 + 4 639 268, the NUMBER OF PEOPLE (TOTAL) column\n= 11 534 183",
              "TOTAL row, NUMBER OF MALES column\n= 29 624 882"], 1,
-         ["Read the TOTAL row.", "The NUMBER OF PEOPLE column."]),
+         ["The population counts everyone: every group, males and females.", "The table has already added the groups up for you."]),
     work("1.3.5", "The total number of black South Africans is forty-nine million seventy thousand eight hundred and nine. Write this number in "
          "numerals without using words.", 2,
          "49 000 000 + 70 000 + 809\n= 49 070 809", [
              "49 000 000 + 700 000 + 809\n= 49 700 809",
              "49 000 000 + 7 000 + 809\n= 49 007 809",
              "4 900 000 + 70 000 + 809\n= 4 970 809"], 1,
-         ["49 million, then 70 thousand, then 809.", "Fill every place value."]),
+         ["Split the words into millions, thousands and the rest, then write each part in digits.",
+          "Every group after the millions has three digits: fill an empty place with 0."]),
     work("1.3.6", "Express the number of white males as a percentage of the total number of males.", 3,
          "Percentage = {2 242 589}/{29 624 882} × 100%\n= 7,569950827%", [
              "Percentage = {2 242 589}/{4 639 268} × 100%\n= 48,339285422%",
@@ -151,9 +156,11 @@ PAYE = {"head": ["MONTHLY REMUNERATION", "ANNUAL EQUIVALENT", "TAX: BELOW 65", "
 # ---- QUESTION 2, the question paper pages 6-7, the answer book page 4 and the memo pages 5-10 ----
 TAX = "Annual taxable income = R35 000 × 12\n= R420 000\nAnnual tax before rebates = "   # 2.1.4(c): every working's first lines
 q21 = [
-    term("2.1.1", "Write the acronym UIF in words.", ["Unemployment Insurance Fund"], ["It pays out when you lose your job.", "U ... Insurance Fund."]),
+    term("2.1.1", "Write the acronym UIF in words.", ["Unemployment Insurance Fund"],
+         ["It pays out when you lose your job.", "You and your employer each pay 1% of your salary into it."]),
     term("2.1.2", "Name the institution that collects tax on behalf of the government of South Africa.",
-         ["SARS", "South African Revenue Service", "South African Revenue Services"], ["Four letters.", "The South African ... Service."]),
+         ["SARS", "South African Revenue Service", "South African Revenue Services"],
+         ["Employers pay the PAYE they deduct from salaries over to it.", "It also collects VAT from businesses."]),
     work("2.1.3", "Determine the employer contribution towards the medical aid if the employer contributes one third of the total contribution.", 2,
          "Employer medical aid contribution = R2 531,54 ÷ 2\n= R1 265,77", [
              "Employer medical aid contribution = R2 531,54 ÷ 3\n= R843,85",
@@ -165,7 +172,7 @@ q21 = [
              "Row R34 977–R35 077, column 65–74\nA = R5 511",
              "Row R34 775–R34 875, column Below 65\nA = R6 235",
              "Row R34 977–R35 077, column 75+\nA = R5 249"], 2,
-         ["Find the row her R35 000 falls in.", "She is 42: the 'below 65' column."]),
+         ["Find the row her R35 000 falls in.", "Her age decides the column."]),
     work("2.1.4(b)", "Calculate the missing value B.", 2,
          "B = R35 000 – R177,12 – R6 298 – R2 531,54\n= R25 993,34", [
              "B = R35 000 – R6 298 – R2 531,54\n= R26 170,46",
@@ -253,7 +260,7 @@ RANGE = "Range = Highest value – Lowest value\nRange = "   # 3.2.2(c)
 q32 = [
     term("3.2.1", "Name the type of graph drawn on ANSWER SHEET 3.2.", ["Stacked bar graph", "Compound bar graph", "Stacked bar chart",
                                                                         "Compound bar chart", "Stacked bar", "Compound bar"],
-         ["Each bar is built from three years on top of each other.", "A ... bar graph."]),
+         ["Look at how each bar is built from the three years in the key.", "Its name has two words before \"graph\"."]),
     term("3.2.2(a)", "Use the graph on ANSWER SHEET 3.2: write down the names of TWO provinces that had the same number of LTE devices during 2021.",
          pairs(("Limpopo", "North West"), ("Mpumalanga", "Eastern Cape"), ("LP", "NW"), ("MP", "EC")),
          ["Read only the hatched (2021) part of each bar.", "Find two bars whose 2021 parts end at the same height."]),
@@ -292,7 +299,7 @@ q41 = [
         "Cost = R1 000 + (R500 × n)", "Cost = R1 000 + (R500 × number of days)", "Cost = 1000 + 500n", "Cost = R1000 + R500n", "Cost = 1000 + 500 x n",
         "Cost = 500n + 1000", "Cost = R500n + R1000", "Cost = 500 x n + 1000", "Cost = 1000 + 500 x number of days", "C = 1000 + 500n",
         "1000 + 500n", "500n + 1000", "1000 + 500 x n"],
-         ["A fixed deposit plus a cost for every day.", "R1 000 deposit; R500 per day for a large trailer."], strict=True),
+         ["A fixed deposit plus a cost for every day.", "Test your formula with TABLE 6: one day must give R1 500."], strict=True),
     work("4.1.2", "Calculate the missing value B.", 3,
          "B = R1 000 + (R350 × 5)\n= R2 750", [
              "B = R1 000 + (R500 × 5)\n= R3 500",
@@ -361,7 +368,7 @@ q51 = [
          ["Option B's monthly maintenance cover.", "For every month of the payment period."]),
     rub("5.1.2(a)", "Candice chooses OPTION A. Give ONE possible reason why Candice chose OPTION A.", 2, [
         "The deposit and first-month instalment is much lower (2).", "OR — Option A has a smaller deposit (2)."],
-        ["Compare the first payment of the two options.", "What would a new small business need?"], each=2),
+        ["Compare the two options row by row in TABLE 8.", "What would a new small business need?"], each=2),
     work("5.1.2(b)", "Candice chooses OPTION A. Calculate the total amount, including VAT, that she would have paid at the end of the payment period.", 7,
          EXCL + "Total price including VAT = £11 584,61 × {120}/{100}\n= £13 901,53", [
              "Total price excluding VAT = £1 173,66 + (£195,61 × 48) + (£25,36 × 48)\n= £1 173,66 + £9 389,28 + £1 217,28\n= £11 780,22 excl VAT\n"
@@ -398,10 +405,10 @@ q52 = [
              "Petrol price for June = {£1,45 × 102,2}/{100}\n= £1,48",
              "Petrol price for June = {£1,45 × 100}/{2,2}\n= £65,91",
              "Petrol price for June = {£1,42 × 100}/{102,2}\n= £1,39"], 2,
-         ["July's price is June's price plus 2,2%.", "Divide July's price by 1,022."]),
+         ["July's price is June's price plus 2,2%.", "June's price × 1,022 = July's price: work backwards."]),
     rub("5.2.4", "Describe the trend in the inflation rate for the period Jul. 2024 to Oct. 2024.", 3, [
         "It remains the same (constant) from July to August (1).", "It decreases from August to September (1).", "It increases from September to October (1)."],
-        ["Read TABLE 10 month by month (C from 5.2.1).", "Same, down, then up?"])]
+        ["Read TABLE 10 month by month (C from 5.2.1).", "Compare each month's rate with the month before: higher, lower or the same?"])]
 
 PRICES = {"head": ["FOOD ITEMS", "QUANTITY", "JOHANNESBURG", "DURBAN", "CAPE TOWN"],
           "rows": [["Salt", "1 kg", "R18,07", "R17,16", "R10,24"], ["Onions #", "10 kg", "R111,59", "R100,58", "R104,10"],
@@ -438,11 +445,10 @@ missions = [
              "shows a graph for the number of LTE devices per province over a three-year period. Some of the information on the graph has been omitted. "
              "NOTE: LTE is a term used for a particular type of 4G that delivers a fast mobile internet experience. The table holds the 2023 data "
              "omitted from the graph (QUESTION 3.2.3).",
-     "figure": fig("3.2", "ANSWER SHEET 3.2, a stacked bar graph, NUMBER OF LTE DEVICES PER PROVINCE, 0 to 60 000 000 in steps of 1 000 000 (hatched "
-                   "2021, white 2022, black 2023). Each bar's tops: Gauteng 16 000 000 / 34 500 000 / 56 000 000; KwaZulu-Natal 9 000 000 / "
-                   "20 500 000 (no 2023 part); Limpopo 4 000 000 / 11 000 000 / 18 500 000; Western Cape 5 500 000 / 12 000 000 / 19 500 000; "
-                   "Mpumalanga 3 500 000 / 8 500 000 (no 2023 part); Eastern Cape 3 500 000 / 8 500 000 / 14 000 000; North West 4 000 000 / "
-                   "8 000 000 / 12 500 000; Free State 1 000 000 / 5 000 000 / 7 500 000; Northern Cape 2 000 000 / 3 000 000 / 4 500 000."),
+     "figure": fig("3.2", "ANSWER SHEET 3.2, a graph, NUMBER OF LTE DEVICES PER PROVINCE, 0 to 60 000 000 in steps of 1 000 000 (key: hatched "
+                   "2021, white 2022, black 2023), one bar for each of Gauteng, KwaZulu-Natal, Limpopo, Western Cape, Mpumalanga, Eastern Cape, "
+                   "North West, Free State and Northern Cape; KwaZulu-Natal and Mpumalanga have no 2023 part (3.2.3 completes them)."),
+     # (no graph type and no readings: 3.2.1 asks for the type, 3.2.2 for readings off the bars, which carry no printed values)
      "items": q32},
     {"id": "4.1", "title": "Question 4.1", "kind": "Trailer rental", "marks": 15, "table": TRAILERS,
      "lead": "Monwabisi operates a trailer rental business. His rental costs for hiring a trailer are:\n• R1 000 refundable deposit per trailer if there is "
@@ -461,8 +467,54 @@ missions = [
              "of the average petrol price per month in pounds (£) for a four-month period during 2024. TABLE 10 shows the monthly inflation percentages "
              "for a four-month period during 2024.",
      "figure": fig("5.2", "ANNEXURE B, a bar graph, AVERAGE PETROL PRICE PER MONTH FOR A FOUR-MONTH PERIOD, the average monthly petrol price in £ per "
-                   "litre from 1,2 to 1,5: Jul. 2024 1,45; Aug. 2024 1,42; Sep. 2024 1,37; Oct. 2024 1,34."), "items": q52},
+                   "litre from 1,2 to 1,5 for Jul. 2024, Aug. 2024, Sep. 2024 and Oct. 2024."),   # (no readings: 5.2.2-5.2.3 read them off the bars)
+     "items": q52},
 ]
+
+
+# ---- Written answers as STATEMENTS (Murci 2026-10-10): the memo's own points (right, one reading of its "OR") and CLEARLY false ones
+# (never a true point the memo leaves out); the learner picks marks/each of them, each right pick earns `each`; the cards are shuffled
+# the same way every run. The rubrics above stay as the source.
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("ml-p1-2025-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # MG p19: 2O for ONE reason, "much lower deposit and first-month instalment" OR "a smaller deposit"; the false ones from TABLE 8
+    # (both 48 months; A's later instalments £195,61 > £182,29 and cover £25,36 > £24,00; the NOTE: all amounts exclude VAT)
+    "5.1.2(a)": (2, ["Option A's deposit and first-month instalment is much lower than Option B's.", "Option A has a smaller deposit."],
+                 ["Option A has a shorter payment period than Option B.",
+                  "Option A's additional monthly instalments are lower than Option B's.",
+                  "Option A's compulsory monthly maintenance cover is cheaper than Option B's.",
+                  "Option A's amounts include VAT, while Option B's amounts exclude VAT."]),
+    # MG p23: 1A each, the three steps of the trend (C = 1,7 from 5.2.1); the false ones are each step's opposite and "no change"
+    "5.2.4": (1, ["It remains the same (constant) from July to August.", "It decreases from August to September.",
+                  "It increases from September to October."],
+              ["It increases from July to August.", "It increases from August to September.", "It decreases from September to October.",
+               "It remains the same for the whole period from July to October."]),
+}
+# Gates: a part whose options show an earlier part's answer opens once that part is answered
+AFTER = {"2.1.4(b)": ["2.1.4(a)"],             # its workings use A = R6 298
+         "2.1.4(c)": ["2.1.4(a)"],             # every working compares with the R6 298 deducted (and its clue names it)
+         "3.1.3(b)": ["3.1.3(a)"],             # its workings take 46% of 750 000 000, 3.1.3(a)'s total
+         "4.2.4(b)": ["4.2.2", "4.2.4(a)"],    # its workings list the vendors in ascending order (4.2.4(a)), the third largest 46 901 (4.2.2)
+         "5.2.4": ["5.2.1"]}                   # its cards say the rate decreases from August to September: C below 2,2 (5.2.1)
+for _m in missions:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+        if _it["n"] in AFTER:
+            _m["items"][_k]["after"] = AFTER[_it["n"]]
+assert sorted(AFTER) == sorted(i["n"] for m in missions for i in m["items"] if i.get("after"))
+assert not [i["n"] for m in missions for i in m["items"] if i["t"] in ("rubric", "steps")], "a written part or typed steps left"
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
@@ -481,6 +533,9 @@ paper = {
         {"n": "4.1.1", "kind": "no_fit", "detail": "A formula plays as a strict term listing the forms a learner types (all or nothing: the memo's 1 "
                                                    "for the deposit and 1 for the variable cost)."},
         {"n": "3.2.3", "kind": "no_fit", "detail": "Completing the stacked bar graph is drawn on paper and self-checked against the memo's criteria."},
+        {"n": "5.1.2(a)", "kind": "no_fit", "detail": "The written answers play as statements (Murci, 2026-10-10): 5.1.2(a) picks ONE of the memo's two "
+                                                      "reasons (2 marks) and 5.2.4 the trend's THREE steps (1 mark each), among clearly false "
+                                                      "statements read off TABLE 8 and TABLE 10."},
         {"n": "1.1.3", "kind": "memo_issue", "detail": "The memo's explanation reads '1RT 169,92' where the table and its working use R169,62."},
         {"n": "4.2.1", "kind": "memo_issue", "detail": "The paper asks for V 'rounded to the nearest thousand'; the memo rounds to three decimal places "
                                                        "(0,652, the nearest thousandth)."},

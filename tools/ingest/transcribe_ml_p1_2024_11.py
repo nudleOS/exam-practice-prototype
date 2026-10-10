@@ -18,8 +18,10 @@ How the memo's shapes map (Mathematical Literacy, as in ML P1 and P2 Nov 2025):
   a read-off of a word or a code -> term (a time slot, a fraction, a meter number, a tax bracket and a formula are strict terms: one
   digit or letter changes the answer); "Choose the statement (A-C)" / "Choose the correct option (A-E)" -> mcq in the paper's order; a
   word chosen from brackets -> mcq; definitions matched to terms -> match (2 marks a pair); "Identify the food items" -> list; a reason
-  or a trend (O marks) -> rubric; three sources that must add up to 34% -> rubric with the memo's three sets as alternatives; "draw a
-  line graph on the ANSWER SHEET" -> draw, self-checked.
+  or a trend (O marks: 3.2.3, 4.1.4, 5.3.1) -> statements (Murci, 2026-10-10: pick the memo's point among clearly wrong ones); three
+  sources that must add up to 34% (5.1.4) -> statements, each card a set of three sources, the memo's three sets the right cards; "draw
+  a line graph on the ANSWER SHEET" -> draw, self-checked. A part whose stem, options or self-check shows an earlier part's answer
+  carries `after` (the gate, AFTER below).
   Authored multiple choice (Murci's ruling, 2026-10-10) for every number a learner would type (a number read off, "Calculate /
   Determine / Convert", "Verify ... whether ... valid"): the stem ends "Choose the correct working"; four options, one the memo's FIRST
   method as the memo works it, a line per step ("{a}/{b}" a stacked fraction; numbers as the memo writes them, decimal comma and space
@@ -334,8 +336,8 @@ q32 = [
     mcq("3.2.2", "Choose the correct option (A, B, C, D or E) that represents the stage in the data handling process that uses the measures of "
         "central tendency and spread.", ["Collecting data", "Classifying and organising data", "Summarising data", "Representing data",
                                          "Analysing data"], 4,
-        ["The stages run in order: collect, organise, summarise, represent, then use the results.",
-         "Which stage USES the measures to draw conclusions about the data?"]),
+        ["The measures are worked out from data that has already been collected and organised.",   # (was a list of A-D in order,
+         "Which stage USES the measures to draw conclusions about the data?"]),                    # leaving E alone: by position)
     rub("3.2.3", "Give a reason why the value of 127 is considered to be an outlier in the data set.", 2, [
         "The value 127 is 60 minutes more than the second highest time in the dataset (2)."],
         ["Compare 127 with the next largest value in the data.", "How far apart are they?"], each=2,
@@ -472,7 +474,8 @@ q51 = [
         "Interest payments = 20% × 45 lakh crore\n= 9 lakh crore\nUnrounded = 9 × 100 000 × 10 000 000\n= 9 000 000 000 000 rupees\n"
         "Rounded = 9 × 100 000 × 10 000 000\n= 9 000 000 000 000 rupees\nDifference = 9 000 000 000 000 – 9 000 000 000 000\n= 0 rupees\n"
         "His statement is VALID"], 2,
-        ["Find 20% of the 45,03 lakh crores, then round it to a whole number.", "Change both amounts to rupees with the NOTE, then compare them."],
+        ["Read the interest payments' percentage on the expenditure pie chart, take it of the 45,03 lakh crores, then round to a whole "
+         "number.", "Change both amounts to rupees with the NOTE, then compare them."],   # (it named the 20% the memo marks RT)
         marks=6)]
 q52 = [
     mcq("5.2.1", "Convert R302,4 billion to million rands." + WORK, [
@@ -509,11 +512,11 @@ missions = [
     {"id": "1.1", "title": "Question 1.1", "kind": "Voters per time slot", "marks": 11,
      "lead": "School X and School Y conducted an election for new members to serve on the school governing body (SGB). The graph below shows "
              "the number of voters voting during different time slots at School X and School Y.",
+     # the caption describes the graph, never its readings: it is the enlarged view's line, and 1.1.1, 1.1.2, 1.1.3 and 1.1.5 ask
+     # the learner to read these bars (2026-10-10 sweep; as the Geography captions)
      "figure": fig("1.1", "A double bar graph, NUMBER OF VOTERS PER TIME SLOT AT SCHOOL X AND SCHOOL Y: Number of voters (0 to 35, gridlines "
                    "every 5) for eight half-hour time slots from 15:00–15:30 to 18:30–19:00; black bars for School X, patterned bars for "
-                   "School Y. School X has no bar in the first two slots, then about 10 (16:00–16:30), 12 (16:30–17:00), 26 (17:00–17:30), 30 "
-                   "(17:30–18:00), 18 (18:00–18:30) and 8 (18:30–19:00). School Y: about 18 (15:00–15:30), 12 (15:30–16:00), 5 (16:00–16:30), "
-                   "9 (16:30–17:00), 26 (17:00–17:30), 24 (17:30–18:00), 5 (18:00–18:30) and 2 (18:30–19:00)."), "items": q11},
+                   "School Y. School X has no bar in the first two slots."), "items": q11},
     {"id": "1.2", "title": "Question 1.2", "kind": "Food prices", "marks": 10, "table": FOOD,
      "lead": "The newly elected SGB planned to have lunch with the staff.\n\nTABLE 1 below shows the average comparative food prices for May 2022 "
              "and May 2023 needed for some of the lunch items.", "items": q12},
@@ -566,6 +569,79 @@ missions = [
              "prices for the last five years.", "items": q53},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10; the helper as in BS P2 Nov 2025) ----
+# A written part plays as picking statements: the memo's own points (right, tidied to one reading of its "/" alternatives) and
+# CLEARLY wrong ones (never a true point the memo leaves out). The learner picks marks/each of them, any right one counts (the
+# memo's "OR"), each right pick earns `each`; the cards are shuffled the same way every run. The rubric parts above stay as the
+# source. No part here is two-sided in the memo (positive/negative, for/against), so none plays as a sort.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("ml-p1-2024-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # 2O for the one reason (MG p10): 127 against the next value, 67; the wrong ones misstate that gap (so the clue "compare 127
+    # with the next largest value" does not single the right card out) or call 127 the mode, the median or a middle-half value
+    "3.2.3": (2, ["The value 127 is 60 minutes more than the second highest time in the data set."],
+                 ["The value 127 is 60 minutes less than the second highest time in the data set.",
+                  "The value 127 is only 6 minutes more than the second highest time in the data set.",
+                  "The value 127 is the most common time in the data set.",
+                  "The value 127 is the middle value of the data set when the times are arranged in order.",
+                  "The value 127 lies between the lower quartile and the upper quartile of the data set."]),
+    # 2O for ONE reason, the memo's two as alternatives (MG p13); the wrong ones are the opposite of a fixed rate (one about a party
+    # that ends early, so clue 2 does not single the right card out) and the other two DJs' tariffs read as DJ Cool's
+    "4.1.4": (2, ["DJ Cool charges a fixed rate, which is not economical if the party ends early.", "DJ Cool has a bad reputation."],
+                 ["DJ Cool charges less if the party ends earlier than planned.", "DJ Cool charges more for every extra hour he plays.",
+                  "DJ Cool charges R1 000 per hour or part thereof.",
+                  "DJ Cool charges an additional R1 250 per hour after the first 5 hours."]),
+    # 1RT a source, 3 for a set: the memo's three sets (the only triples of slices adding to 34%, GST 17% from 5.1.2) are the right
+    # cards, one set a pick (a pick of single sources would credit three that add to 47%); the wrong sets add to 37%, 28%, 27%, 36%
+    "5.1.4": (3, ["Corporation tax, Income tax and Customs", "Corporation tax, GST and Non-debt capital receipts",
+                  "Income tax, GST and Non-debt capital receipts"],
+                 ["Corporation tax, Income tax and Excise duties", "Income tax, Excise duties and Non-tax receipts",
+                  "GST, Customs and Non-tax receipts", "Corporation tax, GST and Customs"]),
+    # 1O years increase + 1O rate increases: one statement carries both (MG p17), its two wordings both right; the wrong ones are
+    # the opposite, no change, a rise then a fall, and a wrong step (the rate rises by 0,5% a year, not 1%)
+    "5.3.1": (2, ["As the years increase, the inflation rate increases.", "The inflation rate increases from 2020 to 2024."],
+                 ["As the years increase, the inflation rate decreases.", "The inflation rate stays the same from 2020 to 2024.",
+                  "The inflation rate increases, then decreases from 2020 to 2024.",
+                  "The inflation rate increases by 1% each year from 2020 to 2024."]),
+}
+for _m in missions:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+assert not [i["n"] for m in missions for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
+# ---- Gates (a catalogue field since 2026-10-10): a part whose stem, options or self-check shows an EARLIER part's answer opens only
+# once that part is answered ----
+AFTER = {
+    "1.1.4": ["1.1.2"],                # its stem names School X's 17:30–18:00 slot, the slot 1.1.2 asks for
+    "2.2.3": ["2.2.1", "2.2.2"],       # its options show R1 549 a month and the R68 000 excluding VAT
+    "2.3.2": ["2.3.1"],                # its options work in bracket C with the annual R471 310,20
+    "3.2.4(b)": ["3.2.4(a)"],          # an option's Q3 is (a)'s 28,5
+    "4.1.2(b)": ["4.1.1(b)"],          # its self-check's points show Q = 5 250 and R = 9 000
+    "5.1.4": ["5.1.2"],                # its right sets (15% + GST + 2% = 34%) show GST's 17%
+    "5.2.2": ["5.2.1"],                # "Hence": every option starts from R302 400 million
+}
+_order = [i["n"] for m in missions for i in m["items"]]
+for _m in missions:
+    for _it in _m["items"]:
+        if _it["n"] in AFTER:
+            assert all(_order.index(e) < _order.index(_it["n"]) for e in AFTER[_it["n"]]), _it["n"]
+            _it["after"] = AFTER[_it["n"]]
+assert sorted(AFTER) == sorted(i["n"] for m in missions for i in m["items"] if "after" in i)
+
 # the parts that played as typed numbers (steps or num) until Murci's ruling of 2026-10-10, now authored multiple choice
 AUTHORED = [i["n"] for m in missions for i in m["items"] if i["t"] == "mcq" and i["q"].endswith(WORK)]
 AUTHORED_MARKS = sum(i["marks"] for m in missions for i in m["items"] if i["n"] in AUTHORED)
@@ -608,8 +684,11 @@ paper = {
                                                        "result, and every option of a part has the same number of lines."},
         {"n": "4.1.2(b)", "kind": "no_fit", "detail": "Drawing DJ Rain's line graph on the ANSWER SHEET is done on paper and self-checked against the "
                                                       "memo's criteria."},
-        {"n": "5.1.4", "kind": "no_fit", "detail": "The three sources play as a rubric with the memo's three alternative sets (each adds up to the 34% "
-                                                   "of borrowings); a list would credit any three of the five sources the sets name."},
+        {"n": "5.1.4", "kind": "no_fit", "detail": "The three sources play as statements, each card a SET of three sources: the memo's three "
+                                                   "alternative sets (the only triples adding up to the 34% of borrowings) are the right cards "
+                                                   "and four sets adding to 37%, 28%, 27% and 36% the wrong ones; one set is picked, worth the "
+                                                   "3 marks (the memo's 1RT a source, all or nothing here). A pick of single sources would credit "
+                                                   "any three of the five the sets name (Corporation tax, Income tax and GST add to 47%)."},
         {"n": "3.2.2", "kind": "low_confidence", "detail": "The memo's answer is E (Analysing data). In CAPS the measures of central tendency and "
                                                            "spread are calculated under 'Summarising data' (C), so a reviewer may want to confirm; "
                                                            "transcribed as the memo has it."},
