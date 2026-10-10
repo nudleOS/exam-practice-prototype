@@ -12,7 +12,11 @@ How the memo's shapes map (the same for every Business Studies paper):
   scenario's own sentences (the memo: "only award marks for responses that are quoted from the scenario"); "Classify" -> match
   (each item to its environment); one fixed answer -> term; explain/discuss/outline/advise/describe -> rubric, its points the
   memo's (each 2 where every point is worth two ticks); the essays -> one rubric each, the memo's points under its own headings
-  and sub-maxima, plus insight (LASO). Section B is "answer any TWO" and Section C "answer any ONE" (answer_any)."""
+  and sub-maxima, plus insight (LASO). Section B is "answer any TWO" and Section C "answer any ONE" (answer_any).
+
+Then (Murci 2026-10-10, the same shape as bs-p2-2025-11), see the bottom block: every written (rubric) part plays as STATEMENTS
+(pick the memo's points among clearly wrong ones) or, where the memo weighs two sides, a SORT (4.4); both essays play as SECTIONS
+(one part per memo heading, facts summing to 32) plus an INSIGHT part (8). The rubric parts above stay as the memo source."""
 import json
 from pathlib import Path
 
@@ -47,7 +51,7 @@ q11 = [
     mcq("1.1.1", "This Act requires businesses to display information of their products on packaging:",
         ["Employment Equity Act (EEA), 1998 (Act 55 of 1998)", "Labour Relations Act (LRA), 1995 (Act 66 of 1995)",
          "Consumer Protection Act (CPA), 2008 (Act 68 of 2008)", "National Credit Act (NCA), 2005 (Act 34 of 2005)"], 2,
-        ["Which Act protects the people who BUY products?", "Labelling tells a buyer what is inside the packaging."]),
+        ["Which Act is about the rights of the people who BUY products?", "Labelling tells a buyer what is inside the packaging."]),
     mcq("1.1.2", "Smith Stores uses outdated computers which prevent access to online transactions. This challenge is classified as a … "
         "factor of the PESTLE analysis.", ["technological", "political", "legal", "social"], 0,
         ["PESTLE: political, economic, social, technological, legal, environmental.", "What kind of problem is an old computer?"]),
@@ -57,7 +61,8 @@ q11 = [
     mcq("1.1.4", "The role of the interviewer during an interview is to …",
         ["make the interviewee feel at ease.", "ask clarity-seeking questions about the position.", "assist candidates in responding to questions.",
          "be inquisitive and show interest in the business."], 0,
-        ["Three options describe what a CANDIDATE does.", "The interviewer runs the interview: what helps the candidate do well?"]),
+        ["Two of the options describe what a CANDIDATE should do, not the interviewer.",
+         "An interviewer must be fair to every candidate: no one gets help that the others do not."]),
     mcq("1.1.5", "Top Limited implemented the … step of the PDCA model by monitoring processes to determine whether they are functioning "
         "effectively.", ["do", "check", "plan", "act"], 1,
         ["Plan, Do, Check, Act: which step looks at results?", "Monitoring whether something works is ..."]),
@@ -65,15 +70,17 @@ q11 = [
 WORDS = "selection;  job specification;  National Skills;  management;  threat;  placement;  weakness;  performance;  job description;  Human Resources"
 q12 = [
     term("1.2.1", "The … Development Strategy aims to increase access to programmes that train people.", ["National Skills"],
-         ["A national strategy behind the Skills Development Act.", "Two words from the list; the strategy develops ..."]),
+         ["Its goals are what the SETAs and the training levy work towards.", "Think of the Act that created the SETAs."]),
     term("1.2.2", "Eezy Electronics are losing customers due to the high crime rate in the area. This is classified as a … in the SWOT "
-         "analysis.", ["threat"], ["Is crime in the area inside or outside the business?", "SWOT: the outside things are opportunities and ..."]),
+         "analysis.", ["threat"], ["Is crime in the area inside or outside the business?", "Is losing customers good or bad for the business?"]),
     term("1.2.3", "The component of the job analysis that outlines the duties and responsibilities of the position is known as …",
-         ["job description"], ["A job analysis has two parts: one describes the JOB, one the PERSON.", "Duties belong to the job, not the person."]),
+         ["job description"], ["A job analysis has two parts: one is about the work itself, one about the person who will do it.",
+                               "Duties and responsibilities belong to the work, not the person."]),
     term("1.2.4", "Themba, the human resources manager, conducts background checks of applicants who qualify for the job during the … "
          "procedure.", ["selection"], ["Recruitment attracts applicants; what comes next?", "Checking applicants before choosing one is part of ..."]),
     term("1.2.5", "Blue Manufacturer developed new methods and techniques to improve the quality of their products. This is known as "
-         "quality …", ["management"], ["Methods and techniques to improve quality are how quality is ...", "TQM: total quality ..."]),
+         "quality …", ["management"], ["Not one product check, but the whole way a business runs its quality.",
+                                       "Which word in the list names the work of planning, organising, leading and controlling?"]),
 ]
 COL_B = ["an agreement between the employer and the employee that is legally binding",
          "responsible for producing goods at the lowest possible cost",
@@ -121,14 +128,15 @@ q2 = [
         "Pay out grants to businesses that are complying with the requirements of the Skills Development Act.",
         "Identify suitable workplaces for practical work experience.",
         "Any other relevant answer related to the role of SETAs in supporting the SDA."],
-        ["SETA: Sector Education and Training Authority. One sector, its training.", "Think levies, grants, learnerships, skills plans."], each=2),
+        ["SETA: Sector Education and Training Authority. One sector, its training.",
+         "Ask of each card: is it about training and skills in a sector?"], each=2),
 ]
 q23 = [
     rub("2.3.1", "Identify the force of Porter's Five Forces model that is applicable to BF. Motivate your answer by quoting from the scenario "
         "above.", 3, [
             "Competitive rivalry/Power of competitors.",
             "(Its motivation, quoted from the scenario:) 'BF sales have decreased as Bright Eyewear sells unique sunglasses at reasonable prices.'"],
-        ["Who is taking BF's sales away?", "Another business selling the same kind of product is a ..."], worth=[2, 1],
+        ["Who is taking BF's sales away?", "Check both halves of each card: the force AND the sentence that proves it."], worth=[2, 1],
         notes=["No marks for the motivation if the force is wrong; the force earns its marks even if the motivation is incomplete."]),
     rub("2.3.2", "Describe how businesses could apply ONE other force of Porter's Five Forces model to analyse their position in the market "
         "environment.", 3, [
@@ -154,8 +162,8 @@ q23 = [
             "easy for new businesses to enter the market/industry; if the business is highly profitable, it will attract potential competitors "
             "that want to benefit from high profits; new competitors can quickly/easily enter the market, if it takes little time/money to "
             "enter the market; if there are a few suppliers of a product/service but many buyers, it may be easy to enter the market."],
-        ["Five forces: rivalry, suppliers, buyers, substitutes, new entrants. Not the one in 2.3.1.",
-         "Name the force, then say how a business would use it to judge its position."], worth=[2, 1, 2, 1, 2, 1, 2, 1],
+        ["The force from 2.3.1 does not count here.",
+         "Check each description against how the force really works: does it give the business more control or less?"], worth=[2, 1, 2, 1, 2, 1, 2, 1],
         notes=["Mark the first ONE force only. No marks for competitive rivalry/power of competitors (2.3.1's force)."]),
 ]
 q24 = [rub("2.4", "Explain the steps in strategy evaluation.", 4, [
@@ -166,7 +174,8 @@ q24 = [rub("2.4", "Explain the steps in strategy evaluation.", 4, [
     "Decide on the desired outcome as envisaged when strategies were implemented.",
     "Consider the impact of the strategic implementation in the internal and external environments of the business.",
     "Any other relevant answer related to the steps in strategy evaluation (in any order)."],
-    ["Evaluation looks back at a strategy already in use.", "Compare what was planned with what happened, then act on the difference."], each=2)]
+    ["Evaluation looks back at a strategy already in use.",
+     "Ask of each card: does it help the business learn whether its strategy is working?"], each=2)]
 q25 = [rub("2.5", "Discuss any TWO types of intensive strategies.", 6, [
     "Market penetration.",
         "(Market penetration, discussed:) new products penetrate an existing market at a low price, until it is well "
@@ -183,11 +192,13 @@ q25 = [rub("2.5", "Discuss any TWO types of intensive strategies.", 6, [
     "markets/modifies an existing product; businesses generate new ideas/develop new products/services for existing/current markets; "
     "businesses conduct test marketing/market research to establish whether new products will be accepted by existing customers; new "
     "products may be different/of a higher quality than those of competitors."],
-    ["Intensive strategies work harder with existing products or markets.", "Three of them: penetrate, develop the market, develop the product."], worth=[2, 1, 2, 1, 2, 1],
+    ["Intensive strategies work harder with existing products or markets.",
+     "Ask of each card: is the product new or existing, and is the market new or existing?"], worth=[2, 1, 2, 1, 2, 1],
     notes=["Mark the first TWO only (3 marks each: the strategy 2, its discussion 1)."])]
 q26 = [
     pick("2.6.1", "Quote TWO ways in which MF complies with the National Credit Act (NCA), 2005 (Act 34 of 2005) from the scenario above.",
-         sentences(MF), [1, 3], ["The NCA is about lending money and selling on credit.", "A cooling-off period belongs to a different Act."]),
+         sentences(MF), [1, 3], ["Offering credit is not, by itself, obeying the Act: look for what MF DOES to follow the rules on credit.",
+                                 "The five-day period to return goods is a consumer right from another Act."]),
     rub("2.6.2", "Recommend other ways in which businesses can comply with the National Credit Act.", 4, [
         "Offer applicants pre-agreement statements.", "Disclose all costs of the loan/No hidden costs should be charged/added.",
         "Businesses should be registered with the National Credit Regulator.",
@@ -195,7 +206,7 @@ q26 = [
         "Conduct affordability assessment to ensure that consumers have the ability to meet their obligations.",
         "Verify the identity of clients and report suspicious transactions/train staff on their obligations in terms of FICA.",
         "Any other relevant answer related to other ways in which businesses can comply with the NCA."],
-        ["Think about what a lender must do BEFORE it gives credit.", "Registration, reporting, honest costs, checking a client can pay."], each=2,
+        ["Think about what a lender must do BEFORE it gives credit.", "Ask of each card: does it protect the consumer who borrows?"], each=2,
         notes=["No marks for the ways quoted from the scenario in 2.6.1."]),
 ]
 q27 = [rub("2.7", "Explain ways in which businesses can apply ownership as a pillar of the Broad-Based Black Economic Empowerment Act (BBBEE), "
@@ -208,7 +219,7 @@ q27 = [rub("2.7", "Explain ways in which businesses can apply ownership as a pil
     "Businesses sometimes find it difficult to locate suitable black business partners/shareholders who can afford shares.",
     "Many black people cannot afford shares in companies/contributions to partnerships.",
     "Any other relevant answer related to ways in which businesses can apply ownership as a pillar of BBBEE."],
-    ["Ownership means who holds the shares or the partnership.", "How can black people become part-owners of a business?"], each=2)]
+    ["Ownership is about who holds a stake in the business.", "How can black people become part-owners of a business?"], each=2)]
 q28 = [rub("2.8", "Advise businesses on the advantages of diversification strategies.", 4, [
     "Increases sales/revenue/income and business growth.", "Improves the business brand/image/brand awareness of the business.",
     "Reduces the risk of relying only on one product for sales/revenue/income.",
@@ -219,7 +230,7 @@ q28 = [rub("2.8", "Advise businesses on the advantages of diversification strate
     "Allow businesses to remain relevant/functional/operational in a dynamic business environment.",
     "Enable businesses to establish additional markets in unrelated markets/industries.",
     "Any other relevant answer related to the advantages of diversification strategies."],
-    ["Diversifying means not putting all your eggs in one basket.", "What does a business gain from selling more than one kind of product?"], each=2)]
+    ["Diversifying means adding new products or new markets.", "What does a business gain from selling more than one kind of product?"], each=2)]
 missions_q2 = [
     {"id": "2.1", "title": "Question 2.1", "kind": "Leave in the BCEA", "marks": 4, "items": q2[:1]},
     {"id": "2.2", "title": "Question 2.2", "kind": "SETAs", "marks": 4, "items": q2[1:]},
@@ -250,10 +261,12 @@ q32 = [rub("3.2", "Outline the placement procedure as a human resources activity
     "Determine the successful candidate's strengths/weaknesses/interests/skills by subjecting him/her to a range of psychometric tests.",
     "Determine the relationship between the position and the competencies of the new employee.",
     "Any other relevant answer related to the placement procedure as a human resources activity."],
-    ["Placement puts the new employee in the right position.", "Match what the job needs with what the person can do."], each=2)]
+    ["Placement puts the new employee in the right position.",
+     "It happens after selection: the person is chosen; now, where do they fit best?"], each=2)]
 q33 = [
     term("3.3.1", "Name the salary determination method applied by FW in the scenario above.", ["Piecemeal", "Piece meal", "Piece-meal"],
-         ["FW pays by how much each worker sells.", "Paid per piece (per roll), not per hour."]),
+         ["FW pays by how much each worker sells.",
+          "There are two methods: pay for time worked, or pay for output produced. Which does FW use?"]),
     rub("3.3.2", "Explain the implications of the Labour Relations Act on the human resources function.", 4, [
         "Promotes resolution of labour disputes between employer and employees.",
         "Protects the rights of employees/employers as outlined in the Constitution.",
@@ -276,7 +289,8 @@ q34 = [rub("3.4", "Advise businesses on the reasons for the termination of an em
     "An employee may have reached the pre-determined age for retirement.", "Incapacity of an employee to work due to illness/injuries.",
     "By a mutual agreement between the employer and employee.", "The duration of the employment contract expires/comes to an end.",
     "Any other relevant answer related to the reasons for the termination of an employment contract."],
-    ["A contract can end because of the employer, the employee, or time.", "Dismissal, retrenchment, resignation, retirement ..."], each=2)]
+    ["A contract can end because of the employer, the employee, or time.",
+     "A fair reason is about the work, the business's situation or the contract itself, never about a worker's rights."], each=2)]
 q35 = [rub("3.5", "Outline the difference between quality control and quality assurance.", 4, [
     "Quality control (submax 2): a system that ensures the desired quality is met by inspecting the final product; ensure that finished "
     "products meet the required standards; the process of ensuring that products are consistently manufactured to high standards; checking "
@@ -291,7 +305,8 @@ q35 = [rub("3.5", "Outline the difference between quality control and quality as
            "if only one of the two is given."])]
 q36 = [
     pick("3.6.1", "Quote TWO ways from the scenario above in which BM apply total quality management (TQM) to reduce the cost of quality.",
-         sentences(BM), [1, 2], ["Which sentences describe what BM DOES?", "Avoiding repeated work and sharing responsibility both cut costs."]),
+         sentences(BM), [1, 2], ["Which sentences describe what BM DOES?",
+                                 "Cost of quality falls when a business organises its work and its people well: which sentences show BM doing that on purpose?"]),
     rub("3.6.2", "Discuss the impact of total quality management (TQM) if poorly implemented by businesses.", 4, [
         "Setting unrealistic deadlines that may not be achieved.", "Employees may not be adequately trained resulting in poor quality products.",
         "Decline in productivity, because of stoppages.",
@@ -302,7 +317,7 @@ q36 = [
         "High staff turnover, because of poor skills development.",
         "Undocumented/Uncontrolled quality control processes/systems could result in errors/deviations from pre-set quality standards.",
         "Any other relevant answer related to the impact of TQM if it is poorly implemented by businesses."],
-        ["What goes wrong for customers, staff and investors when quality slips?", "Each point: a problem, then its result."], each=2),
+        ["What goes wrong for customers, staff and investors when quality slips?", "Each true card names a problem and what it leads to."], each=2),
 ]
 q37 = [rub("3.7", "Describe the advantages of monitoring and evaluation of quality processes as a total quality management (TQM) element for "
            "large businesses.", 6, [
@@ -321,7 +336,7 @@ q37 = [rub("3.7", "Describe the advantages of monitoring and evaluation of quali
     "Quality circles meet on regular basis to evaluate the progress in terms of quality.",
     "Continuous research is conducted on latest developments to ensure that TQM planning is up to date.",
     "Any other relevant answer related to the advantages of monitoring and evaluation of quality processes as a TQM element on large businesses."],
-    ["Monitoring finds problems early; evaluating decides what to change.", "Think defects, costs, decisions, benchmarks."], each=2)]
+    ["Monitoring finds problems early; evaluating decides what to change.", "Ask of each card: would it make quality better or worse?"], each=2)]
 q38 = [rub("3.8", "Advise businesses on the quality indicators of the public relations function.", 4, [
     "Dealing quickly with negative publicity./Less/little/no incidents of negative publicity.", "Providing regular/positive press releases.",
     "Implement sustainable corporate social investment (CSI) programmes.",
@@ -367,14 +382,15 @@ q42 = [rub("4.2", "Outline the strategic management process.", 4, [
     "(option 2) Control/Evaluate/Monitor the implemented strategy to identify gaps/deviations in implementation.",
     "(option 2) Take corrective action to ensure goals/objectives are met.",
     "Any other relevant answer related to the strategic management process."],
-    ["It starts with where the business wants to go.", "Vision, scan the environment, formulate, implement, evaluate."], each=2)]
+    ["It starts with where the business wants to go.",
+     "Where does the business want to go, where is it now, how will it get there, and how will it know it worked?"], each=2)]
 q43 = [
     pick("4.3.1", "Quote TWO challenges for GF from the scenario above.", sentences(GF), [1, 2],
          ["A challenge is a problem GF faces.", "One comes from outside the business, one from inside."]),
     match("4.3.2", "Classify GF's challenges according to the business environments.", GF_CH,
           ["Micro environment", "Market environment", "Macro environment"], [2, 0], 1,
-          ["Micro: inside the business. Market: its immediate surroundings. Macro: the wider economy.",
-           "Can GF control exchange rates? Can it control its own workers?"],
+          ["The three environments differ in how much control the business has.",
+           "Ask of each challenge: who causes it, and can GF control it?"],
           heads=["CHALLENGES", "BUSINESS ENVIRONMENTS"], groups=True),
 ]
 q44 = [rub("4.4", "Discuss the impact of the Compensation for Occupational Injuries and Diseases Amendment Act (COIDA),1997 (Act 61 of 1997) "
@@ -402,7 +418,8 @@ q44 = [rub("4.4", "Discuss the impact of the Compensation for Occupational Injur
     "Negative: procedures required by this Act may be costly as paperwork places an extra administrative burden on businesses.",
     "Negative: employers make annual contributions to COIDA, which may result in cash flow problems.",
     "Any other relevant answer related to the positive and/or negative impact of COIDA on businesses."],
-    ["COIDA compensates workers injured or made ill by their work.", "Impact can be positive, negative, or both: say what happens, then why."], each=2)]
+    ["COIDA compensates workers injured or made ill by their work.",
+     "Ask of each card: does it help the business, cost the business, or is it simply false?"], each=2)]
 q45 = [rub("4.5", "Recommend ways in which businesses can deal with the challenges posed by the social factor of the PESTLE analysis.", 4, [
     "Sell substitute products at lower prices due to low levels of income distribution/Employ people from local community.",
     "Learn local languages/indigenous languages/Hire employees who are well conversant with the local language.",
@@ -423,7 +440,7 @@ q46 = [rub("4.6", "Outline the purpose of induction.", 4, [
     "Communicate information about the products/services offered by the business.",
     "Communicate business policies regarding ethical/professional conduct/procedures/employment contract/conditions of employment.",
     "Any other relevant answer related to the purpose of induction."],
-    ["Induction is a new employee's first days.", "People, place, rules and roles."], each=2)]
+    ["Induction is a new employee's first days.", "Ask of each card: does it help a new employee settle in?"], each=2)]
 q47 = [rub("4.7", "Explain the Unemployment Insurance Fund (UIF) as a benefit required by law.", 6, [
     "Employees are required to contribute 1% of their basic salary towards UIF.",
     "Employers are required to contribute 1% of an employee's basic salary towards UIF.",
@@ -436,7 +453,8 @@ q47 = [rub("4.7", "Explain the Unemployment Insurance Fund (UIF) as a benefit re
 q48 = [
     term("4.8.1", "Name the total quality management (TQM) element applied by FL in the scenario above.",
          ["Adequate financing and capacity", "Adequate financing"],
-         ["FL can AFFORD to do something.", "Which TQM element is about having the money and means?"]),
+         ["FL can AFFORD to do something.",
+          "Which TQM element depends on the business's resources rather than its people or its processes?"]),
     rub("4.8.2", "Explain the benefits of a good quality management system.", 4, [
         "Effective customer services are rendered, resulting in increased customer satisfaction.", "Time and resources are used efficiently.",
         "Productivity increases through proper time management/using high quality resources.",
@@ -447,7 +465,8 @@ q48 = [
         "Increased market share/financial stability as more customers improve profitability.",
         "Improves business image as there are less defects/returns.",
         "Any other relevant answer related to the benefits of a good quality management system."],
-        ["A system that keeps quality high helps customers, staff and profits.", "Each point: a benefit, then what it leads to."], each=2),
+        ["A system that keeps quality high helps customers, staff and profits.",
+         "Ask of each card: is it something a good system really delivers?"], each=2),
 ]
 q49 = [rub("4.9", "Advise businesses on the role of quality circles as part of continuous improvement to processes and systems.", 4, [
     "Solve problems related to quality and implement improvements.", "Investigate problems and suggest solutions to management.",
@@ -462,7 +481,8 @@ q49 = [rub("4.9", "Advise businesses on the role of quality circles as part of c
     "Improve employees' loyalty/commitment to the organisational goals.", "Improve employees' communication at all levels of the business.",
     "Develop a positive attitude/sense of involvement in decision-making processes of the services offered.",
     "Any other relevant answer related to the role of quality circles as part of continuous improvement to processes and systems."],
-    ["A quality circle is a small group of workers who meet about quality.", "What do they find, suggest and improve?"], each=2)]
+    ["A quality circle is a small group of workers who meet about quality.",
+     "Ask of each card: does it make the work better and the team stronger?"], each=2)]
 missions_q4 = [
     {"id": "4.1", "title": "Question 4.1", "kind": "Defensive strategies", "marks": 2, "items": q41},
     {"id": "4.2", "title": "Question 4.2", "kind": "Strategic management", "marks": 4, "items": q42},
@@ -489,12 +509,19 @@ INSIGHT = ["Insight (8), 2 each: Layout (an introduction, paragraphs and a concl
            "older than two years).",
            ]
 ESSAY_NOTES = ["Facts are capped at 32 of the 40; no marks for content repeated from the introduction or the conclusion."]
-q5 = [rub("5", "The Employment Equity Act (EEA), 1998 (Act 55 of 1998) was established to facilitate the transformation process in the workplace. "
-          "The implementation of the EEA may have an impact on business operations. Businesses are compelled to comply with the requirements of "
-          "this Act to avoid facing penalties for non-compliance.\n\nWrite an essay on the Employment Equity Act in which you include the following "
-          "aspects:\n• Outline the purpose of the Employment Equity Act.\n• Discuss the impact of the Employment Equity Act on businesses.\n"
-          "• Explain ways in which businesses can comply with the Employment Equity Act.\n• Advise businesses on penalties they may face for "
-          "non-compliance with this Act.", 40, [
+Q5_STEM = ("The Employment Equity Act (EEA), 1998 (Act 55 of 1998) was established to facilitate the transformation process in the workplace. "
+           "The implementation of the EEA may have an impact on business operations. Businesses are compelled to comply with the requirements of "
+           "this Act to avoid facing penalties for non-compliance.\n\nWrite an essay on the Employment Equity Act in which you include the following "
+           "aspects:\n• Outline the purpose of the Employment Equity Act.\n• Discuss the impact of the Employment Equity Act on businesses.\n"
+           "• Explain ways in which businesses can comply with the Employment Equity Act.\n• Advise businesses on penalties they may face for "
+           "non-compliance with this Act.")
+Q6_STEM = ("Businesses following the correct recruitment procedures will attract the best applicants. The human resources manager could use "
+           "the internal recruitment method to fill the available vacancies. The interviewer must be well prepared before conducting the interview. "
+           "Both employers and employees should be aware of the legal requirements of an employment contract.\n\nWrite an essay on the human "
+           "resources function in which you include the following aspects:\n• Outline the recruitment procedure as a human resources activity.\n"
+           "• Discuss the impact of internal recruitment on businesses.\n• Explain the role of the interviewer before the interview.\n"
+           "• Advise businesses on the legal requirements of an employment contract.")
+q5 = [rub("5", Q5_STEM, 40, [
     "Introduction (any 2 x 1): the EEA gives businesses the opportunity to create acceptable employment practices to correct inequalities of "
     "the past; businesses that implement the EEA will benefit from improved and greater transformation processes in the workplace; the "
     "requirements stated in the EEA compel businesses to align all the employment policies and procedures appropriately; the Act stipulates "
@@ -567,12 +594,7 @@ q5 = [rub("5", "The Employment Equity Act (EEA), 1998 (Act 55 of 1998) was estab
     ["Plan four headings, one per bullet in the question, between an introduction and a conclusion.",
      "Purpose: what the Act sets out to do. Impact: good AND bad for a business. Compliance: what a business must do. Penalties: what happens if it does not."],
     notes=ESSAY_NOTES)]
-q6 = [rub("6", "Businesses following the correct recruitment procedures will attract the best applicants. The human resources manager could use "
-          "the internal recruitment method to fill the available vacancies. The interviewer must be well prepared before conducting the interview. "
-          "Both employers and employees should be aware of the legal requirements of an employment contract.\n\nWrite an essay on the human "
-          "resources function in which you include the following aspects:\n• Outline the recruitment procedure as a human resources activity.\n"
-          "• Discuss the impact of internal recruitment on businesses.\n• Explain the role of the interviewer before the interview.\n"
-          "• Advise businesses on the legal requirements of an employment contract.", 40, [
+q6 = [rub("6", Q6_STEM, 40, [
     "Introduction (any 2 x 1): an accurate recruitment procedure enables businesses to appoint suitable candidates who meet the needs of the "
     "identified position; businesses prefer internal recruitment methods as they provide existing employees with the opportunity to grow and "
     "showcase the skills they have acquired; the interviewer should have a comprehensive understanding of the interview process to ensure the "
@@ -633,6 +655,335 @@ missions_c = [
     {"id": "6", "title": "Question 6", "kind": "Essay: the human resources function", "marks": 40, "items": q6},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10, the same shape as bs-p2-2025-11) ----
+# A written part plays as picking statements: the memo's own points (right, tidied to one reading of its "/" alternatives) and
+# CLEARLY wrong ones (never a true point the memo leaves out: its "any other relevant answer" would make that right). The learner
+# picks marks/each of them, any right one counts (the memo's "any N"), each right pick earns `each`; the cards are shuffled the same
+# way every run. The memo points above stay as the source. "Identify/Discuss a force or strategy + its quote or discussion" parts
+# (2.3.1, 2.3.2, 2.5: the name 2 + its motivation/description 1) play as one card per name + its half, each 3.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("bs-p1-2025-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+BF_Q = "'BF sales have decreased as Bright Eyewear sells unique sunglasses at reasonable prices.'"
+BF_0 = "'Bona Frames are well-known for their quality sunglasses and reading spectacles.'"
+STATEMENTS = {
+    "2.2": (2, ["Promote and establish learnerships.", "Collect levies and pay out grants as required.",
+                "Approve workplace skills plans and annual training reports.", "Monitor and evaluate the actual training by service providers."],
+               ["Collect income tax from employees on behalf of SARS.", "Set the minimum wage that every sector must pay.",
+                "Register trade unions and settle labour disputes between employers and employees."]),
+    "2.3.1": (3, ["Competitive rivalry: " + BF_Q],
+                 ["Bargaining power of suppliers: " + BF_Q, "Bargaining power of buyers: " + BF_0,
+                  "Threat of new entrants: " + BF_0, "Threat of substitutes: " + BF_0]),
+    "2.3.2": (3, ["Bargaining power of suppliers: the smaller the number of suppliers, the more powerful they may be, as the choice of suppliers "
+                  "may be limited.",
+                  "Threat of substitutes: if the business sells unique products, it will not be threatened by substitute products."],
+                 ["Bargaining power of buyers: buyers who buy in bulk have less power to bargain for prices in their favour.",
+                  "Threat of new entrants: if the barriers to enter the market are low, it is difficult for new businesses to enter the market.",
+                  "Competitive rivalry: the more competitors there are in a market, the more control the business has over its prices."]),
+    "2.4": (2, ["Examine the underlying basis of a business strategy.", "Compare the expected performance with the actual performance.",
+                "Determine the reasons for deviations and analyse these reasons.", "Take corrective action so that deviations may be corrected."],
+               ["Ignore any deviations, as the strategy has already been implemented.",
+                "Evaluate a strategy only once, before it is implemented, and never again.",
+                "Keep the strategy unchanged even when the results are poor."]),
+    "2.5": (3, ["Market penetration: businesses focus on selling existing products into existing markets to increase their market share.",
+                "Market development: businesses aim to sell their existing products in new markets.",
+                "Product development: businesses aim to introduce new products into existing markets."],
+               ["Market penetration: businesses sell new products in new markets that are unrelated to their current business.",
+                "Market development: businesses take over their suppliers to control the supply of raw materials.",
+                "Product development: businesses sell their existing products, unchanged, in new markets."]),
+    "2.6.2": (2, ["Offer applicants pre-agreement statements.", "Disclose all costs of the loan.",
+                  "Businesses should be registered with the National Credit Regulator.",
+                  "Conduct an affordability assessment to ensure that consumers have the ability to meet their obligations."],
+                 ["Add hidden costs to the loan after the agreement has been signed.",
+                  "Grant credit to every applicant without checking whether they can afford it.",
+                  "Refuse to tell consumers how much interest they will be charged."]),
+    "2.7": (2, ["Businesses should include black people in shareholding, partnerships or franchises.",
+                "Encourage small black investors to invest in big companies and share ownership.",
+                "Large businesses should form joint ventures with small black-owned businesses and share business risks.",
+                "More opportunities are created for black people to become owners or entrepreneurs."],
+               ["Black shareholders may not vote at shareholders' meetings.",
+                "Ownership is applied by paying black employees higher salaries than other employees.",
+                "Businesses should sell shares only to people who already own large companies."]),
+    "2.8": (2, ["Increases sales, revenue and business growth.", "Reduces the risk of relying on only one product for sales.",
+                "Improves the business brand and image.",
+                "Enables businesses to retain their competitive advantage by expanding into new, unexplored markets."],
+               ["Guarantees that the business will never make a loss.", "Increases the risk, as the business relies on only one product.",
+                "Allows the business to stop meeting the needs of its current customers."]),
+    "3.2": (2, ["Businesses should outline the specific responsibilities, expectations and skills of the new position.",
+                "Determine the successful candidate's strengths, weaknesses, interests and skills by subjecting the candidate to a range of "
+                "psychometric tests.",
+                "Determine the relationship between the position and the competencies of the new employee."],
+               ["Place the new employee in any vacant position, regardless of his or her skills.",
+                "Placement means dismissing new employees who do not perform in their first week.",
+                "Placement is done before the vacancy is advertised."]),
+    "3.3.2": (2, ["Promotes the resolution of labour disputes between employer and employees.",
+                  "Protects the rights of employees and employers as outlined in the Constitution.",
+                  "Workers cannot be easily dismissed, as bargaining council or CCMA processes need to be followed.",
+                  "Provides for unresolved disputes to be referred to the Labour Courts."],
+                 ["Employers may dismiss workers at any time without following any procedure.",
+                  "The LRA prevents workers from joining trade unions.",
+                  "The LRA sets the number of annual leave days that employees must receive."]),
+    "3.4": (2, ["The employer may dismiss an employee for a valid reason, such as unsatisfactory job performance or misconduct.",
+                "The employer may retrench some employees due to insolvency.",
+                "Employees may decide to resign voluntarily for better job opportunities.",
+                "The duration of the employment contract expires."],
+               ["An employer may end a contract because the employee joined a trade union.",
+                "An employer may end a contract because the employee is pregnant.",
+                "A contract ends automatically every time the employee takes annual leave."]),
+    "3.5": (2, ["Quality control inspects the final product, whereas quality assurance carries out checks during and after the production process.",
+                "Quality control ensures that finished products meet the required standards, whereas quality assurance ensures that the required "
+                "standards are met at every stage of the process.",
+                "Quality control checks raw materials, machinery and products to maintain high standards, whereas quality assurance is the "
+                "'building in' of quality as opposed to the 'checking of' quality."],
+               ["Quality control builds quality into every stage of the process, whereas quality assurance only inspects the final product.",
+                "Quality control aims to get the product 'right the first time', whereas quality assurance checks finished products for defects.",
+                "Quality control and quality assurance both take place only after products have been sold to customers."]),
+    "3.6.2": (2, ["Employees may not be adequately trained, resulting in poor quality products.",
+                  "Decline in productivity because of stoppages.",
+                  "The business's reputation may suffer because of poor quality or defective goods.",
+                  "Decline in sales as more goods are returned by unhappy customers."],
+                 ["Sales always increase, because customers prefer poor quality goods.",
+                  "Productivity increases because there are more stoppages.",
+                  "Staff turnover falls because employees receive less skills development."]),
+    "3.7": (2, ["Prevents product defects and minimises wastage and customer complaints.",
+                "Cost of production is reduced, as deviations from set standards can be corrected.",
+                "Supports management to acquire the information needed to make informed decisions about processes.",
+                "Benchmarking is used to find best practices in order to determine the competitive position of the business.",
+                "Improves performance and maintains high quality standards."],
+               ["Increases product defects and wastage, as fewer checks are done.", "Removes the need for quality control checks at key points.",
+                "Strategies never need to be revised once quality has been checked once."]),
+    "3.8": (2, ["Dealing quickly with negative publicity.", "Providing regular, positive press releases.",
+                "Implementing sustainable corporate social investment (CSI) programmes.",
+                "Good results of feedback from public surveys on the business's image."],
+               ["Frequent incidents of negative publicity that are never answered.",
+                "Refusing to speak to the media or the community about the business.",
+                "Many customer complaints about rude telephone manners and untidy buildings."]),
+    "4.2": (2, ["Have a clear vision, mission statement and measurable, realistic objectives in place.",
+                "Identify strengths, weaknesses, opportunities and threats by conducting environmental scanning.",
+                "Formulate alternative strategies to respond to the challenges.",
+                "Implement selected strategies by communicating them to all stakeholders."],
+               ["Skip the environmental scan, as the business already knows its market.",
+                "Stop the process once the strategy has been implemented, without evaluating it.",
+                "Keep the strategy secret from staff so that they cannot resist it."]),
+    "4.5": (2, ["Employ people from the local community.", "Hire employees who are well conversant with the local language.",
+                "Work together with community police forums and improve security in the business.",
+                "Develop new products that address the lifestyle trends of customers."],
+               ["Ignore the language spoken by the local community.", "Raise prices sharply in areas where incomes are low.",
+                "Close the business whenever crime is reported in the area."]),
+    "4.6": (2, ["Introduce new employees to management and colleagues to establish relationships.",
+                "Give new employees a tour of the building.",
+                "Familiarise new employees with the organisational structure and their supervisors.",
+                "Explain safety regulations and rules, so that new employees understand their responsibilities."],
+               ["Decide which of the applicants will be appointed.",
+                "Keep new employees away from their colleagues until their probation ends.",
+                "Dismiss new employees who make mistakes in their first week."]),
+    "4.7": (2, ["Employees are required to contribute 1% of their basic salary towards UIF.",
+                "Employers are required to contribute 1% of an employee's basic salary towards UIF.",
+                "The fund also assists the dependants of a contributing worker who has died.",
+                "The fund offers short-term financial assistance to workers when they become unemployed or are unable to work due to illness, "
+                "maternity or adoption leave.",
+                "Contributions are paid to the Unemployment Insurance Fund or SARS."],
+               ["Employees contribute 10% of their basic salary towards UIF.", "Only employers contribute to UIF; employees pay nothing.",
+                "The fund pays a monthly pension to all workers once they retire."]),
+    "4.8.2": (2, ["Effective customer services are rendered, resulting in increased customer satisfaction.",
+                  "Time and resources are used efficiently.", "A business has a competitive advantage over its competitors.",
+                  "Improves the business image, as there are fewer defects and returns."],
+                 ["Increases the number of defects and returns.", "Removes the need for any training of employees.",
+                  "Guarantees that the business will have no competitors."]),
+    "4.9": (2, ["Solve problems related to quality and implement improvements.", "Investigate problems and suggest solutions to management.",
+                "Ensure that there is no duplication of activities in the workplace.",
+                "Increase employees' morale and motivation to boost team spirit."],
+               ["Decide on the salaries of all employees in the business.", "Replace the managers of the business.",
+                "Increase the duplication of tasks in the workplace."]),
+}
+# A written part whose memo weighs two sides (positive / negative impact) plays as a SORT instead (variety, Murci 2026-10-10): each
+# statement dragged to its side, or to "Not true" (the clearly wrong ones), 1 mark a statement; a grouped match.
+SORTS = {
+    "4.4": (["Positive impact", "Negative impact", "Not true"], [
+        ("It eliminates the time and costs spent on lengthy civil court proceedings.", 0),
+        ("Employers are protected from financial burden should an accident occur in the workplace, provided that the employer was not negligent.", 0),
+        ("Claiming processes can be time consuming.", 1),
+        ("Procedures required by the Act may be costly, as paperwork places an extra administrative burden on businesses.", 1),
+        ("Employees must pay a monthly contribution to the Compensation Fund from their wages.", 2),
+        ("COIDA allows employers to ignore safety measures, as every accident is covered anyway.", 2)]),
+}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("bs-p1-2025-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+for _m in missions_q2 + missions_q3 + missions_q4:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+assert not [i["n"] for m in missions_q2 + missions_q3 + missions_q4 for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
+
+# ---- The essays as SECTIONS (Murci 2026-10-10): the memo's headings, each played as statements or a sort, their facts summing to the
+# memo's cap of 32 (the memo's sub-maxima 10/14/12/10 scaled to 6/8/8/6 here, 10/14/10/12 to 6/8/6/8: the facts are capped at 32), then
+# an INSIGHT part (LASO, 8) worked out from the picks (Layout: introduction + conclusion right; Analysis: every heading answered;
+# Synthesis: every section right first time; Originality: the example statements picked). The essay's own wording goes to the
+# mission's extract; the memo points above stay as the source.
+def essay(nums, parts, examples, insight_clues):
+    ex = [[n, next(p for p in parts if p["n"] == n)["opts"].index(t)] for n, t in examples]
+    assert sum(p["marks"] for p in parts) == 32, [p["marks"] for p in parts]
+    return parts + [{"t": "insight", "n": nums, "marks": 8, "q": "Insight: your essay's layout, analysis, synthesis and originality, worked out "
+                     "from your picks.", "clues": insight_clues, "of": [p["n"] for p in parts], "intro": parts[0]["n"], "conclusion": parts[-1]["n"],
+                     "examples": ex}]
+
+
+INSIGHT_CLUES = ["Insight is earned from how you answered the sections.", "Right first time, every heading answered, and the examples picked."]
+Q5_EX = ["For example, a construction company that ignores a compliance order is taken to the Labour Court.",
+         "For example, an employee who was unfairly passed over for promotion because of her race is awarded compensation."]
+q5_parts = essay("5.7", [
+    stmt("5.1", "Introduction: pick the TWO statements that introduce this essay on the Employment Equity Act.", 2,
+         ["The Employment Equity Act gives businesses the opportunity to create acceptable employment practices to correct inequalities of the past.",
+          "Businesses that implement the EEA will benefit from improved and greater transformation processes in the workplace.",
+          "The Act stipulates bodies that are responsible for monitoring compliance and imposing punitive measures for non-compliance."],
+         ["The EEA allows businesses to choose whether or not to follow fair employment practices.",
+          "The EEA applies only to businesses that are owned by the government.",
+          "Businesses that ignore the EEA face no consequences."],
+         ["An introduction says what the Act sets out to do and why it matters to a business.", "Check each card against what the Act requires."], 1),
+    stmt("5.2", "Outline the purpose of the Employment Equity Act.", 6,
+         ["It allows employees who do the same work to be paid equally.",
+          "It eliminates discrimination on grounds of gender, race or disability in the workplace.",
+          "It promotes equal opportunity and fair treatment in the workplace.",
+          "It promotes diversity in the workplace by ensuring that people of diverse backgrounds are appointed.",
+          "It protects employees from victimisation if they exercise the rights given to them by the EEA."],
+         ["It allows employers to pay employees differently for the same work, based on their race.",
+          "It requires businesses to appoint people from only one race group.",
+          "It sets the number of annual leave days that employees must receive."],
+         ["The Act's purpose is about fairness at work.", "Ask of each card: does it make the workplace fairer, and is it this Act's job?"], 2),
+    sort_("5.3", "Discuss the impact of the Employment Equity Act on businesses.", 8, ["Positive impact", "Negative impact", "Not true"], [
+        ("It encourages consultation between employer and employees.", 0),
+        ("It provides employees with legal recourse if they have been unfairly discriminated against.", 0),
+        ("Businesses are in a better position to negotiate contracts with the government.", 0),
+        ("It increases the administration burden, as businesses must compile and submit employment equity reports.", 1),
+        ("Skilled people from designated groups may demand higher salaries, which increases salary expenses.", 1),
+        ("Positions often go unfilled because there are no suitable EEA candidates.", 1),
+        ("It allows businesses to pay women less than men for the same work.", 2),
+        ("It removes the need for businesses to report anything to the Department of Labour.", 2)],
+        ["A positive helps the business or its staff; a negative costs the business time or money.",
+         "A 'Not true' card says something the Act does not do."]),
+    stmt("5.4", "Explain ways in which businesses can comply with the Employment Equity Act.", 8,
+         ["Prepare an employment equity plan in consultation with employees.",
+          "Submit the employment equity plan to the Department of Labour.",
+          "Assign one or more senior managers to ensure implementation and monitoring of the employment equity plan.",
+          "Display a summary of the Act where employees can clearly see it.",
+          "Eliminate barriers that have an adverse impact on designated groups."],
+         ["Keep the employment equity plan secret from employees and the Department of Labour.",
+          "Pay designated groups less than other employees for work of equal value.",
+          "Use appointment tests that favour one race group."],
+         ["Complying means acting openly and fairly, and being able to prove it to the Department of Labour.",
+          "Ask of each card: would a labour inspector be satisfied?"], 2),
+    stmt("5.5", "Advise businesses on penalties they may face for non-compliance with this Act.", 6,
+         ["A compliance order may be issued to businesses that do not comply with the EEA.",
+          "Businesses may face heavy fines for non-compliance.",
+          "The Department of Labour may block non-compliant companies from doing business with the government."] + Q5_EX,
+         ["Non-compliant businesses are rewarded with extra government tenders.",
+          "Labour inspectors are not allowed to visit a business or interview its employees.",
+          "Penalties for non-compliance are paid by the employees, not the business."],
+         ["What can the Department of Labour and the courts do to a business that ignores the Act?",
+          "Ask of each card: does it punish the business, or reward it?"], 2),
+    stmt("5.6", "Conclusion: pick the statement that concludes this essay.", 2,
+         ["Businesses that implement the EEA enjoy a balanced workforce that represents the demographics of the community in which they operate.",
+          "Penalties for non-compliance with the Act may have a negative financial implication for businesses."],
+         ["The EEA has no effect on how businesses employ people.",
+          "Businesses that comply with the EEA lose all their government contracts.",
+          "It is cheaper for businesses to ignore the EEA, as there are no penalties."],
+         ["A conclusion sums up why the Act matters to a business.", "The benefits of complying, the cost of not complying."], 2),
+], [("5.5", Q5_EX[0]), ("5.5", Q5_EX[1])], INSIGHT_CLUES)
+
+Q6_EX = ["For example, the HR manager of a supermarket books the boardroom for the interview day and sends every shortlisted candidate an SMS "
+         "with the date and venue.",
+         "For example, before interviewing applicants for an accountant post, the panel agrees on the same core questions about bookkeeping "
+         "skills for every candidate."]
+q6_parts = essay("6.7", [
+    stmt("6.1", "Introduction: pick the TWO statements that introduce this essay on the human resources function.", 2,
+         ["An accurate recruitment procedure enables businesses to appoint suitable candidates who meet the needs of the identified position.",
+          "Businesses prefer internal recruitment methods as they give existing employees the opportunity to grow and showcase their skills.",
+          "Businesses are guided by laws when drawing up the legal requirements of the employment contract."],
+         ["Recruitment is only needed when a business is about to close down.",
+          "An employment contract does not need to follow any law.",
+          "Interviews work best when the interviewer does no planning beforehand."],
+         ["An introduction says why the topic matters to a business.", "Check each card against how a careful HR manager works."], 1),
+    stmt("6.2", "Outline the recruitment procedure as a human resources activity.", 6,
+         ["The human resources manager should prepare a job analysis, including the job specification and job description, to identify "
+          "recruitment needs.",
+          "Choose the method of recruitment, such as internal or external, to reach suitable candidates.",
+          "Vacancies can be advertised internally via internal email, word of mouth or staff notices.",
+          "If internal recruitment is unsuccessful, external recruitment should be considered.",
+          "Place the advertisement in the appropriate media that will ensure that the best candidates apply."],
+         ["Appoint the first person who applies, without advertising the post.",
+          "Leave the company's name and contact details out of the advertisement.",
+          "Only ever recruit from outside the business, never from current staff."],
+         ["Recruitment attracts suitable applicants to a vacancy.", "Ask of each card: would it bring in the best candidates?"], 2),
+    sort_("6.3", "Discuss the impact of internal recruitment on businesses.", 8, ["Positive impact", "Negative impact", "Not true"], [
+        ("It is cheaper and quicker to fill the post, as this method focuses on promoting existing employees.", 0),
+        ("Placement is easy, as management knows the employees' skills and strengths.", 0),
+        ("It provides opportunities for career paths within the business.", 0),
+        ("Current employees may not bring new ideas into the business.", 1),
+        ("Promoting a current employee may cause resentment amongst other employees.", 1),
+        ("The number of applicants is limited to current staff only.", 1),
+        ("It attracts more applicants than external recruitment, as anyone may apply.", 2),
+        ("Promoted employees know nothing about how the business operates.", 2)],
+        ["Internal recruitment fills a post from the business's own staff.",
+         "A 'Not true' card says something that cannot happen when only current staff apply."]),
+    stmt("6.4", "Explain the role of the interviewer before the interview.", 6,
+         ["Book and prepare the venue for the interview.",
+          "Develop a core set of questions based on the skills, knowledge and ability required.",
+          "Read the application and verify the CV of every candidate for anything that may need to be explained."] + Q6_EX,
+         ["Give each candidate a different set of questions so that no two interviews are the same.",
+          "Tell only some of the shortlisted candidates where the interview will be held.",
+          "Decide who will get the job before reading any of the applications."],
+         ["Before the interview, the interviewer plans so that every candidate gets a fair chance.",
+          "Ask of each card: would it make the interview fair and well organised?"], 2),
+    stmt("6.5", "Advise businesses on the legal requirements of an employment contract.", 8,
+         ["Both the employer and the employee must sign the contract.",
+          "The employer and employee must agree to any changes to the contract.",
+          "The remuneration package, including benefits, must be clearly indicated.",
+          "The employment contract may not contain any requirements that are in conflict with the BCEA.",
+          "The employer must allow the employee to read through the contract thoroughly before it is signed."],
+         ["The employer may change the contract at any time without telling the employee.",
+          "The contract may set working conditions below the minimum required by the BCEA.",
+          "Only the employee needs to sign the contract."],
+         ["A contract binds both parties, and the law sets its minimum terms.", "Ask of each card: is it fair to BOTH parties?"], 2),
+    stmt("6.6", "Conclusion: pick the statement that concludes this essay.", 2,
+         ["The correct recruitment procedure enables businesses to compile a proper job analysis that is used to identify suitable candidates "
+          "for the vacancy.",
+          "Businesses can avoid legal action by aligning their employment contracts with recent legislation."],
+         ["Internal recruitment always makes existing employees feel unwanted.",
+          "The success of an interview does not depend on any planning before the interview.",
+          "Employment contracts do not need to follow the law, as long as both parties agree."],
+         ["A conclusion sums up why the topic matters to a business.", "Good procedure, careful planning and the law."], 2),
+], [("6.4", Q6_EX[0]), ("6.4", Q6_EX[1])], INSIGHT_CLUES)
+
+for _m, _parts, _stem, _q in ((missions_c[0], q5_parts, Q5_STEM, "5"), (missions_c[1], q6_parts, Q6_STEM, "6")):
+    _m["items"] = _parts
+    _m["lead"] = "Build the essay section by section, then see your insight."
+    _m["extract"] = "QUESTION " + _q + ": THE ESSAY\n\n" + _stem   # (the essay's wording in the shared-information card: on a phone it folds away)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Business Studies", "title": "Business Studies P1", "sitting": "November 2025", "total_marks": 150, "time": "2 hours"},
@@ -647,6 +998,13 @@ paper = {
                                                        "Intelligence Centre Act', transcribed as printed in the scenario (the option is the scenario's sentence)."},
         {"n": "2.6.1", "kind": "no_fit", "detail": "Quote items (2.6.1, 3.6.1, 4.3.1) are played by picking the scenario's sentences: the memo awards "
                                                    "marks only for responses quoted from the scenario, so picking the right sentences is the same skill."},
+        {"n": "2.7", "kind": "memo_issue", "detail": "The memo lists two challenges as ways to apply ownership ('Businesses sometimes find it difficult to "
+                                                     "locate suitable black business partners...', 'Many black people cannot afford shares...') and an EME "
+                                                     "scorecard rule (50% black ownership -> level 3); none of the three is used as a statement."},
+        {"n": "4.4", "kind": "memo_issue", "detail": "The memo lists 'Employers have to pay a monthly amount to the Compensation Fund' under the "
+                                                     "positives; not used as a sort row."},
+        {"n": "4.3.2", "kind": "no_fit", "detail": "4.3.2's rows are 4.3.1's two challenges (as the paper's own table pairs them); a learner who opens "
+                                                   "4.3.2 first sees 4.3.1's answer. Needs a player gate (answer 4.3.1 first); not fixable in the data."},
     ],
 }
 out = Path(__file__).parent / "out" / "bs-p1-2025-11"
