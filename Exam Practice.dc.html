@@ -3788,7 +3788,7 @@ class Component extends DCLogic {
       // A POINT IN THE MEMO'S NOTATION (2026-10-10): "a/b" is ONE word with alternatives (a slot), "( )" is optional or a marker's note and
       // never required ("(Foreign) investment", "(accept examples)", "(1)"), " OR " and "ACCEPT: ..." are other wordings, each tried on its
       // own. A slot is a KEYWORD when it has a word over 5 letters: the answer hits it with a word whose first 5 letters start one of them,
-      // or with one of its shorter alternatives standing whole ("fuel" in fuel/diesel/petrol). A point needs min(2, its keywords) slots hit;
+      // or with one of its shorter alternatives standing whole ("fuel" in fuel/diesel/petrol, "Al" in Al/aluminium). A point needs min(2, its keywords) slots hit;
       // keywords sharing their starts are one ("nucleotides ... nucleoplasm"). Found by the memo self-test and a learner-style probe: the
       // memo's own words could not pass 34 parts, and a learner writing one alternative failed 60 points. A point with NO keyword is matched
       // on its own words: a one-word choice (yes / no / a letter) must open the answer; otherwise each slot of 3+ letter words, less the
@@ -3796,7 +3796,7 @@ class Component extends DCLogic {
       const slotsOf = w => w.replace(/\([^)]*\)/g, " ").split(/\s+/).map(tok => [...new Set(tok.split("/").flatMap(x => norm(x).split(" ")).filter(Boolean))]).filter(sl => sl.length);
       const hitOf = w => { const slots = slotsOf(w), ks = [];
         slots.forEach(sl => { const pf = [...new Set(sl.filter(x => x.length > 5).map(x => x.slice(0, 5)))].sort(); if (!pf.length) return;
-          const short = sl.filter(x => x.length >= 3 && x.length <= 5 && !LEAD_STOP.has(x)), k = ks.find(q => q.pf.join() === pf.join());
+          const short = sl.filter(x => x.length >= 2 && x.length <= 5 && !LEAD_STOP.has(x)), k = ks.find(q => q.pf.join() === pf.join());
           if (k) short.forEach(x => k.short.indexOf(x) === -1 && k.short.push(x)); else ks.push({ pf: pf, short: short }); });
         if (ks.length) { const hit = (k, x) => (x.length > 4 && k.pf.indexOf(x.slice(0, 5)) !== -1) || k.short.indexOf(x) !== -1;
           const got = ks.filter(k => words.some(x => hit(k, x))).length;
