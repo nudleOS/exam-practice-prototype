@@ -638,6 +638,147 @@ missions_c = [
     {"id": "6", "title": "Question 6", "kind": "Essay: human rights, inclusivity, environment", "marks": 40, "items": q6},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10, option C of three mocks; the design approved the same night) ----
+# A written part plays as picking statements: the memo's own points (right, tidied to one reading of its "/" alternatives) and
+# CLEARLY wrong ones (never a true point the memo leaves out: its "any other relevant answer" would make that right). The learner
+# picks marks/each of them, any right one counts (the memo's "any N"), each right pick earns `each`; the cards are shuffled the same
+# way every run. The memo points above stay as the source. A part worth more than 1 per point (BS "explain": 2) says so in play.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("bs-p2-2025-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    "2.2": (2, ["Excess is the amount that the insured agrees to pay upfront, as set out in the insurance policy.",
+                "It is the portion of a claim that the insured pays towards repairing or replacing the damaged property.",
+                "Excess protects the insurer against fraudulent claims, as the insured is less likely to claim falsely when part must be paid upfront."],
+               ["Excess is the extra amount the insurer pays out on top of the full value of the claim.",
+                "Excess is the monthly premium the insured pays to keep the policy active.",
+                "Excess allows the insured to claim more than the value of the property that was damaged."]),
+    "2.3": (2, ["Serves as an indicator of economic conditions in South Africa.", "Keeps investors informed by publishing share prices daily.",
+                "Acts as a link between investors and public companies.", "Provides protection for investors through strict rules and legislation."],
+               ["Sets the repo rate that commercial banks use to charge interest.",
+                "Collects company tax from listed companies on behalf of SARS.",
+                "Guarantees that the price of every listed share will rise each year."]),
+    "2.4": (3, ["Autocratic leadership style: 'Rachel takes all decisions alone, without consulting her staff members.'",
+                "Transactional leadership style: 'Zaid, however, offers rewards to hardworking employees, which increases productivity.'"],
+               ["Democratic leadership style: 'Rachel takes all decisions alone, without consulting her staff members.'",
+                "Laissez-faire leadership style: 'Zaid, however, offers rewards to hardworking employees, which increases productivity.'",
+                "Charismatic leadership style: 'Rachel takes all decisions alone, without consulting her staff members.'"]),
+    "2.5": (2, ["A leader's positive attitude can influence the success of the business.",
+                "Leaders should model the behaviour that they want to see in team members.",
+                "A leader's attitude may influence the thoughts and behaviour of employees."],
+               ["A leader's attitude has no effect on the team, because only the leadership style matters.",
+                "Successful leaders avoid learning from others, as they already know everything they need.",
+                "A positive attitude means a leader gives up on a task as soon as it becomes difficult."]),
+    "2.6.2": (2, ["Select a background that complements the text.", "Use a legible font and font size so that the slides are easy to read.",
+                  "Structure the information in a logical sequence so that the audience can follow it."],
+                 ["Fill each slide with as much text as possible so that nothing is left out.",
+                  "Use a different font style on every slide to keep the audience guessing.",
+                  "Use the smallest possible font so that more information fits on each slide."]),
+    "2.7": (2, ["Positive: returns are guaranteed, as the interest rate is fixed for the whole investment period.",
+                "Positive: it is a low-risk investment, as the money is invested with the South African Government.",
+                "Positive: no charges or commissions are payable on this type of investment.",
+                "Negative: penalties are charged for early withdrawals if the savings are less than 12 months old."],
+               ["Positive: the bonds can be ceded to a bank as security for a loan.",
+                "Negative: investors can lose all their money if share prices fall on the JSE.",
+                "Positive: interest is paid only once, at the end of a 20-year period."]),
+    "2.8": (2, ["Success: it is managed by a board of skilled directors, which results in better decision-making.",
+                "Success: shareholders can vote for the most capable directors to manage the company.",
+                "Failure: a large management structure can make decision-making slow.",
+                "Failure: directors' fees increase the company's expenses, which reduces net profit."],
+               ["Success: a single owner makes every decision alone, so no meetings are needed.",
+                "Failure: directors have unlimited personal liability for all of the company's debts.",
+                "Success: a public company does not have to report to its shareholders at all."]),
+    "3.2": (2, ["Diversity in the workforce improves morale and motivation amongst employees.",
+                "Employees from different backgrounds bring different perspectives to the business.",
+                "A diverse workforce can give the business a competitive advantage, as it can render better services.",
+                "Employees show greater loyalty to the business because they feel respected and accepted."],
+               ["Diversity means that every employee must think and act in exactly the same way.",
+                "A diverse workforce allows the business to pay some groups lower wages.",
+                "Diversity removes the need for the business to follow labour legislation."]),
+    "3.3.1": (3, ["Responsibility: 'JP developed a remedial programme to reduce air pollution levels and to protect the environment.'"],
+                 ["Transparency: 'JP developed a remedial programme to reduce air pollution levels and to protect the environment.'",
+                  "Fairness: 'The board of directors of Jaleel Pharmacy regularly applies the King Code principles in their business operations.'",
+                  "Accountability: 'The board of directors of Jaleel Pharmacy regularly applies the King Code principles in their business operations.'",
+                  "Confidentiality: 'JP developed a remedial programme to reduce air pollution levels and to protect the environment.'"]),
+    "3.3.2": (3, ["Transparency: decisions and actions must be clear to all stakeholders, and reports must be accurate and available to shareholders.",
+                  "Accountability: businesses should be responsible for their decisions and actions, and present accurate annual reports to shareholders at the AGM."],
+                 ["Responsibility: JP reduces air pollution levels to protect the environment.",
+                  "Secrecy: business deals should be kept hidden from shareholders to protect the directors.",
+                  "Transparency: directors may leave the negative impacts on the community out of their reports."]),
+    "3.4": (2, ["A clear set of procedures for teamwork ensures that every team member understands his/her role.",
+                "Good communication between team members may result in quick decisions.", "Quality feedback improves the morale of the team.",
+                "Open and honest discussions lead to effective solutions of problems."],
+               ["Team members should avoid giving feedback so that nobody's feelings are hurt.",
+                "Only the team leader should speak during meetings so that decisions are not delayed.",
+                "Progress should never be reviewed, so that the team is not distracted from its tasks."]),
+    "3.5.2": (2, ["Acknowledge that there is conflict in the workplace.", "Identify the cause of the conflict to get clarity on its nature.",
+                  "Arrange a meeting where each party has the opportunity to express his/her own views."],
+                 ["Ignore the conflict, as it will resolve itself over time.", "Dismiss the employees involved without hearing their side.",
+                  "Decide who is to blame and punish that party in front of the other staff."]),
+    "3.6": (2, ["It improves the business's image, as it conducts itself in a responsible way.",
+                "It promotes customer loyalty, resulting in more sales.", "The business enjoys the goodwill and support of communities.",
+                "It may give the business tax advantages, such as tax rebates."],
+               ["CSR projects immediately double the business's profits.", "CSR allows the business to ignore labour legislation.",
+                "CSR means the business no longer has to pay its employees' salaries."]),
+    "3.7": (2, ["Positive: members have time to think about the question in silence before responding.",
+                "Positive: voting on the ideas is anonymous and may be more honest.",
+                "Positive: everyone can contribute, and one person is less likely to dominate the group.",
+                "Negative: it is time consuming, as each member must make a presentation."],
+               ["Positive: one person dominates the group, so decisions are made faster.",
+                "Negative: members must vote openly, so nobody can be honest.",
+                "Positive: it needs no preparation at all, so it can be used spontaneously."]),
+    "4.3": (2, ["Management guides human behaviour, whereas leadership influences human behaviour.",
+                "Management focuses on the short to medium term, whereas leadership focuses on the long term.",
+                "Management is task orientated, whereas leadership is people orientated."],
+               ["Management inspires staff to trust each other, whereas leadership enforces rules on subordinates.",
+                "Management focuses on the long term, whereas leadership focuses only on today's tasks.",
+                "Management does the right things, whereas leadership does things right."]),
+    "4.4": (2, ["It has its own legal identity and can sign contracts in its own name.",
+                "It has continuity of existence, as its lifespan does not depend on the lifespan of its owners.",
+                "It is not required to publish its financial statements for the general public.",
+                "It pays tax at a fixed tax rate to SARS."],
+               ["Its shares can be bought and sold by the public on the JSE.", "It has only one owner, who makes all the decisions alone.",
+                "It does not need any directors to manage it."]),
+    "4.5": (2, ["Maintain eye contact with the audience.", "Vary the tone of voice to prevent monotony.",
+                "Manage time effectively to allow time for questions."],
+               ["Read every slide word for word with your back to the audience.", "Speak as fast as possible to cover more information.",
+                "Hide behind the equipment so that the audience focuses on the slides."]),
+    "4.7": (2, ["Team dynamic theories explain how effective teams work.", "Businesses are able to allocate tasks according to the roles of team members.",
+                "Theories help team leaders to understand the personality types of team members, so that tasks are assigned more effectively.",
+                "Conflict may be minimised when team members perform different roles."],
+               ["Team dynamic theories require every member to perform the same role.",
+                "The theories ensure that team members never disagree about anything.",
+                "Team dynamic theories are used to calculate employees' salaries."]),
+    "4.8.2": (2, ["Make time for brainstorming sessions to generate new ideas.",
+                  "Place suggestion boxes around the workplace and keep communication channels open for new ideas.",
+                  "Reward creativity with incentives for staff members who come up with useful ideas."],
+                 ["Criticise new ideas in public so that only the best people share them.", "Give employees fewer breaks to keep them focused.",
+                  "Only allow managers to suggest new ideas."]),
+    "4.9": (2, ["Charge fair and affordable prices for goods and services.",
+                "Work together with suppliers to share delivery costs to remote rural areas.",
+                "Buy in bulk to get a discount and avoid charging high prices."],
+               ["Charge much higher prices because rural customers have few other shops to choose from.",
+                "Stop supplying rural areas so that prices no longer matter.",
+                "Add a hidden transport fee to the price without telling customers."]),
+}
+for _m in missions_q2 + missions_q3 + missions_q4:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+assert not [i["n"] for m in missions_q2 + missions_q3 + missions_q4 for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Business Studies", "title": "Business Studies P2", "sitting": "November 2025", "total_marks": 150, "time": "2 hours"},
