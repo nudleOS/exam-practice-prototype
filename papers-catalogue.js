@@ -290,7 +290,7 @@ window.NX_CATALOGUE = {
    "missions": 11,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "037844b508",
+   "rev": "699d7a8d2f",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2025 Eng.pdf"
   },
   {
@@ -312,7 +312,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "dd33b4f9d3",
+   "rev": "96956d1db9",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2025 Eng.pdf"
   },
   {
@@ -334,7 +334,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "f5b8900ecb",
+   "rev": "77d8ed56ee",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2024 Eng.pdf"
   },
   {
@@ -356,7 +356,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "ee41d0a27a",
+   "rev": "41874ae3c4",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2024 Eng.pdf"
   },
   {
