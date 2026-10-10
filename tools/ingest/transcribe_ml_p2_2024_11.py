@@ -20,8 +20,14 @@ The memo's shapes map as in Mathematical Literacy P2 Nov 2025 (transcribe_ml_p2_
   matching concepts to TABLE 1's definitions (A-G) -> match (2 marks a pair); "Choose ... (A, B or C)" -> mcq; a name, a product, a
   duration, a direction, a probability read off a table, a simplified ratio -> term (every spelling the memo accepts; all or nothing
   where the memo splits the marks; `reject` for a wrong direction a spelling slip away); the names of several things the memo marks
-  one by one (two cities, four months) -> list; an explanation or a reason (A/O marks) -> rubric, each memo alternative one 2-mark
-  point.
+  one by one (two cities, four months) -> list; an explanation or a reason (A/O marks) -> statements (STATEMENTS at the bottom,
+  Murci 2026-10-10: the memo's own alternatives as right cards, tidied to one reading, and clearly wrong ones; pick one, 2 marks).
+  No memo here weighs two sides (each written part asks for ONE explanation or reason), so no part plays as a sort.
+  A part whose options show an earlier part's answer opens only after it ("after": 3.2.2 shows 3.2.1's circumference, 3.2.3
+  3.2.2's radius, 4.2.2 4.2.1's two pallets). Figure captions show under the figures, so none names an answer: no count a part
+  asks for (the seat's crosspieces, the pillows, the bricks and rows), no campsite or dam position (2.1.3, 2.1.4), no place-to-day
+  link (2.2.1), no curve shape or height at a distance (2.2.3-2.2.5), no city pair beside a distance (5.1.1), no month position
+  (5.1.2, 5.1.4).
   Every number the learner would TYPE (a count read off a figure, "Calculate / Determine / Convert", "Verify" / "Show ... whether
   or not he is correct") -> authored whole-working mcq (Murci, 2026-10-10; the layout of transcribe_math_p1_2025_11.py): the stem
   plus "Choose the correct working.", four workings with one step a line ("{a}/{b}" a fraction, numbers the memo's way): the memo's
@@ -66,15 +72,27 @@ def mcq(n, q, opts, a, clues, marks=2, **kw):
 
 
 WORK = "\n\nChoose the correct working."
+AUTHORED = []   # the typed calculations played as authored multiple choice, in paper order
 
 
-def work(n, q, marks, a, right, wrong, clues):
+def shape(o):
+    """An option's layout: its line count and how many lines end in a [reason]; every option of one part must match, so the
+    layout never points at the answer."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+def work(n, q, marks, a, right, wrong, clues, **kw):
     """An authored whole-working MCQ (Murci, 2026-10-10): `right` is the memo's FIRST method, put at index a (0-3); `wrong` are the
-    three workings built from common errors, filling the other places in order. One step a line ("\\n")."""
+    three workings built from common errors, filling the other places in order. One step a line ("\\n"); the part keeps its
+    marks, all or nothing. kw: catalogue extras, e.g. after=[...] when the options show an earlier part's answer."""
     assert len(wrong) == 3 and 0 <= a <= 3, n
     opts = list(wrong)
     opts.insert(a, right)
-    return mcq(n, q + WORK, opts, a, clues, marks=marks)
+    assert len(set(opts)) == 4, (n, "four distinct options")
+    assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
+    AUTHORED.append(n)
+    return mcq(n, q + WORK, opts, a, clues, marks=marks, **kw)
 
 
 # notes: the memo's marking instructions that are NOT points: never scored, never shown. worth: each point's own marks where they differ.
@@ -201,7 +219,8 @@ q216 = [
         ["Who uses the ablutions at a busy camp, and what might they have to wait for?", "What do you do with your clothes while you shower?"], each=2)]
 q22 = [
     term("2.2.1", "Write down the day during the run when you would pass Gabriel's Pools.", ["Day 2", "Day two", "2", "The second day"],
-         ["Find Gabriel's Pools on the route map.", "Which loop, Day 1 or Day 2, does it lie on?"]),
+         ["Find Gabriel's Pools on the route map.", "Each loop of the route carries the label of the day it is run: read the label of "
+          "the loop you found it on."]),   # (the old 'Day 1 or Day 2?' turned the typed answer into a coin flip)
     mcq("2.2.2", "The descriptions of a part of the route on the brochure are as follows:\n\n• Run for 5,5 km along Rhebok Valley.\n• Continue "
         "down the other side to the Reflection Pools for a swim and drinking water.\n• Then return to the home base.\n\nChoose the route "
         "described above and match it with A, B, C or D. Write only the letter next to the question number (2.2.2).",
@@ -267,7 +286,8 @@ q32 = [
              "Radius = 8 cm × 2\n= 16 cm",
              "Radius = {25,136 cm}/{3,142}\n= 8 cm",
              "Radius = {8 cm}/{3,142}\n= 2,546 cm"],
-         ["The radius runs from the centre of the circle to its edge.", "How does it compare with the diameter?"]),
+         ["The radius runs from the centre of the circle to its edge.", "How does it compare with the diameter?"],
+         after=["3.2.1"]),   # an option shows the circumference, 3.2.1's answer
     work("3.2.3", "The hardware store sells paint in 50 mℓ, 1 litre, 5 litre and 20 litre containers.\n\nMrs Kgomo claims that a 50 mℓ can of paint "
          "will be sufficient to paint ONE side of 36 circular wooden tags.\n\nVerify her statement. Show ALL calculations.\n\nUse the following "
          "formula:\nArea of a circle = 3,142 × radius²", 9, 2,
@@ -284,7 +304,8 @@ q32 = [
              "Total area = 36 × 50,5862 cm² = 1 821,1032 cm²\nTotal area in m² = 1 821,1032 ÷ 100² = 0,182110 m²\n"
              "6 m² = 1 ℓ = 1 000 mℓ, so 0,3 m² = 50 mℓ\n0,3 m² > 0,182110 m²\nTherefore 50 mℓ will be more than sufficient."],
          ["Area to paint on one tag = the tag's area minus the hole's area.", "6 m² per litre (1 000 mℓ): what area does 50 mℓ cover? Change "
-          "the tags' cm² to m² (÷ 10 000) and compare."])]
+          "the tags' cm² to m² (÷ 10 000) and compare."],
+         after=["3.2.2"])]   # three options square the 4 cm radius, 3.2.2's answer (the memo: CA from 3.2.2)
 q33 = [
     work("3.3.1", "The volume of the cubic-shaped packet is 2 744 cm³.\n\nCalculate the side length of the cubic-shaped packet.\n\nYou may use the "
          "following formula:\nVolume of a cube = side × side × side", 4, 1,
@@ -352,7 +373,8 @@ q42 = [
              "Area of 2 doors = 2 × (2,13 + 3) = 10,26 m²\nLabour cost = 10,26 m² × R500 = R5 130\nBrick cost = 2 × 525 × R6,45 = R6 772,50\n"
              "Total cost = R2 000 + R5 130 + R6 772,50 = R13 902,50\nNot VALID"],
          ["Area of both openings = 2 × length × width; labour is R500 per square metre.",
-          "Bricks: the pallets from 4.2.1 × 525 × R6,45; add the R2 000 material and compare with R15 200."]),
+          "Bricks: the pallets from 4.2.1 × 525 × R6,45; add the R2 000 material and compare with R15 200."],
+         after=["4.2.1"]),   # the options price 2 pallets, 4.2.1's answer (the memo: CA pallets from 4.2.1)
     rub("4.2.3", "Give ONE suitable reason why the bricks have to be placed on a wooden pallet.", 2, [
         "To be easily lifted by a fork lift (2).", "OR — Storage / loading / transportation are made easier (2).", "OR — It keeps them from breaking (2).",
         "OR — It makes counting easier (2).", "OR — To protect the bricks from damage (2).", "OR — To keep it tight and compact (2)."],
@@ -454,7 +476,7 @@ missions = [
                    "crosspieces 36 cm long and the seat of crosspieces 32 cm across, labels Crosspiece and Chair support on each. SIDE VIEW OF "
                    "FOLD-UP CHAIR: the chair back, a light bar 66 cm long leaning up to the left, its crosspieces drawn as small blocks along "
                    "its top edge with the gap between two of them marked 1.27 cm spacing; the chair seat, a dark bar sloping up to the right, "
-                   "with six raised blocks (its crosspieces) along its top. Below them the MATERIAL LIST (typed in the table) and a photo: "
+                   "with raised blocks (its crosspieces) along its top. Below them the MATERIAL LIST (typed in the table) and a photo: "
                    "ASSEMBLED CHAIR AND FOLDED-UP CHAIR, the slatted chair standing open and, beside it, a second chair folded flat."),
      "items": q13},
     {"id": "2.1", "title": "Question 2.1", "kind": "Aerial view", "marks": 12,
@@ -463,11 +485,10 @@ missions = [
              "campers allowed. Some campsites have one hut and others have more than one hut, labelled A, B and C.", "table": CAMPERS,
      "figure": fig("2.1", "ANNEXURE A, AERIAL VIEW OF BAVIAANSKLOOF UITSPAN WITH CAMPSITES AND NUMBER OF CAMPERS: an aerial photo of the camp "
                    "in a valley. Top left, an arrow marked N points up the picture (north); beside it a label, Houtkloof mountains, lies "
-                   "across rocky slopes that fill the upper left. Numbered circles mark the campsites. Lower left: campsite 1 at the left "
-                   "edge of a dark pond labelled Dam, campsite 2 at its right edge and campsite 9 just below them. Upper middle: campsite 8 "
-                   "where the rocky slopes end. To the lower right of 8, a cluster: 7, then 6 and 5 to its right, and below them 3 and 4, "
-                   "with the label Ablution between them. Lower right: a building labelled Main house. In the top right corner, the table "
-                   "of campsites and numbers of campers (typed in the table)."), "items": q21},
+                   "across rocky slopes that fill the upper left. Numbered circles mark campsites 1 to 9; a dark pond is labelled Dam, the "
+                   "label Ablution sits among campsites 3, 4, 5 and 6, and a building is labelled Main house. In the top right corner, the "
+                   "table of campsites and numbers of campers (typed in the table)."), "items": q21},
+                   # (no campsite or dam positions: 2.1.3 asks the dam's direction from campsite 8, 2.1.4 the campsite near the dam)
     {"id": "2.1.6", "title": "Question 2.1.6", "kind": "Layout plan and scale", "marks": 8,
      "lead": "The layout plan below shows the ablution facilities (toilets and showers) in the middle of campsites 3, 4, 5 and 6.\n\nThe actual "
              "length of the ablution facilities is 8,2 metres.",
@@ -484,29 +505,27 @@ missions = [
              "• Day 1 of the trail run is Days 3 and 4 of the hike.\n• Day 2 of the trail run is Days 1 and 2 of the hike.\n• Trail (path "
              "through the natural landscape)",
      "figure": fig("2.2", "ANNEXURE B, MAP OF THE LEOPARD TRAIL RUN ROUTE: two loops of trail meet at the Cedar Falls Home Base, a pin under "
-                   "a dark label box in the middle. The smaller loop on the left is labelled Day 2: Rhebok Valley along its far left end, "
-                   "Gabriel's Pools marked on its upper side and Reflection Pools on its lower side. The larger loop on the right is "
-                   "labelled Day 1: The Cauldron along its upper side near the home base, Fond Farewell and Birdsong Valley (with arrows) up "
-                   "its long arm to the north, and Honeybush Hill and Inconvenient Truth along its lower side."), "items": q22},
+                   "a dark label box in the middle: a smaller loop on the left labelled Day 2 and a larger loop on the right labelled Day 1. "
+                   "Place names are printed along the trails: Birdsong Valley, Fond Farewell, Gabriel's Pools, Honeybush Hill, Inconvenient "
+                   "Truth, Reflection Pools, Rhebok Valley and The Cauldron."), "items": q22},
+                   # (the places in A-Z order, on no loop and no side: 2.2.1 and 2.2.2 ask which day and which part they lie on)
     {"id": "2.2.3", "title": "Question 2.2.3", "kind": "Elevation map", "marks": 7,
      "lead": "The Leopard Trail Run is a two-day event, run on the outskirts of the camp, starting and ending at the Cedar Falls Home Base.\n\n"
              "ANNEXURE B shows the map as well as the elevation map of the Leopard Trail Run in the Baviaanskloof situated close to "
              "Willowmore.",
      "figure": fig("2.2.3", "ANNEXURE B, ELEVATION MAP OF THE LEOPARD TRAIL RUN ROUTE: two graphs of the height above sea level along the "
-                   "route, distance run across the bottom. TRAIL RUN – DAY 1: distance marks at 5, 10, 15, 20, 25 and 30,5 km; heights "
-                   "721 m, 1 000 m and 1 183 m marked up the side. The curve starts near 860 m, climbs to three sharp peaks near 1 183 m "
-                   "between about 4 and 8 km, slopes steadily down to its lowest, about 721 m, near 18,5 km, climbs again to peaks above "
-                   "1 000 m between about 23 and 27 km and ends at 861 m. TRAIL RUN – DAY 2: distance marks every 2,5 km up to 20 km, then "
-                   "21,9 km; heights 864 m, 900 m, 975 m, 1 050 m and 1 173 m marked up the side, each with a dashed line across. The curve "
-                   "starts at 864 m, climbs to about 1 050 m near 1 km, wanders down between about 900 m and 1 000 m to 10 km, climbs to "
-                   "its highest point, 1 173 m, at the 12,5 km line, drops to about 1 050 m, rises to a second peak near 16,5 km, comes down "
-                   "through the 1 050 m line at the 17,5 km line and finishes near the 900 m line at 21,9 km."), "items": q223},
+                   "route, the distance run across the bottom, each a curve that rises and falls along the route over a shaded area. TRAIL "
+                   "RUN – DAY 1: distance marks at 5, 10, 15, 20, 25 and 30,5 km; heights 721 m, 1 000 m and 1 183 m marked up the side, and "
+                   "861 m at the end of the curve. TRAIL RUN – DAY 2: distance marks every 2,5 km up to 20 km, then 21,9 km, with a grid "
+                   "line up from each; heights 864 m, 900 m, 975 m, 1 050 m and 1 173 m marked up the side, each with a dashed line "
+                   "across."), "items": q223},
+                   # (no curve shape and no height at a distance: 2.2.3-2.2.5 read them off the curves)
     {"id": "3.1", "title": "Question 3.1", "kind": "Time and perimeter", "marks": 11,
      "lead": "Mrs Kgomo is a Grade 2 teacher at Happy Valley Primary School.\n\nShe has a reading corner at the back of her classroom. Learners who "
              "wait for their transport after school, usually sit there and read a book.\n\nMrs Kgomo stores pillows in bags (see pictures below). "
              "Learners sit on these pillows after school.\n\nNOTE: Piping: thin cord covered in fabric used to decorate the bag and reinforce the seams",
      "figure": fig("3.1", "PILLOWS IN THE BAG: a person holding a box-shaped storage bag with a zip around its lid and a handle on its side; a "
-                   "clear strip down its front shows four pillows stacked one above the other; an arrow labelled Piping points to the cord "
+                   "clear strip down its front shows the pillows stacked one above the other; an arrow labelled Piping points to the cord "
                    "along its bottom edge. DIMENSIONS OF THE BAG: the same bag, 48 cm high, 46 cm long and 30 cm wide."), "items": q31},
     {"id": "3.2", "title": "Question 3.2", "kind": "Circles and paint", "marks": 13,
      "lead": "Mrs Kgomo created a birthday calendar for her 2024 class to hang against the wall.\n\nShe will write each learner's name and birthday "
@@ -542,27 +561,22 @@ missions = [
      "figure": fig("4.2", "PICTURE OF TWO DOORS TO BE REPLACED: a double garage with two panelled doors side by side. BRICKS ON A WOODEN PALLET: "
                    "a cube-shaped stack of bricks on a wooden pallet. INCOMPLETE DIAGRAM SHOWING THE PATTERN OF HOW THE BRICKS SHOULD BE LAID, "
                    "WITH THE FIRST TWO ROWS COMPLETED: the face of the wall in a door opening: the bottom two rows run the full width, each "
-                   "nine whole bricks and a half brick (the lower row starts with the half brick, the upper row ends with it); above them, a "
-                   "staircase of rows up the right-hand edge shows the pattern to the top, 20 rows in all. SIDE VIEW OF THE DOUBLE-BRICK "
-                   "WALL: the end of the wall, two bricks thick and 20 rows high."), "items": q42},
+                   "with a half brick at one end (the lower row starts with it, the upper row ends with it); above them, a staircase of rows "
+                   "up the right-hand edge shows the pattern up to the top row. SIDE VIEW OF THE DOUBLE-BRICK WALL: the end of the wall, two "
+                   "bricks thick, every row drawn from the bottom to the top."), "items": q42},   # (no brick or row count: 4.2.1 reads them)
     {"id": "5.1", "title": "Question 5.1", "kind": "Map and trip plan", "marks": 14,
      "lead": "Chris and Boipelo are planning a year-long trip, mostly along the A1 motorway, around Australia. It is the world's longest "
              "continuous road of 14 655 km that passes through every state and connects seven of its eight capitals.\n\nANNEXURE C is a map "
              "of Australia and the distances and driving times between the major cities and the states or territories. Next to it is the "
              "plan of their trip.",
      "figure": fig("5.1", "ANNEXURE C, two panels side by side. Left, MAP OF AUSTRALIA SHOWING THE A1 MOTORWAY, DISTANCES, DRIVING TIMES AND "
-                   "STATES OR TERRITORIES: the A1 drawn as a thick line right round the mainland near the coast; KEY: STATE a triangle, City "
-                   "a dot. Distances and driving times beside the road, clockwise from the north: Darwin to Cairns 2 850 km, 33 h 55 min; "
-                   "Cairns to Brisbane 1 705 km, 20 h 40 min; Brisbane to Sydney 922 km, 10 h 30 min; Sydney to Melbourne 1 062 km, "
-                   "13 h 40 min; Melbourne to Adelaide 738 km, 9 h 6 min; PERTH TO ADELAIDE 29 hours (no distance); Perth to Broome "
-                   "2 811 km, 30 hours; Broome to Darwin 1 871 km, 21 h 13 min. Across the middle: DARWIN TO ADELAIDE 3 027 km 35 HOURS. "
-                   "The states, with thin borders: Western Australia (the whole west), Northern Territory (the middle of the north), South "
-                   "Australia (the middle of the south), Queensland (the north-east), New South Wales (the south-east), Victoria (the "
-                   "south-east corner) and, across the sea to the south, Tasmania with Hobart. Right, PLANNED TRIP ALONG THE A1 MOTORWAY "
-                   "AND OTHER ROADS: an outline of Australia with no borders, month labels joined by arrows: JAN in the south-east, FEB on "
-                   "Tasmania, MAR on the south-east coast, APR up the east coast, MAY in the north-east, JUN in the middle of the north "
-                   "(an arrow up to the north coast), JUL at the top, AUG in the north-west, SEP and OCT down the west coast, NOV in the "
-                   "south-west and DEC in the middle of the south coast, an arrow from it pointing east."), "items": q51},
+                   "STATES OR TERRITORIES: the A1 drawn as a thick line right round the mainland near the coast, the cities on it marked as "
+                   "dots and named, and beside the road, arrows with the distance and the driving time between neighbouring cities; across "
+                   "the middle, DARWIN TO ADELAIDE 3 027 km 35 HOURS. The states and territories, named and divided by thin borders: "
+                   "Western Australia, Northern Territory, South Australia, Queensland, New South Wales, Victoria and, across the sea, "
+                   "Tasmania. KEY: STATE a triangle, City a dot. Right, PLANNED TRIP ALONG THE A1 MOTORWAY AND OTHER ROADS: an outline of "
+                   "Australia with no borders, the twelve months (JAN to DEC) placed round it and joined by arrows."), "items": q51},
+                   # (no city pair beside a distance and no month's place: 5.1.1, 5.1.2 and 5.1.4 read them off the map)
     {"id": "5.2", "title": "Question 5.2", "kind": "Conversion and ratio", "marks": 7,
      "lead": "Chris and Boipelo plan to visit Uluru. This oval-shaped big rock rises 1 142 feet above the surrounding desert plain.\n\nThe diagram "
              "below shows a comparison of the height of Uluru and some other tourist attractions around the world.",
@@ -574,10 +588,90 @@ missions = [
              "the mainland, islands and total for each state or territory on a website. Some values have been omitted.", "table": AREAS, "items": q53},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10; the helpers are the Business Studies P2 2025 reference's) ----
+# A written part plays as picking statements: the memo's own alternatives (right; each tidied to one reading of its "/" forms, the
+# same meaning) and CLEARLY wrong ones (false, the opposite, or a confusion with another concept; never a true reason the memo
+# leaves out: its "any other" reading would make that right). Each part here asks for ONE explanation or reason worth 2 (2A / 2O),
+# so the learner picks one card (count 1, each 2); any right card scores. The cards are shuffled the same way every run. The rubric
+# bullets above stay as the source.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("ml-p2-2024-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # 2A, any one of the memo's four explanations (three as cards: 'from an elevated height' says the same as 'from the top');
+    # the wrong ones confuse it with a front view at ground level, an elevation map and a view from below
+    "2.1.1": (2, ["A view from the top.",
+                  "A view of the landscape from a certain height above the ground, like from a satellite or a drone.",
+                  "A bird's-eye view."],
+                 ["A view from ground level, looking straight at the front of an object.",
+                  "A graph of the heights above sea level along a route.",
+                  "A view from below, looking up at the sky."]),
+    # 2O, any one of the memo's three reasons (the third tidied to one reading of its 'or' forms); the wrong ones give the benches
+    # jobs they do not do
+    "2.1.6(c)": (2, ["To allow people to sit while waiting for a toilet or a shower to become available.",
+                     "To place your clothes or belongings on while you are showering.",
+                     "To sit on while you change your outfit or get dressed."],
+                    ["To hold up the roof of the ablution facilities.",
+                     "To heat the water for the showers.",
+                     "To stop the water from the showers reaching the toilets."]),   # (worded like the right ones: no grammar tell)
+    # 2O, either of the memo's two explanations; the wrong ones contradict the DAY 1 elevation map (from 8 km to 18 km the curve
+    # slopes down from near 1 000 m to its lowest, about 721 m)
+    "2.2.4": (2, ["That part shows a continuous downward slope: it is downhill.",
+                  "That part does not have many uphills."],
+                 ["That part is mostly uphill.",
+                  "That part is the highest part of the Day 1 route, above 1 000 m.",
+                  "That part of the route is flat, at the same height all the way."]),
+    # 2O, any one of the memo's six reasons (three as cards, tidied to one reading); the wrong ones are plainly false of a pallet
+    "4.2.3": (2, ["So that the bricks can easily be lifted by a forklift.",
+                  "It makes storing, loading and transporting the bricks easier.",
+                  "It makes counting the bricks easier."],
+                 ["So that the pallet can be built into the wall together with the bricks.",
+                  "It makes the bricks stronger.",
+                  "It makes each brick lighter."]),
+}
+# A memo that weighs two sides (advantages / disadvantages, for / against) would play as a SORT; none in this paper does (its four
+# written parts each ask for ONE explanation or reason), so SORTS stays empty and sort_ is kept for parity.
+SORTS = {}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("ml-p2-2024-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+for _m in missions:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+assert not [i["n"] for m in missions for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
 # every part that played as typed steps or num until Murci's ruling of 2026-10-10, now an authored whole-working mcq
 CALC = ["1.2.1", "1.2.3", "1.3.1", "1.3.2", "1.3.4", "1.3.5", "2.1.2", "2.1.5", "2.1.6(a)", "2.1.6(b)", "2.2.3", "2.2.5", "3.1.2", "3.1.3",
         "3.2.1", "3.2.2", "3.2.3", "3.3.1", "3.3.2", "4.1.3", "4.1.4", "4.2.1", "4.2.2", "5.1.3", "5.1.5", "5.2.1", "5.3.2", "5.3.3(a)",
         "5.3.3(b)"]
+assert tuple(AUTHORED) == tuple(CALC), AUTHORED
+ITEMS = [i for m in missions for i in m["items"]]
+assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "num", "rubric")], "a typed calculation or a written answer is left"
+assert {i["n"]: i.get("after") for i in ITEMS if i.get("after")} == {"3.2.2": ["3.2.1"], "3.2.3": ["3.2.2"], "4.2.2": ["4.2.1"]}
 CALC_MARKS = sum(i["marks"] for m in missions for i in m["items"] if i["n"] in CALC)
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
@@ -590,7 +684,22 @@ paper = {
                                                    "value the memo also accepts never appears in a wrong option: 2.1.6(b) takes the memo's "
                                                    "90 mm measurement (1 : 90 and 1 : 92, from 91 or 89 mm inside its ± 1 mm, are not offered); "
                                                    "4.2.1 takes 19 bricks a row (20 a row, 400 and 800 bricks are not offered); 4.2.2 takes "
-                                                   "12,78 m² (R6 500 and R15 272,50, from 13 m², are not offered)."},
+                                                   "12,78 m² (R6 500 and R15 272,50, from 13 m², are not offered). Where the memo gives the "
+                                                   "answer only (1.3.1's 18, 1.3.4's 1,9 cm, 2.1.6(a)'s 9 showers, 2.2.3's 12,5 km) the "
+                                                   "working is ours. 3.2.2, 3.2.3 and 4.2.2 open only after the part whose answer their "
+                                                   "options show (3.2.1, 3.2.2, 4.2.1)."},
+        {"n": "2.1.1", "kind": "no_fit", "detail": "The written answers play as statements (pick one of six cards, 2 marks): 2.1.1 (2A), 2.1.6(c), "
+                                                   "2.2.4 and 4.2.3 (2O each). Each asks for ONE explanation or reason, so any of the memo's "
+                                                   "alternatives (tidied to one reading) is a right card; the wrong cards are plainly false. No "
+                                                   "memo here weighs two sides, so no part plays as a sort."},
+        {"n": "2.2.3", "kind": "no_fit", "detail": "The figure captions show under the figures, so they describe each figure without the values or "
+                                                   "positions the parts read off it: ANNEXURE A gives no campsite or dam positions (2.1.3, 2.1.4), "
+                                                   "B's route map ties no place to a loop (2.2.1, 2.2.2) and its elevation map gives no curve "
+                                                   "shape (2.2.3-2.2.5), C's map pairs no distance with its cities and its trip plan places no "
+                                                   "month (5.1.1, 5.1.2, 5.1.4); 1.3, 3.1 and 4.2 give no count a part asks for."},
+        {"n": "5.3", "kind": "memo_issue", "detail": "TABLE 3 prints Western Australia's mainland area as 2 526 924 km²; with its 3 089 km² of "
+                                                     "islands that is 2 530 013, not its printed total 2 527 013, and the printed mainland total "
+                                                     "7 656 061 fits 2 523 924. No part reads that cell; transcribed as printed."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 5, 150 marks; per question 26, 31, 31, 29, 33), "
                                                            "hand-transcribed from scanned page images of the question paper and its ADDENDUM (no text "
                                                            "layer; ANNEXURES A, B and C) and from the memo's text and page images; no API call."},
@@ -623,19 +732,6 @@ paper = {
                                                        "subtracts 0,00003142 m² (its result 0,00499578 m² and its answer 29,97 mℓ are right)."},
     ],
 }
-out = Path(__file__).parent / "out" / "ml-p2-2024-11"
-out.mkdir(parents=True, exist_ok=True)
-(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the scanned question paper, its scanned addendum and the "
-                                                                       "memo PDF and their page images (no API call)",
-                                                        "scope": "the whole paper, Questions 1 to 5 (2.1, 2.2 and 5.1 read the addendum's "
-                                                                 "ANNEXURES A, B and C)"}, "paper": paper},
-                                              indent=1, ensure_ascii=False), encoding="utf-8")
-def shape(o):
-    """(lines, trailing [reasons]): every option of one part must match, so the layout never points at the answer."""
-    lines = o.split("\n")
-    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
-
-
 at = []
 for m in missions:
     got = sum(i["marks"] for i in m["items"])
@@ -660,3 +756,11 @@ for m in missions:
     per_q[m["id"].split(".")[0]] = per_q.get(m["id"].split(".")[0], 0) + sum(i["marks"] for i in m["items"])
 assert per_q == {"1": 26, "2": 31, "3": 31, "4": 29, "5": 33}, per_q
 assert total == paper["paper"]["total_marks"] == paper["sections"][0]["total"] == 150, total
+print("statements:", [i["n"] for i in ITEMS if i["t"] == "pickn"], "sorts:", [i["n"] for i in ITEMS if i.get("groups")])
+out = Path(__file__).parent / "out" / "ml-p2-2024-11"   # written only once every check above has passed
+out.mkdir(parents=True, exist_ok=True)
+(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the scanned question paper, its scanned addendum and the "
+                                                                       "memo PDF and their page images (no API call)",
+                                                        "scope": "the whole paper, Questions 1 to 5 (2.1, 2.2 and 5.1 read the addendum's "
+                                                                 "ANNEXURES A, B and C)"}, "paper": paper},
+                                              indent=1, ensure_ascii=False), encoding="utf-8")

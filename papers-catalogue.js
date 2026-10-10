@@ -356,7 +356,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "41874ae3c4",
+   "rev": "1bff9940d4",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2024 Eng.pdf"
   },
   {
