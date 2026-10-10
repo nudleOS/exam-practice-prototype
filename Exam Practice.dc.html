@@ -1588,6 +1588,8 @@ const INSIGHT_RULES = [["Layout", "your introduction and your conclusion are rig
 const progEmpty = () => ({ v: 1, xp: 0, bestStreak: 0, last: null, papers: {} });
 const progRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const d = JSON.parse(localStorage.getItem(PROG_KEY) || "null");
   return d && d.v === 1 && d.papers && typeof d.papers === "object" ? d : progEmpty(); } catch (e) { return progEmpty(); } };
+// a local calendar day, YYYY-MM-DD (the days practised: the home page counts this week's)
+const progDay = t => t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
 const progWrite = d => { try { if (BUS_BLOCKED) throw new Error("blocked"); localStorage.setItem(PROG_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } };
 // Brief 20: pass marks with their sources. A paper without one gets no pass wording (a practice mark is not an exam result).
 // Brief 22: the vortex map's ground (one step lighter than the page's --bg #191b1e). The map, the colour its dots fade
@@ -2670,7 +2672,8 @@ class Component extends DCLogic {
     this._progT = setTimeout(() => { const s = this.state; if (s.paperId !== pid) return;
       const d = progRead(), pick = o => Object.fromEntries(mine(o).map(k => [k, o[k]]));
       d.papers[pid] = { prog: pick(s.prog), paid: pick(s.paid), mi: s.mi || 0, pi: s.pi || 0, at: Date.now() };
-      d.xp = Math.max(d.xp || 0, s.xp || 0); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid; progWrite(d); }, 350);
+      d.xp = Math.max(d.xp || 0, s.xp || 0); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid;
+      const today = progDay(new Date()); d.days = (d.days || []).filter(x => x !== today).concat([today]).slice(-60); progWrite(d); }, 350);
   }
   partByNumber(n) { return this.missions().reduce((a, m) => a || m.parts.filter(q => q.number === n)[0], null); }
   // an insight is worked out when every section of its essay is closed
@@ -2682,6 +2685,10 @@ class Component extends DCLogic {
       insightRows: INSIGHT_RULES.map((ru, i) => { const x = by[["layout", "analysis", "synthesis", "originality"][i]] || { awarded: 0 };
         return { name: ru[0], rule: ru[1], got: shown ? x.awarded + " / 2" : "– / 2", state: !shown ? "" : x.awarded >= 2 ? "ok" : x.awarded > 0 ? "part" : "none" }; }),
       insightWaitOn: open.length > 0, insightWait: open.length ? "Finish the essay first: " + open.join(", ") + (open.length === 1 ? " is" : " are") + " still open." : "" }; }
+  // the home page's learner: their own XP and days practised this week once they have saved work, else the design's (HOME.me)
+  realMe() { const d = progRead(); if (!d.last || !(d.days || []).length) return HOME.me;
+    const now = new Date(), mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7)), from = progDay(mon);
+    return Object.assign({}, HOME.me, { xp_total: d.xp || 0, days_practised_this_week: (d.days || []).filter(x => x >= from).length }); }
   // The home page's "continue" from what was really saved (the last catalogue paper with work in it), or null for the design's
   // own returning learner (HOME.resume). Next up: the first mission with a part still open; finished when none is.
   realResume() {
@@ -3133,7 +3140,7 @@ class Component extends DCLogic {
   }
   countUp() {
     const real = this.realResume(), rs = real || (this.state.home === "finished" ? HOME.resume_finished : HOME.resume);
-    const to = { xp: HOME.me.xp_total, marks: rs.marks_earned, days: HOME.me.days_practised_this_week };
+    const me = this.realMe(), to = { xp: me.xp_total, marks: rs.marks_earned, days: me.days_practised_this_week };
     cancelAnimationFrame(this._cu);
     if (this.state.reduced) { this.setState({ disp: to }); return; }
     const t0 = performance.now(), dur = 900;
@@ -5327,7 +5334,7 @@ class Component extends DCLogic {
     const picking = returning && s.picking;
     const showPicker = !returning || picking;
     const rs = real || (finished ? HOME.resume_finished : HOME.resume);
-    const glow = Math.min(7, HOME.me.days_practised_this_week);
+    const me = this.realMe(), glow = Math.min(7, me.days_practised_this_week);
     const modelOn = !s.reduced && !s.saveData;
     // Every subject Nexera knows: the ones with a paper first, then the rest, honestly tagged.
     const withPaper = HOME.subjects.filter(x => shownQual(x.qualification)).map(x => ({ name: x.name, qualification: x.qualification, paper_ids: x.paper_ids }));
@@ -5428,13 +5435,13 @@ class Component extends DCLogic {
       pillWordDisplay: phone ? "none" : "inline",
       dispXp: s.disp.xp, dispMarks: s.disp.marks, resumeTotal: rs.total_marks, dispDays: s.disp.days,
       daysWord: phone ? (s.disp.days === 1 ? "day" : "days") : (s.disp.days === 1 ? "day this week" : "days this week"),
-      xpAria: HOME.me.xp_total + " XP. Your progress", marksAria: rs.marks_earned + " of " + rs.total_marks + " marks banked",
-      daysAria: HOME.me.days_practised_this_week + " days practised this week, explain",
+      xpAria: me.xp_total + " XP. Your progress", marksAria: rs.marks_earned + " of " + rs.total_marks + " marks banked",
+      daysAria: me.days_practised_this_week + " days practised this week, explain",
       marksDeg: Math.round(360 * s.disp.marks / rs.total_marks) + "deg",
       progressOpen: s.pop === "progress", toggleProgress: () => { if (s.pop === "progress") this.closeLayer(); else this.setState({ pop: "progress" }); },
-      progRows: [{ label: "XP", value: HOME.me.xp_total.toLocaleString("en-GB") },
+      progRows: [{ label: "XP", value: me.xp_total.toLocaleString("en-GB") },
         { label: "Marks banked · " + resumeName, value: rs.marks_earned + " of " + rs.total_marks },
-        { label: "Days practised this week", value: String(HOME.me.days_practised_this_week) }],
+        { label: "Days practised this week", value: String(me.days_practised_this_week) }],
       closePops: () => this.closeLayer(),
       // design preview states ("Picker open" went 2026-10-02: the paper map is the picker now; "Finished" went too, Murci found
       // it unclear: the home of a learner whose paper is done stays in the product, only its preview shortcut is gone)
