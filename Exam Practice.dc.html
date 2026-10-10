@@ -3478,13 +3478,17 @@ class Component extends DCLogic {
     if (mode === "lettername") return answer && answer.letter && bad("letter") ? [{ L: answer.letter, row: null }] : [];
     if (mode === "letternames") return (answer || []).map((r, k) => r && r.letter && bad("l" + k) ? { L: r.letter, row: k } : null).filter(Boolean);
     if (lettersOnly && mode === "pickn") return (answer || []).filter(i => bad("o" + i)).map(i => ({ L: opts[i], row: null }));
+    // a wrong STATEMENT (written answers as statements, Murci 2026-10-10, option C) breaks like a wrong MCQ card and stays out
+    if (mode === "pickn") return (answer || []).filter(i => bad("o" + i)).map(i => ({ L: opts[i], row: null, i: i }));
     if (lettersOnly && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];
     if (part.ab && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];   // a Venn region
     return [];
   }
   // each ruled-out letter's chip as termBreak draws a field: its box, its letter centred, round, no cross (it is 42 px)
   chipSnaps(dead) {
-    return dead.map(d => { const b = document.querySelector(d.row != null ? '[data-lnrow][data-row="' + d.row + '"] [data-tile][data-letter="' + d.L + '"]'
+    return dead.map(d => { if (d.i != null) { const t = document.querySelector('[data-question] [data-tile][data-idx="' + d.i + '"]'); if (!t) return null;   // a statement card: its lines wrap
+        const ts = getComputedStyle(t); return { r: t.getBoundingClientRect(), text: t.textContent.replace(/\s+/g, " ").trim(), font: ts.font, pad: ts.paddingLeft, radius: ts.borderRadius, wrap: true }; }
+      const b = document.querySelector(d.row != null ? '[data-lnrow][data-row="' + d.row + '"] [data-tile][data-letter="' + d.L + '"]'
         : '[data-question] [data-tile][data-letter="' + d.L + '"][aria-checked="true"]'); if (!b) return null;
       const cs = getComputedStyle(b); return { r: b.getBoundingClientRect(), text: d.L, font: cs.font, pad: "0", radius: cs.borderRadius, center: true, small: true, ball: b.dataset.ball === "true" }; }).filter(Boolean);
   }
@@ -4676,7 +4680,7 @@ class Component extends DCLogic {
       if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; sp = s.edited.picks ? null : stampOf(itemsBy["o" + i]); if (!sp && Array.isArray(revealAns) && revealAns.indexOf(i) !== -1 && !sel) sp = memoStamp; }
       if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : letters[i] === o ? "·" : letters[i];
         sp = sel && !s.edited.order && !seqBalls ? stampOf(itemsBy["pos" + pos]) : null; }
-      const out = chipsOnly && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket, no stamp
+      const out = (chipsOnly || mode === "pickn") && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket (a statement: gone), no stamp
       const st = stampSty(sp), rich = this.isRich(o);
       return Object.assign({ idx: String(i), text: rich ? "" : o, badge: badge, rich: rich, plainOn: !rich, richAttr: rich ? "true" : "false", lines: rich ? this.workLines(o) : [], fon: wkOn(i) ? "true" : "false",
         letter: chipsOnly ? String(o).trim() : "", ball: chipsOnly ? "true" : "false", dead: this.deadAttr(out, String(o).trim()), off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
@@ -4810,7 +4814,9 @@ class Component extends DCLogic {
         const ts = [].slice.call(e.currentTarget.querySelectorAll("[data-tile]")); const i = ts.indexOf(document.activeElement); if (i < 0) return;
         e.preventDefault(); const nx = ts[(i + (e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : ts.length - 1)) % ts.length]; nx.focus();
         if (e.currentTarget.getAttribute("role") === "radiogroup") nx.click(); },
-      hasCounter: mode === "pickn", counterText: pickedN >= need && s.pickWarn && mode === "pickn" ? "Pick " + need + ": unpick one first" : "Pick " + need + " · " + pickedN + " picked",
+      // (a statement worth more than 1, a 2-mark "explain" point with its reason, says so: "Pick 3 · 2 marks each")
+      hasCounter: mode === "pickn", counterText: pickedN >= need && s.pickWarn && mode === "pickn" ? "Pick " + need + ": unpick one first"
+        : "Pick " + need + ((part.marks || need) / need !== 1 && Number.isInteger((part.marks || need) / need) ? " · " + (part.marks / need) + " marks each" : "") + " · " + pickedN + " picked",
       counterColor: pickedN === need ? "#3ddc97" : "var(--text2)", counterKey: "w" + s.pickWarn, counterAnim: s.pickWarn && !s.reduced ? "shake 360ms ease both" : "none",
       hasSeq: mode === "order" && !seqBalls, seqText: seq.length ? "Your order: " + seq.join(" → ") : "Tap the cards in the order you choose.",
       hasSeqTrack: seqBalls, seqSlots: seqSlots, seqN: String(seqN), seqClosed: seqWon ? "true" : "false", seqWonAttr: seqWon ? "true" : "false",
