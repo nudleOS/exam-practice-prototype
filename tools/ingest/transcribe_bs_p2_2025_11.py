@@ -798,6 +798,77 @@ for _m in missions_q2 + missions_q3 + missions_q4:
             _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
 assert not [i["n"] for m in missions_q2 + missions_q3 + missions_q4 for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
 
+# ---- The essays as SECTIONS (Murci 2026-10-10): the memo's headings, each played as statements or a sort, their facts summing to the
+# memo's cap of 32, then an INSIGHT part (LASO, 8) worked out from the picks (Layout: introduction + conclusion right; Analysis: every
+# heading answered; Synthesis: every section right first time; Originality: the example statements picked). The essay's own wording
+# stays as the mission's lead; the memo points above stay as the source.
+def essay(nums, parts, examples, insight_clues):
+    ex = [[n, next(p for p in parts if p["n"] == n)["opts"].index(t)] for n, t in examples]
+    assert sum(p["marks"] for p in parts) == 32, [p["marks"] for p in parts]
+    return parts + [{"t": "insight", "n": nums, "marks": 8, "q": "Insight: your essay's layout, analysis, synthesis and originality, worked out "
+                     "from your picks.", "clues": insight_clues, "of": [p["n"] for p in parts], "intro": parts[0]["n"], "conclusion": parts[-1]["n"],
+                     "examples": ex}]
+
+
+Q5_EX = ["For example, a retailer insured against theft is paid out when its stock is stolen in a burglary.",
+         "For example, if a key manager dies in an accident, the policy pays out to the business."]
+q5_parts = essay("5.7", [
+    stmt("5.1", "Introduction: pick the TWO statements that introduce this essay on insurance.", 2,
+         ["Insurance and assurance are indispensable to businesses and individuals to insure against unforeseen events.",
+          "Businesses are required by law to take out the relevant compulsory insurance.",
+          "Businesses are exposed to many risks during their operations, so they take out insurance to protect themselves."],
+         ["Insurance is only needed by businesses that have already suffered a loss.",
+          "Businesses can choose to ignore compulsory insurance if they have enough savings.",
+          "Insurance guarantees that a business will never suffer any loss at all."],
+         ["An introduction says why the topic matters to a business.", "Risks, the law and protection."], 1),
+    sort_("5.2", "Outline the differences between insurance and assurance.", 8, ["Insurance", "Assurance", "Not true"], [
+        ("It is based on the principle of indemnity.", 0),
+        ("The insured transfers the cost of a possible loss to the insurer for a premium.", 0),
+        ("It covers a specified event that may occur, such as fire, theft or burglary.", 0),
+        ("It is based on the principle of security, as the event is certain but its time is not.", 1),
+        ("The insurer pays an agreed sum after a set period or on the death of the insured, whichever comes first.", 1),
+        ("It applies to long-term policies such as life insurance, endowments and retirement annuities.", 1),
+        ("It pays out more than the value of the loss, so the insured makes a profit.", 2),
+        ("It covers only events that happened before the policy was taken out.", 2)],
+        ["Insurance: something MAY happen. Assurance: something WILL happen.", "Short-term cover against loss, or long-term cover for life."]),
+    sort_("5.3", "Explain the THREE types of compulsory insurance.", 8, ["UIF", "COIDA", "RAF", "Not true"], [
+        ("It provides short-term benefits to workers who become unemployed.", 0),
+        ("Employers and employees each contribute 1% of the employee's basic wage every month.", 0),
+        ("It compensates employees for injuries and diseases they get at work.", 1),
+        ("Employers contribute to the fund and may not deduct the contributions from wages.", 1),
+        ("It is funded by a levy on the sale of fuel.", 2),
+        ("It insures road users against the negligence of other road users.", 2),
+        ("Employees must pay for their own work injuries before any claim can be made.", 3),
+        ("Only businesses with more than 1 000 employees have to register for it.", 3)],
+        ["Losing your job, getting hurt at work, a road accident.", "Who pays in: the employer, the worker, the fuel buyer?"]),
+    stmt("5.4", "Discuss the advantages of insurance.", 6,
+         ["It transfers the risk from the business to the insurer.",
+          "The business is compensated for insurable losses, such as property destroyed by fire.",
+          "It protects the business against claims by members of the public for damages it is responsible for."] + Q5_EX,
+         ["Insurance allows a business to claim twice for the same loss.", "It removes the need for the business to look after its assets.",
+          "Insurance premiums are paid back in full at the end of every year."],
+         ["What does the business get for its premium?", "Risk moves to the insurer; losses are compensated."], 2),
+    sort_("5.5", "Advise businesses on the principles of insurance: utmost good faith and insurable interest.", 6,
+          ["Utmost good faith", "Insurable interest", "Not true"], [
+        ("The insured must be honest when giving details to take out the policy.", 0),
+        ("Both the insurer and the insured must disclose all relevant facts.", 0),
+        ("The insured must prove a financial loss if the insured object is damaged or lost.", 1),
+        ("The insured must have a legal relationship with the insured object.", 1),
+        ("The insured may hide facts that would make the premium higher.", 2),
+        ("Anyone may insure any object, even one they have no link to.", 2)],
+        ["Good faith is about honesty; insurable interest is about who loses.", "Could you insure your neighbour's car?"]),
+    stmt("5.6", "Conclusion: pick the statement that concludes this essay.", 2,
+         ["Insurance protects a business against the risks it is exposed to during its operations.",
+          "Principles such as utmost good faith and insurable interest must be kept so that the insurance contract stays valid."],
+         ["Insurance is unnecessary for any business that is well managed.", "Compulsory insurance can be ignored once a business makes a profit.",
+          "Breaking the principles of insurance makes a claim pay out faster."],
+         ["A conclusion sums up why it all matters.", "Protection, and keeping the contract valid."], 2),
+], [("5.4", Q5_EX[0]), ("5.4", Q5_EX[1])],
+    ["Insight is earned from how you answered the sections.", "Right first time, every heading answered, and the examples picked."])
+missions_c[0]["items"] = q5_parts
+missions_c[0]["lead"] = "Build the essay section by section, then see your insight."
+missions_c[0]["extract"] = "QUESTION 5: THE ESSAY\n\n" + Q5_STEM   # (the essay's wording in the shared-information card: on a phone it folds away)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Business Studies", "title": "Business Studies P2", "sitting": "November 2025", "total_marks": 150, "time": "2 hours"},
