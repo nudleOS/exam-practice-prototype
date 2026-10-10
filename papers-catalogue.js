@@ -490,8 +490,10 @@ window.NX_CATALOGUE = {
    "duration_minutes": 180,
    "questions": 10,
    "missions": 43,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2024"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2024",
+   "rev": "5d134e02e7",
+   "source_pdf": "uploads/Physical Sciences P1 Nov 2024 Eng.pdf"
   },
   {
    "id": "ps-p2-2024-11",
