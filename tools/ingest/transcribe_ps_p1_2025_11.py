@@ -141,10 +141,13 @@ q2 = [
         ["The block is at rest with MAXIMUM static friction: friction equals the horizontal pull.", "F's vertical part lifts the block, so N is less than mg."]),
     rub("2.4", "Angle θ is decreased while the magnitude of force F remains constant. How will the friction acting on the block be affected? Choose from "
         "INCREASES, DECREASES or REMAINS THE SAME. Explain the answer.", 4, [
-        "Increases (1): the vertical component of F decreases (1); the normal force increases (1); μs remains constant, fs(max) is directly proportional to N (1).",
-        "OR — Decreases (1): the horizontal component of F increases (1); the block will move (Fnet will increase) (1); fk < fs(max) (1).",
-        "OR — Remains the same (1): explained with a relevant calculation, choosing μk < μs and θ that together with μk give fk = 15 N."],
-        ["A smaller angle means a bigger horizontal part and a smaller vertical part of F.", "Friction depends on the normal force, and on whether the block starts to slide."], each=4),
+        # the memo's four ticks a point each (2026-10-10): one 4-mark point per answer gave "Increases because the normal force increases" 4 / 4
+        "Increases (1)", "The vertical component of F decreases (1)", "The normal force increases (1)",
+        "μs remains constant, so fs(max) increases: it is directly proportional to the normal force (1)",
+        "OR — Decreases (1)", "The horizontal component of F increases (1)", "The block will move / Fnet will increase (1)",
+        "The kinetic friction is less than the maximum static friction (fk < fs(max)) (1)",
+        "OR — Remains the same (1)", "A relevant calculation (1)", "choosing μk smaller than μs (1)", "and θ that together with μk gives fk = 15 N (1)"],
+        ["A smaller angle means a bigger horizontal part and a smaller vertical part of F.", "Friction depends on the normal force, and on whether the block starts to slide."]),
 ]
 
 # ---- QUESTION 3, the question paper page 9 and the memo pages 5-9 ----
@@ -164,9 +167,9 @@ q3 = [
         "Inelastic. (1)", "The height decreased/smaller. (1)",
         "The velocity with which the ball strikes the ground is not the same as the velocity with which it left the ground / kinetic energy is "
         "converted to heat and sound energy / kinetic energy is NOT conserved / the kinetic energy is not the same before and after the ball strikes "
-        "the ground. ACCEPT: kinetic energy is lost. (1)",
-        "Do NOT accept any calculation as an explanation."],
-        ["Compare the heights: 5 m below the top before, 3 m after.", "Elastic means kinetic energy is conserved."]),
+        "the ground. ACCEPT: kinetic energy is lost. (1)"],
+        ["Compare the heights: 5 m below the top before, 3 m after.", "Elastic means kinetic energy is conserved."],
+        notes=["Do NOT accept any calculation as an explanation."]),
     draw("3.5", "Sketch a velocity versus time graph for the motion of the ball from the time it was projected until it reached the maximum height after "
          "it bounced. Show the following NUMERICAL VALUES on the graph: the initial velocity; time p; velocity q.", 4, [
         ["A straight line starting at v = 15 m·s⁻¹ with negative final velocity (or starting at −15 m·s⁻¹ with positive final velocity)", 1],
