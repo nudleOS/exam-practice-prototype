@@ -758,13 +758,13 @@
                       </sc-if>
                       <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line)">
                         <sc-for list="{{ ctxTableHead }}" as="th" hint-placeholder-count="3">
-                          <span role="columnheader" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}">{{ th.t }}</span>
+                          <span role="columnheader" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}; min-width:0; overflow-wrap:anywhere">{{ th.t }}</span>
                         </sc-for>
                       </div>
                       <sc-for list="{{ ctxTableRows }}" as="tr" hint-placeholder-count="3">
                         <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; border-top:{{ tr.line }}">
                           <sc-for list="{{ tr.cells }}" as="td" hint-placeholder-count="3">
-                            <span role="{{ td.role }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums">{{ td.t }}</span>
+                            <span role="{{ td.role }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums; min-width:0; overflow-wrap:anywhere">{{ td.t }}</span>
                           </sc-for>
                         </div>
                       </sc-for>
@@ -1723,9 +1723,11 @@ const tableView = t => {
   const num = c => /^[\d.,\s–-]+$/.test(c);
   const numeric = t.rows.every(r => r.slice(1).every(num));
   const n = t.head.length;
+  // (a word longer than its column breaks rather than being cut off: the cells take overflow-wrap:anywhere, 2026-10-10, PS P2 Nov 2024 Q3's
+  // "2,2-dimethylpropane"; and a column's share starts at 7 characters, so "20,15" beside a long label fits)
   // each row is its own grid, so a track sized by its content ("auto") is sized per ROW and the columns drift (2026-10-10, LS P2 Nov
   // 2024 1.5: "RrEe" sat left of its heading): every track is a share of the width, from its column's longest text, the same in each row
-  const longest = i => Math.min(24, Math.max(4, ...[t.head[i], ...t.rows.map(r => r[i])].map(c => String(c == null ? "" : c).length)));
+  const longest = i => Math.min(24, Math.max(7, ...[t.head[i], ...t.rows.map(r => r[i])].map(c => String(c == null ? "" : c).length)));
   const cols = numeric ? "minmax(0,1.35fr)" + " minmax(0,1fr)".repeat(n - 1) : t.head.map((_, i) => `minmax(${i ? 0 : 52}px,${longest(i)}fr)`).join(" ");
   const short = t.rows.every(r => r[0].length <= 2);
   const al = i => i === 0 ? (short ? "center" : "left") : numeric ? "center" : "left";
