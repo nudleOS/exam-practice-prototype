@@ -179,7 +179,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "fa42f6e669",
+   "rev": "14672e3eba",
    "source_pdf": "uploads/Geography P2 Nov 2024 Eng.pdf",
    "printed_marks": 150
   },
@@ -246,7 +246,7 @@ window.NX_CATALOGUE = {
    "missions": 16,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "b72ea3a7a0",
+   "rev": "a38179b70e",
    "source_pdf": "uploads/Life Sciences P1 Nov 2024 Eng.pdf"
   },
   {
