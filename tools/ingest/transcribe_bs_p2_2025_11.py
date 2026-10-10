@@ -21,10 +21,13 @@ match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "
 
 
 # notes: the memo's marking instructions that are NOT points ("Mark the first TWO only ..."): never scored, never shown (2026-10-10)
-def rub(n, q, marks, bullets, clues, each=None, notes=None):
+# worth: each point's own marks where they differ ("Force (2) + Motivation (1)": the name and its quote, [2, 1]) (2026-10-10)
+def rub(n, q, marks, bullets, clues, each=None, notes=None, worth=None):
     r = {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets}
     if each:
         r["each"] = each
+    if worth:
+        r["worth"] = worth
     if notes:
         r["notes"] = notes
     return r
@@ -132,9 +135,12 @@ q23 = [rub("2.3", "Explain the functions of the Johannesburg Securities Exchange
     "Any other relevant answer related to the functions of the JSE."],
     ["The JSE is where shares in public companies are bought and sold.", "What does it do for investors, for companies and for the economy?"], each=2)]
 q24 = [rub("2.4", "Identify the leadership styles applicable to MT. Motivate your answer by quoting from the scenario above.", 6, [
-    "Autocratic leadership style (2); motivation (1), quoted: 'Rachel takes all decisions alone, without consulting her staff members.'",
-    "Transactional leadership style (2); motivation (1), quoted: 'Zaid, however, offers rewards to hardworking employees, which increases productivity.'"],
-    ["One manager decides alone; the other trades rewards for hard work.", "Name each style, then quote the sentence that shows it."], each=3,
+    "Autocratic leadership style.",
+    "(Its motivation, quoted from the scenario:) 'Rachel takes all decisions alone, without consulting her staff members.'",
+    "Transactional leadership style.",
+    "(Its motivation, quoted from the scenario:) 'Zaid, however, offers rewards to hardworking employees, which increases productivity.'"],
+    ["One manager decides alone; the other trades rewards for hard work.", "Name each style, then quote the sentence that shows it."],
+    worth=[2, 1, 2, 1],
     notes=["Mark the first TWO only. Marks for a style even if its quote is incomplete; no marks for a motivation if its style is wrong."])]
 q25 = [rub("2.5", "Describe the role of personal attitude in successful leadership.", 4, [
     "Positive attitude releases leadership potential for personal growth.", "A leader's good attitude can influence the success of the business.",
@@ -159,9 +165,9 @@ q26 = [
         "Use legible font and font size so that it is easy to see/read.", "Make sure there are no language and spelling errors.",
         "Use bright colours to increase visibility.",
         "Structure information in a logical sequence so that the audience can easily follow the content of the presentation.",
-        "Any other relevant answer related to aspects that should be considered when designing a multimedia presentation.",
-        "No marks for the aspects quoted in 2.6.1."],
-        ["Think of a slide: heading, background, images, font, colour, order.", "Each aspect, then why it helps the audience."], each=2),
+        "Any other relevant answer related to aspects that should be considered when designing a multimedia presentation."],
+        ["Think of a slide: heading, background, images, font, colour, order.", "Each aspect, then why it helps the audience."], each=2,
+        notes=["No marks for the aspects quoted in 2.6.1."]),
 ]
 q27 = [rub("2.7", "Discuss the impact of government/RSA Retail Savings Bonds as a form of investment.", 6, [
     "Positive: guaranteed returns, as interest rate is fixed for the whole investment period.",
@@ -240,10 +246,11 @@ q32 = [rub("3.2", "Outline the benefits of diversity in the workplace.", 6, [
     ["People from different backgrounds bring different ideas.", "Think morale, image, customers, problem-solving."], each=2)]
 q33 = [
     rub("3.3.1", "Identify the King Code principle applied by JP. Motivate your answer by quoting from the scenario above.", 3, [
-        "Principle (2): Responsibility.",
-        "Motivation (1), quoted from the scenario: 'JP developed a remedial programme to reduce air pollution levels and to protect the environment.'",
-        "No marks for the motivation if the principle is wrong; responsibility earns its marks even if the motivation is incomplete."],
-        ["Who is JP caring for by reducing pollution?", "The King Code principles: responsibility, accountability, transparency, fairness ..."]),
+        "Responsibility.",
+        "(Its motivation, quoted from the scenario:) 'JP developed a remedial programme to reduce air pollution levels and to protect the environment.'"],
+        ["Who is JP caring for by reducing pollution?", "The King Code principles: responsibility, accountability, transparency, fairness ..."],
+        worth=[2, 1],
+        notes=["No marks for the motivation if the principle is wrong; responsibility earns its marks even if the motivation is incomplete."]),
     rub("3.3.2", "Describe any ONE other King Code principle that businesses can apply to improve their ethical business conduct.", 3, [
         "Transparency (principle 2, a description 1): decisions/actions must be clear to all stakeholders; staffing and other processes should be open "
         "and transparent; employees/shareholders/directors should be aware of the employment policies of the business; auditing and other reports must "
@@ -358,9 +365,10 @@ q43 = [rub("4.3", "Explain the difference between management and leadership.", 4
     "knowledge/skills/intelligence; always trying to find more efficient ways of completing tasks; leadership is inspirational in their approach by "
     "energizing/motivating/encouraging employees; leadership is people orientated and focuses on building relationships/morale/development; leads "
     "by example/trust/respect; leadership 'does the right things' by focusing on the vision and strategies; leadership asks 'what' and 'why' to "
-    "foster a deeper understanding for improvement.",
-    "Not necessarily a table, and the two need not link, but the difference must be clear: a maximum of 2 if it is not, or if only one side is given."],
-    ["A manager gets tasks done; a leader inspires people.", "Give one point for each side so the difference is clear."], each=2)]
+    "foster a deeper understanding for improvement."],
+    ["A manager gets tasks done; a leader inspires people.", "Give one point for each side so the difference is clear."], each=2,
+    notes=["Not necessarily a table, and the two need not link, but the difference must be clear: a maximum of 2 if it is not, or if only one "
+           "side is given."])]
 q44 = [rub("4.4", "Discuss the advantages of a personal liability company.", 6, [
     "Has its own legal identity and shareholders have no direct legal implications/limited liability.", "Has the potential for good long-term growth.",
     "Pays tax at a fixed tax rate to the South African Revenue Services (SARS).",
@@ -412,9 +420,9 @@ q48 = [
         "Encourage job swops within the organisation/study how other businesses are doing things.",
         "Respond enthusiastically to all ideas and never let anyone feel less important.",
         "Reward creativity by offering employees reward schemes/introduce incentives for staff members who come up with useful creative ideas.",
-        "Any other relevant answer related to other ways in which businesses can create an environment that promotes creative thinking.",
-        "No marks for the ways quoted in 4.8.1."],
-        ["How can a business show that it wants new ideas?", "Brainstorming, suggestion boxes, training, rewards."], each=2),
+        "Any other relevant answer related to other ways in which businesses can create an environment that promotes creative thinking."],
+        ["How can a business show that it wants new ideas?", "Brainstorming, suggestion boxes, training, rewards."], each=2,
+        notes=["No marks for the ways quoted in 4.8.1."]),
 ]
 q49 = [rub("4.9", "Recommend ways in which businesses can deal with the pricing of goods in rural areas as a type of unethical business practice in the workplace.", 4, [
     "Lobby with other businesses/suppliers in the area to convince the government to improve infrastructure in the rural area.",
@@ -441,7 +449,8 @@ INSIGHT = ["Insight (8), 2 each: Layout (an introduction, paragraphs and a concl
            "explained); Analysis and interpretation (all headings addressed; interpreted correctly); Synthesis (only relevant facts); "
            "Originality (an example in any TWO of the four aspects, based on recent information, current trends and developments, not "
            "older than two years).",
-           "Facts are capped at 32 of the 40; no marks for content repeated from the introduction or the conclusion."]
+           ]
+ESSAY_NOTES = ["Facts are capped at 32 of the 40; no marks for content repeated from the introduction or the conclusion."]
 Q5_STEM = ("Businesses are required to make a clear distinction between insurance and assurance for future financial planning. A sound knowledge "
            "of compulsory insurance is beneficial for businesses. Businesses receive the benefits of insurance when they successfully apply the "
            "insurance principles.\n\nWrite an essay on investment: insurance in which you include the following aspects:\n• Outline the differences "
@@ -465,7 +474,6 @@ q5 = [rub("5", Q5_STEM, 40, [
     "Assurance: specified event is a certainty, but the time of the event is uncertain.",
     "Assurance: applicable to long-term insurance.",
     "Assurance, examples (1): life insurance/endowment policy/retirement annuities.",
-    "Insurance and assurance: not necessarily a table; the differences need not link but must be clear; a maximum of 6 if the difference is not clear/only one side is given.",
     "Compulsory insurance (max 16; the first THREE types, each the type 2 + explanation 4, submax 6): Unemployment Insurance Fund/UIF.",
     "UIF: the UIF provides short-term benefits to workers who have been working and become unemployed for various reasons.",
     "UIF: the UIF provides financial assistance for a limited period to the dependants of a deceased employee who was registered with/contributed to the UIF.",
@@ -529,7 +537,9 @@ q5 = [rub("5", Q5_STEM, 40, [
     "parties to ensure the validity of the contract.",
     "Any other relevant answer under each heading."] + INSIGHT,
     ["Plan the four aspects as headings between an introduction and a conclusion.",
-     "Insurance vs assurance: indemnity vs certainty. Compulsory: UIF, COIDA, RAF. Then advantages, then the two principles."])]
+     "Insurance vs assurance: indemnity vs certainty. Compulsory: UIF, COIDA, RAF. Then advantages, then the two principles."],
+    notes=["Insurance and assurance: not necessarily a table; the differences need not link but must be clear; a maximum of 6 if the "
+           "difference is not clear/only one side is given."] + ESSAY_NOTES)]
 Q6_STEM = ("Employers are obligated to take care of the human health and safety of employees in the workplace. Businesses must be able to implement "
            "ways to deal with human rights and apply strategies to protect the environment and human health. They must also have knowledge of "
            "diversity issues in order to deal with them correctly.\n\nWrite an essay on human rights, inclusivity and environmental issues in which "
@@ -618,7 +628,8 @@ q6 = [rub("6", Q6_STEM, 40, [
     "Conclusion: the workplace consists of diverse backgrounds and therefore requires businesses to develop ways to deal with the diversity issues in the workplace.",
     "Any other relevant answer under each heading."] + INSIGHT,
     ["Plan the four aspects as headings between an introduction and a conclusion.",
-     "Health and safety: what the employer must provide. Rights: name three, then how to respect each. Environment: strategies. Age and disability: ways to include."])]
+     "Health and safety: what the employer must provide. Rights: name three, then how to respect each. Environment: strategies. Age and disability: ways to include."],
+    notes=ESSAY_NOTES)]
 
 missions_c = [
     {"id": "5", "title": "Question 5", "kind": "Essay: investment, insurance", "marks": 40, "items": q5},

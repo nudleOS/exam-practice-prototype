@@ -25,10 +25,13 @@ match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "
 
 
 # notes: the memo's marking instructions that are NOT points ("Mark the first TWO only ..."): never scored, never shown (2026-10-10)
-def rub(n, q, marks, bullets, clues, each=None, notes=None):
+# worth: each point's own marks where they differ ("Force (2) + Motivation (1)": the name and its quote, [2, 1]) (2026-10-10)
+def rub(n, q, marks, bullets, clues, each=None, notes=None, worth=None):
     r = {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets}
     if each:
         r["each"] = each
+    if worth:
+        r["worth"] = worth
     if notes:
         r["notes"] = notes
     return r
@@ -123,10 +126,10 @@ q2 = [
 q23 = [
     rub("2.3.1", "Identify the force of Porter's Five Forces model that is applicable to BF. Motivate your answer by quoting from the scenario "
         "above.", 3, [
-            "Force (2): Competitive rivalry/Power of competitors.",
-            "Motivation (1), quoted from the scenario: 'BF sales have decreased as Bright Eyewear sells unique sunglasses at reasonable prices.'",
-            "No marks for the motivation if the force is wrong; the force earns its marks even if the motivation is incomplete."],
-        ["Who is taking BF's sales away?", "Another business selling the same kind of product is a ..."]),
+            "Competitive rivalry/Power of competitors.",
+            "(Its motivation, quoted from the scenario:) 'BF sales have decreased as Bright Eyewear sells unique sunglasses at reasonable prices.'"],
+        ["Who is taking BF's sales away?", "Another business selling the same kind of product is a ..."], worth=[2, 1],
+        notes=["No marks for the motivation if the force is wrong; the force earns its marks even if the motivation is incomplete."]),
     rub("2.3.2", "Describe how businesses could apply ONE other force of Porter's Five Forces model to analyse their position in the market "
         "environment.", 3, [
             "Bargaining power of suppliers/Power of suppliers (force 2, a description 1): assess the power of the suppliers in influencing "
@@ -184,9 +187,9 @@ q26 = [
         "Submit an annual compliance report to the National Credit Regulator.",
         "Conduct affordability assessment to ensure that consumers have the ability to meet their obligations.",
         "Verify the identity of clients and report suspicious transactions/train staff on their obligations in terms of FICA.",
-        "Any other relevant answer related to other ways in which businesses can comply with the NCA.",
-        "No marks for the ways quoted from the scenario in 2.6.1."],
-        ["Think about what a lender must do BEFORE it gives credit.", "Registration, reporting, honest costs, checking a client can pay."], each=2),
+        "Any other relevant answer related to other ways in which businesses can comply with the NCA."],
+        ["Think about what a lender must do BEFORE it gives credit.", "Registration, reporting, honest costs, checking a client can pay."], each=2,
+        notes=["No marks for the ways quoted from the scenario in 2.6.1."]),
 ]
 q27 = [rub("2.7", "Explain ways in which businesses can apply ownership as a pillar of the Broad-Based Black Economic Empowerment Act (BBBEE), "
            "2003 (Act 53 of 2003).", 6, [
@@ -275,10 +278,10 @@ q35 = [rub("3.5", "Outline the difference between quality control and quality as
     "Quality assurance (submax 2): checks carried out during and after the production process; ensure that required standards have been met "
     "at every stage of the process; processes put in place to ensure that the quality of products/services/systems adhere to pre-set "
     "standards with minimal defects/delays/short-comings; ensuring that every process is aimed to get the product 'right the first time' "
-    "and prevent mistakes from happening; the 'building in' of quality as opposed to 'checking of' quality.",
-    "The answer need not be a table and the two sides need not link, but the difference must be clear: a maximum of 2 if it is not, or if "
-    "only one of the two is given."],
-    ["One checks the finished product; the other builds quality in at every step.", "Inspecting at the end vs preventing mistakes along the way."], each=2)]
+    "and prevent mistakes from happening; the 'building in' of quality as opposed to 'checking of' quality."],
+    ["One checks the finished product; the other builds quality in at every step.", "Inspecting at the end vs preventing mistakes along the way."], each=2,
+    notes=["The answer need not be a table and the two sides need not link, but the difference must be clear: a maximum of 2 if it is not, or "
+           "if only one of the two is given."])]
 q36 = [
     pick("3.6.1", "Quote TWO ways from the scenario above in which BM apply total quality management (TQM) to reduce the cost of quality.",
          sentences(BM), [1, 2], ["Which sentences describe what BM DOES?", "Avoiding repeated work and sharing responsibility both cut costs."]),
@@ -476,7 +479,8 @@ INSIGHT = ["Insight (8), 2 each: Layout (an introduction, paragraphs and a concl
            "explained); Analysis and interpretation (all headings addressed; interpreted correctly); Synthesis (only relevant facts); "
            "Originality (an example in any TWO of the four aspects, based on recent information, current trends and developments, not "
            "older than two years).",
-           "Facts are capped at 32 of the 40; no marks for content repeated from the introduction or the conclusion."]
+           ]
+ESSAY_NOTES = ["Facts are capped at 32 of the 40; no marks for content repeated from the introduction or the conclusion."]
 q5 = [rub("5", "The Employment Equity Act (EEA), 1998 (Act 55 of 1998) was established to facilitate the transformation process in the workplace. "
           "The implementation of the EEA may have an impact on business operations. Businesses are compelled to comply with the requirements of "
           "this Act to avoid facing penalties for non-compliance.\n\nWrite an essay on the Employment Equity Act in which you include the following "
@@ -553,7 +557,8 @@ q5 = [rub("5", "The Employment Equity Act (EEA), 1998 (Act 55 of 1998) was estab
     "tenders; penalties for non-compliance with the Act may have a negative financial implication for businesses.",
     "Any other relevant answer under each heading."] + INSIGHT,
     ["Plan four headings, one per bullet in the question, between an introduction and a conclusion.",
-     "Purpose: what the Act sets out to do. Impact: good AND bad for a business. Compliance: what a business must do. Penalties: what happens if it does not."])]
+     "Purpose: what the Act sets out to do. Impact: good AND bad for a business. Compliance: what a business must do. Penalties: what happens if it does not."],
+    notes=ESSAY_NOTES)]
 q6 = [rub("6", "Businesses following the correct recruitment procedures will attract the best applicants. The human resources manager could use "
           "the internal recruitment method to fill the available vacancies. The interviewer must be well prepared before conducting the interview. "
           "Both employers and employees should be aware of the legal requirements of an employment contract.\n\nWrite an essay on the human "
@@ -613,7 +618,8 @@ q6 = [rub("6", "Businesses following the correct recruitment procedures will att
     "can avoid legal actions by aligning their employment contracts according to recent legislation.",
     "Any other relevant answer under each heading."] + INSIGHT,
     ["Plan four headings, one per bullet in the question, between an introduction and a conclusion.",
-     "Recruitment: the steps in order. Internal recruitment: good AND bad. Before the interview: what the interviewer arranges. Contract: what the law requires."])]
+     "Recruitment: the steps in order. Internal recruitment: good AND bad. Before the interview: what the interviewer arranges. Contract: what the law requires."],
+    notes=ESSAY_NOTES)]
 missions_c = [
     {"id": "5", "title": "Question 5", "kind": "Essay: the Employment Equity Act", "marks": 40, "items": q5},
     {"id": "6", "title": "Question 6", "kind": "Essay: the human resources function", "marks": 40, "items": q6},

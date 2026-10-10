@@ -14,8 +14,9 @@ from pathlib import Path
 HERE = Path(__file__).parent
 
 # a memo marking NOTE, not a point: key words / phrases, criteria, an ACCEPT limit, "Mark the first TWO only", "Do NOT accept ...",
-# "X defined: 0/2", "deduct 1" (these belong in a rubric's `notes`, which is never scored)
-NOTE_RE = re.compile(r"^(OR\s*[—-]\s*)?(Key (words?|phrases?)|Criteria|ACCEPT \(max|Mark the first|Do NOT accept)|:\s*0/\d|\bdeduct \d", re.I)
+# "No marks for ...", "Facts are capped at 32 ...", "not necessarily a table ...", "X defined: 0/2", "deduct 1" (these belong
+# in a rubric's `notes`, which is never scored)
+NOTE_RE = re.compile(r"^(OR\s*[—-]\s*)?(Key (words?|phrases?)|Criteria|ACCEPT \(max|Mark the first|Do NOT accept|No marks for|Do not award|Facts are capped|(The answer )?(need not|not necessarily) be a table|Not necessarily a table)|:\s*0/\d|\bdeduct \d", re.I)
 
 
 def schema_errors(paper):
