@@ -65,8 +65,9 @@ draw = lambda n, q, marks, criteria, clues, memo="": {"t": "draw", "n": n, "mark
 
 
 def steps(n, q, marks, sts, clues):
-    """sts: (label, marks, answer, tolerance, the memo's working)."""
-    s = [{"id": "s%d" % (i + 1), "label": lab, "marks": m, "a": a, "tol": tol, "memo": memo} for i, (lab, m, a, tol, memo) in enumerate(sts)]
+    """sts: (label, marks, answer, tolerance, the memo's working[, other values that also earn it])."""
+    s = [{"id": "s%d" % (i + 1), "label": st[0], "marks": st[1], "a": st[2], "tol": st[3], "memo": st[4], **({"also": st[5]} if len(st) > 5 else {})}
+         for i, st in enumerate(sts)]
     assert sum(x["marks"] for x in s) == marks, n
     return {"t": "steps", "n": n, "marks": marks, "q": q, "clues": clues, "steps": s}
 
@@ -393,10 +394,12 @@ q51 = [
           "number.\n\nSanji stated that the rounded answer he calculated did not make much difference in rupees when compared to the non-rounded "
           "answer.\n\nVerify, showing ALL calculations, whether his statement is valid.", 6, [
         ("Interest payments (lakh crore)", 2, 9.006, 0.0005, "Interest payments = 20% × 45,03 lakh crore ✓RT (both values) = 9,006 lakh crore ✓A"),
-        ("Unrounded interest payments (rupees)", 1, 90060000, 0.5, "Unrounded = 9,006 × 100 × 100 000 = 90 060 000 rupees ✓C"),
+        ("Unrounded interest payments (rupees)", 1, 90060000, 0.5, "Unrounded = 9,006 × 100 × 100 000 = 90 060 000 rupees ✓C. Also "
+         "accepted: 9 006 000 000 000 rupees (by the NOTE a lakh crore is 100 000 × 10 000 000 rupees)", [9006000000000]),
         ("Interest payments rounded to the nearest whole number (lakh crore)", 1, 9, 0.01, "Rounded = 9 ✓R (9 × 100 × 100 000 = 90 000 000 rupees)"),
         ("Difference between the two amounts (rupees)", 2, 60000, 0.5, "Difference = 90 060 000 – 90 000 000 = 60 000 rupees ✓CA. His "
-         "statement is NOT VALID ✓O (OR 9,006 – 9,000 = 0,006 lakh crore ✓R ✓CA; amount in rupees = 0,006 × 100 × 100 000 = 60 000 ✓C)")],
+         "statement is NOT VALID ✓O (OR 9,006 – 9,000 = 0,006 lakh crore ✓R ✓CA; amount in rupees = 0,006 × 100 × 100 000 = 60 000 ✓C). "
+         "Also accepted: 6 000 000 000 rupees (the NOTE's lakh crore)", [6000000000])],
           ["Find 20% of the 45,03 lakh crores, then round it to a whole number.", "Change both amounts to rupees with the NOTE, then compare them."])]
 q52 = [
     steps("5.2.1", "Convert R302,4 billion to million rands.", 2, [
@@ -409,7 +412,7 @@ q52 = [
         ("Corporate income tax in lakh crore", 2, 134507.19, 0.015, "= 13 450 719,04 ÷ 100 ✓MCA = 134 507,1904 lakh crore ✓CA. NPR (OR "
          "R302 400 000 000 ÷ R1 000 000 × 4 447 989,1 ✓MA = 1,345071904 × 1 000 000 000 000 ✓CA ÷ 100 000 ÷ 100 ✓MCA = 134 507,1904 lakh "
          "crore ✓CA; OR R1 000 000 = 0,44479891 lakh crore ✓C, R302 400 000 000 × 0,44479891 ✓MA ÷ 1 000 000 ✓MCA = 134 507,1904 lakh "
-         "crore ✓CA)")],
+         "crore ✓CA). Also accepted: 1,345071904 lakh crore (by the NOTE, 13 450 719,04 lakh ÷ 10 000 000)", [1.345071904])],
           ["Each R1 million is worth 44,479891 lakhs (the NOTE).", "Then use the NOTE in QUESTION 5.1 to go from lakhs to the larger unit."])]
 INFL = {"title": "TABLE 7: INFLATION RATES IN INDIA FOR THE LAST FIVE YEARS", "head": ["YEAR", "INFLATION RATE"],
         "rows": [["2024", "8%"], ["2023", "7,5%"], ["2022", "7%"], ["2021", "6,5%"], ["2020", "6%"]]}
@@ -532,12 +535,12 @@ paper = {
         {"n": "5.1.5", "kind": "memo_issue", "detail": "The memo converts lakh crore to rupees as × 100 × 100 000 (one crore). By the paper's NOTE, "
                                                        "1 lakh crore = 100 000 crore = 1 000 000 000 000 rupees, so 9,006 lakh crore is "
                                                        "9 006 000 000 000 rupees and the difference is 6 000 000 000 rupees (not 60 000); the "
-                                                       "conclusion (NOT VALID) stands. Transcribed as printed: the rupee steps expect 90 060 000 and "
-                                                       "60 000."},
+                                                       "conclusion (NOT VALID) stands. Murci, 2026-10-10: BOTH earn the rupee steps (the memo's 90 060 000 "
+                                                       "and 60 000, and the NOTE's values, as each step's `also`)."},
         {"n": "5.2.2", "kind": "memo_issue", "detail": "The memo's 134 507,1904 'lakh crore' is in crore: 13 450 719,04 lakh ÷ 100 = 134 507,19 crore, "
                                                        "and its third method writes R1 000 000 = 0,44479891 lakh crore (÷ 10 000 000, one crore). "
-                                                       "In lakh crore the tax is 1,345071904 (R302,4 billion = 1,345 × 10¹² rupees). Transcribed as "
-                                                       "printed: the last step expects 134 507,19."},
+                                                       "In lakh crore the tax is 1,345071904 (R302,4 billion = 1,345 × 10¹² rupees). Murci, "
+                                                       "2026-10-10: BOTH earn the last step (134 507,19 and, as its `also`, 1,345071904)."},
     ],
 }
 out = Path(__file__).parent / "out" / "ml-p1-2024-11"

@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=34"></script>
+<script src="papers-catalogue.js?v=35"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -1898,7 +1898,7 @@ function buildPapers() {
           if (q.t === "letternames") { SERVER.keys[key] = { pairs: q.pool.map(p => ({ letter: p.letter, names: p.name })), count: q.count };
             SERVER.memo[key] = q.pool.map(p => p.letter + " · " + p.name[0]);
             return Object.assign(base, { response_mode: "letternames", marking_mode: "answer", letters: q.letters, count: q.count }); }
-          if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft }])) };
+          if (q.t === "steps") { SERVER.keys[key] = { steps: Object.fromEntries(q.steps.map(st => [st.id, { a: st.a, tol: st.tol, v: st.memo, ft: st.ft, also: st.also || [] }])) };
             SERVER.memo[key] = q.steps.map(st => st.memo);
             return Object.assign(base, { response_mode: "steps", marking_mode: "answer", steps: q.steps.map(st => ({ id: st.id, label: st.label, marks: st.marks, unit_hint: st.unit || "" })) }); }
           if (q.t === "num") { SERVER.keys[key] = { num: q.a, tol: q.tol || 0.001 }; SERVER.memo[key] = [String(q.a).replace(".", ",") + (q.unit ? " " + q.unit : "")]; return Object.assign(base, { response_mode: "num", marking_mode: "answer", unit_hint: q.unit || "" }); }
@@ -3780,7 +3780,9 @@ class Component extends DCLogic {
         const k = key.steps[s.id]; const v = vals[s.id];
         if (v === null) return { key: s.id, awarded: 0, available: s.marks, verdict: "missing" };
         if (isNaN(v)) return { key: s.id, awarded: 0, available: s.marks, verdict: "unreadable", reason: "We could not read a number. Use digits, for example 2,557." };
-        if (Math.abs(v - k.a) <= k.tol) return { key: s.id, awarded: s.marks, available: s.marks, verdict: "correct" };
+        // `also` (2026-10-10, Murci): other values that earn the step, where the memo's own value is a slip the paper contradicts
+        // (ML P1 Nov 2024 5.1.5 / 5.2.2: lakh crore converted with one crore): the memo's value and the right one both earn it
+        if (Math.abs(v - k.a) <= k.tol || (k.also || []).some(x => Math.abs(v - x) <= k.tol)) return { key: s.id, awarded: s.marks, available: s.marks, verdict: "correct" };
         if (k.ft && Object.values(vals).every(x => x !== null && !isNaN(x)) && Math.abs(v - k.ft(vals)) <= k.tol * 2)
           return { key: s.id, awarded: s.marks, available: s.marks, verdict: "follow_through", reason: "Correct method with your earlier value carried forward." };
         return { key: s.id, awarded: 0, available: s.marks, verdict: "incorrect" };

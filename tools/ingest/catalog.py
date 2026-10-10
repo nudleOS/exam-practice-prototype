@@ -97,7 +97,10 @@ COMPONENTS = {
     "num": component("num", "One number (keypad), within a tolerance.", {"a": NUM, "tol": NUM, "unit": STR}, ["a", "tol"]),
     "steps": component("steps", "A calculation in numbered steps, each one NUMBER (method marks per step).", {
         "steps": {"type": "array", "items": obj({"id": STR, "label": STR, "marks": INT, "a": NUM, "tol": NUM,
-                                                  "memo": {"type": "string", "description": "the memo's working for this step"}},
+                                                  "memo": {"type": "string", "description": "the memo's working for this step"},
+                                                  "also": {"type": "array", "items": NUM, "description": "Other values that earn the step, each within "
+                                                           "tol: only when the memo's own value is a slip the paper contradicts and the right one "
+                                                           "must not lose the mark (ML P1 Nov 2024 5.1.5: lakh crore converted with one crore)"}},
                                                  ["id", "label", "marks", "a", "tol", "memo"])}}, ["steps"]),
     "rubric": component("rubric", "A written answer marked against the memo's points (Explain / Describe / State ...).", {
         "bullets": {**STRS, "description": "The memo's marking points, one per mark (or per 'each'). An alternative answer starts 'OR — '"},

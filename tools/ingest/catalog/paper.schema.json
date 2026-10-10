@@ -909,6 +909,13 @@
                 "memo": {
                  "type": "string",
                  "description": "the memo's working for this step"
+                },
+                "also": {
+                 "type": "array",
+                 "items": {
+                  "type": "number"
+                 },
+                 "description": "Other values that earn the step, each within tol: only when the memo's own value is a slip the paper contradicts and the right one must not lose the mark (ML P1 Nov 2024 5.1.5: lakh crore converted with one crore)"
                 }
                },
                "required": [
