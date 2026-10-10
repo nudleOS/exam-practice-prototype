@@ -2502,3 +2502,50 @@ body.nx-play [data-ctx] [data-ctx-body] > * { flex-shrink:0; }
 /* a table is its own stacking context: its pinned cells (sticky, z-index 1) layer over its own cells only. Measured 2026-10-10: in
    the phone sheet, scrolled, the pinned "Tax Bracket" cell painted over the sheet's sticky title bar (also z-index 1, earlier in the page). */
 [data-ctx-table] { isolation:isolate; }
+
+/* ---- Match: drag-and-drop glass cards (Murci 2026-10-10, direction A of two mocks). The descriptions (a classification: its
+   groups) are cards like the page's MCQ answer cards (--nx-tile, theme-aware: no more black grey), in a tray under the rows on a phone,
+   beside them from 760 px; each Column A item is a row with a slot. A right pair turns green and locks; a wrong one breaks (termBreak)
+   and its card goes back to the tray. */
+body.nx-play [data-match] { display:flex; flex-direction:column; gap:12px; }
+body.nx-play [data-mhint] { font-size:13px; line-height:1.55; color:var(--text2); }
+body.nx-play [data-msplit] { display:grid; grid-template-columns:minmax(0, 1fr); gap:16px; }
+@media (min-width:760px) { body.nx-play [data-msplit] { grid-template-columns:minmax(0, 1.2fr) minmax(0, 1fr); align-items:start; } }
+body.nx-play :is([data-mrows], [data-mtray]) { display:flex; flex-direction:column; gap:8px; min-width:0; }
+body.nx-play [data-mhead] { font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3); }
+body.nx-play [data-mrow] { display:grid; grid-template-columns:minmax(0, 0.8fr) minmax(0, 1.25fr); gap:8px; align-items:stretch; }
+body.nx-play [data-mlab] { display:flex; align-items:center; padding:10px 12px; border-radius:14px; border:1px solid var(--nx-card-line); background:color-mix(in srgb, var(--nx-card) 55%, transparent); font-size:14px; font-weight:600; line-height:1.35; color:var(--text); }
+body.nx-play [data-mslot] { min-height:58px; padding:0; border-radius:16px; border:1.5px dashed var(--line2); background:transparent; color:var(--text3); font:inherit; text-align:left;
+  display:flex; align-items:stretch; cursor:pointer; transition:border-color 160ms ease, background 160ms ease; }
+body.nx-play [data-mslot][data-full="true"] { border-color:transparent; }
+body.nx-play [data-mslot]:is([data-state="ready"]) { border-color:rgba(129,177,255,0.6); }
+body.nx-play [data-mslot][data-over="true"] { border-color:#81b1ff; background:rgba(129,177,255,0.12); }
+body.nx-play [data-mslot][data-state="miss"] { border-color:rgba(255,107,107,0.8); }
+body.nx-play [data-mslot][data-state="miss"] [data-mdrop] { color:#ff8a8a; }
+body.nx-play [data-mslot]:disabled { cursor:default; }
+body.nx-play [data-mslot]:focus-visible, body.nx-play button[data-mcard]:focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+body.nx-play [data-mdrop] { margin:auto; padding:8px 10px; font-size:12.5px; line-height:1.35; text-align:center; }
+body.nx-play [data-mcard] { display:flex; align-items:flex-start; gap:10px; width:100%; box-sizing:border-box; min-height:58px; padding:10px 12px; border-radius:16px;
+  border:1.5px solid var(--nx-card-line); background:var(--nx-card); box-shadow:0 12px 26px -20px rgba(10,40,100,0.45);
+  color:var(--text); font:inherit; font-size:14px; line-height:1.4; text-align:left; cursor:grab; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+  transition:border-color 160ms ease, box-shadow 160ms ease; }
+/* the MCQ panel's answer card, exactly (its tokens: --nx-card, --nx-card-line, --nx-badge; measured 2026-10-10, the page tile's grey was
+   what Murci called the black background) */
+body.nx-play button[data-mcard]:not(:disabled):hover, body.nx-play [data-mslot]:not(:disabled):hover [data-mcard] { border-color:var(--nx-card-hover); }
+body.nx-play [data-mletter] { flex:none; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  background:var(--nx-badge); color:var(--nx-badge-ink); font-size:15px; font-weight:800; }
+body.nx-play [data-mtext] { flex:1; min-width:0; padding-top:7px; }
+body.nx-play [data-mcard][data-sel="true"] { border-color:rgba(129,177,255,0.9); box-shadow:0 0 0 3px rgba(0,104,248,0.2); }
+body.nx-play [data-mcard][data-sel="true"] [data-mletter] { background:#81b1ff; color:#0b1a33; }
+body.nx-play [data-mrow][data-state="ok"] [data-mcard] { border-color:#3ddc97; box-shadow:0 0 0 3px rgba(61,220,151,0.16); cursor:default; }
+body.nx-play [data-mrow][data-state="ok"] [data-mletter] { background:#1f9d68; color:#ffffff; }
+body.nx-play [data-mtick] { flex:none; margin-left:auto; padding-top:5px; color:#3ddc97; font-weight:800; }
+body.nx-play [data-mcard][data-break="true"] { visibility:hidden; }
+body.nx-play button[data-mcard]:disabled { cursor:default; }
+body.nx-play [data-mdone] { font-size:12.5px; color:var(--text2); }
+[data-mghost] { position:fixed !important; z-index:200; pointer-events:none; opacity:0.96; box-shadow:0 16px 32px rgba(0,0,0,0.35) !important; }
+body.nx-mdrag, body.nx-mdrag * { cursor:grabbing !important; }
+@media (max-width:600px) { body.nx-play [data-mrow] { grid-template-columns:minmax(0, 0.75fr) minmax(0, 1.25fr); }
+  body.nx-play :is([data-mcard], [data-mlab]) { font-size:13.5px; } }
+/* a match card breaks with its lines kept (termBreak snap.wrap) */
+[data-termshards] .ts-glass.ts-wrap { white-space:normal; align-items:flex-start; padding:10px 12px !important; line-height:1.4; }

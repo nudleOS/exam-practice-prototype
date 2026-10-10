@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=284">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=286">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1039,26 +1039,29 @@
           </sc-if>
 
           <sc-if value="{{ isMatch }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:12px">
-              <span style="font-size:13px; line-height:1.55; color:var(--text2)">{{ matchHint }}</span>
-              <div style="display:grid; grid-template-columns:{{ matchCols }}; gap:12px">
-                <div role="group" aria-label="{{ matchHeadA }}" style="display:flex; flex-direction:column; gap:8px">
-                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">{{ matchHeadA }}</span>
-                  <sc-for list="{{ matchLeft }}" as="ml" hint-placeholder-count="5">
-                    <button onClick="{{ ml.pick }}" aria-pressed="{{ ml.on }}" aria-label="{{ ml.aria }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ ml.border }}; background:{{ ml.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
-                      <span style="flex:1">{{ ml.text }}</span>
-                      <span style="flex:none; font-size:12px; font-weight:800; color:{{ ml.pairColor }}">{{ ml.paired }}</span>
-                    </button>
+            <div data-match="true" data-mgroups="{{ matchGroups }}">
+              <span data-mhint="true">{{ matchHint }}</span>
+              <div data-msplit="true">
+                <div data-mrows="true" role="group" aria-label="{{ matchHeadA }}">
+                  <span data-mhead="true">{{ matchHeadA }}</span>
+                  <sc-for list="{{ matchRows }}" as="mw" hint-placeholder-count="4">
+                    <div data-mrow="true" data-state="{{ mw.state }}">
+                      <span data-mlab="true">{{ mw.text }}</span>
+                      <button data-mslot="true" data-l="{{ mw.l }}" data-full="{{ mw.fullAttr }}" data-state="{{ mw.state }}" aria-label="{{ mw.aria }}" onClick="{{ mw.tap }}" disabled="{{ mw.off }}">
+                        <sc-if value="{{ mw.full }}" hint-placeholder-val="{{ false }}">
+                          <span data-mcard="true" data-r="{{ mw.r }}" data-break="{{ mw.brk }}"><span data-mletter="true">{{ mw.L }}</span><span data-mtext="true">{{ mw.cardText }}</span><sc-if value="{{ mw.ok }}" hint-placeholder-val="{{ false }}"><span data-mtick="true" aria-hidden="true">✓</span></sc-if></span>
+                        </sc-if>
+                        <sc-if value="{{ mw.empty }}" hint-placeholder-val="{{ true }}"><span data-mdrop="true">{{ mw.emptyText }}</span></sc-if>
+                      </button>
+                    </div>
                   </sc-for>
                 </div>
-                <div role="group" aria-label="{{ matchHeadB }}" style="display:flex; flex-direction:column; gap:8px">
-                  <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:var(--text3)">{{ matchHeadB }}</span>
-                  <sc-for list="{{ matchRight }}" as="mr" hint-placeholder-count="5">
-                    <button onClick="{{ mr.pick }}" style="min-height:48px; padding:8px 12px; border-radius:12px; border:1px solid {{ mr.border }}; background:{{ mr.bg }}; color:var(--text); text-align:left; font-size:13.5px; cursor:pointer; display:flex; gap:8px; align-items:center">
-                      <span style="flex:none; font-size:12px; font-weight:800; color:var(--text3)">{{ mr.key }}</span>
-                      <span style="flex:1">{{ mr.text }}</span>
-                    </button>
+                <div data-mtray="true" role="group" aria-label="{{ matchHeadB }}">
+                  <span data-mhead="true">{{ matchHeadB }}</span>
+                  <sc-for list="{{ matchTray }}" as="mt" hint-placeholder-count="5">
+                    <button data-mcard="true" data-r="{{ mt.r }}" data-sel="{{ mt.sel }}" aria-pressed="{{ mt.sel }}" aria-label="{{ mt.aria }}" onClick="{{ mt.tap }}" disabled="{{ mt.off }}"><span data-mletter="true">{{ mt.L }}</span><span data-mtext="true">{{ mt.text }}</span></button>
                   </sc-for>
+                  <sc-if value="{{ matchTrayEmpty }}" hint-placeholder-val="{{ false }}"><span data-mdone="true">Every description is placed.</span></sc-if>
                 </div>
               </div>
             </div>
@@ -1950,7 +1953,7 @@ class Component extends DCLogic {
   // Business Studies three papers done + the fourth racing, Geography a finished track; the map opens on Business Studies
   // unless the learner picked a subject on this device. "Fresh paper" etc. in the design preview switch it off.
   state = { pmRace: true, pmSubj: "Business Studies", screen: "pick", programme: "All", paperId: null, mi: 0, pi: 0, vw: 1280,
-    inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, drawn: false, build: {},
+    inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, matchCard: null, matchMiss: [], matchBreak: [], drawn: false, build: {},
     prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyFolder: null, studyErr: "",
@@ -2068,6 +2071,32 @@ class Component extends DCLogic {
     document.addEventListener("pointerup", e => { const w = this._wkSw; this._wkSw = null; if (!w || w.id !== e.pointerId) return; const dx = e.clientX - w.x, dy = e.clientY - w.y;
       if (Math.abs(dx) > 44 && Math.abs(dx) > 1.4 * Math.abs(dy)) { this._wkSwiped = Date.now(); this.wkStep(dx < 0 ? 1 : -1); } }, { passive: true });
     document.addEventListener("pointercancel", () => { this._wkSw = null; }, { passive: true });
+    // match (Murci, 2026-10-10): a glass card drags into a row. A mouse drags on the move; a finger after a short hold (220 ms), so a
+    // swipe over the cards still scrolls the page; once dragging, the page does not scroll (touchmove is cancelled) except at the
+    // screen's edge, where it scrolls under the card (a phone's tray is under the rows). The lift that ends a drag is not a tap.
+    const mEnd = () => { const d = this._mD; this._mD = null; if (!d) return null; clearTimeout(d.t); cancelAnimationFrame(d.raf); if (d.g) d.g.remove();
+      document.body.classList.remove("nx-mdrag"); document.querySelectorAll("[data-mslot][data-over]").forEach(z => z.removeAttribute("data-over")); return d; };
+    const mHover = d => { document.querySelectorAll("[data-mslot][data-over]").forEach(z => z.removeAttribute("data-over"));
+      const t = document.elementFromPoint(d.cx, d.cy), z = t && t.closest("[data-mslot]"); if (z && !z.disabled) z.setAttribute("data-over", "true"); };
+    const mMove = (d, x, y) => { d.cx = x; d.cy = y; d.g.style.transform = "translate(" + (x - d.dx) + "px, " + (y - d.dy) + "px) rotate(-2deg)"; mHover(d);
+      const edge = y < 80 ? -1 : y > innerHeight - 110 ? 1 : 0; cancelAnimationFrame(d.raf);
+      if (edge) { const step = () => { if (this._mD !== d) return; scrollBy(0, edge * 10); mHover(d); d.raf = requestAnimationFrame(step); }; d.raf = requestAnimationFrame(step); } };
+    const mStart = d => { if (d.on) return; d.on = true; const r = d.el.getBoundingClientRect(); d.dx = d.x - r.left; d.dy = d.y - r.top;
+      d.g = d.el.cloneNode(true); d.g.setAttribute("data-mghost", "true"); d.g.style.width = r.width + "px"; d.g.style.left = "0px"; d.g.style.top = "0px"; document.body.appendChild(d.g);
+      document.body.classList.add("nx-mdrag"); if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) { /* not allowed here */ } mMove(d, d.x, d.y); };
+    document.addEventListener("pointerdown", e => { const c = e.isPrimary && e.button === 0 && e.target.closest ? e.target.closest("[data-match] [data-mcard]") : null; if (!c) return;
+      const btn = c.closest("button"), slot = c.closest("[data-mslot]"), from = slot ? +slot.dataset.l : null;
+      if ((btn && btn.disabled) || (from != null && this.matchLockedRow(from)) || !this.matchOpen()) return;
+      const d = { el: c, r: +c.dataset.r, from: from, x: e.clientX, y: e.clientY, id: e.pointerId, touch: e.pointerType !== "mouse", on: false }; mEnd(); this._mD = d;
+      if (d.touch) d.t = setTimeout(() => { if (this._mD === d) mStart(d); }, 220); }, { passive: true });
+    document.addEventListener("pointermove", e => { const d = this._mD; if (!d || e.pointerId !== d.id) return;
+      if (!d.on) { const far = Math.hypot(e.clientX - d.x, e.clientY - d.y); if (d.touch) { if (far > 8) mEnd(); return; } if (far <= 6) return; mStart(d); }
+      mMove(d, e.clientX, e.clientY); }, { passive: true });
+    document.addEventListener("touchmove", e => { if (this._mD && this._mD.on) e.preventDefault(); }, { passive: false });
+    document.addEventListener("pointerup", e => { const d = this._mD; if (!d || e.pointerId !== d.id) return; const was = d.on; mEnd(); if (!was) return;
+      this._mDragged = Date.now(); const t = document.elementFromPoint(e.clientX, e.clientY), z = t && t.closest("[data-mslot]"), tray = t && t.closest("[data-mtray]");
+      if (z && !z.disabled) this.matchPlace(+z.dataset.l, d.r, d.from); else if (tray && d.from != null) this.matchUnplace(d.from); }, { passive: true });
+    document.addEventListener("pointercancel", () => { mEnd(); }, { passive: true });
     const ready = () => { this.papers = buildPapers(); this.setState({ bus: busRead() });
       // ?demo=1 (the presentation, Murci 2026-10-08): the paper opens with every part closed on Gold except the ones to present,
       // straight into the first of them; each is the only open part of its question, so finishing it shows the end page
@@ -3496,7 +3525,7 @@ class Component extends DCLogic {
     // three times, then cracks run out from one point; only then does it break (below, at CRACK_AT)
     const SHAKE = 320, CRACK_AT = NX_GLASS_BREAK, whole = document.createElement("div"), wg = document.createElement("div"), wt = document.createElement("span"), x = document.createElement("i");
     whole.className = "ts-whole"; whole.style.cssText = "left:" + r.left + "px; top:" + r.top + "px; width:" + W + "px; height:" + H + "px";
-    wg.className = "ts-glass" + (snap.ball ? " ts-ball" : ""); wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
+    wg.className = "ts-glass" + (snap.ball ? " ts-ball" : "") + (snap.wrap ? " ts-wrap" : "");   /* wrap: a match card's lines (2026-10-10) */ wg.style.borderRadius = snap.radius; wt.textContent = snap.text; wt.style.cssText = "font:" + snap.font + "; padding-left:" + snap.pad + (snap.center ? "; margin:0 auto; padding:0" : "");
     x.className = "ts-x"; x.setAttribute("aria-hidden", "true"); wg.append(wt); if (!snap.small) wg.append(x); whole.appendChild(wg); layer.appendChild(whole);
     if (navigator.vibrate) try { navigator.vibrate([70, 50, 90]); } catch (e) { /* not allowed here */ }
     if (snap.ball) {   // a BALL is hit (Murci, 2026-10-05, "more immersive"): it squashes, rebounds, then cracks; at the burst a shockwave and glass dust
@@ -3616,7 +3645,7 @@ class Component extends DCLogic {
     // fill: forwards, so it came back on a practice round, measured), and the balls roll in again
     (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; clearTimeout(this._glassT);
     clearTimeout(this._seqT); this._seqBusy = false; document.querySelectorAll("[data-seqtrack]").forEach(t => { t.classList.remove("nx-pulsing"); t.querySelectorAll("[data-ball]").forEach(b => { delete b.dataset.lit; b.style.visibility = ""; }); });
-    this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
+    this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, matchCard: null, matchMiss: [], matchBreak: [], build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false, wkIdx: 0, wkDir: 0 }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
@@ -3947,6 +3976,11 @@ class Component extends DCLogic {
       const dead = result.marker === "unavailable" ? [] : this.deadLetters(part, mode, answer, result), chipSnaps = !quiet ? this.chipSnaps(dead) : [];
       const seqR = !quiet && result.marker !== "unavailable" && this.seqOn(part) ? this.seqMarked(result) : null;   // 2.5.4's track: the ball out of order
       const deadL = dead.map(d => d.L), opts0 = (part.options || []).map(o => String(o).trim());   // (right: it flips; wrong: it breaks)   // the field as it is, before the result hides it
+      // a MATCH (Murci, 2026-10-10): each wrong pair's card cracks and breaks like glass, then goes back to the tray (it may be right in
+      // another row); the right pairs lock. The cards are measured now, before the result re-renders them.
+      const mWrong = !quiet && mode === "match" && result.marker !== "unavailable" ? (result.items || []).filter(it => it.verdict === "incorrect" && /^m\d+$/.test(it.key)).map(it => +it.key.slice(1)) : [];
+      const mSnaps = mWrong.map(l => { const el = document.querySelector('[data-match] [data-mslot][data-l="' + l + '"] [data-mcard]'); if (!el) return null;
+        const cs = getComputedStyle(el); return { r: el.getBoundingClientRect(), text: el.textContent.replace(/\s+/g, " ").trim(), font: cs.font, pad: "12px", radius: cs.borderRadius, wrap: true }; }).filter(Boolean);
       if (result.marker === "unavailable") { this.setState({ marking: false, reply: { waiting: true }, barOpen: true, barSeq: s.barSeq + 1, runLog: s.runLog.concat([{ key: part.key, waiting: true, xp: 0 }]), prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { waiting: true }) }) }, () => this.react("greet")); return; }
       const tryNo = pr.tries + 1;
       const draw = mode === "draw";
@@ -3980,6 +4014,7 @@ class Component extends DCLogic {
         pick: deadL.length && mode === "mcq" && deadL.indexOf(opts0[s.pick]) !== -1 ? null : s.pick,
         letter: deadL.length && mode === "lettername" ? "" : s.letter,
         lrows: deadL.length && mode === "letternames" ? (s.lrows || []).map((r, k) => dead.some(d => d.row === k) ? Object.assign({}, r, { letter: "" }) : r) : s.lrows,
+        matchBreak: mWrong, matchCard: null,
         marking: false, reply: reply, barOpen: !quiet && !missLive, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
         xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
@@ -4001,7 +4036,7 @@ class Component extends DCLogic {
       const flinch = !closed && !result.full && !draw;
       // a wrong answer that breaks glass (the term's capsule, a letter ball) hurts the robot when the glass BURSTS, not when it is marked
       // (Murci, 2026-10-06: "the robot animates before the glasses break"); nothing to break: at once
-      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || !!(seqR && seqR.snap) || (!!part.ab && dead.length > 0)), hurtAt = glass ? NX_GLASS_BREAK + 140 : 0;   // (140 ms after the burst, a reaction's time: the robot's re-render (~180 ms, measured 2026-10-08) landed on the burst's own frame and stalled the shards as they started; begun first, they run on the compositor through it)
+      const glass = !quiet && !result.full && !draw && !this.state.reduced && (!!snap || chipSnaps.length > 0 || mSnaps.length > 0 || !!(seqR && seqR.snap) || (!!part.ab && dead.length > 0)), hurtAt = glass ? NX_GLASS_BREAK + 140 : 0;   // (140 ms after the burst, a reaction's time: the robot's re-render (~180 ms, measured 2026-10-08) landed on the burst's own frame and stalled the shards as they started; begun first, they run on the compositor through it)
       clearTimeout(this._glassT);
       // right on the first try (gold) dances, right on a later try (silver, bronze) claps (Murci 2026-10-08: "must not dance on
       // silver and bronze but has to clap")
@@ -4013,6 +4048,9 @@ class Component extends DCLogic {
       if (snap && result.full) this.termFlip(snap);
       else if (snap) this.termBreak(snap).then(() => { const q = this.part(), st = this.state; if (!closed && q && q.key === part.key && st.reply === reply && st.barOpen) this.tryAgain(); });
       chipSnaps.forEach(sn => this.termBreak(sn));   // (the term's glass: the pieces lie until the robot sweeps them)
+      if (mWrong.length) { mSnaps.forEach(sn => this.termBreak(sn)); clearTimeout(this._mbT);
+        this._mbT = setTimeout(() => { const q = this.part(); if (!q || q.key !== part.key) return; const mp = Object.assign({}, this.state.matchPairs), ed = Object.assign({}, this.state.edited);
+          mWrong.forEach(l => { delete mp[l]; ed["m" + l] = true; }); this.setState({ matchPairs: mp, edited: ed, matchBreak: [], matchMiss: mWrong }); }, this.state.reduced ? 0 : NX_GLASS_BREAK + 20); }
       if (seqR) this.seqPulse(part, seqR, !!result.full);   // the impulse runs the track; a ball out of order breaks
       if (part.ab && !quiet) this.vennHit(answer, !!result.full);   // the Venn: the region cracks and bursts, or lights up
       if (!result.full && !draw && !quiet) setTimeout(() => this.pipLose(tryNo - 1), hurtAt || 60);   // the try coin it cost cracks; the next one lights
@@ -4034,6 +4072,41 @@ class Component extends DCLogic {
       this.setState({ marking: true, reply: null, barOpen: true }, () => this.react("greet")); clearTimeout(this._mk); this._mk = setTimeout(() => finish(result), 2400); return; }
     return finish(result);
   }
+
+  // ---- Match: drag-and-drop glass cards (Murci, 2026-10-10: "drag and drop all the matches to the right row then when submit the
+  // glasses break which are wrong and the right ones behave as expected"; direction A of two mocks) ----
+  // The answer stays matchPairs (row -> card), so the service's judge is unchanged. A right pair locks; a wrong one breaks and its card
+  // goes back to the tray (Murci picked this over "out of play": a card wrong in one row may be right in another). A classification's
+  // groups are cards that never leave the tray (a group takes more than one row).
+  matchVals(s, part, mode, locked, itemsBy) {
+    if (mode !== "match") return { matchRows: [], matchTray: [], matchTrayEmpty: false };
+    const M = part.match, L = i => String.fromCharCode(65 + i), sel = s.matchCard, brk = s.matchBreak || [], miss = s.matchMiss || [];
+    const okRow = l => { const it = itemsBy["m" + l]; return !!it && it.verdict === "correct" && !s.edited["m" + l] && s.matchPairs[l] != null; };
+    const rows = M.left.map((t, l) => { const r = s.matchPairs[l], full = r != null, ok = okRow(l), off = locked || ok, missed = miss.indexOf(l) !== -1 && !full;
+      return { l: String(l), text: t, full: full, empty: !full, fullAttr: full ? "true" : "false", r: full ? String(r) : "", L: full ? L(r) : "", cardText: full ? M.right[r] : "", ok: ok,
+        brk: brk.indexOf(l) !== -1 ? "true" : "false", state: ok ? "ok" : missed ? "miss" : full ? "placed" : sel != null && !off ? "ready" : "empty",
+        emptyText: missed ? "Not that one. Place another." : sel != null ? "Tap to place " + L(sel) + " here" : "Drop " + (M.groups ? "a group" : "a description") + " here",
+        aria: t + (full ? ": " + L(r) + ", " + M.right[r] + (ok ? ", right" : "") : missed ? ": the last answer was wrong, empty" : ": empty") + (sel != null && !off ? ". Press to place " + L(sel) + " here" : full && !off ? ". Press to take it back" : ""),
+        off: off, tap: () => this.matchTapSlot(l) }; });
+    const used = new Set(Object.keys(s.matchPairs).map(k => s.matchPairs[k]));
+    const tray = M.right.map((t, r) => ({ r: String(r), L: L(r), text: t, sel: sel === r ? "true" : "false", off: locked,
+      aria: L(r) + ": " + t + (sel === r ? ", picked: now press a row" : ""), tap: () => this.matchTapCard(r) })).filter((c, r) => M.groups || !used.has(r));
+    return { matchRows: rows, matchTray: tray, matchTrayEmpty: !tray.length };
+  }
+  matchLockedRow(l) { const part = this.part(), s = this.state, res = s.reply && s.reply.result && part && s.reply.part === part.number ? s.reply.result : null;
+    const it = res && (res.items || []).find(x => x.key === "m" + l); return !!it && it.verdict === "correct" && !s.edited["m" + l] && s.matchPairs[l] != null; }
+  matchOpen() { const part = this.part(); return !!part && part.response_mode === "match" && !this.pg(part.key).closed && !this.state.marking; }
+  matchPlace(l, r, from) { if (!this.matchOpen() || this.matchLockedRow(l) || (from != null && this.matchLockedRow(from))) return;
+    const part = this.part(), mp = Object.assign({}, this.state.matchPairs), ed = Object.assign({}, this.state.edited, { ["m" + l]: true });
+    if (from != null && from !== l) { delete mp[from]; ed["m" + from] = true; }
+    if (!part.match.groups) Object.keys(mp).forEach(k => { if (mp[k] === r && +k !== l) { delete mp[k]; ed["m" + k] = true; } });
+    mp[l] = r; this.setState({ matchPairs: mp, matchCard: null, edited: ed, matchMiss: (this.state.matchMiss || []).filter(x => x !== l) }); }
+  matchUnplace(l) { if (!this.matchOpen() || this.matchLockedRow(l) || this.state.matchPairs[l] == null) return;
+    const mp = Object.assign({}, this.state.matchPairs); delete mp[l]; this.setState({ matchPairs: mp, matchCard: null, edited: Object.assign({}, this.state.edited, { ["m" + l]: true }) }); }
+  // (the lift that ends a drag is not a tap: _mDragged)
+  matchTapCard(r) { if (Date.now() - (this._mDragged || 0) < 450 || !this.matchOpen()) return; this.setState({ matchCard: this.state.matchCard === r ? null : r }); }
+  matchTapSlot(l) { if (Date.now() - (this._mDragged || 0) < 450) return; const s = this.state;
+    if (s.matchCard != null) this.matchPlace(l, s.matchCard, null); else if (s.matchPairs[l] != null) this.matchUnplace(l); }
 
   // ---- Focus swipe: an MCQ of WORKINGS (Maths Nov 2025; Murci, 2026-10-10) ----
   // One working on a phone, two side by side from 760 px (a tablet either way up, a desktop): a working is several lines, and at about
@@ -4815,7 +4888,7 @@ class Component extends DCLogic {
     this.setState({ lrows: rows, edited: Object.assign({}, s.edited, patch.letter != null ? { ["l" + k]: true } : { ["n" + k]: true }) }); }
   canCheckNow(part) { const s = this.state, mode = part.response_mode;
     return mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
-      : mode === "match" ? Object.keys(s.matchPairs).length > 0 : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
+      : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null) : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
       : mode === "order" ? s.orderSeq.length === (part.options || []).length : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s)
       : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : mode === "build" ? this.buildReady(part, s.build) : true; }
 
@@ -5009,17 +5082,13 @@ class Component extends DCLogic {
       matchHeadA: mode === "match" && part.match.heads ? part.match.heads[0] : "COLUMN A", matchHeadB: mode === "match" && part.match.heads ? part.match.heads[1] : "COLUMN B",
       // the paper's own column titles; a one-to-one match says how many descriptions are left over (plain arithmetic: 10 for 5 terms
       // leaves five), a classification never does (it would tell the learner whether the items share a group)
-      matchHint: mode !== "match" ? "" : part.match.groups ? "Tap an item, then tap the group it belongs to. A group may take more than one item."
+      // drag-and-drop glass cards (Murci, 2026-10-10, direction A): the descriptions (or a classification's groups) are cards in a tray,
+      // each Column A item a row with a slot; a tap on a card, then on a row, places it too (the phone's sure path, and the keyboard's)
+      matchHint: mode !== "match" ? "" : part.match.groups ? "Drag each group into the rows it belongs to, or tap a group, then a row. A group may take more than one row."
         : (() => { const spare = part.match.right.length - part.match.left.length, word = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][spare] || String(spare);
-            return "Tap a Column A item, then tap its description." + (spare > 0 ? " " + word + (spare === 1 ? " description is" : " descriptions are") + " not used." : ""); })(),
-      matchLeft: mode === "match" ? part.match.left.map((t, l) => { const r = s.matchPairs[l]; const on = s.matchSel === l; const it = itemsBy["m" + l]; const sp = stampOf(it);
-        return { text: t, on: on, paired: sp ? sp.t : r != null ? "→ " + String.fromCharCode(65 + r) : "", pairColor: sp ? sp.c : "var(--tint)",
-          aria: t + (r != null ? ", paired with " + String.fromCharCode(65 + r) : "") + (sp ? ", " + sp.t : ""),
-          border: sp ? sp.b : on ? "rgba(129,177,255,0.7)" : r != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.16)" : "rgba(32,35,39,0.72)",
-          pick: () => { if (!locked) this.setState({ matchSel: on ? null : l }); } }; }) : [],
-      matchRight: mode === "match" ? part.match.right.map((t, r) => { const usedBy = Object.keys(s.matchPairs).filter(k => s.matchPairs[k] === r)[0];
-        return { key: String.fromCharCode(65 + r), text: t, border: usedBy != null ? "rgba(129,177,255,0.3)" : "var(--line2)", bg: "rgba(32,35,39,0.72)",
-          pick: () => { if (locked || this.state.matchSel == null) return; const mp = Object.assign({}, this.state.matchPairs); if (!part.match.groups) Object.keys(mp).forEach(k => { if (mp[k] === r) delete mp[k]; }); mp[this.state.matchSel] = r; this.setState({ matchPairs: mp, matchSel: null }); } }; }) : [],
+            return "Drag each description into its row, or tap one, then the row." + (spare > 0 ? " " + word + (spare === 1 ? " description is" : " descriptions are") + " not used." : ""); })(),
+      matchGroups: mode === "match" && part.match.groups ? "true" : "false",
+      ...this.matchVals(s, part, mode, locked, itemsBy),
       isDraw: draw,
       ...this.sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, touch),
       ...this.layer2Vals(s, phone, tablet, part, reply, res, closed, mode, locked, stampOf),
@@ -5038,7 +5107,7 @@ class Component extends DCLogic {
       barPrimaryColor: primaryIsSuccess ? "#0d2419" : bar && bar.primary[1] ? "#ffffff" : "var(--text4)",
       barPrimaryShadow: primaryIsSuccess ? "0 10px 26px rgba(61,220,151,0.3)" : bar && bar.primary[1] ? "0 10px 26px rgba(30,70,255,0.32)" : "none",
       primary: () => { if (closed || (reply && reply.waiting)) this.advance(); else this.check(); },
-      primaryLabel: draw ? "I've drawn it" : "Check", primaryDisabled: primaryDisabled,
+      primaryLabel: draw ? "I've drawn it" : mode === "match" ? "Check my matches" : "Check", primaryDisabled: primaryDisabled,
       // No footer Check (Murci, 2026-10-01: "Check needs to be out"; the same on every size): each question answers from its own
       // control, an MCQ on a card's tap, a term on the arrow in its field, every other mode on the same arrow in a row under its
       // answer (a drawing on a worded button: an arrow alone would not say "I've drawn it"). The footer keeps Back / Skip / Next.
@@ -5049,7 +5118,7 @@ class Component extends DCLogic {
       nxAnswerRow: !locked && mode !== "term" && mode !== "mcq" && mode !== "num" && mode !== "lettername" && mode !== "letternames" && !(reply && reply.waiting) && (mode === "draw" || !primaryDisabled),
       // the letter-name's arrow is inside its name box, as the term's, the list's and the number's (Murci's P30 lite, 2026-10-03: on its
       // own row it made the page 52 px too tall and started under the strip)
-      lnArrowOn: mode === "lettername" && !locked && !(reply && reply.waiting), nxAnswerIcon: !draw, nxAnswerWord: draw,
+      lnArrowOn: mode === "lettername" && !locked && !(reply && reply.waiting), nxAnswerIcon: !draw && mode !== "match", nxAnswerWord: draw || mode === "match",
       primaryBg: primaryDisabled ? "var(--panel)" : "var(--grad)", primaryColor: primaryDisabled ? "var(--text4)" : "#ffffff",
       primaryCursor: primaryDisabled ? "not-allowed" : "pointer", primaryShadow: primaryDisabled ? "none" : "0 10px 26px rgba(30,70,255,0.3)",
       ...this.playHeadVals(s, part),
@@ -5135,7 +5204,7 @@ class Component extends DCLogic {
     const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : "Finish")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next" : "Check";
     const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
-      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? Object.keys(s.matchPairs).length > 0
+      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null)
       : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
       : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim()
       : mode === "build" ? this.buildReady(part, s.build) : true;
