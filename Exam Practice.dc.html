@@ -4293,7 +4293,13 @@ class Component extends DCLogic {
   // ── Layer 3: the pipe-systems scene. Draws from the part's givens; shows only the learner's own
   // values (live while typing, the SUBMITTED ones after Check); the memo's ghost only after close.
   sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, touch) {
-    const sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + (part._mid || mission.id)];
+    let sc = mission && SCENES[((this.paper() || {}).id || "") + ":" + (part._mid || mission.id)];
+    // AN ITEM'S OWN FIGURE shows on the page when the part plays there (2026-10-10): a pick of letters plays on the page (mcqOn), and the
+    // page drew only its MISSION's figure, so LS P1 Nov 2025 1.1.6 "In which part does the zygote develop into a morula?" showed S Q R P
+    // and no diagram (10 Geography items the same). Registered as a mission's figure is; the MCQ stage is untouched (it keys on the mission)
+    if (!sc && part.img && part.img.src) { const fid = "img:" + part.key;
+      if (!FIGS[fid]) FIGS[fid] = { src: part.img.src, w: part.img.w, h: part.img.h, caption: part.img.alt || "", hotspots: [] };
+      sc = SCENES[fid] || (SCENES[fid] = { template: "figure", fig: fid }); }
     if (sc && sc.template === "figure") return this.figureVals(sc, s, phone, part, reply, res, closed, stampOf);
     const binds = sc && sc.tags[part.number];
     const off = { hasScene: false, hasFigure: false, figFrameOn: false, figShowOn: false, figBigOpen: false, figSaysLead: "false" };
