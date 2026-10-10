@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=286">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=288">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -715,7 +715,7 @@
                   </button>
                 </sc-for>
               </div>
-              <sc-if value="{{ figCanHide }}" hint-placeholder-val="{{ false }}"><button data-figtoggle="true" onClick="{{ toggleFig }}" aria-expanded="true" aria-label="Hide the figure" title="Hide the figure"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.8 9.8 0 0 0 5.4-1.6"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg></button></sc-if>
+              <sc-if value="{{ figCanHide }}" hint-placeholder-val="{{ false }}"><button data-figtoggle="true" onClick="{{ toggleFig }}" aria-expanded="true" aria-label="Hide the figure" title="Hide the figure"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.8 9.8 0 0 0 5.4-1.6"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg><span>Hide</span></button></sc-if>
             </div>
           </div>
         </sc-if>
@@ -2409,7 +2409,9 @@ class Component extends DCLogic {
       // (beside: only the frame and the panel's padding share the figure's column, not the question)
       const qs = getComputedStyle(q), pad = (parseFloat(qs.paddingTop) || 0) + (parseFloat(qs.paddingBottom) || 0);
       // (beside, the frame stretches to the panel's height, so its chrome is read from its padding and border, not its height)
-      const fp = fbx.parentElement, fps = fp ? getComputedStyle(fp) : null, chrome = (fig.offsetHeight - fig.clientHeight) + (fps ? (parseFloat(fps.paddingTop) || 0) + (parseFloat(fps.paddingBottom) || 0) : 0);
+      // (and the room kept under the frame for the Hide pull-tab that hangs off its edge, 2026-10-10: its margin)
+      const fp = fbx.parentElement, fps = fp ? getComputedStyle(fp) : null, chrome = (fig.offsetHeight - fig.clientHeight) + (fps ? (parseFloat(fps.paddingTop) || 0) + (parseFloat(fps.paddingBottom) || 0) : 0)
+        + (parseFloat(getComputedStyle(fig).marginBottom) || 0);
       // (Version D, 2026-10-08: beside the answers, UNDER the question, so the question's block above the figure is room taken too;
       // read off the layout: the rects' difference, the panel's rise-in scale divided out, its scroll added back)
       const headH = side && q._nxFigRow != null ? Math.max(0, q._nxFigRow - (parseFloat(qs.paddingTop) || 0)) : 0;

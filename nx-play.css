@@ -1372,11 +1372,16 @@ body.nx-play main:not(#mq-stage) [data-figure] { box-sizing:border-box; width:mi
 body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] { width:100% !important; margin:0 !important; height:auto !important; }
 body.nx-play main:not(#mq-stage) [data-figure] [data-figbox] img { object-fit:fill !important; }
 body.nx-play main:not(#mq-stage) [data-figure][data-fighot="false"] [data-figbox] { cursor:zoom-in; }
-/* the eye ON the figure, in its top corner (Murci 2026-10-08: the 36 px band above the image that held it is gone), in Skip's blue
-   so it reads on the white of a figure and on a dark one */
-body.nx-play main:not(#mq-stage) [data-figtoggle] { position:absolute; top:14px; right:14px; z-index:3; width:34px; height:34px; padding:0; display:grid; place-items:center; border-radius:50%;
-  border:1px solid rgba(160,190,255,0.6); background:linear-gradient(180deg, #2b4fc0, #1f3a91); color:#fff; cursor:pointer;
-  box-shadow:0 3px 10px rgba(7,20,43,0.45), 0 0 0 2px rgba(255,255,255,0.85); transition:filter 150ms ease, transform 150ms ease; }
+/* the eye is a PULL-TAB on the frame's bottom edge (Murci 2026-10-10, A of three mocks; no band above the image, 2026-10-08): on
+   the image's top corner it covered content on 103 of the 150 figures that show it on a phone (80 on a tablet), and the emptiest
+   corner still 75 (photos and maps with content in every corner). The frame lets it hang out (its clip only rounded its own
+   corners) and keeps room for it below; its top meets the image's bottom edge (the frame's 8 px padding is under it), so it covers
+   none of the picture; in Skip's blue */
+body.nx-play main:not(#mq-stage) [data-figure]:has(> [data-figpad] > [data-figtoggle]) { overflow:visible !important; margin-bottom:18px; }
+body.nx-play main:not(#mq-stage) [data-question][data-figstack="true"] > [data-figure]:has(> [data-figpad] > [data-figtoggle]) { margin-bottom:30px; }
+body.nx-play main:not(#mq-stage) [data-figtoggle] { position:absolute; right:16px; bottom:-18px; z-index:3; height:26px; padding:0 12px 0 10px; display:inline-flex; align-items:center; gap:6px;
+  border-radius:13px; border:1px solid rgba(160,190,255,0.6); background:linear-gradient(180deg, #2b4fc0, #1f3a91); color:#fff; font:inherit; font-size:12.5px; font-weight:700;
+  line-height:1; cursor:pointer; box-shadow:0 3px 10px rgba(7,20,43,0.35); transition:filter 150ms ease, transform 150ms ease; }
 body.nx-play main:not(#mq-stage) [data-figtoggle]:hover { filter:brightness(1.12); }
 body.nx-play main:not(#mq-stage) [data-figtoggle]:active { transform:scale(0.94); }
 body.nx-play main:not(#mq-stage) [data-figshow] { flex:none; align-self:flex-start; display:inline-flex; align-items:center; gap:8px; min-height:38px; padding:0 14px; border-radius:12px;
@@ -1473,10 +1478,10 @@ body.nx-play.nx-typing .nx-typestrip { display:flex; position:fixed; z-index:24;
 body.nx-play.nx-play [data-footer] [data-check] { display:none !important; }
 /* F1 typing mode: the strip above the row when the row has Back at its left (--typ-up = the row's height + 8) */
 body.nx-play.nx-typing .nx-typestrip { bottom:calc(var(--kb, 0px) + 8px + var(--typ-up, 0px)); }
-/* F2 the paper button (fixed under the profile picture) covered "2 marks" on a multiple-choice question and the figure's eye */
+/* F2 the paper button (fixed under the profile picture) covered "2 marks" on a multiple-choice question (and the figure's eye, which
+   now hangs off the frame's bottom edge) */
 @media (max-width:599px) {
   body.nx-play .mcqp .qhead { padding-right:46px; box-sizing:border-box; }
-  body.nx-play main:not(#mq-stage) [data-figtoggle] { right:auto; left:14px; }
 }
 /* F6 the medal line under a sealed term was 10.5 px on a phone */
 @media (max-width:600px) { body.nx-play main:not(#mq-stage) [data-termtier] { font-size:11px; } }
