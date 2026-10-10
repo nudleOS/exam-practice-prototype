@@ -114,7 +114,8 @@ COMPONENTS = {
                 "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"},
             obj({"kind": {"type": "string", "const": "cross"}, "alleles": STRS, "phenos": STRS,
                  "parents": {"type": "array", "items": obj({"pheno": STR, "geno": STRS}, ["pheno", "geno"])},
-                 "offspring": {"type": "array", "items": obj({"geno": STRS, "pheno": STR}, ["geno", "pheno"])}},
+                 "offspring": {"type": "array", "items": obj({"geno": STRS, "pheno": STR}, ["geno", "pheno"])},
+                 "gens": {**STRS, "description": "The generations' labels as the memo marks them: default ['P1', 'F1']; ['P2', 'F2'] for a cross of a second generation"}},
                 ["kind", "alleles", "phenos", "parents", "offspring"]) | {
                 "description": "Only for a MONOHYBRID genetic cross the memo marks P1 phenotypes, P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (compulsory), P1/F1, meiosis/fertilisation: BUILT on a Punnett square. alleles: the system's alleles; phenos: every phenotype the stem names; parents: the two P1 parents; offspring: EVERY possible genotype with its phenotype. The criteria keep the memo's 8 points"}]},
         "memo": STR}, ["criteria"]),

@@ -45,7 +45,7 @@ component (the `t` field). Choose the component by how the MEMO marks the part, 
   (they fold case, so DD would pass for dd);
 - a MONOHYBRID genetic cross the memo marks point by point (P1 phenotypes and genotypes, meiosis, gametes, fertilisation, F1
   genotypes and phenotypes, ratio) is `draw` with `build.kind` "cross" (parents, every offspring genotype's phenotype) and the
-  memo's criteria; no flag;
+  memo's criteria; no flag; `gens` when the memo names other generations ("P2 and F2": ["P2", "F2"]);
 - an essay the memo marks by points under headings with sub-maxima (Business Studies Section C) is ONE `rubric`: its bullets
   the memo's points under their headings (introduction, each aspect with its sub-maximum, conclusion) and the insight marks;
 - a part no component can mark (a drawing, a graph to plot, a dihybrid cross) becomes `draw` with the memo's criteria, and gets

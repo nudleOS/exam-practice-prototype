@@ -192,6 +192,8 @@
   // fertilisation LINES instead of a square; the square is the one layout here (the same two marks).
   function cross(host, o) {
     const cfg = o.cfg, nf = Math.min(3, cfg.phenos.length), al = "al", ph = "ph", lab = "lab";
+    // the generations as the paper names them (LS P2 Nov 2024 2.4.4 crosses parents 5 and 6: its memo marks "P2 and F2"), default P1 / F1
+    const gen = Array.isArray(cfg.gens) && cfg.gens.length === 2 ? cfg.gens : ["P1", "F1"];
     const ids = [["L0", lab, "Label for the parents' row"], ["P0", ph, "First parent's phenotype", "P"], ["P1", ph, "Second parent's phenotype", "P"],
       ["G00", al, "First parent's genotype, first allele"], ["G01", al, "First parent's genotype, second allele"],
       ["G10", al, "Second parent's genotype, first allele"], ["G11", al, "Second parent's genotype, second allele"],
@@ -203,9 +205,9 @@
     for (let k = 0; k < nf; k++) ids.push(["F" + k, ph, "Offspring phenotype " + (k + 1), "F"]);
     const cell = (S, rc) => `<td class="gx-cell">${S("C" + rc + "a")}${S("C" + rc + "b")}</td>`;
     return sockets(host, o, { ids: ids, first: al, within: [ph], empty: { ph: "phenotype", lab: "label" },   // (a blank dashed pill said nothing at 360 px)
-      tray: { al: cfg.alleles, ph: [...cfg.phenos].sort(), lab: ["F1", "Fertilisation", "Meiosis", "P1"] },   // (sorted: a paper's order could read as the answer)
+      tray: { al: cfg.alleles, ph: [...cfg.phenos].sort(), lab: [gen[1], "Fertilisation", "Meiosis", gen[0]].sort() },   // (sorted: a paper's order could read as the answer)
       trayName: { al: "Alleles: tap one", ph: "Phenotypes: tap one", lab: "Labels: tap one" },
-      labels: { P: "P1 phenotypes", G: "P1 genotypes", M: "Gametes", F: "F1 genotypes", Ph: "F1 phenotypes", R: "Ratio (compulsory)", L1: "P1 and F1", L2: "Meiosis and fertilisation" },
+      labels: { P: gen[0] + " phenotypes", G: gen[0] + " genotypes", M: "Gametes", F: gen[1] + " genotypes", Ph: gen[1] + " phenotypes", R: "Ratio (compulsory)", L1: gen[0] + " and " + gen[1], L2: "Meiosis and fertilisation" },
       view: (v, S, N, locked) => `<div class="gx-x">`
         + `<div class="gx-r">${S("L0", "gx-lab")}<div class="gx-c"><span class="gx-k">Phenotype</span><div class="gx-pair">${S("P0", "gx-ph")}<b class="gx-by" aria-hidden="true">×</b>${S("P1", "gx-ph")}</div></div></div>`
         + `<div class="gx-r"><span></span><div class="gx-c"><span class="gx-k">Genotype</span><div class="gx-pair"><span class="gx-gt">${S("G00")}${S("G01")}</span><b class="gx-by" aria-hidden="true">×</b><span class="gx-gt">${S("G10")}${S("G11")}</span></div></div></div>`

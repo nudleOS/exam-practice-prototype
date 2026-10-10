@@ -33,7 +33,7 @@
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
 <script src="papers-pages.js?v=2"></script>
   <script src="mcq-play.js?v=65"></script>
-  <script src="build-play.js?v=18"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
+  <script src="build-play.js?v=19"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -1864,7 +1864,7 @@ function buildPapers() {
           if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : b.kind === "cross" ? { cross: b } : { stems: b });
             // a cross keeps its criteria OUT of the part: they name its answers ("P1 genotypes: AA x AG"); its memo shows them at the end
-            if (b.kind === "cross") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "cross", alleles: b.alleles, phenos: b.phenos.slice().sort() } });
+            if (b.kind === "cross") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "cross", alleles: b.alleles, phenos: b.phenos.slice().sort(), gens: b.gens } });
             // (the answers stay in the key, never in the part; so do a paper's chip `labels`: LS P1 2026 3.6.4's named each stem's
             // ANSWER, "✕ A bends to the light" on a miss told the learner the shape; the builder's own neutral names show instead)
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
@@ -3709,7 +3709,8 @@ class Component extends DCLogic {
       const kids = [0, 1, 2].map(k => [a["F" + k], a["R" + k] || 0]).filter(x => x[0]), names = kids.map(x => x[0]);
       const Ph = names.length === Object.keys(want).length && new Set(names).size === names.length && names.every(n => want[n]);
       const R = Ph && kids.every(x => x[1] > 0) && kids.every(x => x[1] * want[kids[0][0]] === want[x[0]] * kids[0][1]);   // 2 : 2 is 1 : 1
-      const L1 = a.L0 === "P1" && a.L3 === "F1", L2 = a.L1 === "Meiosis" && a.L2 === "Fertilisation";
+      const gen = Array.isArray(b.gens) && b.gens.length === 2 ? b.gens : ["P1", "F1"];   // P2 / F2 when the paper says so
+      const L1 = a.L0 === gen[0] && a.L3 === gen[1], L2 = a.L1 === "Meiosis" && a.L2 === "Fertilisation";
       const it = (k, ok) => ({ key: k, awarded: ok ? 1 : 0, available: 1, verdict: ok ? "correct" : "incorrect" });
       const items = [it("P", P), it("G", G), it("M", M), it("F", F), it("Ph", Ph), it("R", R), it("L1", L1), it("L2", L2)];
       const got = (R ? 1 : 0) + Math.min(part.marks - 1, [P, G, M, F, Ph, L1, L2].filter(Boolean).length);
