@@ -127,6 +127,10 @@
             "answer_book"
            ],
            "description": "Only when the figure is printed in the ANSWER BOOK (an answer sheet's graph or annexure), not the question paper: page is then the answer book's"
+          },
+          "inset": {
+           "type": "integer",
+           "description": "Pixels of white margin round the crop, when a label touches its corner (the page's Hide button sits on the figure's top-left corner)"
           }
          },
          "required": [
@@ -229,6 +233,10 @@
                  "answer_book"
                 ],
                 "description": "Only when the figure is printed in the ANSWER BOOK (an answer sheet's graph or annexure), not the question paper: page is then the answer book's"
+               },
+               "inset": {
+                "type": "integer",
+                "description": "Pixels of white margin round the crop, when a label touches its corner (the page's Hide button sits on the figure's top-left corner)"
                }
               },
               "required": [

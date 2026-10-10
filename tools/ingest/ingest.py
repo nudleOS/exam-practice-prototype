@@ -152,12 +152,25 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
         pix = page.get_pixmap(dpi=150, clip=clip)
         name = f"q{stem.replace('.', '_')}.png"
         pix.save(str(out / "figures" / name))
+        w, h = pix.width, pix.height
         try:  # a palette PNG: diagrams are line art (the hand-made crops were 32 colours)
             from PIL import Image
-            Image.open(out / "figures" / name).convert("RGB").quantize(colors=32).save(out / "figures" / name, optimize=True)
+            im = Image.open(out / "figures" / name).convert("RGB")
+            # inset: a white margin round a crop whose labels touch its corner, where the figure's Hide button sits on the page
+            # (2026-10-10, Geography P1 Nov 2024 2.1.6: the button covered option "Y")
+            i = int(f.get("inset") or 0)
+            if i > 0:
+                framed = Image.new("RGB", (w + 2 * i, h + 2 * i), "white")
+                framed.paste(im, (i, i))
+                im, w, h = framed, w + 2 * i, h + 2 * i
+            im.quantize(colors=32).save(out / "figures" / name, optimize=True)
         except ImportError:
             pass
-        return {"src": f"tools/ingest/out/{out.name}/figures/{name}", "w": pix.width, "h": pix.height}
+        # ?v=: the file's own hash, so a re-cropped figure is fetched fresh (2026-10-10: a browser showed the old crop, stretched
+        # into the new box, after an inset changed its size under the same name)
+        import hashlib
+        v = hashlib.sha1((out / "figures" / name).read_bytes()).hexdigest()[:10]
+        return {"src": f"tools/ingest/out/{out.name}/figures/{name}?v={v}", "w": w, "h": h}
 
     for sec in paper["sections"]:
         for m in sec["missions"]:
