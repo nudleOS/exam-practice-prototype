@@ -1723,7 +1723,10 @@ const tableView = t => {
   const num = c => /^[\d.,\s–-]+$/.test(c);
   const numeric = t.rows.every(r => r.slice(1).every(num));
   const n = t.head.length;
-  const cols = numeric ? "minmax(0,1.35fr)" + " minmax(0,1fr)".repeat(n - 1) : "minmax(52px,auto)" + " minmax(0,1fr)".repeat(n - 1);
+  // each row is its own grid, so a track sized by its content ("auto") is sized per ROW and the columns drift (2026-10-10, LS P2 Nov
+  // 2024 1.5: "RrEe" sat left of its heading): every track is a share of the width, from its column's longest text, the same in each row
+  const longest = i => Math.min(24, Math.max(4, ...[t.head[i], ...t.rows.map(r => r[i])].map(c => String(c == null ? "" : c).length)));
+  const cols = numeric ? "minmax(0,1.35fr)" + " minmax(0,1fr)".repeat(n - 1) : t.head.map((_, i) => `minmax(${i ? 0 : 52}px,${longest(i)}fr)`).join(" ");
   const short = t.rows.every(r => r[0].length <= 2);
   const al = i => i === 0 ? (short ? "center" : "left") : numeric ? "center" : "left";
   return { cols, head: t.head.map((h, i) => ({ t: h, a: al(i) })),
