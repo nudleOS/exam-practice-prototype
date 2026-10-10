@@ -3756,8 +3756,10 @@ class Component extends DCLogic {
     const whole = (ok, items) => ({ marks_awarded: ok ? part.marks : items.reduce((a, x) => a + x.awarded, 0), marks: part.marks, full: ok, marker: "auto", items: items });
     if (key.mcq != null) { const ok = answer === key.mcq;
       return whole(ok, [{ key: "o" + answer, awarded: ok ? part.marks : 0, available: part.marks, verdict: ok ? "correct" : "incorrect" }]); }
+    // the first COUNT distinct picks, as the service's judge_pickn: a pool may hold more right answers than the picks asked for
+    // (Geography P2 Nov 2024 1.1.8, the memo accepts Y or Z for one mark), and both picked scored 2 of 1 (2026-10-10)
     if (key.pickn) { const each = part.marks / key.count; let got = 0;
-      const items = answer.map(i => { const ok = key.pickn.indexOf(i) !== -1; if (ok) got += each; return { key: "o" + i, awarded: ok ? each : 0, available: each, verdict: ok ? "correct" : "incorrect" }; });
+      const items = [...new Set(answer)].slice(0, key.count).map(i => { const ok = key.pickn.indexOf(i) !== -1; if (ok) got += each; return { key: "o" + i, awarded: ok ? each : 0, available: each, verdict: ok ? "correct" : "incorrect" }; });
       got = Math.round(got * 100) / 100; return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items }; }
     if (key.order) { const ok = key.order.every((w, pos) => answer[pos] === w);
       return whole(ok, key.order.map((w, pos) => ({ key: "pos" + pos, awarded: 0, available: 0, verdict: answer[pos] === w ? "correct" : "incorrect" }))); }
