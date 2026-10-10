@@ -42,6 +42,10 @@
   const PAGE_HTML = '<div class="top">\n  <button class="mapbtn" id="mq-mapBtn" aria-haspopup="dialog" aria-label="Map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span class="lbl">Map</span></button>\n  <div class="streak" id="mq-streak"></div>\n  <button class="mute" id="mq-motion" hidden aria-pressed="false" aria-label="Tilt the glass with your phone" title="Tilt"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="18" rx="2" transform="rotate(-14 12 12)"/><path d="M3.5 9.5a9 9 0 0 0 0 5M20.5 9.5a9 9 0 0 1 0 5"/></svg></button>\n  <div class="xp marks" id="mq-marksBox" aria-label="Marks"><span><span id="mq-mk">0</span><span class="of">/<span id="mq-mkOf"></span></span></span><span class="lbl">marks</span></div>\n  <div class="xp" id="mq-xpBox"><span aria-hidden="true">⚡</span><span id="mq-xp">0</span><span style="color:var(--tint)">XP</span></div>\n</div>\n<main class="stage" id="mq-stage"></main>';
   const CSS_URL = (document.currentScript && document.currentScript.src || "").replace(/mcq-play\.js/, "mcq-play.css");   // keeps a ?v= query, so a versioned script loads its matching CSS
   let mounted = null;
+  // "{a}/{b}" in an option is a stacked fraction (Maths Nov 2025, 2026-10-10: options set as the memo sets them); a screen reader hears
+  // "a over b". Only the drawing changes: the option's text stays as given everywhere else.
+  const FRAC = /\{([^{}]*)\}\/\{([^{}]*)\}/g;
+  const fracHTML = s => String(s).replace(FRAC, (_, n, d) => `<span class="frac"><span class="fn">${n}</span><span class="sr"> over </span><span class="fd">${d}</span></span>`);
   function mount(opts) {
     if (mounted) mounted.destroy();
     if (CSS_URL && !document.querySelector('link[data-mcqp]')) { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = CSS_URL; l.dataset.mcqp = ""; document.head.appendChild(l); }
@@ -244,7 +248,7 @@
       it.opts.forEach((o, i) => {
         const t = document.createElement("div"); t.className = "tile" + (deal && !reduced ? " dealt" : ""); t.dataset.i = i;
         t.style.setProperty("--d", (i * 90) + "ms"); t.style.setProperty("--gd", (1.2 + i * 0.85).toFixed(2) + "s"); t.style.setProperty("--rz", ((i % 2 ? 1 : -1) * (4 + i)) + "deg");
-        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="edge" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${tbl ? `<span class="cells">${tbl.rows[i].map(c => `<span>${esc(c)}</span>`).join("")}</span>` : o}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
+        t.innerHTML = `<button class="side face" role="radio" aria-checked="false"><span class="gleam" aria-hidden="true"></span><span class="edge" aria-hidden="true"></span><span class="letter">${L[i]}</span><span class="txt">${tbl ? `<span class="cells">${tbl.rows[i].map(c => `<span>${esc(c)}</span>`).join("")}</span>` : fracHTML(o)}</span>${panel ? `<span class="ico" aria-hidden="true">${opts.iconFor ? opts.iconFor(i, it) || "" : ""}</span><span class="radio" aria-hidden="true"></span>` : ""}</button>
           <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="buddy" aria-hidden="true"></div><div class="copy"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div></div>`;
         const face = t.querySelector(".face");
         // (a head's single letters are the figure's labels and stay capitals: "muscle in X", not "muscle in x")
@@ -367,6 +371,8 @@
     function fillBack(t, it) { const w = WHY[it.n] || {};
       const ans = t.querySelector(".ans"); ans.textContent = ""; const l = document.createElement("span"), x = document.createElement("span");
       l.className = "ans-l"; l.textContent = L[it.a]; x.className = "ans-t"; x.textContent = it.opts[it.a];
+      if (FRAC.test(x.textContent)) { FRAC.lastIndex = 0; x.innerHTML = fracHTML(x.innerHTML); }   // its fractions stacked (the text escaped first: textContent, then read back as HTML)
+      FRAC.lastIndex = 0;
       const sep = document.createElement("span"); sep.className = "ans-sep"; sep.textContent = " · "; ans.append(l, sep, x); t.querySelector(".why").textContent = whyOf(it);
       t.querySelector(".not").innerHTML = w.not ? "Why not the others · " + w.not : ""; t.querySelector(".back").removeAttribute("aria-hidden"); }
     // Where the learner goes next, and how: inside the same question group (1.1.1 -> 1.1.5) a tap anywhere continues; the

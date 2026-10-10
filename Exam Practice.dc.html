@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=29"></script>
+<script src="papers-catalogue.js?v=30"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -32,7 +32,7 @@
     ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + (rev[id] || Date.now());   // (a paper under review, ?ingested=, is always fresh)
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
 <script src="papers-pages.js?v=6"></script>
-  <script src="mcq-play.js?v=65"></script>
+  <script src="mcq-play.js?v=66"></script>
   <script src="build-play.js?v=19"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=280">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=282">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -856,11 +856,30 @@
                   </sc-for>
                 </div>
               </sc-if>
-              <div data-track="{{ tilesChips }}" style="display:contents">
+              <sc-if value="{{ wkOn }}" hint-placeholder-val="{{ false }}">
+                <div data-wknav="true">
+                  <button data-wkstep="prev" aria-label="Previous working" onClick="{{ wkPrev }}"><span aria-hidden="true">‹</span></button>
+                  <span data-wktabs="true" role="group" aria-label="Workings">
+                    <sc-for list="{{ wkTabs }}" as="wt" hint-placeholder-count="4">
+                      <button data-wktab="true" data-on="{{ wt.on }}" data-verdict="{{ wt.verdict }}" aria-current="{{ wt.cur }}" aria-label="{{ wt.aria }}" onClick="{{ wt.go }}">{{ wt.L }}</button>
+                    </sc-for>
+                  </span>
+                  <button data-wkstep="next" aria-label="Next working" onClick="{{ wkNext }}"><span aria-hidden="true">›</span></button>
+                </div>
+                <p data-wkhint="true">{{ wkHint }}</p>
+              </sc-if>
+              <div data-track="{{ tilesChips }}" data-wkfocus="{{ wkFocus }}" data-wkpair="{{ wkPair }}" style="display:contents">
               <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
-                <button data-tile="true" data-idx="{{ tl.idx }}" data-letter="{{ tl.letter }}" data-ball="{{ tl.ball }}" data-dead="{{ tl.dead }}" data-verdict="{{ tl.verdict }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ tl.off }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
+                <button data-tile="true" data-idx="{{ tl.idx }}" data-fon="{{ tl.fon }}" data-letter="{{ tl.letter }}" data-ball="{{ tl.ball }}" data-dead="{{ tl.dead }}" data-verdict="{{ tl.verdict }}" role="{{ tl.role }}" aria-checked="{{ tl.checked }}" aria-label="{{ tl.aria }}" tabIndex="{{ tl.tab }}" onClick="{{ tl.pick }}" disabled="{{ tl.off }}" style="min-height:56px; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; border:1.5px solid {{ tl.border }}; background:{{ tl.bg }}; color:var(--text); text-align:left; cursor:pointer; box-shadow:{{ tl.shadow }}; transition:border-color 160ms ease, background 160ms ease">
                   <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; background:{{ tl.badgeBg }}; font-size:13px; font-weight:800; color:{{ tl.badgeColor }}">{{ tl.badge }}</span>
-                  <span style="flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.4; text-wrap:pretty">{{ tl.text }}</span>
+                  <span data-wktext="{{ tl.richAttr }}" style="flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.4; text-wrap:pretty">
+                    <sc-if value="{{ tl.plainOn }}" hint-placeholder-val="{{ true }}">{{ tl.text }}</sc-if>
+                    <sc-if value="{{ tl.rich }}" hint-placeholder-val="{{ false }}">
+                      <sc-for list="{{ tl.lines }}" as="ln" hint-placeholder-count="2">
+                        <span data-wl="true"><span data-ws="true"><sc-for list="{{ ln.segs }}" as="sg" hint-placeholder-count="1"><sc-if value="{{ sg.frac }}" hint-placeholder-val="{{ false }}"><span data-frac="true"><span data-fn="true">{{ sg.n }}</span><span data-fd="true">{{ sg.d }}</span></span></sc-if><sc-if value="{{ sg.txt }}" hint-placeholder-val="{{ true }}">{{ sg.t }}</sc-if></sc-for></span><sc-if value="{{ ln.hasReason }}" hint-placeholder-val="{{ false }}"><span data-wr="true">{{ ln.reason }}</span></sc-if></span>
+                      </sc-for>
+                    </sc-if>
+                  </span>
                   <sc-if value="{{ tl.hasStamp }}" hint-placeholder-val="{{ false }}">
                     <span style="flex:none; height:28px; padding:0 9px; border-radius:14px; display:flex; align-items:center; background:{{ tl.stampBg }}; font-size:12px; font-weight:800; color:{{ tl.stampColor }}; white-space:nowrap">{{ tl.stamp }}</span>
                   </sc-if>
@@ -2043,6 +2062,12 @@ class Component extends DCLogic {
     // &paper=ls picks Life Sciences. ?play=N opens mission N of the paper straight away (a design preview switch): ?paper=ls&play=0.
     document.documentElement.dataset.nx = new URLSearchParams(location.search).get("theme") === "light" ? "light" : "dark";   // the play look's theme: dark (the app's), ?theme=light to review
     const qs = new URLSearchParams(location.search), playQ = qs.get("play"), paperQ = qs.get("paper") || "ls";   // aet, ls, or an ingested paper's id
+    // focus swipe (an MCQ of workings, layer2Vals): a sideways swipe over the workings shows the next or the last one; the page still
+    // scrolls up and down (touch-action: pan-y on them); the lift that ends a swipe never answers (pick checks _wkSwiped)
+    document.addEventListener("pointerdown", e => { const g = e.isPrimary && e.target && e.target.closest ? e.target.closest('[data-wkfocus="true"]') : null; this._wkSw = g ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null; }, { passive: true });
+    document.addEventListener("pointerup", e => { const w = this._wkSw; this._wkSw = null; if (!w || w.id !== e.pointerId) return; const dx = e.clientX - w.x, dy = e.clientY - w.y;
+      if (Math.abs(dx) > 44 && Math.abs(dx) > 1.4 * Math.abs(dy)) { this._wkSwiped = Date.now(); this.wkStep(dx < 0 ? 1 : -1); } }, { passive: true });
+    document.addEventListener("pointercancel", () => { this._wkSw = null; }, { passive: true });
     const ready = () => { this.papers = buildPapers(); this.setState({ bus: busRead() });
       // ?demo=1 (the presentation, Murci 2026-10-08): the paper opens with every part closed on Gold except the ones to present,
       // straight into the first of them; each is the only open part of its question, so finishing it shows the end page
@@ -2144,6 +2169,11 @@ class Component extends DCLogic {
     if (this._lastScreen === "play" && this.state.screen !== "play" && this._retakeSaved) this.endRetake();
     this._lastScreen = this.state.screen;
     const st = this.state; document.body.classList.toggle("nx-play", st.screen === "play");
+    // focus swipe: the working(s) coming on slide in from the side they were swiped from (not on a new part: that deals in as ever)
+    const wkEl = st.screen === "play" ? document.querySelector('[data-wkfocus="true"]') : null, wkKey = wkEl ? (this.part() || {}).key + "|" + Math.floor((st.wkIdx || 0) / this.wkPer()) : null;
+    if (wkKey !== this._wkKey) { const was = this._wkKey; this._wkKey = wkKey;
+      if (wkEl && was && was.split("|")[0] === wkKey.split("|")[0] && st.wkDir && !st.reduced)
+        wkEl.querySelectorAll('[data-tile][data-fon="true"]').forEach(t => t.animate([{ translate: (st.wkDir * 32) + "px 0", opacity: 0 }, { translate: "0 0", opacity: 1 }], { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" })); }
     if (st.screen !== "map") this._mapSeen = null;   // the next visit to the map replays what is new since this one
     // the swiped subject row (a phone): when the map opens or its subject changes, the current chip slides to the middle; only
     // then, so it never fights the learner's own swipe
@@ -3588,13 +3618,13 @@ class Component extends DCLogic {
     clearTimeout(this._seqT); this._seqBusy = false; document.querySelectorAll("[data-seqtrack]").forEach(t => { t.classList.remove("nx-pulsing"); t.querySelectorAll("[data-ball]").forEach(b => { delete b.dataset.lit; b.style.visibility = ""; }); });
     this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, build: {}, drawn: false, reply: null, marking: false,
     barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
-    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
+    pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false, wkIdx: 0, wkDir: 0 }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
   // "What cost you marks" (2026-10-02): the paper's mark (and its first-try mark once a retake changed it), one plain line, then
   // a try's answer as the learner gave it, in words (the report card shows each try beside the memo)
   ansText(part, a) {
     const o = (part.options || []).map(x => String(x).trim()), mode = part.response_mode, L = i => String.fromCharCode(65 + i);
-    const opt = i => i == null || i < 0 ? "" : part.ab || /^[A-Z]$/.test(o[i] || "") ? (o[i] || "") : L(i) + " · " + (o[i] || "").replace(/\.$/, "");
+    const opt = i => i == null || i < 0 ? "" : part.ab || /^[A-Z]$/.test(o[i] || "") ? (o[i] || "") : L(i) + " · " + (this.isRich(o[i] || "") ? this.plainWork(o[i]) : (o[i] || "").replace(/\.$/, ""));   // (a working: one line, its fractions as "x/(2π)")
     if (a == null || a === "") return "";
     if (mode === "mcq") return opt(a);
     if (mode === "pickn" || mode === "order") return (a || []).map(opt).filter(Boolean).join(mode === "order" ? " → " : ", ");
@@ -3624,7 +3654,7 @@ class Component extends DCLogic {
         marks: lost > 0 ? "−" + lost + " of " + q.marks : best + " / " + q.marks, lostSide: lost > 0,
         tries: tries || (medal === "gold" && answered ? "✓ Right on the first try" : answered ? "" : "Not answered yet"),
         memo: (q.response_mode === "mcq" && !q.ab ? (SERVER.memo[q.key] || []).map(t => { const o = (q.options || []).map(x => String(x).trim()), i = o.indexOf(String(t).trim());
-            return i >= 0 && !/^[A-Z]$/.test(o[i]) ? String.fromCharCode(65 + i) + " · " + o[i].replace(/\.$/, "") : String(t); }) : (SERVER.memo[q.key] || []).map(String)).join("\n") || "In the paper's memo",   // (a multiple-choice memo with its letter, as the tries show)
+            return i >= 0 && !/^[A-Z]$/.test(o[i]) ? String.fromCharCode(65 + i) + " · " + (this.isRich(o[i]) ? "\n" + this.fracPlain(o[i]) : o[i].replace(/\.$/, "")) : String(t); })   /* (a working: its lines, as the memo has them) */ : (SERVER.memo[q.key] || []).map(String)).join("\n") || "In the paper's memo",   // (a multiple-choice memo with its letter, as the tries show)
         canGo: lost > 0, goLabel: answered ? "Retake" : "Answer",
         aria: (answered ? "Retake " : "Answer ") + q.number + ", " + lost + " of " + q.marks + " marks to win" + (answered ? ", no XP" : ""),
         go: () => answered ? this.retakePart(mi, pi, "summary") : this.resetInputs({ screen: "play", mi: mi, pi: pi, revisit: true, revisitTo: "summary" }) }; }).filter(Boolean) }));
@@ -3999,6 +4029,31 @@ class Component extends DCLogic {
     return finish(result);
   }
 
+  // ---- Focus swipe: an MCQ of WORKINGS (Maths Nov 2025; Murci, 2026-10-10) ----
+  // One working on a phone, two side by side from 760 px (a tablet either way up, a desktop): a working is several lines, and at about
+  // 340 px a card still keeps each of the memo's lines on one line.
+  wkPer() { return (this.state.vw || innerWidth) >= 760 ? 2 : 1; }
+  wkTo(i, focus) { const p = this.part(); if (!p) return; const n = (p.options || []).length, per = this.wkPer(), cur = this.state.wkIdx || 0, to = Math.max(0, Math.min(n - 1, i));
+    if (Math.floor(to / per) === Math.floor(cur / per)) { if (focus) this.wkFocusTile(); return; }
+    this.setState({ wkIdx: to, wkDir: to > cur ? 1 : -1 }, () => { if (focus) this.wkFocusTile(); }); }
+  wkStep(d, focus) { const p = this.part(); if (!p) return; const n = (p.options || []).length, per = this.wkPer(), pages = Math.ceil(n / per), pg = Math.floor((this.state.wkIdx || 0) / per);
+    this.setState({ wkIdx: ((pg + d + pages) % pages) * per, wkDir: d }, () => { if (focus) this.wkFocusTile(); }); }
+  wkFocusTile() { const t = document.querySelector('[data-wkfocus="true"] [data-tile][data-fon="true"]'); if (t) t.focus({ preventScroll: true }); }
+  // A working option drawn as the memo sets it: a line per "\n", a line's trailing "[reason]" in its own column (a proof's statement
+  // and reason) and "{a}/{b}" a stacked fraction. The option's text itself is unchanged (the service holds it; the answer is its index).
+  isRich(o) { return /\n|\{[^{}]*\}\/\{[^{}]*\}/.test(String(o)); }
+  workLines(o) {
+    const segs = s => { const out = [], re = /\{([^{}]*)\}\/\{([^{}]*)\}/g; let at = 0, m;
+      while ((m = re.exec(s))) { if (m.index > at) out.push({ frac: false, txt: true, t: s.slice(at, m.index), n: "", d: "" }); out.push({ frac: true, txt: false, t: "", n: m[1], d: m[2] }); at = re.lastIndex; }
+      if (at < s.length) out.push({ frac: false, txt: true, t: s.slice(at), n: "", d: "" }); return out; };
+    return String(o).split("\n").map((line, k) => { const m = line.match(/^(.*?)\s*\[([^\[\]]+)\]\s*$/);
+      return { k: String(k), segs: segs(m ? m[1] : line), hasReason: !!m, reason: m ? "[" + m[2] + "]" : "" }; }); }
+  // the same option as text: fracPlain writes a fraction "x/(2π)" (its lines kept: the report card's memo); plainWork makes it one line,
+  // a screen reader's label (speak: "(25 − x) over (2π)", a line a sentence) or the lines joined by ";" (a try, as given)
+  fracPlain(o, speak) { const g = t => /^[\w.²³′″√]+$/.test(t) ? t : "(" + t + ")";
+    return String(o).replace(/\{([^{}]*)\}\/\{([^{}]*)\}/g, (_, n, d) => g(n) + (speak ? " over " : "/") + g(d)); }
+  plainWork(o, speak) { return this.fracPlain(o, speak).split("\n").join(speak ? ". " : "; "); }
+
   // ---- Practice MCQs play in mcq-play (the concept design) ----
   // On for an MCQ part in practice: not a closed part (its closed view and Replay stay), not a figure
   // mission (its MCQs pick on the figure).
@@ -4010,6 +4065,9 @@ class Component extends DCLogic {
     // table, measured: the table was missing and the cards read "A · X", "B · Y")
     const lettersOnly = (part.options || []).length > 0 && part.options.every(o => /^[A-Z]$/.test(String(o).trim()));
     if (lettersOnly || part.ab || (part._table !== undefined ? part._table : m.table)) return false;   // (part.ab: the Venn, below)
+    // options that are WORKINGS (a line break in one) play on the page, one at a time (focus swipe, layer2Vals): the component's four
+    // stacked glass cards squeezed a memo's working into a paragraph each (Murci, 2026-10-10: "squeezed ... structured as the memo")
+    if ((part.options || []).some(o => String(o).indexOf("\n") !== -1)) return false;
     // A part that is already closed opens in the page's closed view (with Replay) — but the part the component is
     // playing closes DURING its animation, and must not unmount it then.
     // (2026-09-30: a closed part the component finished opens in the component again, as it ended: seeded from mcqBook. Measured: the
@@ -4523,6 +4581,14 @@ class Component extends DCLogic {
     const need = part.count || 1;
     const deadT = this.pg(part.key).dead || [], chipsOnly = opts.length > 0 && opts.every(o => /^[A-Z]$/.test(String(o).trim()));
     const seqBalls = mode === "order" && chipsOnly && opts.length > 1;   // 2.5.4's track (below): no stamp on a ball, the impulse says it
+    // FOCUS SWIPE (Maths Nov 2025, Murci 2026-10-10, picked from three mocks): an MCQ whose options are WORKINGS (an option with a line
+    // break) shows one at a time at full width (two side by side from a tablet up), laid out as the memo sets it (workLines); tabs A-D
+    // and a sideways swipe change which; a tap on a working answers it, as every MCQ card does (no Check: Murci, 2026-10-01)
+    const work = mode === "mcq" && opts.some(o => String(o).indexOf("\n") !== -1), wkPer = this.wkPer(), wkCur = Math.max(0, Math.min(opts.length - 1, s.wkIdx || 0)),
+      wkPage = Math.floor(wkCur / wkPer) * wkPer, wkOn = i => !work || (i >= wkPage && i < wkPage + wkPer);
+    // every working already tried wrong in this round (a tile shows only the LAST try's verdict; the tabs are the overview, so they keep
+    // them all: measured, D's mark went when B was tried next). From the tries as given ("D · ..."), which name the letter.
+    const wkTried = work ? new Set((this.pg(part.key).att || []).filter(x => !x.ok && /^[A-Z] · /.test(x.t || "")).map(x => x.t.charCodeAt(0) - 65)) : new Set();
     const tiles = isTiles ? opts.map((o, i) => {
       let sel = false, badge = letters[i], sp = null;
       if (mode === "mcq") { sel = s.pick === i; sp = s.edited["o" + i] ? null : stampOf(itemsBy["o" + i]); if (!sp && revealAns === i && s.pick !== i) sp = memoStamp; }
@@ -4530,12 +4596,12 @@ class Component extends DCLogic {
       if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : letters[i] === o ? "·" : letters[i];
         sp = sel && !s.edited.order && !seqBalls ? stampOf(itemsBy["pos" + pos]) : null; }
       const out = chipsOnly && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket, no stamp
-      const st = stampSty(sp);
-      return Object.assign({ idx: String(i), text: o, badge: badge,
+      const st = stampSty(sp), rich = this.isRich(o);
+      return Object.assign({ idx: String(i), text: rich ? "" : o, badge: badge, rich: rich, plainOn: !rich, richAttr: rich ? "true" : "false", lines: rich ? this.workLines(o) : [], fon: wkOn(i) ? "true" : "false",
         letter: chipsOnly ? String(o).trim() : "", ball: chipsOnly ? "true" : "false", dead: this.deadAttr(out, String(o).trim()), off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
         role: mode === "mcq" ? "radio" : mode === "pickn" ? "checkbox" : "button", checked: mode === "order" ? "false" : sel ? "true" : "false",
         // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
-        aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + o) + (sp ? ", " + sp.t : ""),
+        aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + (rich ? this.plainWork(o, true) : o)) + (sp ? ", " + sp.t : ""),
         tab: mode === "mcq" ? ((s.pick == null ? i === 0 : sel) ? "0" : "-1") : "0",
         border: sp ? sp.b : sel ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: sel ? "rgba(0,104,248,0.16)" : "var(--nx-tile, rgba(32,35,39,0.78))",   /* the theme's (nx-play.css): in the light theme the card was dark grey under dark text, measured 2026-10-10 */
         shadow: sel ? "0 0 0 3px rgba(0,104,248,0.18)" : "none",
@@ -4543,6 +4609,7 @@ class Component extends DCLogic {
         pick: () => {
           if (locked) return;
           const st0 = this.state;
+          if (work && Date.now() - (this._wkSwiped || 0) < 450) return;   // the lift of a sideways swipe is not a tap on the working under it
           // an MCQ on the page answers on the tap, as a card does (LS P1 Nov 2024 3.3.3, X or Y: measured, no way to check the pick)
           if (mode === "mcq") { this.setState({ pick: i, edited: Object.assign({}, st0.edited, Object.fromEntries(opts.map((_, j) => ["o" + j, true]))) }, () => this.check()); return; }
           if (mode === "pickn") { const has = st0.picks.indexOf(i) !== -1;
@@ -4649,7 +4716,14 @@ class Component extends DCLogic {
       tilesChips: isTiles && (part.options || []).length > 0 && (part.options || []).every(o => /^[A-Z]$/.test(String(o).trim())) ? "true" : "false",
       isTiles: isTiles && !venn, tiles: tilesShown, hasVenn: venn, vennA: venn ? part.ab.a : "", vennB: venn ? part.ab.b : "", vennTab: locked ? "-1" : "0",
       vennGroupAria: venn ? "Where does it belong: " + part.ab.a + " (A), " + part.ab.b + " (B), both or none?" : "", ...vennVals, tilesRole: mode === "mcq" ? "radiogroup" : "group", tilesAria: mode === "mcq" ? "Answer options" : mode === "pickn" ? "Pick " + need : "Put these in order",
+      // focus swipe: the tabs (each marked as its tile is: tried wrong, right, or the memo's), Back / Next round the workings, the hint
+      wkOn: work, wkFocus: work ? "true" : "false", wkPair: work && wkPer === 2 ? "true" : "false", wkPrev: () => this.wkStep(-1), wkNext: () => this.wkStep(1),
+      wkTabs: work ? tiles.map((t, i) => ({ L: letters[i], on: wkOn(i) ? "true" : "false", cur: wkOn(i) ? "true" : "false", verdict: t.verdict || (wkTried.has(i) ? "bad" : ""), go: () => this.wkTo(i),
+        aria: (wkPer === 2 ? "Show workings " + letters[Math.floor(i / 2) * 2] + " and " + (letters[Math.floor(i / 2) * 2 + 1] || "") : "Show working " + letters[i]) + (t.verdict === "bad" || (!t.verdict && wkTried.has(i)) ? ", tried: wrong" : t.verdict === "ok" ? ", marked right" : t.verdict === "memo" ? ", the memo's answer" : "") })) : [],
+      wkHint: "Swipe or tap " + letters[0] + "–" + letters[Math.max(0, opts.length - 1)] + (closed ? " to look over the other workings." : " to compare the workings. Tap the one you choose to answer."),
       tilesKeys: e => { if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].indexOf(e.key) === -1) return;
+        // focus swipe: left / right change the working shown (never answer); up / down do nothing (the others are not on screen)
+        if (work) { e.preventDefault(); if (e.key === "ArrowLeft" || e.key === "ArrowRight") this.wkStep(e.key === "ArrowRight" ? 1 : -1, true); return; }
         const ts = [].slice.call(e.currentTarget.querySelectorAll("[data-tile]")); const i = ts.indexOf(document.activeElement); if (i < 0) return;
         e.preventDefault(); const nx = ts[(i + (e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : ts.length - 1)) % ts.length]; nx.focus();
         if (e.currentTarget.getAttribute("role") === "radiogroup") nx.click(); },

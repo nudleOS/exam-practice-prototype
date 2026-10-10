@@ -2463,6 +2463,35 @@ body.nx-play main:not(#mq-stage) [data-vennitems] { flex-direction:column !impor
 [data-ctx-table] [data-pin="true"] { position: sticky; left: 0; z-index: 1; background: var(--tbl-pin); box-shadow: 1px 0 0 var(--line); }
 [data-ctx-table] [role="table"] > [role="row"]:first-child [data-pin="true"] { background: linear-gradient(rgba(255,255,255,0.05), rgba(255,255,255,0.05)), var(--tbl-pin); }
 [data-tbl-scroll]:focus-visible { outline: 3px solid #81b1ff; outline-offset: -3px; }
+
+/* ---- Focus swipe: an MCQ of WORKINGS (Maths Nov 2025; Murci 2026-10-10, picked C of three mocks: "squeezed and they should be
+   structured as the memo"). One working at a time on a phone, two side by side from 760 px (wkPer), tabs A-D with Back / Next round
+   them, a sideways swipe. Each laid out as the memo sets it: a line per step, a proof's [reason] in a right-hand column, stacked
+   fractions. A tap on a working answers it, as every card does. */
+body.nx-play [data-wknav] { display:flex; align-items:center; gap:6px; }
+body.nx-play [data-wktabs] { display:flex; gap:6px; flex:1; justify-content:center; }
+body.nx-play :is([data-wktab], [data-wkstep]) { min-width:44px; height:44px; padding:0; border-radius:12px; border:1.5px solid var(--line2); background:rgba(255,255,255,0.05);
+  color:var(--text2); font:inherit; font-size:15px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 160ms ease, border-color 160ms ease; }
+body.nx-play [data-wkstep] { background:transparent; border-color:transparent; font-size:26px; font-weight:500; line-height:1; color:var(--text); }
+body.nx-play [data-wktab][data-on="true"] { background:var(--grad); border-color:transparent; color:#ffffff; }
+body.nx-play [data-wktab][data-verdict="bad"] { border-color:rgba(255,107,107,0.8); text-decoration:line-through; text-decoration-thickness:2px; }
+body.nx-play [data-wktab][data-verdict="bad"]:not([data-on="true"]) { color:#ff8a8a; }
+body.nx-play [data-wktab]:is([data-verdict="ok"], [data-verdict="memo"]) { border-color:#3ddc97; }
+body.nx-play :is([data-wktab], [data-wkstep]):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+body.nx-play [data-wkhint] { margin:0; font-size:12.5px; line-height:1.4; color:var(--text2); text-align:center; }
+body.nx-play [data-track][data-wkfocus="true"] { display:grid !important; grid-template-columns:minmax(0, 1fr); gap:10px; touch-action:pan-y; }
+body.nx-play [data-track][data-wkpair="true"] { grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:stretch; }
+body.nx-play [data-wkfocus="true"] [data-tile][data-fon="false"] { display:none !important; }
+body.nx-play [data-wkfocus="true"] [data-tile] { align-items:flex-start !important; padding:12px 14px !important; }
+body.nx-play [data-wktext="true"] { font-weight:400 !important; font-size:15.5px !important; line-height:1.45 !important; text-wrap:wrap !important; }
+body.nx-play [data-wl] { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; column-gap:12px; row-gap:0; padding:3px 0; }
+body.nx-play [data-ws] { flex:1 1 auto; min-width:0; overflow-wrap:anywhere; }
+/* a reason stays beside its statement while both fit; a long pair puts the reason on its own line, right-aligned (the memo wraps a
+   long reason so; measured: at 310 px a 48% column broke "[∠ at centre = 2 × ∠ at circumference]" over three lines) */
+body.nx-play [data-wr] { flex:0 1 auto; margin-left:auto; max-width:100%; text-align:right; font-size:12.5px; line-height:1.35; color:var(--text2); }
+body.nx-play [data-frac] { display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.86em; line-height:1.2; margin:0 0.14em; }
+body.nx-play [data-frac] > [data-fd] { border-top:1.5px solid currentColor; padding-top:1px; }
+html[data-nx="light"] body.nx-play [data-wktab]:not([data-on="true"]) { background:rgba(10,30,70,0.04); }
 /* a page MCQ card's resting colours by theme (Exam Practice layer2Vals: var(--nx-tile) / var(--nx-tilebadge), dark fallbacks there).
    Measured 2026-10-10: in the light theme every word card on the page was rgba(32,35,39,0.78) under the theme's dark navy text. */
 html[data-nx="light"] body.nx-play { --nx-tile:#ffffff; --nx-tilebadge:rgba(10,30,70,0.07); }

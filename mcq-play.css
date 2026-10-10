@@ -460,3 +460,6 @@
   .mcqp .qimg img { display:block; width:100%; height:auto; max-height:min(28svh, 210px); object-fit:contain; }
   .mcqp .qimg.big { cursor:zoom-out; max-width:none; } .mcqp .qimg.big img { max-height:none; }
   .mcqp .qimg:focus-visible { outline:2px solid var(--tint); outline-offset:3px; }
+/* a stacked fraction in an option ("{a}/{b}", mcq-play.js fracHTML; Maths Nov 2025, 2026-10-10) */
+.mcqp .frac { display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.86em; line-height:1.2; margin:0 0.14em; }
+.mcqp .frac > .fd { border-top:1.5px solid currentColor; padding-top:1px; }
