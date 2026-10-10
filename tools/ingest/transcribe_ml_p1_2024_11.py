@@ -1,7 +1,7 @@
 """Mathematical Literacy P1 Nov 2024, the whole paper (Questions 1 to 5, 150 marks), hand-transcribed into the catalogue format (as
-if Claude had produced it), then run through `ingest.py --from-json` like any ingested paper. Stems, options, marks, answers and the
-memo's working are the paper's and the memo's own (its English); clues and figure captions are ours. No API call: the transcription
-is the source, kept in git (out/ is not). The question paper and its ADDENDUM are SCANS (no text layer): read from their page
+if Claude had produced it), then run through `ingest.py --from-json` like any ingested paper. Stems, the printed options, marks,
+answers and the memo's working are the paper's and the memo's own (its English); clues, figure captions and the wrong options of the
+authored multiple choice are ours. No API call: the transcription is the source, kept in git (out/ is not). The question paper and its ADDENDUM are SCANS (no text layer): read from their page
 images; the memo has a text layer, checked against its page images.
 
   python tools/ingest/transcribe_ml_p1_2024_11.py
@@ -15,15 +15,19 @@ typed as 5.1's table (income) and extract (expenditure). The ANSWER SHEET for QU
 is cropped from there, so no figure comes from the addendum.
 
 How the memo's shapes map (Mathematical Literacy, as in ML P1 and P2 Nov 2025):
-  a read-off -> num or term (a time slot, a fraction, a meter number, a tax bracket and a formula are strict terms: one digit or letter
-  changes the answer); "Choose the statement (A-C)" / "Choose the correct option (A-E)" -> mcq in the paper's order; a word chosen from
-  brackets -> mcq; definitions matched to terms -> match (2 marks a pair); "Identify the food items" -> list; "Calculate / Determine /
-  Convert" -> steps, each step ONE number the memo's method produces (unit in the label's brackets), its RT/MA/CA/C/R marks riding on
-  the number they lead to; "Verify ... whether ... valid" -> steps for the numbers, the conclusion (O) folded into the last step; a
-  reason or a trend (O marks) -> rubric; three sources that must add up to 34% -> rubric with the memo's three sets as alternatives;
-  "draw a line graph on the ANSWER SHEET" -> draw, self-checked.
-  A memo range or two accepted answers -> a tolerance spanning them; the memo's NPR (no penalty for rounding if the first decimal is
-  correct) widens a tolerance to cover the answer's one-decimal rounding.
+  a read-off of a word or a code -> term (a time slot, a fraction, a meter number, a tax bracket and a formula are strict terms: one
+  digit or letter changes the answer); "Choose the statement (A-C)" / "Choose the correct option (A-E)" -> mcq in the paper's order; a
+  word chosen from brackets -> mcq; definitions matched to terms -> match (2 marks a pair); "Identify the food items" -> list; a reason
+  or a trend (O marks) -> rubric; three sources that must add up to 34% -> rubric with the memo's three sets as alternatives; "draw a
+  line graph on the ANSWER SHEET" -> draw, self-checked.
+  Authored multiple choice (Murci's ruling, 2026-10-10) for every number a learner would type (a number read off, "Calculate /
+  Determine / Convert", "Verify ... whether ... valid"): the stem ends "Choose the correct working"; four options, one the memo's FIRST
+  method as the memo works it, a line per step ("{a}/{b}" a stacked fraction; numbers as the memo writes them, decimal comma and space
+  thousands; a verify part's conclusion its last line), and three built from real errors for that calculation (a wrong operation, the
+  wrong base, a unit slip, a value from the wrong row or column, rounding too early, an error that turns the conclusion), each ending
+  in a confident result. Every option of a part has the same number of lines; the part keeps its marks, all or nothing. A number read
+  off (1.1.1, 2.2.1, 3.1.1) shows its reading as the working: which bar, line or row, then the value. 5.1.5 and 5.2.2 follow the
+  paper's NOTE, not the memo's one-crore conversion (see their memo_issue flags).
 Figure boxes are measured in PDF points (the scan's pages 595.2 x 841.68) from ink profiles of the page renders (scratchpad
 ml1_24: ink_ml1_24.py, prof_ml1_24.py), set so that ingest's 1% pad keeps the drawing and leaves out the "[Adapted from ...]" lines and
 the text around it, and checked on the cropped figures; `inset` where a printed label sits in the crop's top-left corner (the page's
@@ -56,20 +60,14 @@ def rub(n, q, marks, bullets, clues, each=None, must=None, notes=None, worth=Non
 
 term = lambda n, q, a, clues, marks=2, strict=False: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a,
                                                       **({"strict": True} if strict else {})}
-num = lambda n, q, a, tol, unit, clues, marks=2: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
-lst = lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
+lst =lambda n, q, count, pool, clues, marks: {"t": "list", "n": n, "marks": marks, "q": q, "clues": clues, "count": count, "pool": pool}
 match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "marks": len(left) * each, "q": q, "clues": clues, "left": left,
                                                          "right": right, "a": a, **({"each": each} if each > 1 else {}), **kw}
 draw = lambda n, q, marks, criteria, clues, memo="": {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
                                                      "criteria": [{"text": t, "marks": m} for t, m in criteria], **({"memo": memo} if memo else {})}
 
 
-def steps(n, q, marks, sts, clues):
-    """sts: (label, marks, answer, tolerance, the memo's working[, other values that also earn it])."""
-    s = [{"id": "s%d" % (i + 1), "label": st[0], "marks": st[1], "a": st[2], "tol": st[3], "memo": st[4], **({"also": st[5]} if len(st) > 5 else {})}
-         for i, st in enumerate(sts)]
-    assert sum(x["marks"] for x in s) == marks, n
-    return {"t": "steps", "n": n, "marks": marks, "q": q, "clues": clues, "steps": s}
+WORK = "\n\nChoose the correct working."   # the stem's ending on every authored multiple choice (a typed calculation, Murci 2026-10-10)
 
 
 def bare(s):
@@ -117,8 +115,12 @@ def formulas():
 
 # ---- QUESTION 1, the question paper pages 3-5 and the memo pages 2-4 ----
 q11 = [
-    num("1.1.1", "Write down the number of voters at School Y from 16:00–16:30.", 5, 0.01, "voters",
-        ["School Y's bars are the patterned ones.", "Find the 16:00–16:30 slot and read its bar against the axis."]),
+    mcq("1.1.1", "Write down the number of voters at School Y from 16:00–16:30." + WORK, [
+        "School Y is the black bar\nAt 16:00–16:30 it reaches 10 voters",
+        "School Y is the patterned bar\nAt 16:00–16:30 it reaches 5 voters",
+        "School Y is the patterned bar\nAt 16:00–16:30 it reaches 9 voters",
+        "Both bars at 16:00–16:30\n10 + 5 = 15 voters"], 1,
+        ["School Y's bars are the patterned ones.", "Find the 16:00–16:30 slot and read its bar against the axis."], marks=2),
     term("1.1.2", "Identify the time slot when 30 people voted at School X.", slot(),
          ["School X's bars are the black ones.", "Find the bar that reaches the 30 line, then read its time slot below."], strict=True),
     mcq("1.1.3", "Choose the statement (A–C) below that BEST describes the trend of the voters at School Y.", [
@@ -129,9 +131,12 @@ q11 = [
     term("1.1.4", "The probability of randomly selecting a voter from School X is 0,56 during the 17:30–18:00 time slot.\n\nWrite 0,56 as a "
          "simplified fraction.", ["14/25", "14 over 25"],
          ["0,56 is 56 hundredths: write it over 100 first.", "Divide the top and the bottom by their highest common factor."], strict=True),
-    steps("1.1.5", "Calculate the total number of voters at both schools who voted during the 17:00–17:30 time slot.", 3, [
-        ("Total number of voters at both schools", 3, 52, 0.01, "Total number = 26 + 26 ✓RT ✓MA = 52 ✓A")],
-          ["Read both bars in the 17:00–17:30 slot.", "Add the two schools' voters."])]
+    mcq("1.1.5", "Calculate the total number of voters at both schools who voted during the 17:00–17:30 time slot." + WORK, [
+        "Total number = 25 + 25\n= 50",
+        "Total number = 30 + 24\n= 54",
+        "Total number = 12 + 9\n= 21",
+        "Total number = 26 + 26\n= 52"], 3,
+        ["Read both bars in the 17:00–17:30 slot.", "Add the two schools' voters."], marks=3)]
 FOOD = {"title": "TABLE 1: COMPARATIVE FOOD PRICES FOR SOME LUNCH ITEMS",
         "head": ["FOOD ITEMS", "PRICE IN RAND: MAY 2022", "PRICE IN RAND: MAY 2023", "PERCENTAGE CHANGE: YEAR ON YEAR",
                  "PERCENTAGE CHANGE: MONTH ON MONTH"],
@@ -143,22 +148,25 @@ q12 = [
     lst("1.2.1", "Identify the food items that showed a decrease in both the month-on-month and year-on-year percentage change.", 2,
         [["Sunflower oil", "Oil"], ["Oranges", "Orange"]],
         ["A decrease is a negative percentage change.", "Both percentage columns must be negative in the same row."], 3),
-    steps("1.2.2", "Determine the missing value, A.", 2, [
-        ("Total price A for May 2022 (R)", 2, 298.41, 0.005, "Value of A = R12,60 + R45,56 + R52,97 + R40,68 + R22,07 + R37,73 + R86,80 ✓MA "
-         "= R298,41 ✓A. NPU")],
-          ["A is the TOTAL of the May 2022 column.", "Add all seven May 2022 prices."]),
-    steps("1.2.3", "Calculate the price of a dozen eggs during May 2022.", 2, [
-        ("Price of a dozen eggs in May 2022 (R)", 2, 35.31, 0.015, "Price per dozen = R52,97 ÷ 1,5 ✓A (OR × 1/1,5) = R35,31 ✓A (OR 1 egg = "
-         "R52,97 ÷ 18 ✓A, price per dozen = R2,94277 × 12 = R35,31 ✓A; OR price for ½ dozen = R52,97 ÷ 3 ✓A = R17,65666, price for a "
-         "dozen = R17,65666 × 2 = R35,31 ✓A). NPR")],
-          ["The tray in TABLE 1 holds 1,5 dozen eggs.", "Find the price of ONE dozen from the May 2022 price."]),
-    steps("1.2.4", "Write down the unit ratio, in the form 1 : …, for the price of the oranges in May 2022 to the price of the oranges in "
-          "May 2023.", 3, [
-        ("Price of oranges in May 2022 (R)", 1, 22.07, 0.005, "22,07 ✓RT"),
-        ("Price of oranges in May 2023 (R)", 1, 20.10, 0.005, "20,10 ✓RT"),
-        ("The unit ratio 1 : … (the number after the colon)", 1, 0.91, 0.011, "= 22,07 : 20,10 = 1 : 0,9107385591 ≈ 1 : 0,91 ✓A "
-         "(simplification in correct order). NPR")],
-          ["May 2022 comes first in the ratio.", "Divide both sides by the May 2022 price."])]
+    mcq("1.2.2", "Determine the missing value, A." + WORK, [
+        "Value of A = R12,60 + R45,56 + R52,97 + R40,68 + R22,07 + R37,73 + R86,80\n= R298,41",
+        "Value of A = R15,14 + R48,47 + R57,33 + R35,52 + R20,10 + R46,75 + R93,06\n= R316,37",
+        "Value of A = R12,60 + R45,56 + R52,97 + R40,68 + R22,07 + R37,73\n= R211,61",
+        "Value of A = (R12,60 + R45,56 + R52,97 + R40,68 + R22,07 + R37,73 + R86,80) ÷ 7\n= R42,63"], 0,
+        ["A is the TOTAL of the May 2022 column.", "Add all seven May 2022 prices."], marks=2),
+    mcq("1.2.3", "Calculate the price of a dozen eggs during May 2022." + WORK, [
+        "Price per dozen = R52,97 × 1,5\n= R79,46",
+        "Price per dozen = R57,33 ÷ 1,5\n= R38,22",
+        "Price per dozen = R52,97 ÷ 1,5\n= R35,31",
+        "Price per dozen = R52,97 ÷ 12\n= R4,41"], 2,
+        ["The tray in TABLE 1 holds 1,5 dozen eggs.", "Find the price of ONE dozen from the May 2022 price."], marks=2),
+    mcq("1.2.4", "Write down the unit ratio, in the form 1 : …, for the price of the oranges in May 2022 to the price of the oranges in "
+        "May 2023." + WORK, [
+        "Ratio = 20,10 : 22,07\n= 1 : 1,0980099502\n≈ 1 : 1,10",
+        "Ratio = 22,07 : 20,10\n= 1 : 0,9107385591\n≈ 1 : 0,91",
+        "Ratio = 40,68 : 35,52\n= 1 : 0,8731563422\n≈ 1 : 0,87",
+        "Ratio = 37,73 : 46,75\n= 1 : 1,2390670554\n≈ 1 : 1,24"], 1,
+        ["May 2022 comes first in the ratio.", "Divide both sides by the May 2022 price."], marks=3)]
 TERMS = ["An increase in the price of a basket of goods or services over time that is representative of the economy as a whole",
          "Sum of all the values divided by the number of values",
          "The income received from the item sold and the cost price of the item is the same",
@@ -186,40 +194,52 @@ TARIFF = {"title": "TABLE 3: RESIDENTIAL ELECTRICITY TARIFF", "head": ["BLOCK", 
 q21 = [
     term("2.1.1", "Write down the meter number.", ["07032985769"],
          ["Look near the top of the till slip.", "Copy every digit exactly as printed."], strict=True),
-    steps("2.1.2", "Determine the missing value, B.", 3, [
-        ("VAT amount B (R)", 3, 169.565, 0.006, "B = R1 300,00 ✓RT – R1 130,43 ✓MA = R169,57 ✓A (OR B = R1 130,43 × 15/100 OR × 0,15 = R169,56; "
-         "OR B = R1 300 × 15/115 = R169,57). AO")],
-          ["B is the VAT on the electricity.", "The TOTAL includes the VAT."]),
-    steps("2.1.3", "A partial residential electricity tariff table (excluding VAT) is shown below.\n\nDetermine the number of kWh units Miecke "
-          "purchased.", 7, [
-        ("Cost of the Block 1 units, excluding VAT (R)", 2, 766.50, 0.005, "Amount for Block 1 = 350 kWh × R2,19 ✓MA = R766,50 ✓CA (OR with "
-         "the tariffs including VAT ✓A: R2,19 × 115/100 = R2,5185 and R2,91 × 115/100 = R3,3465; amount spent in Block 1 = 350 kWh × "
-         "R2,5185 = R881,475 ✓MCA)"),
-        ("Amount left for the Block 2 units (R)", 1, 363.93, 0.005, "Amount left for Block 2 = R1 130,43 – R766,50 = R363,93 ✓MCA (OR "
-         "R1 300 – R881,475 = R418,525 ✓MCA)"),
-        ("Number of Block 2 units (kWh)", 2, 125.06, 0.045, "Units in Block 2 = R363,93 ÷ R2,91 ✓MCA = 125,0618557 kWh ✓CA (OR R418,525 ÷ "
-         "R3,3465 ✓MCA = 125,06 kWh ✓CA)"),
-        ("Total number of kWh units purchased (kWh)", 2, 475.06, 0.045, "Total kWh received = 350 kWh + 125,0618557 kWh ✓MCA = 475,06 kWh "
-         "✓CA. NPR")],
-          ["The R1 130,43 for electricity excludes VAT, like TABLE 3's tariffs.",
-           "The first 350 kWh are charged at the Block 1 tariff; what is left of the money buys units at the Block 2 tariff."])]
+    mcq("2.1.2", "Determine the missing value, B." + WORK, [
+        "B = R1 300,00 – R1 130,43\n= R169,57",
+        "B = R1 300,00 × {15}/{100}\n= R195,00",
+        "B = R1 130,43 × {15}/{115}\n= R147,45",
+        "B = R1 300,00 + R1 130,43\n= R2 430,43"], 0,
+        ["B is the VAT on the electricity.", "The TOTAL includes the VAT."], marks=3),
+    mcq("2.1.3", "A partial residential electricity tariff table (excluding VAT) is shown below.\n\nDetermine the number of kWh units Miecke "
+        "purchased." + WORK, [
+        "Amount for Block 1 = 350 kWh × R2,19\n= R766,50\nAmount left for Block 2 = R1 300,00 – R766,50\n= R533,50\n"
+        "Units in Block 2 = {R533,50}/{R2,91}\n= 183,3333333 kWh\nTotal kWh received = 350 kWh + 183,3333333 kWh\n= 533,33 kWh",
+        "Amount for Block 1 = 350 kWh × R2,91\n= R1 018,50\nAmount left for Block 2 = R1 130,43 – R1 018,50\n= R111,93\n"
+        "Units in Block 2 = {R111,93}/{R2,19}\n= 51,109589 kWh\nTotal kWh received = 350 kWh + 51,109589 kWh\n= 401,11 kWh",
+        "Amount for Block 1 = 350 kWh × R2,19\n= R766,50\nAmount left for Block 2 = R1 130,43 – R766,50\n= R363,93\n"
+        "Units in Block 2 = R363,93 × R2,91\n= 1 059,0363 kWh\nTotal kWh received = 350 kWh + 1 059,0363 kWh\n= 1 409,04 kWh",
+        "Amount for Block 1 = 350 kWh × R2,19\n= R766,50\nAmount left for Block 2 = R1 130,43 – R766,50\n= R363,93\n"
+        "Units in Block 2 = {R363,93}/{R2,91}\n= 125,0618557 kWh\nTotal kWh received = 350 kWh + 125,0618557 kWh\n= 475,06 kWh"], 3,
+        ["The R1 130,43 for electricity excludes VAT, like TABLE 3's tariffs.",
+         "The first 350 kWh are charged at the Block 1 tariff; what is left of the money buys units at the Block 2 tariff."], marks=7)]
 SOLAR = {"title": "HOME SOLAR SYSTEM UNIT PAYMENT OPTIONS", "head": ["OPTION 1: RENT-TO-OWN", "OPTION 2: CASH PRICE"],
          "rows": [["Pay for 7 years at R1 549 p/m", "R78 200 (incl. VAT)"], ["Additional costs:", ""], ["R782 initiation fee", ""],
                   ["Buy-out after rental period R7 820", ""]]}
 q22 = [
-    num("2.2.1", "Write down the monthly instalment for the rent-to-own option.", 1549, 0.01, "R",
-        ["Read OPTION 1 in the advertisement.", "p/m means per month."]),
-    steps("2.2.2", "Calculate, excluding VAT, the cash price of the home solar system unit.", 3, [
-        ("Cash price excluding VAT (R)", 3, 68000, 0.005, "Price excluding VAT = R78 200 ✓RT ÷ 1,15 ✓MA = R68 000 ✓A (OR R78 200 × 100/115 "
-         "= R68 000; OR VAT amount = R78 200 × 15/115 = R10 199,999 ≈ R10 200, price excluding VAT = R78 200 – R10 200 = R68 000)")],
-          ["The cash price R78 200 includes 15% VAT.", "So R78 200 is 115% of the price without VAT."]),
-    steps("2.2.3", "After seven years, Miecke decides to buy-out the rent-to-own option.\n\nCalculate the extra amount she has to pay compared to "
-          "buying the home solar system unit for cash.", 5, [
-        ("Number of months in the rental period", 1, 84, 0.01, "Number of months = 12 × 7 = 84 months ✓A"),
-        ("Total cost of the rent-to-own option (R)", 2, 138718, 0.005, "Rent-to-own = (R1 549 × 84) + R782 + R7 820 = R130 116 + R782 + R7 820 "
-         "✓MCA = R138 718 ✓CA"),
-        ("Extra amount compared to the cash price (R)", 2, 60518, 0.005, "Difference = R138 718 – R78 200 ✓MCA = R60 518 ✓CA")],
-          ["Count the monthly instalments in 7 years, then add the initiation fee and the buy-out.", "Compare the total with the cash price."])]
+    mcq("2.2.1", "Write down the monthly instalment for the rent-to-own option." + WORK, [
+        "Rent-to-own: R782 initiation fee\nMonthly instalment = R782",
+        "Rent-to-own: 7 years = 84 months\nMonthly instalment = R78 200 ÷ 84 = R930,95",
+        "Rent-to-own: pay for 7 years at R1 549 p/m\nMonthly instalment = R1 549",
+        "Rent-to-own: R1 549 a year\nMonthly instalment = R1 549 ÷ 12 = R129,08"], 2,
+        ["Read OPTION 1 in the advertisement.", "p/m means per month."], marks=2),
+    mcq("2.2.2", "Calculate, excluding VAT, the cash price of the home solar system unit." + WORK, [
+        "Price excluding VAT = R78 200 – (15% × R78 200)\n= R66 470",
+        "Price excluding VAT = {R78 200}/{1,15}\n= R68 000",
+        "Price excluding VAT = R78 200 × 1,15\n= R89 930",
+        "Price excluding VAT = R78 200 × {15}/{115}\n= R10 200"], 1,
+        ["The cash price R78 200 includes 15% VAT.", "So R78 200 is 115% of the price without VAT."], marks=3),
+    mcq("2.2.3", "After seven years, Miecke decides to buy-out the rent-to-own option.\n\nCalculate the extra amount she has to pay compared to "
+        "buying the home solar system unit for cash." + WORK, [
+        "Number of months = 12 × 7\n= 84 months\nRent-to-own = (R1 549 × 84) + R782 + R7 820\n= R130 116 + R782 + R7 820\n= R138 718\n"
+        "Difference = R138 718 – R68 000\n= R70 718",
+        "Number of months = 12 × 7\n= 84 months\nRent-to-own = (R1 549 × 84) + R7 820\n= R130 116 + R7 820\n= R137 936\n"
+        "Difference = R137 936 – R78 200\n= R59 736",
+        "Number of months = 12 × 7\n= 84 months\nRent-to-own = (R1 549 × 84) + R782 – R7 820\n= R130 116 + R782 – R7 820\n= R123 078\n"
+        "Difference = R123 078 – R78 200\n= R44 878",
+        "Number of months = 12 × 7\n= 84 months\nRent-to-own = (R1 549 × 84) + R782 + R7 820\n= R130 116 + R782 + R7 820\n= R138 718\n"
+        "Difference = R138 718 – R78 200\n= R60 518"], 3,
+        ["Count the monthly instalments in 7 years, then add the initiation fee and the buy-out.", "Compare the total with the cash price."],
+        marks=5)]
 TAX = {"title": "ANNEXURE A: TAX RATES FROM 1 MARCH 2023 TO 29 FEBRUARY 2024", "head": ["Tax Bracket", "Taxable income (R)", "Tax rates (R)"],
        "rows": [["A", "1–237 100", "18% of taxable income"], ["B", "237 101–370 500", "42 678 + 26% of taxable income above 237 100"],
                 ["C", "370 501–512 800", "77 362 + 31% of taxable income above 370 500"],
@@ -235,13 +255,21 @@ q23 = [
     term("2.3.1", "Identify the tax bracket that Miecke will use to calculate her income tax payable.", ["C", "Bracket C", "Tax bracket C"],
          ["ANNEXURE A's brackets are for ANNUAL taxable income.", "Work out her yearly income, then find the row whose range holds it."],
          marks=3, strict=True),
-    steps("2.3.2", "Calculate Miecke's annual tax payable for the 2023/2024 tax year.", 5, [
-        ("Tax before the rebate (R)", 3, 108613.16, 0.006, "Tax before rebate = 77 362 + 31% of taxable income above 370 500 = R77 362 + 31% "
-         "(R471 310,20 – R370 500) ✓SF = R77 362 + 31% (R100 810,20) = R77 362 + R31 251,162 ✓MCA = R108 613,162 ✓CA (CA from 2.3.1)"),
-        ("Annual tax payable (R)", 2, 91378.16, 0.006, "Annual tax payable = R108 613,162 – R17 235 ✓RT = R91 378,162 = R91 378,16 ✓CA (OR "
-         "= R77 362 + 0,31 (R471 310,20 – R370 500) ✓SF ✓✓MCA – R17 235 ✓RT = R91 378,16 ✓CA)")],
-          ["Use her bracket's tax rate with her annual taxable income.", "She is under 65 and has no medical aid: which rebate applies, and are there "
-           "any medical credits?"])]
+    mcq("2.3.2", "Calculate Miecke's annual tax payable for the 2023/2024 tax year." + WORK, [
+        "Tax before rebate = 77 362 + 31% of taxable income above 370 500\n= R77 362 + 31% (R471 310,20 – R370 500)\n"
+        "= R77 362 + 31% (R100 810,20)\n= R77 362 + R31 251,162\n= R108 613,162\nAnnual tax payable = R108 613,162 – R17 235\n"
+        "= R91 378,162\n= R91 378,16",
+        "Tax before rebate = 42 678 + 26% of taxable income above 237 100\n= R42 678 + 26% (R471 310,20 – R237 100)\n"
+        "= R42 678 + 26% (R234 210,20)\n= R42 678 + R60 894,652\n= R103 572,652\nAnnual tax payable = R103 572,652 – R17 235\n"
+        "= R86 337,652\n= R86 337,65",
+        "Tax before rebate = 77 362 + 31% of taxable income above 370 500\n= R77 362 + 31% (R471 310,20 – R370 500)\n"
+        "= R77 362 + 31% (R100 810,20)\n= R77 362 + R31 251,162\n= R108 613,162\nAnnual tax payable = R108 613,162 + R17 235\n"
+        "= R125 848,162\n= R125 848,16",
+        "Tax before rebate = 77 362 + 31% of taxable income above 370 500\n= R77 362 + 31% (R471 310,20 – R370 500)\n"
+        "= R77 362 + 31% (R100 810,20)\n= R77 362 + R31 251,162\n= R108 613,162\nAnnual tax payable = R108 613,162 – R17 235 – (12 × R364)\n"
+        "= R87 010,162\n= R87 010,16"], 0,
+        ["Use her bracket's tax rate with her annual taxable income.", "She is under 65 and has no medical aid: which rebate applies, and are there "
+         "any medical credits?"], marks=5)]
 
 # ---- QUESTION 3, the question paper pages 8-9, ANNEXURE B (the addendum page 3, sideways: typed) and the memo pages 9-10 ----
 GRAPHS = ("ANNEXURE B (printed sideways in the addendum; typed here, values read off the graphs)\n\n"
@@ -260,32 +288,49 @@ GRAPHS = ("ANNEXURE B (printed sideways in the addendum; typed here, values read
           "70 000 in 2015, about 70 000 in 2016, about 80 000 in 2017, about 85 000 in 2018, about 90 000 in 2019, and level at 90 000 "
           "(labelled) from 2019 to 2023.")
 q31 = [
-    num("3.1.1", "Identify the year in which there was a decrease in the number of employees in the Pick n Pay stores for the first time.", 2015,
-        0.01, "", ["Use GRAPH 2 and follow the Pick n Pay line from 2005.", "Find the first year in which the line goes down."]),
-    steps("3.1.2", "It is projected that the number of Pick n Pay stores will increase by 95,39% from 2023 to 2032.\n\nDetermine, by means of "
-          "calculations, the projected number of Pick n Pay stores in 2032.", 3, [
-        ("Number of Pick n Pay stores in 2023", 1, 2204, 0.5, "2 204 ✓RT"),
-        ("Projected number of Pick n Pay stores in 2032", 2, 4306.5, 0.51, "Projected number of stores = 2 204 × 95,39/100 ✓MA + 2 204 = "
-         "2 102,3956 + 2 204 = 4 306,3956 = 4 306 ✓CA (OR 2 204 × 195,39/100 OR × 1,9539 = 4 306 stores). Accept: 4 307. AO")],
-          ["Start from the number of Pick n Pay stores in 2023 (GRAPH 1).", "Add 95,39% of it to itself."]),
-    steps("3.1.3", "An analyst stated that Shoprite employed more employees per store than Pick n Pay during 2023.\n\nVerify, showing ALL "
-          "calculations, whether the analyst's statement is valid.", 6, [
-        ("Shoprite employees per store in 2023", 3, 43.39, 0.015, "Average Shoprite = 153 726 ✓RT ÷ 3 543 ✓RT = 43,388653… employees ✓CA"),
-        ("Pick n Pay employees per store in 2023", 3, 40.83, 0.035, "Average Pick n Pay = 90 000 ÷ 2 204 ✓RT (both values) = 40,834845… "
-         "employees ✓CA. Her statement is VALID ✓O. NPR")],
-          ["Employees per store = the number of employees ÷ the number of stores, both in 2023.", "Employees are on GRAPH 2, stores on GRAPH 1."]),
-    steps("3.1.4", "Determine, as a percentage, the probability of randomly selecting a year where the number of Shoprite stores is fewer than "
-          "2 000.", 3, [
-        ("Probability (%)", 3, 30, 0.005, "Probability = 3 ✓RT / 10 ✓RT × 100% = 30% ✓CA. AO")],
-          ["Use GRAPH 1: count the years in which the Shoprite line is below 2 000.", "Divide by the number of years on the graph."])]
+    mcq("3.1.1", "Identify the year in which there was a decrease in the number of employees in the Pick n Pay stores for the first time."
+        + WORK, [
+        "Pick n Pay (the lower line) first falls between 2014 and 2015\nYear of the first decrease: 2014",
+        "Pick n Pay (the upper line) first falls between 2019 and 2020\nYear of the first decrease: 2020",
+        "Pick n Pay (the lower line) first falls between 2014 and 2015\nYear of the first decrease: 2015",
+        "Pick n Pay (the lower line) first falls between 2015 and 2016\nYear of the first decrease: 2016"], 2,
+        ["Use GRAPH 2 and follow the Pick n Pay line from 2005.", "Find the first year in which the line goes down."], marks=2),
+    mcq("3.1.2", "It is projected that the number of Pick n Pay stores will increase by 95,39% from 2023 to 2032.\n\nDetermine, by means of "
+        "calculations, the projected number of Pick n Pay stores in 2032." + WORK, [
+        "Projected number of stores = 3 543 × {95,39}/{100} + 3 543\n= 3 379,6677 + 3 543\n= 6 922,6677\n= 6 923",
+        "Projected number of stores = 1 128 × {95,39}/{100} + 1 128\n= 1 075,9992 + 1 128\n= 2 203,9992\n= 2 204",
+        "Projected number of stores = 2 204 × {95,39}/{100}\n= 2 204 × 0,9539\n= 2 102,3956\n= 2 102",
+        "Projected number of stores = 2 204 × {95,39}/{100} + 2 204\n= 2 102,3956 + 2 204\n= 4 306,3956\n= 4 306"], 3,
+        ["Start from the number of Pick n Pay stores in 2023 (GRAPH 1).", "Add 95,39% of it to itself."], marks=3),
+    mcq("3.1.3", "An analyst stated that Shoprite employed more employees per store than Pick n Pay during 2023.\n\nVerify, showing ALL "
+        "calculations, whether the analyst's statement is valid." + WORK, [
+        "Average Shoprite = 3 543 ÷ 153 726\n= 0,023047… employees\nAverage Pick n Pay = 2 204 ÷ 90 000\n= 0,024488… employees\n"
+        "Her statement is NOT VALID",
+        "Average Shoprite = 153 726 ÷ 3 543\n= 43,388653… employees\nAverage Pick n Pay = 90 000 ÷ 2 204\n= 40,834845… employees\n"
+        "Her statement is VALID",
+        "Average Shoprite = 90 000 ÷ 3 543\n= 25,402201… employees\nAverage Pick n Pay = 153 726 ÷ 2 204\n= 69,748638… employees\n"
+        "Her statement is NOT VALID",
+        "Average Shoprite = 153 726 ÷ 1 581\n= 97,233396… employees\nAverage Pick n Pay = 90 000 ÷ 1 128\n= 79,787234… employees\n"
+        "Her statement is VALID"], 1,
+        ["Employees per store = the number of employees ÷ the number of stores, both in 2023.", "Employees are on GRAPH 2, stores on GRAPH 1."],
+        marks=6),
+    mcq("3.1.4", "Determine, as a percentage, the probability of randomly selecting a year where the number of Shoprite stores is fewer than "
+        "2 000." + WORK, [
+        "Probability = {3}/{10} × 100%\n= 30%",
+        "Probability = {7}/{10} × 100%\n= 70%",
+        "Probability = {3}/{9} × 100%\n= 33,33%",
+        "Probability = {3}/{10}\n= 0,3%"], 0,
+        ["Use GRAPH 1: count the years in which the Shoprite line is below 2 000.", "Divide by the number of years on the graph."], marks=3)]
 TIMES = "12  15  25  25  40  28  18  23\n43  15  22  19  15  8  37  9\n24  23  15  67  25  29  6  17\n15  43  23  27  33  26  127  10"
 q32 = [
-    steps("3.2.1", "Write down the number of customers that represent the sample size and the number of customers that represent the population "
-          "size for this study.", 3, [
-        ("Sample size (customers)", 2, 32, 0.01, "Sample = 32 ✓A ✓A (1A counting to 32, 1A sample)"),
-        ("Population size (customers)", 1, 12342, 0.01, "Population = 12 342 ✓A (OR 32 and 12 342: 2A sample in correct order, 1A population in "
-         "correct order; no words used)")],
-          ["Each recorded time is one customer in the sample: count them.", "The population is the whole group the sample is taken from."]),
+    mcq("3.2.1", "Write down the number of customers that represent the sample size and the number of customers that represent the population "
+        "size for this study." + WORK, [
+        "Sample = 12 342 customers\nPopulation = 32 customers",
+        "Sample = 32 customers\nPopulation = 12 342 + 32 = 12 374 customers",
+        "Sample = 32 customers\nPopulation = 12 342 customers",
+        "Sample = 32 customers\nPopulation = 12 342 – 32 = 12 310 customers"], 2,
+        ["Each recorded time is one customer in the sample: count them.", "The population is the whole group the sample is taken from."],
+        marks=3),
     mcq("3.2.2", "Choose the correct option (A, B, C, D or E) that represents the stage in the data handling process that uses the measures of "
         "central tendency and spread.", ["Collecting data", "Classifying and organising data", "Summarising data", "Representing data",
                                          "Analysing data"], 4,
@@ -297,15 +342,20 @@ q32 = [
         notes=["The memo underlines 'more than the second highest' (2O conclusion)."])]
 RANKED = "6  8  9  10  12  15  15  15  15  15  17\n18  19  22  23  23  23  24  25  25  25  26\n27  28  29  33  37  40  43  43  67  127"
 q324 = [
-    steps("3.2.4(a)", "Calculate the value of the upper quartile (Q3).", 3, [
-        ("Upper quartile (Q3)", 3, 28.5, 0.005, "Quartile 3 = (28 + 29) ✓RT ÷ 2 ✓MA = 28,5 ✓CA. AO")],
-          ["There are 32 values: the upper quartile is the middle of the upper 16.", "With an even count, average the two middle values."]),
-    steps("3.2.4(b)", "Vuyo stated that if the outlier value was removed from the data set, the new interquartile (IQR) value would be 13.\n\n"
-          "Verify Vuyo's statement, showing ALL calculations.", 5, [
-        ("New lower quartile (Q1)", 1, 15, 0.01, "New Quartile 1 = 15 ✓RT"),
-        ("New upper quartile (Q3)", 1, 28, 0.01, "New Quartile 3 = 28 ✓RT"),
-        ("New interquartile range (IQR)", 3, 13, 0.01, "IQR = Q3 – Q1 ✓A; IQR = 28 – 15 ✓MCA = 13. He is CORRECT ✓O")],
-          ["Without 127 there are 31 values, and the median is the 16th.", "Q1 and Q3 are the middles of the 15 values below and the 15 above the median."])]
+    mcq("3.2.4(a)", "Calculate the value of the upper quartile (Q3)." + WORK, [
+        "Quartile 3 = {29 + 33}/{2}\n= 31",
+        "Quartile 3 = {28 + 29}/{2}\n= 28,5",
+        "Quartile 3 = {27 + 28}/{2}\n= 27,5",
+        "Quartile 3 = {23 + 23}/{2}\n= 23"], 1,
+        ["There are 32 values: the upper quartile is the middle of the upper 16.", "With an even count, average the two middle values."], marks=3),
+    mcq("3.2.4(b)", "Vuyo stated that if the outlier value was removed from the data set, the new interquartile (IQR) value would be 13.\n\n"
+        "Verify Vuyo's statement, showing ALL calculations." + WORK, [
+        "New Quartile 1 = 15\nNew Quartile 3 = 28,5\nIQR = Q3 – Q1\nIQR = 28,5 – 15\n= 13,5 ≈ 13\nHe is CORRECT.",
+        "New Quartile 1 = 15\nNew Quartile 3 = 29\nIQR = Q3 – Q1\nIQR = 29 – 15\n= 14\nHe is NOT CORRECT.",
+        "New Quartile 1 = 15\nNew Quartile 3 = 28\nIQR = Maximum – Minimum\nIQR = 67 – 6\n= 61\nHe is NOT CORRECT.",
+        "New Quartile 1 = 15\nNew Quartile 3 = 28\nIQR = Q3 – Q1\nIQR = 28 – 15\n= 13\nHe is CORRECT."], 3,
+        ["Without 127 there are 31 values, and the median is the 16th.", "Q1 and Q3 are the middles of the 15 values below and the 15 above the median."],
+        marks=5)]
 
 # ---- QUESTION 4, the question paper pages 10-11, the ANSWER SHEET (page 14) and the memo pages 11-14 ----
 PARTY = {"title": "TABLE 4: BUDGETED EXPENSES FOR THE PARTY", "head": ["", ""],
@@ -319,11 +369,12 @@ q41 = [
     term("4.1.1(a)", "The table below represents the cost to hire DJ Rain (TABLE 5: COST TO HIRE DJ RAIN PER HOUR).\n\nWrite a formula to "
          "calculate the cost to hire DJ Rain for more than 5 hours in the following form:\nCost = …", formulas(),
          ["The first 5 hours cost one fixed amount.", "Every hour after the fifth adds the same tariff."], marks=3, strict=True),
-    steps("4.1.1(b)", "Complete the table by calculating the missing values P, Q and R.", 4, [
-        ("Value of P (R)", 1, 4000, 0.01, "P = 4 000 ✓A"),
-        ("Value of Q (R)", 2, 5250, 0.01, "Q = 5 250 ✓✓A"),
-        ("Value of R (R)", 1, 9000, 0.01, "R = 9 000 ✓A")],
-          ["Up to 5 hours the cost does not change.", "After 5 hours, use your formula from (a)."]),
+    mcq("4.1.1(b)", "Complete the table by calculating the missing values P, Q and R." + WORK, [
+        "P = 4 000\nQ = 5 250\nR = 9 000",
+        "P = 4 000\nQ = 7 500\nR = 11 250",
+        "P = 4 000\nQ = 11 500\nR = 15 250",
+        "P = 2 400\nQ = 5 250\nR = 9 000"], 0,
+        ["Up to 5 hours the cost does not change.", "After 5 hours, use your formula from (a)."], marks=4),
     term("4.1.2(a)", "The graphs showing the costs to hire DJ 5-Star and DJ Cool are shown on the ANSWER SHEET.\n\nName the type of graph used to "
          "represent the cost to hire DJ 5-Star.", ["Step graph", "Stepwise graph", "Step-wise graph"],
          ["Look at DJ 5-Star's graph between the whole hours.", "The cost stays the same for each part of an hour, then jumps: what shape does "
@@ -334,13 +385,18 @@ q41 = [
         ["Plot each value in TABLE 5, with your P, Q and R.", "Join the points with straight lines."],
         memo="CA from 4.1.1(b). The line runs flat at R4 000 from (0 ; 4 000) to (5 ; 4 000), then rises through (6 ; 5 250), (7 ; 6 500) and "
              "(8 ; 7 750) to (9 ; 9 000)."),
-    steps("4.1.3", "Lee's parents decide to hire DJ 5-Star for the 21st birthday party. DJ 5-Star will provide the music entertainment from 18:00 "
-          "until 01:30.\n\nDetermine the total budgeted expenses for the party.", 5, [
-        ("Number of hours DJ 5-Star charges for", 1, 8, 0.01, "Time = 18:00 – 01:30 = 7 hrs 30 min ≈ 8 hrs ✓A"),
-        ("Cost of DJ 5-Star (R)", 2, 8000, 0.01, "Cost for DJ = 8 × R1 000 ✓MCA = R8 000 ✓CA"),
-        ("Total budgeted expenses for the party (R)", 2, 34185, 0.01, "Total cost = R18 000 + R750 + R6 185 + R1 250 + R8 000 ✓MCA = R34 185 ✓CA")],
-          ["Find how long DJ 5-Star plays: 'or part thereof' counts a part of an hour as a whole hour.",
-           "Add the venue (deposit and the day), the food and drinks, the cake and the DJ."]),
+    mcq("4.1.3", "Lee's parents decide to hire DJ 5-Star for the 21st birthday party. DJ 5-Star will provide the music entertainment from 18:00 "
+        "until 01:30.\n\nDetermine the total budgeted expenses for the party." + WORK, [
+        "Time = 18:00 – 01:30\n= 7 hrs 30 min\n= 7,5 hrs\nCost for DJ = 7,5 × R1 000\n= R7 500\n"
+        "Total cost = R18 000 + R750 + R6 185 + R1 250 + R7 500\n= R33 685",
+        "Time = 18:00 – 01:30\n= 16 hrs 30 min\n≈ 17 hrs\nCost for DJ = 17 × R1 000\n= R17 000\n"
+        "Total cost = R18 000 + R750 + R6 185 + R1 250 + R17 000\n= R43 185",
+        "Time = 18:00 – 01:30\n= 7 hrs 30 min\n≈ 8 hrs\nCost for DJ = 8 × R1 000\n= R8 000\n"
+        "Total cost = R18 000 + R750 + R6 185 + R1 250 + R8 000\n= R34 185",
+        "Time = 18:00 – 01:30\n= 7 hrs 30 min\n≈ 8 hrs\nCost for DJ = 8 × R1 000\n= R8 000\n"
+        "Total cost = R18 000 + R6 185 + R1 250 + R8 000\n= R33 435"], 2,
+        ["Find how long DJ 5-Star plays: 'or part thereof' counts a part of an hour as a whole hour.",
+         "Add the venue (deposit and the day), the food and drinks, the cake and the DJ."], marks=5),
     rub("4.1.4", "Give ONE reason why Lee's parents did not choose DJ Cool.", 2, [
         "He charges a flat/fixed rate, which is not economical if the party ends early (2).", "OR — He has a bad reputation (2)."],
         ["Compare how DJ Cool charges with how the other two DJs charge.", "Think about a party that ends earlier than planned."], each=2)]
@@ -348,20 +404,27 @@ GUESTS = {"title": "TABLE 6: ACTUAL NUMBER OF GUESTS PER FUNCTION", "head": ["YE
           "rows": [["2023", "180", "350", "400", "200", "215", "90", "150", "230", "160"],
                    ["2022", "360", "160", "300", "70", "160", "200", "240", "", ""]]}
 q42 = [
-    steps("4.2.1", "Write, as a decimal, the probability that a cinema-style venue was chosen as a suitable function venue for all the functions "
-          "held during 2022 and 2023.", 3, [
-        ("Functions that needed the cinema-style venue", 1, 4, 0.01, "4 ✓A (numerator)"),
-        ("Functions held during 2022 and 2023", 1, 16, 0.01, "16 ✓A (denominator)"),
-        ("Probability, as a decimal", 1, 0.25, 0.005, "Probability = 4/16 = 0,25 ✓CA")],
-          ["The cinema-style venue is needed when a function has too many guests for either sit-down venue.", "Count the functions in both years."]),
-    steps("4.2.2", "Determine the median number of guests accommodated during 2023.", 3, [
-        ("Median number of guests in 2023", 3, 200, 0.01, "90 150 160 180 200 215 230 350 400 ✓A (arranging); Median = 200 ✓✓A. AO")],
-          ["Arrange the nine 2023 values in order.", "The median is the middle value."]),
-    steps("4.2.3", "The manager stated that the range of the number of guests per function during 2022, is the same as the range of the number of "
-          "guests per function during 2023.\n\nVerify, showing ALL calculations, whether his statement is valid.", 5, [
-        ("Range of the number of guests in 2022", 3, 290, 0.01, "Range 2022 = 360 – 70 ✓RT (both values) ✓MCA = 290 ✓CA"),
-        ("Range of the number of guests in 2023", 2, 310, 0.01, "Range 2023 = 400 – 90 = 310 ✓A. His statement is NOT VALID ✓O")],
-          ["Range = highest value − lowest value.", "Work out each year's range, then compare them."])]
+    mcq("4.2.1", "Write, as a decimal, the probability that a cinema-style venue was chosen as a suitable function venue for all the functions "
+        "held during 2022 and 2023." + WORK, [
+        "Probability = {7}/{16}\n= 0,4375",
+        "Probability = {4}/{12}\n= 0,33",
+        "Probability = {2}/{9}\n= 0,22",
+        "Probability = {4}/{16}\n= 0,25"], 3,
+        ["The cinema-style venue is needed when a function has too many guests for either sit-down venue.", "Count the functions in both years."],
+        marks=3),
+    mcq("4.2.2", "Determine the median number of guests accommodated during 2023." + WORK, [
+        "180 ; 350 ; 400 ; 200 ; 215 ; 90 ; 150 ; 230 ; 160\nMedian = 215",
+        "90 ; 150 ; 160 ; 180 ; 200 ; 215 ; 230 ; 350 ; 400\nMedian = 200",
+        "90 ; 150 ; 160 ; 180 ; 200 ; 215 ; 230 ; 350 ; 400\nMedian = {200 + 215}/{2} = 207,5",
+        "90 ; 150 ; 160 ; 180 ; 200 ; 215 ; 230 ; 350 ; 400\nMedian = 1 975 ÷ 9 = 219,44"], 1,
+        ["Arrange the nine 2023 values in order.", "The median is the middle value."], marks=3),
+    mcq("4.2.3", "The manager stated that the range of the number of guests per function during 2022, is the same as the range of the number of "
+        "guests per function during 2023.\n\nVerify, showing ALL calculations, whether his statement is valid." + WORK, [
+        "Range 2022 = 360 – 240\n= 120\nRange 2023 = 180 – 160\n= 20\nHis statement is NOT VALID",
+        "Range 2022 = 360 – 70\n= 290 ≈ 300\nRange 2023 = 400 – 90\n= 310 ≈ 300\nHis statement is VALID",
+        "Range 2022 = 360 – 70\n= 290\nRange 2023 = 400 – 90\n= 310\nHis statement is NOT VALID",
+        "Range 2022 = 360 – 70\n= 290\nRange 2023 = 360 – 70\n= 290\nHis statement is VALID"], 2,
+        ["Range = highest value − lowest value.", "Work out each year's range, then compare them."], marks=5)]
 
 # ---- QUESTION 5, the question paper pages 12-13, ANNEXURE C (the addendum page 4, sideways: typed) and the memo pages 15-18 ----
 INCOME = {"title": "ANNEXURE C — Indian Union Budget Income Sources in 2023-2024 (45,03 lakh crores), a pie chart",
@@ -376,57 +439,71 @@ q51 = [
     mcq("5.1.1", "Choose the correct word from those given in brackets. Write down only the word next to the question number (5.1.1).\n\nA budget "
         "is a (deficit/surplus/balanced) budget when the income is less than the expenditure.", ["deficit", "surplus", "balanced"], 0,
         ["Income less than expenditure: is money left over, missing, or exactly enough?", "A balanced budget has income equal to expenditure."]),
-    steps("5.1.2", "General sales tax (GST) is a tax that is similar to VAT in South Africa.\n\nCalculate the missing percentage for GST on the pie "
-          "chart.", 3, [
-        ("Missing percentage for GST (%)", 3, 17, 0.005, "GST % = 100% – (15% + 15% + 4% + 7% + 6% + 2% + 34%) ✓RT ✓MA = 100% – 83% = 17% "
-         "✓CA. AO")],
-          ["A pie chart's percentages add up to 100%.", "Add all the other income percentages first."]),
-    steps("5.1.3", "Calculate, in lakh crores, the amount spent on defence in India.", 3, [
-        ("Amount spent on defence (lakh crore)", 3, 3.6024, 0.0025, "Defence = 8% ✓RT × 45,03 lakh crore ✓MA = 3,6024 lakh crore ✓CA. NPR. AO")],
-          ["Read Defence's percentage on the expenditure pie chart.", "Take that percentage of the 45,03 lakh crores."]),
+    mcq("5.1.2", "General sales tax (GST) is a tax that is similar to VAT in South Africa.\n\nCalculate the missing percentage for GST on the pie "
+        "chart." + WORK, [
+        "GST % = 100% – (15% + 15% + 4% + 7% + 6% + 2% + 34%)\n= 100% – 83%\n= 17%",
+        "GST % = 100% – (15% + 15% + 4% + 7% + 6% + 2%)\n= 100% – 49%\n= 51%",
+        "GST % = 100% – (15% + 4% + 7% + 6% + 2% + 34%)\n= 100% – 68%\n= 32%",
+        "GST % = 15% + 15% + 4% + 7% + 6% + 2% + 34%\n= 49% + 34%\n= 83%"], 0,
+        ["A pie chart's percentages add up to 100%.", "Add all the other income percentages first."], marks=3),
+    mcq("5.1.3", "Calculate, in lakh crores, the amount spent on defence in India." + WORK, [
+        "Defence = 7% × 45,03 lakh crore\n= 3,1521 lakh crore",
+        "Defence = 45,03 lakh crore ÷ 8%\n= 562,875 lakh crore",
+        "Defence = 0,8 × 45,03 lakh crore\n= 36,024 lakh crore",
+        "Defence = 8% × 45,03 lakh crore\n= 3,6024 lakh crore"], 3,
+        ["Read Defence's percentage on the expenditure pie chart.", "Take that percentage of the 45,03 lakh crores."], marks=3),
     rub("5.1.4", "List THREE sources of income shown on the pie chart where the total percentages add up to the borrowing percentage value.", 3, [
         "Corporation tax (1).", "Income tax (1).", "Customs (1).",
         "OR — Corporation tax (1).", "GST (1).", "Non-debt capital receipts (1).",
         "OR — Income tax (1).", "GST (1).", "Non-debt capital receipts (1)."],
         ["Borrowings are 34% of the income.", "Try combinations of three slices until their percentages total exactly 34%."],
         notes=["CA from 5.1.2 for GST.", "Each set: 1RT correct source, 1RT correct source, 1RT correct source adding to 34%."]),
-    steps("5.1.5", "Sanji calculated, in lakh crores, the amount spent on interest payments. He rounded off his answer to the nearest whole "
-          "number.\n\nSanji stated that the rounded answer he calculated did not make much difference in rupees when compared to the non-rounded "
-          "answer.\n\nVerify, showing ALL calculations, whether his statement is valid.", 6, [
-        ("Interest payments (lakh crore)", 2, 9.006, 0.0005, "Interest payments = 20% × 45,03 lakh crore ✓RT (both values) = 9,006 lakh crore ✓A"),
-        ("Unrounded interest payments (rupees)", 1, 90060000, 0.5, "Unrounded = 9,006 × 100 × 100 000 = 90 060 000 rupees ✓C. Also "
-         "accepted: 9 006 000 000 000 rupees (by the NOTE a lakh crore is 100 000 × 10 000 000 rupees)", [9006000000000]),
-        ("Interest payments rounded to the nearest whole number (lakh crore)", 1, 9, 0.01, "Rounded = 9 ✓R (9 × 100 × 100 000 = 90 000 000 rupees)"),
-        ("Difference between the two amounts (rupees)", 2, 60000, 0.5, "Difference = 90 060 000 – 90 000 000 = 60 000 rupees ✓CA. His "
-         "statement is NOT VALID ✓O (OR 9,006 – 9,000 = 0,006 lakh crore ✓R ✓CA; amount in rupees = 0,006 × 100 × 100 000 = 60 000 ✓C). "
-         "Also accepted: 6 000 000 000 rupees (the NOTE's lakh crore)", [6000000000])],
-          ["Find 20% of the 45,03 lakh crores, then round it to a whole number.", "Change both amounts to rupees with the NOTE, then compare them."])]
+    mcq("5.1.5", "Sanji calculated, in lakh crores, the amount spent on interest payments. He rounded off his answer to the nearest whole "
+        "number.\n\nSanji stated that the rounded answer he calculated did not make much difference in rupees when compared to the non-rounded "
+        "answer.\n\nVerify, showing ALL calculations, whether his statement is valid." + WORK, [
+        "Interest payments = 17% × 45,03 lakh crore\n= 7,6551 lakh crore\nUnrounded = 7,6551 × 100 000 × 10 000 000\n"
+        "= 7 655 100 000 000 rupees\nRounded = 8 × 100 000 × 10 000 000\n= 8 000 000 000 000 rupees\n"
+        "Difference = 8 000 000 000 000 – 7 655 100 000 000\n= 344 900 000 000 rupees\nHis statement is NOT VALID",
+        "Interest payments = 20% × 45,03 lakh crore\n= 9,006 lakh crore\nUnrounded = 9,006 × 100 000\n= 900 600 rupees\n"
+        "Rounded = 9 × 100 000\n= 900 000 rupees\nDifference = 900 600 – 900 000\n= 600 rupees\nHis statement is VALID",
+        "Interest payments = 20% × 45,03 lakh crore\n= 9,006 lakh crore\nUnrounded = 9,006 × 100 000 × 10 000 000\n"
+        "= 9 006 000 000 000 rupees\nRounded = 9 × 100 000 × 10 000 000\n= 9 000 000 000 000 rupees\n"
+        "Difference = 9 006 000 000 000 – 9 000 000 000 000\n= 6 000 000 000 rupees\nHis statement is NOT VALID",
+        "Interest payments = 20% × 45 lakh crore\n= 9 lakh crore\nUnrounded = 9 × 100 000 × 10 000 000\n= 9 000 000 000 000 rupees\n"
+        "Rounded = 9 × 100 000 × 10 000 000\n= 9 000 000 000 000 rupees\nDifference = 9 000 000 000 000 – 9 000 000 000 000\n= 0 rupees\n"
+        "His statement is VALID"], 2,
+        ["Find 20% of the 45,03 lakh crores, then round it to a whole number.", "Change both amounts to rupees with the NOTE, then compare them."],
+        marks=6)]
 q52 = [
-    steps("5.2.1", "Convert R302,4 billion to million rands.", 2, [
-        ("Corporate income tax (R million)", 2, 302400, 0.01, "Amount expressed in million = R302,4 billion × 1 000 ✓MA = R302 400 million ✓A "
-         "(OR R302 400 000 000). AO")],
-          ["1 billion = 1 000 million.", "Going to a smaller unit: does the number get bigger or smaller?"]),
-    steps("5.2.2", "Hence, convert the South African corporate income tax to lakh crore.", 4, [
-        ("Corporate income tax in lakhs", 2, 13450719.04, 0.045, "R302 400 million = R302 400 × 44,479891 lakh ✓MA = 13 450 719,04 lakh ✓CA "
-         "(CA from 5.2.1)"),
-        ("Corporate income tax in lakh crore", 2, 134507.19, 0.015, "= 13 450 719,04 ÷ 100 ✓MCA = 134 507,1904 lakh crore ✓CA. NPR (OR "
-         "R302 400 000 000 ÷ R1 000 000 × 4 447 989,1 ✓MA = 1,345071904 × 1 000 000 000 000 ✓CA ÷ 100 000 ÷ 100 ✓MCA = 134 507,1904 lakh "
-         "crore ✓CA; OR R1 000 000 = 0,44479891 lakh crore ✓C, R302 400 000 000 × 0,44479891 ✓MA ÷ 1 000 000 ✓MCA = 134 507,1904 lakh "
-         "crore ✓CA). Also accepted: 1,345071904 lakh crore (by the NOTE, 13 450 719,04 lakh ÷ 10 000 000)", [1.345071904])],
-          ["Each R1 million is worth 44,479891 lakhs (the NOTE).", "Then use the NOTE in QUESTION 5.1 to go from lakhs to the larger unit."])]
+    mcq("5.2.1", "Convert R302,4 billion to million rands." + WORK, [
+        "Amount expressed in million = R302,4 billion ÷ 1 000\n= R0,3024 million",
+        "Amount expressed in million = R302,4 billion × 1 000\n= R302 400 million",
+        "Amount expressed in million = R302,4 billion × 1 000 000\n= R302 400 000 million",
+        "Amount expressed in million = R302,4 billion × 100\n= R30 240 million"], 1,
+        ["1 billion = 1 000 million.", "Going to a smaller unit: does the number get bigger or smaller?"], marks=2),
+    mcq("5.2.2", "Hence, convert the South African corporate income tax to lakh crore." + WORK, [
+        "R302 400 million = R302 400 × 44,479891 lakh\n= 13 450 719,04 lakh\n= 13 450 719,04 ÷ 10 000 000\n= 1,345071904 lakh crore",
+        "R302 400 million = R302 400 ÷ 44,479891 lakh\n= 6 798,58 lakh\n= 6 798,58 ÷ 10 000 000\n= 0,000679858 lakh crore",
+        "R302 400 million = R302 400 × 44,479891 lakh\n= 13 450 719,04 lakh\n= 13 450 719,04 ÷ 100 000\n= 134,5071904 lakh crore",
+        "R302 400 million = R302 400 × 44,479891 lakh\n= 13 450 719,04 lakh\n= 13 450 719,04 × 10 000 000\n"
+        "= 134 507 190 400 000 lakh crore"], 0,
+        ["Each R1 million is worth 44,479891 lakhs (the NOTE).", "Then use the NOTE in QUESTION 5.1 to go from lakhs to the larger unit."],
+        marks=4)]
 INFL = {"title": "TABLE 7: INFLATION RATES IN INDIA FOR THE LAST FIVE YEARS", "head": ["YEAR", "INFLATION RATE"],
         "rows": [["2024", "8%"], ["2023", "7,5%"], ["2022", "7%"], ["2021", "6,5%"], ["2020", "6%"]]}
 q53 = [
     rub("5.3.1", "Describe the trend in the inflation rates in India.", 2, [
         "As the years increase (1).", "The inflation rate increases (1).", "OR — The inflation rate increases (1).", "From 2020 to 2024 (1)."],
         ["Read TABLE 7 from 2020 up to 2024.", "Does the rate go up, go down or stay the same, and over which years?"]),
-    steps("5.3.2", "Calculate how much the house was worth at the end of 2022.", 6, [
-        ("Value of the house at the end of 2023 (rupees)", 3, 4629629.63, 0.035, "Price at the end of 2023 = 5 000 000 ÷ 1,08 ✓A ✓MA (OR "
-         "5 000 000 ÷ 108% OR 5 000 000 × 100/108) = 4 629 629,63 rupees ✓CA"),
-        ("Value of the house at the end of 2022 (rupees)", 3, 4306632.21, 0.015, "Price at end of 2022 = 4 629 629,63 rupees ÷ 1,075 ✓MCA ✓MA "
-         "(OR ÷ 107,5% OR × 100/107,5) = 4 306 632,214 rupees ✓CA (OR 5 000 000 × 100/108 × 100/107,5 = 4 306 632,214 rupees). NPU. NPR")],
-          ["Work backwards a year at a time: the 2024 rate takes the value back to the end of 2023.",
-           "Going back one year, divide by (100% + that year's rate)."])]
+    mcq("5.3.2", "Calculate how much the house was worth at the end of 2022." + WORK, [
+        "Price at the end of 2023 = 5 000 000 × 1,08\n= 5 400 000 rupees\nPrice at end of 2022 = 5 400 000 rupees × 1,075\n= 5 805 000 rupees",
+        "Price at the end of 2023 = 5 000 000 × 0,92\n= 4 600 000 rupees\nPrice at end of 2022 = 4 600 000 rupees × 0,925\n= 4 255 000 rupees",
+        "Price at the end of 2023 = 5 000 000 ÷ 1,075\n= 4 651 162,79 rupees\nPrice at end of 2022 = 4 651 162,79 rupees ÷ 1,07\n"
+        "= 4 346 881,11 rupees",
+        "Price at the end of 2023 = 5 000 000 ÷ 1,08\n= 4 629 629,63 rupees\nPrice at end of 2022 = 4 629 629,63 rupees ÷ 1,075\n"
+        "= 4 306 632,214 rupees"], 3,
+        ["Work backwards a year at a time: the 2024 rate takes the value back to the end of 2023.",
+         "Going back one year, divide by (100% + that year's rate)."], marks=6)]
 
 missions = [
     {"id": "1.1", "title": "Question 1.1", "kind": "Voters per time slot", "marks": 11,
@@ -489,6 +566,10 @@ missions = [
              "prices for the last five years.", "items": q53},
 ]
 
+# the parts that played as typed numbers (steps or num) until Murci's ruling of 2026-10-10, now authored multiple choice
+AUTHORED = [i["n"] for m in missions for i in m["items"] if i["t"] == "mcq" and i["q"].endswith(WORK)]
+AUTHORED_MARKS = sum(i["marks"] for m in missions for i in m["items"] if i["n"] in AUTHORED)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Mathematical Literacy", "title": "Mathematical Literacy P1", "sitting": "November 2024", "total_marks": 150, "time": "3 hours"},
@@ -516,12 +597,15 @@ paper = {
                                                    "full marks) and 4.1.1(a) (the formula's three A marks). Each is strict, listing the forms a "
                                                    "learner types (a time slot in 24-hour, 12-hour and words; the formula with or without 'Cost =' "
                                                    "and R, n or the hours named)."},
-        {"n": "2.1.3", "kind": "no_fit", "detail": "Calculations play as steps: each step is the number the memo's method produces, its RT/MA/CA/C/R "
-                                                   "marks riding on that number. 'Verify' parts (3.1.3, 3.2.4(b), 4.2.3, 5.1.5) fold the memo's "
-                                                   "conclusion (the O mark) into the last step. 2.1.3's steps follow the memo's first method (tariffs "
-                                                   "excluding VAT); its second method (VAT-inclusive tariffs R2,5185 and R3,3465: R881,475 and "
-                                                   "R418,525) reaches the same 125,06 and 475,06 kWh, but its first two numbers differ. The memo's "
-                                                   "NPR widens the tolerances where it applies (1.2.3, 1.2.4, 2.1.3, 3.1.3, 5.1.3, 5.2.2, 5.3.2)."},
+        {"n": AUTHORED[0], "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): every typed calculation plays as the memo's "
+                                                       "working plus three built from common errors, 0 or full marks: " + ", ".join(AUTHORED) +
+                                                       " (" + str(AUTHORED_MARKS) + " marks). The right option is the memo's FIRST method as the "
+                                                       "memo works it (5.1.5 and 5.2.2 follow the paper's NOTE instead: see their memo_issue "
+                                                       "flags); a number read off (1.1.1, 2.2.1, 3.1.1) shows its reading as the working. The "
+                                                       "wrong options come from a wrong operation, the wrong base, a unit slip, a value from the "
+                                                       "wrong row, column, bar or line, rounding too early, or, in a verify part (3.1.3, "
+                                                       "3.2.4(b), 4.2.3, 5.1.5), an error that turns the conclusion; each ends in a confident "
+                                                       "result, and every option of a part has the same number of lines."},
         {"n": "4.1.2(b)", "kind": "no_fit", "detail": "Drawing DJ Rain's line graph on the ANSWER SHEET is done on paper and self-checked against the "
                                                       "memo's criteria."},
         {"n": "5.1.4", "kind": "no_fit", "detail": "The three sources play as a rubric with the memo's three alternative sets (each adds up to the 34% "
@@ -535,20 +619,20 @@ paper = {
         {"n": "5.1.5", "kind": "memo_issue", "detail": "The memo converts lakh crore to rupees as × 100 × 100 000 (one crore). By the paper's NOTE, "
                                                        "1 lakh crore = 100 000 crore = 1 000 000 000 000 rupees, so 9,006 lakh crore is "
                                                        "9 006 000 000 000 rupees and the difference is 6 000 000 000 rupees (not 60 000); the "
-                                                       "conclusion (NOT VALID) stands. Murci, 2026-10-10: BOTH earn the rupee steps (the memo's 90 060 000 "
-                                                       "and 60 000, and the NOTE's values, as each step's `also`)."},
+                                                       "conclusion (NOT VALID) stands. Murci, 2026-10-10: both earn. Played as authored multiple "
+                                                       "choice, which has one right option: the right option follows the NOTE (9,006 × 100 000 × "
+                                                       "10 000 000 = 9 006 000 000 000 rupees, a difference of 6 000 000 000 rupees, NOT VALID), and "
+                                                       "the memo's one-crore working (90 060 000 and 60 000 rupees) is not among the options. The "
+                                                       "steps' `also` values that credited both are gone with the steps."},
         {"n": "5.2.2", "kind": "memo_issue", "detail": "The memo's 134 507,1904 'lakh crore' is in crore: 13 450 719,04 lakh ÷ 100 = 134 507,19 crore, "
                                                        "and its third method writes R1 000 000 = 0,44479891 lakh crore (÷ 10 000 000, one crore). "
                                                        "In lakh crore the tax is 1,345071904 (R302,4 billion = 1,345 × 10¹² rupees). Murci, "
-                                                       "2026-10-10: BOTH earn the last step (134 507,19 and, as its `also`, 1,345071904)."},
+                                                       "2026-10-10: both earn. Played as authored multiple choice, which has one right option: the "
+                                                       "right option follows the NOTE (13 450 719,04 lakh ÷ 10 000 000 = 1,345071904 lakh crore), "
+                                                       "and the memo's one-crore working (÷ 100 = 134 507,1904) is not among the options. The "
+                                                       "step's `also` value that credited both is gone with the steps."},
     ],
 }
-out = Path(__file__).parent / "out" / "ml-p1-2024-11"
-out.mkdir(parents=True, exist_ok=True)
-(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper, addendum and memo PDFs and their page "
-                                                                       "images (no API call)",
-                                                        "scope": "Questions 1 to 5 (the whole paper)"}, "paper": paper}, indent=1, ensure_ascii=False),
-                                   encoding="utf-8")
 for m in missions:
     got = sum(i["marks"] for i in m["items"])
     assert got == m["marks"], (m["id"], got, m["marks"])
@@ -558,4 +642,45 @@ for m in missions:
     qs[m["id"].split(".")[0]] = qs.get(m["id"].split(".")[0], 0) + m["marks"]
 print("per question:", qs)
 assert qs == {"1": 29, "2": 30, "3": 29, "4": 31, "5": 31}, qs
-print("total:", sum(i["marks"] for m in missions for i in m["items"]))
+total = sum(i["marks"] for m in missions for i in m["items"])
+assert total == 150, total
+print("total:", total)
+
+# ---- self-checks on the authored multiple choice (rule: the layout must never point at the answer) ----
+WAS_TYPED = ["1.1.1", "1.1.5", "1.2.2", "1.2.3", "1.2.4", "2.1.2", "2.1.3", "2.2.1", "2.2.2", "2.2.3", "2.3.2", "3.1.1", "3.1.2", "3.1.3",
+             "3.1.4", "3.2.1", "3.2.4(a)", "3.2.4(b)", "4.1.1(b)", "4.1.3", "4.2.1", "4.2.2", "4.2.3", "5.1.2", "5.1.3", "5.1.5", "5.2.1",
+             "5.2.2", "5.3.2"]   # every steps / num part before the ruling (git 434aab6)
+
+
+def shape(o):
+    """An option's layout: its number of lines and of [reasons] at a line's end."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+at = []
+for m in missions:
+    for i in m["items"]:
+        assert i["t"] not in ("steps", "num"), (i["n"], "a typed calculation is left")
+        if i["n"] in AUTHORED:
+            o = i["opts"]
+            assert len(o) == 4 and len(set(o)) == 4 and 0 <= i["a"] < 4, (i["n"], "4 distinct options and the right one among them")
+            assert len({shape(x) for x in o}) == 1, (i["n"], [shape(x) for x in o])
+            assert shape(o[0])[0] >= 2, (i["n"], "a working is the method, then the result: 2 lines at least")
+            at.append("ABCD"[i["a"]])
+assert AUTHORED == WAS_TYPED, sorted(set(AUTHORED) ^ set(WAS_TYPED))
+spread = {k: at.count(k) for k in "ABCD"}
+assert max(spread.values()) - min(spread.values()) <= 1, spread
+for n in ("5.1.5", "5.2.2"):   # the memo's one-crore working (× 100 × 100 000, ÷ 100) is no option: the right one follows the NOTE
+    o = next(i["opts"] for m in missions for i in m["items"] if i["n"] == n)
+    bad = [s for s in ("× 100 × 100 000", "90 060 000", "90 000 000 rupees", "60 000 rupees", "÷ 100\n", "134 507,19") for x in o if s in x]
+    assert not bad, (n, bad)
+print("authored multiple choice:", len(AUTHORED), "parts,", AUTHORED_MARKS, "marks; right options:", spread)
+
+# written only once every check above has passed, so the ingest never reads a transcription that failed one
+out = Path(__file__).parent / "out" / "ml-p1-2024-11"
+out.mkdir(parents=True, exist_ok=True)
+(out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper, addendum and memo PDFs and their page "
+                                                                       "images (no API call)",
+                                                        "scope": "Questions 1 to 5 (the whole paper)"}, "paper": paper}, indent=1, ensure_ascii=False),
+                                   encoding="utf-8")
