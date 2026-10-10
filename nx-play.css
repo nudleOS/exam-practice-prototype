@@ -2497,9 +2497,8 @@ body.nx-play [data-wr] { flex:0 1 auto; margin-left:auto; max-width:100%; text-a
 body.nx-play [data-frac] { display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:0.86em; line-height:1.2; margin:0 0.14em; }
 body.nx-play [data-frac] > [data-fd] { border-top:1.5px solid currentColor; padding-top:1px; }
 html[data-nx="light"] body.nx-play [data-wktab]:not([data-on="true"]) { background:rgba(10,30,70,0.04); }
-/* a page MCQ card's resting colours by theme (Exam Practice layer2Vals: var(--nx-tile) / var(--nx-tilebadge), dark fallbacks there).
-   Measured 2026-10-10: in the light theme every word card on the page was rgba(32,35,39,0.78) under the theme's dark navy text. */
-html[data-nx="light"] body.nx-play { --nx-tile:#ffffff; --nx-tilebadge:rgba(10,30,70,0.07); }
+/* (a page answer card now wears the MCQ card tokens, --nx-card / --nx-card-line / --nx-badge / --nx-sel, in both themes: Exam Practice
+   layer2Vals. Its own dark grey, rgba(32,35,39,0.78), showed as black behind statements and picks, Murci 2026-10-10.) */
 /* the phone's shared-information sheet scrolls; nothing in it shrinks. Its body is a column flexbox capped at 78svh, and the table's
    wrapper clips (overflow: hidden, for its rounded corners), so flex shrank it to what was left: measured 2026-10-10, ML P1 Nov 2024
    2.3's tax table got 83 px of its 643 under a 416 px extract, the rows below cut off and out of reach. */
@@ -2509,7 +2508,7 @@ body.nx-play [data-ctx] [data-ctx-body] > * { flex-shrink:0; }
 [data-ctx-table] { isolation:isolate; }
 
 /* ---- Match: drag-and-drop glass cards (Murci 2026-10-10, direction A of two mocks). The descriptions (a classification: its
-   groups) are cards like the page's MCQ answer cards (--nx-tile, theme-aware: no more black grey), in a tray under the rows on a phone,
+   groups) are cards like the MCQ answer cards (--nx-card, theme-aware: no more black grey), in a tray under the rows on a phone,
    beside them from 760 px; each Column A item is a row with a slot. A right pair turns green and locks; a wrong one breaks (termBreak)
    and its card goes back to the tray. */
 body.nx-play [data-match] { display:flex; flex-direction:column; gap:12px; }

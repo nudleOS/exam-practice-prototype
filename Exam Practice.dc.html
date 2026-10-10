@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=288">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=289">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -4684,9 +4684,11 @@ class Component extends DCLogic {
         // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
         aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + (rich ? this.plainWork(o, true) : o)) + (sp ? ", " + sp.t : ""),
         tab: mode === "mcq" ? ((s.pick == null ? i === 0 : sel) ? "0" : "-1") : "0",
-        border: sp ? sp.b : sel ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: sel ? "rgba(0,104,248,0.16)" : "var(--nx-tile, rgba(32,35,39,0.78))",   /* the theme's (nx-play.css): in the light theme the card was dark grey under dark text, measured 2026-10-10 */
+        // the MCQ answer card's own colours, both themes (Murci 2026-10-10: "the backgrounds of the answer are black ... make sure I never get
+        // to see that no matter the paper or subject"): the page's word cards had a dark grey of their own (rgba(32,35,39,0.78)) in the dark theme
+        border: sp ? sp.b : sel ? "var(--nx-sel-line)" : "var(--nx-card-line)", bg: sel ? "var(--nx-sel)" : "var(--nx-card)",
         shadow: sel ? "0 0 0 3px rgba(0,104,248,0.18)" : "none",
-        badgeBg: sel ? "#81b1ff" : "var(--nx-tilebadge, rgba(255,255,255,0.06))", badgeColor: sel ? "#0b1a33" : "var(--text2)",
+        badgeBg: sel ? "#81b1ff" : "var(--nx-badge)", badgeColor: sel ? "#0b1a33" : "var(--nx-badge-ink)",
         pick: () => {
           if (locked) return;
           const st0 = this.state;
@@ -4816,7 +4818,7 @@ class Component extends DCLogic {
       isLetterName: mode === "lettername",
       letterTiles: mode === "lettername" ? (part.letters || []).map((L, j) => { const on = s.letter === L, out = (this.pg(part.key).dead || []).indexOf(L) !== -1;
         return { label: L, checked: on ? "true" : "false", aria: "Letter " + L, tab: (s.letter ? on : j === 0) ? "0" : "-1",
-          border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
+          border: on ? "var(--nx-sel-line)" : "var(--nx-card-line)", bg: on ? "var(--nx-sel)" : "var(--nx-card)", color: on ? "var(--nx-text, #ffffff)" : "var(--text2)",   /* the MCQ card colours (2026-10-10) */
           dead: this.deadAttr(out, L), off: locked || out,
           pick: () => { if (!locked && !out) this.setState({ letter: L, edited: Object.assign({}, this.state.edited, { letter: true }) }); } }; }) : [],
       lname: s.lname, onLname: e => this.setState({ lname: e.target.value, edited: Object.assign({}, this.state.edited, { lname: true }) }),
@@ -4832,7 +4834,7 @@ class Component extends DCLogic {
           tiles: (part.letters || []).map((L, j) => { const on = r.letter === L, oi = (s.lrows || []).findIndex((o, x) => x !== k && o && o.letter === L), out = (this.pg(part.key).dead || []).indexOf(L) !== -1;
             return { label: L, checked: on ? "true" : "false", tab: (r.letter ? on : j === 0) ? "0" : "-1",
               aria: "Letter " + L + (oi >= 0 ? ", now on part " + (oi + 1) : ""), opacity: oi >= 0 ? "0.4" : "1",
-              border: on ? "rgba(129,177,255,0.85)" : "var(--line2)", bg: on ? "rgba(0,104,248,0.18)" : "rgba(32,35,39,0.78)", color: on ? "#ffffff" : "var(--text2)",
+              border: on ? "var(--nx-sel-line)" : "var(--nx-card-line)", bg: on ? "var(--nx-sel)" : "var(--nx-card)", color: on ? "var(--nx-text, #ffffff)" : "var(--text2)",   /* the MCQ card colours (2026-10-10) */
               dead: this.deadAttr(out, L), off: locked || out,
               pick: () => { if (!locked && !out) this.lrowSet(k, { letter: L }); } }; }),
           name: r.name || "", onName: e => this.lrowSet(k, { name: e.target.value }), nameAria: "Name of part " + (k + 1),
