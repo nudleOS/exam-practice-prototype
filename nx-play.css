@@ -1936,7 +1936,9 @@ body.nx-play.nx-play .mcqp .again .retry.nxb-sm { height:38px !important; min-he
 @media (prefers-reduced-motion: reduce) { body.nx-play [data-ctx] :is([data-ctx-body], [data-ctx-scrim]) { animation:none !important; } }
 html[data-nx="light"] body.nx-play { --nx-sheet:#f4f7ff; }
 @media (max-width:600px) {
-  body.nx-play.nx-ctxsheet :is(.nx-typestrip, [data-footer], .pv-fab, [data-pvfab]) { visibility:hidden !important; }
+  /* the sheet's z-index counts only inside <main> (z 1), so every layer above <main> steps aside while it is open: the ground too
+     (2026-10-10: the rocks covered LS P2 Nov 2024 1.5's table in the sheet) */
+  body.nx-play.nx-ctxsheet :is(.nx-typestrip, [data-footer], .pv-fab, [data-pvfab], .nx-ground) { visibility:hidden !important; }
 }
 /* numbered slots (lists; written answers that ask for a NUMBER of things): one short line per answer, its number in front, the
    field 16 px (iOS zooms into anything smaller), a marked line's stamp at its end; the box grows to 4 rows for a longer point */
