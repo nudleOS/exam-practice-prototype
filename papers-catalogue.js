@@ -22,7 +22,7 @@ window.NX_CATALOGUE = {
    "missions": 30,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "8b409c5672",
+   "rev": "3b2996ba43",
    "source_pdf": "uploads/Business Studies P1 Nov 2025 Eng.pdf"
   },
   {
@@ -156,7 +156,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "ba1e968e59",
+   "rev": "7010588451",
    "source_pdf": "uploads/Geography P1 Nov 2024 Eng.pdf",
    "printed_marks": 150
   },
