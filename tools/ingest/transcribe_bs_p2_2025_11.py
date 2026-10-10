@@ -20,10 +20,13 @@ match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "
                                                          "right": right, "a": a, **({"each": each} if each > 1 else {}), **kw}
 
 
-def rub(n, q, marks, bullets, clues, each=None):
+# notes: the memo's marking instructions that are NOT points ("Mark the first TWO only ..."): never scored, never shown (2026-10-10)
+def rub(n, q, marks, bullets, clues, each=None, notes=None):
     r = {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets}
     if each:
         r["each"] = each
+    if notes:
+        r["notes"] = notes
     return r
 
 
@@ -130,9 +133,9 @@ q23 = [rub("2.3", "Explain the functions of the Johannesburg Securities Exchange
     ["The JSE is where shares in public companies are bought and sold.", "What does it do for investors, for companies and for the economy?"], each=2)]
 q24 = [rub("2.4", "Identify the leadership styles applicable to MT. Motivate your answer by quoting from the scenario above.", 6, [
     "Autocratic leadership style (2); motivation (1), quoted: 'Rachel takes all decisions alone, without consulting her staff members.'",
-    "Transactional leadership style (2); motivation (1), quoted: 'Zaid, however, offers rewards to hardworking employees, which increases productivity.'",
-    "Mark the first TWO only. Marks for a style even if its quote is incomplete; no marks for a motivation if its style is wrong."],
-    ["One manager decides alone; the other trades rewards for hard work.", "Name each style, then quote the sentence that shows it."], each=3)]
+    "Transactional leadership style (2); motivation (1), quoted: 'Zaid, however, offers rewards to hardworking employees, which increases productivity.'"],
+    ["One manager decides alone; the other trades rewards for hard work.", "Name each style, then quote the sentence that shows it."], each=3,
+    notes=["Mark the first TWO only. Marks for a style even if its quote is incomplete; no marks for a motivation if its style is wrong."])]
 q25 = [rub("2.5", "Describe the role of personal attitude in successful leadership.", 4, [
     "Positive attitude releases leadership potential for personal growth.", "A leader's good attitude can influence the success of the business.",
     "Leaders must know their strengths and weaknesses to apply their leadership styles effectively.",
@@ -215,7 +218,7 @@ KH = ("Klipland Hardware is experiencing conflict in the workplace. Some employe
       "production. The management of KH sets unrealistic deadlines that increase the stress levels of employees. The employees of KH have "
       "difficulty with paying their own debt timeously.")
 q31 = [lst("3.1", "List any FOUR problem-solving steps.", 4,
-           [["Identify the problem"], ["Define the problem"], ["Identify possible solutions to the problem", "Identify possible solutions"],
+           [["Identify the problem"], ["Define the problem"], ["Identify possible solutions to the problem", "Identify possible solutions", "generate (possible solutions)", "brainstorm (possible solutions)"],
             ["Evaluate alternative solutions"], ["Choose the most appropriate solution", "Select the most appropriate alternative", "Choose the best solution"],
             ["Develop an action plan"], ["Implement the suggested solution", "Implement the action plan"],
             ["Monitor the implementation of the solution", "Monitor the action plan"], ["Evaluate the implemented solution"]],
@@ -253,9 +256,9 @@ q33 = [
         "the company should appoint internal and external auditors to audit financial statements; the board should ensure that the company's ethics on "
         "disclosure are motivated/proper/accurate and implemented effectively; businesses should be accountable/responsible for their "
         "decisions/actions; businesses should present accurate annual reports to shareholders at the AGM; top management should ensure that other "
-        "levels of management are clear about their roles and responsibilities to improve accountability.",
-        "Mark the first ONE only; no marks for responsibility (3.3.1's principle)."],
-        ["Not responsibility (that was 3.3.1).", "Name the principle, then describe what a business does to apply it."], each=3),
+        "levels of management are clear about their roles and responsibilities to improve accountability."],
+        ["Not responsibility (that was 3.3.1).", "Name the principle, then describe what a business does to apply it."], each=3,
+        notes=["Mark the first ONE only; no marks for responsibility (3.3.1's principle)."]),
 ]
 q34 = [rub("3.4", "Discuss communication as a criterion for successful team performance.", 6, [
     "A clear set of processes/procedures for teamwork ensures that every team member understands his/her role.",

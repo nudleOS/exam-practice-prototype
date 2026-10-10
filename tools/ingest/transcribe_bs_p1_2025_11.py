@@ -24,10 +24,13 @@ match = lambda n, q, left, right, a, each, clues, **kw: {"t": "match", "n": n, "
                                                          "right": right, "a": a, **({"each": each} if each > 1 else {}), **kw}
 
 
-def rub(n, q, marks, bullets, clues, each=None):
+# notes: the memo's marking instructions that are NOT points ("Mark the first TWO only ..."): never scored, never shown (2026-10-10)
+def rub(n, q, marks, bullets, clues, each=None, notes=None):
     r = {"t": "rubric", "n": n, "marks": marks, "q": q, "clues": clues, "bullets": bullets}
     if each:
         r["each"] = each
+    if notes:
+        r["notes"] = notes
     return r
 
 
@@ -143,10 +146,10 @@ q23 = [
             "Threat/Barriers of new entrants to the market (force 2, a description 1): if the barriers to enter the market are low, then it is "
             "easy for new businesses to enter the market/industry; if the business is highly profitable, it will attract potential competitors "
             "that want to benefit from high profits; new competitors can quickly/easily enter the market, if it takes little time/money to "
-            "enter the market; if there are a few suppliers of a product/service but many buyers, it may be easy to enter the market.",
-            "Mark the first ONE force only. No marks for competitive rivalry/power of competitors (2.3.1's force)."],
+            "enter the market; if there are a few suppliers of a product/service but many buyers, it may be easy to enter the market."],
         ["Five forces: rivalry, suppliers, buyers, substitutes, new entrants. Not the one in 2.3.1.",
-         "Name the force, then say how a business would use it to judge its position."], each=3),
+         "Name the force, then say how a business would use it to judge its position."], each=3,
+        notes=["Mark the first ONE force only. No marks for competitive rivalry/power of competitors (2.3.1's force)."]),
 ]
 q24 = [rub("2.4", "Explain the steps in strategy evaluation.", 4, [
     "Examine the underlying basis of a business strategy.", "Look forward and backwards into the implementation process.",
@@ -169,9 +172,9 @@ q25 = [rub("2.5", "Discuss any TWO types of intensive strategies.", 6, [
     "Product development (strategy 2, a discussion point 1): a growth strategy where businesses aim to introduce new products into existing "
     "markets/modifies an existing product; businesses generate new ideas/develop new products/services for existing/current markets; "
     "businesses conduct test marketing/market research to establish whether new products will be accepted by existing customers; new "
-    "products may be different/of a higher quality than those of competitors.",
-    "Mark the first TWO only (3 marks each: the strategy 2, its discussion 1)."],
-    ["Intensive strategies work harder with existing products or markets.", "Three of them: penetrate, develop the market, develop the product."], each=3)]
+    "products may be different/of a higher quality than those of competitors."],
+    ["Intensive strategies work harder with existing products or markets.", "Three of them: penetrate, develop the market, develop the product."], each=3,
+    notes=["Mark the first TWO only (3 marks each: the strategy 2, its discussion 1)."])]
 q26 = [
     pick("2.6.1", "Quote TWO ways in which MF complies with the National Credit Act (NCA), 2005 (Act 34 of 2005) from the scenario above.",
          sentences(MF), [1, 3], ["The NCA is about lending money and selling on credit.", "A cooling-off period belongs to a different Act."]),
