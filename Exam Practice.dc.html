@@ -3806,9 +3806,12 @@ class Component extends DCLogic {
       const asked = norm(part.stem).split(" ").filter(Boolean);
       const slotsOf = w => w.replace(/\([^)]*\)/g, " ").split(/\s+/).map(tok => [...new Set(tok.split("/").flatMap(x => norm(x).split(" ")).filter(Boolean))]).filter(sl => sl.length);
       const hitOf = w => { const slots = slotsOf(w), ks = [];
-        slots.forEach(sl => { const pf = [...new Set(sl.filter(x => x.length > 5).map(x => x.slice(0, 5)))].sort(); if (!pf.length) return;
-          const short = sl.filter(x => x.length >= 2 && x.length <= 5 && !LEAD_STOP.has(x)), k = ks.find(q => q.pf.join() === pf.join());
-          if (k) short.forEach(x => k.short.indexOf(x) === -1 && k.short.push(x)); else ks.push({ pf: pf, short: short }); });
+        // slots sharing ANY start are one keyword (2026-10-10: "followers/employees" and "follow" were two, so the one word "followers" hit
+        // two keywords and BS P2 2024 2.5.2's name alone earned its explanation's mark too)
+        slots.forEach(sl => { const pf = [...new Set(sl.filter(x => x.length > 5).map(x => x.slice(0, 5)))]; if (!pf.length) return;
+          const short = sl.filter(x => x.length >= 2 && x.length <= 5 && !LEAD_STOP.has(x)), same = ks.filter(q => q.pf.some(p => pf.indexOf(p) !== -1));
+          const k = { pf: [...new Set(pf.concat(...same.map(q => q.pf)))].sort(), short: [...new Set(short.concat(...same.map(q => q.short)))] };
+          same.forEach(q => ks.splice(ks.indexOf(q), 1)); ks.push(k); });
         if (ks.length) { const hit = (k, x) => (x.length > 4 && k.pf.indexOf(x.slice(0, 5)) !== -1) || k.short.indexOf(x) !== -1;
           const own = ks.filter(k => !asked.some(x => hit(k, x))), use = own.length ? own : ks, need = own.length ? Math.min(2, own.length) : ks.length;
           const got = use.filter(k => words.some(x => hit(k, x))).length;
@@ -3816,7 +3819,10 @@ class Component extends DCLogic {
         if (slots.length === 1 && slots[0].length === 1 && slots[0][0].length <= 3) return words[0] === slots[0][0] ? slots[0] : null;
         const sig = slots.map(sl => sl.filter(x => x.length >= 3 && !LEAD_STOP.has(x))).filter(sl => sl.length);
         return sig.length && sig.every(sl => sl.some(x => words.indexOf(x) !== -1)) ? sig.map(sl => sl.find(x => words.indexOf(x) !== -1)) : null; };
-      const wordingsOf = pt => { const s = String(pt).replace(/^OR\s*[—–-]\s*/, ""), m = s.match(/\bACCEPT\b:?/i), main = m ? s.slice(0, m.index) : s, acc = m ? s.slice(m.index + m[0].length) : "";
+      // "ACCEPT" (or "Accept:") is the memo's notation for other wordings; a lowercase "accept" is the memo's prose ("(accept examples)",
+      // "followers easily accept/take responsibility"): split there, "examples)" became a wording of its own and "for example" earned the
+      // point (2026-10-10: 68 Geography and Business Studies points)
+      const wordingsOf = pt => { const s = String(pt).replace(/^OR\s*[—–-]\s*/, ""), m = s.match(/\bACCEPT\b:?|\b[Aa]ccept:/), main = m ? s.slice(0, m.index) : s, acc = m ? s.slice(m.index + m[0].length) : "";
         return main.split(/\s+OR\s+/).concat(acc.trim() ? acc.split(/\s+OR\s+/) : []).filter(x => slotsOf(x).length); };
       const catchAll = pt => /^any other\b/i.test(String(pt).replace(/^OR\s*[—–-]\s*/, ""));
       const items = key.rubric.map((pt, i) => { let ev = null; if (!catchAll(pt)) for (const w of wordingsOf(pt)) { ev = hitOf(w); if (ev) break; } const ok = !!ev;
