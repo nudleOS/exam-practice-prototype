@@ -111,7 +111,17 @@ def semantic_issues(paper):
                     bl, must, worth = i.get("bullets") or [], i.get("must") or [], i.get("worth")
                     if worth is not None and len(worth) != len(bl): add(n, "error", f"worth has {len(worth)} marks for {len(bl)} points")
                     pw = (lambda k: worth[k]) if worth is not None and len(worth) == len(bl) else (lambda k: i.get("each") or 1)
-                    if sum(pw(k) for k, b in enumerate(bl) if not b.startswith("OR")) < i.get("marks", 0): add(n, "warn", "fewer memo points than marks")
+                    # the marker's alternative answers: EVERY bullet starting "OR" opens the next one, and only the best one counts, so each
+                    # must reach the marks alone (2026-10-10: BS P1 2025 4.2 began all six option-2 points with "OR", six answers of 2 / 4)
+                    groups = []
+                    for k, b in enumerate(bl):
+                        if not k or b.startswith("OR"): groups.append([])
+                        groups[-1].append(k)
+                    if not groups or sum(pw(k) for k in groups[0]) < i.get("marks", 0): add(n, "warn", "fewer memo points than marks")
+                    for g in groups[1:]:
+                        if sum(pw(k) for k in g) < i.get("marks", 0):
+                            add(n, "warn", f"the alternative answer from point {g[0]} can earn {sum(pw(k) for k in g)} of {i.get('marks')}: only an "
+                                           "alternative's FIRST point starts with OR")
                     if any(not 0 <= k < len(bl) or bl[k].startswith("OR") for k in must): add(n, "error", "a compulsory point is not one of the memo points")
                     if must and len(must) * (i.get("each") or 1) >= i.get("marks", 0): add(n, "warn", "compulsory points leave no marks for the rest")
                 if t == "lettername" and i.get("a", {}).get("letter") not in (i.get("letters") or []): add(n, "error", "answer letter is not one of the letters")

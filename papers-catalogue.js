@@ -22,7 +22,7 @@ window.NX_CATALOGUE = {
    "missions": 30,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "4f3c1a67c6",
+   "rev": "3bcf734784",
    "source_pdf": "uploads/Business Studies P1 Nov 2025 Eng.pdf"
   },
   {
@@ -302,7 +302,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "24745e4d20",
+   "rev": "dd33b4f9d3",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2025 Eng.pdf"
   },
   {

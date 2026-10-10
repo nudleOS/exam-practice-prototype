@@ -87,7 +87,7 @@ q11 = [match("1.1", "Use TABLE 1 above and match an explanation or a definition 
              heads=["CONCEPT", "TABLE 1: DEFINITIONS"])]
 q12 = [
     rub("1.2.1", "State, in words, the arrival time of the flight using the 12-hour format.", 2, [
-        "Quarter past two (1).", "In the afternoon (1).", "OR — Fifteen minutes after two (1).", "OR — In the afternoon (1)."],
+        "Quarter past two (1).", "In the afternoon (1).", "OR — Fifteen minutes after two (1).", "In the afternoon (1)."],
         ["The flight lands at 14:15 on the 24-hour clock.", "In words: how many minutes past which hour, and which part of the day?"]),
     steps("1.2.2", "Only 33⅓% of the maximum number of passengers were on board this flight. Calculate the number of passengers on this flight.", 2,
           [("Number of passengers on this flight", 2, 63, 0.01, "Number of passengers = 33⅓% × 189 ✓MA = 63 ✓A (OR ⅓ × 189 ✓MA = 63 ✓A)")],

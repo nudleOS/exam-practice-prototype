@@ -354,11 +354,11 @@ q42 = [rub("4.2", "Outline the strategic management process.", 4, [
     "Implement selected strategies by communicating it to all stakeholders/organising business resources/motivating staff.",
     "Continuously evaluate/monitor/measure strategies in order to take corrective action.",
     "OR — (option 2) Review/Analyse/Re-examine their vision/mission statement.",
-    "OR — (option 2) Conduct an environmental analysis using models such as SWOT/PESTLE/Porter's Five Forces.",
-    "OR — (option 2) Formulate a strategy, such as defensive/retrenchment strategy.",
-    "OR — (option 2) Implement a strategy, using a template such as an action plan.",
-    "OR — (option 2) Control/Evaluate/Monitor the implemented strategy to identify gaps/deviations in implementation.",
-    "OR — (option 2) Take corrective action to ensure goals/objectives are met.",
+    "(option 2) Conduct an environmental analysis using models such as SWOT/PESTLE/Porter's Five Forces.",
+    "(option 2) Formulate a strategy, such as defensive/retrenchment strategy.",
+    "(option 2) Implement a strategy, using a template such as an action plan.",
+    "(option 2) Control/Evaluate/Monitor the implemented strategy to identify gaps/deviations in implementation.",
+    "(option 2) Take corrective action to ensure goals/objectives are met.",
     "Any other relevant answer related to the strategic management process."],
     ["It starts with where the business wants to go.", "Vision, scan the environment, formulate, implement, evaluate."], each=2)]
 q43 = [
