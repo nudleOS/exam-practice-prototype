@@ -391,7 +391,7 @@ q43 = [
           ["Micro environment", "Market environment", "Macro environment"], [2, 0], 1,
           ["The three environments differ in how much control the business has.",
            "Ask of each challenge: who causes it, and can GF control it?"],
-          heads=["CHALLENGES", "BUSINESS ENVIRONMENTS"], groups=True),
+          heads=["CHALLENGES", "BUSINESS ENVIRONMENTS"], groups=True, after=["4.3.1"]),   # (its rows are 4.3.1's answers: it opens after 4.3.1)
 ]
 q44 = [rub("4.4", "Discuss the impact of the Compensation for Occupational Injuries and Diseases Amendment Act (COIDA),1997 (Act 61 of 1997) "
            "on businesses.", 6, [
@@ -1003,8 +1003,8 @@ paper = {
                                                      "scorecard rule (50% black ownership -> level 3); none of the three is used as a statement."},
         {"n": "4.4", "kind": "memo_issue", "detail": "The memo lists 'Employers have to pay a monthly amount to the Compensation Fund' under the "
                                                      "positives; not used as a sort row."},
-        {"n": "4.3.2", "kind": "no_fit", "detail": "4.3.2's rows are 4.3.1's two challenges (as the paper's own table pairs them); a learner who opens "
-                                                   "4.3.2 first sees 4.3.1's answer. Needs a player gate (answer 4.3.1 first); not fixable in the data."},
+        {"n": "4.3.2", "kind": "no_fit", "detail": "4.3.2's rows are 4.3.1's two challenges (as the paper's own table pairs them), so it is GATED "
+                                                   "(after: 4.3.1): the player opens it only once 4.3.1 is answered."},
     ],
 }
 out = Path(__file__).parent / "out" / "bs-p1-2025-11"
