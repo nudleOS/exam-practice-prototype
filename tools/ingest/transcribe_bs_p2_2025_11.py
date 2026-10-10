@@ -685,20 +685,6 @@ STATEMENTS = {
                  ["Fill each slide with as much text as possible so that nothing is left out.",
                   "Use a different font style on every slide to keep the audience guessing.",
                   "Use the smallest possible font so that more information fits on each slide."]),
-    "2.7": (2, ["Positive: returns are guaranteed, as the interest rate is fixed for the whole investment period.",
-                "Positive: it is a low-risk investment, as the money is invested with the South African Government.",
-                "Positive: no charges or commissions are payable on this type of investment.",
-                "Negative: penalties are charged for early withdrawals if the savings are less than 12 months old."],
-               ["Positive: the bonds can be ceded to a bank as security for a loan.",
-                "Negative: investors can lose all their money if share prices fall on the JSE.",
-                "Positive: interest is paid only once, at the end of a 20-year period."]),
-    "2.8": (2, ["Success: it is managed by a board of skilled directors, which results in better decision-making.",
-                "Success: shareholders can vote for the most capable directors to manage the company.",
-                "Failure: a large management structure can make decision-making slow.",
-                "Failure: directors' fees increase the company's expenses, which reduces net profit."],
-               ["Success: a single owner makes every decision alone, so no meetings are needed.",
-                "Failure: directors have unlimited personal liability for all of the company's debts.",
-                "Success: a public company does not have to report to its shareholders at all."]),
     "3.2": (2, ["Diversity in the workforce improves morale and motivation amongst employees.",
                 "Employees from different backgrounds bring different perspectives to the business.",
                 "A diverse workforce can give the business a competitive advantage, as it can render better services.",
@@ -731,13 +717,6 @@ STATEMENTS = {
                 "It may give the business tax advantages, such as tax rebates."],
                ["CSR projects immediately double the business's profits.", "CSR allows the business to ignore labour legislation.",
                 "CSR means the business no longer has to pay its employees' salaries."]),
-    "3.7": (2, ["Positive: members have time to think about the question in silence before responding.",
-                "Positive: voting on the ideas is anonymous and may be more honest.",
-                "Positive: everyone can contribute, and one person is less likely to dominate the group.",
-                "Negative: it is time consuming, as each member must make a presentation."],
-               ["Positive: one person dominates the group, so decisions are made faster.",
-                "Negative: members must vote openly, so nobody can be honest.",
-                "Positive: it needs no preparation at all, so it can be used spontaneously."]),
     "4.3": (2, ["Management guides human behaviour, whereas leadership influences human behaviour.",
                 "Management focuses on the short to medium term, whereas leadership focuses on the long term.",
                 "Management is task orientated, whereas leadership is people orientated."],
@@ -772,9 +751,49 @@ STATEMENTS = {
                 "Stop supplying rural areas so that prices no longer matter.",
                 "Add a hidden transport fee to the price without telling customers."]),
 }
+# A written part whose memo weighs two sides (positive / negative impact, success / failure) plays as a SORT instead (variety,
+# Murci 2026-10-10: not only MCQ-style picks): each statement dragged to its side, or to "Not true" (the clearly wrong ones), 1 mark
+# a statement; a grouped match (the cards are reusable), so the platform and the service play it as they play a classification.
+SORTS = {
+    "2.7": (["Positive impact", "Negative impact", "Not true"], [
+        ("Returns are guaranteed, as the interest rate is fixed for the whole investment period.", 0),
+        ("It is a low-risk investment, as the money is invested with the South African Government.", 0),
+        ("Penalties are charged for early withdrawals if the savings are less than 12 months old.", 1),
+        ("The bonds cannot be ceded to a bank as security for a loan.", 1),
+        ("Investors can lose all their money if share prices fall on the JSE.", 2),
+        ("Interest is paid only once, at the end of a 20-year period.", 2)]),
+    "2.8": (["Success", "Failure", "Not true"], [
+        ("It is managed by a board of skilled directors, which results in better decision-making.", 0),
+        ("Shareholders can vote for the most capable directors to manage the company.", 0),
+        ("A large management structure can make decision-making slow.", 1),
+        ("Directors' fees increase the company's expenses, which reduces net profit.", 1),
+        ("Directors have unlimited personal liability for all of the company's debts.", 2),
+        ("A public company does not have to report to its shareholders at all.", 2)]),
+    "3.7": (["Positive impact", "Negative impact", "Not true"], [
+        ("Members have time to think about the question in silence before responding.", 0),
+        ("Voting on the ideas is anonymous and may be more honest.", 0),
+        ("It is time consuming, as each member must make a presentation.", 1),
+        ("Good ideas can be voted out because their potential cannot be developed further.", 1),
+        ("Members must vote openly, so nobody can be honest.", 2),
+        ("One person dominates the group, so decisions are made faster.", 2)]),
+}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("bs-p2-2025-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
 for _m in missions_q2 + missions_q3 + missions_q4:
     for _k, _it in enumerate(_m["items"]):
-        if _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
             _each, _right, _wrong = STATEMENTS[_it["n"]]
             _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
 assert not [i["n"] for m in missions_q2 + missions_q3 + missions_q4 for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
