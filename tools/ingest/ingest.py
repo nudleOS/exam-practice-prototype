@@ -41,8 +41,8 @@ component (the `t` field). Choose the component by how the MEMO marks the part, 
 - a letter + name the memo accepts in two ways ("C - urethra OR D - penis") uses `lettername.or`; the LETTERS and NAMES of
   several parts in one numbered part use `letternames` (count + pool), never two parts and never `draw`;
 - a GENOTYPE answer ("Give the genotype of individual 5", "State ALL the possible genotypes") is `genotype`: the system's
-  alleles exactly as printed (superscripts as Unicode: Iᴮ, Xʰ), each memo genotype as its two alleles; never `term` or `list`
-  (they fold case, so DD would pass for dd);
+  alleles exactly as printed (superscripts as Unicode: Iᴮ, Xʰ), each memo genotype as its two alleles (a DIHYBRID's four,
+  RRee, with `per` 4; a gamete's, re, as two); never `term` or `list` (they fold case, so DD would pass for dd);
 - a MONOHYBRID genetic cross the memo marks point by point (P1 phenotypes and genotypes, meiosis, gametes, fertilisation, F1
   genotypes and phenotypes, ratio) is `draw` with `build.kind` "cross" (parents, every offspring genotype's phenotype) and the
   memo's criteria; no flag; `gens` when the memo names other generations ("P2 and F2": ["P2", "F2"]);

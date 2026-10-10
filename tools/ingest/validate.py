@@ -118,7 +118,8 @@ def semantic_issues(paper):
                 if t == "genotype":
                     al, pool = i.get("alleles") or [], i.get("pool") or []
                     if len(pool) < i.get("count", 0): add(n, "error", "fewer memo genotypes than the count asked")
-                    if any(len(g) != 2 or any(x not in al for x in g) for g in pool): add(n, "error", "a memo genotype is not two of the alleles")
+                    per = 4 if i.get("per") == 4 else 2   # a dihybrid's genotype is four alleles (RRee)
+                    if any(len(g) != per or any(x not in al for x in g) for g in pool): add(n, "error", f"a memo genotype is not {per} of the alleles")
                     if i.get("count") and (i.get("marks") or 0) % i["count"]: add(n, "warn", "marks do not split evenly over the genotypes")
                 b = i.get("build") or {}
                 if t == "draw" and b.get("kind") == "cross":   # everything the marker derives must exist: each parent, each offspring's phenotype
