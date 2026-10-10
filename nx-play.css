@@ -2555,6 +2555,11 @@ body.nx-mdrag, body.nx-mdrag * { cursor:grabbing !important; }
    MCQ): the statement takes the row's width and the slot holds a short group; the groups sit in one row, and on a phone the tray
    stays in reach above the dock while the statements scroll (tap a group, then a statement, or drag) */
 body.nx-play [data-match][data-mgroups="true"] [data-mrow] { grid-template-columns:minmax(0, 1fr) minmax(118px, 0.42fr); }
+/* (a tablet and up: one column, the groups on top and in reach while the statements scroll under them) */
+body.nx-play [data-match][data-mgroups="true"] [data-msplit] { grid-template-columns:minmax(0, 1fr); }
+@media (min-width:760px) { body.nx-play [data-match][data-mgroups="true"] [data-mtray] { order:-1; position:sticky; top:0; z-index:4; padding:10px;
+    border-radius:18px; border:1px solid var(--nx-panel-line); background:var(--nx-panel); }
+  body.nx-play [data-match][data-mgroups="true"] [data-mtray] > [data-mcard] { flex:0 1 210px; } }
 body.nx-play [data-match][data-mgroups="true"] [data-mlab] { font-weight:500; line-height:1.45; }
 body.nx-play [data-match][data-mgroups="true"] [data-mtray] { flex-direction:row; flex-wrap:wrap; align-items:stretch; }
 body.nx-play [data-match][data-mgroups="true"] [data-mtray] > [data-mhead] { flex:1 1 100%; }
