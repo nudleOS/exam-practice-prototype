@@ -256,8 +256,10 @@ window.NX_CATALOGUE = {
    "duration_minutes": 150,
    "questions": 3,
    "missions": 14,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2024"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2024",
+   "rev": "237fc953c5",
+   "source_pdf": "uploads/Life Sciences P2 Nov 2024 Eng.pdf"
   },
   {
    "id": "ml-p1-2025-11",
