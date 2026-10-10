@@ -100,6 +100,8 @@ COMPONENTS = {
     "rubric": component("rubric", "A written answer marked against the memo's points (Explain / Describe / State ...).", {
         "bullets": {**STRS, "description": "The memo's marking points, one per mark (or per 'each'). An alternative answer starts 'OR — '"},
         "each": {"type": "integer", "description": "Marks per point when one point is worth more than 1"},
+        "worth": {**INTS, "description": "Each point's own marks, one per bullet, when points differ (the memo's 'Force (2) + Motivation (1)': "
+                  "the name and its quote as two points worth [2, 1]); overrides each"},
         "notes": {**STRS, "description": "The memo's marking NOTES that are not points (key-word rules, 'X defined: 0/2', ACCEPT limits, criteria): never scored and never shown to the learner; a note in bullets would be a point a learner earns"},
         "table": {**STRS, "description": "Tabulate: the table's column headings (the things compared, in the paper's order); the answer is played as that table, one row per difference the question asks for"},
         "must": {**INTS, "description": "0-based indexes of COMPULSORY points (the memo's 'Compulsory mark * (1) + Any (5)'): each earns its own "

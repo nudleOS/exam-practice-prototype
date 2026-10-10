@@ -107,9 +107,10 @@ def semantic_issues(paper):
                         if re.search(r"\d\s*[×÷−+=*/x]\s*[\d(]", lab) or nums & keys:
                             add(n, "error", f"step {s.get('id')}'s label prints the working or an answer: {lab!r}")
                 if t == "rubric":
-                    pts = [b for b in i.get("bullets") or [] if not b.startswith("OR")]
-                    if len(pts) * (i.get("each") or 1) < i.get("marks", 0): add(n, "warn", "fewer memo points than marks")
-                    bl, must = i.get("bullets") or [], i.get("must") or []
+                    bl, must, worth = i.get("bullets") or [], i.get("must") or [], i.get("worth")
+                    if worth is not None and len(worth) != len(bl): add(n, "error", f"worth has {len(worth)} marks for {len(bl)} points")
+                    pw = (lambda k: worth[k]) if worth is not None and len(worth) == len(bl) else (lambda k: i.get("each") or 1)
+                    if sum(pw(k) for k, b in enumerate(bl) if not b.startswith("OR")) < i.get("marks", 0): add(n, "warn", "fewer memo points than marks")
                     if any(not 0 <= k < len(bl) or bl[k].startswith("OR") for k in must): add(n, "error", "a compulsory point is not one of the memo points")
                     if must and len(must) * (i.get("each") or 1) >= i.get("marks", 0): add(n, "warn", "compulsory points leave no marks for the rest")
                 if t == "lettername" and i.get("a", {}).get("letter") not in (i.get("letters") or []): add(n, "error", "answer letter is not one of the letters")

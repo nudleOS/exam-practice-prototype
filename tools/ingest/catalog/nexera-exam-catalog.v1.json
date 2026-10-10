@@ -862,6 +862,13 @@
       "type": "integer",
       "description": "Marks per point when one point is worth more than 1"
      },
+     "worth": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "Each point's own marks, one per bullet, when points differ (the memo's 'Force (2) + Motivation (1)': the name and its quote as two points worth [2, 1]); overrides each"
+     },
      "notes": {
       "type": "array",
       "items": {
