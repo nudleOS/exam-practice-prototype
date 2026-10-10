@@ -252,7 +252,7 @@
           <div class="side back" aria-hidden="true"><span class="gleam" aria-hidden="true"></span><div class="buddy" aria-hidden="true"></div><div class="copy"><div class="ok"></div><div class="ans"></div><div class="why"></div><div class="not"></div><div class="more">Tap to see why</div></div></div>`;
         const face = t.querySelector(".face");
         // (a head's single letters are the figure's labels and stay capitals: "muscle in X", not "muscle in x")
-        if (tbl) face.setAttribute("aria-label", L[i] + ": " + tbl.head.map((h, j) => h.toLowerCase().replace(/\b[a-z]\b/g, c => c.toUpperCase()) + " " + String(tbl.rows[i][j]).toLowerCase()).join(", "));
+        if (tbl) face.setAttribute("aria-label", L[i] + ": " + tbl.head.map((h, j) => h.toLowerCase().replace(/\b[a-z]\b/g, c => c.toUpperCase()) + " " + String(tbl.rows[i][j]))   /* a cell as printed: genotypes (Bbtt / bbTt) differ only in capitals, so lower-casing made LS P2 2025 1.1.8 sound four times the same (2026-10-11) */.join(", "));
         face.addEventListener("pointermove", e => { const r = face.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
           face.style.setProperty("--mx", x + "px"); face.style.setProperty("--my", y + "px");
           if (e.pointerType === "touch" || reduced || S.done || t.classList.contains("sel")) return;
