@@ -668,7 +668,11 @@
         "type": "string"
        }
       },
-      "description": "Every genotype the memo accepts, each as its two alleles (['I\u1d2e', 'i'])"
+      "description": "Every genotype the memo accepts, each as its alleles (['I\u1d2e', 'i']; a dihybrid's four, ['R', 'R', 'e', 'e'])"
+     },
+     "per": {
+      "type": "integer",
+      "description": "Alleles per genotype: 2 (default) or 4 (a dihybrid, RRee)"
      }
     },
     "required": [

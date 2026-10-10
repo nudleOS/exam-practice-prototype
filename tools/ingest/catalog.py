@@ -89,7 +89,8 @@ COMPONENTS = {
     "genotype": component("genotype", "COUNT genotypes built from the paper's alleles (never typed: case and superscripts are exact, DD is never dd).", {
         "alleles": {**STRS, "description": "Every allele of the system as printed, dominant first (['D', 'd'], ['Iᴬ', 'Iᴮ', 'i'], ['Xᴴ', 'Xʰ', 'Y'])"},
         "count": INT,
-        "pool": {"type": "array", "items": STRS, "description": "Every genotype the memo accepts, each as its two alleles (['Iᴮ', 'i'])"}},
+        "pool": {"type": "array", "items": STRS, "description": "Every genotype the memo accepts, each as its alleles (['Iᴮ', 'i']; a dihybrid's four, ['R', 'R', 'e', 'e'])"},
+        "per": {"type": "integer", "description": "Alleles per genotype: 2 (default) or 4 (a dihybrid, RRee)"}},
         ["alleles", "count", "pool"]),
     "num": component("num", "One number (keypad), within a tolerance.", {"a": NUM, "tol": NUM, "unit": STR}, ["a", "tol"]),
     "steps": component("steps", "A calculation in numbered steps, each one NUMBER (method marks per step).", {

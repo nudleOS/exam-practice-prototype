@@ -178,12 +178,13 @@
       destroy() { host.innerHTML = ""; } };
   }
   // a genotype question: `count` genotypes of two alleles each, from the paper's alleles (2.4.2: Iᴬ Iᴮ i, two genotypes)
+  // per: alleles per genotype, 2 (Dd) or 4 (a dihybrid's RRee, LS P2 Nov 2024 1.5.3(a), 2026-10-09); socket ids g<k>a, b, c, d
   function geno(host, o) {
-    const cfg = o.cfg, n = cfg.count || 1, ids = [];
-    for (let k = 0; k < n; k++) ids.push(["g" + k + "a", "al", (n > 1 ? "Genotype " + (k + 1) : "Genotype") + ", first allele"], ["g" + k + "b", "al", (n > 1 ? "Genotype " + (k + 1) : "Genotype") + ", second allele"]);
+    const cfg = o.cfg, n = cfg.count || 1, per = cfg.per === 4 ? 4 : 2, ids = [], ORD = ["first", "second", "third", "fourth"];
+    for (let k = 0; k < n; k++) for (let j = 0; j < per; j++) ids.push(["g" + k + "abcd"[j], "al", (n > 1 ? "Genotype " + (k + 1) : "Genotype") + ", " + ORD[j] + " allele"]);
     return sockets(host, o, { ids: ids, first: "al", tray: { al: cfg.alleles }, trayName: { al: "Alleles: tap one" },
       labels: Object.fromEntries(Array.from({ length: n }, (_, k) => ["g" + k, n > 1 ? "Genotype " + (k + 1) : "Genotype"])),
-      view: (v, S) => Array.from({ length: n }, (_, k) => `<div class="gx-g"><span class="gx-k">${n > 1 ? "Genotype " + (k + 1) : "Genotype"}</span>${S("g" + k + "a")}${S("g" + k + "b")}</div>`).join("") });
+      view: (v, S) => Array.from({ length: n }, (_, k) => `<div class="gx-g"><span class="gx-k">${n > 1 ? "Genotype " + (k + 1) : "Genotype"}</span>${Array.from({ length: per }, (_, j) => S("g" + k + "abcd"[j])).join("")}</div>`).join("") });
   }
   // a monohybrid cross (2.5.4), laid out as the memo marks it: P1 phenotypes and genotypes, the gametes on a Punnett square's edges,
   // its cells the F1 genotypes, then the F1 phenotypes and their ratio. The four labels (P1, Meiosis, Fertilisation, F1) are placed by
