@@ -1906,7 +1906,7 @@ function buildPapers() {
         const parts = (m.parts || m.items || []).map(q => {
           const key = P.id + ":" + q.n; count++;
           SERVER.clues[key] = q.clues || [];
-          const base = { key: key, board: true, number: q.n, marks: q.marks, stem: q.q, clues_available: (q.clues || []).length, img: q.img || null };   // img: an ingested MCQ's own figure
+          const base = { key: key, board: true, number: q.n, marks: q.marks, after: q.after || null, stem: q.q, clues_available: (q.clues || []).length, img: q.img || null };   // img: an ingested MCQ's own figure
           if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]];   // opt_table: options printed as a table (1.1.6), the card shows its rows
             return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts, opt_table: q.optTable || null, ab: q.ab || null }); }
           if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
@@ -2219,6 +2219,7 @@ class Component extends DCLogic {
   componentDidUpdate() {
     this.buildSync();
     this.progSync();
+    this.gateSync();
     // the report card opens its lost questions (the template drops a bare `open`): once per paper and filter, after the render
     if (this.state.screen === "summary") { const k = (this.state.paperId || "") + ":" + (this.state.rcFilter || "");
       if (this._rcOpen !== k) { this._rcOpen = k; requestAnimationFrame(() => document.querySelectorAll('details.rc-row[data-lost="true"]').forEach(d => { d.open = true; })); } }
@@ -2675,6 +2676,15 @@ class Component extends DCLogic {
       d.xp = Math.max(d.xp || 0, s.xp || 0); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid;
       const today = progDay(new Date()); d.days = (d.days || []).filter(x => x !== today).concat([today]).slice(-60); progWrite(d); }, 350);
   }
+  // a GATED part (`after`: the earlier parts whose answers it shows; BS P1 Nov 2025 4.3.2 classifies the two sentences 4.3.1 asks the
+  // learner to quote) opens only once those are closed. Arriving at it before (Skip, the question map) moves on to the next part that
+  // is open, or back to the part it waits for; the robot says why (2026-10-10)
+  gateOpen(part) { const pid = part.key.slice(0, part.key.lastIndexOf(":")); return (part.after || []).every(n => this.pg(pid + ":" + n).closed); }
+  gateSync() { const st = this.state; if (st.screen !== "play") { this._gateAt = null; return; } const part = this.part(), m = this.mission();
+    if (!part || !m || this.gateOpen(part) || this.pg(part.key).closed || this._gateAt === part.key + ":" + st.pi) return; this._gateAt = part.key + ":" + st.pi;
+    const fwd = m.parts.findIndex((q, j) => j > st.pi && this.gateOpen(q) && !this.pg(q.key).closed),
+      back = m.parts.findIndex(q => (part.after || []).indexOf(q.number) !== -1 && !this.pg(q.key).closed), to = fwd !== -1 ? fwd : back;
+    if (to !== -1) this.resetInputs({ pi: to, bubbleMsg: part.number + " opens after " + part.after.join(", ") + ": it uses that answer." }); }
   partByNumber(n) { return this.missions().reduce((a, m) => a || m.parts.filter(q => q.number === n)[0], null); }
   // an insight is worked out when every section of its essay is closed
   insightReady(part) { const pid = part.key.slice(0, part.key.lastIndexOf(":")); return ((part.insight || {}).of || []).every(n => this.pg(pid + ":" + n).closed); }
@@ -3180,7 +3190,7 @@ class Component extends DCLogic {
     const nx = this.nextMissionOpen(); if (nx) this.openMission(nx.mi, nx.pi); else this.advance(); }
   // the next part still open after this one, round from the start; -1 when this is the only one (or none is)
   nextOpenPart(m) { if (!m) return -1; const n = m.parts.length, pi = this.state.pi;
-    for (let d = 1; d < n; d++) { const i = (pi + d) % n, p = this.pg(m.parts[i].key); if (!p.closed && !p.waiting) return i; } return -1; }
+    for (let d = 1; d < n; d++) { const i = (pi + d) % n, p = this.pg(m.parts[i].key); if (!p.closed && !p.waiting && this.gateOpen(m.parts[i])) return i; } return -1; }   // (a gated part waits: gateOpen)
   // Back: the part before this one, in the mission (practice; a drill or a fix has its own order); it opens as it stands, closed or not
   canBack() { const s = this.state; return s.screen === "play" && !s.drill && !s.revisit && s.pi > 0; }
   prevPart() { if (this.canBack()) this.resetInputs({ pi: this.state.pi - 1 }); }
@@ -4983,7 +4993,7 @@ class Component extends DCLogic {
     Object.assign(rows[k], patch);
     this.setState({ lrows: rows, edited: Object.assign({}, s.edited, patch.letter != null ? { ["l" + k]: true } : { ["n" + k]: true }) }); }
   canCheckNow(part) { const s = this.state, mode = part.response_mode;
-    return mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
+    return !this.gateOpen(part) ? false : mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
       : mode === "insight" ? this.insightReady(part) : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null) : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
       : mode === "order" ? s.orderSeq.length === (part.options || []).length : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s)
       : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : mode === "build" ? this.buildReady(part, s.build) : true; }
@@ -5300,7 +5310,7 @@ class Component extends DCLogic {
     const locked = closed || s.marking;
     const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : "Finish")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next" : "Check";
-    const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
+    const canCheck = !this.gateOpen(part) ? false : mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
       : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "insight" ? this.insightReady(part) : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null)
       : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
       : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim()

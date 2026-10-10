@@ -33,6 +33,7 @@ COMMON = {
     "q": {"type": "string", "description": "The question text exactly as printed, without the marks"},
     "clues": {"type": "array", "items": STR, "description": "Two hints that lead the learner without giving the answer"},
     "note": {"type": "string", "description": "Optional: what a figure's label shows, for the record (never shown)"},
+    "after": {**STRS, "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"},
 }
 COMMON_REQ = ["n", "marks", "q", "clues"]
 

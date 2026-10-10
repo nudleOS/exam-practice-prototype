@@ -182,6 +182,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "opts": {
               "type": "array",
               "items": {
@@ -323,6 +330,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "opts": {
               "type": "array",
               "items": {
@@ -381,6 +395,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "opts": {
               "type": "array",
               "items": {
@@ -434,6 +455,13 @@
              "note": {
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
              },
              "left": {
               "type": "array",
@@ -513,6 +541,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "a": {
               "type": "array",
               "items": {
@@ -571,6 +606,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "count": {
               "type": "integer"
              },
@@ -624,6 +666,13 @@
              "note": {
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
              },
              "letters": {
               "type": "array",
@@ -714,6 +763,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "letters": {
               "type": "array",
               "items": {
@@ -788,6 +844,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "alleles": {
               "type": "array",
               "items": {
@@ -854,6 +917,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "a": {
               "type": "number"
              },
@@ -903,6 +973,13 @@
              "note": {
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
              },
              "steps": {
               "type": "array",
@@ -987,6 +1064,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "bullets": {
               "type": "array",
               "items": {
@@ -1066,6 +1150,13 @@
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
              },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
+             },
              "of": {
               "type": "array",
               "items": {
@@ -1139,6 +1230,13 @@
              "note": {
               "type": "string",
               "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "after": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional: earlier parts (numbers) whose ANSWERS this part shows (e.g. it classifies the sentences an earlier part asks the learner to quote): it opens only once they are answered"
              },
              "criteria": {
               "type": "array",
