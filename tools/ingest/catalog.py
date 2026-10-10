@@ -113,6 +113,13 @@ COMPONENTS = {
         "table": {**STRS, "description": "Tabulate: the table's column headings (the things compared, in the paper's order); the answer is played as that table, one row per difference the question asks for"},
         "must": {**INTS, "description": "0-based indexes of COMPULSORY points (the memo's 'Compulsory mark * (1) + Any (5)'): each earns its own "
                  "mark, and the other points together earn at most marks minus the compulsory ones"}}, ["bullets"]),
+    "insight": component("insight", "An essay's insight (Business Studies LASO: Layout, Analysis, Synthesis, Originality, 2 each), never answered: "
+                         "worked out from the essay's own sections (written answers as statements, 2026-10-10).", {
+        "of": {**STRS, "description": "the essay's section parts (their numbers), introduction to conclusion"},
+        "intro": {**STR, "description": "the introduction part's number"}, "conclusion": {**STR, "description": "the conclusion part's number"},
+        "examples": {"type": "array", "items": {"type": "array", "prefixItems": [STR, INT], "minItems": 2, "maxItems": 2},
+                     "description": "[part number, option index] of each EXAMPLE statement (recent, real): Originality, 1 each, 2 at most"}},
+        ["of", "intro", "conclusion"]),
     "draw": component("draw", "No catalogue type fits (a drawing, a graph to plot, a structured essay ...): the learner answers on paper and self-checks against the memo's criteria. Flag it no_fit.", {
         "criteria": {"type": "array", "items": obj({"text": STR, "marks": INT}, ["text", "marks"])},
         "build": {"anyOf": [

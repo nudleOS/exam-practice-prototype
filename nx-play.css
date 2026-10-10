@@ -2567,3 +2567,18 @@ body.nx-play [data-match][data-mgroups="true"] [data-mtray] > [data-mcard] [data
   body.nx-play [data-match][data-mgroups="true"] [data-mrow] { grid-template-columns:minmax(0, 1fr) 118px; } }
 /* a match card breaks with its lines kept (termBreak snap.wrap) */
 [data-termshards] .ts-glass.ts-wrap { white-space:normal; align-items:flex-start; padding:10px 12px !important; line-height:1.4; }
+/* an essay's INSIGHT (LASO, Murci 2026-10-10: earned from the picks): four rows on the MCQ card colours, each its rule and its
+   marks; green when both earned, amber for one, plain for none; a line names the sections still open */
+body.nx-play [data-insight] { display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:18px; border:1px solid var(--nx-card-line); background:var(--nx-card); }
+body.nx-play [data-ins-head] { font-size:15px; font-weight:800; color:var(--nx-text); }
+body.nx-play [data-ins-row] { display:grid; grid-template-columns:96px minmax(0, 1fr) auto; gap:10px; align-items:center; padding:10px 12px; border-radius:14px;
+  border:1px solid var(--nx-card-line); background:color-mix(in srgb, var(--nx-badge) 22%, transparent); }
+body.nx-play [data-ins-name] { font-weight:800; font-size:14px; color:var(--nx-text); }
+body.nx-play [data-ins-rule] { font-size:13px; line-height:1.4; color:var(--nx-text2); }
+body.nx-play [data-ins-got] { font-weight:800; font-size:14px; color:var(--nx-text); white-space:nowrap; }
+body.nx-play [data-ins-row][data-state="ok"] { border-color:#3ddc97; }
+body.nx-play [data-ins-row][data-state="ok"] [data-ins-got] { color:#3ddc97; }
+body.nx-play [data-ins-row][data-state="part"] { border-color:#e0a10f; }
+body.nx-play [data-ins-row][data-state="part"] [data-ins-got] { color:#e0a10f; }
+body.nx-play [data-ins-wait] { font-size:13px; color:var(--nx-text2); }
+@media (max-width:600px) { body.nx-play [data-ins-row] { grid-template-columns:minmax(0, 1fr) auto; } body.nx-play [data-ins-rule] { grid-column:1 / -1; grid-row:2; } }

@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=291">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=292">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1067,6 +1067,16 @@
             </div>
           </sc-if>
 
+          <sc-if value="{{ isInsight }}" hint-placeholder-val="{{ false }}">
+            <div data-insight="true">
+              <span data-ins-head="true">{{ insightHead }}</span>
+              <sc-for list="{{ insightRows }}" as="ir" hint-placeholder-count="4">
+                <div data-ins-row="true" data-state="{{ ir.state }}"><span data-ins-name="true">{{ ir.name }}</span><span data-ins-rule="true">{{ ir.rule }}</span><span data-ins-got="true">{{ ir.got }}</span></div>
+              </sc-for>
+              <sc-if value="{{ insightWaitOn }}" hint-placeholder-val="{{ false }}"><span data-ins-wait="true">{{ insightWait }}</span></sc-if>
+            </div>
+          </sc-if>
+
           <sc-if value="{{ isDraw }}" hint-placeholder-val="{{ false }}">
             <div style="padding:18px; border-radius:16px; border:1px dashed var(--line2); display:flex; gap:12px; align-items:flex-start">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#81b1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
@@ -1572,6 +1582,9 @@ const busReset = () => { try { if (!BUS_BLOCKED) localStorage.removeItem(BUS_KEY
 // service's attempt, which already keeps a learner's answers on the platform. One versioned key: the learner's XP and best streak,
 // the last paper, and per catalogue paper its parts (prog, paid) and its place (mission, part). Guarded like the bus.
 const PROG_KEY = "nexera.progress.v1";
+// an essay's insight, as the memo words it (Business Studies: Layout, Analysis and interpretation, Synthesis, Originality; 2 each)
+const INSIGHT_RULES = [["Layout", "your introduction and your conclusion are right"], ["Analysis", "every heading of the essay is answered"],
+  ["Synthesis", "only right statements: every section right on its first try"], ["Originality", "you picked the example statements"]];
 const progEmpty = () => ({ v: 1, xp: 0, bestStreak: 0, last: null, papers: {} });
 const progRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const d = JSON.parse(localStorage.getItem(PROG_KEY) || "null");
   return d && d.v === 1 && d.papers && typeof d.papers === "object" ? d : progEmpty(); } catch (e) { return progEmpty(); } };
@@ -1924,6 +1937,10 @@ function buildPapers() {
             // ANSWER, "✕ A bends to the light" on a miss told the learner the shape; the builder's own neutral names show instead)
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
               labels: undefined, stems: b.stems ? b.stems.map(st => ({ id: st.id, tip: st.tip })) : undefined }) }); }
+          // INSIGHT, an essay's LASO (Murci 2026-10-10: "earned from the picks"): never answered, worked out from the essay's own sections
+          if (q.t === "insight") { SERVER.keys[key] = { insight: { of: q.of || [], intro: q.intro, conclusion: q.conclusion, examples: q.examples || [] } };
+            SERVER.memo[key] = INSIGHT_RULES.map(r => r[0] + ": " + r[1]);
+            return Object.assign(base, { response_mode: "insight", marking_mode: "auto", insight: { of: q.of || [] } }); }
           if (q.t === "draw") { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             SERVER.keys[key] = { draw: true, worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) };
             return Object.assign(base, { response_mode: "draw", marking_mode: "criteria" }); }
@@ -2655,6 +2672,16 @@ class Component extends DCLogic {
       d.papers[pid] = { prog: pick(s.prog), paid: pick(s.paid), mi: s.mi || 0, pi: s.pi || 0, at: Date.now() };
       d.xp = Math.max(d.xp || 0, s.xp || 0); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid; progWrite(d); }, 350);
   }
+  partByNumber(n) { return this.missions().reduce((a, m) => a || m.parts.filter(q => q.number === n)[0], null); }
+  // an insight is worked out when every section of its essay is closed
+  insightReady(part) { const pid = part.key.slice(0, part.key.lastIndexOf(":")); return ((part.insight || {}).of || []).every(n => this.pg(pid + ":" + n).closed); }
+  insightVals(part, mode) { const off = { insightHead: "", insightRows: [], insightWaitOn: false, insightWait: "" }; if (mode !== "insight") return off;
+    const pid = part.key.slice(0, part.key.lastIndexOf(":")), open = ((part.insight || {}).of || []).filter(n => !this.pg(pid + ":" + n).closed);
+    const shown = !open.length || this.pg(part.key).closed, r = this.mark(part, {}), by = {}; (r.items || []).forEach(x => { by[x.key] = x; });
+    return { insightHead: "Insight · " + (shown ? r.marks_awarded + " of " + (part.marks || 8) : (part.marks || 8) + " marks") + ", earned from your picks",
+      insightRows: INSIGHT_RULES.map((ru, i) => { const x = by[["layout", "analysis", "synthesis", "originality"][i]] || { awarded: 0 };
+        return { name: ru[0], rule: ru[1], got: shown ? x.awarded + " / 2" : "– / 2", state: !shown ? "" : x.awarded >= 2 ? "ok" : x.awarded > 0 ? "part" : "none" }; }),
+      insightWaitOn: open.length > 0, insightWait: open.length ? "Finish the essay first: " + open.join(", ") + (open.length === 1 ? " is" : " are") + " still open." : "" }; }
   // The home page's "continue" from what was really saved (the last catalogue paper with work in it), or null for the design's
   // own returning learner (HOME.resume). Next up: the first mission with a part still open; finished when none is.
   realResume() {
@@ -3808,6 +3835,16 @@ class Component extends DCLogic {
     const key = SERVER.keys[part.key];
     if (part.response_mode === "draw") return { marks_awarded: 0, marks: part.marks || 0, full: false, marker: "none", items: [{ key: "d", awarded: 0, available: 0, verdict: "not_marked_online" }] };
     if (!key) return { marker: "unavailable", message: "saved" };
+    // an essay's insight (LASO, 2 each), from its sections as the learner left them: Layout = the introduction earned something and the
+    // conclusion its full marks; Analysis = every heading answered (half of them: 1); Synthesis = only right statements, every section
+    // right on its first try (one or two sections retried: 1); Originality = the example statements among the final picks (1 each)
+    if (key.insight) { const I = key.insight, pid = part.key.slice(0, part.key.lastIndexOf(":")), g = n => this.pg(pid + ":" + n), q = n => this.partByNumber(n);
+      const body = I.of.filter(n => n !== I.intro && n !== I.conclusion), full = n => !!q(n) && (g(n).best || 0) >= (q(n).marks || 0);
+      const Lo = ((g(I.intro).best || 0) > 0 ? 1 : 0) + (full(I.conclusion) ? 1 : 0), done = body.filter(n => (g(n).best || 0) > 0).length;
+      const An = body.length && done === body.length ? 2 : done * 2 >= body.length && done ? 1 : 0, retried = I.of.filter(n => !g(n).firstTryFull).length;
+      const Sy = retried === 0 ? 2 : retried <= 2 ? 1 : 0, Or = Math.min(2, I.examples.filter(e => (g(e[0]).ans || []).indexOf(e[1]) !== -1).length);
+      const items = [["layout", Lo], ["analysis", An], ["synthesis", Sy], ["originality", Or]].map(([k, v]) => ({ key: k, awarded: v, available: 2, verdict: v >= 2 ? "correct" : v > 0 ? "partial" : "incorrect" }));
+      const tot = Lo + An + Sy + Or; return { marks_awarded: tot, marks: part.marks || 8, full: tot >= (part.marks || 8), marker: "insight", items: items }; }
     // a built drawing, marked like the memo: the histogram's T C L S P (P: 2 for all four bars, 1 for one to three; a bar or line
     // graph loses T and S, the memo's rule), the stems one mark each
     if (key.hist) { const h = key.hist, a = answer || {}, cap = " " + norm(a.cap) + " ";
@@ -4003,7 +4040,7 @@ class Component extends DCLogic {
       : mode === "match" ? part.match.left.map((_, l) => ui.matchPairs[l] != null ? ui.matchPairs[l] : null)
       : mode === "mcq" ? ui.pick : mode === "pickn" ? ui.picks.slice() : mode === "order" ? ui.orderSeq.slice()
       : mode === "lettername" ? { letter: ui.letter, name: ui.lname } : mode === "letternames" ? Array.from({ length: part.count || 1 }, (_, k) => ({ letter: ((ui.lrows || [])[k] || {}).letter || "", name: ((ui.lrows || [])[k] || {}).name || "" })) : mode === "term" ? ui.term : mode === "num" ? ui.numVal
-      : mode === "build" ? JSON.parse(JSON.stringify(ui.build || {})) : mode === "draw" ? !!ui.drawn : part.table ? tableText(part.table, ui.written) : ui.written;
+      : mode === "build" ? JSON.parse(JSON.stringify(ui.build || {})) : mode === "insight" ? {} : mode === "draw" ? !!ui.drawn : part.table ? tableText(part.table, ui.written) : ui.written;
   }
   // `given` (from mcq-play): { answer, quiet } — the answer passed in (a setState'd pick would not be read yet), and
   // quiet = no verdict bar and no focus move (the component shows the verdict). Returns the reply.
@@ -4031,7 +4068,7 @@ class Component extends DCLogic {
       if (result.marker === "unavailable") { this.setState({ marking: false, reply: { waiting: true }, barOpen: true, barSeq: s.barSeq + 1, runLog: s.runLog.concat([{ key: part.key, waiting: true, xp: 0 }]), prog: Object.assign({}, s.prog, { [part.key]: Object.assign({}, pr, { waiting: true }) }) }, () => this.react("greet")); return; }
       const tryNo = pr.tries + 1;
       const draw = mode === "draw";
-      const closed = draw || result.full || tryNo >= 3;
+      const closed = draw || mode === "insight" || result.full || tryNo >= 3;   // (an insight is worked out once)
       const revealed = !draw && !result.full && tryNo >= 3;
       let xp = 0, mult = 1, streak = s.streak;
       const replay = !!s.paid[part.key] || !!pr.replay;
@@ -4071,6 +4108,7 @@ class Component extends DCLogic {
         prog: Object.assign({}, s.prog, { [part.key]: { tries: tryNo, best: reply.best_marks, closed: closed, revealed: revealed || pr.revealed,
           firstTryFull: pr.firstTryFull || (result.full && tryNo === 1 && !replay), waiting: false, draw: draw, xp: (pr.xp || 0) + xp, replay: pr.replay,
           retake: pr.retake, first: pr.first,   // a retake's flag, and the mark before any retake (the paper's first-try mark)
+          ans: Array.isArray(answer) ? answer.slice() : pr.ans,   // the last picks (an essay's insight reads its example statements from them)
           dead: (pr.dead || []).concat(deadL.filter(L => (pr.dead || []).indexOf(L) === -1)),   // letters this question has ruled out
           // the medal the question earned (the question map shows it): the try it was right on; a practice replay keeps the first one's
           medal: pr.medal || (result.full && !replay && !draw ? ["gold", "silver", "bronze"][Math.min(2, tryNo - 1)] : ""),
@@ -4939,7 +4977,7 @@ class Component extends DCLogic {
     this.setState({ lrows: rows, edited: Object.assign({}, s.edited, patch.letter != null ? { ["l" + k]: true } : { ["n" + k]: true }) }); }
   canCheckNow(part) { const s = this.state, mode = part.response_mode;
     return mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim()) : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim()
-      : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null) : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
+      : mode === "insight" ? this.insightReady(part) : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null) : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1)
       : mode === "order" ? s.orderSeq.length === (part.options || []).length : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s)
       : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim() : mode === "build" ? this.buildReady(part, s.build) : true; }
 
@@ -5141,6 +5179,7 @@ class Component extends DCLogic {
       matchGroups: mode === "match" && part.match.groups ? "true" : "false",
       ...this.matchVals(s, part, mode, locked, itemsBy),
       isDraw: draw,
+      isInsight: mode === "insight", ...this.insightVals(part, mode),
       ...this.sceneVals(s, phone, tablet, desk, mission, part, reply, res, closed, stampOf, touch),
       ...this.layer2Vals(s, phone, tablet, part, reply, res, closed, mode, locked, stampOf),
       hasReveal: !!(reply && reply.reveal && closed && (outcome !== "out" || s.memoSeen)),
@@ -5158,7 +5197,7 @@ class Component extends DCLogic {
       barPrimaryColor: primaryIsSuccess ? "#0d2419" : bar && bar.primary[1] ? "#ffffff" : "var(--text4)",
       barPrimaryShadow: primaryIsSuccess ? "0 10px 26px rgba(61,220,151,0.3)" : bar && bar.primary[1] ? "0 10px 26px rgba(30,70,255,0.32)" : "none",
       primary: () => { if (closed || (reply && reply.waiting)) this.advance(); else this.check(); },
-      primaryLabel: draw ? "I've drawn it" : mode === "match" ? "Check my matches" : "Check", primaryDisabled: primaryDisabled,
+      primaryLabel: draw ? "I've drawn it" : mode === "match" ? "Check my matches" : mode === "insight" ? "Work out my insight" : "Check", primaryDisabled: primaryDisabled,
       // No footer Check (Murci, 2026-10-01: "Check needs to be out"; the same on every size): each question answers from its own
       // control, an MCQ on a card's tap, a term on the arrow in its field, every other mode on the same arrow in a row under its
       // answer (a drawing on a worded button: an arrow alone would not say "I've drawn it"). The footer keeps Back / Skip / Next.
@@ -5255,7 +5294,7 @@ class Component extends DCLogic {
     const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : "Finish")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next" : "Check";
     const canCheck = mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
-      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null)
+      : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "insight" ? this.insightReady(part) : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null)
       : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
       : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim()
       : mode === "build" ? this.buildReady(part, s.build) : true;

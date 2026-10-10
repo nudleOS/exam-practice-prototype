@@ -1042,6 +1042,80 @@
             "properties": {
              "t": {
               "type": "string",
+              "const": "insight"
+             },
+             "n": {
+              "type": "string",
+              "description": "The part's number exactly as printed, e.g. 2.4.1(a)"
+             },
+             "marks": {
+              "type": "integer"
+             },
+             "q": {
+              "type": "string",
+              "description": "The question text exactly as printed, without the marks"
+             },
+             "clues": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Two hints that lead the learner without giving the answer"
+             },
+             "note": {
+              "type": "string",
+              "description": "Optional: what a figure's label shows, for the record (never shown)"
+             },
+             "of": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "the essay's section parts (their numbers), introduction to conclusion"
+             },
+             "intro": {
+              "type": "string",
+              "description": "the introduction part's number"
+             },
+             "conclusion": {
+              "type": "string",
+              "description": "the conclusion part's number"
+             },
+             "examples": {
+              "type": "array",
+              "items": {
+               "type": "array",
+               "prefixItems": [
+                {
+                 "type": "string"
+                },
+                {
+                 "type": "integer"
+                }
+               ],
+               "minItems": 2,
+               "maxItems": 2
+              },
+              "description": "[part number, option index] of each EXAMPLE statement (recent, real): Originality, 1 each, 2 at most"
+             }
+            },
+            "required": [
+             "t",
+             "n",
+             "marks",
+             "q",
+             "clues",
+             "of",
+             "intro",
+             "conclusion"
+            ],
+            "additionalProperties": false
+           },
+           {
+            "type": "object",
+            "properties": {
+             "t": {
+              "type": "string",
               "const": "draw"
              },
              "n": {
