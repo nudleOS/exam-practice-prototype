@@ -2,6 +2,8 @@
 `ingest.py --from-json` like any ingested paper. Stems, options, marks and answers are the paper's and the memo's own; the clues and
 the figure captions (alt text) are ours. No API call: the transcription is the source, kept in git (out/ is not).
 Polished one subject at a time, every paper of it (Murci, 2026-10-09): Life Sciences first, 2025 and 2024, P1 and P2.
+Learner rollout (Murci, 2026-10-10): every written answer plays as statements (STATEMENTS) or a sort (SORTS, 3.4.3); the parts whose
+cards show an earlier part's answer open after it (GATES).
 
   python tools/ingest/transcribe_ls_p2_2024_11.py
   python tools/ingest/ingest.py "<...>/Life Sciences P2 Nov 2024 Eng.pdf" "<...>/Life Sciences P2 Nov 2024 MG Eng.pdf" --id ls-p2-2024-11 --from-json
@@ -45,7 +47,7 @@ q11 = [
         ["The extra chromosome came in a gamete.", "Which division makes gametes, and what must the pairs do in it?"]),
     mcq("1.1.5", "A gradual change in the characteristics of a species over time is known as …",
         ["punctuated equilibrium.", "genetic engineering.", "speciation.", "biological evolution."], 3,
-        ["One option is change in sudden bursts, another the forming of a new species.", "Which term is the change itself, slow and over time?"]),
+        ["Is the change in the stem sudden or slow? Does the stem say that a new species forms?", "Which term is the change itself, slow and over time?"]),
     mcq("1.1.6", "Which ONE of the following is a reproductive isolation mechanism?",
         ["Adaptation to the same pollinator", "Species-specific courtship behaviour", "Production of fertile offspring", "Breeding at the same time of the year"], 1,
         ["An isolation mechanism STOPS two species from interbreeding.", "Three of the options would help them interbreed."]),
@@ -63,7 +65,7 @@ q11 = [
                                                        ["The chromosome number remains the same", "The chromosome number is halved"],
                                                        ["Two divisions occur", "Four divisions occur"]]}),
     mcq("1.1.9", "Which ONE of the following scientists discovered the fossil Taung Child?", ["Lee Berger", "Ron Clarke", "Raymond Dart", "Robert Broom"], 2,
-        ["The skull was found in 1924 in a lime quarry.", "Broom found Mrs Ples, Clarke Little Foot and Berger Homo naledi."]),
+        ["The skull was found in 1924 in a lime quarry.", "The scientist who described it in 1925 named a new genus for it, Australopithecus."]),
     mcq("1.1.10", "Which ONE of the following is produced at the end of translation?", ["A DNA molecule", "A messenger RNA molecule", "A protein", "An amino acid"], 2,
         ["Translation is the second stage of protein synthesis.", "Amino acids go IN at the ribosome: what comes OUT?"]),
 ]
@@ -113,7 +115,7 @@ q15 = [
     term("1.5.1", "Name the type of cross represented above.", ["dihybrid cross", "dihybrid"],
          ["How many genes are followed in this cross?", "A cross of one gene is monohybrid."], reject=["monohybrid cross", "monohybrid"]),
     lst("1.5.2", "Give the dominant characteristic of EACH gene.", 2, 2, [["red (spots)"], ["black (eyes)"]],
-        ["The dominant allele is written with a capital letter.", "Give the characteristic, not the letter: R for the wing spots, E for the eyes."]),
+        ["The dominant allele is written with a capital letter.", "Give the characteristic in words, not the letter, for the wing spots AND for the eyes."]),
     # four alleles a genotype (catalogue `genotype` per 4, 2026-10-09): the memo's RRee and Rree, 2 marks each
     {"t": "genotype", "n": "1.5.3(a)", "marks": 4, "q": "Give ALL the possible genotypes at X", "alleles": WING, "count": 2, "per": 4,
      "pool": [["R", "R", "e", "e"], ["R", "r", "e", "e"]],
@@ -289,7 +291,7 @@ q32 = [
          ["Follow the Old-world monkeys' branch down to where it first meets another branch.", "Which group's branch runs straight on to that point?"]),
     rub("3.2.3", "Give a reason for your answer to QUESTION 3.2.2.", 1,
         ["They share the most recent common ancestor U", "OR — Old-world monkeys are directly descended from U"],
-        ["Closely related species meet at a branch point soon.", "Name the branch point they share."]),
+        ["Closely related species meet at a branch point soon.", "Find the branch point that the two groups share."]),
     lst("3.2.4", "Identify THREE species that share the common ancestor R.", 3, 3,
         [["humans", "human"], ["chimpanzees", "chimp"], ["gorillas", "gorilla"], ["Q"]],
         ["Start at R and follow every branch above it up to the top.", "Which groups can you reach from R?"]),
@@ -302,7 +304,7 @@ q32 = [
 ]
 q33 = [
     lst("3.3.1(a)", "Identify the independent variable", 1, 1, [["type (of milk)", "kind (of milk)"]],
-        ["What did the researchers change between the two groups?", "One group drank cow's milk, the other soy milk."]),
+        ["What did the researchers change between the two groups?", "It is the factor they set up on purpose before anything was measured."]),
     lst("3.3.1(b)", "Identify the dependent variable", 1, 1, [["height (of the children)"]],
         ["What did the researchers measure at the end?", "It was measured in cm."]),
     term("3.3.2", "Name the type of variation displayed by the height of a person.", ["continuous variation", "continuous"],
@@ -346,13 +348,12 @@ q34 = [
          "Fossils of Homo habilis were found in Africa only", "The oldest fossils of Homo sapiens were found in Africa",
          "The younger fossils of Homo sapiens were found in other parts of the world"],
         ["Name the other hominid genera and species.", "Say where each one's fossils have been found."]),
-    # a TABLE the memo marks (1) for the table + (2 x 2) for two differences, each with both sides. Each point leads with its column
-    # (the marker text names the column for every cell, a free hit) and keeps ONE other long word its own: "ridges" in both brow
-    # points, or "cranium" in both brain points, let any answer naming it score the other column's point
+    # a TABLE the memo marks (1) for the table + (2 x 2) for two differences, each with both sides: played as a SORT into the two
+    # species' columns (SORTS below), the source points kept here
     rub("3.4.3", "Use the information in the passage regarding Homo erectus and tabulate TWO differences between the features of Homo erectus and Homo sapiens.", 5,
         ["Table with the two species as column headings", "Homo erectus: a smaller brain", "Homo sapiens: a larger brain / bigger brain",
          "Homo erectus: a prominent brow ridge", "Homo sapiens: a reduced brow ridge"],
-        ["Read the passage for two features of Homo erectus.", "For each feature, say how it differs in humans today: one row per difference."],
+        ["Read the passage for two features of Homo erectus.", "For each feature, ask how it compares in humans today."],
         table=["Homo erectus", "Homo sapiens"]),
     rub("3.4.4", "What observation of the skull of Homo erectus would have led scientists to conclude that Homo erectus was bipedal?", 1,
         ["The foramen magnum was in a (more) forward position"],
@@ -360,7 +361,7 @@ q34 = [
 ]
 q35 = [
     rub("3.5.1", "What is a mutation?", 1, ["Changes in the genetic composition / genetic material of organisms"],
-        ["It is a change in an organism's DNA.", "Name what changes."]),
+        ["Think of what high radiation does to the DNA in a cell.", "A mutation is a source of new alleles: what has changed?"]),
     lst("3.5.2", "What effect does exposure to high radiation have on animals?", 1, 1,
         [["cancer"], ["death", "die", "dies", "kill"], ["mutations", "mutate"]],
         ["Read the passage.", "What happened to the animals exposed to the radiation?"]),
@@ -430,6 +431,146 @@ missions_b = [
                 "They found that these wolves have a mutation that makes them immune to cancer."},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10, as Business Studies P2 Nov 2025): a written part plays as picking statements:
+# the memo's own points (right, tidied to one reading of its "/" alternatives) and CLEARLY wrong ones (never a true point the memo
+# leaves out: its "any other relevant answer" would make that right). The learner picks marks/each of them, any right one counts (the
+# memo's "any N"), each right pick earns `each` (Life Sciences: 1 a tick; a difference with both sides ticked, 2); the cards are
+# shuffled the same way every run. The memo points above (rub) stay as the source. No Section C essay in this paper (Section B is
+# Questions 2 and 3) and no calculation with a working (2.4.4's cross is built on the Punnett square), so no essay sections and no
+# whole-working MCQs.
+import random
+
+PID = "ls-p2-2024-11"
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random(PID + ":" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # 6 of the memo's 7 points ("Any"): all 7 fill the 8 cards with one wrong (the 8-card limit)
+    "2.1.2": (1, ["The DNA double helix unwinds.", "The weak hydrogen bonds break, so the double strand unzips.",
+                  "Two separate strands are formed.", "One strand is used as a template.", "An mRNA molecule is formed on the template strand.",
+                  "Free RNA nucleotides from the nucleoplasm are used.", "The mRNA is complementary to the DNA template strand."],
+              ["Molecule Y is formed at a ribosome in the cytoplasm."]),
+    # (1 x 2): a difference, its two sides ticked, is worth the whole 2
+    "2.1.3": (2, ["Molecule X (DNA) is double stranded, while molecule Y (RNA) is single stranded.",
+                  "Molecule X (DNA) contains deoxyribose sugar, while molecule Y (RNA) contains ribose sugar.",
+                  "Molecule X (DNA) has thymine as a nitrogenous base, while molecule Y (RNA) has uracil."],
+              ["Molecule X (DNA) is single stranded, while molecule Y (RNA) is double stranded.",
+               "Molecule X (DNA) contains ribose sugar, while molecule Y (RNA) contains deoxyribose sugar.",
+               "Molecule X (DNA) has uracil as a nitrogenous base, while molecule Y (RNA) has thymine.",
+               "Molecule X (DNA) is shorter, while molecule Y (RNA) is longer."]),
+    "2.2.2": (2, ["Whole chromosomes move to the poles during anaphase I, while chromatids move to the poles during anaphase II.",
+                  "Centromeres do not split during anaphase I, while centromeres split during anaphase II."],
+              ["Chromatids move to the poles during anaphase I, while whole chromosomes move to the poles during anaphase II.",
+               "Centromeres split during anaphase I, while centromeres do not split during anaphase II.",
+               "Crossing over takes place during anaphase I, while it does not take place during anaphase II."]),
+    "2.2.4": (1, ["It attaches to the centromere.", "It pulls the chromatids towards the opposite poles.", "It contracts and shortens."],
+              ["It copies the DNA before the cell divides.", "It forms a new nuclear membrane around each set of chromosomes.",
+               "It holds the two chromatids of a chromosome together."]),
+    "2.3.3": (1, ["The man is heterozygous for blood group A: he is Iᴬi.", "The woman has an allele for blood group B: she is IᴬIᴮ.",
+                  "The child inherits the Iᴮ allele from the mother.", "The child inherits the i allele from the father.",
+                  "The child is heterozygous for blood group B: the genotype is Iᴮi."],
+              ["The man is homozygous for blood group A: he is IᴬIᴬ.", "The father passes the Iᴮ allele on to the child.",
+               "The child is homozygous for blood group B: the genotype is IᴮIᴮ."]),
+    "2.4.3": (1, ["Males have only one X chromosome (XY).", "Males need only one recessive allele to have muscular dystrophy.",
+                  "Females have two X chromosomes.", "Females need two recessive alleles (XᵈXᵈ) to have muscular dystrophy.",
+                  "In females, a dominant allele on one X chromosome masks the effect of the recessive allele."],
+              ["The allele for muscular dystrophy is carried on the Y chromosome.",
+               "Males have two X chromosomes, so they inherit two recessive alleles.",
+               "Females need only one recessive allele to have muscular dystrophy."]),
+    "3.1.1": (1, ["The Bt-producing gene is cut from the bacterial DNA.", "The Bt-producing gene is inserted into the maize DNA.",
+                  "The maize DNA carrying the bacterial gene is recombinant DNA.",
+                  "The recombinant DNA causes the maize plant to produce the Bt toxin."],
+              ["A maize gene is inserted into the DNA of the bacterium.", "The maize is cross-pollinated with the bacterium.",
+               "The Bt toxin gene is removed from the maize DNA."]),
+    # (2 x 2): a reason and its result; the memo has exactly TWO reasons (its "/" results are one reading each)
+    "3.1.2": (2, ["Fewer crops are damaged by insects, which leads to an increased yield.",
+                  "There is a reduced need for pesticides, so farmers save money."],
+              ["More pesticide must be sprayed on Bt maize, so farmers spend more money.",
+               "Bt maize attracts more insects, which pollinate it and increase the yield.",
+               "Bt maize needs no water or fertiliser, so it costs nothing to grow."]),
+    # the memo's reason for 'gibbons' and its reason for 'U' (both answers it accepts at 3.2.2)
+    "3.2.3": (1, ["Gibbons and Old-world monkeys share the most recent common ancestor, U.", "Old-world monkeys are directly descended from U."],
+              ["Gibbons and Old-world monkeys share the most recent common ancestor, T.", "Old-world monkeys are directly descended from the gibbons.",
+               "Gibbons and Old-world monkeys both belong to group P."]),
+    "3.3.7": (2, ["Cow's milk consumption leads to increased height compared to soy milk.",
+                  "Soy milk consumption by children leads to below-average height.",
+                  "Cow's milk consumption by children leads to above-average height."],
+              ["Soy milk consumption leads to increased height compared to cow's milk.",
+               "The type of milk has no influence on the height of children.",
+               "Cow's milk consumption by children leads to below-average height."]),
+    "3.4.1": (1, ["The oldest fossils of Homo erectus were found in Africa.",
+                  "The younger fossils of Homo erectus were found in other parts of the world, such as Asia.",
+                  "The ages and places of the fossils indicate that Homo erectus migrated out of Africa."],
+              ["The oldest fossils of Homo erectus were found in Asia.", "Homo erectus fossils were found in Africa only.",
+               "The ages and places of the fossils indicate that Homo erectus migrated from Asia into Africa."]),
+    "3.4.2": (1, ["Ardipithecus fossils were found in Africa only.", "Australopithecus fossils were found in Africa only.",
+                  "Fossils of Homo habilis were found in Africa only.", "The oldest fossils of Homo sapiens were found in Africa.",
+                  "The younger fossils of Homo sapiens were found in other parts of the world."],
+              ["The oldest fossils of Homo sapiens were found in Europe.", "Australopithecus fossils were found on every continent.",
+               "Fossils of Homo habilis were found only outside Africa."]),
+    "3.4.4": (1, ["The foramen magnum was in a more forward position."],
+              ["The foramen magnum was in a more backward position.", "The skull had no foramen magnum.",
+               "The brain case was smaller than that of a chimpanzee.", "The canine teeth were large and pointed, like those of a gorilla."]),
+    "3.5.1": (1, ["A change in the genetic composition of an organism."],
+              ["The process by which organisms with favourable characteristics survive and reproduce.",
+               "The exchange of genetic material between homologous chromosomes during meiosis.",
+               "The movement of alleles from one population to another.", "The formation of a new species from an existing one."]),
+    # 7 of the memo's 8 points ("Any"): its "When exposed to radiation" opens the point after it, so the two play as one statement and
+    # the 8 ticks as 7 cards + one wrong (the Lamarckian slip: a mutation arising because it is needed)
+    "3.5.3": (1, ["There was variation amongst the wolves in the population.",
+                  "Some wolves had the mutation which made them immune to cancer and some did not.",
+                  "When exposed to the radiation, the wolves without the mutation died.", "The wolves with the mutation survived.",
+                  "The wolves that survived reproduced.", "The survivors passed the allele for the mutation on to their offspring.",
+                  "The next generation had a higher proportion of wolves with the mutation."],
+              ["The wolves developed the mutation because they needed to survive the radiation."]),
+}
+# A written part whose memo weighs two sides plays as a SORT (variety): 3.4.3's tabulated differences, each feature sorted into its
+# species' column (the memo's table), or "Not true" (true of neither: both species walk upright). 1 mark a row: the memo's 4 entries +
+# 1 false row = 5; the memo's mark for drawing a table is the sort's own two-column layout.
+SORTS = {
+    "3.4.3": (["Homo erectus", "Homo sapiens", "Not true"], [
+        ("Small brain", 0), ("Prominent brow ridges", 0), ("Large brain", 1), ("Reduced brow ridges", 1), ("Walks on all four limbs", 2)]),
+}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random(PID + ":sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+# GATES: a part whose statements show an earlier part's answer opens only once that part is answered (2.1.2-2.1.3 name molecule Y as
+# mRNA/RNA, 2.2.2 names anaphase II, 2.2.4 describes structure B's role, 3.2.3 names the gibbons)
+GATES = {"2.1.2": ["2.1.1"], "2.1.3": ["2.1.1"], "2.2.2": ["2.2.1"], "2.2.4": ["2.2.3(b)"], "3.2.3": ["3.2.2"]}
+for _m in missions + missions_b:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+        if _it["n"] in GATES:
+            _m["items"][_k]["after"] = GATES[_it["n"]]
+_ITEMS = [i for m in missions + missions_b for i in m["items"]]
+assert not [i["n"] for i in _ITEMS if i["t"] in ("rubric", "steps")], "a written answer or typed steps left"
+assert set(GATES) | set(n for g in GATES.values() for n in g) <= {i["n"] for i in _ITEMS}, "a gate names a missing part"
+for _m in missions + missions_b:
+    assert sum(i["marks"] for i in _m["items"]) == _m["marks"], _m["id"]
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Life Sciences", "title": "Life Sciences P2", "sitting": "November 2024", "total_marks": 150, "time": "2½ hours"},
@@ -438,6 +579,17 @@ paper = {
         {"n": "2.4.4", "kind": "no_fit", "detail": "The memo's compulsory mark is '25% chance of muscular dystrophy child'. The cross builder takes the offspring's phenotypes and their proportions (2 : 1 : 1, or 50 : 25 : 25), which give the 25%; the compulsory point is marked on those proportions."},
         {"n": "3.2.2", "kind": "memo_issue", "detail": "The question asks for a SPECIES, and the memo also accepts 'U' (a common ancestor); kept as the memo has it. 3.2.4 likewise accepts Q."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
+        {"n": "2.1.2", "kind": "no_fit", "detail": "Written answers play as statements (Murci, 2026-10-10): " + ", ".join(sorted(STATEMENTS)) + " pick the "
+                                                   "memo's points among clearly wrong ones, 1 mark a tick (2.1.3, 2.2.2, 3.1.2 and 3.3.7: 2 a point, "
+                                                   "as the memo ticks both halves). 2.1.2 (any 6 of 7) and 3.5.3 (any 7 of 8) fill the 8-card limit "
+                                                   "with the memo's points and ONE wrong statement; 3.5.3 joins 'When exposed to radiation' to the "
+                                                   "point it opens, so its 8 ticks play as 7 statements."},
+        {"n": "3.4.3", "kind": "no_fit", "detail": "The tabulation plays as a sort into the two species' columns: the memo's 4 entries + 1 'Not true' "
+                                                   "row, 5 marks. The memo's mark for drawing a table is the sort's own two-column layout, so the "
+                                                   "fifth mark is earned on the false row."},
+        {"n": "3.2.3", "kind": "memo_issue", "detail": "The memo's reason depends on the 3.2.2 answer it accepts (gibbons: they share the most "
+                                                       "recent common ancestor U; 'U': Old-world monkeys are directly descended from U). Both "
+                                                       "reasons are right statements; the part opens after 3.2.2, as its statements name the gibbons."},
     ],
 }
 out = Path(__file__).parent / "out" / "ls-p2-2024-11"
