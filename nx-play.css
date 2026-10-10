@@ -2495,3 +2495,10 @@ html[data-nx="light"] body.nx-play [data-wktab]:not([data-on="true"]) { backgrou
 /* a page MCQ card's resting colours by theme (Exam Practice layer2Vals: var(--nx-tile) / var(--nx-tilebadge), dark fallbacks there).
    Measured 2026-10-10: in the light theme every word card on the page was rgba(32,35,39,0.78) under the theme's dark navy text. */
 html[data-nx="light"] body.nx-play { --nx-tile:#ffffff; --nx-tilebadge:rgba(10,30,70,0.07); }
+/* the phone's shared-information sheet scrolls; nothing in it shrinks. Its body is a column flexbox capped at 78svh, and the table's
+   wrapper clips (overflow: hidden, for its rounded corners), so flex shrank it to what was left: measured 2026-10-10, ML P1 Nov 2024
+   2.3's tax table got 83 px of its 643 under a 416 px extract, the rows below cut off and out of reach. */
+body.nx-play [data-ctx] [data-ctx-body] > * { flex-shrink:0; }
+/* a table is its own stacking context: its pinned cells (sticky, z-index 1) layer over its own cells only. Measured 2026-10-10: in
+   the phone sheet, scrolled, the pinned "Tax Bracket" cell painted over the sheet's sticky title bar (also z-index 1, earlier in the page). */
+[data-ctx-table] { isolation:isolate; }
