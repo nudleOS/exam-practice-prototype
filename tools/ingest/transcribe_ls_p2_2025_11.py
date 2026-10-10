@@ -7,8 +7,14 @@ the figure captions (alt text) are ours. No API call: the transcription is the s
   python tools/ingest/ingest.py "<...>/Life Sciences P2 Nov 2025 Eng.pdf" "<...>/Life Sciences P2 Nov 2025 MG Eng.pdf" --id ls-p2-2025-11 --from-json
   then open Exam Practice.dc.html?ingested=ls-p2-2025-11&paper=ls-p2-2025-11&play=0
 
-Figure boxes are measured in PDF points on the A4 page (595 x 842) and stored as fractions."""
+Figure boxes are measured in PDF points on the A4 page (595 x 842) and stored as fractions.
+
+Learner rollout (Murci, 2026-10-10): written answers play as statements (one as a sort), the typed calculation (3.2.4) as a
+whole-working multiple choice, and a part whose statements show an earlier part's answer opens only after it (GATES, at the bottom).
+This paper has no Section C essay (Section B is Questions 2 and 3)."""
 import json
+import random
+import re
 from pathlib import Path
 
 W, H = 595.0, 842.0
@@ -23,6 +29,27 @@ num = lambda n, q, a, tol, unit, clues, marks=1: {"t": "num", "n": n, "marks": m
 AB = ["A only", "B only", "Both A and B", "None"]
 # Column I / Column II (1.3): the description is the stem, COLUMN II's two items are `ab` (the Venn layout draws them as its two circles)
 abq = lambda n, q, a_item, b_item, a, clues: mcq(n, q, AB, a, clues, ab={"a": a_item, "b": b_item})
+
+PID = "ls-p2-2025-11"
+WORK = "\n\nChoose the correct working."
+AUTHORED = []   # the typed calculations played as authored multiple choice, in paper order
+
+
+def shape(o):
+    """An option's layout: its line count and how many lines end in a [reason]."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+def work(n, q, marks, opts, a, clues):
+    """A typed calculation as authored multiple choice (Murci, 2026-10-10): opts are the memo's FIRST working and three workings
+    built from common errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing."""
+    assert len(opts) == 4 and len(set(opts)) == 4, (n, "four distinct options")
+    assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
+    assert 0 <= a <= 3, (n, a)
+    AUTHORED.append(n)
+    return {"t": "mcq", "n": n, "marks": marks, "q": q + WORK, "clues": clues, "opts": opts, "a": a}
+
 
 # ---- Section A: Question 1, from the question paper pages 3-8 and the memo page 4 ----
 DNA = fig(4, (140, 125, 502, 492), "DNA replication, in a box. At the bottom the two strands are still paired: the left-hand strand's bases read "
@@ -52,7 +79,7 @@ q11 = [
                                       "caused by non-disjunction of chromosomes during meiosis.", "caused by an allele carried on an autosome."], 1,
         ["Option A describes a different disorder.", "Haemophilia is far more common in boys: what does that say about where its allele sits?"]),
     mcq("1.1.5", "Which ONE of the following is an example of a heterozygous genotype?", ["XʳXʳ", "BB", "RW", "aa"], 2,
-        ["Heterozygous means the two alleles are different.", "Look at the letters of each genotype: which pair is not the same?"]),
+        ["Heterozygous means the two alleles of a gene are different.", "For a gene on the X-chromosome, compare the small letters, not the X's."]),
     # options printed as a TABLE: optTable carries it; opts read each row as a line (the medal card, the memo)
     mcq("1.1.6", "Which ONE of the following combinations CORRECTLY identifies molecules 1, 4 and 5?",
         ["1: nucleotide · 4: deoxyribose · 5: phosphate", "1: nitrogenous base · 4: phosphate · 5: deoxyribose",
@@ -122,13 +149,13 @@ q14 = [
     mcq1("1.4.2(c)", "Which diagram (V, W, X, Y or Z) represents a cell during prophase I", CELLS, 0,
          ["In prophase the nucleus is still there.", "In meiosis I the homologous chromosomes pair up side by side."]),
     num("1.4.3(a)", "How many chromosomes will there be in each cell at the end of mitosis", 6, 0, "",
-        ["Mitosis keeps the chromosome number the same.", "Count the chromosomes in a cell at the start, such as W."]),
+        ["Mitosis keeps the chromosome number the same.", "Count the chromosomes (not the chromatids) in a cell before it divides."]),
     num("1.4.3(b)", "How many chromosomes will there be in each cell at the end of meiosis I", 3, 0, "",
         ["Meiosis I halves the chromosome number.", "Start from the number in a cell before it divides."]),
 ]
 q15 = [
     term("1.5.1(a)", "Identify the stage of protein synthesis represented", ["translation"],
-         ["The mRNA has left the nucleus and the amino acids are being brought to it.", "It is the second stage, after transcription."]),
+         ["The mRNA has left the nucleus and the amino acids are being brought to it.", "Which stage takes place in the cytoplasm rather than in the nucleus?"]),
     term("1.5.1(b)", "Identify molecule 1", ["tRNA", "transfer RNA", "t-RNA"],
          ["It carries an amino acid at one end.", "Its three bases at the other end are an anticodon."]),
     term("1.5.1(c)", "Identify organelle Z", ["ribosome", "ribosomes"], ["This organelle is where proteins are made.", "The mRNA attaches to it."]),
@@ -192,8 +219,8 @@ q21 = [
         "fertilised by normal gametes, the resulting zygotes will not be normal. Explain the genetic composition of these zygotes.", 3,
         ["The zygote will have XXY chromosomes / XXX chromosomes / an extra gonosome", "since the ovum with XX chromosomes",
          "fused with a sperm with a Y-chromosome / X-chromosome"],
-        ["A gamete with an extra sex chromosome could be an ovum with two X-chromosomes.",
-         "What does the zygote have if that ovum is fertilised by an X sperm, or by a Y sperm?"]),
+        ["This is a female's cell: what would her gamete carry if its sex chromosomes failed to separate?",
+         "Then think about the two kinds of sperm that could fertilise it."]),
 ]
 q22 = [
     term("2.2.1", "Name the technique used in this criminal investigation.", ["DNA profiling"],
@@ -213,20 +240,21 @@ q22 = [
         ["The DNA profiles of the child, mother and possible father are compared", "since the child inherits 50% of their DNA from each parent",
          "All the DNA bands that are identical to the mother in the child's DNA profile are eliminated",
          "The remaining DNA bands are checked against the possible fathers'", "for possible matches with the child"],
-        ["A child gets half of its DNA from each parent.", "Remove the bands that came from the mother: what is left to compare?"]),
+        ["Whose DNA profiles would the laboratory need for a paternity test?", "Which of the child's bands could have come only from the father?"]),
 ]
 q23 = [
     term("2.3.1", "Name the type of diagram represented above.", ["pedigree diagram", "pedigree"],
          ["It traces a characteristic through the generations of one family.", "Breeders of horses and dogs keep this kind of record too."]),
     num("2.3.2", "How many offspring do parents 3 and 4 have?", 1, 0, "", ["Find the line that joins 3 and 4.", "Follow it down to their children."]),
-    term("2.3.3(a)", "Give the phenotype of individual 10", ["female with CADASIL"], ["Use the key.", "What does a filled circle stand for?"]),
+    term("2.3.3(a)", "Give the phenotype of individual 10", ["female with CADASIL"],
+         ["Use the key.", "Its shape gives the sex; its shading shows whether it has the disorder."]),
     # a genotype is BUILT from the alleles (catalogue `genotype`, 2026-10-06): typed, a case-folding matcher passed DD and Dd for dd
     {"t": "genotype", "n": "2.3.3(b)", "marks": 1, "q": "Give the genotype of individual 5", "alleles": ["D", "d"], "count": 1, "pool": [["d", "d"]],
-     "clues": ["Individual 5 does not have CADASIL, and its allele is dominant.", "What genotype must a person without the disorder have?"]},
+     "clues": ["Find individual 5's phenotype from the key first.", "The CADASIL allele (D) is dominant: one copy is enough to show the disorder."]},
     rub("2.3.4", "Using evidence from the diagram, explain why individuals 1 and 2 are both heterozygous.", 4,
         ["Both individual 1 and 2 have CADASIL", "indicating they have a dominant allele / the (genotype) Dd",
          "but have children who do not have CADASIL / are homozygous recessive", "indicating that they inherited a recessive allele from each parent"],
-        ["Look first at whether 1 and 2 have the disorder.", "Then at their children: what must a child without CADASIL have got from each parent?"]),
+        ["Look first at whether 1 and 2 have the disorder.", "Then look at their children: could two DD parents have a child without CADASIL?"]),
     num("2.3.5", "What is the percentage chance of parents 7 and 8 having another child with CADASIL?", 50, 0, "%",
         ["7 has CADASIL but a child without it; 8 does not have it: what are their genotypes?", "Cross the two and count the offspring with D."]),
 ]
@@ -258,7 +286,7 @@ q25 = [
          "resulting in the intermediate phenotype which is the golden-coloured coat / palomino"],
         ["Is either allele dominant over the other?", "What kind of phenotype does the heterozygous horse show?"]),
     term("2.5.3(a)", "The breeding of horses with desired characteristics is a type of biotechnology. Name this type of biotechnology.",
-         ["artificial selection", "selective breeding"], ["People choose which animals breed.", "It is the human counterpart of selection by nature."]),
+         ["artificial selection", "selective breeding"], ["People choose which animals breed.", "It has been used for thousands of years on crops and livestock."]),
     lst("2.5.3(b)", "Name the TWO phenotypes of the horses that must be interbred for a 100% chance of palomino offspring.", 2, 2,
         [["chestnut (coloured coat)"], ["cream (coloured coat)"]],
         ["A palomino has one allele of each colour.", "Which two homozygous horses always give one of each?"]),
@@ -287,19 +315,19 @@ q25 = [
 q31 = [
     lst("3.1.1", "State TWO characteristics related to vision that humans share with African apes.", 2, 2,
         [["binocular (vision)"], ["stereoscopic (vision)"], ["colour (vision)", "color", "cones (presence of cones)"], ["front (eyes in front)"]],
-        ["Where are the eyes on the face?", "Think of how the two eyes work together to see depth, and what colours they see."]),
+        ["Think of where the eyes sit on the face.", "Think of how a primate judges distance when it moves through trees."]),
     rub("3.1.2", "Describe TWO differences between the jaws of humans and African apes.", 4,
         ["Smaller jaws in humans", "and larger jaws in African apes", "Small teeth / canines in humans", "and large teeth / canines in African apes",
          "C-shaped palate in humans", "and a U-shaped palate in African apes", "Humans are non-prognathous", "and African apes are prognathous",
          "Humans do not have diastema", "and African apes have diastema", "There is a well-developed chin in humans",
          "and an underdeveloped chin in African apes"],
-        ["Compare the size of the jaws and of the teeth.", "Think also of the palate's shape, the chin and how far the jaw sticks out."]),
+        ["Picture a human skull beside a gorilla skull, seen from below.", "Each feature appears twice: one version is human, the other is an ape's."]),
     rub("3.1.3", "Explain the significance of the position of the foramen magnum, the shape of the spine and the size of the pelvis in bipedalism.", 6,
         ["The foramen magnum is in a more forward position", "to allow the vertebral column to attach below it", "The spine is S-shaped",
          "for better distribution of upper body weight / to absorb shock when walking upright / to allow flexibility", "The pelvis is short and wide",
          "to support the weight above the pelvis / upper body"],
-        ["For each feature, say what it is like in humans and how it helps upright walking.",
-         "Think of where the skull sits on the spine, the spine's curves and how the pelvis carries weight."]),
+        ["Each right statement names a feature AND says how it helps upright walking.",
+         "Picture a human skeleton beside a gorilla's: the skull, the backbone and the hips."]),
 ]
 q32 = [
     num("3.2.1", "How many genera are represented in the table?", 3, 0, "",
@@ -310,12 +338,15 @@ q32 = [
          "One is a child's skull, one an adult female's skull, one a nearly complete skeleton."]),
     num("3.2.3", "Give the average brain volume (mℓ) of the species that was the first to use tools.", 609, 0, "mℓ",
         ["Which species' name means 'handy man'?", "Read its brain volume from the table."]),
-    {"t": "steps", "n": "3.2.4", "marks": 3,
-     "q": "Calculate the percentage increase in the average brain volume between Homo habilis and Homo sapiens. Show ALL working and round off the answer to TWO decimal places.",
-     "clues": ["Percentage increase = (new − old) ÷ old × 100.", "The old value is Homo habilis'; the new one is Homo sapiens'."],
-     "steps": [{"id": "s1", "label": "Increase in average brain volume (mℓ)", "marks": 1, "a": 721, "tol": 0, "memo": "(1 330 − 609) / 609 ✓"},
-               {"id": "s2", "label": "Percentage increase (%), to two decimal places", "marks": 2, "a": 118.39, "tol": 0.005,
-                "memo": "× 100 ✓ = 118,39 ✓ %"}]},
+    # (typed steps until 2026-10-10: the memo's working (1 330 − 609) / 609 ✓ × 100 ✓ = 118,39 ✓ %)
+    work("3.2.4", "Calculate the percentage increase in the average brain volume between Homo habilis and Homo sapiens. Show ALL working and "
+         "round off the answer to TWO decimal places.", 3, [
+             "Percentage increase = {1 330 − 609}/{1 330} × 100\n= {721}/{1 330} × 100\n= 54,21%",   # divides by the NEW volume
+             "Percentage increase = {959 − 609}/{609} × 100\n= {350}/{609} × 100\n= 57,47%",         # reads Homo erectus' 959 for Homo sapiens
+             "Percentage increase = {1 330 − 609}/{609} × 100\n= {721}/{609} × 100\n= 118,39%",      # the memo
+             "Percentage increase = {1 330 − 609}/{609} × 100\n= 1,18 × 100\n= 118,00%"], 2,         # rounds the fraction too early
+         ["Check which two species the question compares, and read their volumes from the table.",
+          "A percentage increase compares the change with the starting value."]),
     rub("3.2.5", "The brain decomposes after the organism dies. Explain how scientists are able to determine the brain volume of fossils.", 3,
         ["The cranium remains / becomes fossilised", "The cranium houses the brain, therefore", "measuring the cranial capacity gives brain volume"],
         ["What part of the skull survives as a fossil?", "The brain filled that space: what can be measured?"]),
@@ -330,27 +361,28 @@ q33 = [
     rub("3.3.1(b)", "Using the information in the extract, explain why the ostrich and emu are considered different species.", 2,
         ["They breed at different times of the year / ostriches lay their eggs mainly in September while emus lay their eggs from November to April",
          "therefore, they cannot interbreed"],
-        ["Compare the months in which the ostrich and the emu lay eggs.", "Can they mate if they breed at different times?"]),
+        ["Compare the months in which the ostrich and the emu lay eggs.", "What has to happen at the same time for two birds to mate?"]),
     lst("3.3.1(c)", "Name TWO other reproductive isolation mechanisms that would have prevented the rhea and ostrich from interbreeding if they "
         "were in the same habitat.", 2, 2,
         [["courtship (species-specific courtship behaviour)", "behaviour", "behavior"], ["infertile (offspring)"],
          ["prevention (of fertilisation)", "fertilisation", "fertilization"]],
-        ["Breeding at different times is already used: think of behaviour, and of what happens after mating.",
-         "What if mating happens but no zygote forms, or the offspring cannot breed?"]),
+        ["Think of what could stop two species from mating, or make their mating fail.",
+         "A mechanism can act before mating, on the gametes, or on the offspring."]),
     term("3.3.2", "Identify the evidence for evolution represented in the diagram.", ["biogeography"],
          ["The diagram is a world map of where related species live.", "This evidence studies the distribution of organisms."]),
     rub("3.3.3", "Describe how the evidence identified in QUESTION 3.3.2 supports the theory of evolution.", 5,
         ["The ratites all had one common ancestor", "When continental drift occurred", "the (population) of ratites was separated",
          "The sub-populations were faced with different environmental conditions and", "underwent natural selection independently",
          "to form different species"],
-        ["The ratites share one ancestor but live on continents far apart.", "How did the land split, and what did different conditions do to each group?"]),
+        ["Why would related flightless birds live on continents that oceans now separate?",
+         "Think of what happened to the land over millions of years, and what each isolated group then faced."]),
 ]
 q34 = [
     lst("3.4.1", "State the independent variable for this investigation.", 1, 1, [["availability (of food)", "available"]],
         ["What did the investigator change?", "The food was removed and returned."]),
     rub("3.4.2", "Describe how the dependent variable was measured.", 1,
         ["They measured the time it took for 80% of the flies to die from starvation"],
-        ["What was recorded after the food was removed?", "It was a time, for a certain percentage of the flies."]),
+        ["What was recorded after the food was removed?", "Read the procedure: which measurement was repeated in every generation?"]),
     # a term, not a list: the list matcher takes any answer HOLDING the key word, and "age" is inside "average", "stage", "percentage"
     term("3.4.3", "State ONE controlled variable that was considered when selecting the fruit flies at the beginning of the investigation.",
          ["age", "same age", "the same age", "age of the flies", "age of the fruit flies"],
@@ -358,7 +390,7 @@ q34 = [
     rub("3.4.4", "Explain why the investigator gave the fruit flies the same type of food throughout the investigation.", 2,
         ["To improve the validity of the investigation", "by ensuring that the availability of food is the only independent variable",
          "so that any changes that occur are only due to the availability of food"],
-        ["Only whether there was food was being tested, not which food.", "What would a different food do to the results?"]),
+        ["Recall what the independent variable of this investigation is.", "What would a different food do to the results?"]),
     rub("3.4.5", "Describe the results obtained in this investigation.", 2,
         ["The hours until death in the 1st generation was shorter / between 8 and 40 hours",
          "The hours until death in the 60th generation was longer / between 140 and 180 hours"],
@@ -368,7 +400,7 @@ q34 = [
          "When the food source was removed", "the fruit flies that were not starvation resistant died",
          "Those that were starvation resistant survived and reproduced and", "passed on the allele for starvation resistance to their offspring",
          "The next generation had a higher proportion of fruit flies that were starvation resistant"],
-        ["Start with variation in the population.", "Who survives the starvation, who breeds, and what do the offspring inherit?"]),
+        ["Darwin's theory runs in a set order: where does it begin?", "Who survives the starvation, who breeds, and what do the offspring inherit?"]),
 ]
 missions_b = [
     {"id": "2.1", "title": "Question 2.1", "kind": "Sex chromosomes", "marks": 11, "lead": "The diagram below represents the sex chromosomes in a female.",
@@ -379,11 +411,18 @@ missions_b = [
     {"id": "2.2", "title": "Question 2.2", "kind": "DNA evidence", "marks": 9,
      "lead": "The diagram below shows the DNA analysis of a sample obtained at a crime scene, a sample from the victim and samples from two "
              "suspects. In their investigation, police conducted a comparison of the DNA to identify the criminal.", "items": q22,
+     # (the caption describes each strip on its own: it said "Suspect 1's strip has the same bands in the same places", 2.2.2's answer)
      "figure": fig(10, (105, 153, 523, 450), "Four strips of black bands, labelled on the right from top to bottom: sample from crime scene, "
-                   "sample from the victim, sample from suspect 1, sample from suspect 2. The crime-scene strip has two clusters of bands at "
-                   "the left, a single thin band, then three pairs of bands spread to the far right. Suspect 1's strip has the same bands in the "
-                   "same places. The victim's and suspect 2's strips also have a single thin band near the middle left, but their other bands "
-                   "form wide clusters in other places, and they have no bands in the right-hand third.")},
+                   "sample from the victim, sample from suspect 1, sample from suspect 2. Each strip read from left to right. Crime scene: a "
+                   "thick and a thin band at the far left; three bands (thick, thin, thick) near the left; one thin band a third of the way "
+                   "along; a thin and a thick band near the middle; a thick and a thin band two-thirds along; a thick and a thin band at the "
+                   "far right. Victim: four thick bands side by side at the left, then two thin bands; one thin band a third of the way along; "
+                   "three bands close together near the middle; four bands close together two-thirds along; nothing further right. Suspect 1: "
+                   "a thick and a thin band at the far left; three bands (thick, thin, thick) near the left; one thin band a third of the way "
+                   "along; a thin and a thick band near the middle; a thick and a thin band two-thirds along; a thick and a thin band at the "
+                   "far right. Suspect 2: two thick bands at the far left; three bands (thick, thin, thick) near the left; one thin band a third "
+                   "of the way along; three bands close together near the middle; three bands close together two-thirds along; nothing "
+                   "further right.")},
     {"id": "2.3", "title": "Question 2.3", "kind": "Inheritance of CADASIL", "marks": 9,
      "lead": "CADASIL is an autosomal genetic disorder caused by a dominant allele (D). It results in the thickening of the walls of blood vessels. "
              "The diagram below shows the inheritance of CADASIL in a family.", "items": q23,
@@ -428,9 +467,171 @@ missions_b = [
                 "to die from starvation was recorded again.\n• This procedure was repeated until the 60th generation of fruit flies was reached.\n\n"
                 "The graphs below show the results obtained for the 1st generation and the 60th generation.",
      "figure": fig(17, (78, 169, 526, 334), "Two graphs of the number of flies (no scale) against hours until death from starvation (0 to 200). "
-                   "Generation 1 (original population): one narrow peak from about 10 to 40 hours, highest near 20 hours. Generation 60: one "
+                   "Generation 1 (original population): one narrow peak from about 8 to 40 hours, highest near 20 hours. Generation 60: one "
                    "narrow peak from about 140 to 180 hours, highest near 160 hours.")},
 ]
+
+# ---- Written answers as STATEMENTS (Murci 2026-10-10, as Business Studies P2 Nov 2025): a written part plays as picking statements:
+# the memo's own points (right, tidied to one reading of its "/" alternatives) and CLEARLY wrong ones (never a true point the memo
+# leaves out: its "any other relevant answer" would make that right). The learner picks marks/each of them, any right one counts (the
+# memo's "any N"), each right pick earns `each` (Life Sciences: 1 a tick; a point with its reason or explanation, both ticked, 2); the
+# cards are shuffled the same way every run. Each card reads on its own (the cards are shuffled: no "This ..." pointing at another).
+# The memo points above (rub) stay as the source.
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random(PID + ":" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    "2.1.3": (1, ["There will be one X-chromosome and one Y-chromosome."],
+              ["There will be two Y-chromosomes.", "There will be two X-chromosomes, the same as in the female.",
+               "There will be only one X-chromosome and no Y-chromosome.",
+               "There will be three sex chromosomes: two X-chromosomes and one Y-chromosome."]),
+    "2.1.4(c)": (1, ["It leads to increased genetic variation."],
+                 ["It makes the gametes genetically identical to each other.", "It halves the number of chromosomes in the gametes.",
+                  "It repairs damaged DNA before the cell divides.", "It ensures that every gamete receives a Y-chromosome."]),
+    # the memo's two OR answers, each a point + its reason (2 ticks): either one is worth the whole 2
+    "2.1.5": (2, ["The chromosomes will appear as single chromatids, due to the splitting of the centromere.",
+                  "Each chromosome will have some genetic material of the other chromosome, because of crossing over."],
+              ["Each chromosome will still have two chromatids, because the centromeres do not split in meiosis II.",
+               "The chromosomes will be exactly as they were at the start, because no genetic material was exchanged.",
+               "The number of chromatids will double, because the DNA replicates again before meiosis II."]),
+    # the memo's "an extra gonosome" reading is left out: it would name 2.1.2's answer (XXY / XXX carry the same meaning)
+    "2.1.6": (1, ["The zygote will have XXY or XXX sex chromosomes.", "The ovum carried two X-chromosomes (XX).",
+                  "The ovum fused with a sperm carrying a Y-chromosome or an X-chromosome."],
+              ["The zygote will have 45 chromosomes, as one sex chromosome is missing.",
+               "The extra chromosome in the zygote is an autosome, such as an extra chromosome 21.",
+               "The ovum carried no sex chromosome at all.", "Non-disjunction took place in the zygote, after fertilisation."]),
+    "2.2.3": (1, ["The bands of suspect 1 are identical to the bands of the sample from the crime scene."],
+              ["The bands of suspect 2 are identical to the bands of the sample from the crime scene.",
+               "The bands of suspect 1 are identical to the bands of the victim's sample.",
+               "Suspect 1's sample has no bands in common with the sample from the crime scene.",
+               "The bands of suspect 1 are in the same places as the bands of suspect 2."]),
+    "2.2.5": (1, ["The DNA profiles of the child, the mother and the possible father are compared.",
+                  "The child inherits 50% of its DNA from each parent.",
+                  "All the bands in the child's DNA profile that are identical to the mother's are eliminated.",
+                  "The child's remaining bands are checked against the possible father's DNA profile.",
+                  "A possible father whose bands match the child's remaining bands could be the father."],
+              ["Only the child's DNA profile is needed to identify the father.",
+               "The bands the child shares with the mother are the ones compared with the possible father.",
+               "The child's DNA profile is identical to the father's DNA profile."]),
+    "2.3.4": (1, ["Both individuals 1 and 2 have CADASIL.", "Individuals 1 and 2 each have a dominant allele (D).",
+                  "Individuals 1 and 2 have children who do not have CADASIL (homozygous recessive).",
+                  "The children without CADASIL inherited a recessive allele (d) from each parent."],
+              ["Individuals 1 and 2 do not have CADASIL.", "All the children of individuals 1 and 2 have CADASIL.",
+               "Individuals 1 and 2 must both be DD, since they have CADASIL.",
+               "A child without CADASIL inherited a dominant allele from one parent."]),
+    "2.4.4": (1, ["Allele Iᴬ is inherited from one parent.", "Allele Iᴮ is inherited from the other parent.",
+                  "The alleles Iᴬ and Iᴮ are co-dominant.", "Both alleles are equally expressed in the phenotype."],
+              ["Both alleles, Iᴬ and Iᴮ, are inherited from the same parent.",
+               "Allele Iᴬ is dominant over allele Iᴮ, so only blood group A is expressed.",
+               "Blood group AB is caused by a new mutation in every generation."]),
+    "2.5.2": (1, ["Neither the allele for a cream-coloured coat nor the allele for a chestnut-coloured coat is dominant.",
+                  "The heterozygous horse shows an intermediate phenotype, the golden-coloured (palomino) coat."],
+              ["The allele for a cream-coloured coat is dominant over the allele for a chestnut-coloured coat.",
+               "Both colours show at the same time, as patches of cream and chestnut hair.",
+               "The golden coat is caused by a third allele that neither parent carries."]),
+    # three features, each with its significance (2 ticks a feature): the memo has exactly three
+    "3.1.3": (2, ["The foramen magnum is in a more forward position, to allow the vertebral column to attach below it.",
+                  "The spine is S-shaped, for better distribution of the upper body weight.",
+                  "The pelvis is short and wide, to support the weight of the upper body."],
+              ["The foramen magnum is in a more backward position, to allow the vertebral column to attach behind the skull.",
+               "The spine is C-shaped, to keep the upper body bent forward over the hips.",
+               "The pelvis is long and narrow, to support the weight of the upper body."]),
+    "3.2.5": (1, ["The cranium becomes fossilised.", "The cranium houses the brain.", "Measuring the cranial capacity gives the brain volume."],
+              ["The brain itself becomes fossilised, so its volume can be measured directly.",
+               "The brain volume is found from the size of the foramen magnum.",
+               "The brain volume is calculated by counting the teeth in the jaw."]),
+    "3.2.6": (1, ["Brain volume increased over time.", "A larger brain led to more intelligence.",
+                  "More intelligence led to the development of complex tools."],
+              ["Brain volume decreased over time.", "Larger brains led to the loss of tool use.",
+               "Brain volume has no link with the development of tools."]),
+    "3.3.1(a)": (1, ["A biological species is a group of organisms with similar characteristics.",
+                     "The members of a biological species can interbreed to produce fertile offspring."],
+                 ["A biological species is any group of organisms that live in the same habitat.",
+                  "The members of a biological species can interbreed, but always produce infertile offspring.",
+                  "The members of a biological species cannot interbreed with each other."]),
+    "3.3.1(b)": (1, ["They breed at different times of the year: ostriches lay eggs mainly in September, emus from November to April.",
+                     "The ostrich and the emu cannot interbreed."],
+                 ["Ostriches and emus lay their eggs in the same months of the year.",
+                  "Emus lay their eggs mainly in September, while ostriches lay theirs from November to April.",
+                  "The ostrich and the emu produce fertile offspring when they mate."]),
+    "3.3.3": (1, ["The ratites all had one common ancestor.", "The continents drifted apart (continental drift).",
+                  "The population of ratites was separated.", "The sub-populations were faced with different environmental conditions.",
+                  "The sub-populations underwent natural selection independently.", "The sub-populations formed different species."],
+              ["Each ratite species arose separately, with no common ancestor.",
+               "The ratites flew between the continents and kept interbreeding."]),
+    "3.4.2": (1, ["They measured the time it took for 80% of the flies to die from starvation."],
+              ["They counted the eggs laid by each generation.", "They measured the mass of food the flies ate every hour.",
+               "They measured the time it took for the eggs to hatch.", "They counted how many flies were still alive after one hour."]),
+    "3.4.4": (1, ["To improve the validity of the investigation.",
+                  "To ensure that the availability of food is the only independent variable.",
+                  "So that any changes are only due to the availability of food."],
+              ["So that the type of food becomes the independent variable.", "To make sure that the flies never run out of food.",
+               "To test which type of food the flies prefer."]),
+    "3.4.5": (1, ["In the 1st generation the hours until death were shorter: between 8 and 40 hours.",
+                  "In the 60th generation the hours until death were longer: between 140 and 180 hours."],
+              ["In the 1st generation the hours until death were between 140 and 180 hours.",
+               "The flies of the 60th generation died sooner than those of the 1st generation.",
+               "Both generations took the same time to die from starvation."]),
+    # 6 of the memo's 7 points ("Any"): all 7 fill the 8 cards with one wrong (the 8-card limit): the Lamarckian slip
+    "3.4.6": (1, ["There was variation in the population of fruit flies.", "Some flies were starvation resistant, while others were not.",
+                  "The food source was removed.", "The flies that were not starvation resistant died.",
+                  "The starvation-resistant flies survived and reproduced.",
+                  "The survivors passed on the allele for starvation resistance to their offspring.",
+                  "The next generation had a higher proportion of starvation-resistant flies."],
+              ["The flies became starvation resistant during their lives because they needed to, and passed this on."]),
+}
+# A written part whose memo weighs two sides plays as a SORT (variety): 3.1.2's differences set a human feature against an ape's
+# (each side ticked: 2 x 2). Its 4 marks are 4 rows = two whole differences of the memo (the jaws, the palate), each row sorted to its
+# side, 1 mark a row. No "Not true" row: a fifth row would need a fifth mark, and a false row in place of one side would break a pair.
+SORTS = {
+    "3.1.2": (["Humans", "African apes"], [
+        ("The jaws are smaller.", 0), ("The jaws are larger.", 1), ("The palate is C-shaped.", 0), ("The palate is U-shaped.", 1)]),
+}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random(PID + ":sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+# GATES: a part whose statements show an earlier part's answer opens only once that part is answered: 2.1.5 names crossing over
+# (2.1.4(a)); 2.1.6's sperm carrying a Y-chromosome shows a male's XY (2.1.3); 2.2.3 names suspect 1 (2.2.2); 2.2.5 names DNA
+# profiles (2.2.1); 2.3.4's children without CADASIL are homozygous recessive, as individual 5 is (2.3.3(b)); 2.5.2's 'neither allele
+# is dominant ... intermediate phenotype' is incomplete dominance (2.5.1); 3.4.4 names the availability of food as the independent
+# variable (3.4.1).
+GATES = {"2.1.5": ["2.1.4(a)"], "2.1.6": ["2.1.3"], "2.2.3": ["2.2.2"], "2.2.5": ["2.2.1"], "2.3.4": ["2.3.3(b)"], "2.5.2": ["2.5.1"],
+         "3.4.4": ["3.4.1"]}
+for _m in missions + missions_b:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+        if _it["n"] in GATES:
+            _m["items"][_k]["after"] = GATES[_it["n"]]
+_ITEMS = [i for m in missions + missions_b for i in m["items"]]
+assert not [i["n"] for i in _ITEMS if i["t"] in ("rubric", "steps")], "a written answer or typed steps left"
+assert set(GATES) | set(n for g in GATES.values() for n in g) <= {i["n"] for i in _ITEMS}, "a gate names a missing part"
+_ORDER = [i["n"] for i in _ITEMS]
+assert all(_ORDER.index(e) < _ORDER.index(n) for n, g in GATES.items() for e in g), "a gate names a later part"
+for _m in missions + missions_b:
+    assert sum(i["marks"] for i in _m["items"]) == _m["marks"], _m["id"]
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
@@ -440,6 +641,19 @@ paper = {
         {"n": "3.4", "kind": "no_fit", "detail": "The question prints TWO figures: the procedure diagram (page 16: a container of flies, food removed, food returned, a new generation) and the results graphs (page 17). A mission holds one figure: the graphs are kept (3.4.5 reads them); the procedure diagram repeats the printed procedure and is left out."},
         {"n": "3.4.4", "kind": "memo_issue", "detail": "The memo's third point reads 'so that any changes that occur are only due to food availability ✓ of food' (a repeated 'of food'); transcribed as 'only due to the availability of food'."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 3), hand-transcribed from the paper and memo PDFs; no API call."},
+        {"n": "2.1.3", "kind": "no_fit", "detail": "Written answers play as statements (Murci, 2026-10-10): " + ", ".join(STATEMENTS) + " pick the "
+                                                   "memo's points among clearly wrong ones, 1 mark a tick (2.1.5 and 3.1.3: 2 a point, as the "
+                                                   "memo ticks the point and its reason). 2.1.5's two OR answers are both right statements, "
+                                                   "either worth the whole 2. 3.4.6 (any 6 of 7) fills the 8-card limit with the memo's 7 "
+                                                   "points and ONE wrong statement."},
+        {"n": "3.1.2", "kind": "no_fit", "detail": "The differences play as a sort into Humans and African apes: 4 rows, two whole differences "
+                                                   "of the memo (the jaws, the palate), 1 mark a row as the memo ticks each side. No 'Not true' "
+                                                   "row: it would need a fifth mark or break a pair."},
+        {"n": "3.2.4", "kind": "no_fit", "detail": "The calculation plays as a whole-working multiple choice: the memo's working and three "
+                                                   "workings built from learner errors (dividing by the new volume, reading Homo erectus' 959 "
+                                                   "for Homo sapiens, rounding the fraction too early); all 3 marks or none."},
+        {"n": "2.5.2", "kind": "memo_issue", "detail": "The memo reads 'Neither the allele of a cream-coloured coat and chestnut-coloured coat is "
+                                                       "dominant'; the statement reads 'Neither ... nor ...'."},
     ],
 }
 out = Path(__file__).parent / "out" / "ls-p2-2025-11"
