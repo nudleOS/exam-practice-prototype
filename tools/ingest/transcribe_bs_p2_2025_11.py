@@ -252,19 +252,21 @@ q33 = [
         worth=[2, 1],
         notes=["No marks for the motivation if the principle is wrong; responsibility earns its marks even if the motivation is incomplete."]),
     rub("3.3.2", "Describe any ONE other King Code principle that businesses can apply to improve their ethical business conduct.", 3, [
-        "Transparency (principle 2, a description 1): decisions/actions must be clear to all stakeholders; staffing and other processes should be open "
+        "Transparency.",
+        "(Transparency, described:) decisions/actions must be clear to all stakeholders; staffing and other processes should be open "
         "and transparent; employees/shareholders/directors should be aware of the employment policies of the business; auditing and other reports must "
         "be accurate/available to shareholders/employees; regular audits should be done to determine the effectiveness of the business; business deals "
         "should be conducted openly so that there is no hint/sign of dishonesty/corruption; businesses should give details of shareholders' voting "
         "rights to them before/at the Annual General Meeting (AGM); the board of directors must report on both the negative and positive impacts of "
         "the business on the community/environment; the board should ensure that the company's ethics on information are reliable/relevant and "
         "implemented effectively.",
-        "Accountability (principle 2, a description 1): there must be regular communication between management and stakeholders such as shareholders; "
+        "OR — Accountability.",
+        "(Accountability, described:) there must be regular communication between management and stakeholders such as shareholders; "
         "the company should appoint internal and external auditors to audit financial statements; the board should ensure that the company's ethics on "
         "disclosure are motivated/proper/accurate and implemented effectively; businesses should be accountable/responsible for their "
         "decisions/actions; businesses should present accurate annual reports to shareholders at the AGM; top management should ensure that other "
         "levels of management are clear about their roles and responsibilities to improve accountability."],
-        ["Not responsibility (that was 3.3.1).", "Name the principle, then describe what a business does to apply it."], each=3,
+        ["Not responsibility (that was 3.3.1).", "Name the principle, then describe what a business does to apply it."], worth=[2, 1, 2, 1],
         notes=["Mark the first ONE only; no marks for responsibility (3.3.1's principle)."]),
 ]
 q34 = [rub("3.4", "Discuss communication as a criterion for successful team performance.", 6, [

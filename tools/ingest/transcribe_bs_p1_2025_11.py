@@ -132,26 +132,30 @@ q23 = [
         notes=["No marks for the motivation if the force is wrong; the force earns its marks even if the motivation is incomplete."]),
     rub("2.3.2", "Describe how businesses could apply ONE other force of Porter's Five Forces model to analyse their position in the market "
         "environment.", 3, [
-            "Bargaining power of suppliers/Power of suppliers (force 2, a description 1): assess the power of the suppliers in influencing "
+            "Bargaining power of suppliers OR Power of suppliers.",
+        "(Bargaining power of suppliers/Power of suppliers, described:) assess the power of the suppliers in influencing "
             "prices; suppliers that deliver high quality/unique/scarce products may have power over the business; the more powerful the "
             "suppliers, the less control the business has over them; the smaller the number of suppliers, the more powerful they may be as the "
             "choice of suppliers may be limited; identify the kind of power suppliers have in terms of the quality of products/services/"
             "reliability/ability to make prompt deliveries.",
-            "Bargaining power of buyers/Power of buyers (force 2, a description 1): assess how easy it is for buyers/customers to drive "
+            "OR — Bargaining power of buyers OR Power of buyers.",
+        "(Bargaining power of buyers/Power of buyers, described:) assess how easy it is for buyers/customers to drive "
             "prices down; determine the number of buyers/the importance of each buyer to the business and the cost of switching to other "
             "products; a few powerful buyers are often able to dictate their terms to the business; buyers buying in bulk can bargain for "
             "prices in their favour; if buyers can do without the business's products then they have more power to determine the prices and "
             "terms of sale; conduct market research to gather more information about its buyers.",
-            "Threat of substitution/substitutes (force 2, a description 1): business's products that can be easily substituted weakens the "
+            "OR — Threat of substitution/substitutes.",
+        "(Threat of substitution/substitutes, described:) business's products that can be easily substituted weakens the "
             "power of the business in the market; establish whether the sellers of substitute products have improved their product/sell lower "
             "quality goods at lower prices; if the business sells unique products it will not be threatened by substitute products; assess if "
             "customers are using substitute products/services and determine reasons for using substitutes.",
-            "Threat/Barriers of new entrants to the market (force 2, a description 1): if the barriers to enter the market are low, then it is "
+            "OR — Threat/Barriers of new entrants to the market.",
+        "(Threat/Barriers of new entrants to the market, described:) if the barriers to enter the market are low, then it is "
             "easy for new businesses to enter the market/industry; if the business is highly profitable, it will attract potential competitors "
             "that want to benefit from high profits; new competitors can quickly/easily enter the market, if it takes little time/money to "
             "enter the market; if there are a few suppliers of a product/service but many buyers, it may be easy to enter the market."],
         ["Five forces: rivalry, suppliers, buyers, substitutes, new entrants. Not the one in 2.3.1.",
-         "Name the force, then say how a business would use it to judge its position."], each=3,
+         "Name the force, then say how a business would use it to judge its position."], worth=[2, 1, 2, 1, 2, 1, 2, 1],
         notes=["Mark the first ONE force only. No marks for competitive rivalry/power of competitors (2.3.1's force)."]),
 ]
 q24 = [rub("2.4", "Explain the steps in strategy evaluation.", 4, [
@@ -164,19 +168,22 @@ q24 = [rub("2.4", "Explain the steps in strategy evaluation.", 4, [
     "Any other relevant answer related to the steps in strategy evaluation (in any order)."],
     ["Evaluation looks back at a strategy already in use.", "Compare what was planned with what happened, then act on the difference."], each=2)]
 q25 = [rub("2.5", "Discuss any TWO types of intensive strategies.", 6, [
-    "Market penetration (strategy 2, a discussion point 1): new products penetrate an existing market at a low price, until it is well "
+    "Market penetration.",
+        "(Market penetration, discussed:) new products penetrate an existing market at a low price, until it is well "
     "known to the customers and then the price increases; businesses focus on selling existing products into existing markets to increase "
     "their market share; businesses use market research on existing clients to decide on how to improve their marketing mix; aggressive "
     "marketing campaigns such as lowering/reducing prices are used to attract potential/existing clients; embark on an intensive advertising "
     "campaign to increase awareness and customer loyalty; employ more sales staff to improve sales/services.",
-    "Market development (strategy 2, a discussion point 1): a growth strategy where businesses aim to sell their existing products in new "
+    "Market development.",
+        "(Market development, discussed:) a growth strategy where businesses aim to sell their existing products in new "
     "markets; businesses target consumers in a potential market that is outside of its normal target market; increasing sales of existing "
     "products by finding new ways to develop new markets; prices are restructured/reviewed to cater for customers/consumers of all income levels.",
-    "Product development (strategy 2, a discussion point 1): a growth strategy where businesses aim to introduce new products into existing "
+    "Product development.",
+        "(Product development, discussed:) a growth strategy where businesses aim to introduce new products into existing "
     "markets/modifies an existing product; businesses generate new ideas/develop new products/services for existing/current markets; "
     "businesses conduct test marketing/market research to establish whether new products will be accepted by existing customers; new "
     "products may be different/of a higher quality than those of competitors."],
-    ["Intensive strategies work harder with existing products or markets.", "Three of them: penetrate, develop the market, develop the product."], each=3,
+    ["Intensive strategies work harder with existing products or markets.", "Three of them: penetrate, develop the market, develop the product."], worth=[2, 1, 2, 1, 2, 1],
     notes=["Mark the first TWO only (3 marks each: the strategy 2, its discussion 1)."])]
 q26 = [
     pick("2.6.1", "Quote TWO ways in which MF complies with the National Credit Act (NCA), 2005 (Act 34 of 2005) from the scenario above.",
@@ -474,7 +481,8 @@ missions_q4 = [
 
 # ---- Section C: the essays (answer any ONE), the question paper page 10 and the memo pages 24-31 ----
 # Each essay is one rubric part (as printed: one question of 40): the memo's points under its own headings and sub-maxima (facts
-# capped at 32), and insight (8). An essay's points are marked as the memo's are: 2 each, the introduction's 1 each.
+# capped at 32), and insight (8). Every point earns 1 here: the keyword stand-in cannot judge sub-maxima, repetition or insight, so an
+# essay's mark waits for model marking.
 INSIGHT = ["Insight (8), 2 each: Layout (an introduction, paragraphs and a conclusion, the words INTRODUCTION and CONCLUSION stated and "
            "explained); Analysis and interpretation (all headings addressed; interpreted correctly); Synthesis (only relevant facts); "
            "Originality (an example in any TWO of the four aspects, based on recent information, current trends and developments, not "
