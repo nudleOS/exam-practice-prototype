@@ -1735,7 +1735,8 @@ const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, ""
 // A slip that changes the meaning: a numeral differs (prophase i / ii, 2 / 3), or one word is the other with a meaning prefix
 // (incomplete / complete, heterozygous / homozygous is caught by the glossary below, dis-, non-, hypo- ...). Same word count only:
 // a dropped or added word is not a spelling slip either (distance alone allowed "prophase" for "prophase i").
-const MEANING_PREFIX = ["in", "im", "il", "ir", "un", "dis", "non", "a", "an", "anti", "de", "hyper", "hypo", "endo", "exo", "inter", "intra", "pre", "post", "sub", "super", "mis"];
+const MEANING_PREFIX = ["in", "im", "il", "ir", "un", "dis", "non", "a", "an", "anti", "de", "hyper", "hypo", "endo", "exo", "inter", "intra", "pre", "post", "sub", "super", "mis",
+  "fe", "wo"];   // a sex is never a slip (2026-10-10): "female with CADASIL" was 2 edits from "male with CADASIL", in the budget (the service: d40180a)
 const meaningSlip = (typed, target) => { const a = typed.split(" "), b = target.split(" "); if (a.length !== b.length) return true;
   return a.some((w, i) => { const v = b[i]; if (w === v) return false;
     if (/^(?:[ivx]+|\d+)$/.test(w) || /^(?:[ivx]+|\d+)$/.test(v)) return true;
