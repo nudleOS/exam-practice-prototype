@@ -110,7 +110,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "f8d94f275e",
+   "rev": "e5de6b1910",
    "source_pdf": "uploads/Geography P1 Nov 2025 Eng.pdf",
    "printed_marks": 150
   },
@@ -133,7 +133,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "f79d9221a4",
+   "rev": "2d91a19dc0",
    "source_pdf": "uploads/Geography P2 Nov 2025 Eng.pdf",
    "printed_marks": 150
   },
