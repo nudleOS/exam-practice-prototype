@@ -2684,7 +2684,11 @@ class Component extends DCLogic {
     if (!part || !m || this.gateOpen(part) || this.pg(part.key).closed || this._gateAt === part.key + ":" + st.pi) return; this._gateAt = part.key + ":" + st.pi;
     const fwd = m.parts.findIndex((q, j) => j > st.pi && this.gateOpen(q) && !this.pg(q.key).closed),
       back = m.parts.findIndex(q => (part.after || []).indexOf(q.number) !== -1 && !this.pg(q.key).closed), to = fwd !== -1 ? fwd : back;
-    if (to !== -1) this.resetInputs({ pi: to, bubbleMsg: part.number + " opens after " + part.after.join(", ") + ": it uses that answer." }); }
+    const why = part.number + " opens after " + part.after.join(", ") + ": it uses that answer.";
+    if (to !== -1) { this.resetInputs({ pi: to, bubbleMsg: why }); return; }
+    // (the part it waits for is in another question: go there)
+    const ms = this.missions(), mi2 = ms.findIndex(mm => mm.parts.some(q => (part.after || []).indexOf(q.number) !== -1 && !this.pg(q.key).closed));
+    if (mi2 !== -1) { const pi2 = ms[mi2].parts.findIndex(q => (part.after || []).indexOf(q.number) !== -1 && !this.pg(q.key).closed); this.openMission(mi2, pi2); this.setState({ bubbleMsg: why }); } }
   partByNumber(n) { return this.missions().reduce((a, m) => a || m.parts.filter(q => q.number === n)[0], null); }
   // an insight is worked out when every section of its essay is closed
   insightReady(part) { const pid = part.key.slice(0, part.key.lastIndexOf(":")); return ((part.insight || {}).of || []).every(n => this.pg(pid + ":" + n).closed); }
