@@ -404,12 +404,12 @@ missions_b = [
                 "is used to genetically modify maize to contain the Bt toxin. This Bt maize is toxic to insects."},
     {"id": "3.2", "title": "Question 3.2", "kind": "Phylogenetic tree", "marks": 9,
      "lead": "The phylogenetic tree below shows the evolutionary relationship between some species.", "items": q32,
-     "figure": fig(12, (163, 317, 463, 593), "A tree with seven groups along the top, each drawn as a silhouette, from left to right: New-world "
+     "figure": fig(12, (163, 317, 463, 593), "A phylogenetic tree with seven groups along the top, each drawn as a silhouette, from left to right: New-world "
                    "monkeys, gibbons, humans, chimpanzees, gorillas, orangutans and Old-world monkeys. A bracket labelled P spans chimpanzees, gorillas "
-                   "and orangutans. The humans' branch runs down to the right: the chimpanzees' branch joins it at Q and the gorillas' at R, and it "
-                   "ends at S on the orangutans' branch. The orangutans' branch runs on down to the left and ends at T on the gibbons' branch. The "
-                   "gibbons' branch runs on down to the right and ends at U on the Old-world monkeys' branch, which runs on down to the left and ends "
-                   "at V, the foot of the tree, on the New-world monkeys' branch.")},
+                   "and orangutans. The branches join at points lettered Q to V.")
+     # (no branch-by-branch joins: the caption shows in the enlarged view, and where each branch joins is what 3.2.1, 3.2.2 and
+     # 3.2.4 ask the learner to read off the tree)
+     },
     {"id": "3.3", "title": "Question 3.3", "kind": "Milk and height", "marks": 12,
      "lead": "A group of researchers conducted an investigation to determine the influence of the type of milk on the height of children drinking "
              "the milk. (The investigation was conducted over a period of 7 years from age 3 to age 10.)", "items": q33,
