@@ -2454,3 +2454,12 @@ body.nx-play main:not(#mq-stage) [data-vitem] > b::after { content:":"; }
 /* the items under the question (Murci 2026-10-08: "make oestrogen and testosterone align vertical from the left like the question
    below 1.3.1"): one under the other, from the question's own left edge, as the paper lists them */
 body.nx-play main:not(#mq-stage) [data-vennitems] { flex-direction:column !important; align-items:flex-start !important; justify-content:flex-start !important; gap:4px !important; }
+
+/* A WIDE TABLE SCROLLS, ITS FIRST COLUMN PINNED (Murci, 2026-10-10, option A of three mocks; tableView sizes each column to its
+   longest word). The pinned cell needs an opaque background, the colour the table sits on: the page's panel inline, the sheet's own
+   colour in the phone's "Shared information" sheet. The header's pinned cell keeps the header row's 5% tint over it. */
+[data-ctx-table] { --tbl-pin: var(--nx-card, #0c1c36); }
+@media (max-width:600px) { body.nx-play [data-ctx] [data-ctx-body] [data-ctx-table] { --tbl-pin: var(--nx-sheet, #0e1838); } }
+[data-ctx-table] [data-pin="true"] { position: sticky; left: 0; z-index: 1; background: var(--tbl-pin); box-shadow: 1px 0 0 var(--line); }
+[data-ctx-table] [role="table"] > [role="row"]:first-child [data-pin="true"] { background: linear-gradient(rgba(255,255,255,0.05), rgba(255,255,255,0.05)), var(--tbl-pin); }
+[data-tbl-scroll]:focus-visible { outline: 3px solid #81b1ff; outline-offset: -3px; }

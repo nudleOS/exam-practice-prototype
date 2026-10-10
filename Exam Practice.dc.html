@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=277">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=279">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -752,23 +752,31 @@
                   </sc-if>
                   <!-- the paper's table, as printed (grid rows, not <table>: the parser would lift sc-for out of a tbody) -->
                   <sc-if value="{{ ctxHasTable }}" hint-placeholder-val="{{ false }}">
-                    <div role="table" aria-label="{{ ctxTableLabel }}" data-ctx-table="true" style="border-radius:12px; border:1px solid var(--line); overflow:hidden; font-size:13.5px; line-height:1.4; color:var(--text2)">
+                    <div data-ctx-table="true" style="border-radius:12px; border:1px solid var(--line); overflow:hidden; font-size:13.5px; line-height:1.4; color:var(--text2)">
                       <sc-if value="{{ ctxHasTableTitle }}" hint-placeholder-val="{{ false }}">
                         <div style="padding:8px 12px; font-size:12px; font-weight:800; color:var(--text); background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line); text-wrap:pretty">{{ ctxTableTitle }}</div>
                       </sc-if>
-                      <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line)">
-                        <sc-for list="{{ ctxTableHead }}" as="th" hint-placeholder-count="3">
-                          <span role="columnheader" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}; min-width:0; overflow-wrap:anywhere">{{ th.t }}</span>
-                        </sc-for>
-                      </div>
-                      <sc-for list="{{ ctxTableRows }}" as="tr" hint-placeholder-count="3">
-                        <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; border-top:{{ tr.line }}">
-                          <sc-for list="{{ tr.cells }}" as="td" hint-placeholder-count="3">
-                            <span role="{{ td.role }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums; min-width:0; overflow-wrap:anywhere">{{ td.t }}</span>
+                      <!-- a wide table scrolls sideways, its first column pinned (Murci, 2026-10-10): the box is a focusable region, so keys scroll it -->
+                      <div data-tbl-scroll="true" role="region" tabindex="0" aria-label="{{ ctxTableLabel }}" style="overflow-x:auto; overscroll-behavior-x:contain">
+                        <div role="table" aria-label="{{ ctxTableLabel }}" style="min-width:{{ ctxTableMinW }}px">
+                          <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; background:rgba(255,255,255,0.05); border-bottom:1px solid var(--line)">
+                            <sc-for list="{{ ctxTableHead }}" as="th" hint-placeholder-count="3">
+                              <span role="columnheader" data-pin="{{ th.pin }}" style="padding:7px 10px; font-size:12px; font-weight:800; color:var(--text); text-align:{{ th.a }}; min-width:0; overflow-wrap:normal">{{ th.t }}</span>
+                            </sc-for>
+                          </div>
+                          <sc-for list="{{ ctxTableRows }}" as="tr" hint-placeholder-count="3">
+                            <div role="row" style="display:grid; grid-template-columns:{{ ctxTableCols }}; border-top:{{ tr.line }}">
+                              <sc-for list="{{ tr.cells }}" as="td" hint-placeholder-count="3">
+                                <span role="{{ td.role }}" data-pin="{{ td.pin }}" style="padding:6px 10px; font-weight:{{ td.w }}; color:{{ td.c }}; text-align:{{ td.a }}; font-variant-numeric:tabular-nums; min-width:0; overflow-wrap:normal; white-space:{{ td.ws }}">{{ td.t }}</span>
+                              </sc-for>
+                            </div>
                           </sc-for>
                         </div>
-                      </sc-for>
+                      </div>
                     </div>
+                    <sc-if value="{{ ctxTableWide }}" hint-placeholder-val="{{ false }}">
+                      <p data-tbl-hint="true" style="margin:-4px 0 0; font-size:12px; color:var(--text3, var(--text2))">Swipe sideways to see every column →</p>
+                    </sc-if>
                   </sc-if>
                   <sc-if value="{{ ctxHasAfter }}" hint-placeholder-val="{{ false }}">
                     <p style="margin:0; font-size:14px; line-height:1.65; color:var(--text2); text-wrap:pretty">{{ ctxAfter }}</p>
@@ -1731,9 +1739,20 @@ const tableView = t => {
   const cols = numeric ? "minmax(0,1.35fr)" + " minmax(0,1fr)".repeat(n - 1) : t.head.map((_, i) => `minmax(${i ? 0 : 52}px,${longest(i)}fr)`).join(" ");
   const short = t.rows.every(r => r[0].length <= 2);
   const al = i => i === 0 ? (short ? "center" : "left") : numeric ? "center" : "left";
-  return { cols, head: t.head.map((h, i) => ({ t: h, a: al(i) })),
+  // A WIDE TABLE SCROLLS, ITS FIRST COLUMN PINNED (Murci, 2026-10-10, option A of three mocks: Maths Lit's 5-7 column tables broke their
+  // headers mid-word on a phone, "POP / ULAT / ION"). Each column is at least its longest WORD wide (a number: its whole text, never
+  // wrapped), so headers wrap only between words; the rows are at least the sum wide, and a box narrower than that scrolls sideways.
+  const isNum = i => t.rows.every(r => { const s = String(r[i] == null ? "" : r[i]).trim(); return !s || num(s) || /^[…\-–—.]+$/.test(s); });   // "…": a blank to fill
+  const longestWord = s => Math.max(0, ...String(s == null ? "" : s).split(/\s+/).map(w => w.length));
+  const minPx = i => Math.round(22 + 7.6 * Math.max(longestWord(t.head[i]), ...t.rows.map(r => isNum(i) ? String(r[i] == null ? "" : r[i]).length : longestWord(r[i]))));
+  const mins = t.head.map((_, i) => Math.max(i ? 0 : 64, minPx(i)));
+  const shares = t.head.map((_, i) => numeric ? (i ? 1 : 1.35) : longest(i));
+  const colsMin = t.head.map((_, i) => `minmax(${mins[i]}px,${shares[i]}fr)`).join(" ");
+  return { cols: colsMin, minW: mins.reduce((a, b) => a + b, 0), numCols: t.head.map((_, i) => i > 0 && isNum(i)),
+    head: t.head.map((h, i) => ({ t: h, a: al(i), pin: i === 0 ? "true" : "false" })),
     rows: t.rows.map((r, ri) => ({ line: ri ? "1px solid var(--line)" : "none",
-      cells: r.map((c, i) => ({ t: c, a: al(i), role: i ? "cell" : "rowheader", w: i ? "500" : "700", c: i ? "var(--text2)" : "var(--text)" })) })) };
+      cells: r.map((c, i) => ({ t: c, a: al(i), role: i ? "cell" : "rowheader", w: i ? "500" : "700", c: i ? "var(--text2)" : "var(--text)",
+        pin: i === 0 ? "true" : "false", ws: i > 0 && isNum(i) ? "nowrap" : "normal" })) })) };
 };
 const unitText = u => String(u || "").replace("**3", "³").replace("**2", "²");
 const num = s => { const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(/−/g, "-").replace(/[×x*]10\^/i, "e").replace(",", "."); return t === "" ? null : (/^-?\d*\.?\d+(e-?\d+)?$/i.test(t) ? parseFloat(t) : NaN); };
@@ -4864,6 +4883,9 @@ class Component extends DCLogic {
       ctxPeek: ctxText ? ctxText.split("\n")[0] : ctxTable ? ctxTable.title || "A table of results" : "",
       ctxHasTable: !!ctxView, ctxHasTableTitle: !!(ctxTable && ctxTable.title), ctxTableTitle: ctxTable ? ctxTable.title || "" : "",
       ctxTableLabel: ctxTable ? ctxTable.title || ctxTable.head.join(", ") : "", ctxTableCols: ctxView ? ctxView.cols : "", ctxTableHead: ctxView ? ctxView.head : [],
+      // the table's room: the question column (640 px on wide layouts, as the figures), less the sheet's padding and the border
+      ctxTableMinW: ctxView ? ctxView.minW : 0,
+      ctxTableWide: !!ctxView && ctxView.minW > Math.min((s.vw >= 1100 || (s.vw >= 600 && s.vw > s.vh)) ? 640 : s.vw - 32, s.vw - 32) - 2,
       ctxTableRows: ctxView ? ctxView.rows : [], ctxHasAfter: !!(ctxTable && ctxTable.after), ctxAfter: ctxTable ? ctxTable.after || "" : "",
       partKey: part.key + ":" + s.pi, partNumber: part.number,
       partMarks: part.marks ? part.marks + (part.marks === 1 ? " mark" : " marks") + (!(this.pg(part.key).replay && !this.pg(part.key).retake) ? ", first try only" : "") : "Not marked online",
