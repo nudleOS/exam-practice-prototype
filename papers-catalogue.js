@@ -443,8 +443,10 @@ window.NX_CATALOGUE = {
    "duration_minutes": 180,
    "questions": 11,
    "missions": 44,
-   "status": "preparing",
-   "provenance_label": "DBE question paper · November 2024"
+   "status": "ready",
+   "provenance_label": "DBE question paper · November 2024",
+   "rev": "2789b680b4",
+   "source_pdf": "uploads/Mathematics P2 Nov 2024 Eng.pdf"
   },
   {
    "id": "ps-p1-2025-11",
