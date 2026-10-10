@@ -156,6 +156,12 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
         try:  # a palette PNG: diagrams are line art (the hand-made crops were 32 colours)
             from PIL import Image
             im = Image.open(out / "figures" / name).convert("RGB")
+            # rotate: clockwise degrees that turn a figure printed SIDEWAYS upright (2026-10-10: ML P2 Nov 2024's ANNEXURES A and C
+            # are landscape pages printed on their side; typed out, the aerial view and the map would be lost)
+            r = int(f.get("rotate") or 0) % 360
+            if r:
+                im = im.rotate(-r, expand=True)
+                w, h = im.size
             # inset: a white margin round a crop whose labels touch its corner, where the figure's Hide button sits on the page
             # (2026-10-10, Geography P1 Nov 2024 2.1.6: the button covered option "Y")
             i = int(f.get("inset") or 0)

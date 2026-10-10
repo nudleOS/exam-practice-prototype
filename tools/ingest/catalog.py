@@ -43,7 +43,9 @@ FIGURE = obj({
     "source": {"type": "string", "enum": ["answer_book"], "description": "Only when the figure is printed in the ANSWER BOOK (an answer sheet's "
                                                                            "graph or annexure), not the question paper: page is then the answer book's"},
     "inset": {"type": "integer", "description": "Pixels of white margin round the crop, when a label touches its corner (the page's Hide "
-                                                "button sits on the figure's top-left corner)"}},
+                                                "button sits on the figure's top-left corner)"},
+    "rotate": {"type": "integer", "enum": [90, 180, 270], "description": "Clockwise degrees that turn a figure printed SIDEWAYS upright "
+                                                                        "(a landscape annexure on its side): 90 when its text reads bottom to top"}},
     ["page", "bbox", "caption"])
 
 
