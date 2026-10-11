@@ -21,8 +21,9 @@ year, transcribe_g11_math_p1_2018_11.py):
   An answer the memo states with no working (a pair of roots, asymptotes, a range, an interval) -> authored multiple choice of
   answers: the memo's and three common errors. One number with no working (6.5) stays num.
   The sketch 5.7 -> draw with build "sketch" (2026-10-11: f and g placed on one grid, each curve drawn through its features,
-  marked online against the memo's six criteria); the tree diagram 8.1.1 and the Venn diagram 9.1 -> draw (self-checked against
-  the memo's criteria). No written answer in this paper: 8.2.1 and 8.2.2 justify 'with appropriate calculations', so they are
+  marked online against the memo's six criteria); the tree diagram 8.1.1 -> draw with build "tree" and the Venn diagram 9.1 -> draw
+  with build "venn" (2026-10-11: each branch's outcome and probability and each end's outcome; each region's number or form in x;
+  marked online against the memo's criteria). No written answer in this paper: 8.2.1 and 8.2.2 justify 'with appropriate calculations', so they are
   workings, as the 2018 paper's 9.1.
   Where a part's stem, options or criteria show an EARLIER part's answer it carries "after" (the assert at the end).
 Missions: Questions 4, 5, 6 and 9 share one stem (a pattern, two functions, a graph, a survey), so each is one mission;
@@ -404,7 +405,14 @@ q81 = [
         ["How many marbles of each colour are in the bag at the start?", "After one marble is put aside, how many marbles are left, and how "
                                                                          "many of that colour?"],
         memo="The memo's tree: the first marble B 3/5 (0,6) and R 2/5 (0,4); after B: B 2/4 and R 2/4 (1/2 or 0,5 each); after R: B 3/4 and "
-             "R 1/4; the outcomes (B ; B), (B ; R), (R ; B) and (R ; R) at the ends of the branches."),
+             "R 1/4; the outcomes (B ; B), (B ; R), (R ; B) and (R ; R) at the ends of the branches.",
+        # built (2026-10-11): the branches drawn (two, then two after each); the learner chooses each branch's outcome (✓ branches), types its
+        # probability, a fraction or a decimal, any equal form (✓ probabilities: 2/4 = 1/2 = 0,5 as the memo allows) and chooses each end's
+        # outcome (✓ outcomes)
+        build={"kind": "tree", "outcomes": [{"id": "B", "name": "blue"}, {"id": "R", "name": "red"}], "stages": ["First marble", "Second marble"],
+               "tree": [{"id": "B", "p": "3/5", "next": [{"id": "B", "p": "2/4"}, {"id": "R", "p": "2/4"}]},
+                        {"id": "R", "p": "2/5", "next": [{"id": "B", "p": "3/4"}, {"id": "R", "p": "1/4"}]}],
+               "crit": {"branches": 0, "p": 1, "out": 2}}),
     work("8.1.2", "Determine the probability of first taking a red marble and then taking a blue marble, in that order.", 2, [
         "P(R ; B) = {2}/{5} × {3}/{4}\n= {3}/{10}",     # the memo
         "P(R ; B) = {2}/{5} × {3}/{5}\n= {6}/{25}",     # as if the first marble went back
@@ -436,7 +444,15 @@ q9 = [
         ["Which number goes in the region where all three circles overlap?", "How many like rugby only, once the overlaps are taken out of "
                                                                              "the 52?"],
         memo="The memo's Venn diagram: a rectangle holding three overlapping circles R, V and C: 26 − x in R only, 13 − x in V only, 5 in C "
-             "only, 14 in R and V only, 12 in R and C only, 15 in V and C only, x in all three, and 3 outside the circles."),
+             "only, 14 in R and V only, 12 in R and C only, 15 in V and C only, x in all three, and 3 outside the circles.",
+        # built (2026-10-11): the learner fills all eight regions, each with a form in x where it holds one (26 − x, 13 − x, x). The memo's
+        # "✓ 14 or 12 or 15" is one mark for ANY ONE of the three pairs' regions right (any); x in all three is the stem's own value and
+        # the memo gives it no tick, so that region is filled but not marked
+        build={"kind": "venn", "sets": [{"id": "R", "name": "rugby"}, {"id": "V", "name": "volleyball"}, {"id": "C", "name": "chess"}],
+               "outside": True, "unknown": "x",
+               "regions": [{"in": "RV", "at": 14, "crit": 0}, {"in": "RC", "at": 12, "crit": 0}, {"in": "VC", "at": 15, "crit": 0},
+                           {"in": "R", "at": "26 − x", "crit": 1}, {"in": "V", "at": "13 − x", "crit": 2}, {"in": "C", "at": 5, "crit": 3},
+                           {"in": "out", "at": 3, "crit": 4}, {"in": "RVC", "at": "x"}], "any": [0]}),
     work("9.2", "Show that x = 8.", 2, [
         "26 − 8 + 14 + 8 + 12 + 5 + 15 + 13 − 8 + 3 = 80\n80 = 80\nSo x = 8",                                         # starts from the answer
         "26 − x + 14 + x + 12 + 5 + 15 + 13 − x + 3 = 80\n88 − 80 = x\nx = 8",                                        # the memo
@@ -456,6 +472,42 @@ q9 = [
         AL2 + "{12 + 14 + 15 + 8}/{77}\n= {7}/{11}",    # the 3 who like no sport left out of the total
         AL2 + "1 − {3}/{80}\n= {77}/{80}"], 0,          # at least one sport
         ["Which regions hold learners who like two or all three sports?", "Out of how many learners is the one chosen?"], after=["9.1", "9.2"])]
+
+
+def venn_ok(i):
+    """A built Venn diagram: every region of its sets (and outside, when it is filled) listed once, every criterion earned by a region, every
+    entry a whole number or one of the forms the builder offers (x, x + n, x − n, n − x)."""
+    b = i["build"]
+    ids = [s["id"] for s in b["sets"]]
+    want = ([ids[0], ids[0] + ids[1], ids[1]] if len(ids) == 2 else
+            [ids[0], ids[1], ids[2], ids[0] + ids[1], ids[0] + ids[2], ids[1] + ids[2], "".join(ids)]) + (["out"] if b["outside"] else [])
+    assert sorted(g["in"] for g in b["regions"]) == sorted(want), (i["n"], "regions")
+    assert sorted({g["crit"] for g in b["regions"] if "crit" in g}) == list(range(len(i["criteria"]))), (i["n"], "every criterion a region")
+    x = b.get("unknown", "x")
+    for g in b["regions"]:
+        s = re.sub(r"\s+", "", str(g["at"])).replace("−", "-")
+        assert re.fullmatch(r"\d+|%s|%s[+-]\d+|\d+[+-]%s" % (x, x, x), s), (i["n"], g)
+
+
+def tree_ok(i):
+    """A built tree: every branch an outcome of the stem's, a point's branches each a different outcome, every probability a fraction or a
+    decimal, each point's adding up to 1, and every criterion earned by something the learner gives."""
+    b = i["build"]
+    ids = [x["id"] for x in b["outcomes"]]
+    val = lambda p: (lambda t: float(t[0]) / float(t[1]) if len(t) == 2 else float(t[0]))(p.replace(",", ".").split("/"))
+    for kids in [b["tree"]] + [t["next"] for t in b["tree"]]:
+        assert all(t["id"] in ids for t in kids) and len({t["id"] for t in kids}) == len(kids), (i["n"], "outcomes")
+        assert abs(sum(val(t["p"]) for t in kids) - 1) < 1e-9, (i["n"], "a point's branches add up to 1")
+    named = set(b["crit"].values()) | {t["crit"] for t in b["tree"] + [u for t in b["tree"] for u in t["next"]] if "crit" in t}
+    assert sorted(named) == list(range(len(i["criteria"]))), (i["n"], "every criterion earned by a component")
+
+
+for i in q81 + q9:
+    k = (i.get("build") or {}).get("kind")
+    if k == "venn":
+        venn_ok(i)
+    if k == "tree":
+        tree_ok(i)
 
 # (no caption names a value, an intercept, a turning point or a direction a question asks for: captions show in the enlarged view and
 # to screen readers)
@@ -542,7 +594,13 @@ paper = {
                                                  "and both intercepts, and g's asymptote and both intercepts; each curve is drawn through its "
                                                  "own features, and the memo's six criteria are marked from the placed features and f's shape "
                                                  "(both branches). The memo marks no shape for g. The tree diagram (8.1.1) and the Venn diagram "
-                                                 "(9.1) are drawn on paper and self-checked against the memo's criteria (3 and 5)."},
+                                                 "(9.1) are BUILT (2026-10-11): the tree's branches are drawn, the learner choosing each "
+                                                 "branch's outcome (✓ branches), typing its probability (✓ probabilities, any equal form: 2/4 "
+                                                 "= 1/2 = 0,5) and choosing each end's outcome (✓ outcomes); the Venn diagram's eight regions "
+                                                 "are filled, each a number or a form in x (26 − x, 13 − x, x)."},
+        {"n": "9.1", "kind": "no_fit", "detail": "The memo's '✓ 14 or 12 or 15' is one mark for ANY ONE of the three pairs' regions right "
+                                                 "(R and V only 14, R and C only 12, V and C only 15). x in all three is the stem's own value and "
+                                                 "the memo gives it no tick: the learner fills that region, and it is not marked."},
         {"n": "6.1", "kind": "low_confidence", "detail": "The paper prints 'Determine the x-intercepts f.' (an 'of' missing); kept as printed."},
         {"n": "3.2", "kind": "memo_issue", "detail": "The memo's difference diagram (page 6) labels the third difference y − 30; its working uses "
                                                      "30 − y (x − 3 = 30 − y, x = 12, y = 21). The right option is the working; the wrong option "

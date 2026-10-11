@@ -423,7 +423,7 @@ window.NX_CATALOGUE = {
    "missions": 39,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "fb68c98fe2",
+   "rev": "4dd3e36dfe",
    "source_pdf": "uploads/Mathematics P1 Nov 2024 Eng.pdf"
   },
   {
@@ -598,7 +598,7 @@ window.NX_CATALOGUE = {
    "questions": 7,
    "missions": 16,
    "status": "ready",
-   "rev": "2f6f5cb926",
+   "rev": "1564d91daf",
    "source_pdf": "uploads/Grade 10 Mathematics P1 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },
@@ -730,7 +730,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 18,
    "status": "ready",
-   "rev": "cc52da4c6f",
+   "rev": "c6d82e7c69",
    "source_pdf": "uploads/Grade 11 Mathematics P1 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -774,7 +774,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 19,
    "status": "ready",
-   "rev": "eafb8c8912",
+   "rev": "9b4fce5e1f",
    "source_pdf": "uploads/Grade 11 Mathematics P1 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },

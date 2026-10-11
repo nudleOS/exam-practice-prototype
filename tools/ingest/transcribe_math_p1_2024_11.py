@@ -22,7 +22,8 @@ How the memo's shapes map (Mathematics: the phone has multiple choice, short tex
   trailing [..] as a proof's reason column, so the memo's S = n/2[...] is written with round brackets or with text after it),
   and every option of a part has the same shape; the stem ends "Choose the correct answer." (a short answer) or "Choose the
   correct working." (a working). The part keeps its marks. The right option's position is spread evenly over A-D.
-  "Draw a Venn diagram" -> draw (self-checked against the memo's criteria); "Sketch the graph" -> draw with build "sketch"
+  "Draw a Venn diagram" -> draw with build "venn" (2026-10-11: each region's number filled, marked online against the memo's three
+  ticks); "Sketch the graph" -> draw with build "sketch"
   (2026-10-11: its features placed on a grid and its shape chosen, the curve drawn through them, marked online against the memo's
   criteria).
   A part whose options show an EARLIER part's answer opens only after it (`after`, GATES below).
@@ -419,7 +420,9 @@ q10 = [
 
 # ---- QUESTION 11, the question paper page 9 and the memo page 17 ----
 q11b = [
-    draw("11.1", "Draw a Venn diagram to represent ALL the learners sitting for these examinations.", 3, [
+    # built (2026-10-11): the learner fills the seven regions (numbers: the memo's diagram has no unknown); no outside region, as the memo
+    # leaves it empty ("all these learners sit for at least one"). Its ticks: ✓ 2; ✓ 3 ; 4 ; 5 (all three); ✓ 6 ; 9 ; 11 (all three)
+    {**draw("11.1", "Draw a Venn diagram to represent ALL the learners sitting for these examinations.", 3, [
         ["2 in the region for all three subjects", 1],
         ["3, 4 and 5 in the regions for exactly two subjects (T and G only, M and G only, M and T only)", 1],
         ["6, 9 and 11 in the regions for one subject only (T only, G only, M only)", 1]],
@@ -427,6 +430,11 @@ q11b = [
                                                                                   "Geography from their totals."],
         memo="The memo's Venn diagram: M only 11, T only 6, G only 9; M and T only 5, M and G only 4, T and G only 3; all three 2; 40 learners "
              "in all, none outside the circles."),
+     "build": {"kind": "venn", "sets": [{"id": "M", "name": "Mathematics"}, {"id": "T", "name": "Tourism"}, {"id": "G", "name": "Geography"}],
+               "outside": False,
+               "regions": [{"in": "MTG", "at": 2, "crit": 0}, {"in": "TG", "at": 3, "crit": 1}, {"in": "MG", "at": 4, "crit": 1},
+                           {"in": "MT", "at": 5, "crit": 1}, {"in": "T", "at": 6, "crit": 2}, {"in": "G", "at": 9, "crit": 2},
+                           {"in": "M", "at": 11, "crit": 2}]}},
     work("11.2", "Calculate the probability that a learner, chosen at random, will sit for examinations in at least TWO of the subjects.", 2, [
         'P(at least two subjects) = {4 + 5 + 3}/{40}\n= {12}/{40} = {3}/{10} = 0,3',                   # the centre (all three) left out
         'P(at least two subjects) = {4 + 2 + 5 + 3}/{22 + 16 + 18}\n= {14}/{56} = {1}/{4} = 0,25',     # the subject totals as the total
@@ -444,6 +452,26 @@ q11b = [
         'P(M) × P(T) = {22}/{40} × {16}/{40} = {11}/{50} = 0,22\nP(M and T) = {7}/{40} = 0,175\nP(M and T) ≠ 0, so M and T are not mutually '
         'exclusive\nEvents M and T are independent'], 1,
         ["Independent events: P(M and T) = P(M) × P(T).", "P(M and T) counts every learner in both circles, the centre too."], marks=4)]
+
+
+def venn_ok(i):
+    """A built Venn diagram: every region of its sets (and outside, when it is filled) listed once, every criterion earned by a region, every
+    entry a whole number or one of the forms the builder offers (x, x + n, x − n, n − x)."""
+    b = i["build"]
+    ids = [s["id"] for s in b["sets"]]
+    want = ([ids[0], ids[0] + ids[1], ids[1]] if len(ids) == 2 else
+            [ids[0], ids[1], ids[2], ids[0] + ids[1], ids[0] + ids[2], ids[1] + ids[2], "".join(ids)]) + (["out"] if b["outside"] else [])
+    assert sorted(g["in"] for g in b["regions"]) == sorted(want), (i["n"], "regions")
+    assert sorted({g["crit"] for g in b["regions"] if "crit" in g}) == list(range(len(i["criteria"]))), (i["n"], "every criterion a region")
+    x = b.get("unknown", "x")
+    for g in b["regions"]:
+        s = re.sub(r"\s+", "", str(g["at"])).replace("−", "-")
+        assert re.fullmatch(r"\d+|%s|%s[+-]\d+|\d+[+-]%s" % (x, x, x), s), (i["n"], g)
+
+
+for i in q11b:
+    if (i.get("build") or {}).get("kind") == "venn":
+        venn_ok(i)
 
 # ---- QUESTION 12, the question paper page 9 and the memo page 17 ----
 q12b = [
@@ -578,8 +606,10 @@ paper = {
         {"n": "4.3", "kind": "no_fit", "detail": "The sketch of f (4.3) is BUILT on a grid (2026-10-11): the learner places the intercepts with "
                                                  "the axes and the asymptote and chooses the shape (one intercept and the asymptote fix no "
                                                  "exponential), the curve is drawn through them, and the memo's three criteria are marked from "
-                                                 "them. The Venn diagram (11.1) is drawn on paper and self-checked against the memo's three "
-                                                 "criteria."},
+                                                 "them. The Venn diagram (11.1) is BUILT (2026-10-11): the learner fills its seven regions "
+                                                 "(no outside region: the memo leaves it empty, as every learner sits at least one), marked "
+                                                 "as the memo's three ticks: the centre; the three 'two subjects only' regions together; the "
+                                                 "three 'one subject only' regions together."},
         {"n": "5.5", "kind": "no_fit", "detail": "The memo accepts four transformations (reflect in the y-axis then 2 units right; reflect in the "
                                                  "x-axis then 4 units down; reflect about x = 1; reflect about y = −2). The MCQ offers the first; "
                                                  "each distractor was checked to change the domain or range of f (2 units left: x ≠ −3; x-axis then "

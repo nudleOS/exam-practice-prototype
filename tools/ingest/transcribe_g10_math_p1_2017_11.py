@@ -19,7 +19,8 @@ transcribe_g10_math_p1_2018_11.py):
   multiple choice of answers: the memo's and three common errors.
   One number with no working (3.1.1, 5.2, 6.2.1, 7.1.1, 7.1.2) stays num; the one word 1.1.2 (Irrational) is a term with Rational
   rejected; the number line 2.1.2 -> draw with build "numline" (2026-10-11: the end placed, its dot and the shading chosen, marked
-  online); the Venn diagram 7.2.1 -> draw (self-checked against the memo's criteria); the sketch 6.1.3 ->
+  online); the Venn diagram 7.2.1 -> draw with build "venn" (2026-10-11: each region filled, x − 20 as a form in x, marked online,
+  one tick per region); the sketch 6.1.3 ->
   draw with build "sketch" (2026-10-11: its features placed on a grid, the curve drawn through them, marked online).
   Where a part's stem, options or criteria show an EARLIER part's answer it carries "after" (see the assert at the end).
 Missions: Question 5 shares one stem and graph, so it is one mission; Questions 1, 2, 3, 4, 6 and 7 are their numbered groups
@@ -360,7 +361,12 @@ q72 = [
         ["20 in the overlap of S and T", 1], ["28 in T only", 1], ["x − 20 in S only", 1], ["8 outside both circles", 1]],
         ["Which number goes in the overlap of the two circles?", "How many learners own a tablet only, once the overlap is taken out?"],
         memo="The memo's Venn diagram: a rectangle for the 150 learners holding two overlapping circles, S (smartphone) and T (tablet; the "
-             "memo labels it B): x − 20 in S only, 20 in the overlap, 28 in T only and 8 outside both circles."),
+             "memo labels it B): x − 20 in S only, 20 in the overlap, 28 in T only and 8 outside both circles.",
+        # built (2026-10-11): the learner fills each region; the memo's diagram carries x (x − 20, before 7.2.2 solves it), so every region
+        # takes a form too (the number alone, x, x + n, x − n, n − x); one tick per region, in the memo's order (✓20 ✓28 ✓x − 20 ✓8)
+        build={"kind": "venn", "sets": [{"id": "S", "name": "smartphone"}, {"id": "T", "name": "tablet"}], "outside": True, "unknown": "x",
+               "regions": [{"in": "ST", "at": 20, "crit": 0}, {"in": "T", "at": 28, "crit": 1}, {"in": "S", "at": "x − 20", "crit": 2},
+                           {"in": "out", "at": 8, "crit": 3}]}),
     work("7.2.2", "How many learners owned only a smartphone?", 3, [
         "x − 20 + 20 + 48 + 8 = 150\nx = 94\nSmartphone only = 94 − 20\n= 74",             # all 48 tablet owners put in T only
         "x − 20 + 20 + 28 = 150\nx = 122\nSmartphone only = 122 − 20\n= 102",              # the 8 with neither device left out
@@ -381,6 +387,26 @@ q72 = [
         "P(at most one) = 1 − {94}/{150}\n= {56}/{150}\n= {28}/{75}\n= 0,37"], 1,                                              # the wrong complement
         ["Which regions of the Venn diagram hold learners with no device or with exactly one device?",
          "How many learners are in those regions together?"], after=["7.2.1", "7.2.2"])]
+
+
+def venn_ok(i):
+    """A built Venn diagram: every region of its sets (and outside, when it is filled) listed once, every criterion earned by a region, every
+    entry a whole number or one of the forms the builder offers (x, x + n, x − n, n − x)."""
+    b = i["build"]
+    ids = [s["id"] for s in b["sets"]]
+    want = ([ids[0], ids[0] + ids[1], ids[1]] if len(ids) == 2 else
+            [ids[0], ids[1], ids[2], ids[0] + ids[1], ids[0] + ids[2], ids[1] + ids[2], "".join(ids)]) + (["out"] if b["outside"] else [])
+    assert sorted(g["in"] for g in b["regions"]) == sorted(want), (i["n"], "regions")
+    assert sorted({g["crit"] for g in b["regions"] if "crit" in g}) == list(range(len(i["criteria"]))), (i["n"], "every criterion a region")
+    x = b.get("unknown", "x")
+    for g in b["regions"]:
+        s = re.sub(r"\s+", "", str(g["at"])).replace("−", "-")
+        assert re.fullmatch(r"\d+|%s|%s[+-]\d+|\d+[+-]%s" % (x, x, x), s), (i["n"], g)
+
+
+for i in q72:
+    if (i.get("build") or {}).get("kind") == "venn":
+        venn_ok(i)
 
 # (no caption names a value or region a question asks for: the captions show in the enlarged view and to screen readers)
 missions = [
@@ -471,8 +497,10 @@ paper = {
         {"n": "2.1.2", "kind": "no_fit", "detail": "The number line (2.1.2) is BUILT (2026-10-11, a line from −10 to 10: the paper prints none): "
                                                    "the learner places the end, chooses its dot (open or closed) and the shading, and the memo's "
                                                    "one tick needs all three (an open dot at −6, shaded to the right); it opens after 2.1.1, "
-                                                   "whose answer it shows. The Venn diagram (7.2.1) is drawn on paper and self-checked "
-                                                   "against the memo's criteria; the sketch of p (6.1.3) is BUILT on a grid (2026-10-11): the "
+                                                   "whose answer it shows. The Venn diagram (7.2.1) is BUILT (2026-10-11): the learner fills "
+                                                   "each region (the memo's x − 20 as a form in x: the number alone, x, x + n, x − n or n − x, "
+                                                   "offered in every region), one tick per region as the memo marks it; the sketch of p "
+                                                   "(6.1.3) is BUILT on a grid (2026-10-11): the "
                                                    "learner places the asymptote and both intercepts, the curve is drawn through them, and the "
                                                    "memo's three criteria are marked from the placed features and the curve's shape."},
         {"n": "6.2.2", "kind": "memo_issue", "detail": "The memo's mark column reads 'subst. (2 ; −7)', but the paper's point and the memo's own "

@@ -21,7 +21,8 @@ transcribe_g10_math_p1_2018_11.py / transcribe_g10_math_p1_2017_11.py):
   An answer the memo states with no working (a pair of roots, asymptotes, an interval, a coordinate, a range) -> authored multiple
   choice of answers: the memo's and three common errors. 6.1 (y = −4) is one too, not a term: the term marker drops the minus sign,
   so y = 4 would pass.
-  The tree diagram 8.2 -> draw (self-checked against the memo's criteria); the sketch 5.4 -> draw with build "sketch" (2026-10-11:
+  The tree diagram 8.2 -> draw with build "tree" (2026-10-11: each branch's outcome and probability and each end's outcome, marked
+  online against the memo's four criteria); the sketch 5.4 -> draw with build "sketch" (2026-10-11:
   f and g placed on one grid, each curve drawn through its features, marked online against the memo's five criteria); 9.2.1 (a
   choice and its reason) -> statements, 1 mark each.
   Where a part's stem, options or criteria show an EARLIER part's answer it carries "after" (the assert at the end).
@@ -420,7 +421,16 @@ q8 = [
         ["How many yellow balls are there?", "After one ball is taken out and not returned, how many balls are left, and how many of that "
                                              "colour?"],
         memo="The memo's tree: the first ball R 6/32, G 8/32, Y 18/32; after R: R 5/31, G 8/31, Y 18/31; after G: R 6/31, G 7/31, Y 18/31; "
-             "after Y: R 6/31, G 8/31, Y 17/31; the nine outcomes (R; R) to (Y; Y) at the ends of the branches."),
+             "after Y: R 6/31, G 8/31, Y 17/31; the nine outcomes (R; R) to (Y; Y) at the ends of the branches.",
+        # built (2026-10-11): the branches drawn (three, then three after each); the learner chooses each branch's outcome (✓ branches),
+        # types its probability, a fraction or a decimal, any equal form (✓ probabilities) and chooses each end's outcome (✓ outcomes). The
+        # memo's "✓ 18 (number of yellow balls)" is earned where the 18 shows: the first ball's Y branch, 18/32 (or an equal form)
+        build={"kind": "tree", "outcomes": [{"id": "R", "name": "red"}, {"id": "G", "name": "green"}, {"id": "Y", "name": "yellow"}],
+               "stages": ["First ball", "Second ball"],
+               "tree": [{"id": "R", "p": "6/32", "next": [{"id": "R", "p": "5/31"}, {"id": "G", "p": "8/31"}, {"id": "Y", "p": "18/31"}]},
+                        {"id": "G", "p": "8/32", "next": [{"id": "R", "p": "6/31"}, {"id": "G", "p": "7/31"}, {"id": "Y", "p": "18/31"}]},
+                        {"id": "Y", "p": "18/32", "crit": 0, "next": [{"id": "R", "p": "6/31"}, {"id": "G", "p": "8/31"}, {"id": "Y", "p": "17/31"}]}],
+               "crit": {"branches": 1, "p": 2, "out": 3}}),
     work("8.3", "Calculate the probability that the two balls drawn from the bag will have the same colour.", 4, [
         SAME + "= ({8}/{32} × {8}/{32}) + ({6}/{32} × {6}/{32}) + ({18}/{32} × {18}/{32})\n= {53}/{128}",            # as if each ball went back
         "P(G, G) + P(R, R)\n= ({8}/{32} × {7}/{31}) + ({6}/{32} × {5}/{31})\n= {43}/{496}",                            # the two yellow balls left out
@@ -428,6 +438,24 @@ q8 = [
         SAME + "= ({8}/{32} × {7}/{32}) + ({6}/{32} × {5}/{32}) + ({18}/{32} × {17}/{32})\n= {49}/{128}"], 2,        # the second ball still out of 32
         ["Which outcomes on your tree have two balls of the same colour?", "Along a branch, do you add or multiply the probabilities, and "
                                                                            "between outcomes?"], after=["8.2"])]
+
+
+def tree_ok(i):
+    """A built tree: every branch an outcome of the stem's, a point's branches each a different outcome, every probability a fraction or a
+    decimal, each point's adding up to 1, and every criterion earned by something the learner gives."""
+    b = i["build"]
+    ids = [x["id"] for x in b["outcomes"]]
+    val = lambda p: (lambda t: float(t[0]) / float(t[1]) if len(t) == 2 else float(t[0]))(p.replace(",", ".").split("/"))
+    for kids in [b["tree"]] + [t["next"] for t in b["tree"]]:
+        assert all(t["id"] in ids for t in kids) and len({t["id"] for t in kids}) == len(kids), (i["n"], "outcomes")
+        assert abs(sum(val(t["p"]) for t in kids) - 1) < 1e-9, (i["n"], "a point's branches add up to 1")
+    named = set(b["crit"].values()) | {t["crit"] for t in b["tree"] + [u for t in b["tree"] for u in t["next"]] if "crit" in t}
+    assert sorted(named) == list(range(len(i["criteria"]))), (i["n"], "every criterion earned by a component")
+
+
+for i in q8:
+    if (i.get("build") or {}).get("kind") == "tree":
+        tree_ok(i)
 
 # ---- QUESTION 9, the question paper page 8 and the memo page 19 ----
 VM = "P(V) × P(M) = {32}/{150} × {67}/{150} = 0,095\n"
@@ -543,7 +571,13 @@ paper = {
                                                  "asymptotes and intercepts and g's intercepts, each curve is drawn through its features, and "
                                                  "the memo's five criteria are marked from them (f's shape from the curve the learner's own "
                                                  "features make). The grid's y step is 1/3, so that f's y-intercept 2/3 can be placed exactly. "
-                                                 "The tree diagram (8.2) is drawn on paper and self-checked against the memo's 4 criteria."},
+                                                 "The tree diagram (8.2) is BUILT (2026-10-11): its branches drawn, the learner choosing each "
+                                                 "branch's outcome, typing its probability (any equal form) and choosing each end's outcome, "
+                                                 "marked against the memo's 4 criteria."},
+        {"n": "8.2", "kind": "no_fit", "detail": "The memo's first tick, '18 (number of yellow balls)', has no box of its own on a tree: it is "
+                                                 "earned where the 18 shows, the first ball's Y branch probability 18/32 (an equal form, 9/16 "
+                                                 "or 0,5625, earns it too). The other three ticks are the tree's: every branch's outcome, every "
+                                                 "probability, every end's outcome."},
         {"n": "9.2.1", "kind": "no_fit", "detail": "The choice with its reason plays as statements: the memo's NOT mutually exclusive (1) and its "
                                                    "reason P(A and B) = 0,12 ≠ 0 (1) are the two right cards; the wrong cards are false for these "
                                                    "events (P(A and B) = 0,12, P(A) + P(B) = 0,95)."},
