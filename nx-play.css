@@ -20,14 +20,17 @@ html[data-nx="dark"] body.nx-play, html[data-nx="dark"] body.nx-app {
   --nx-bubble:#0b2350; --nx-bubble-line:rgba(88,140,235,0.6);
   --nx-scrim:rgba(2,10,28,0.7); --nx-shadow:0 30px 60px -32px rgba(0,0,0,0.75);
 }
+/* Light (Murci 2026-10-11: "on the light theme make sure we do not have pure white so fields and other things are visible"): no
+   surface is pure white. The page is a step deeper, every surface a tinted off-white, and every card, field and slot keeps an edge
+   that reads (its line was #e5ecf6 on #ffffff, about 1.2:1: cards, fields and slots dissolved into the page). */
 html[data-nx="light"] body.nx-play {
-  --nx-top:#f4f9ff; --nx-bot:#e7f1fd; --nx-head:rgba(251,252,254,0.94); --nx-line:rgba(40,80,150,0.12); --nx-line2:rgba(40,80,150,0.22);
-  --nx-panel:#fdfdff; --nx-panel-line:#e2eaf5; --nx-card:#ffffff; --nx-card-line:#e5ecf6; --nx-card-hover:#b9d3f3;
-  --nx-sel:#edf4fe; --nx-sel-line:#7fb2f2; --nx-badge:#e9f3ff; --nx-badge-ink:#2b6be0; --nx-accent:#0285fb;
+  --nx-top:#eaf1fb; --nx-bot:#dbe6f5; --nx-head:rgba(243,247,252,0.95); --nx-line:rgba(40,80,150,0.16); --nx-line2:rgba(40,80,150,0.28);
+  --nx-panel:#f5f8fd; --nx-panel-line:#ccd8eb; --nx-card:#f7f9fd; --nx-card-line:#c4d2e8; --nx-card-hover:#a9c6ee;
+  --nx-sel:#e2edfc; --nx-sel-line:#5e9cee; --nx-badge:#e2eefd; --nx-badge-ink:#2b6be0; --nx-accent:#0285fb;
   --nx-text:#15295a; --nx-text2:#51648a; --nx-h1:#0d2666; --nx-ico:#9ab9e6; --nx-radio:#b9c8de;
   --nx-chip:#e3eefc; --nx-chip-ink:#2c4f8f; --nx-chip-num:#cfe2fd; --nx-chip-num-ink:#1b5fd9;
-  --nx-pill:#ffffff; --nx-pill-line:#e1e9f5; --nx-xp-ink:#1667e8; --nx-doodle:rgba(80,120,190,0.2);
-  --nx-bubble:#ffffff; --nx-bubble-line:#c9dcf5;
+  --nx-pill:#f4f7fc; --nx-pill-line:#ccd8eb; --nx-xp-ink:#1667e8; --nx-doodle:rgba(80,120,190,0.2);
+  --nx-bubble:#f7f9fd; --nx-bubble-line:#b9cfee;
   --nx-scrim:rgba(214,226,244,0.72); --nx-shadow:0 26px 50px -30px rgba(20,50,110,0.35);
   color-scheme:light;
 }
@@ -262,7 +265,7 @@ html[data-nx="dark"] body.nx-play .mcqp .back .not { border-top-color:var(--nx-c
 html[data-nx="light"] body.nx-play .mcqp .tile.gold .back { background:linear-gradient(180deg, #fff8e3, #fdeec6); --ink:#8a6414; }
 html[data-nx="light"] body.nx-play .mcqp .tile.silver .back { background:linear-gradient(180deg, #f6f8fb, #e6ebf1); --ink:#4f5966; }
 html[data-nx="light"] body.nx-play .mcqp .tile.bronze .back { background:linear-gradient(180deg, #fcefe5, #f5dac7); --ink:#8a4f24; }
-html[data-nx="light"] body.nx-play .mcqp .back { background:linear-gradient(180deg, #ffffff, #f1f5fb); }
+html[data-nx="light"] body.nx-play .mcqp .back { background:linear-gradient(180deg, #f7f9fd, #e9eff8); }
 html[data-nx="light"] body.nx-play .mcqp .back .ans, html[data-nx="light"] body.nx-play .mcqp .back .why { color:var(--nx-h1); }
 html[data-nx="light"] body.nx-play .mcqp .tile.gold .why { color:var(--nx-h1); }
 html[data-nx="light"] body.nx-play .mcqp .back .not { color:var(--nx-text2); }
@@ -353,10 +356,10 @@ html[data-nx="dark"] body.nx-play, html[data-nx="dark"] body.nx-app {
   --dock-bg:linear-gradient(180deg, rgba(2,16,39,0), rgba(2,16,39,0.96) 34%);
 }
 html[data-nx="light"] body.nx-play {
-  --field:#ffffff; --line:#e5ecf6; --line2:#c9d8ee; --hover:#eef4fd; --panel2:#ffffff;
+  --field:#f4f7fc; --line:#c4d2e8; --line2:#a9bfe0; --hover:#e6effc; --panel2:#f5f8fd;
   --text:var(--nx-text); --text2:var(--nx-text2); --text3:#56698f; --text4:#56698f; --tint:#1b5fd9;
-  --card2:#ffffff; --scene-bg:linear-gradient(180deg, #ffffff, #f3f8ff); --reveal-bg:linear-gradient(180deg, #ffffff, #f3f8ff);
-  --dock-bg:linear-gradient(180deg, rgba(231,241,253,0), rgba(231,241,253,0.96) 34%);
+  --card2:#f7f9fd; --scene-bg:linear-gradient(180deg, #f7f9fd, #eaf1fb); --reveal-bg:linear-gradient(180deg, #f7f9fd, #eaf1fb);
+  --dock-bg:linear-gradient(180deg, rgba(219,230,245,0), rgba(219,230,245,0.96) 34%);
 }
 /* the question column: the MCQ panel's place, clear of the robot's corner (one column: the companion is fixed on its rock) */
 body.nx-play main:not(#mq-stage):not([data-done]) { display:block !important; box-sizing:border-box; max-width:min(900px, calc(var(--nx-vw, 100vw) - var(--nx-botR) - 24px)) !important;
@@ -412,7 +415,7 @@ html[data-nx="light"] body.nx-play main:not(#mq-stage) [data-question] [role="no
 /* light: the result bar as a white card. The host writes its tone titles for a dark bar (ok #5fe6ab, warn #f3c14f, bad
    #ff9a9c, neutral #fff) and its body in #e6e8ea: each maps to a dark shade of the same tone. The runtime writes them as
    "color: rgb(...)", matched exactly. The tone also stays in the border and the icon. */
-html[data-nx="light"] body.nx-play [data-bar] { background:#ffffff !important; box-shadow:0 -14px 40px rgba(20,50,110,0.16) !important; }
+html[data-nx="light"] body.nx-play [data-bar] { background:var(--nx-panel) !important; box-shadow:0 -14px 40px rgba(20,50,110,0.16) !important; }
 html[data-nx="light"] body.nx-play [data-bar] > span:first-child [style*="color: rgb(95, 230, 171)"] { color:#0d7047 !important; }
 html[data-nx="light"] body.nx-play [data-bar] > span:first-child [style*="color: rgb(243, 193, 79)"] { color:#855400 !important; }
 html[data-nx="light"] body.nx-play [data-bar] > span:first-child [style*="color: rgb(255, 154, 156)"] { color:#b3261e !important; }
