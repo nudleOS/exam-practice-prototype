@@ -4,6 +4,8 @@
    - "stems" (3.6.4) three stems in the box: tap how each looks after the investigation (bends left / straight up / right / no growth).
    - "geno"  (LS P2 Nov 2025 2.3.3(b), 2.4.2) genotypes built from the paper's alleles: sockets filled from a tray, exact (DD is not dd).
    - "cross" (LS P2 Nov 2025 2.5.4) a monohybrid cross on a Punnett square, the memo's 8 points (ratio compulsory + any 5).
+   - "sketch" (Maths P1 Nov 2025 4.5, Grade 10 P1 2017 6.1.3; 2026-10-11) a graph sketch: the memo's features placed on a grid, the curve
+     drawn live through them.
    The host (Exam Practice) owns the ANSWER (its state, so Check, marking and "same answer" work as for every other type); this
    module owns only its DOM and its step. A learner who drew it on paper gets the criteria as a self-check (shown, never banked).
 
@@ -220,6 +222,355 @@
         + `</div></div></div>` });
   }
 
+  // ── the graph SKETCH (Murci 2026-10-11 picked mock A of three, "Build it on screen: place the key points; marked online"). "Sketch
+  // the graph of f; show the intercepts and the asymptote" BUILT on a grid: a tray holds the features the memo marks (their names, never
+  // their positions); tap one, then the grid (it snaps to the step; an asymptote is a line through the tapped value), or drag a placed
+  // one; keyboard: Enter on a feature places it, the arrows move it, Delete removes it. The curve is drawn LIVE through what is placed,
+  // the family fitted as far as the placed features fix it, nothing before that. The answer is the positions, plus the SHAPE word of
+  // the curve the learner's own points make (or chose, where the memo's features leave it open, e.g. one intercept + an asymptote):
+  // the marker reads only those, never the fit.
+  //   cfg   { family, x: [min, max, step], y: [min, max, step], domain?: [x0, x1], features: [{ id, kind: "point" | "hline" | "vline",
+  //           label, graph?, turn? }], shape?: { label, pick?: [words] }, b?, graphs?: [{ id, family, label, b?, domain?, shape? }] }
+  //           (trig x in degrees, b the period factor the stem's equation prints; graphs: two graphs on one set of axes, each feature
+  //           naming its graph)
+  //   value { p: { featureId: [x, y] (a point) | number (a line's value) }, pick: { graphId: word }, s: { graphId: shape word(s) } }
+  const SKD = Math.PI / 180, TRIG = { sin: 1, cos: 1, tan: 1 };
+  const FAMN = { parabola: "parabola", hyperbola: "hyperbola", exponential: "exponential graph", log: "log graph", cubic: "cubic graph",
+    line: "straight line", sin: "sine graph", cos: "cosine graph", tan: "tan graph" };
+  const skNum = (n, deg) => { const r = Math.round(n * 100) / 100; return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ",") + (deg ? "°" : ""); };
+  // least squares, rows [c1 .. cn, rhs]: { x, rank, res } (columns scaled first, so the rank test is relative; a free unknown is 0)
+  function lsq(rows, n) {
+    const sc = Array.from({ length: n }, (_, j) => Math.sqrt(rows.reduce((t, r) => t + r[j] * r[j], 0)) || 1);
+    const M = Array.from({ length: n }, () => new Array(n + 1).fill(0));
+    rows.forEach(r => { for (let i = 0; i < n; i++) { const ri = r[i] / sc[i]; for (let j = 0; j < n; j++) M[i][j] += ri * r[j] / sc[j]; M[i][n] += ri * r[n]; } });
+    const piv = []; let row = 0;
+    for (let c = 0; c < n && row < n; c++) {
+      let best = row; for (let r = row + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[best][c])) best = r;
+      if (Math.abs(M[best][c]) < 1e-9) continue;
+      const t = M[row]; M[row] = M[best]; M[best] = t;
+      for (let r = 0; r < n; r++) if (r !== row && M[r][c]) { const k = M[r][c] / M[row][c]; for (let j = c; j <= n; j++) M[r][j] -= k * M[row][j]; }
+      piv.push(c); row++;
+    }
+    const x = new Array(n).fill(0); piv.forEach((c, r) => { x[c] = M[r][n] / M[r][c] / sc[c]; });
+    return { x: x, rank: piv.length, res: rows.reduce((m, r) => Math.max(m, Math.abs(r.slice(0, n).reduce((t, a, j) => t + a * x[j], 0) - r[n])), 0) };
+  }
+  // one family through the placed features: { f, vas, has, word }, "nofit" (no curve of the family passes through them all), or null
+  // (not fixed yet). pts [{ x, y, turn }]; hs / vs the placed asymptotes' values; pick the chosen shape word; R the grid (+ d0 d1 domain)
+  function skFamily(fam, pts, hs, vs, pick, R) {
+    const k = R.xr / R.yr, eps = 1e-6 * Math.max(1, R.yr);
+    if (fam === "line" || fam === "parabola" || fam === "cubic") {
+      const n = fam === "line" ? 2 : fam === "parabola" ? 3 : 4, rows = [];
+      if (hs.length || vs.length) return "nofit";
+      pts.forEach(p => { const r = []; for (let j = n - 1; j >= 0; j--) r.push(Math.pow(p.x, j)); rows.push(r.concat([p.y]));
+        if (p.turn && n > 2) { const d = []; for (let j = n - 1; j >= 0; j--) d.push(j ? j * Math.pow(p.x, j - 1) * k : 0); rows.push(d.concat([0])); } });
+      if (!rows.length) return null;
+      let L = lsq(rows, n);
+      // a parabola fixed but for how wide (a turning point alone) takes the chosen opening at a representative width
+      if (L.rank === n - 1 && pick && fam === "parabola") { rows.push([1, 0, 0, (pick === "∩" ? -1 : 1) * 4 * R.yr / (R.xr * R.xr)]); L = lsq(rows, n); }
+      if (L.rank < n) return null;
+      const c = L.x, lead = c[0]; if (n > 2 && Math.abs(lead) < 1e-9) return "nofit";
+      return { f: x => c.reduce((t, a) => t * x + a, 0), vas: [], has: [],
+        word: fam === "line" ? (lead > 1e-12 ? "positive gradient" : lead < -1e-12 ? "negative gradient" : "horizontal") : fam === "parabola" ? (lead > 0 ? "∪" : "∩") : (lead > 0 ? "positive" : "negative") };
+    }
+    if (fam === "hyperbola") {   // y = a/(x − p) + q, as the linear xy = K + qx + py (K = a − pq)
+      if (pts.some(p => p.turn)) return "nofit";
+      const rows = pts.map(p => [1, p.x, p.y, p.x * p.y]).concat(vs.map(t => [0, 0, 1, t]), hs.map(t => [0, 1, 0, t]));
+      if (!rows.length) return null;
+      let L = lsq(rows, 3);
+      if (L.rank === 2 && pick && vs.length && hs.length && !pts.length) { rows.push([1, 0, 0, (pick === "top left and bottom right" ? -1 : 1) * R.xr * R.yr / 32 - vs[0] * hs[0]]); L = lsq(rows, 3); }
+      if (L.rank < 3) return null;
+      const K = L.x[0], q = L.x[1], p = L.x[2], a = K + p * q; if (Math.abs(a) < 1e-9) return "nofit";
+      return { f: x => a / (x - p) + q, vas: [p], has: [q], word: a > 0 ? "top right and bottom left" : "top left and bottom right" };
+    }
+    if (fam === "exponential") {   // y = a·bˣ + q: the asymptote first, then ln|y − q| is linear in x
+      if (!hs.length) return null;
+      const q = hs[0]; if (pts.some(p => p.turn || Math.abs(p.y - q) < eps)) return "nofit";
+      if (!pts.length) return null;
+      const s = Math.sign(pts[0].y - q); if (pts.some(p => Math.sign(p.y - q) !== s)) return "nofit";
+      const rows = pts.map(p => [1, p.x, Math.log(Math.abs(p.y - q))]);
+      let L = lsq(rows, 2);
+      if (L.rank === 1 && pick) { rows.push([0, 1, (pick === "decreasing" ? -1 : 1) * s * Math.LN2]); L = lsq(rows, 2); }
+      if (L.rank < 2) return null;
+      const A = s * Math.exp(L.x[0]), B = L.x[1]; if (Math.abs(B) < 1e-9) return "nofit";
+      return { f: x => A * Math.exp(B * x) + q, vas: [], has: [q], word: (s * B > 0 ? "increasing" : "decreasing") + ", " + (s > 0 ? "above" : "below") };
+    }
+    if (fam === "log") {   // y = k·ln(x − p) + q: the asymptote first
+      if (!vs.length) return null;
+      const p = vs[0]; if (pts.some(t => t.turn || t.x <= p + 1e-9)) return "nofit";
+      if (!pts.length) return null;
+      const rows = pts.map(t => [Math.log(t.x - p), 1, t.y]);
+      let L = lsq(rows, 2);
+      if (L.rank === 1 && pick) { rows.push([1, 0, (pick === "decreasing" ? -1 : 1) / Math.LN2]); L = lsq(rows, 2); }
+      if (L.rank < 2) return null;
+      const K = L.x[0], q = L.x[1]; if (Math.abs(K) < 1e-9) return "nofit";
+      return { f: x => x > p ? K * Math.log(x - p) + q : NaN, vas: [p], has: [], word: K > 0 ? "increasing" : "decreasing" };
+    }
+    // y = a·s(b(x − p)) + q: the graph's own b (the stem prints the equation, "cos 2x + 1", so the period is no answer; without it, sin x − 1's
+    // (0 ; −1), (90° ; 0), (270° ; −2) fit −sin 3x − 1 as well and the curve never fixed), else every b of a school paper; phase p on half
+    // the x step; (a, q) by least squares
+    if (TRIG[fam]) {
+      const tan = fam === "tan", base = fam === "sin" ? Math.sin : fam === "cos" ? Math.cos : Math.tan;
+      const dbase = fam === "sin" ? Math.cos : t => -Math.sin(t);
+      if (hs.length || (!tan && vs.length) || (tan && pts.some(p => p.turn))) return "nofit";
+      if (!pts.length) return null;
+      const fits = []; let free = false;
+      (R.b ? [R.b] : [0.5, 1, 1.5, 2, 3, 4]).forEach(b => { const per = (tan ? 180 : 360) / b, ps = R.xstep / 2;
+        for (let ph = 0; ph < per - 1e-9; ph += ps) {
+          const th = x => b * (x - ph) * SKD;
+          if (tan && (vs.some(t => Math.abs(Math.cos(th(t))) > 1e-7) || pts.some(p => Math.abs(Math.cos(th(p.x))) < 1e-7))) continue;
+          const rows = []; pts.forEach(p => { rows.push([base(th(p.x)), 1, p.y]); if (p.turn) rows.push([b * SKD * dbase(th(p.x)) * R.xr, 0, 0]); });
+          const L = lsq(rows, 2); if (L.res > eps) continue;
+          if (L.rank < 2) { free = true; continue; }
+          if (Math.abs(L.x[0]) > 1e-9) fits.push({ a: L.x[0], q: L.x[1], b: b, ph: ph });
+        } });
+      if (free) return null;
+      if (!fits.length) return "nofit";
+      const fOf = c => x => c.a * base(c.b * (x - c.ph) * SKD) + c.q;
+      const vasOf = c => { if (!tan) return []; const out = [], st = 180 / c.b; let x0 = c.ph + 90 / c.b; x0 -= Math.ceil((x0 - R.xmin) / st + 1) * st;
+        for (let x = x0; x <= R.xmax + 1e-9; x += st) if (x >= R.xmin - 1e-9) out.push(Math.round(x * 1e6) / 1e6); return out; };
+      // every fit must draw the same curve over the domain, or the features do not fix it yet
+      const ref = fits[0], fr = fOf(ref), va = vasOf(ref).join();
+      for (const c of fits.slice(1)) { if (vasOf(c).join() !== va) return null; const fc = fOf(c);
+        for (let i = 0; i <= 96; i++) { const x = R.d0 + (R.d1 - R.d0) * i / 96;
+          if (tan && (Math.abs(Math.cos(ref.b * (x - ref.ph) * SKD)) < 0.05 || Math.abs(Math.cos(c.b * (x - c.ph) * SKD)) < 0.05)) continue;
+          if (Math.abs(fr(x) - fc(x)) > 1e-3 * R.yr) return null; } }
+      return { f: fr, vas: vasOf(ref), has: [], word: tan ? (ref.a * ref.b > 0 ? "increasing" : "decreasing") : "drawn" };
+    }
+    return null;
+  }
+  // the family's fit, then the check every family shares: each placed point on the curve (a turning point flat there), each placed line
+  // one of its asymptotes
+  function skFit(fam, pts, hs, vs, pick, R) {
+    const g = skFamily(fam, pts, hs, vs, pick, R); if (!g || g === "nofit") return g;
+    const ey = 1e-6 * Math.max(1, R.yr), ex = 1e-6 * Math.max(1, R.xr), h = 1e-4 * R.xr;
+    if (pts.some(p => !(Math.abs(g.f(p.x) - p.y) <= ey))) return "nofit";
+    if (pts.some(p => p.turn && !(Math.abs(g.f(p.x + h) - g.f(p.x - h)) / (2 * h) * R.xr / R.yr <= 1e-4))) return "nofit";
+    if (hs.some(t => !g.has.some(a => Math.abs(a - t) <= ey)) || vs.some(t => !g.vas.some(a => Math.abs(a - t) <= ex))) return "nofit";
+    return g;
+  }
+  let skN = 0;
+  function sketch(host, o) {
+    const cfg = o.cfg, uid = "sk" + (++skN);
+    const GR = cfg.graphs && cfg.graphs.length ? cfg.graphs : [{ id: "f", family: cfg.family, b: cfg.b, domain: cfg.domain, shape: cfg.shape, label: "" }];
+    const FE = (cfg.features || []).map(f => Object.assign({}, f, { graph: f.graph || GR[0].id }));
+    const deg = GR.some(g => TRIG[g.family]), R0 = { xmin: cfg.x[0], xmax: cfg.x[1], xstep: cfg.x[2], ymin: cfg.y[0], ymax: cfg.y[1], ystep: cfg.y[2] };
+    R0.xr = R0.xmax - R0.xmin; R0.yr = R0.ymax - R0.ymin;
+    const normV = val => { const b = { p: {}, pick: {}, s: {} }, x = clone(val); ["p", "pick", "s"].forEach(k => { if (x[k] && typeof x[k] === "object") b[k] = x[k]; }); return b; };
+    let v = normV(o.value), locked = false, items = null, drag = null, W = 0, ro = null, pinUp = 0;   // pinUp: when a pin was let go (its click is not a grid tap)
+    const placed = id => v.p[id] != null;
+    const firstOpen = after => { const i = FE.findIndex(f => f.id === after), L = FE.slice(i + 1).concat(FE.slice(0, i + 1)); return (L.find(f => !placed(f.id)) || {}).id || ""; };
+    let act = firstOpen("");
+    const fmtX = x => skNum(x, deg), fmtY = y => skNum(y, false);
+    const valText = (f, val) => f.kind === "point" ? "(" + fmtX(val[0]) + " ; " + fmtY(val[1]) + ")" : f.kind === "hline" ? "y = " + fmtY(val) : "x = " + fmtX(val);
+    const spoken = (f, val) => f.kind === "point" ? "x " + fmtX(val[0]) + ", y " + fmtY(val[1]) : valText(f, val);
+    const snap = (u, lo, hi, st) => +(Math.max(lo, Math.min(hi, lo + Math.round((u - lo) / st) * st))).toFixed(9);
+    const sx = u => snap(u, R0.xmin, R0.xmax, R0.xstep), sy = u => snap(u, R0.ymin, R0.ymax, R0.ystep);
+    // the fit of every graph from what is placed (and the shape word each graph's marked shape reads)
+    const fitAll = () => GR.map(g => { const fs = FE.filter(f => f.graph === g.id && placed(f.id)), d = g.domain || [R0.xmin, R0.xmax];
+      return skFit(g.family, fs.filter(f => f.kind === "point").map(f => ({ x: v.p[f.id][0], y: v.p[f.id][1], turn: !!f.turn })),
+        fs.filter(f => f.kind === "hline").map(f => v.p[f.id]), fs.filter(f => f.kind === "vline").map(f => v.p[f.id]), v.pick[g.id] || "", Object.assign({ d0: d[0], d1: d[1], b: g.b }, R0)); });
+    const emit = () => { const F = fitAll(); v.s = {};
+      GR.forEach((g, k) => { if (g.shape) v.s[g.id] = F[k] && F[k] !== "nofit" ? F[k].word : (v.pick[g.id] || ""); }); o.onChange(clone(v)); };
+    // the grid, as large as the width allows (a phone's whole card), never taller than ~62% of what is in view, so the tray and the grid
+    // are seen together: what scrolls it is the card on a tablet (608 px at 820 x 1180: a 588 px grid sat under its own tray), the page
+    // under the header and the robot's dock on a phone; past 0.68 flatter, the width gives way instead
+    let VH = 0;
+    const inView = () => { for (let n = host.parentElement; n && n !== document.body; n = n.parentElement) { const o = getComputedStyle(n).overflowY;
+        if ((o === "auto" || o === "scroll") && n.clientHeight > 200 && n.clientHeight < (window.innerHeight || 700) - 40) return n.clientHeight; }
+      return (window.innerHeight || 700) - (document.body.classList.contains("nx-compact") ? 210 : 120); };
+    function geo() {
+      const cx = R0.xr / R0.xstep, cy = R0.yr / R0.ystep, a = Math.max(0.68, Math.min(1.05, cy / cx));
+      const h = Math.min(Math.round(W * a), Math.max(220, Math.round(VH * 0.62))), w = Math.min(W, Math.max(240, Math.round(h / 0.68)));
+      const ax = Math.max(R0.xmin, Math.min(R0.xmax, 0)), ay = Math.max(R0.ymin, Math.min(R0.ymax, 0));
+      const L = ax === R0.xmin ? 38 : 12, B = ay === R0.ymin ? 24 : 12, T = 14, pw = w - L - 22, ph = h - T - B;   // (right: the arrow and "x")
+      return { w: w, h: h, L: L, T: T, pw: pw, ph: ph, ax: ax, ay: ay, X: x => L + (x - R0.xmin) / R0.xr * pw, Y: y => T + (R0.ymax - y) / R0.yr * ph };
+    }
+    // ticks: every step a grid line (while 7 px apart), a label on every k-th step from 0, k the first that leaves room for the text
+    const labelEvery = (px, wide) => { const K = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 30, 50, 100];
+      return K.find(k => k * px >= wide) || K[K.length - 1]; };
+    function svgInner(F, G) {
+      const X = G.X, Y = G.Y, x0 = X(G.ax), y0 = Y(G.ay), pxX = G.pw / (R0.xr / R0.xstep), pxY = G.ph / (R0.yr / R0.ystep);
+      const wid = s => s.length * 6.3 + 10;
+      const kx = labelEvery(pxX, Math.max(wid(fmtX(R0.xmin)), wid(fmtX(R0.xmax)))), ky = labelEvery(pxY, 17);
+      const on = (u, st, kk) => Math.abs(Math.round(u / (st * kk)) * st * kk - u) < 1e-6;
+      // (a number a placed point sits on is left out: (0 ; 1)'s dot covered the y-axis' 1, which peeked out beside it)
+      const pts = FE.filter(f => f.kind === "point" && placed(f.id)).map(f => v.p[f.id]);
+      const underX = x => pts.some(p => Math.abs(p[1] - G.ay) < 1e-9 && Math.abs(p[0] - x) < 1e-9), underY = y => pts.some(p => Math.abs(p[0] - G.ax) < 1e-9 && Math.abs(p[1] - y) < 1e-9);
+      let g = "", t = "";
+      for (let i = 0; i <= Math.round(R0.xr / R0.xstep); i++) { const x = R0.xmin + i * R0.xstep, lab = on(x, R0.xstep, kx);
+        if (pxX >= 7 || lab) g += `<line x1="${X(x).toFixed(1)}" x2="${X(x).toFixed(1)}" y1="${G.T}" y2="${G.T + G.ph}" class="sk-grid${lab ? " sk-grid2" : ""}"/>`;
+        if (lab && Math.abs(x) > 1e-9 && !underX(x)) t += `<text x="${X(x).toFixed(1)}" y="${(y0 + 15).toFixed(1)}" class="sk-tick" text-anchor="middle">${fmtX(x)}</text>`; }
+      for (let i = 0; i <= Math.round(R0.yr / R0.ystep); i++) { const y = R0.ymin + i * R0.ystep, lab = on(y, R0.ystep, ky);
+        if (pxY >= 7 || lab) g += `<line x1="${G.L}" x2="${G.L + G.pw}" y1="${Y(y).toFixed(1)}" y2="${Y(y).toFixed(1)}" class="sk-grid${lab ? " sk-grid2" : ""}"/>`;
+        // (a label under the x-axis that would sit on the origin's 0, as −1 did at 360 px, is left out)
+        if (lab && Math.abs(y) > 1e-9 && !underY(y) && Math.abs(Y(y) + 4 - (y0 + 15)) >= 13) t += `<text x="${(x0 - 5).toFixed(1)}" y="${(Y(y) + 4).toFixed(1)}" class="sk-tick" text-anchor="end">${fmtY(y)}</text>`; }
+      t += `<text x="${(x0 - 5).toFixed(1)}" y="${(y0 + 15).toFixed(1)}" class="sk-tick" text-anchor="end">0</text>`;
+      const ax = `<line x1="${G.L}" x2="${G.L + G.pw}" y1="${y0}" y2="${y0}" class="sk-axis"/><path d="M${G.L + G.pw + 7} ${y0}l-8 -4v8z" class="sk-arrow"/>`
+        + `<line x1="${x0}" x2="${x0}" y1="${G.T + G.ph}" y2="${G.T}" class="sk-axis"/><path d="M${x0} ${G.T - 7}l-4 8h8z" class="sk-arrow"/>`
+        + `<text x="${G.L + G.pw + 10}" y="${y0 + 4}" class="sk-name">x</text><text x="${x0 + 7}" y="${G.T + 9}" class="sk-name">y</text>`;
+      // the placed asymptotes (dashed), then each graph's curve, clipped to the grid
+      let a = "", c = "";
+      FE.forEach(f => { if (!placed(f.id) || f.kind === "point") return; const val = v.p[f.id];
+        a += f.kind === "hline" ? `<line x1="${G.L}" x2="${G.L + G.pw}" y1="${Y(val).toFixed(1)}" y2="${Y(val).toFixed(1)}" class="sk-asym"/>`
+          : `<line x1="${X(val).toFixed(1)}" x2="${X(val).toFixed(1)}" y1="${G.T}" y2="${G.T + G.ph}" class="sk-asym"/>`; });
+      F.forEach((fit, k) => { if (!fit || fit === "nofit") return; const d = GR[k].domain || [R0.xmin, R0.xmax], lo = R0.ymin - R0.yr, hi = R0.ymax + R0.yr, N = 360;
+        let p = "", pen = false, px = null, last = null;
+        for (let i = 0; i <= N; i++) { const x = d[0] + (d[1] - d[0]) * i / N; let y = fit.f(x);
+          if (px != null && fit.vas.some(va => (va - px) * (va - x) <= 0)) pen = false;
+          px = x; if (!isFinite(y)) { pen = false; continue; }
+          y = Math.max(lo, Math.min(hi, y)); p += (pen ? "L" : "M") + X(x).toFixed(1) + " " + Y(y).toFixed(1); pen = true;
+          if (y >= R0.ymin && y <= R0.ymax) last = [x, y]; }
+        c += `<path d="${p}" class="sk-curve${k ? " sk-c2" : ""}"/>`;
+        if (GR.length > 1 && last) c += `<text x="${(X(last[0]) - 4).toFixed(1)}" y="${(Y(last[1]) - 7).toFixed(1)}" class="sk-glab${k ? " sk-c2" : ""}" text-anchor="end">${esc(GR[k].label || GR[k].id)}</text>`; });
+      return `<defs><clipPath id="${uid}c"><rect x="${G.L}" y="${G.T}" width="${G.pw}" height="${G.ph}"/></clipPath></defs>`
+        + `<rect x="${G.L}" y="${G.T}" width="${G.pw}" height="${G.ph}" class="sk-bg"/>${g}${ax}${t}<g clip-path="url(#${uid}c)">${a}${c}</g>`;
+    }
+    const verdict = id => { const it = items && items.find(x => x.key === id); return it ? (it.verdict === "correct" ? "ok" : "bad") : ""; };
+    // where each placed point's coordinates go: of above-right, above-left, below-right, below-left, the spot with the fewest clashes
+    // (outside the grid, across an axis where its numbers are, on a drawn curve, on another point, on a tag placed before it), in that
+    // order of preference ("(−1 ; 3)" sat on the y-axis' 3 and 4; tan 2x − 1's three x-intercept tags ran into each other)
+    function tagSides(G, F, list) {
+      const curves = F.filter(fit => fit && fit !== "nofit"), x0 = G.X(G.ax), y0 = G.Y(G.ay), placedBoxes = [], dots = list.map(p => [p.px, p.py]);
+      const hit = (a, b) => a[0] < b[0] + b[2] && b[0] < a[0] + a[2] && a[1] < b[1] + b[3] && b[1] < a[1] + a[3];
+      return list.map(p => { const w = p.text.length * 6.6 + 4;
+        const boxes = [[p.px + 10, p.py - 19, "false", "false"], [p.px - 10 - w, p.py - 19, "true", "false"], [p.px + 10, p.py + 8, "false", "true"], [p.px - 10 - w, p.py + 8, "true", "true"]];
+        const score = b => { const r = [b[0], b[1], w, 13]; let s = 0;
+          if (b[0] < G.L - 2 || b[0] + w > G.L + G.pw + 2 || b[1] < G.T - 2 || b[1] + 13 > G.T + G.ph + 2) s += 8;   // (off the grid: cut off at the card's edge)
+          if (b[0] < x0 + 2 && b[0] + w > x0 - 22) s += 2; if (b[1] < y0 + 18 && b[1] + 13 > y0 - 1) s += 2;
+          curves.forEach(fit => { for (let i = 0; i <= 6; i++) { const X = b[0] + w * i / 6, Y = G.Y(fit.f(R0.xmin + (X - G.L) / G.pw * R0.xr)); if (isFinite(Y) && Y >= b[1] - 3 && Y <= b[1] + 16) { s += 1; break; } } });
+          dots.forEach(d => { if (d[0] !== p.px || d[1] !== p.py) { if (hit(r, [d[0] - 7, d[1] - 7, 14, 14])) s += 3; } });
+          placedBoxes.forEach(q => { if (hit(r, q)) s += 3; });
+          return s; };
+        let best = boxes[0], bs = Infinity; boxes.forEach(b => { const s = score(b); if (s < bs) { bs = s; best = b; } });
+        placedBoxes.push([best[0], best[1], w, 13]); return best; });
+    }
+    function pinsHtml(G, F) {
+      const vl = FE.filter(f => f.kind === "vline" && placed(f.id)).sort((p, q) => v.p[p.id] - v.p[q.id]).map(f => f.id);
+      const ptsF = FE.filter(f => f.kind === "point" && placed(f.id));
+      const sides = tagSides(G, F, ptsF.map(f => ({ px: G.X(v.p[f.id][0]), py: G.Y(v.p[f.id][1]), text: valText(f, v.p[f.id]) })));
+      return FE.filter(f => placed(f.id)).map(f => { const val = v.p[f.id], tx = valText(f, val);
+        const common = `type="button" class="sk-pin sk-${f.kind}" data-pin="${f.id}" data-act="${act === f.id}" data-v="${verdict(f.id)}"${locked ? ' tabindex="-1"' : ""}`
+          + ` aria-label="${esc(f.label)} at ${esc(spoken(f, val))}${locked ? "" : ". Arrow keys move it, Delete removes it"}"`;
+        if (f.kind === "point") { const px = G.X(val[0]), py = G.Y(val[1]), sd = sides[ptsF.indexOf(f)];
+          return `<button ${common} style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px"></button>`
+            + `<span class="sk-tag" aria-hidden="true" data-l="${sd[2]}" data-b="${sd[3]}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px">${tx}</span>`; }
+        // an asymptote's pill sits just above its line (clear of the x-axis' numbers when it is y = 0), at the end its curve keeps away from
+        if (f.kind === "hline") { const fit = F[GR.findIndex(g => g.id === f.graph)], far = x => { const y = fit && fit !== "nofit" ? fit.f(x) : NaN; return isFinite(y) ? Math.abs(y - val) : Infinity; };
+          // (below the line when it is under the x-axis: above it, y = −1's pill covered the axis' numbers; and below at the grid's top)
+          const left = !!(fit && fit !== "nofit") && far(R0.xmin + 0.04 * R0.xr) > far(R0.xmax - 0.04 * R0.xr), top = (val < 0 && G.Y(val) + 26 < G.T + G.ph) || G.Y(val) - G.T < 26;
+          return `<button ${common} data-side="${left ? "l" : "r"}" data-below="${top}" style="left:${left ? G.L + 4 : G.L + G.pw - 4}px;top:${G.Y(val).toFixed(1)}px">${tx}</button>`; }
+        // (kept inside the grid: at x = −135°, the grid's left edge, half the pill was cut off)
+        const hw = (tx.length * 7 + 20) / 2, cx = Math.max(G.L + hw, Math.min(G.L + G.pw - hw, G.X(val)));
+        return `<button ${common} data-low="${vl.indexOf(f.id) % 2 === 1}" style="left:${cx.toFixed(1)}px;top:${vl.indexOf(f.id) % 2 ? G.T + G.ph - 4 : G.T + 4}px">${tx}</button>`; }).join("")
+        + `<span class="sk-ghost" aria-hidden="true" hidden></span>`;
+    }
+    const nPlaced = () => FE.filter(f => placed(f.id)).length;
+    const chip = f => { const on = placed(f.id);
+      return `<button type="button" class="sk-chip" data-f="${f.id}" data-k="${f.kind}" data-on="${on}" data-v="${verdict(f.id)}" aria-pressed="${act === f.id}"${locked ? " disabled" : ""}`
+        + ` aria-label="${esc(f.label)}${on ? ", at " + esc(spoken(f, v.p[f.id])) : ", not placed"}"><span class="sk-ic" aria-hidden="true"></span>`
+        // (two lines whatever its state, in a grid: placing a feature never re-flows the tray, so the grid under it never jumps; with the
+        // value beside the name the chips re-wrapped and the grid fell 52 px between two taps at 360 px)
+        + `<span class="sk-cb"><span class="sk-cl">${esc(f.label)}</span><span class="sk-cv" data-on="${on}">${on ? valText(f, v.p[f.id]) : "not placed"}</span></span></button>`; };
+    const shapeLabel = g => (g.shape && g.shape.label || "Shape") + (GR.length > 1 ? " of " + (g.label || g.id) : "");
+    function resHtml() {
+      if (!items) return "";
+      return `<div class="bp-chips sk-res" role="status">${items.map(it => { const f = FE.find(x => x.id === it.key), g = GR.find(x => "shape" + (GR.length > 1 ? ":" + x.id : "") === it.key);
+        const st = it.verdict === "correct" ? (it.awarded >= it.available ? "true" : "part") : "false";
+        return `<span class="bp-chip" data-ok="${st}">${st === "true" ? "✓" : st === "part" ? "◐" : "✕"} ${esc(f ? f.label : g ? shapeLabel(g) : it.key)}${it.available ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
+    }
+    host.innerHTML = `<div class="bp sk" data-locked="false"><div class="sk-tray" role="group" aria-label="Features to place on the grid"></div><div class="sk-picks"></div>`
+      + `<div class="sk-plot" role="group"><svg class="sk-svg" aria-hidden="true" focusable="false"></svg><div class="sk-pins"></div></div>`
+      + `<div class="sk-foot"></div><div class="sk-out"></div><p class="sr-only" aria-live="polite"></p></div>`;
+    const root = host.firstChild, tray = root.querySelector(".sk-tray"), picks = root.querySelector(".sk-picks"), plot = root.querySelector(".sk-plot"),
+      svgEl = root.querySelector(".sk-svg"), pins = root.querySelector(".sk-pins"), foot = root.querySelector(".sk-foot"), out = root.querySelector(".sk-out"), live = root.querySelector("[aria-live]");
+    const say = s => { live.textContent = s; };
+    function paint() {   // the grid and the pins only (a drag repaints these; the dragged pin keeps its pointer capture by being moved, not rebuilt)
+      const G = geo(), F = fitAll();
+      svgEl.setAttribute("viewBox", "0 0 " + G.w + " " + G.h); svgEl.setAttribute("width", G.w); svgEl.setAttribute("height", G.h);
+      plot.style.width = G.w + "px"; plot.style.height = G.h + "px"; svgEl.innerHTML = svgInner(F, G);
+      return { G: G, F: F };
+    }
+    function render(focusSel) {
+      if (focusSel === undefined) { const a = document.activeElement; focusSel = a && root.contains(a) ? (a.dataset.pin ? `[data-pin="${a.dataset.pin}"]` : a.dataset.f ? `[data-f="${a.dataset.f}"]`
+        : a.dataset.op ? `[data-g="${a.dataset.g}"][data-op="${a.dataset.op}"]` : a.classList.contains("sk-rm") ? ".sk-rm" : null) : null; }
+      W = Math.max(240, Math.min(560, Math.floor(host.getBoundingClientRect().width || 320))); VH = inView();
+      root.dataset.locked = String(locked);
+      const { G, F } = paint();
+      plot.setAttribute("aria-label", "Graph grid: x from " + fmtX(R0.xmin) + " to " + fmtX(R0.xmax) + ", y from " + fmtY(R0.ymin) + " to " + fmtY(R0.ymax));
+      tray.innerHTML = `<p class="sk-th"><span>${locked ? "Your features" : "Tap one, then tap the grid"}</span><span class="sk-n">${nPlaced()} of ${FE.length} placed</span></p><div class="sk-ti">${FE.map(chip).join("")}</div>`;
+      picks.innerHTML = GR.filter(g => g.shape && g.shape.pick).map(g => `<div class="sk-pick" role="group" aria-label="${esc(shapeLabel(g))}"><span class="sk-pl">${esc(shapeLabel(g))}</span>`
+        + g.shape.pick.map(op => `<button type="button" class="sk-op" data-g="${g.id}" data-op="${esc(op)}" aria-pressed="${v.pick[g.id] === op}"${locked ? " disabled" : ""}>${esc(op)}</button>`).join("") + `</div>`).join("");
+      pins.innerHTML = pinsHtml(G, F);
+      const a = FE.find(f => f.id === act), bad = F.map((fit, k) => fit === "nofit" ? GR[k] : null).filter(Boolean);
+      foot.innerHTML = locked ? "" : `<p class="sk-hint">${a ? (placed(a.id) ? "Tap the grid to move the " + esc(a.label) + ", or drag it." : "Tap the grid to place the " + esc(a.label) + ".")
+        : nPlaced() ? "Drag a point or a line to move it." : ""}${a && placed(a.id) ? ` <button type="button" class="sk-rm">Remove</button>` : ""}</p>`
+        + bad.map(g => `<p class="sk-note">These do not fit one ${FAMN[g.family] || "graph"}${GR.length > 1 ? " (" + esc(g.label || g.id) + ")" : ""}: move one.</p>`).join("");
+      out.innerHTML = resHtml();
+      wire();
+      if (focusSel) { const n = root.querySelector(focusSel); if (n) n.focus({ preventScroll: true }); }
+    }
+    const centre = f => f.kind === "point" ? [sx((R0.xmin + R0.xmax) / 2), sy((R0.ymin + R0.ymax) / 2)] : f.kind === "hline" ? sy((R0.ymin + R0.ymax) / 2) : sx((R0.xmin + R0.xmax) / 2);
+    const fromEvent = (e, kind) => { const r = svgEl.getBoundingClientRect(), G = geo(), px = (e.clientX - r.left) * G.w / (r.width || G.w), py = (e.clientY - r.top) * G.h / (r.height || G.h);
+      const x = sx(R0.xmin + (px - G.L) / G.pw * R0.xr), y = sy(R0.ymax - (py - G.T) / G.ph * R0.yr); return kind === "point" ? [x, y] : kind === "hline" ? y : x; };
+    const put = (id, val, quiet) => { const f = FE.find(x => x.id === id), was = placed(id); v.p[id] = val; if (!quiet) say(f.label + (was ? " moved to " : " placed at ") + spoken(f, val)); };
+    function wire() {
+      tray.querySelectorAll("[data-f]").forEach(b => b.onclick = e => { if (locked) return; const id = b.dataset.f, f = FE.find(x => x.id === id);
+        act = id;
+        if (e.detail === 0) {   // the keyboard (or a screen reader): placed at the grid's centre if new, then its pin takes the focus for the arrows
+          if (!placed(id)) { put(id, centre(f)); emit(); }
+          render(`[data-pin="${id}"]`); return; }
+        render(`[data-f="${id}"]`); });
+      picks.querySelectorAll("[data-op]").forEach(b => b.onclick = () => { if (locked) return; v.pick[b.dataset.g] = b.dataset.op; emit(); render(`[data-g="${b.dataset.g}"][data-op="${b.dataset.op}"]`); });
+      const rm = foot.querySelector(".sk-rm"); if (rm) rm.onclick = () => { if (locked || !act) return; const f = FE.find(x => x.id === act); delete v.p[act]; say(f.label + " removed"); emit(); render(`[data-f="${act}"]`); };
+      // a tap on the grid places (or moves) the chosen feature; the grid lets the page scroll under a swipe (only the pins hold the finger)
+      plot.onclick = e => { if (locked || drag || e.target.closest(".sk-pin") || Date.now() - pinUp < 450) return; if (!act) act = firstOpen(""); if (!act) return;
+        const id = act, f = FE.find(x => x.id === id), was = placed(id); put(id, fromEvent(e, f.kind)); act = was ? "" : firstOpen(id); emit(); render(null); };
+      const ghost = pins.querySelector(".sk-ghost");
+      plot.onpointermove = e => { if (e.pointerType !== "mouse" || drag || locked || !act || e.target.closest(".sk-pin")) { if (ghost) ghost.hidden = true; return; }
+        const f = FE.find(x => x.id === act), val = fromEvent(e, f.kind), G = geo();
+        ghost.hidden = false; ghost.dataset.k = f.kind; ghost.textContent = valText(f, val);
+        ghost.style.left = (f.kind === "hline" ? G.L : G.X(f.kind === "point" ? val[0] : val)) + "px"; ghost.style.top = (f.kind === "vline" ? G.T : G.Y(f.kind === "point" ? val[1] : val)) + "px";
+        if (f.kind !== "point") { ghost.style.width = f.kind === "hline" ? G.pw + "px" : ""; ghost.style.height = f.kind === "vline" ? G.ph + "px" : ""; } };
+      plot.onpointerleave = () => { if (ghost) ghost.hidden = true; };
+      pins.querySelectorAll(".sk-pin").forEach(b => {
+        const id = b.dataset.pin, f = FE.find(x => x.id === id);
+        // (the grab keeps its offset: an asymptote's pill sits above its line, and the line would jump to the finger)
+        b.onpointerdown = e => { if (locked) return; e.preventDefault(); e.stopPropagation(); b.setPointerCapture(e.pointerId); b.focus({ preventScroll: true });
+          const r = svgEl.getBoundingClientRect(), G = geo(), s = r.width / G.w, cur = v.p[id];
+          const fx = f.kind === "hline" ? e.clientX : r.left + G.X(f.kind === "point" ? cur[0] : cur) * s, fy = f.kind === "vline" ? e.clientY : r.top + G.Y(f.kind === "point" ? cur[1] : cur) * s;
+          drag = { id: id, x: e.clientX, y: e.clientY, ox: fx - e.clientX, oy: fy - e.clientY, moved: false }; document.documentElement.classList.add("bp-drag"); };
+        b.onpointermove = e => { if (!drag || drag.id !== id) return; if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 4) return; drag.moved = true;
+          const val = fromEvent({ clientX: e.clientX + drag.ox, clientY: e.clientY + drag.oy }, f.kind); if (JSON.stringify(val) === JSON.stringify(v.p[id])) return; put(id, val, true);
+          const { G } = paint(), tag = b.nextElementSibling;   // move this pin and its tag; the grid and the curve repaint under it
+          if (f.kind === "point") { b.style.left = tag.style.left = G.X(val[0]) + "px"; b.style.top = tag.style.top = G.Y(val[1]) + "px"; tag.textContent = valText(f, val); }
+          else { const tx = valText(f, val), hw = (tx.length * 7 + 20) / 2; b.textContent = tx;
+            if (f.kind === "hline") b.style.top = G.Y(val) + "px"; else b.style.left = Math.max(G.L + hw, Math.min(G.L + G.pw - hw, G.X(val))) + "px"; } };
+        const end = () => { if (!drag || drag.id !== id) return; const moved = drag.moved; drag = null; pinUp = Date.now(); document.documentElement.classList.remove("bp-drag");
+          if (moved) say(f.label + " moved to " + spoken(f, v.p[id]));
+          act = moved ? "" : id; if (moved) emit(); render(`[data-pin="${id}"]`); };
+        b.onpointerup = end; b.onpointercancel = end;
+        b.onclick = e => e.stopPropagation();
+        b.onkeydown = e => { if (locked) return; const st = e.shiftKey ? 5 : 1, cur = v.p[id];
+          const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
+          if (d) { e.preventDefault(); let val;
+            if (f.kind === "point") val = [sx(cur[0] + d[0] * st * R0.xstep), sy(cur[1] + d[1] * st * R0.ystep)];
+            else if (f.kind === "hline") { if (!d[1]) return; val = sy(cur + d[1] * st * R0.ystep); } else { if (!d[0]) return; val = sx(cur + d[0] * st * R0.xstep); }
+            if (JSON.stringify(val) === JSON.stringify(cur)) return; act = id; put(id, val); emit(); render(`[data-pin="${id}"]`); return; }
+          if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); delete v.p[id]; act = id; say(f.label + " removed"); emit(); render(`[data-f="${id}"]`); return; }
+          if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); const nx = e.key === "Enter" ? firstOpen(id) : id; act = e.key === "Enter" ? nx : act; render(nx ? `[data-f="${nx}"]` : `[data-f="${id}"]`); } };
+      });
+    }
+    render(null);
+    if (window.ResizeObserver) { ro = new ResizeObserver(() => { const w = Math.max(240, Math.min(560, Math.floor(host.getBoundingClientRect().width || 320))); if (Math.abs(w - W) >= 2 && !drag) render(); }); ro.observe(host); }
+    return { sync(s) { const nv = normV(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v);
+        const its = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? s.items : null, was = locked + "|" + JSON.stringify(items);
+        v = nv; locked = !!s.locked; items = its;
+        if (changed && !Object.keys(nv.p).length) act = firstOpen("");   // a fresh try starts at the first feature
+        if (locked) act = "";
+        if ((changed || was !== locked + "|" + JSON.stringify(items)) && !drag) render(); },
+      destroy() { if (ro) ro.disconnect(); document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
+  }
+
   // each kind names its marker's items (the memo's own words); a paper may override them with cfg.labels. (No paper ever carried
   // labels: chipRow read undefined[key] and threw on every render after a Check, so the T C L S P chips never showed; 2026-10-06)
   const LABELS = { hist: { T: "Type", C: "Caption", L: "Axes labels", S: "Scale", P: "Plotting" } };
@@ -234,5 +585,6 @@
       `<label class="bp-tick-row"><input type="checkbox"> ${esc(c[0])}</label>`).join("")}<p class="bp-hint">A self-check: it guides you, it is not marked.</p></div>`;
   }
 
-  window.BuildPlay = { mount(host, o) { return ({ hist: hist, geno: geno, cross: cross }[o.kind] || stems)(host, o); } };
+  // (fit: the sketch's curve fit, for a self-test; SKETCH_V: a marker a test reads to prove this file's sketch is the one loaded)
+  window.BuildPlay = { SKETCH_V: "sketch-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch }[o.kind] || stems)(host, o); } };
 })();

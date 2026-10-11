@@ -1434,6 +1434,282 @@
                 ],
                 "additionalProperties": false,
                 "description": "Only for a MONOHYBRID genetic cross the memo marks P1 phenotypes, P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (compulsory), P1/F1, meiosis/fertilisation: BUILT on a Punnett square. alleles: the system's alleles; phenos: every phenotype the stem names; parents: the two P1 parents; offspring: EVERY possible genotype with its phenotype. The criteria keep the memo's 8 points"
+               },
+               {
+                "type": "object",
+                "properties": {
+                 "kind": {
+                  "type": "string",
+                  "const": "sketch"
+                 },
+                 "family": {
+                  "type": "string",
+                  "enum": [
+                   "parabola",
+                   "hyperbola",
+                   "exponential",
+                   "log",
+                   "cubic",
+                   "line",
+                   "sin",
+                   "cos",
+                   "tan"
+                  ],
+                  "description": "the graph's family (with graphs: the first graph's)"
+                 },
+                 "b": {
+                  "type": "number",
+                  "description": "trig only: the period factor the stem's equation prints (cos 2x + 1: 2; tan x: 1)"
+                 },
+                 "x": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  },
+                  "description": "[min, max, step] of the grid's x-axis (degrees for a trig graph); the learner's taps snap to the step"
+                 },
+                 "y": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  },
+                  "description": "[min, max, step] of the y-axis"
+                 },
+                 "domain": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  },
+                  "description": "[x0, x1] where the curve is drawn, when the paper limits it"
+                 },
+                 "features": {
+                  "type": "array",
+                  "items": {
+                   "type": "object",
+                   "properties": {
+                    "id": {
+                     "type": "string"
+                    },
+                    "kind": {
+                     "type": "string",
+                     "enum": [
+                      "point",
+                      "hline",
+                      "vline"
+                     ],
+                     "description": "a point, or an asymptote: a horizontal / vertical line"
+                    },
+                    "label": {
+                     "type": "string",
+                     "description": "The memo's NAME for it, never its position ('y-intercept', 'turning point', 'asymptote', 'one other point', 'x-intercept of g'); features with the same graph, kind and label are matched as a set, in any order"
+                    },
+                    "at": {
+                     "anyOf": [
+                      {
+                       "type": "array",
+                       "items": {
+                        "type": "number"
+                       }
+                      },
+                      {
+                       "type": "number"
+                      }
+                     ],
+                     "description": "Where the memo puts it: [x, y] for a point, the value for a line (y = \u22129: -9)"
+                    },
+                    "alt": {
+                     "type": "array",
+                     "items": {
+                      "anyOf": [
+                       {
+                        "type": "array",
+                        "items": {
+                         "type": "number"
+                        }
+                       },
+                       {
+                        "type": "number"
+                       }
+                      ]
+                     },
+                     "description": "Other places the memo accepts ('ANY other point', '(45\u00b0 ; \u22123) or (135\u00b0 ; 3)'), on the grid"
+                    },
+                    "tol": {
+                     "type": "number",
+                     "description": "How far from at (or an alt) still earns it, in the axis' units (0: the exact grid point)"
+                    },
+                    "marks": {
+                     "type": "integer",
+                     "description": "Its marks (0 when it only completes a criterion another feature carries)"
+                    },
+                    "crit": {
+                     "type": "integer",
+                     "description": "0-based index of the memo criterion it belongs to: features (and a shape) sharing a crit earn only together ('Intercepts (2 ; 0) and (0 ; \u22128)', 1 mark: one carries the mark, the other 0)"
+                    },
+                    "graph": {
+                     "type": "string",
+                     "description": "With graphs: the id of the graph it belongs to"
+                    },
+                    "turn": {
+                     "type": "boolean",
+                     "description": "A turning point (the curve is flat there): the fit uses it"
+                    }
+                   },
+                   "required": [
+                    "id",
+                    "kind",
+                    "label",
+                    "at",
+                    "tol",
+                    "marks"
+                   ],
+                   "additionalProperties": false
+                  },
+                  "description": "every feature the memo's criteria mark, in the memo's order"
+                 },
+                 "shape": {
+                  "type": "object",
+                  "properties": {
+                   "label": {
+                    "type": "string",
+                    "description": "A NEUTRAL name for the shape, shown on its result chip ('Shape'): never the answer ('decreasing')"
+                   },
+                   "answer": {
+                    "anyOf": [
+                     {
+                      "type": "string"
+                     },
+                     {
+                      "type": "array",
+                      "items": {
+                       "type": "string"
+                      }
+                     }
+                    ],
+                    "description": "The shape word the memo marks, as the builder names a curve: exponential 'increasing' / 'decreasing' (+ ', above' / ', below' its asymptote: 'increasing, above'), log 'increasing' / 'decreasing', line 'positive gradient' / 'negative gradient', parabola '\u222a' / '\u2229', cubic 'positive' / 'negative' (leading coefficient), hyperbola 'top right and bottom left' / 'top left and bottom right', tan 'increasing' / 'decreasing'; 'drawn' for any curve through the features (a sine or cosine's 'Shape'). A shorter answer is met by a longer word ('decreasing' by 'decreasing, above'); a list: any of them"
+                   },
+                   "marks": {
+                    "type": "integer"
+                   },
+                   "crit": {
+                    "type": "integer",
+                    "description": "0-based index of the memo criterion this shape belongs to (see the feature's crit)"
+                   },
+                   "pick": {
+                    "type": "array",
+                    "items": {
+                     "type": "string"
+                    },
+                    "description": "Only when the memo's features leave the shape open (one intercept + the asymptote fix no exponential): the words the learner chooses from (['increasing', 'decreasing']); the curve then follows the choice"
+                   }
+                  },
+                  "required": [
+                   "label",
+                   "answer",
+                   "marks"
+                  ],
+                  "additionalProperties": false
+                 },
+                 "graphs": {
+                  "type": "array",
+                  "items": {
+                   "type": "object",
+                   "properties": {
+                    "id": {
+                     "type": "string"
+                    },
+                    "family": {
+                     "type": "string",
+                     "enum": [
+                      "parabola",
+                      "hyperbola",
+                      "exponential",
+                      "log",
+                      "cubic",
+                      "line",
+                      "sin",
+                      "cos",
+                      "tan"
+                     ]
+                    },
+                    "label": {
+                     "type": "string",
+                     "description": "its name on the paper (g, h)"
+                    },
+                    "b": {
+                     "type": "number",
+                     "description": "trig only: the period factor the stem's equation prints (cos 2x: 2)"
+                    },
+                    "domain": {
+                     "type": "array",
+                     "items": {
+                      "type": "number"
+                     },
+                     "description": "[x0, x1] where it is drawn, when the paper limits it ('for 0\u00b0 \u2264 x \u2264 270\u00b0')"
+                    },
+                    "shape": {
+                     "type": "object",
+                     "properties": {
+                      "label": {
+                       "type": "string",
+                       "description": "A NEUTRAL name for the shape, shown on its result chip ('Shape'): never the answer ('decreasing')"
+                      },
+                      "answer": {
+                       "anyOf": [
+                        {
+                         "type": "string"
+                        },
+                        {
+                         "type": "array",
+                         "items": {
+                          "type": "string"
+                         }
+                        }
+                       ],
+                       "description": "The shape word the memo marks, as the builder names a curve: exponential 'increasing' / 'decreasing' (+ ', above' / ', below' its asymptote: 'increasing, above'), log 'increasing' / 'decreasing', line 'positive gradient' / 'negative gradient', parabola '\u222a' / '\u2229', cubic 'positive' / 'negative' (leading coefficient), hyperbola 'top right and bottom left' / 'top left and bottom right', tan 'increasing' / 'decreasing'; 'drawn' for any curve through the features (a sine or cosine's 'Shape'). A shorter answer is met by a longer word ('decreasing' by 'decreasing, above'); a list: any of them"
+                      },
+                      "marks": {
+                       "type": "integer"
+                      },
+                      "crit": {
+                       "type": "integer",
+                       "description": "0-based index of the memo criterion this shape belongs to (see the feature's crit)"
+                      },
+                      "pick": {
+                       "type": "array",
+                       "items": {
+                        "type": "string"
+                       },
+                       "description": "Only when the memo's features leave the shape open (one intercept + the asymptote fix no exponential): the words the learner chooses from (['increasing', 'decreasing']); the curve then follows the choice"
+                      }
+                     },
+                     "required": [
+                      "label",
+                      "answer",
+                      "marks"
+                     ],
+                     "additionalProperties": false
+                    }
+                   },
+                   "required": [
+                    "id",
+                    "family",
+                    "label"
+                   ],
+                   "additionalProperties": false
+                  },
+                  "description": "Only for TWO graphs on one set of axes ('Sketch f and g'): each with its family and shape; every feature names its graph"
+                 }
+                },
+                "required": [
+                 "kind",
+                 "family",
+                 "x",
+                 "y",
+                 "features"
+                ],
+                "additionalProperties": false,
+                "description": "Only for 'Sketch / Draw the graph of f' the memo marks by its features (intercepts, turning points, asymptotes, a point, the shape): BUILT on a grid, the learner placing each feature, the curve drawn through them. Every criterion becomes features (or the shape) whose marks add up to the part's; a criterion no feature can earn ('smooth curve') is flagged. The criteria keep the memo's own text"
                }
               ]
              },

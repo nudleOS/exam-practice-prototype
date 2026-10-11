@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=72"></script>
+<script src="papers-catalogue.js?v=73"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -31,9 +31,9 @@
     window.__ingestWant = ids.length;
     ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + (rev[id] || Date.now());   // (a paper under review, ?ingested=, is always fresh)
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
-<script src="papers-pages.js?v=16"></script>
+<script src="papers-pages.js?v=17"></script>
   <script src="mcq-play.js?v=67"></script>
-  <script src="build-play.js?v=19"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03 -->
+  <script src="build-play.js?v=20"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03; graph sketches, 2026-10-11 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=295">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=296">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1936,9 +1936,15 @@ function buildPapers() {
           if (q.t === "genotype") { SERVER.keys[key] = { geno: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(g => g.join(""));
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "geno", alleles: q.alleles, count: q.count, per: q.per === 4 ? 4 : 2 } }); }
           if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
-            const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : b.kind === "cross" ? { cross: b } : { stems: b });
+            const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : b.kind === "cross" ? { cross: b } : b.kind === "sketch" ? { sketch: b } : { stems: b });
             // a cross keeps its criteria OUT of the part: they name its answers ("P1 genotypes: AA x AG"); its memo shows them at the end
             if (b.kind === "cross") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "cross", alleles: b.alleles, phenos: b.phenos.slice().sort(), gens: b.gens } });
+            // a graph sketch (2026-10-11): the part gets the grid, the family and each feature's NAME; where each belongs (at, alt, tol), its
+            // marks and the shape's answer stay in the key, as do the criteria ("y-intercept (0 ; 1)" names the answer)
+            if (b.kind === "sketch") { const pub = s => s ? { label: s.label || "Shape", pick: s.pick || undefined } : undefined;
+              return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "sketch", family: b.family, b: b.b, x: b.x, y: b.y, domain: b.domain, shape: pub(b.shape),
+                graphs: b.graphs ? b.graphs.map(g => ({ id: g.id, family: g.family, label: g.label, b: g.b, domain: g.domain, shape: pub(g.shape) })) : undefined,
+                features: b.features.map(f => ({ id: f.id, kind: f.kind, label: f.label, graph: f.graph, turn: f.turn })) } }); }
             // (the answers stay in the key, never in the part; so do a paper's chip `labels`: LS P1 2026 3.6.4's named each stem's
             // ANSWER, "✕ A bends to the light" on a miss told the learner the shape; the builder's own neutral names show instead)
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
@@ -3885,6 +3891,31 @@ class Component extends DCLogic {
     if (key.stems) { const a = answer || {}, items = key.stems.stems.map(st => ({ key: st.id, awarded: a[st.id] === st.ans ? 1 : 0, available: 1, verdict: a[st.id] === st.ans ? "correct" : a[st.id] ? "incorrect" : "missing" }));
       const got = items.reduce((t, x) => t + x.awarded, 0);
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items }; }
+    // a graph sketch (2026-10-11), marked as the memo marks it: each feature placed within its tol of where the memo puts it (at, or an
+    // `alt` the memo also accepts: "(45° ; −3) or (135° ; 3)") earns its marks; the shape earns its marks when the curve the learner's own
+    // points make (or the shape chosen, where the features leave it open) is the memo's ("decreasing" is met by "decreasing, above").
+    // Features sharing a `crit` are ONE memo criterion: each earns only when all of them are right ("Intercepts (2 ; 0) and (0 ; −8)",
+    // 1 mark). Features a learner cannot tell apart (one graph, kind and label: three "x-intercept"s) are matched as a set, in any
+    // order. The reply names a feature right or wrong, never where it belongs.
+    if (key.sketch) { const b = key.sketch, a = answer || {}, P = a.p || {}, S = a.s || {}, E = 1e-6;
+      const g0 = b.graphs && b.graphs.length ? b.graphs[0].id : "f", gid = f => f.graph || g0, graphs = b.graphs && b.graphs.length ? b.graphs : [{ id: "f", shape: b.shape }];
+      const near = (u, w, t) => typeof u === "number" && typeof w === "number" && Math.abs(u - w) <= (t || 0) + E;
+      const hits = (f, val) => val != null && [f.at].concat(f.alt || []).some(t => f.kind === "point" ? Array.isArray(val) && Array.isArray(t) && near(val[0], t[0], f.tol) && near(val[1], t[1], f.tol) : near(val, t, f.tol));
+      const groups = {}; b.features.forEach(f => { const k = gid(f) + "|" + f.kind + "|" + f.label; (groups[k] = groups[k] || []).push(f); });
+      const target = {}, mine = {};   // target: a memo feature is met; mine: the learner's feature (by its id) met one
+      Object.values(groups).forEach(fs => { const own = {};   // the placed values matched to the memo's (augmenting paths: each counts once)
+        const tryV = (f, seen) => { for (let t = 0; t < fs.length; t++) if (!seen[t] && hits(fs[t], P[f.id])) { seen[t] = true; if (own[t] == null || tryV(own[t], seen)) { own[t] = f; return true; } } return false; };
+        fs.forEach(f => { if (P[f.id] != null) tryV(f, {}); });
+        fs.forEach((f, t) => { target[f.id] = own[t] != null; if (own[t]) mine[own[t].id] = true; }); });
+      const shapeOk = g => { const want = [].concat(g.shape.answer), got = String(S[g.id] || "").split(",").map(w => w.trim()).filter(Boolean);
+        return want.some(w => w === "drawn" ? got.length > 0 : String(w).split(",").map(x => x.trim()).every(x => got.indexOf(x) !== -1)); };
+      const shapes = graphs.filter(g => g.shape).map(g => ({ key: "shape" + (graphs.length > 1 ? ":" + g.id : ""), g: g, crit: g.shape.crit, marks: g.shape.marks || 0, ok: shapeOk(g) }));
+      const critOk = c => c == null || (b.features.every(f => f.crit !== c || target[f.id]) && shapes.every(s => s.crit !== c || s.ok));
+      const it = (k, ok, earn, of, placed) => ({ key: k, awarded: earn ? of : 0, available: of, verdict: ok ? "correct" : placed ? "incorrect" : "missing" });
+      const items = b.features.map(f => it(f.id, !!mine[f.id], target[f.id] && critOk(f.crit), f.marks || 0, P[f.id] != null))
+        .concat(shapes.map(s => it(s.key, s.ok, s.ok && critOk(s.crit), s.marks, !!S[s.g.id])));
+      const got = items.reduce((t, x) => t + x.awarded, 0);
+      return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items }; }
     // genetics: a genotype is its two alleles in any order (Iᴮi = iIᴮ), compared EXACTLY (D is not d); a bag is a list in any order
     const gtOf = g => g.map(x => x || "").slice().sort().join("|"), bag = l => l.slice().sort().join("#");
     if (key.geno) { const a = answer || {}, used = key.geno.map(() => false), each = part.marks / key.count; let got = 0;
@@ -4908,7 +4939,8 @@ class Component extends DCLogic {
         border: set ? "transparent" : "var(--line2)", tap: () => set ? this.kpSet() : this.kpPress(lab) }; });
     const reason = mode === "mcq" ? "Pick one answer" : mode === "pickn" ? "Pick " + need + " · " + pickedN + " picked" : mode === "order" ? "Place all " + opts.length + " · " + s.orderSeq.length + " placed"
       : mode === "lettername" ? "Pick the letter and give the name" : mode === "letternames" ? "Give a letter and its name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? ""
-      : mode === "build" ? ({ hist: "Choose the graph type and plot a bar", geno: "Fill every allele", cross: "Fill every allele and name an offspring phenotype" }[part.build && part.build.kind] || "Pick a shape for every stem") : "Enter your answer";
+      : mode === "build" ? ({ hist: "Choose the graph type and plot a bar", geno: "Fill every allele", cross: "Fill every allele and name an offspring phenotype",
+        sketch: (part.build && (part.build.shape || {}).pick) || (part.build && (part.build.graphs || []).some(g => g.shape && g.shape.pick)) ? "Place every feature and choose the shape" : "Place every feature on the grid" }[part.build && part.build.kind] || "Pick a shape for every stem") : "Enter your answer";
     return {
       // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
       // the panel 242 px over at 412x915 and pushed the figure out of sight (Murci, 2026-10-01: "be able to see the images from 1.4")
@@ -4999,6 +5031,9 @@ class Component extends DCLogic {
     // a cross: every allele socket (parents, gametes, the square's cells) and one offspring phenotype; the labels and the P1 phenotypes
     // may be left out, as on paper (they cost their marks)
     if (k === "cross") return ["G00", "G01", "G10", "G11", "T0", "T1", "S0", "S1"].concat(["00", "01", "10", "11"].flatMap(rc => ["C" + rc + "a", "C" + rc + "b"])).every(id => !!b[id]) && !!b.F0;
+    // a sketch: every feature placed, and a shape chosen where the builder asks for one
+    if (k === "sketch") { const B = part.build, G = B.graphs && B.graphs.length ? B.graphs : [{ id: "f", shape: B.shape }];
+      return B.features.every(f => (b.p || {})[f.id] != null) && G.every(g => !(g.shape && g.shape.pick) || !!(b.pick || {})[g.id]); }
     return k === "hist" ? !!b.type && (b.v || []).some(x => x > 0) : (part.build ? part.build.stems : []).every(st => !!b[st.id]); }
   // letters + names: ready once one row has its letter AND its name (a learner who knows one part may send one, as a list)
   lrowsReady(s) { return (s.lrows || []).some(r => r && r.letter && String(r.name || "").trim()); }

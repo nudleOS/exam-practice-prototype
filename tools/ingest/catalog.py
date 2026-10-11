@@ -56,6 +56,53 @@ def component(t, description, props, required):
     return {"description": description, "schema": obj(p, ["t", *COMMON_REQ, *required])}
 
 
+NUMS = {"type": "array", "items": NUM}
+FAMILIES = ["parabola", "hyperbola", "exponential", "log", "cubic", "line", "sin", "cos", "tan"]
+# a graph sketch (2026-10-11): the memo's features placed on a grid, the curve drawn through them (build-play.js "sketch")
+SK_SHAPE = obj({
+    "label": {"type": "string", "description": "A NEUTRAL name for the shape, shown on its result chip ('Shape'): never the answer ('decreasing')"},
+    "answer": {"anyOf": [STR, STRS], "description": "The shape word the memo marks, as the builder names a curve: exponential 'increasing' / "
+               "'decreasing' (+ ', above' / ', below' its asymptote: 'increasing, above'), log 'increasing' / 'decreasing', line 'positive "
+               "gradient' / 'negative gradient', parabola '∪' / '∩', cubic 'positive' / 'negative' (leading coefficient), hyperbola 'top right "
+               "and bottom left' / 'top left and bottom right', tan 'increasing' / 'decreasing'; 'drawn' for any curve through the features "
+               "(a sine or cosine's 'Shape'). A shorter answer is met by a longer word ('decreasing' by 'decreasing, above'); a list: any of them"},
+    "marks": INT,
+    "crit": {"type": "integer", "description": "0-based index of the memo criterion this shape belongs to (see the feature's crit)"},
+    "pick": {**STRS, "description": "Only when the memo's features leave the shape open (one intercept + the asymptote fix no exponential): "
+             "the words the learner chooses from (['increasing', 'decreasing']); the curve then follows the choice"}},
+    ["label", "answer", "marks"])
+SK_FEATURE = obj({
+    "id": STR,
+    "kind": {"type": "string", "enum": ["point", "hline", "vline"], "description": "a point, or an asymptote: a horizontal / vertical line"},
+    "label": {"type": "string", "description": "The memo's NAME for it, never its position ('y-intercept', 'turning point', 'asymptote', "
+              "'one other point', 'x-intercept of g'); features with the same graph, kind and label are matched as a set, in any order"},
+    "at": {"anyOf": [NUMS, NUM], "description": "Where the memo puts it: [x, y] for a point, the value for a line (y = −9: -9)"},
+    "alt": {"type": "array", "items": {"anyOf": [NUMS, NUM]}, "description": "Other places the memo accepts ('ANY other point', "
+            "'(45° ; −3) or (135° ; 3)'), on the grid"},
+    "tol": {"type": "number", "description": "How far from at (or an alt) still earns it, in the axis' units (0: the exact grid point)"},
+    "marks": {"type": "integer", "description": "Its marks (0 when it only completes a criterion another feature carries)"},
+    "crit": {"type": "integer", "description": "0-based index of the memo criterion it belongs to: features (and a shape) sharing a crit earn "
+             "only together ('Intercepts (2 ; 0) and (0 ; −8)', 1 mark: one carries the mark, the other 0)"},
+    "graph": {"type": "string", "description": "With graphs: the id of the graph it belongs to"},
+    "turn": {"type": "boolean", "description": "A turning point (the curve is flat there): the fit uses it"}},
+    ["id", "kind", "label", "at", "tol", "marks"])
+SK_GRAPH = obj({"id": STR, "family": {"type": "string", "enum": FAMILIES}, "label": {"type": "string", "description": "its name on the paper (g, h)"},
+                "b": {"type": "number", "description": "trig only: the period factor the stem's equation prints (cos 2x: 2)"},
+                "domain": {**NUMS, "description": "[x0, x1] where it is drawn, when the paper limits it ('for 0° ≤ x ≤ 270°')"}, "shape": SK_SHAPE},
+               ["id", "family", "label"])
+SKETCH = obj({
+    "kind": {"type": "string", "const": "sketch"},
+    "family": {"type": "string", "enum": FAMILIES, "description": "the graph's family (with graphs: the first graph's)"},
+    "b": {"type": "number", "description": "trig only: the period factor the stem's equation prints (cos 2x + 1: 2; tan x: 1)"},
+    "x": {**NUMS, "description": "[min, max, step] of the grid's x-axis (degrees for a trig graph); the learner's taps snap to the step"},
+    "y": {**NUMS, "description": "[min, max, step] of the y-axis"},
+    "domain": {**NUMS, "description": "[x0, x1] where the curve is drawn, when the paper limits it"},
+    "features": {"type": "array", "items": SK_FEATURE, "description": "every feature the memo's criteria mark, in the memo's order"},
+    "shape": SK_SHAPE,
+    "graphs": {"type": "array", "items": SK_GRAPH, "description": "Only for TWO graphs on one set of axes ('Sketch f and g'): each with its "
+               "family and shape; every feature names its graph"}},
+    ["kind", "family", "x", "y", "features"])
+
 COMPONENTS = {
     "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
                                                        "optTable": obj({"head": STRS, "rows": {"type": "array", "items": STRS}}, ["head", "rows"]) | {
@@ -135,7 +182,11 @@ COMPONENTS = {
                  "offspring": {"type": "array", "items": obj({"geno": STRS, "pheno": STR}, ["geno", "pheno"])},
                  "gens": {**STRS, "description": "The generations' labels as the memo marks them: default ['P1', 'F1']; ['P2', 'F2'] for a cross of a second generation"}},
                 ["kind", "alleles", "phenos", "parents", "offspring"]) | {
-                "description": "Only for a MONOHYBRID genetic cross the memo marks P1 phenotypes, P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (compulsory), P1/F1, meiosis/fertilisation: BUILT on a Punnett square. alleles: the system's alleles; phenos: every phenotype the stem names; parents: the two P1 parents; offspring: EVERY possible genotype with its phenotype. The criteria keep the memo's 8 points"}]},
+                "description": "Only for a MONOHYBRID genetic cross the memo marks P1 phenotypes, P1 genotypes, gametes, F1 genotypes, F1 phenotypes, ratio (compulsory), P1/F1, meiosis/fertilisation: BUILT on a Punnett square. alleles: the system's alleles; phenos: every phenotype the stem names; parents: the two P1 parents; offspring: EVERY possible genotype with its phenotype. The criteria keep the memo's 8 points"},
+            SKETCH | {"description": "Only for 'Sketch / Draw the graph of f' the memo marks by its features (intercepts, turning points, "
+                                     "asymptotes, a point, the shape): BUILT on a grid, the learner placing each feature, the curve drawn "
+                                     "through them. Every criterion becomes features (or the shape) whose marks add up to the part's; a "
+                                     "criterion no feature can earn ('smooth curve') is flagged. The criteria keep the memo's own text"}]},
         "memo": STR}, ["criteria"]),
 }
 
