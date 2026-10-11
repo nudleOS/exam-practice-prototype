@@ -1710,6 +1710,207 @@
                 ],
                 "additionalProperties": false,
                 "description": "Only for 'Sketch / Draw the graph of f' the memo marks by its features (intercepts, turning points, asymptotes, a point, the shape): BUILT on a grid, the learner placing each feature, the curve drawn through them. Every criterion becomes features (or the shape) whose marks add up to the part's; a criterion no feature can earn ('smooth curve') is flagged. The criteria keep the memo's own text"
+               },
+               {
+                "type": "object",
+                "properties": {
+                 "kind": {
+                  "type": "string",
+                  "const": "boxplot"
+                 },
+                 "x": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  },
+                  "description": "[min, max, step] of the line: the paper's scale (the ANSWER BOOK's scaled line where it prints one, else a line that holds the answer with room either side). Every placement snaps to the step, so every memo value must be a multiple of it: 44 and 84 on a line ticked every 5 need step 1"
+                 },
+                 "tick": {
+                  "type": "number",
+                  "description": "A short tick every so many units, as the paper's line has them (default: the step)"
+                 },
+                 "label": {
+                  "type": "number",
+                  "description": "A number every so many units, as the paper's line prints them (default: the tick); the builder widens it on a narrow phone while the numbers would touch"
+                 },
+                 "unit": {
+                  "type": "string",
+                  "description": "The line's quantity and unit, only when the paper's line names it ('Time (in minutes)')"
+                 },
+                 "tol": {
+                  "type": "number",
+                  "description": "How far from the memo's value still earns it, in the line's units (0: exactly the memo's value)"
+                 },
+                 "at": {
+                  "type": "object",
+                  "properties": {
+                   "min": {
+                    "type": "number"
+                   },
+                   "q1": {
+                    "type": "number"
+                   },
+                   "med": {
+                    "type": "number"
+                   },
+                   "q3": {
+                    "type": "number"
+                   },
+                   "max": {
+                    "type": "number"
+                   }
+                  },
+                  "required": [
+                   "min",
+                   "q1",
+                   "med",
+                   "q3",
+                   "max"
+                  ],
+                  "additionalProperties": false,
+                  "description": "The memo's five-number summary: min, q1 (the lower quartile), med (the median), q3 (the upper quartile), max"
+                 },
+                 "crit": {
+                  "type": "object",
+                  "properties": {
+                   "min": {
+                    "type": "integer"
+                   },
+                   "q1": {
+                    "type": "integer"
+                   },
+                   "med": {
+                    "type": "integer"
+                   },
+                   "q3": {
+                    "type": "integer"
+                   },
+                   "max": {
+                    "type": "integer"
+                   }
+                  },
+                  "required": [
+                   "min",
+                   "q1",
+                   "med",
+                   "q3",
+                   "max"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Each value's memo criterion: the 0-based index into criteria. A criterion earns its marks only when ALL its values are right: the memo's '\u2713 min. & max. \u2713 median \u2713 Q1 and Q3' is min 0, max 0, med 1, q1 2, q3 2; '\u2713 box \u2713 whiskers ending at 5 & 120' is q1 0, med 0, q3 0, min 1, max 1. List them in the memo's order: the result chips follow it, and the first value of a criterion shows its marks"
+                 }
+                },
+                "required": [
+                 "kind",
+                 "x",
+                 "tol",
+                 "at",
+                 "crit"
+                ],
+                "additionalProperties": false,
+                "description": "Only for 'Draw a box and whisker diagram' the memo marks by its values (min & max / the whiskers, the median, Q1 and Q3 / the box): BUILT on the paper's scaled line, the learner placing the five values, the box and whiskers drawn from them. Each memo criterion names the values it needs (crit); its marks come from criteria, in the memo's order. The criteria keep the memo's own text"
+               },
+               {
+                "type": "object",
+                "properties": {
+                 "kind": {
+                  "type": "string",
+                  "const": "numline"
+                 },
+                 "x": {
+                  "type": "array",
+                  "items": {
+                   "type": "number"
+                  },
+                  "description": "[min, max, step] of the line: the paper's scale (the ANSWER BOOK's scaled line where it prints one, else a line that holds the answer with room either side). Every placement snaps to the step, so every memo value must be a multiple of it: 44 and 84 on a line ticked every 5 need step 1"
+                 },
+                 "tick": {
+                  "type": "number",
+                  "description": "A short tick every so many units, as the paper's line has them (default: the step)"
+                 },
+                 "label": {
+                  "type": "number",
+                  "description": "A number every so many units, as the paper's line prints them (default: the tick); the builder widens it on a narrow phone while the numbers would touch"
+                 },
+                 "unit": {
+                  "type": "string",
+                  "description": "The line's quantity and unit, only when the paper's line names it ('Time (in minutes)')"
+                 },
+                 "tol": {
+                  "type": "number",
+                  "description": "How far from the memo's value still earns it, in the line's units (0: exactly the memo's value)"
+                 },
+                 "shade": {
+                  "type": "string",
+                  "enum": [
+                   "left",
+                   "right",
+                   "between",
+                   "outside"
+                  ],
+                  "description": "The memo's shading: 'left' or 'right' of ONE end (x < a, x \u2265 a), 'between' two ends (a < x \u2264 b), 'outside' two ends (x \u2264 a or x > b)"
+                 },
+                 "ends": {
+                  "type": "array",
+                  "items": {
+                   "type": "object",
+                   "properties": {
+                    "at": {
+                     "type": "number"
+                    },
+                    "closed": {
+                     "type": "boolean",
+                     "description": "true: a filled dot, the end is in the answer (\u2264, \u2265); false: an open dot (<, >)"
+                    }
+                   },
+                   "required": [
+                    "at",
+                    "closed"
+                   ],
+                   "additionalProperties": false
+                  },
+                  "description": "The memo's end: one for left / right, two for between / outside (any order)"
+                 },
+                 "crit": {
+                  "type": "object",
+                  "properties": {
+                   "end": {
+                    "type": "integer"
+                   },
+                   "circle": {
+                    "type": "integer"
+                   },
+                   "shade": {
+                    "type": "integer"
+                   },
+                   "end0": {
+                    "type": "integer"
+                   },
+                   "end1": {
+                    "type": "integer"
+                   },
+                   "circle0": {
+                    "type": "integer"
+                   },
+                   "circle1": {
+                    "type": "integer"
+                   }
+                  },
+                  "required": [],
+                  "additionalProperties": false,
+                  "description": "Each component's memo criterion: the 0-based index into criteria. 'end' is every end's place, 'circle' every end's open or filled dot, 'shade' the shading; end0 / end1 / circle0 / circle1 one end (0 the LEFT one) where the memo marks the ends apart. A criterion earns its marks only when ALL its components are right ('An open dot at \u22126 with an arrow to the right', 1 mark: end 0, circle 0, shade 0); a component no criterion names is not marked"
+                 }
+                },
+                "required": [
+                 "kind",
+                 "x",
+                 "tol",
+                 "shade",
+                 "ends",
+                 "crit"
+                ],
+                "additionalProperties": false,
+                "description": "Only for 'Represent the answer (an inequality or interval) on a number line': BUILT on a number line, the learner choosing the shading, placing each end and choosing its dot (open or filled). Each memo criterion names the components it needs (crit); its marks come from criteria. Keep the part's 'after' when the inequality is an earlier part's answer"
                }
               ]
              },

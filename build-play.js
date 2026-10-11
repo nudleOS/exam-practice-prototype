@@ -6,6 +6,9 @@
    - "cross" (LS P2 Nov 2025 2.5.4) a monohybrid cross on a Punnett square, the memo's 8 points (ratio compulsory + any 5).
    - "sketch" (Maths P1 Nov 2025 4.5, Grade 10 P1 2017 6.1.3; 2026-10-11) a graph sketch: the memo's features placed on a grid, the curve
      drawn live through them.
+   - "boxplot" (Maths P2 Nov 2024 2.4, Grade 10 P2 2017 1.4 and 2018 1.5; 2026-10-11) a box and whisker diagram: the five values placed on
+     the paper's scaled line, the box and whiskers drawn from them.
+   - "numline" (Grade 10 P1 2017 2.1.2; 2026-10-11) an inequality on a number line: its end(s), open or closed dots, and the shading.
    The host (Exam Practice) owns the ANSWER (its state, so Check, marking and "same answer" work as for every other type); this
    module owns only its DOM and its step. A learner who drew it on paper gets the criteria as a self-check (shown, never banked).
 
@@ -571,6 +574,211 @@
       destroy() { if (ro) ro.disconnect(); document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
   }
 
+  // ── the NUMBER LINE builders (2026-10-11): "Draw a box and whisker diagram" ("boxplot") and "Represent your answer on a number line"
+  // ("numline") BUILT on the paper's own scaled line (the answer book's, where it prints one). A tray holds what the learner places (the
+  // five values; an inequality's end or ends), never where they go: tap one, then tap the line (it snaps to the line's step), or drag
+  // along the line (what is under the finger moves), or nudge the last one touched with − and +; keyboard: Enter on a chip places it
+  // mid-line, the arrows move it (Shift: 5 steps), Delete removes it. The box and whiskers, or the shading and its open or closed dots,
+  // draw themselves from what is placed. The answer is the placed values (and a number line's shading and dots): the marker reads only
+  // those, against the memo's criteria.
+  //   cfg   { x: [min, max, step], tick?, label?, unit? }   (the learner's view: the scale only)
+  //   value boxplot { min, q1, med, q3, max } (numbers); numline { s: "left" | "right" | "between" | "outside", e0, e1 (numbers),
+  //         c0, c1: "open" | "closed" } (e1 / c1 only with two ends)
+  function lineBuild(host, o, spec) {
+    const cfg = o.cfg, lo = cfg.x[0], hi = cfg.x[1], st = cfg.x[2] || 1;
+    const snap = u => +(Math.max(lo, Math.min(hi, lo + Math.round((u - lo) / st) * st))).toFixed(9);
+    const fmt = n => skNum(n, false), stepTx = fmt(st);
+    let v = spec.norm(o.value), locked = false, items = null, drag = null, W = 0, ro = null, act = "", sel = "";
+    const ids = () => spec.ids(v), byId = id => ids().find(x => x.id === id), placed = id => typeof v[id] === "number";
+    // the next value still to place, after `after` (round the tray)
+    const firstOpen = after => { const L = ids(), i = L.findIndex(x => x.id === after), R = L.slice(i + 1).concat(L.slice(0, i + 1)); return (R.find(x => !placed(x.id)) || {}).id || ""; };
+    act = firstOpen("");
+    const emit = () => o.onChange(clone(v));
+    // the line as wide as the card allows (560 px at most); a number every `label` units, widened while the numbers would touch
+    function geo() {
+      const L = 26, pw = W - 2 * L, per = pw / (hi - lo), tick = cfg.tick || st, wide = Math.max(fmt(lo).length, fmt(hi).length) * 6.8 + 9;
+      const lab0 = cfg.label || tick, lab = lab0 * ([1, 2, 4, 5, 10, 20, 50, 100].find(k => lab0 * k * per >= wide) || 100);
+      return { L: L, pw: pw, per: per, tick: tick, lab: lab, X: u => L + (u - lo) * per, val: px => snap(lo + (px - L) / per) };
+    }
+    const vt = id => { const it = items && items.find(x => x.key === id); return it ? (it.verdict === "correct" || it.verdict === "partial" ? "ok" : "bad") : ""; };
+    function axisSvg(G, y) {
+      const on = (u, k) => Math.abs(Math.round(u / k) * k - u) < 1e-6, n = Math.round((hi - lo) / G.tick), minor = G.tick * G.per >= 3.5;
+      let t = `<line x1="${G.L - 16}" x2="${G.L + G.pw + 16}" y1="${y}" y2="${y}" class="nl-axis"/>`
+        + `<path d="M${G.L - 20} ${y}l8 -4.5v9z" class="nl-arrow"/><path d="M${G.L + G.pw + 20} ${y}l-8 -4.5v9z" class="nl-arrow"/>`;
+      for (let i = 0; i <= n; i++) { const u = lo + i * G.tick, lab = on(u, G.lab), x = G.X(u).toFixed(1);
+        if (lab || minor) t += `<line x1="${x}" x2="${x}" y1="${y - (lab ? 6 : 4)}" y2="${y + (lab ? 6 : 4)}" class="nl-tick${lab ? " nl-tick2" : ""}"/>`;
+        if (lab) t += `<text x="${x}" y="${y + 21}" class="nl-num" text-anchor="middle">${fmt(u)}</text>`; }
+      if (cfg.unit) t += `<text x="${(G.L + G.pw / 2).toFixed(1)}" y="${y + 39}" class="nl-unit" text-anchor="middle">${esc(cfg.unit)}</text>`;
+      return t;
+    }
+    host.innerHTML = `<div class="bp nl nl-${spec.kind}" data-locked="false"><div class="nl-top"></div><div class="sk-tray nl-tray" role="group" aria-label="${esc(spec.trayName)}"></div>`
+      + `<div class="nl-plot" role="group"><svg class="nl-svg" aria-hidden="true" focusable="false"></svg></div>`
+      + `<div class="nl-nudge"></div><div class="nl-foot"></div><div class="sk-out"></div><p class="sr-only" aria-live="polite"></p></div>`;
+    const root = host.firstChild, top = root.querySelector(".nl-top"), tray = root.querySelector(".nl-tray"), plot = root.querySelector(".nl-plot"), svgEl = root.querySelector(".nl-svg"),
+      nudge = root.querySelector(".nl-nudge"), foot = root.querySelector(".nl-foot"), out = root.querySelector(".sk-out"), live = root.querySelector("[aria-live]");
+    const say = s => { live.textContent = s; };
+    function paint() {   // the drawing and the line only (a drag repaints this; the tray's chip value is updated in place)
+      const G = geo(), Ay = spec.axisY, H = Ay + (cfg.unit ? 48 : 31);
+      svgEl.setAttribute("viewBox", "0 0 " + W + " " + H); svgEl.setAttribute("width", W); svgEl.setAttribute("height", H); plot.style.width = W + "px";
+      svgEl.innerHTML = `<rect x="0.75" y="0.75" width="${W - 1.5}" height="${H - 1.5}" rx="12" class="nl-bg"/>` + spec.diagram(v, G, Ay, sel, vt, ids()) + axisSvg(G, Ay);
+      return G;
+    }
+    const chip = x => { const on = placed(x.id);
+      return `<button type="button" class="sk-chip nl-chip" data-f="${x.id}" data-k="point" data-on="${on}" data-v="${vt(x.id)}" aria-pressed="${act === x.id}"${locked ? " disabled" : ""}`
+        + ` aria-label="${esc(x.label)}${x.sub ? " (" + x.sub + ")" : ""}${on ? ", at " + fmt(v[x.id]) : ", not placed"}${locked ? "" : on ? ". Arrow keys move it, Delete removes it" : ""}"><span class="sk-ic" aria-hidden="true"></span>`
+        // (two lines whatever its state, as the sketch's: placing a value never re-flows the tray, so the line under it never jumps)
+        + `<span class="sk-cb"><span class="sk-cl">${esc(x.label)}</span><span class="sk-cv" data-on="${on}">${x.sub ? x.sub + (on ? " = " : " · ") : ""}${on ? fmt(v[x.id]) : "not placed"}</span></span></button>`; };
+    function resHtml() {
+      if (!items) return "";
+      return `<div class="bp-chips sk-res" role="status">${items.map(it => { const s = it.verdict === "correct" ? "true" : it.verdict === "partial" ? "part" : "false";
+        return `<span class="bp-chip" data-ok="${s}">${s === "true" ? "✓" : s === "part" ? "◐" : "✕"} ${esc(spec.resLabel(it.key, items))}${it.available ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
+    }
+    function render(focusSel) {
+      if (focusSel === undefined) { const a = document.activeElement; focusSel = a && root.contains(a) ? (a.dataset.f ? `[data-f="${a.dataset.f}"]` : a.dataset.d ? `.nl-nb[data-d="${a.dataset.d}"]`
+        : a.dataset.op ? `[data-op="${a.dataset.op}"]` : a.dataset.cc ? `[data-cc="${a.dataset.cc}"]` : a.classList.contains("nl-rm") ? ".nl-rm" : null) : null; }
+      W = Math.max(240, Math.min(560, Math.floor(host.getBoundingClientRect().width || 320)));
+      if (!locked && !byId(act)) act = firstOpen("");
+      if (sel && !(byId(sel) && placed(sel))) sel = "";
+      root.dataset.locked = String(locked);
+      top.innerHTML = spec.top ? spec.top(v, locked) : "";
+      const L = ids(), n = L.filter(x => placed(x.id)).length;
+      tray.innerHTML = `<p class="sk-th"><span>${locked ? spec.trayDone : spec.trayHead}</span><span class="sk-n">${n} of ${L.length} placed</span></p>`
+        + `<div class="sk-ti${spec.row ? " nl-rows" : ""}">${L.map(x => spec.row ? spec.row(x, chip(x), v, locked) : chip(x)).join("")}</div>`;
+      paint();
+      plot.setAttribute("aria-label", "Number line from " + fmt(lo) + " to " + fmt(hi) + (st !== 1 ? ", in steps of " + stepTx : ""));
+      const s = byId(sel);
+      nudge.innerHTML = locked || !s ? "" : `<div class="nl-nd" role="group" aria-label="Nudge the ${esc(s.lower)}"><span class="nl-ndl">${esc(s.label)} <b>${fmt(v[s.id])}</b></span>`
+        + `<button type="button" class="nl-nb" data-d="-1" aria-label="Move the ${esc(s.lower)} one step left"${v[s.id] <= lo ? " disabled" : ""}>− ${stepTx}</button>`
+        + `<button type="button" class="nl-nb" data-d="1" aria-label="Move the ${esc(s.lower)} one step right"${v[s.id] >= hi ? " disabled" : ""}>+ ${stepTx}</button>`
+        + `<button type="button" class="sk-rm nl-rm">Remove</button></div>`;
+      const a = byId(act);
+      foot.innerHTML = locked ? "" : `<p class="sk-hint">${a ? (placed(a.id) ? "Tap the line to move the " : "Tap the line to place the ") + esc(a.lower) + "." : n ? "Drag a value along the line, or nudge it with − and +." : ""}</p>`
+        + (spec.note ? spec.note(v) : "");
+      out.innerHTML = resHtml();
+      wire();
+      if (focusSel) { const nd = root.querySelector(focusSel); if (nd) nd.focus({ preventScroll: true }); }
+    }
+    const move = (id, u) => { const w = snap(u), x = byId(id); if (w === v[id]) return; const was = placed(id); v[id] = w; sel = id; say(x.label + (was ? " moved to " : " placed at ") + fmt(w)); emit(); };
+    const remove = id => { const x = byId(id); delete v[id]; if (sel === id) sel = ""; act = id; say(x.label + " removed"); emit(); };
+    function wire() {
+      tray.querySelectorAll("[data-f]").forEach(b => {
+        const id = b.dataset.f;
+        b.onclick = e => { if (locked) return; act = id; if (placed(id)) sel = id;
+          if (e.detail === 0 && !placed(id)) { move(id, (lo + hi) / 2); act = firstOpen(id); }   // the keyboard: placed mid-line, then the arrows move it
+          render(`[data-f="${id}"]`); };
+        b.onkeydown = e => { if (locked || !placed(id)) return;
+          const d = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1, PageDown: -5, PageUp: 5 }[e.key];
+          if (d) { e.preventDefault(); move(id, v[id] + d * st * (e.shiftKey ? 5 : 1)); render(`[data-f="${id}"]`); return; }
+          if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); remove(id); render(`[data-f="${id}"]`); } };
+      });
+      nudge.querySelectorAll(".nl-nb").forEach(b => b.onclick = () => { if (locked || !placed(sel)) return; move(sel, v[sel] + +b.dataset.d * st); render(`.nl-nb[data-d="${b.dataset.d}"]`); });
+      const rm = nudge.querySelector(".nl-rm"); if (rm) rm.onclick = () => { if (locked || !sel) return; const id = sel; remove(id); render(`[data-f="${id}"]`); };
+      if (spec.wire) spec.wire(root, { set: (fn, f) => { if (locked) return; fn(v); emit(); render(f); }, say: say });
+    }
+    // the line: a tap places (or moves) the chosen value; a sideways drag moves what is under the finger (else the chosen value); an
+    // up-and-down swipe scrolls the page (touch-action: pan-y), never placing anything
+    const pxOf = e => { const r = svgEl.getBoundingClientRect(); return (e.clientX - r.left) * W / (r.width || W); };
+    const grab = px => { const G = geo(); let best = "", bd = 22; ids().forEach(x => { if (!placed(x.id)) return; const d = Math.abs(G.X(v[x.id]) - px) - (x.id === sel ? 3 : 0); if (d < bd) { bd = d; best = x.id; } }); return best; };
+    plot.addEventListener("pointerdown", e => { if (locked || (e.pointerType === "mouse" && e.button !== 0)) return; drag = { x: e.clientX, y: e.clientY, pid: e.pointerId, near: grab(pxOf(e)), on: false }; });
+    plot.addEventListener("pointermove", e => { const d = drag; if (!d || d.pid !== e.pointerId) return;
+      if (!d.on) { const dx = Math.abs(e.clientX - d.x), dy = Math.abs(e.clientY - d.y); if (dy > 10 && dy > dx) { drag = null; return; } if (dx < 6) return;
+        d.id = d.near || act; if (!d.id) { drag = null; return; } d.on = true; d.was = placed(d.id);
+        try { plot.setPointerCapture(e.pointerId); } catch (_) { /* a synthetic pointer */ } document.documentElement.classList.add("bp-drag"); }
+      e.preventDefault();
+      const w = geo().val(pxOf(e)); if (w === v[d.id]) return; v[d.id] = w; sel = d.id; paint();
+      const cv = tray.querySelector(`[data-f="${d.id}"] .sk-cv`), sub = (byId(d.id) || {}).sub; if (cv) { cv.textContent = (sub ? sub + " = " : "") + fmt(w); cv.dataset.on = "true"; } });
+    const end = e => { const d = drag; if (!d || d.pid !== e.pointerId) return; drag = null; document.documentElement.classList.remove("bp-drag");
+      if (d.on) { const x = byId(d.id); sel = d.id; if (act === d.id || !act) act = firstOpen(d.id); say(x.label + (d.was ? " moved to " : " placed at ") + fmt(v[d.id])); emit(); render(null); return; }
+      if (e.type === "pointercancel" || locked) return;
+      // a tap: with nothing chosen (all placed), a tap on a value chooses it; else the chosen value goes where the line was tapped
+      if (!act) { if (d.near) { sel = act = d.near; render(null); } return; }
+      const id = act; move(id, geo().val(pxOf(e))); sel = id; act = firstOpen(id); render(null); };
+    plot.addEventListener("pointerup", end); plot.addEventListener("pointercancel", end);
+    render(null);
+    if (window.ResizeObserver) { ro = new ResizeObserver(() => { const w = Math.max(240, Math.min(560, Math.floor(host.getBoundingClientRect().width || 320))); if (Math.abs(w - W) >= 2 && !drag) render(); }); ro.observe(host); }
+    return { sync(s) { if (drag && drag.on) return;   // (a drag owns the value until it is let go)
+        const nv = spec.norm(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v);
+        const its = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? s.items : null, was = locked + "|" + JSON.stringify(items);
+        v = nv; locked = !!s.locked; items = its;
+        if (changed && !Object.keys(nv).length) { act = firstOpen(""); sel = ""; }   // a fresh try starts at the first value
+        if (locked) act = "";
+        if (changed || was !== locked + "|" + JSON.stringify(items)) render(); },
+      destroy() { if (ro) ro.disconnect(); document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
+  }
+  // tags over a line: each placed value's text at its x, on the first of two rows where it touches no tag before it (the second row
+  // higher); kept inside the plot
+  function lineTags(list, W, y0, y1) {
+    const rows = [[], []];
+    return list.slice().sort((p, q) => p.x - q.x).map(p => { const w = p.text.length * 6.6 + 8, x = Math.max(w / 2 + 3, Math.min(W - w / 2 - 3, p.x));
+      let r = rows.findIndex(R => R.every(b => x + w / 2 < b[0] || x - w / 2 > b[1])); if (r < 0) r = 1; rows[r].push([x - w / 2, x + w / 2]);
+      return `<text x="${x.toFixed(1)}" y="${r ? y1 : y0}" class="nl-tag${p.cls ? " " + p.cls : ""}" text-anchor="middle">${esc(p.text)}</text>`; }).join("");
+  }
+  // a BOX AND WHISKER diagram: the five values on the paper's line; the whiskers, the box and the median line drawn from where they sit
+  // (a quartile's chip names it in words and shows Q₁ / Q₃ on its value line: "Lower quartile (Q₁)" ran to three lines at 360 px)
+  const BXV = [["min", "Minimum", "min"], ["q1", "Lower quartile", "Q₁", "Q₁"], ["med", "Median", "med"], ["q3", "Upper quartile", "Q₃", "Q₃"], ["max", "Maximum", "max"]];
+  const BXL = { min: "Minimum", q1: "Lower quartile", med: "Median", q3: "Upper quartile", max: "Maximum" };
+  function boxplot(host, o) {
+    const L = BXV.map(([id, label, short, sub]) => ({ id: id, label: label, short: short, sub: sub, lower: label[0].toLowerCase() + label.slice(1) + (sub ? " (" + sub + ")" : "") }));
+    return lineBuild(host, o, { kind: "boxplot", axisY: 98, trayName: "The five values to place on the line", trayHead: "Tap one, then tap the line", trayDone: "Your five values",
+      norm: val => { const x = clone(val), b = {}; L.forEach(y => { if (typeof x[y.id] === "number" && isFinite(x[y.id])) b[y.id] = x[y.id]; }); return b; },
+      ids: () => L,
+      diagram: (v, G, Ay, sel, vt) => { const has = id => typeof v[id] === "number", X = id => G.X(v[id]), T = Ay - 58, B = Ay - 24, C = (T + B) / 2;
+        const ln = (x1, y1, x2, y2, c) => `<line x1="${x1.toFixed(1)}" y1="${y1}" x2="${x2.toFixed(1)}" y2="${y2}" class="${c}"/>`;
+        let d = "";
+        L.forEach(y => { if (has(y.id)) d += ln(X(y.id), C, X(y.id), Ay, "nl-drop" + (sel === y.id ? " nl-on" : "")); });   // each value's dashed drop to the line
+        if (has("min") && has("q1")) d += ln(X("min"), C, X("q1"), C, "nl-wh");
+        if (has("q3") && has("max")) d += ln(X("q3"), C, X("max"), C, "nl-wh");
+        if (has("q1") && has("q3")) { const a = Math.min(X("q1"), X("q3")), b = Math.max(X("q1"), X("q3")); d += `<rect x="${a.toFixed(1)}" y="${T}" width="${(b - a).toFixed(1)}" height="${B - T}" class="nl-box"/>`; }
+        ["q1", "q3"].forEach(id => { if (has(id)) d += ln(X(id), T, X(id), B, "nl-edge"); });
+        if (has("med")) d += ln(X("med"), T, X("med"), B, "nl-med");
+        ["min", "max"].forEach(id => { if (has(id)) d += ln(X(id), C - 9, X(id), C + 9, "nl-cap"); });
+        return d + lineTags(L.filter(y => has(y.id)).map(y => ({ x: X(y.id), text: y.short + " " + skNum(v[y.id], false), cls: [sel === y.id ? "nl-on" : "", vt(y.id) ? "nl-" + vt(y.id) : ""].join(" ").trim() })), G.L * 2 + G.pw, T - 7, T - 22); },
+      // a structural rule, never the answer: from left to right the five run in order (a swapped Q₁ and Q₃ draws a box the wrong way round)
+      note: v => { const p = L.map(y => v[y.id]).filter(n => typeof n === "number");
+        return p.some((n, k) => k && n < p[k - 1]) ? `<p class="sk-note">These are out of order: from left to right a box and whisker diagram runs minimum, Q₁, median, Q₃, maximum.</p>` : ""; },
+      resLabel: k => BXL[k] || k });
+  }
+  // an INEQUALITY on a number line: its end (or two ends) placed on the line, each an open or a closed (filled) dot, and the shading: to the left
+  // or right of one end, between two ends, or outside them (x ≤ a or x ≥ b)
+  // (short words beside each icon, the full sense in its name: "Between two ends" ran to two lines in a tablet's three columns; one row of four on a tablet, two by two on a phone)
+  const NLS = [["left", "Left", "Shade to the left of the end"], ["right", "Right", "Shade to the right of the end"], ["between", "Between", "Shade between two ends"], ["outside", "Outside", "Shade outside two ends"]];
+  const nlIc = d => `<svg viewBox="0 0 36 14" width="36" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${d}</svg>`;
+  const NLI = { left: nlIc('<path d="M5 7H26M26 2.5v9"/><path d="M2 7l6-4v8z" fill="currentColor" stroke="none"/>'), right: nlIc('<path d="M10 7H31M10 2.5v9"/><path d="M34 7l-6-4v8z" fill="currentColor" stroke="none"/>'),
+    between: nlIc('<path d="M8 7H28M8 2.5v9M28 2.5v9"/>'), outside: nlIc('<path d="M5 7H12M12 2.5v9M24 7H31M24 2.5v9"/><path d="M2 7l5-3.5v7zM34 7l-5-3.5v7z" fill="currentColor" stroke="none"/>') };
+  function numline(host, o) {
+    const two = s => s === "between" || s === "outside";
+    const E1 = [{ id: "e0", label: "End", lower: "end", short: "" }], E2 = [{ id: "e0", label: "End 1", lower: "first end", short: "1" }, { id: "e1", label: "End 2", lower: "second end", short: "2" }];
+    return lineBuild(host, o, { kind: "numline", axisY: 76, trayName: "The ends to place on the line", trayHead: "Tap an end, then tap the line", trayDone: "Your number line",
+      norm: val => { const x = clone(val), b = {}; if (NLS.some(s => s[0] === x.s)) b.s = x.s;
+        (two(b.s) ? ["0", "1"] : ["0"]).forEach(k => { if (typeof x["e" + k] === "number" && isFinite(x["e" + k])) b["e" + k] = x["e" + k]; if (x["c" + k] === "open" || x["c" + k] === "closed") b["c" + k] = x["c" + k]; });
+        return b; },
+      ids: v => two(v.s) ? E2 : E1,
+      top: (v, locked) => `<div class="sk-pick nl-shade" role="group" aria-label="Shading"><span class="sk-pl">Shading</span>`
+        + NLS.map(([k, t, n]) => `<button type="button" class="sk-op nl-op" data-op="${k}" aria-label="${n}" aria-pressed="${v.s === k}"${locked ? " disabled" : ""}>${NLI[k]}<span>${t}</span></button>`).join("") + `</div>`,
+      // each end's chip, then its dot: open (the end is not in the answer: < or >) or filled (it is: ≤ or ≥); neither is chosen for the learner
+      row: (x, chipHtml, v, locked) => { const k = x.id.slice(1);
+        return `<div class="nl-row">${chipHtml}<div class="nl-cc" role="group" aria-label="${esc(x.label)}: open or closed dot">`
+          + [["open", "Open"], ["closed", "Closed"]].map(([c, t]) => `<button type="button" class="sk-op nl-c" data-cc="${k}:${c}" aria-pressed="${v["c" + k] === c}"${locked ? " disabled" : ""}><span class="nl-ci" data-c="${c}" aria-hidden="true"></span>${t}</button>`).join("") + `</div></div>`; },
+      wire: (root, api) => {
+        root.querySelectorAll("[data-op]").forEach(b => b.onclick = () => api.set(v => { v.s = b.dataset.op; if (!two(v.s)) { delete v.e1; delete v.c1; } api.say((NLS.find(x => x[0] === b.dataset.op) || [])[2]); }, `[data-op="${b.dataset.op}"]`));
+        root.querySelectorAll("[data-cc]").forEach(b => b.onclick = () => { const [k, c] = b.dataset.cc.split(":"); api.set(v => { v["c" + k] = c; api.say((two(v.s) ? "End " + (+k + 1) : "End") + ": " + (c === "open" ? "open dot" : "closed dot")); }, `[data-cc="${b.dataset.cc}"]`); }); },
+      diagram: (v, G, Ay, sel, vt, L) => { const Ty = Ay - 34, x0 = G.L - 12, x1 = G.L + G.pw + 12;
+        const ends = L.filter(x => typeof v[x.id] === "number").map(x => ({ id: x.id, x: G.X(v[x.id]), c: v["c" + x.id.slice(1)], val: v[x.id] })), xs = ends.map(e => e.x).sort((a, b) => a - b);
+        const seg = (a, b) => `<line x1="${a.toFixed(1)}" x2="${b.toFixed(1)}" y1="${Ty}" y2="${Ty}" class="nl-ray"/>`;
+        const head = (x, dir) => `<path d="M${(x + dir * 4).toFixed(1)} ${Ty}l${-dir * 10} -6v12z" class="nl-rayhead"/>`;
+        let d = "";
+        ends.forEach(e => { d += `<line x1="${e.x.toFixed(1)}" x2="${e.x.toFixed(1)}" y1="${Ty + 8}" y2="${Ay}" class="nl-drop${sel === e.id ? " nl-on" : ""}"/>`; });
+        if (v.s === "right" && xs.length) d += seg(xs[0], x1 - 6) + head(x1, 1);
+        if (v.s === "left" && xs.length) d += seg(x0 + 6, xs[0]) + head(x0, -1);
+        if (v.s === "between" && xs.length === 2) d += seg(xs[0], xs[1]);
+        if (v.s === "outside" && xs.length === 2) d += seg(x0 + 6, xs[0]) + head(x0, -1) + seg(xs[1], x1 - 6) + head(x1, 1);
+        ends.forEach(e => { d += `<circle cx="${e.x.toFixed(1)}" cy="${Ty}" r="7" class="nl-dot" data-c="${e.c || "unset"}"/>`; });
+        return d + lineTags(ends.map(e => ({ x: e.x, text: skNum(e.val, false), cls: sel === e.id ? "nl-on" : "" })), G.L * 2 + G.pw, Ty - 13, Ty - 27); },
+      // the marker's items name the memo's ends left to right, so a two-ended answer's chips say which end
+      resLabel: (k, its) => { const tw = its.some(i => i.key === "end1");
+        return { shade: "Shading", end0: tw ? "Left end" : "End", end1: "Right end", circle0: tw ? "Left dot" : "Open or closed dot", circle1: "Right dot" }[k] || k; } });
+  }
+
   // each kind names its marker's items (the memo's own words); a paper may override them with cfg.labels. (No paper ever carried
   // labels: chipRow read undefined[key] and threw on every render after a Check, so the T C L S P chips never showed; 2026-10-06)
   const LABELS = { hist: { T: "Type", C: "Caption", L: "Axes labels", S: "Scale", P: "Plotting" } };
@@ -585,6 +793,7 @@
       `<label class="bp-tick-row"><input type="checkbox"> ${esc(c[0])}</label>`).join("")}<p class="bp-hint">A self-check: it guides you, it is not marked.</p></div>`;
   }
 
-  // (fit: the sketch's curve fit, for a self-test; SKETCH_V: a marker a test reads to prove this file's sketch is the one loaded)
-  window.BuildPlay = { SKETCH_V: "sketch-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch }[o.kind] || stems)(host, o); } };
+  // (fit: the sketch's curve fit, for a self-test; SKETCH_V / LINE_V: markers a test reads to prove this file's sketch / line builders
+  // are the ones loaded)
+  window.BuildPlay = { SKETCH_V: "sketch-1", LINE_V: "line-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch, boxplot: boxplot, numline: numline }[o.kind] || stems)(host, o); } };
 })();

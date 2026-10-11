@@ -2692,6 +2692,61 @@ html[data-nx="light"] .sk-note { color:#855400; }
 html[data-nx="light"] .sk-svg path.sk-c2 { stroke:#b7790a; }
 html[data-nx="light"] .sk-svg text.sk-c2 { fill:#b7790a; }
 
+/* ==== the NUMBER LINE builders (2026-10-11, build-play.js "boxplot" and "numline"): the paper's scaled line on a card-token surface
+   (--nx-card, never a dark grey; never pure white in light), the drawing in the accent. The tray reuses the sketch's chips (.sk-chip);
+   the line lets the page scroll under an up-and-down swipe and takes a sideways drag (touch-action: pan-y). ==== */
+.nl-plot { position:relative; margin-inline:auto; max-width:100%; touch-action:pan-y; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent; cursor:pointer; }
+.nl[data-locked="true"] .nl-plot { cursor:default; }
+.nl-svg { display:block; overflow:visible; }
+.nl-svg .nl-bg { fill:var(--nx-card); stroke:var(--nx-card-line); stroke-width:1.5; }
+.nl-svg .nl-axis { stroke:var(--nx-text2); stroke-width:1.6; }
+.nl-svg .nl-arrow { fill:var(--nx-text2); }
+.nl-svg .nl-tick { stroke:var(--nx-text2); stroke-width:1; opacity:0.55; }
+.nl-svg .nl-tick2 { stroke-width:1.5; opacity:1; }
+.nl-svg .nl-num { font-size:11px; font-weight:600; fill:var(--nx-text2); font-variant-numeric:tabular-nums; }
+.nl-svg .nl-unit { font-size:11.5px; font-weight:700; fill:var(--nx-text2); }
+.nl-svg .nl-drop { stroke:var(--nx-text2); stroke-width:1; stroke-dasharray:3 3; opacity:0.75; }
+.nl-svg .nl-drop.nl-on { stroke:var(--nx-accent); stroke-width:1.5; stroke-dasharray:none; opacity:1; }
+.nl-svg .nl-box { fill:color-mix(in srgb, var(--nx-accent) 16%, var(--nx-card)); stroke:var(--nx-accent); stroke-width:2; }
+.nl-svg :is(.nl-wh, .nl-cap, .nl-edge, .nl-med) { stroke:var(--nx-accent); stroke-width:2.2; stroke-linecap:round; }
+.nl-svg .nl-med { stroke-width:3.2; }
+.nl-svg .nl-tag { font-size:11.5px; font-weight:800; fill:var(--nx-text); paint-order:stroke; stroke:var(--nx-card); stroke-width:3px; stroke-linejoin:round; font-variant-numeric:tabular-nums; }
+.nl-svg .nl-tag.nl-on { fill:var(--nx-accent); }
+.nl-svg .nl-tag.nl-ok { fill:#3ddc97; }
+.nl-svg .nl-tag.nl-bad { fill:#ff8a8a; }
+/* an inequality: the shading a thick accent line (an arrowhead where it runs on), each end a dot: open (the card's colour inside), filled,
+   or dashed until it is chosen */
+.nl-svg .nl-ray { stroke:var(--nx-accent); stroke-width:4; }
+.nl-svg .nl-rayhead { fill:var(--nx-accent); }
+.nl-svg .nl-dot { stroke:var(--nx-accent); stroke-width:2.6; fill:var(--nx-card); }
+.nl-svg .nl-dot[data-c="closed"] { fill:var(--nx-accent); }
+.nl-svg .nl-dot[data-c="unset"] { stroke:var(--nx-text2); stroke-dasharray:3 2.4; }
+.nl-rows { grid-template-columns:1fr; }
+/* the box plot's five chips: two columns on a phone, three on a tablet (at 136 px a tablet's four put "Lower quartile" on two lines) */
+.nl-boxplot .sk-ti { grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); }
+.nl-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.nl-row .sk-chip { flex:1 1 112px; }   /* (an end's chip and its two dots share one row on a 360 px phone) */
+.nl-cc { display:flex; gap:8px; flex:1 1 172px; }
+.nl-cc .sk-op { flex:1 1 0; display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:44px; padding:0 10px; }
+.nl-ci { flex:none; width:12px; height:12px; box-sizing:border-box; border-radius:50%; border:2.2px solid currentColor; }
+.nl-ci[data-c="closed"] { background:currentColor; }
+.nl-shade { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:8px; }
+.nl-shade .sk-pl { grid-column:1 / -1; }
+.nl-op { display:inline-flex; align-items:center; gap:8px; min-height:44px; text-align:left; }
+.nl-op svg { flex:none; }
+/* the nudge row: the last value touched, one step either way (a 40 px+ finger target each), and Remove */
+.nl-nd { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.nl-ndl { margin-right:auto; font-size:13px; font-weight:700; color:var(--nx-text2); }
+.nl-ndl b { color:var(--nx-text); font-weight:800; font-variant-numeric:tabular-nums; }
+.nl-nb { min-width:60px; min-height:44px; padding:0 12px; border-radius:12px; border:1.5px solid var(--nx-card-line); background:var(--nx-card); color:var(--nx-text);
+  font:inherit; font-size:14px; font-weight:800; font-variant-numeric:tabular-nums; cursor:pointer; touch-action:manipulation; }
+.nl-nb:not(:disabled):hover { border-color:var(--nx-card-hover); }
+.nl-nb:disabled { opacity:0.45; cursor:default; }
+.nl-rm { min-height:44px; padding:0 4px; }
+:is(.nl-nb, .nl-op, .nl-c):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+html[data-nx="light"] .nl-svg .nl-tag.nl-ok { fill:#0f7a4f; }
+html[data-nx="light"] .nl-svg .nl-tag.nl-bad { fill:#b42318; }
+
 /* ---- Long question text, condensed (Murci, 2026-10-11: B + A; nx-fold.js decides what folds) ----
    A long stem's SETUP folds to two lines behind "Read more"; its ASK (the instruction, printed last) always shows. A stem whose ask
    can't be told apart folds whole, to three lines. The folded text stays in the page, so a screen reader still reads all of it. */

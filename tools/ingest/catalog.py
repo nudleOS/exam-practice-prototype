@@ -102,6 +102,43 @@ SKETCH = obj({
     "graphs": {"type": "array", "items": SK_GRAPH, "description": "Only for TWO graphs on one set of axes ('Sketch f and g'): each with its "
                "family and shape; every feature names its graph"}},
     ["kind", "family", "x", "y", "features"])
+# a box and whisker diagram and an inequality on a number line (2026-10-11): placed on the paper's own scaled line (build-play.js
+# "boxplot" and "numline"); the learner sees the scale only
+NL_SCALE = {
+    "x": {**NUMS, "description": "[min, max, step] of the line: the paper's scale (the ANSWER BOOK's scaled line where it prints one, else "
+          "a line that holds the answer with room either side). Every placement snaps to the step, so every memo value must be a multiple "
+          "of it: 44 and 84 on a line ticked every 5 need step 1"},
+    "tick": {"type": "number", "description": "A short tick every so many units, as the paper's line has them (default: the step)"},
+    "label": {"type": "number", "description": "A number every so many units, as the paper's line prints them (default: the tick); the "
+             "builder widens it on a narrow phone while the numbers would touch"},
+    "unit": {"type": "string", "description": "The line's quantity and unit, only when the paper's line names it ('Time (in minutes)')"},
+    "tol": {"type": "number", "description": "How far from the memo's value still earns it, in the line's units (0: exactly the memo's value)"}}
+BX_IDS = ["min", "q1", "med", "q3", "max"]
+BOXPLOT = obj({
+    "kind": {"type": "string", "const": "boxplot"}, **NL_SCALE,
+    "at": obj({k: NUM for k in BX_IDS}, BX_IDS) | {"description": "The memo's five-number summary: min, q1 (the lower quartile), med (the "
+                                                                "median), q3 (the upper quartile), max"},
+    "crit": obj({k: INT for k in BX_IDS}, BX_IDS) | {"description": "Each value's memo criterion: the 0-based index into criteria. A criterion "
+                                                                  "earns its marks only when ALL its values are right: the memo's '✓ min. & "
+                                                                  "max. ✓ median ✓ Q1 and Q3' is min 0, max 0, med 1, q1 2, q3 2; '✓ box "
+                                                                  "✓ whiskers ending at 5 & 120' is q1 0, med 0, q3 0, min 1, max 1. "
+                                                                  "List them in the memo's order: the result chips follow it, and the "
+                                                                  "first value of a criterion shows its marks"}},
+    ["kind", "x", "tol", "at", "crit"])
+NUMLINE = obj({
+    "kind": {"type": "string", "const": "numline"}, **NL_SCALE,
+    "shade": {"type": "string", "enum": ["left", "right", "between", "outside"], "description": "The memo's shading: 'left' or 'right' of ONE "
+              "end (x < a, x ≥ a), 'between' two ends (a < x ≤ b), 'outside' two ends (x ≤ a or x > b)"},
+    "ends": {"type": "array", "items": obj({"at": NUM, "closed": {"type": "boolean", "description": "true: a filled dot, the end is in the "
+                                                                                                   "answer (≤, ≥); false: an open dot (<, >)"}},
+                                           ["at", "closed"]),
+             "description": "The memo's end: one for left / right, two for between / outside (any order)"},
+    "crit": obj({"end": INT, "circle": INT, "shade": INT, "end0": INT, "end1": INT, "circle0": INT, "circle1": INT}, []) | {
+        "description": "Each component's memo criterion: the 0-based index into criteria. 'end' is every end's place, 'circle' every end's "
+                       "open or filled dot, 'shade' the shading; end0 / end1 / circle0 / circle1 one end (0 the LEFT one) where the memo "
+                       "marks the ends apart. A criterion earns its marks only when ALL its components are right ('An open dot at −6 with "
+                       "an arrow to the right', 1 mark: end 0, circle 0, shade 0); a component no criterion names is not marked"}},
+    ["kind", "x", "tol", "shade", "ends", "crit"])
 
 COMPONENTS = {
     "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
@@ -186,7 +223,15 @@ COMPONENTS = {
             SKETCH | {"description": "Only for 'Sketch / Draw the graph of f' the memo marks by its features (intercepts, turning points, "
                                      "asymptotes, a point, the shape): BUILT on a grid, the learner placing each feature, the curve drawn "
                                      "through them. Every criterion becomes features (or the shape) whose marks add up to the part's; a "
-                                     "criterion no feature can earn ('smooth curve') is flagged. The criteria keep the memo's own text"}]},
+                                     "criterion no feature can earn ('smooth curve') is flagged. The criteria keep the memo's own text"},
+            BOXPLOT | {"description": "Only for 'Draw a box and whisker diagram' the memo marks by its values (min & max / the whiskers, the "
+                                      "median, Q1 and Q3 / the box): BUILT on the paper's scaled line, the learner placing the five values, "
+                                      "the box and whiskers drawn from them. Each memo criterion names the values it needs (crit); its "
+                                      "marks come from criteria, in the memo's order. The criteria keep the memo's own text"},
+            NUMLINE | {"description": "Only for 'Represent the answer (an inequality or interval) on a number line': BUILT on a number line, "
+                                      "the learner choosing the shading, placing each end and choosing its dot (open or filled). Each memo "
+                                      "criterion names the components it needs (crit); its marks come from criteria. Keep the part's 'after' "
+                                      "when the inequality is an earlier part's answer"}]},
         "memo": STR}, ["criteria"]),
 }
 
