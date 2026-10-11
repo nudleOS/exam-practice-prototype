@@ -134,6 +134,7 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
     mission's number (a block with one part, 4.2), so the two never share a key. A figure with source "answer_book" (an answer
     sheet's graph, Mathematical Literacy P1 2025 3.2) is cropped from the answer book given with --answer-book."""
     docs, figs = {"paper": fitz.open(paper_pdf), "answer_book": fitz.open(answer_book) if answer_book else None}, {}
+    made = set()   # the crop files written so far
     (out / "figures").mkdir(parents=True, exist_ok=True)
 
     def crop(f, stem):
@@ -151,6 +152,11 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
             return None
         pix = page.get_pixmap(dpi=150, clip=clip)
         name = f"q{stem.replace('.', '_')}.png"
+        # refuse, not repair: a mission and one of its parts with the same number and each its own figure would write the
+        # same file, the part's crop silently replacing the mission's (2026-10-11, found transcribing Grade 11 PS P1 2018)
+        if name in made:
+            sys.exit(f"{stem}: two figures would be cropped to {name} (a mission and a part with the same number): renumber one")
+        made.add(name)
         pix.save(str(out / "figures" / name))
         w, h = pix.width, pix.height
         try:  # a palette PNG: diagrams are line art (the hand-made crops were 32 colours)
