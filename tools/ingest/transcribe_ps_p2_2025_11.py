@@ -507,10 +507,10 @@ missions = [
     {"id": "5", "title": "Question 5", "kind": "Reaction rate", "marks": 11,
      "lead": "Carbon monoxide, CO(g), reacts with oxygen, O₂(g), to form carbon dioxide, CO₂(g), in a sealed container according to the balanced "
              "equation:\n2CO(g) + O₂(g) → 2CO₂(g)\nThe graph below shows the concentration of O₂(g) versus time.",
-     "figure": fig("Q5", "Graph of concentration of O₂(g) (mol·dm⁻³), 0 to 0,30, against time (s), 0 to 60, on a fine grid. The curve starts at "
-                   "0,27 at 0 s and passes through 0,15 at 10 s, about 0,09 at 20 s, about 0,05 at 30 s and about 0,035 at 40 s; from about "
-                   "52 s to 60 s it is level, just above 0,02."), "items": q5a},
-    # (the readings only: was "falls steeply ... then more and more slowly", 5.2.1's answer in words)
+     "figure": fig("Q5", "Graph of concentration of O₂(g) (mol·dm⁻³), 0 to 0,30, against time (s), 0 to 60, on a fine grid, with one "
+                   "curve."), "items": q5a},
+    # (no shape and no readings: "falls steeply ... then more and more slowly" was 5.2.1's answer in words, and the readings at
+    # 10 s and 30 s showed which slope is steeper; the curve carries no printed values, reading it is the skill, 2026-10-11)
     {"id": "5.3", "title": "Question 5.3", "kind": "Energy and the collision theory", "marks": 9,
      "lead": "The reaction between sulphur dioxide, SO₂(g), and oxygen, O₂(g), takes place in a sealed container according to the balanced equation "
              "below.\n2SO₂(g) + O₂(g) ⇌ 2SO₃(g)   ΔH = −196 kJ·mol⁻¹\n\nCurve X is the Maxwell Boltzmann distribution curve for the reaction above.",
