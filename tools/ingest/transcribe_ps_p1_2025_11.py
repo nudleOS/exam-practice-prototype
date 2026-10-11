@@ -7,17 +7,25 @@ images, so its text layer has gaps.
   python tools/ingest/transcribe_ps_p1_2025_11.py
   python tools/ingest/ingest.py "<...>/Physical Sciences P1 Nov 2025 Eng.pdf" "<...>/Physical Sciences P1 Nov 2025 MG Afr & Eng.pdf" --id ps-p1-2025-11 --from-json
 
-How the memo's shapes map (Physical Sciences):
-  multiple choice -> mcq (graph options: the figure, options "Graph A".."Graph D"; options printed as a table -> optTable);
-  a definition/law/statement -> rubric (its key words); "Calculate" -> steps, each step ONE number the method produces (a unit in
-  the label's brackets), the memo's formula and substitution marks riding on the number they lead to (the phone sees the number,
-  not the working); a memo RANGE -> its centre with a tolerance covering it; one read-off number -> num; "Choose ... Explain"
-  -> rubric (a choice cannot be marked as a number); "Show that" -> rubric when the memo marks words, steps on the numbers
-  before the given answer when it marks a formula and its substitutions (7.3); a 3-way choice with no explanation -> mcq;
-  "Draw / Sketch / Redraw" -> draw with the memo's criteria (self-checked, flagged no_fit). A mission is a question with its stem
-  and diagram; a question whose diagram changes part-way is two missions (7, 9, 10).
+How the memo's shapes map (Physical Sciences, Murci's rulings 2026-10-10):
+  multiple choice -> mcq (graph options: the figure, options "Graph A".."Graph D"; options printed as a table -> optTable); a 3-way
+  choice with no explanation -> mcq; one word the memo names -> term; one read-off number with no working -> num (10.1.2).
+  Every calculation ("Calculate", "Determine ... ENERGY PRINCIPLES", "Show that", "Choose ... by means of a calculation", and the
+  one "Write down" whose memo shows a working, 8.3.2) -> authored multiple choice, `work`: the memo's FIRST working line by line
+  (formula, substitution, the answer with its unit, and its direction or conclusion where the memo gives one) and three workings
+  each built from a DIFFERENT realistic physics error (a sign or direction slip, g used wrongly or left out, a unit not converted,
+  the wrong formula, a value from the wrong body or part), every number recomputed; 0 or full marks. A value the memo also accepts
+  (its ranges) is never a wrong option. "Show that r = 0,05 m" (7.3): all four end at the given value, as learners write it; only
+  the right one gets there. A definition or law ("Define / State / Describe") and the one-statement conclusion (6.3) -> statements
+  (STATEMENTS at the bottom: pick 1 x 2, the memo's wording right, its OR form a second right card, the wrong cards a key condition
+  dropped or swapped, the inverse relation, another law's wording); a choice with its reasons ("Choose ... Explain / Give a
+  reason") -> statements, the choice and each memo point a card, 1 mark each as the memo ticks them. No memo here weighs two
+  sides, so no part plays as a sort. "Draw / Sketch / Redraw" -> draw with the memo's criteria (self-checked, flagged no_fit).
+  A part whose options, cards or criteria show an earlier part's answer opens only after it ("after"). A mission is a question with
+  its stem and diagram; a question whose diagram changes part-way is two missions (7, 9, 10).
 Figure boxes are measured in PDF points (page 595.44 x 841.68) from the drawings themselves and checked on a contact sheet."""
 import json
+import re
 from pathlib import Path
 
 W, H = 595.44, 841.68
@@ -35,8 +43,8 @@ def fig(name, caption):
     return {"page": p, "bbox": [round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)], "caption": caption}
 
 
-def mcq(n, q, opts, a, clues, **kw):
-    return {"t": "mcq", "n": n, "marks": 2, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
+def mcq(n, q, opts, a, clues, marks=2, **kw):
+    return {"t": "mcq", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
 
 
 # notes: the memo's marking notes that are NOT points (key words, "... defined: 0/2", ACCEPT limits): never scored, never shown
@@ -44,15 +52,28 @@ rub = lambda n, q, marks, bullets, clues, each=None, notes=None: {"t": "rubric",
                                                                  **({"each": each} if each else {}), **({"notes": notes} if notes else {})}
 term = lambda n, q, a, clues, marks=1: {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a}
 num = lambda n, q, a, tol, unit, clues, marks=1: {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit}
-draw = lambda n, q, marks, criteria, clues, memo="": {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
-                                                     "criteria": [{"text": t, "marks": m} for t, m in criteria], **({"memo": memo} if memo else {})}
+draw = lambda n, q, marks, criteria, clues, memo="", **kw: {"t": "draw", "n": n, "marks": marks, "q": q, "clues": clues,
+                                                           "criteria": [{"text": t, "marks": m} for t, m in criteria], **({"memo": memo} if memo else {}), **kw}
+
+WORK = "\n\nChoose the correct working."
+AUTHORED = []   # the calculations played as authored multiple choice, in paper order
 
 
-def steps(n, q, marks, sts, clues):
-    """sts: (label, marks, answer, tolerance, the memo's working)."""
-    s = [{"id": "s%d" % (i + 1), "label": lab, "marks": m, "a": a, "tol": tol, "memo": memo} for i, (lab, m, a, tol, memo) in enumerate(sts)]
-    assert sum(x["marks"] for x in s) == marks, n
-    return {"t": "steps", "n": n, "marks": marks, "q": q, "clues": clues, "steps": s}
+def shape(o):
+    """An option's layout: its line count and how many lines end in a [reason]."""
+    lines = o.split("\n")
+    return len(lines), sum(1 for ln in lines if re.search(r"\[[^\[\]]+\]\s*$", ln))
+
+
+def work(n, q, marks, opts, a, clues, **kw):
+    """A calculation as authored multiple choice (Murci, 2026-10-10): opts are the memo's FIRST working and three workings built
+    from realistic physics errors, one step a line, a fraction {numerator}/{denominator}; the part keeps its marks, all or nothing.
+    kw: catalogue extras, e.g. after=[...] when the options show an earlier part's answer."""
+    assert len(opts) == 4 and len(set(opts)) == 4, (n, "four distinct options")
+    assert len({shape(o) for o in opts}) == 1 and shape(opts[0])[0] >= 2, (n, [shape(o) for o in opts])
+    assert 0 <= a <= 3, (n, a)
+    AUTHORED.append(n)
+    return mcq(n, q + WORK, opts, a, clues, marks=marks, **kw)
 
 
 # ---- QUESTION 1: multiple choice, the question paper pages 3-7 and the memo page 2 ----
@@ -64,7 +85,8 @@ q1 = [
     mcq("1.2", "A hot-air balloon is moving upwards at a constant velocity. A small stone is dropped from THE BALLOON. Which ONE of the following "
         "graphs represents the motions of the balloon and the stone? Ignore the effects of friction on the stone.",
         ["Graph A", "Graph B", "Graph C", "Graph D"], 1,
-        ["At the moment it is dropped, the stone has the balloon's velocity.", "Then only gravity acts on it: its velocity falls steadily, through zero."],
+        # (the second clue no longer describes the right line's whole path: with the first it named graph B)
+        ["At the moment it is dropped, the stone has the balloon's velocity.", "Once released, only gravity acts on the stone: which way does its velocity change?"],
         figure=fig("1.2", "Four velocity-time graphs, A and B on top and C and D below, each with v (m·s⁻¹) up and t (s) across and two lines, "
                    "'stone' and 'balloon'. A: the balloon a horizontal line above zero; the stone starts where the balloon line meets the axis and "
                    "rises. B: the balloon horizontal above zero; the stone starts at the balloon's velocity and falls in a straight line below zero. "
@@ -79,28 +101,33 @@ q1 = [
         figure=fig("1.3", "A motor on the ground with a string over a wheel above it; the string's other end holds a box; an arrow beside the box points up.")),
     mcq("1.4", "Objects P and Q, with masses m and 2m respectively, have the same momentum. The velocity of P is …",
         ["equal to the velocity of Q.", "half the velocity of Q.", "twice the velocity of Q.", "four times the velocity of Q."], 2,
-        ["p = mv, and p is the same for both.", "Half the mass needs ... the velocity."],
+        # (the old second clue, "Half the mass needs ... the velocity.", left one word to fill in: the answer)
+        ["p = mv, and p is the same for both.", "Write p = mv for P and for Q, and set the two equal."],
         figure=fig("1.4", "Two boxes on a horizontal surface: a smaller box P on the left and a larger box Q on the right.")),
     mcq("1.5", "A block moves along a rough horizontal surface while a horizontal force F of magnitude 18 N and a constant kinetic frictional force of "
         "magnitude 6 N act on it. Which ONE of the following combinations of ACCELERATION and NET WORK DONE ON THE BLOCK is CORRECT?",
         ["Constant; increases", "Increases; constant", "Increases; increases", "Constant; constant"], 0,
-        ["Both forces are constant, so the net force is ...", "Net work = net force x distance, and the distance keeps growing."],
+        # (the old clues, "so the net force is ..." and "the distance keeps growing", read together named option A)
+        ["Find the net force on the block: does it change as the block moves?", "Net work done = net force x distance moved."],
         optTable={"head": ["ACCELERATION", "NET WORK DONE ON THE BLOCK"],
                   "rows": [["Constant", "Increases"], ["Increases", "Constant"], ["Increases", "Increases"], ["Constant", "Constant"]]},
         figure=fig("1.5", "A block on a horizontal surface: F = 18 N pulls it to the right, fk = 6 N acts to the left.")),
     mcq("1.6", "A star's spectrum, observed from Earth, is red shifted. Which ONE of the following statements is CORRECT?",
         ["The speed of light is increasing.", "The star is moving towards Earth.", "The frequency of each spectral line has increased.",
          "The wavelength of each spectral line has increased."], 3,
-        ["Red light has the longest wavelengths of visible light.", "Red shift: the source moves away, and the lines move towards red."]),
+        # (the old clues, "red has the longest wavelengths" and "the lines move towards red", read together named option D)
+        ["A red shift is the Doppler effect for light.", "When a source moves away from you, are its waves stretched or squeezed?"]),
     mcq("1.7", "Three point charges, Q1, Q2 and Q3, are fixed in a straight line. Q1 is r metres from Q2, while Q3 is 2r metres from Q2. The magnitude "
         "of the charge on Q2 is q. The net electrostatic force on charge Q1 is zero. What is the magnitude of charge Q3 in terms of q?",
         ["⅑q", "⅓q", "3q", "9q"], 3,
-        ["Q3 is 3r from Q1, Q2 is r from Q1.", "The two forces on Q1 are equal: kQ3/(3r)² = kq/r²."],
+        # (the old second clue wrote out the equation kQ3/(3r)² = kq/r², which solves to the answer)
+        ["Q3 is 3r from Q1, Q2 is r from Q1.", "The net force on Q1 is zero: write Coulomb's law for each force on Q1 and set them equal."],
         figure=fig("1.7", "Charges Q1, Q2 and Q3 on a dashed line: r between Q1 and Q2, 2r between Q2 and Q3.")),
     mcq("1.8", "Three identical light bulbs, X, Y and Z, are connected in a circuit, as shown in the diagram below. Switch S is initially closed. "
         "Ignore the internal resistance of the battery. Switch S is now opened. How will the brightness of bulbs X and Y be affected?",
         ["Increases; decreases", "Decreases; increases", "Increases; increases", "Decreases; decreases"], 1,
-        ["Opening S removes Z: the total resistance goes up.", "Less total current through X; more of the battery's voltage across Y."],
+        # (the second clue asked the question instead of answering both halves: it named option B)
+        ["Opening S removes Z: the total resistance goes up.", "Then ask how the current through X changes, and how the battery's voltage is now shared between X and Y."],
         optTable={"head": ["BRIGHTNESS OF BULB X", "BRIGHTNESS OF BULB Y"],
                   "rows": [["Increases", "Decreases"], ["Decreases", "Increases"], ["Increases", "Increases"], ["Decreases", "Decreases"]]},
         figure=fig("1.8", "A battery in series with bulb X; after X the circuit splits into bulb Y and, through switch S, bulb Z, in parallel.")),
@@ -111,7 +138,8 @@ q1 = [
     mcq("1.10", "Light of different wavelengths is incident on a metal surface. Which ONE of the following graphs shows the CORRECT relationship between "
         "the maximum kinetic energy of the photoelectrons, Ek(max), and the inverse of the wavelength of the incident light, 1/λ?",
         ["Graph A", "Graph B", "Graph C", "Graph D"], 2,
-        ["Ek(max) = hc/λ − W0: a straight line against 1/λ.", "Below the threshold no electrons are emitted, so the line starts on the axis."],
+        # (the old second clue, "the line starts on the axis", with the first's straight line described graph C)
+        ["Ek(max) = hc/λ − W0: a straight line against 1/λ.", "Is there a lowest frequency (a threshold) below which no electrons are emitted?"],
         figure=fig("1.10", "Four graphs of Ek(max) (J) up against 1/λ (m⁻¹) across. A: a straight line rising from the origin. B: a line starting "
                    "on the 1/λ axis to the right of the origin and falling below it. C: a line starting on the 1/λ axis to the right of the origin "
                    "and rising. D: a line falling from the origin.")),
@@ -129,46 +157,61 @@ q2 = [
         ["w: Fg / Fw / weight / mg / 49 N / gravitational force, downwards", 1], ["F: FA / 18 N / applied force, at θ above the horizontal", 1],
         ["fs(max): Ff / fs / f / friction (force) / (static) friction, horizontal, to the left", 1], ["N: FN / normal (force), upwards", 1]],
         ["Four forces: weight, the applied force, friction and the normal force.", "Draw them from one dot, each with an arrow and a label."],
-        memo="A mark for each label AND its arrow; fk not accepted as a label. Any additional force(s), everything correct but no arrows, or forces "
+        memo="A mark for each label AND its arrow; fk not accepted as label. Any additional force(s), everything correct but no arrows, or forces "
              "not touching the dot: max 3/4."),
-    steps("2.3.1", "The horizontal component of force F is 15 N. Calculate θ.", 2,
-          [("Angle θ (degrees)", 2, 33.56, 0.1, "Fx = F cos θ; 15 = 18 cos θ ✓; θ = 33,56° ✓ (OR 9,95 = 15 tan θ, OR 9,95 = 18 sin θ). Answer only: 1/2.")],
-          ["You know F and its horizontal component.", "cos θ = Fx / F."]),
-    steps("2.3.2", "The horizontal component of force F is 15 N. Calculate the coefficient of static friction.", 5, [
-        ("Vertical component of F (N)", 1, 9.95, 0.05, "Fy = 18 sin 33,56° = 9,95 N, OR Fy = √(18² − 15²) = 9,95 N ✓"),
-        ("Normal force on the block (N)", 1, 39.05, 0.1, "FN + Fy − Fg = 0; FN = (5)(9,8) − 9,95 ✓ = 39,05 N"),
-        ("Coefficient of static friction", 3, 0.38, 0.01, "fs(max) = μs N ✓; 15 ✓ = μs(39,05); μs = 0,38 ✓ (N not calculated: 3/5)")],
-        ["The block is at rest with MAXIMUM static friction: friction equals the horizontal pull.", "F's vertical part lifts the block, so N is less than mg."]),
+    work("2.3.1", "The horizontal component of force F is 15 N. Calculate θ.", 2, [
+        "Fx = F cos θ\n15 = 18 cos θ\nθ = 33,56°",                        # the memo
+        "Fx = F sin θ\n15 = 18 sin θ\nθ = 56,44°",                        # the sine for the horizontal component
+        "Fx = F tan θ\n15 = 18 tan θ\nθ = 39,81°",                        # the wrong ratio (tan)
+        "Fx = F cos θ\n15 = 18 cos θ\nθ = 0,59°"], 0,                     # the calculator in radians
+        ["You know F and its horizontal component.", "Which trig ratio links the side next to θ with the hypotenuse?"]),
+    work("2.3.2", "The horizontal component of force F is 15 N. Calculate the coefficient of static friction.", 5, [
+        "fs(max) = μsN\nfs(max) = μs(mg + F sin θ)\n15 = μs((5)(9,8) + 18 sin 33,56°)\nμs = 0,25",       # F's vertical part pushes down (sign)
+        "fs(max) = μsN\nfs(max) = μs(mg − F cos θ)\n15 = μs((5)(9,8) − 18 cos 33,56°)\nμs = 0,44",       # the horizontal part taken off N
+        "fs(max) = μsN\nfs(max) = μs(mg − F sin θ)\n18 = μs((5)(9,8) − 18 sin 33,56°)\nμs = 0,46",       # F itself as the friction (wrong value)
+        "fs(max) = μsN\nfs(max) = μs(mg − F sin θ)\n15 = μs((5)(9,8) − 18 sin 33,56°)\nμs = 0,38"], 3,  # the memo (its OPTION 1)
+        # (the old clues, "friction equals the horizontal pull" and "N is less than mg", read together picked out option D's lines)
+        ["The block is on the point of moving: which force does the maximum static friction balance?",
+         "Does F's vertical component press the block onto the surface or lift it?"],
+        after=["2.3.1"]),   # the options show θ = 33,56°, 2.3.1's answer
     rub("2.4", "Angle θ is decreased while the magnitude of force F remains constant. How will the friction acting on the block be affected? Choose from "
         "INCREASES, DECREASES or REMAINS THE SAME. Explain the answer.", 4, [
-        # the memo's four ticks a point each (2026-10-10): one 4-mark point per answer gave "Increases because the normal force increases" 4 / 4
         "Increases (1)", "The vertical component of F decreases (1)", "The normal force increases (1)",
         "μs remains constant, so fs(max) increases: it is directly proportional to the normal force (1)",
         "OR — Decreases (1)", "The horizontal component of F increases (1)", "The block will move / Fnet will increase (1)",
         "The kinetic friction is less than the maximum static friction (fk < fs(max)) (1)",
         "OR — Remains the same (1)", "A relevant calculation (1)", "choosing μk smaller than μs (1)", "and θ that together with μk gives fk = 15 N (1)"],
-        ["A smaller angle means a bigger horizontal part and a smaller vertical part of F.", "Friction depends on the normal force, and on whether the block starts to slide."]),
+        ["Resolve F at the smaller angle: which component grows and which shrinks?", "How does the normal force depend on F's vertical component?"]),
 ]
 
 # ---- QUESTION 3, the question paper page 9 and the memo pages 5-9 ----
 q3 = [
     rub("3.1", "Define the term free fall.", 2, [
         "Motion under the influence of weight/gravitational force only. (2 or 0)"],
-        ["Which force is the ONLY one acting?", "Free fall: motion under the influence of ... only."], each=2, notes=["A projectile defined: 0/2."]),
-    steps("3.2", "Using EQUATIONS OF MOTION ONLY, calculate the value of p.", 3,
-          [("Time p (s)", 3, 1.53, 0.01, "vf = vi + aΔt ✓; 0 = 15 + (−9,8)Δt ✓ (upwards positive); Δt = 1,53 s ✓. Energy principles used: 1/3.")],
-          ["At time p the velocity is 0: the top of the flight.", "vf = vi + aΔt with a = −9,8 m·s⁻² (upwards positive)."]),
-    steps("3.3", "The ball strikes the ground 3,36 seconds after it was thrown upwards. Calculate q.", 3,
-          [("Magnitude of velocity q (m·s⁻¹)", 3, 18.13, 0.2, "vf² = vi² + 2aΔy ✓; vf² = (15)² + 2(−9,8)(−5) ✓; vf = 17,97 m·s⁻¹ ✓ "
-            "(OR vf = vi + aΔt = 15 + (−9,8)(3,36) = 17,93 m·s⁻¹). Range: 17,93 – 18,33.")],
-          ["q is the speed when the ball hits the ground, 5 m below where it started.", "vf² = vi² + 2aΔy, or vf = vi + aΔt with Δt = 3,36 s."]),
+        ["Which force is the ONLY one acting?", "Think of a ball thrown upwards with no air resistance: what acts on it the whole time?"], each=2,
+        notes=["A projectile defined: 0/2."]),
+    work("3.2", "Using EQUATIONS OF MOTION ONLY, calculate the value of p.", 3, [
+        "vf = vi + aΔt\n0 = 15 + (9,8)Δt\nΔt = −1,53 s",                          # a = +9,8 with upwards positive (sign)
+        "vf = vi + aΔt\n0 = 15 + (−9,8)Δt\nΔt = 1,53 s",                          # the memo (OPTION 1, upwards positive)
+        "vf = vi + aΔt\n0 = 15 + (−10)Δt\nΔt = 1,50 s",                           # g taken as 10, not the data sheet's 9,8
+        "Δy = viΔt + ½aΔt²\n0 = 15Δt + ½(−9,8)Δt²\nΔt = 3,06 s"], 1,              # Δy = 0: the time back to the roof, not to the top
+        ["At time p the velocity is 0: the top of the flight.", "Choose upwards as positive and keep the signs of the velocity and the acceleration consistent."]),
+    work("3.3", "The ball strikes the ground 3,36 seconds after it was thrown upwards. Calculate q.", 3, [
+        "vf² = vi² + 2aΔy\nvf² = (15)² + 2(−9,8)(−5)\nq = 17,97 m·s⁻¹",           # the memo (OPTION 1, upwards positive)
+        "vf² = vi² + 2aΔy\nvf² = (15)² + 2(−9,8)(5)\nq = 11,27 m·s⁻¹",            # the ground taken 5 m ABOVE the start (sign)
+        "vf² = vi² + aΔy\nvf² = (15)² + (−9,8)(−5)\nq = 16,55 m·s⁻¹",             # the 2 left out of the formula
+        "vf = vi + aΔt\nvf = 0 + (−9,8)(3,36)\nq = 32,93 m·s⁻¹"], 0,              # from rest, but over the whole 3,36 s (wrong part)
+        # (the old second clue wrote the right working's formula, vf² = vi² + 2aΔy)
+        ["q is the speed when the ball hits the ground, 5 m below where it started.",
+         "Pick an equation of motion that uses what you know: vi, the acceleration and the displacement (mind its sign)."]),
     rub("3.4", "The ball bounces to a maximum height of 3 m after it struck the ground. Is the collision with the ground ELASTIC or INELASTIC? Explain "
         "the answer WITHOUT the use of calculations.", 3, [
         "Inelastic. (1)", "The height decreased/smaller. (1)",
         "The velocity with which the ball strikes the ground is not the same as the velocity with which it left the ground / kinetic energy is "
         "converted to heat and sound energy / kinetic energy is NOT conserved / the kinetic energy is not the same before and after the ball strikes "
         "the ground. ACCEPT: kinetic energy is lost. (1)"],
-        ["Compare the heights: 5 m below the top before, 3 m after.", "Elastic means kinetic energy is conserved."],
+        # (the old first clue, "5 m below the top before", misplaced the heights)
+        ["Compare how high the ball rose before the bounce with how high it rises after it.", "What does 'elastic' say about the kinetic energy?"],
         notes=["Do NOT accept any calculation as an explanation."]),
     draw("3.5", "Sketch a velocity versus time graph for the motion of the ball from the time it was projected until it reached the maximum height after "
          "it bounced. Show the following NUMERICAL VALUES on the graph: the initial velocity; time p; velocity q.", 4, [
@@ -176,8 +219,9 @@ q3 = [
         ["The straight line cuts the time axis at the time calculated in 3.2 (1,53 s)", 1],
         ["The correct velocity calculated in 3.3 (17,97 m·s⁻¹) where the ball is on the ground", 1],
         ["The velocity of the second line is less than in 3.3; the lines are parallel and it ends at v = 0", 1]],
-        ["One straight line until the bounce, then a second, parallel one.", "Mark 15, 1,53 and your q on the axes."],
-        memo="Positive marking from 3.2 and 3.3. Accept if no contact time is shown on the graph.")]
+        ["One straight line until the bounce, then a second, parallel one.", "Mark 15, your p and your q on the axes."],
+        memo="Positive marking from 3.2 and 3.3. Accept if no contact time is shown on the graph.",
+        after=["3.2", "3.3"])]   # its criteria show p = 1,53 s and q = 17,97 m·s⁻¹
 
 # ---- QUESTION 4, the question paper page 10 and the memo pages 9-10 ----
 q4 = [
@@ -185,14 +229,25 @@ q4 = [
         "The product of the resultant/net force acting on an object and the time the (net) force acts on the object. (2)",
         "OR — The product of the resultant/net force and the contact time. (2)"],
         ["Impulse = force x ...", "Which force, and which time?"], each=2, notes=["Key words: product; resultant/net force; time. A key word omitted: deduct 1."]),
-    steps("4.2.1", "Calculate the average net force acting on the ball.", 3,
-          [("Average net force on the ball (N)", 3, 225, 1, "Gradient: Fnet = Δp/Δt = (4,5 − 0)/(0,03 − 0,01) ✓✓ = 225 N to the right/opposite to the original "
-            "direction of the ball ✓ (OR Fnet(0,01) = 0 − pi and Fnet(0,03) = 4,5 − pi).")],
-          ["The graph's gradient is the change in momentum over the change in time.", "Use the two points where the line is known: (0,01; 0) and (0,03; 4,5)."]),
-    steps("4.2.2", "Calculate the magnitude of the initial velocity of the ball.", 4,
-          [("Magnitude of the initial velocity (m·s⁻¹)", 4, 15, 0.1, "FnetΔt = Δp = mvf − mvi ✓ (any one); (225)(0,03) ✓ = 4,5 − (0,15)vi ✓; vi = −15 m·s⁻¹; "
-            "vi = 15 m·s⁻¹ ✓ (positive marking from 4.2.1)")],
-          ["Impulse = change in momentum, with the mass in kg (150 g).", "The ball comes in one way and leaves the other: watch the signs."]),
+    work("4.2.1", "Calculate the average net force acting on the ball.", 3, [
+        "Fnet = gradient = {Δpf}/{Δ(Δt)}\nFnet = {4,5 − 0}/{0,03 − 0}\nFnet = 150 N to the right (opposite to the ball's original direction)",
+        # ^ the line read from the origin, not from (0,01; 0) (wrong point)
+        "Fnet = m × gradient = m{Δpf}/{Δ(Δt)}\nFnet = (0,15){4,5 − 0}/{0,03 − 0,01}\nFnet = 33,75 N to the right (opposite to the ball's original direction)",
+        # ^ multiplies by the mass: the gradient is already Δp/Δt (wrong formula)
+        "Fnet = gradient = {Δpf}/{Δ(Δt)}\nFnet = {4,5 − 0}/{0,03 − 0,01}\nFnet = 225 N to the right (opposite to the ball's original direction)",
+        # ^ the memo (OPTION 1)
+        "Fnet = gradient = {Δpf}/{Δ(Δt)}\nFnet = {4,5 − 0}/{0,03 − 0,01}\nFnet = 225 N to the left (in the ball's original direction)"], 2,
+        # ^ the direction slip
+        ["What quantity does the gradient of a momentum against time graph give?", "Read two points that lie ON the line."]),
+    work("4.2.2", "Calculate the magnitude of the initial velocity of the ball.", 4, [
+        "FnetΔt = Δp = mvf − mvi\n(−225)(0,03) = 4,5 − (0,15)vi\nvi = 75 m·s⁻¹\nMagnitude of vi = 75 m·s⁻¹",        # Fnet's sign against pf's (sign)
+        "FnetΔt = Δp = mvf − mvi\n(225)(0,03) = 4,5 − (150)vi\nvi = −0,015 m·s⁻¹\nMagnitude of vi = 0,015 m·s⁻¹",   # 150 g not converted to kg
+        "FnetΔt = mvi\n(225)(0,03) = (0,15)vi\nvi = 45 m·s⁻¹\nMagnitude of vi = 45 m·s⁻¹",                         # impulse taken as the momentum
+        "FnetΔt = Δp = mvf − mvi\n(225)(0,03) = 4,5 − (0,15)vi\nvi = −15 m·s⁻¹\nMagnitude of vi = 15 m·s⁻¹"], 3,  # the memo (OPTION 1)
+        # (the old first clue, "Impulse = change in momentum, with the mass in kg", with the second's signs picked out option D)
+        ["Which principle links the impulse on the ball to its momentum before and after the hit?",
+         "The ball comes in one way and leaves the other: watch the signs and the units."],
+        after=["4.2.1"]),   # the options show Fnet = 225 N, 4.2.1's answer
     draw("4.3", "Redraw the graph in the ANSWER BOOK and label it as A. On the same set of axes, draw the graph that will be obtained when a ball with a "
          "bigger mass is used, without changing the initial velocity and average net force. Label this as B.", 2, [
         ["Line B parallel to A (same net force: same gradient), shifted to the right (bigger initial momentum to undo), both labelled", 2]],
@@ -206,26 +261,33 @@ q5 = [
         "OR — The work done (on an object) by a resultant/net force is equal to the change in the object's kinetic energy. (2)"],
         ["It links work and one kind of energy.", "Which work: by which force?"], each=2,
         notes=["Key words: net/total work done; equal; change in kinetic energy. A key word omitted: deduct 1."]),
-    steps("5.2", "Using ENERGY PRINCIPLES ONLY, calculate the kinetic energy of the crate at point B.", 3,
-          [("Kinetic energy of the crate at B (J)", 3, 84, 0.5, "Wnet = ΔEk / FAΔx cos θ = ½mvf² − ½mvi² ✓ (any one); (12)(7) cos 0° = Ekf − 0 ✓; Ekf = 84 J ✓")],
-          ["From A to B the surface is frictionless: F does all the work.", "Work = F Δx cos θ, and the crate starts at rest."]),
+    work("5.2", "Using ENERGY PRINCIPLES ONLY, calculate the kinetic energy of the crate at point B.", 3, [
+        "Wnet = ΔEk\n(12)(7) cos 0° = Ekf − 0\nEkf = 84 J",                    # the memo
+        "Wnet = ΔEk\n(12)(7) cos 20° = Ekf − 0\nEkf = 78,93 J",                # the slope's 20° used on the flat (wrong part)
+        "Wnet = ΔEk\n(3)(9,8)(7) cos 0° = Ekf − 0\nEkf = 205,8 J",             # the weight mg used for F (g used wrongly)
+        "Wnet = ΔEk\n½(12)(7) cos 0° = Ekf − 0\nEkf = 42 J"], 0,               # the ½ of Ek put on the work (wrong formula)
+        # (the old clues, "F does all the work" and "Work = F Δx cos θ, from rest", read together picked out option A)
+        ["From A to B the surface is frictionless: which force does net work on the crate?",
+         "What is the angle between that force and the crate's displacement?"]),
     draw("5.3", "Force F is removed when the crate reaches point B. The crate then experiences a constant frictional force of 21 N as it moves down the "
          "incline. Draw a free-body diagram showing ALL the forces acting on the crate as it moves down the incline.", 3, [
         ["w: Fw / Fg / mg / gravitational force / 29,4 N / weight, vertically downwards", 1],
         ["f: Ff / fk / (kinetic) friction / 21 N, up the incline", 1], ["N: FN / normal (force), perpendicular to the incline", 1]],
         ["Three forces once F is gone.", "Friction opposes the motion down the slope; N is perpendicular to the slope."],
         memo="A mark for each label AND its arrow. Any additional force(s), no arrows, or forces not touching the dot: max 2/3."),
-    # "decide by calculation" (2026-10-10): as a rubric of the memo's options a strong learner's working scored 0 / 5 (numbers, no words to
-    # match); played as the memo's Option 5, the marks riding on its two numbers, the conclusion on the distance (7,68 m > 6,8 m)
-    steps("5.4", "Using ENERGY PRINCIPLES ONLY, determine whether the crate will pass point C.", 5, [
-        ("Net force along the slope opposing the crate's motion (N)", 2, 10.94, 0.05,
-         "W(Fg) = (3)(9,8) sin 20° Δx cos 0° ✓ (gravity's component, 10,06 N, along the motion); W(f) = (21) Δx cos 180° ✓ (friction against it): "
-         "21 − 10,06 = 10,94 N"),
-        ("Distance the crate slides down the slope from B before it stops (m)", 3, 7.68, 0.05,
-         "Wnet = ΔEk: [(3)(9,8) sin 20° − 21] Δx cos 0° = 0 − 84 ✓; Δx = 7,68 m ✓; 7,68 m > 6,8 m: the crate WILL pass point C ✓. "
-         "(Any of the memo's five options: W(Fg), W(f) and ΔEk substituted, the answer, the conclusion; e.g. Ekf at C = 9,58 J > 0 J.) "
-         "Accept cos 70° or sin 20° throughout.")],
-        ["Down the slope gravity's component (3 × 9,8 × sin 20°) helps; friction (21 N) opposes.", "Work out how far the crate slides before its 84 J is used up, then compare with BC = 6,8 m."])]
+    work("5.4", "Force F is removed when the crate reaches point B. The crate then experiences a constant frictional force of 21 N as it moves down the "
+         "incline. Using ENERGY PRINCIPLES ONLY, determine whether the crate will pass point C.", 5, [
+        "Wnet = ΔEk\nWFg + Wfk = Ekf − Eki\n(3)(9,8) sin 20° Δx cos 180° + (21)Δx cos 180° = 0 − 84\nΔx = 2,70 m\n"
+        "2,70 m < 6,8 m: the crate will not pass point C",                                  # gravity's work taken against the motion (sign)
+        "Wnet = ΔEk\nWFg + Wfk = Ekf − Eki\n(3)(9,8) cos 20°(6,8) cos 0° + (21)(6,8) cos 180° = Ekf − 84\nEkf = 129,06 J\n"
+        "129,06 J > 0 J: the crate will pass point C",                                      # cos 20° for gravity's component (wrong formula)
+        "Wnet = ΔEk\nWFg + Wfk = Ekf − Eki\n(3) sin 20° Δx cos 0° + (21)Δx cos 180° = 0 − 84\nΔx = 4,21 m\n"
+        "4,21 m < 6,8 m: the crate will not pass point C",                                  # g left out: the mass used as the weight
+        "Wnet = ΔEk\nWFg + Wfk = Ekf − Eki\n(3)(9,8) sin 20° Δx cos 0° + (21)Δx cos 180° = 0 − 84\nΔx = 7,68 m\n"
+        "7,68 m > 6,8 m: the crate will pass point C"], 3,                                  # the memo (OPTION 1)
+        ["Down the slope, gravity's component along the slope does positive work and friction does negative work.",
+         "Work out how far the crate slides before its kinetic energy from B is used up, then compare with BC = 6,8 m."],
+        after=["5.2"])]   # the options show Ek at B = 84 J, 5.2's answer
 
 # ---- QUESTION 6, the question paper page 12 and the memo pages 13-14 ----
 q6 = [
@@ -233,25 +295,32 @@ q6 = [
         "The change in frequency (or pitch) of the sound detected by a listener, because the sound source and the listener have different velocities "
         "relative to the medium of sound propagation. (2)",
         "OR — An (apparent) change in (observed/detected) frequency (pitch) as a result of the relative motion between a sound source and an observer. (2)"],
-        ["Think of an ambulance passing you: what changes?", "It is about the detected frequency and the relative motion."], each=2,
+        ["Think of an ambulance passing you: what changes?", "Something must be different between the source and the listener."], each=2,
         notes=["Key words: change in frequency; source and listener; relative motion/different velocities. A key word omitted: deduct 1."]),
     term("6.2.1", "For this experiment, write down the independent variable.", ["Velocity of the ambulance", "Speed of the ambulance", "Velocity of the source",
                                                                                 "Speed of the source", "vs"],
-         ["What did the experimenters change on purpose?", "The graph's horizontal axis."]),
+         # (the old second clue, "The graph's horizontal axis.", pointed to the answer by position)
+         ["What did the experimenters change on purpose?", "The detected frequency depends on it."]),
     term("6.2.2", "For this experiment, write down a controlled variable.", [
         "Frequency of the sound produced by the ambulance siren", "Frequency of the siren", "Wavelength of the sound produced by the siren", "fs",
         "Speed of sound", "Density of air", "Temperature of air", "The detector is stationary", "The listener is stationary"],
          ["What was kept the same in every run?", "Think of the siren itself, the air, or the detector."]),
     rub("6.3", "What conclusion can be made for Part B of this experiment?", 2, [
         "As the velocity of the ambulance increases, the detected frequency decreases. (2)"],
-        ["Part B: the ambulance moves AWAY from the detector.", "Read the falling line: what happens to the frequency as the velocity grows?"], each=2,
+        ["Part B: the ambulance moves AWAY from the detector.", "Which line is Part B's? Compare its frequency at 5 m·s⁻¹ and at 25 m·s⁻¹."], each=2,
         notes=["Inversely proportional indicated: 0/2."]),
-    steps("6.4", "Calculate the speed of sound in air.", 6,
-          [("Speed of sound in air (m·s⁻¹)", 6, 329.64, 0.5,
-            "Approaching: fL = v/(v − vs) fs ✓ (either formula); 1298 = v/(v − 25) fs ✓, so vfs = 1298(v − 25) (1). Moving away: fL = v/(v + vs) fs; "
-            "1115 = v/(v + 25) fs ✓, so vfs = 1115(v + 25) (2). (1) = (2): 1298(v − 25) = 1115(v + 25) ✓ (OR (1) ÷ (2): 1,164(v − 25) = v + 25); "
-            "v = 329,64 m·s⁻¹ ✓")],
-          ["Read the two detected frequencies at 25 m·s⁻¹: 1 298 Hz approaching, 1 115 Hz moving away.", "Two Doppler equations, two unknowns (v and fs): divide one by the other."])]
+    work("6.4", "Calculate the speed of sound in air.", 6, [
+        "fL = {v}/{v − vs} fs (approaching)\nfs = 1115 Hz (the reading for Part B)\n1298 = {v}/{v − 25}(1115)\n1298(v − 25) = 1115v\n"
+        "183v = 32 450\nv = 177,32 m·s⁻¹",                                                   # Part B's reading taken as the siren's own (wrong value)
+        "fL = {v}/{v − vs} fs (approaching)\n1298 = {v}/{v − 25} fs, so vfs = 1298(v − 25) … (1)\nfL = {v}/{v + vs} fs (moving away)\n"
+        "1115 = {v}/{v + 25} fs, so vfs = 1115(v + 25) … (2)\n(1) = (2): 1298(v − 25) = 1115(v + 25)\nv = 329,64 m·s⁻¹",   # the memo
+        "fL = {v}/{v + vs} fs (approaching)\n1298 = {v}/{v + 25} fs, so vfs = 1298(v + 25) … (1)\nfL = {v}/{v − vs} fs (moving away)\n"
+        "1115 = {v}/{v − 25} fs, so vfs = 1115(v − 25) … (2)\n(1) = (2): 1298(v + 25) = 1115(v − 25)\nv = −329,64 m·s⁻¹",  # the signs swapped
+        "fL = {v}/{v − vs} fs (approaching)\nfs = {1298 + 1115}/{2} = 1206,5 Hz\n1298 = {v}/{v − 25}(1206,5)\n1298(v − 25) = 1206,5v\n"
+        "91,5v = 32 450\nv = 354,64 m·s⁻¹"], 1,                                               # the siren's frequency taken halfway (misread)
+        ["Read the two detected frequencies at 25 m·s⁻¹ and decide which line is the approaching ambulance.",
+         "Two Doppler equations, two unknowns (v and fs): divide one by the other."],
+        after=["6.3"])]   # the options say which reading is Part B's (moving away), the heart of 6.3's conclusion
 
 # ---- QUESTION 7, the question paper page 13 and the memo pages 14-15 ----
 q7a = [
@@ -261,51 +330,77 @@ q7a = [
         ["Direction: arrows pointing away from the positive charge", 1], ["Field lines radially outward", 1]],
         ["X is positive.", "Field lines point the way a positive test charge would be pushed."],
         memo="Two or more field lines inside the sphere / not touching the sphere / crossing each other: deduct 1. More than one charge drawn: 0/2."),
-    # "Show that" with a formula and its substitutions (2026-10-10, memo self-test: as a rubric the memo's own working scored 0 / 3, a
-    # formula has no words to match): steps on the numbers the working produces BEFORE the given answer, the marks riding on them
-    steps("7.3", "Show, by means of a calculation, that r = 0,05 m.", 3, [
-        ("Product kQ (N·m²·C⁻¹)", 1, 2700, 1, "(9 × 10⁹)(3 × 10⁻⁷) ✓ = 2 700"),
-        ("r² (m²)", 2, 0.0025, 0.00005, "E = kQ/r² ✓; 1,08 × 10⁶ ✓ = (9 × 10⁹)(3 × 10⁻⁷)/r²; r² = 2,5 × 10⁻³ m², so r = 0,05 m")],
-        ["E is the field of a point charge: E = kQ/r².", "Work out kQ first, then r² = kQ / E."])]
+    # "Show that" (a given answer): every option ends at r = 0,05 m, as learners write it; only the memo's working gets there
+    work("7.3", "Show, by means of a calculation, that r = 0,05 m.", 3, [
+        "E = {kQ}/{r²}\n1,08 × 10⁶ = {(9 × 10⁹)(3 × 10⁻⁷)}/{r²}\nr = 0,05 m",           # the memo
+        "E = {kQ}/{r²}\n1,08 × 10⁶ = {(9 × 10⁹)(3 × 10⁷)}/{r²}\nr = 0,05 m",            # 10⁻⁷ written 10⁷ (a power slip)
+        "E = {kQ}/{r²}\n1,08 × 10⁶ = {(6,67 × 10⁻¹¹)(3 × 10⁻⁷)}/{r²}\nr = 0,05 m",      # G substituted for k (the wrong constant)
+        "E = {kQ}/{r}\n1,08 × 10⁶ = {(9 × 10⁹)(3 × 10⁻⁷)}/{r}\nr = 0,05 m"], 0,         # r not squared (the wrong formula)
+        # (the old clues wrote the right working's formula, E = kQ/r², and its rearrangement r² = kQ / E)
+        ["The field at P is due to the charge on X alone, r metres away.", "Every option claims 0,05 m: work its numbers through to see which really gets there."])]
 q7b = [
-    # "Choose ... by means of a calculation" (2026-10-10): as a rubric of the memo's options a strong learner's working scored 0 / 6; played as
-    # Option 1, the marks riding on its three forces, "No" (1) and "Fnet(E) ≠ Fnet" (1) on the net force (0,14 N ≠ 0,0427 N: friction acts)
-    steps("7.4", "The NET FORCE acting on sphere X is 0,0427 N at point A. Is the surface frictionless? Choose from YES or NO. Explain the answer by "
-          "means of a calculation.", 6, [
-        ("Electrostatic force of Y on X (N)", 2, 0.54, 0.005, "FXY = kQXQY/r² ✓ = (9 × 10⁹)(3 × 10⁻⁷)(5 × 10⁻⁷)/(0,05)² ✓ = 0,54 N"),
-        ("Electrostatic force of Z on X (N)", 1, 0.675, 0.01, "FXZ = (9 × 10⁹)(3 × 10⁻⁷)(4 × 10⁻⁷)/(0,04)² ✓ = 0,68 N"),
-        ("Net electrostatic force on X (N)", 3, 0.135, 0.01,
-         "Fnet(E) = FXZ − FXY = 0,68 − 0,54 ✓ = 0,14 N; No ✓: Fnet(E) ≠ Fnet (0,14 N ≠ 0,0427 N), so friction acts ✓. "
-         "(OR Enet = 450 000 N·C⁻¹, Fnet = qE = 0,14 N; OR 0,0427 = 0,14 − f, f = 0,0923 N.) Ignore negative charges substituted.")],
-        ["Work out the electrostatic force from Y and from Z on X, then the net electrostatic force.", "If that is more than 0,0427 N, something else (friction) acts."]),
+    work("7.4", "The NET FORCE acting on sphere X is 0,0427 N at point A. Is the surface frictionless? Choose from YES or NO. Explain the answer by "
+         "means of a calculation.", 6, [
+        "FXY = {kQXQY}/{r²} = {(9 × 10⁹)(3 × 10⁻⁷)(5 × 10⁻⁷)}/{(0,05)²}\nFXY = 0,54 N\nFXZ = {kQXQZ}/{r²} = {(9 × 10⁹)(3 × 10⁻⁷)(4 × 10⁻⁷)}/{(0,04)²}\n"
+        "FXZ = 0,68 N\nFnet(E) = 0,68 + 0,54 = 1,22 N\nNo: Fnet(E) ≠ Fnet (1,22 N ≠ 0,0427 N), so friction acts",
+        # ^ the two forces added: Y pulls X left, Z pulls it right (direction slip)
+        "FXY = {kQY}/{r²} = {(9 × 10⁹)(5 × 10⁻⁷)}/{(0,05)²}\nFXY = 1,8 × 10⁶ N\nFXZ = {kQZ}/{r²} = {(9 × 10⁹)(4 × 10⁻⁷)}/{(0,04)²}\n"
+        "FXZ = 2,25 × 10⁶ N\nFnet(E) = 2,25 × 10⁶ − 1,8 × 10⁶ = 4,5 × 10⁵ N\nNo: Fnet(E) ≠ Fnet (4,5 × 10⁵ N ≠ 0,0427 N), so friction acts",
+        # ^ the field E = kQ/r² taken as the force, X's own charge left out (wrong formula)
+        "FXY = {kQXQY}/{r²} = {(9 × 10⁹)(3 × 10⁻⁷)(5 × 10⁻⁷)}/{(0,05)²}\nFXY = 0,54 N\nFXZ = {kQXQZ}/{r²} = {(9 × 10⁹)(3 × 10⁻⁷)(4 × 10⁻⁷)}/{(0,04)²}\n"
+        "FXZ = 0,68 N\nFnet(E) = 0,68 − 0,54 = 0,14 N\nNo: Fnet(E) ≠ Fnet (0,14 N ≠ 0,0427 N), so friction acts",
+        # ^ the memo (OPTION 1)
+        "FXY = {kQXQY}/{r²} = {(9 × 10⁹)(3 × 10⁻⁷)(5 × 10⁻⁷)}/{(0,05)²}\nFXY = 0,54 N\nFXZ = {kQXQZ}/{r²} = {(9 × 10⁹)(3 × 10⁻⁷)(4 × 10⁻⁷)}/{(0,05)²}\n"
+        "FXZ = 0,43 N\nFnet(E) = 0,54 − 0,43 = 0,11 N\nNo: Fnet(E) ≠ Fnet (0,11 N ≠ 0,0427 N), so friction acts"], 2,
+        # ^ Y's distance r used for Z too (a value from the wrong part)
+        ["Work out the electrostatic force of Y and of Z on X, then the net electrostatic force.", "If that is more than 0,0427 N, something else (friction) acts."]),
     mcq("7.5", "Sphere Y is brought into contact with sphere X, and is placed back in its original position. How will the magnitude of the force that "
         "sphere X now exerts on sphere Y be affected? Choose from INCREASES, DECREASES or REMAINS THE SAME.",
         ["Increases", "Decreases", "Remains the same"], 1,
-        ["Touching shares the charge: (+3 + (−5))/2 each.", "Compare the product of the charges before and after."])]
+        # (the old first clue worked the shared charge out, (+3 + (−5))/2 each, leaving one multiplication to the answer)
+        ["When the spheres touch, their total charge is shared between them: what is that total?", "Compare the product of the charges before and after."])]
 
 # ---- QUESTION 8, the question paper page 14 and the memo pages 16-18 ----
 q8 = [
     rub("8.1", "Define the term emf.", 2, [
         "Maximum/total energy provided/work done by a battery/cell per unit/coulomb of charge passing through it. (2 or 0)"],
-        ["It is energy per charge.", "Energy provided by the battery for each coulomb."], each=2),
-    steps("8.2", "Switch S1 remains open while switch S2 is closed. The reading on ammeter A2 is 120 A. Calculate the reading on the voltmeter.", 3,
-          [("Reading on the voltmeter (V)", 3, 12, 0.05, "R = V/I ✓; 0,1 = V/120 ✓; V = 12 V ✓")],
-          ["With only S2 closed, the voltmeter reads across the starter motor.", "V = IR with R = 0,1 Ω."]),
-    steps("8.3.1", "Switch S1 is now closed and switch S2 is opened. The power dissipated by each headlight is 15 W. Calculate the current passing through L1.", 3,
-          [("Current through L₁ (A)", 3, 1.12, 0.01, "P = I²R ✓; 15 = I²(12) ✓; I = 1,12 A ✓ (OR P = V²/R: V = 13,42 V, then P = VI or V = IR)")],
-          ["You know each headlight's power and resistance.", "P = I²R."]),
-    num("8.3.2", "Switch S1 is now closed and switch S2 is opened. Write down the reading on ammeter A1.", 2.24, 0.01, "A",
-        ["A1 carries the current of both headlights.", "Two identical headlights, each with your current from 8.3.1."]),
-    steps("8.4", "Calculate the emf of the battery.", 6, [
-        ("Total resistance of the two headlights (Ω)", 1, 6, 0.01, "1/Rp = 1/12 + 1/12 ✓; Rp = 6 Ω"),
-        ("Internal resistance of the battery (Ω)", 4, 0.012, 0.0006, "ε = I(R + r) ✓ = 2,24(6 + r) ✓; ε = 120(0,1 + r) ✓; equating: 2,24(6 + r) = 120(0,1 + r) ✓; r = 0,012 Ω"),
-        ("emf of the battery (V)", 1, 13.445, 0.026, "ε = 2,24(6 + 0,012) = 13,46 V, OR ε = 120(0,1 + 0,012) = 13,47 V ✓. Range: 13,42 V – 13,47 V")],
-        ["The emf is the same in both switch settings: ε = I(R + r).", "Write it twice (headlights, 2,24 A; starter motor, 120 A), set them equal and find r first."]),
+        ["Its unit, the volt, is a joule per coulomb.", "Is it measured with or without a current in the battery?"], each=2),
+    work("8.2", "Switch S1 remains open while switch S2 is closed. The reading on ammeter A2 is 120 A. Calculate the reading on the voltmeter.", 3, [
+        "R = {V}/{I}\n12 = {V}/{120}\nV = 1 440 V",                     # a headlight's 12 Ω (the wrong body)
+        "R = {I}/{V}\n0,1 = {120}/{V}\nV = 1 200 V",                    # the formula upside down
+        "R = {V}/{I}\n0,1 = {V}/{120}\nV = 8,33 × 10⁻⁴ V",              # rearranged as V = R/I
+        "R = {V}/{I}\n0,1 = {V}/{120}\nV = 12 V"], 3,                   # the memo
+        ["With only S2 closed, the voltmeter reads across the starter motor.", "Ohm's law, with the starter motor's resistance."]),
+    work("8.3.1", "Switch S1 is now closed and switch S2 is opened. The power dissipated by each headlight is 15 W. Calculate the current passing through L1.", 3, [
+        "P = I²R\n15 = I²(12)\nI = 1,12 A",                             # the memo (OPTION 1)
+        "P = I²R\n15 = I²(6)\nI = 1,58 A",                              # the two headlights' 6 Ω for ONE headlight (wrong part)
+        "P = I²R\n15 = I²(12)\nI = 1,25 A",                             # the square root left out
+        "P = I²R\n15 = I²(0,1)\nI = 12,25 A"], 0,                       # the starter motor's 0,1 Ω (the wrong body)
+        ["You know each headlight's power and resistance.", "P = I²R."]),
+    work("8.3.2", "Switch S1 is now closed and switch S2 is opened. Write down the reading on ammeter A1.", 1, [
+        "A1 = {1,12}/{2}\nA1 = 0,56 A",                                 # the current split in half, not added
+        "A1 = {V}/{Rp} = {12}/{6}\nA1 = 2,00 A",                        # 8.2's 12 V used here (the wrong part)
+        "A1 = (2)(1,12)\nA1 = 2,24 A",                                  # the memo
+        "A1 = I(L1)\nA1 = 1,12 A"], 2,                                  # one headlight's current only
+        # (the old second clue, "the branch currents add up", with the first gave A1 = 2 x 1,12 A)
+        ["Where is A1: before or after the current splits between L1 and L2?", "Trace the current from the battery through A1 to the headlights."],
+        after=["8.2", "8.3.1"]),   # the options show 8.3.1's 1,12 A and 8.2's 12 V
+    work("8.4", "Calculate the emf of the battery.", 6, [
+        "Rs = 12 + 12, so Rs = 24 Ω\nε = I(R + r) = 2,24(24 + r)\nε = I(R + r) = 120(0,1 + r)\n2,24(24 + r) = 120(0,1 + r)\nr = 0,35 Ω\n"
+        "ε = 2,24(24 + 0,35) = 54,54 V",                                # the headlights taken in series (wrong formula)
+        "{1}/{Rp} = {1}/{12} + {1}/{12}, so Rp = 6 Ω\nε = I(R + r) = 2,24(12 + r)\nε = I(R + r) = 120(0,1 + r)\n2,24(12 + r) = 120(0,1 + r)\n"
+        "r = 0,13 Ω\nε = 2,24(12 + 0,13) = 27,17 V",                    # one headlight's 12 Ω with the total current (wrong part)
+        "{1}/{Rp} = {1}/{12} + {1}/{12}, so Rp = 6 Ω\nε = V + Ir = 12 + 2,24r\nε = I(R + r) = 120(0,1 + r)\n12 + 2,24r = 120(0,1 + r)\n"
+        "r = 0 Ω\nε = 12 + 2,24(0) = 12,00 V",                          # 8.2's 12 V taken as the headlights' voltage (wrong part)
+        "{1}/{Rp} = {1}/{12} + {1}/{12}, so Rp = 6 Ω\nε = I(R + r) = 2,24(6 + r)\nε = I(R + r) = 120(0,1 + r)\n2,24(6 + r) = 120(0,1 + r)\n"
+        "r = 0,012 Ω\nε = 2,24(6 + 0,012) = 13,47 V"], 3,               # the memo (OPTION 1; its range 13,42 V - 13,47 V)
+        ["The emf is the same in both switch settings: ε = I(R + r).", "Write it twice (headlights, 2,24 A; starter motor, 120 A), set them equal and find r first."],
+        after=["8.2", "8.3.2"]),   # the options show 8.3.2's 2,24 A and 8.2's 12 V
     rub("8.5", "Both switches are now closed. How will the reading on ammeter A1 be affected? Choose from INCREASES, DECREASES or REMAINS THE SAME. "
         "Explain the answer WITHOUT the use of a calculation.", 5, [
         "Decrease (1).", "The total/external resistance decreases (1).", "The total current increases (1).", "V(internal) increases (1).",
         "The voltage across the light bulbs decreases / V(external) decreases (1)."],
-        ["Closing S2 adds the starter motor (0,1 Ω) in parallel.", "More current from the battery means more 'lost volts' inside it."],
+        ["Closing S2 adds the starter motor (0,1 Ω) in parallel.", "Follow the chain: the external resistance, the total current, the lost volts inside the battery, then the headlights."],
         notes=["A calculation given as the explanation: 1/5.",
                "ACCEPT (max 3/5): Increases (1) — the initial reading on A1 = 0 A when switch S1 is open (1); now both switches are closed and current "
                "flows through the circuit (1). The mark for 'increases' only if its explanation is correct."])]
@@ -314,16 +409,23 @@ q8 = [
 q9a = [
     rub("9.1", "Define the term rms potential difference.", 2, [
         "The AC potential difference/voltage that produces/dissipates the same amount of energy as an equivalent DC potential difference/voltage. (2)"],
-        ["It compares AC with DC.", "Which AC voltage gives the same energy (heating) as a DC voltage?"], each=2,
+        ["It compares AC with DC.", "Think of the heating effect of each in the same resistor."], each=2,
         notes=["DC written first / energy or heating effect omitted / alternating current defined: 0/2."]),
     term("9.2", "What is the polarity of the magnet at Z?", ["North", "N"],
-         ["Use the right-hand rule for generators: the coil's motion and the induced current are shown.", "The field runs from the magnet's north to its south."], marks=2),
-    steps("9.3", "The resistance of the fan is 60 Ω and the maximum potential difference produced by the generator is 311,11 V. Calculate the cost of "
-          "operating the fan for 1,5 hours if the cost of electricity is R3,33 per kWh.", 5, [
-        ("rms potential difference (V)", 1, 219.99, 0.05, "Vrms = Vmax/√2 = 311,11/√2 ✓ = 219,99 V"),
-        ("Average power of the fan (W)", 2, 806.59, 0.5, "Pave = V²rms/R ✓ = (219,99)²/60 ✓ = 806,59 W = 0,80659 kW"),
-        ("Cost of operating the fan (R)", 2, 4.03, 0.01, "cost = PΔt × tariff = 0,80659(1,5)(3,33) ✓ = R4,03 ✓ (OR E = PΔt = 1,21 kWh, cost = 1,21 × 3,33)")],
-        ["Start from the rms voltage: Vrms = Vmax/√2.", "Power in kW x time in hours = kWh; then multiply by the tariff."])]
+         # (the old second clue named the north pole)
+         ["Use the right-hand rule for generators: the coil's motion and the induced current are shown.",
+          "Find the direction the magnetic field must have for this current, then name the pole it leaves."], marks=2),
+    work("9.3", "The resistance of the fan is 60 Ω and the maximum potential difference produced by the generator is 311,11 V. Calculate the cost of "
+         "operating the fan for 1,5 hours if the cost of electricity is R3,33 per kWh.", 5, [
+        "Vrms = Vmax = 311,11 V\nPave = {V²rms}/{R} = {(311,11)²}/{60} = 1 613,16 W = 1,61316 kW\ncost = PΔt × tariff = (1,61316)(1,5)(3,33)\n"
+        "cost = R8,06",                                                 # the maximum voltage used as the rms (wrong value)
+        "Vrms = {Vmax}/{√2} = {311,11}/{√2} = 219,99 V\nPave = {V²rms}/{R} = {(219,99)²}/{60} = 806,59 W = 0,80659 kW\n"
+        "cost = PΔt × tariff = (0,80659)(1,5)(3,33)\ncost = R4,03",     # the memo (OPTION 1)
+        "Vrms = {Vmax}/{2} = {311,11}/{2} = 155,56 V\nPave = {V²rms}/{R} = {(155,56)²}/{60} = 403,32 W = 0,40332 kW\n"
+        "cost = PΔt × tariff = (0,40332)(1,5)(3,33)\ncost = R2,01",     # divides by 2, not √2 (wrong formula)
+        "Vrms = {Vmax}/{√2} = {311,11}/{√2} = 219,99 V\nPave = {V²rms}/{R} = {(219,99)²}/{60} = 806,59 W\n"
+        "cost = PΔt × tariff = (806,59)(1,5)(3,33)\ncost = R4 028,92"], 1,   # W not converted to kW
+        ["The fan's average power uses the rms voltage.", "Electricity is sold per kWh: kilowatts times hours."])]
 q9b = [
     draw("9.4", "Redraw this graph in the ANSWER BOOK and label it as A. On the same set of axes, draw the graph for ONE rotation of the coil when the speed "
          "of rotation is doubled. Label this as graph B.", 3, [
@@ -339,23 +441,28 @@ q9b = [
 q10a = [
     rub("10.1.1", "Define the term work function.", 2, [
         "Minimum energy needed for the electrons to be emitted from the metal surface. (2)"],
-        ["It is an energy.", "The LEAST energy needed to free an electron from the surface."], each=2, notes=["Threshold frequency defined: 0/2."]),
+        ["It is an energy, not a frequency.", "It belongs to the metal, not to the light: each metal has its own value."], each=2,
+        notes=["Threshold frequency defined: 0/2."]),
     num("10.1.2", "Write down the threshold frequency of zinc.", 1.045e15, 0.001e15, "Hz",
-        ["Zinc's electrons leave with zero kinetic energy at this frequency.", "Read the frequency the learners used."]),
+        # (the old second clue, "Read the frequency the learners used.", pointed to the answer by position)
+        ["Zinc's electrons leave with zero kinetic energy at this frequency.", "At the threshold frequency a photon's energy just equals the work function."]),
     rub("10.1.3", "How does the work function of sodium compare to that of caesium? Choose from SMALLER THAN, GREATER THAN or EQUAL TO. Explain the answer.", 3, [
         "Greater than (1).", "The maximum kinetic energy of electrons from sodium is smaller (1).",
         "E is constant / the same frequency / the same light used (Ek(max) is smaller, W0 is larger) (1)."],
-        ["E(photon) = W0 + Ek(max), and the light is the same for both.", "Which metal's electrons leave with less kinetic energy?"]),
+        ["Use E(photon) = W0 + Ek(max) for each metal.", "Read the table: which metal's electrons leave with less kinetic energy?"]),
     rub("10.1.4", "Light of the same frequency, but with a higher intensity, is now incident on metal M. Will electrons now be ejected? Choose from YES or NO. "
         "Give a reason for the answer.", 2, [
         "No (1).", "The intensity of light does not have any effect on the ejection of electrons for metal M (1), OR the frequency of light has not changed / "
         "the energy of a photon has not changed (1)."],
-        ["Intensity is the number of photons, not the energy of each.", "Does each photon carry more energy now?"])]
+        ["Metal M emitted no electrons at this frequency.", "What does a higher intensity change: the number of photons or the energy of each photon?"])]
 q10b = [
-    steps("10.2.1", "An electron of this atom moves from E3 to E1. Photon X is emitted. Calculate the frequency of photon X.", 4,
-          [("Frequency of photon X (Hz)", 4, 6.64e14, 0.01e14, "E = hf ✓; 5,7 × 10⁻¹⁹ − 1,3 × 10⁻¹⁹ ✓ = (6,63 × 10⁻³⁴) f ✓; f = 6,64 × 10¹⁴ Hz ✓ "
-            "(accept E3 − E1 or E1 − E3; f must be positive)")],
-          ["The photon carries away the energy difference E3 − E1.", "E = hf, with h = 6,63 × 10⁻³⁴ J·s."]),
+    work("10.2.1", "An electron of this atom moves from E3 to E1. Photon X is emitted. Calculate the frequency of photon X.", 4, [
+        "E = hf\n5,7 × 10⁻¹⁹ − 1,3 × 10⁻¹⁹ = (6,63 × 10⁻³⁴)f\nf = 6,64 × 10¹⁴ Hz",              # the memo (OPTION 1)
+        "E = hcf\n5,7 × 10⁻¹⁹ − 1,3 × 10⁻¹⁹ = (6,63 × 10⁻³⁴)(3 × 10⁸)f\nf = 2,21 × 10⁶ Hz",   # E = hf mixed with E = hc/λ (wrong formula)
+        "E = hf\n5,7 × 10⁻¹⁹ − 5,1 × 10⁻¹⁹ = (6,63 × 10⁻³⁴)f\nf = 9,05 × 10¹³ Hz",              # E3 − E2, the wrong levels (wrong value)
+        "E = hf\n5,7 × 10⁻¹⁹ + 1,3 × 10⁻¹⁹ = (6,63 × 10⁻³⁴)f\nf = 1,06 × 10¹⁵ Hz"], 0,         # the energies added (sign)
+        # (the old second clue wrote the right working's formula, E = hf)
+        ["The photon carries away the energy the electron loses.", "Which equation links a photon's energy to its frequency? Take h from the data sheet."]),
     rub("10.2.2", "Is it possible for a photon with an energy of 2,5 x 10⁻¹⁹ J to be emitted from this atom? Choose from YES or NO. Give a reason for the answer.", 2, [
         "No (1).", "The energy does not correspond to any transition in this atom (1)."],
         ["List the possible jumps: E3 − E2, E3 − E1, E2 − E1.", "Does any of them equal 2,5 × 10⁻¹⁹ J?"])]
@@ -394,9 +501,9 @@ missions = [
              "detected. The siren of an ambulance produces sound with a constant frequency. The ambulance, with its siren on, moves towards a stationary "
              "sound detector (Part A) and away from the stationary sound detector (Part B) at constant velocities. The experiment is repeated for "
              "different velocities of the ambulance. The detected frequency is measured for EACH velocity. The results obtained are shown in the graph below.",
-     "figure": fig("Q6", "Detected frequency (Hz) up against velocity of the ambulance (m·s⁻¹) across, 0 to 30. Two straight lines start at the same "
-                   "frequency on the axis: one rises (Part A, approaching) to 1 298 Hz at 25 m·s⁻¹; one falls (Part B, moving away) to 1 115 Hz at "
-                   "25 m·s⁻¹."), "items": q6},
+     # (the caption no longer names the falling line as Part B's: the paper does not label the lines, and that was 6.3's conclusion)
+     "figure": fig("Q6", "Detected frequency (Hz) up against velocity of the ambulance (m·s⁻¹) across, 0 to 30. Two straight lines, not labelled, "
+                   "start at the same frequency on the axis: one rises to 1 298 Hz at 25 m·s⁻¹; the other falls to 1 115 Hz at 25 m·s⁻¹."), "items": q6},
     {"id": "7", "title": "Question 7", "kind": "Electrostatics", "marks": 7,
      "lead": "A sphere X is placed at point A on a horizontal surface. X carries a charge of +3 x 10⁻⁷ C. Point P is r metres to the left of point A. The "
              "magnitude of the electric field at point P is 1,08 x 10⁶ N·C⁻¹.",
@@ -430,27 +537,213 @@ missions = [
                    "an arrow points down from E3 to E1."), "items": q10b},
 ]
 
+# ---- Written answers as STATEMENTS (Murci 2026-10-10; the helpers are the Business Studies P2 2025 reference's) ----
+# A written part plays as picking statements: the memo's own points (right, tidied to ONE reading of its "/" alternatives) and
+# CLEARLY wrong ones (a key condition dropped or swapped, the inverse relation, another law's or quantity's wording, the opposite
+# choice): never a true point the memo leaves out. The learner picks marks/each of them, any right one counts, each right pick earns
+# `each`; the cards are shuffled the same way every run. The rubric bullets above stay as the source.
+import random
+
+
+def stmt(n, q, marks, right, wrong, clues, each):
+    count = marks // each
+    assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+    assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+    order = list(range(len(right) + len(wrong)))
+    random.Random("ps-p1-2025-11:" + n).shuffle(order)
+    opts = [(right + wrong)[i] for i in order]
+    return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts,
+            "pool": sorted(k for k, i in enumerate(order) if i < len(right)), "count": count}
+
+
+STATEMENTS = {
+    # 2 or 0, either OR form: the wrong ones drop "net", swap the proportions, or are the first and third laws
+    "2.1": (2, ["When a net (resultant) force acts on an object, the object accelerates in the direction of the net force with an acceleration "
+                "directly proportional to the net force and inversely proportional to the mass of the object.",
+                "The net (resultant) force acting on an object is equal to the rate of change of momentum of the object."],
+               ["When a force acts on an object, the object accelerates in the direction of that force, whatever other forces act on it.",
+                "When a net force acts on an object, the object accelerates in the direction of the net force with an acceleration inversely "
+                "proportional to the net force and directly proportional to the mass of the object.",
+                "An object continues in its state of rest or of uniform motion unless a non-zero net force acts on it.",
+                "When object A exerts a force on object B, object B simultaneously exerts a force of equal magnitude in the opposite direction on object A."]),
+    # the memo's FIRST answer (Increases) and its three ticks, 1 each. The memo also accepts "Decreases" (the block moves: fk < fs(max))
+    # and "Remains the same" (with a calculation): those cannot be cards beside "Increases" (a learner could pick both), so they are
+    # left out, and no wrong card is true in them (the horizontal component DOES grow: not a wrong card)
+    "2.4": (1, ["The friction acting on the block increases.", "The vertical component of F decreases.", "The normal force on the block increases.",
+                "μs remains constant, and fs(max) is directly proportional to the normal force."],
+               ["The vertical component of F increases.", "The normal force on the block decreases.",
+                "The coefficient of static friction increases when θ decreases.",
+                "The maximum static friction does not depend on the normal force."]),   # (a 4th wrong card: with seven the seeded
+                # shuffle put the four right cards first, an answer by position)
+    # 2 or 0 ("a projectile defined: 0/2"); the wrong ones add air resistance, a constant velocity, a net force of zero, downward motion only
+    "3.1": (2, ["Motion under the influence of the gravitational force (weight) only."],
+               ["Motion under the influence of the gravitational force and air resistance.", "Motion at a constant velocity under the influence of gravity.",
+                "Motion in which the net force acting on the object is zero.", "Motion of an object downwards only, after it is dropped from rest."]),
+    # 3 ticks: the choice, the height, kinetic energy (its "/" forms one reading: not conserved)
+    "3.4": (1, ["The collision is inelastic.", "The ball bounces to a smaller height than it reached before the bounce.",
+                "Kinetic energy is not conserved in the collision."],
+               ["The collision is elastic.", "Kinetic energy is conserved in the collision.",
+                "The ball leaves the ground with a greater speed than it strikes the ground.", "The ball gains mechanical energy when it strikes the ground."]),
+    # 2, either OR form: the wrong ones are momentum, the net force (rate of change of momentum), work and acceleration
+    "4.1": (2, ["The product of the resultant (net) force acting on an object and the time the resultant force acts on the object.",
+                "The product of the resultant (net) force and the contact time."],
+               ["The product of the mass of an object and its velocity.", "The rate of change of momentum of an object.",
+                "The product of the resultant force acting on an object and the distance through which the object moves.",
+                "The change in the velocity of an object divided by the time taken."]),
+    # 2, either OR form: the wrong ones drop "net", swap kinetic for potential energy, or are another law's wording
+    "5.1": (2, ["The net (total) work done on an object is equal to the change in the object's kinetic energy.",
+                "The work done on an object by a resultant (net) force is equal to the change in the object's kinetic energy."],
+               ["The work done on an object by a force is equal to the change in the object's kinetic energy, whatever other forces act on it.",
+                "The net work done on an object is equal to the change in the object's potential energy.",
+                "The total mechanical energy in an isolated system remains constant.",
+                "The net work done on an object is equal to the rate of change of the object's momentum."]),
+    # 2, either OR form: the wrong ones change the emitted frequency, the speed of sound or the loudness, or have no relative motion
+    "6.1": (2, ["The change in frequency (or pitch) of the sound detected by a listener because the sound source and the listener have different "
+                "velocities relative to the medium of sound propagation.",
+                "An apparent change in the observed frequency (pitch) as a result of the relative motion between a sound source and an observer."],
+               ["A change in the frequency of the sound that the source itself produces as the source moves.",
+                "The change in the speed of sound detected by a listener because the source and the listener move relative to each other.",
+                "The change in the loudness of a sound as its source moves closer to a listener.",
+                "The change in the frequency detected by a listener when the source and the listener move with the same velocity."]),
+    # 2, one statement ("inversely proportional indicated: 0/2"); the wrong ones are Part A's trend, no trend, the siren's own frequency
+    "6.3": (2, ["As the velocity of the ambulance increases, the detected frequency decreases."],
+               ["As the velocity of the ambulance increases, the detected frequency increases.",
+                "The detected frequency is inversely proportional to the velocity of the ambulance.",
+                "The detected frequency stays the same for every velocity of the ambulance.",
+                "As the velocity of the ambulance increases, the frequency of the sound produced by the siren decreases."]),
+    # 2 or 0: the wrong ones are a gravitational field, no force, current, potential difference
+    "7.1": (2, ["A region of space in which an electric charge experiences a force."],
+               ["A region of space in which a mass experiences a force.", "A region of space in which an electric charge experiences no force.",
+                "The rate of flow of electric charge in a conductor.", "The energy transferred per unit charge between two points in a circuit."]),
+    # 2 or 0: the wrong ones are current, power, stored charge, the terminal potential difference
+    "8.1": (2, ["The maximum energy provided by a battery per coulomb of charge passing through it."],
+               ["The rate of flow of charge through a battery.", "The energy provided by a battery per second.",
+                "The total charge that a battery can store.", "The potential difference across the terminals of a battery while a current flows through it."]),
+    # 5 ticks: the choice and the memo's chain. Its ACCEPT ("Increases", max 3/5, from 8.2's open S1) is not a card either way
+    "8.5": (1, ["The reading on ammeter A1 decreases.", "The total (external) resistance of the circuit decreases.",
+                "The total current from the battery increases.", "The potential difference across the internal resistance (V internal) increases.",
+                "The potential difference across the headlights (V external) decreases."],
+               ["The reading on ammeter A1 remains the same.", "The total (external) resistance of the circuit increases.",
+                "The potential difference across the internal resistance (V internal) decreases."]),
+    # 2 ("DC written first / energy omitted / AC defined: 0/2"): the wrong ones are DC first, the peak, the average, half the energy
+    "9.1": (2, ["The AC potential difference that dissipates the same amount of energy as an equivalent DC potential difference."],
+               ["The DC potential difference that dissipates the same amount of energy as an equivalent AC potential difference.",
+                "The maximum (peak) value of an AC potential difference.", "The average value of an AC potential difference over one complete cycle.",
+                "The AC potential difference that dissipates half the energy of an equivalent DC potential difference."]),
+    # 2 ("threshold frequency defined: 0/2"): the wrong ones are the threshold frequency, the maximum kinetic energy, a photon's energy, intensity
+    "10.1.1": (2, ["The minimum energy needed for electrons to be emitted from the surface of a metal."],
+                  ["The minimum frequency of light needed for electrons to be emitted from the surface of a metal.",
+                   "The maximum kinetic energy of the electrons emitted from the surface of a metal.",
+                   "The energy of each photon of the light shining on the metal.",
+                   "The minimum intensity of light needed for electrons to be emitted from the surface of a metal."]),
+    # 3 ticks: the choice, the smaller Ek(max), the same light
+    "10.1.3": (1, ["The work function of sodium is greater than that of caesium.", "The maximum kinetic energy of the electrons emitted from sodium is smaller.",
+                   "The same frequency of light is used, so each photon has the same energy for both metals."],
+                  ["The work function of sodium is smaller than that of caesium.", "The work function of sodium is equal to that of caesium.",
+                   "The maximum kinetic energy of the electrons emitted from sodium is greater.", "Sodium is lit with light of a higher frequency than caesium."]),
+    # 2 ticks: the choice and the memo's first reason (its OR form, "the frequency has not changed", is true: not a wrong card)
+    "10.1.4": (1, ["No, electrons will not be ejected.", "The intensity of light does not have any effect on the ejection of electrons for metal M."],
+                  ["Yes, electrons will now be ejected.", "A higher intensity gives each photon more energy.",
+                   "A higher intensity increases the frequency of the light.", "Any metal emits electrons if the light is bright enough."]),
+    # 2 ticks: the choice and the reason; the wrong ones misread the gaps (E3 − E2 = 0,6, E2 − E1 = 3,8 x 10⁻¹⁹ J)
+    "10.2.2": (1, ["No, such a photon cannot be emitted.", "The energy 2,5 × 10⁻¹⁹ J does not correspond to any transition in this atom."],
+                  ["Yes, such a photon can be emitted.", "2,5 × 10⁻¹⁹ J is the energy difference between E3 and E2.",
+                   "2,5 × 10⁻¹⁹ J is the energy difference between E2 and E1.", "An atom can emit a photon of any energy smaller than E3 − E1."]),
+}
+# A memo that weighs two sides (advantages / disadvantages, for / against) would play as a SORT; none in this paper does (its written
+# parts are definitions, laws, a conclusion and choices with reasons), so SORTS stays empty and sort_ is kept for parity.
+SORTS = {}
+
+
+def sort_(n, q, marks, bins, rows, clues):
+    order = list(range(len(rows)))
+    random.Random("ps-p1-2025-11:sort:" + n).shuffle(order)
+    rows = [rows[i] for i in order]
+    assert marks == len(rows) and len(set(b for _, b in rows)) == len(bins), n
+    return {"t": "match", "n": n, "marks": marks, "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+            "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True}
+
+
+for _m in missions:
+    for _k, _it in enumerate(_m["items"]):
+        if _it["t"] == "rubric" and _it["n"] in SORTS:
+            _bins, _rows = SORTS[_it["n"]]
+            _m["items"][_k] = sort_(_it["n"], _it["q"], _it["marks"], _bins, _rows, _it["clues"])
+        elif _it["t"] == "rubric" and _it["n"] in STATEMENTS:
+            _each, _right, _wrong = STATEMENTS[_it["n"]]
+            _m["items"][_k] = stmt(_it["n"], _it["q"], _it["marks"], _right, _wrong, _it["clues"], _each)
+assert not [i["n"] for m in missions for i in m["items"] if i["t"] == "rubric"], "a written part left as rubric"
+
+# every part that played as typed steps (and 8.3.2's num with a working) before 2026-10-10, now authored multiple choice
+assert tuple(AUTHORED) == ("2.3.1", "2.3.2", "3.2", "3.3", "4.2.1", "4.2.2", "5.2", "5.4", "6.4", "7.3", "7.4", "8.2", "8.3.1", "8.3.2", "8.4",
+                           "9.3", "10.2.1"), AUTHORED
+ITEMS = [i for m in missions for i in m["items"]]
+assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric")], "a typed calculation or a written answer is left"
+assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["10.1.2"], "only the read-off stays a typed number"
+assert {i["n"]: i.get("after") for i in ITEMS if i.get("after")} == {
+    "2.3.2": ["2.3.1"], "3.5": ["3.2", "3.3"], "4.2.2": ["4.2.1"], "5.4": ["5.2"], "6.4": ["6.3"], "8.3.2": ["8.2", "8.3.1"], "8.4": ["8.2", "8.3.2"]}
+AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
+PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn"]
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Physical Sciences", "title": "Physical Sciences P1", "sitting": "November 2025", "total_marks": 150, "time": "3 hours"},
     "sections": [{"title": "Physics", "total": 150, "missions": missions}],
     "flags": [
+        {"n": AUTHORED[0], "kind": "no_fit", "detail": "Authored multiple choice (Murci, 2026-10-10): every calculation plays as the memo's FIRST "
+                                                       "working plus three built from realistic physics errors (a sign or direction slip, g used "
+                                                       "wrongly or left out, a unit not converted, the wrong formula, a value from the wrong body or "
+                                                       "part), 0 or full marks: " + ", ".join(AUTHORED) + " (%d parts, %d marks). 8.3.2 (a 'Write "
+                                                       "down' whose memo shows A1 = (1,12)(2)) is one of them; 10.1.2 (a read-off) stays a typed "
+                                                       "number. A value the memo's ranges accept is never a wrong option (3.3: 17,93 - 18,33 m·s⁻¹; "
+                                                       "8.4: 13,42 - 13,47 V)." % (len(AUTHORED), AUTHORED_MARKS)},
+        {"n": "7.3", "kind": "no_fit", "detail": "'Show that r = 0,05 m': all four workings end at the given 0,05 m, as learners write it; only the "
+                                                 "memo's substitution gets there (the others: 10⁻⁷ written 10⁷, G for k, r not squared). 5.4 and 7.4 "
+                                                 "(decide by calculation) end in the memo's conclusion; 7.4's wrong workings also conclude 'No', so "
+                                                 "the working decides, not the conclusion."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 10), hand-transcribed from the paper and memo PDFs and their "
                                                            "page images (formulas are images); no API call."},
-        {"n": "2.3.2", "kind": "no_fit", "detail": "Calculations play as steps: each step is the number the memo's method produces, its formula and "
-                                                   "substitution marks riding on that number (the phone sees numbers, not working). 4.2.1 asks for a "
-                                                   "vector: the direction mark ('to the right') rides on the magnitude."},
-        {"n": "5.4", "kind": "no_fit", "detail": "Decide-by-calculation parts play as steps on the memo's numbers (5.4: its Option 5, the net force along the slope and the distance before stopping; 7.4: its Option 1, the two forces on X and the net force). The conclusion's mark rides on the decisive number (7,68 m > 6,8 m; 0,14 N ≠ 0,0427 N). As written answers, a strong learner's full working scored 0 (2026-10-10). 7.3 (Show that r = 0,05 m) likewise plays the numbers before the given answer."},
+        {"n": PICKS[0], "kind": "no_fit", "detail": "The written answers play as statements (%d parts): the definitions and laws (2.1, 3.1, 4.1, 5.1, "
+                                                    "6.1, 7.1, 8.1, 9.1, 10.1.1) and the conclusion 6.3 pick one card for 2 marks (an OR form is a "
+                                                    "second right card); the choices with reasons (2.4, 3.4, 8.5, 10.1.3, 10.1.4, 10.2.2) pick the "
+                                                    "choice and the memo's points, 1 mark each. 2.4's memo also accepts 'Decreases' (fk < fs(max)) "
+                                                    "and 'Remains the same' (with a calculation): only its first answer plays (two choices side by "
+                                                    "side could both be picked), and no wrong card is true under the others. 8.5's ACCEPT "
+                                                    "('Increases', max 3/5) and 10.1.4's OR reason are neither right nor wrong cards. The "
+                                                    "choice stays a card beside its reasons rather than a multiple choice of its own: each "
+                                                    "is ONE printed part (one number, the player's key), and a separate choice would mark "
+                                                    "2.4's and 8.5's memo-accepted choices wrong."
+                                                    % len(PICKS)},
         {"n": "2.2", "kind": "no_fit", "detail": "Drawings (2.2, 3.5, 4.3, 5.3, 7.2, 9.4) are done on paper and self-checked against the memo's criteria."},
-        {"n": "3.3", "kind": "memo_issue", "detail": "The memo gives a range (17,93 – 18,33 m·s⁻¹): played as its centre 18,13 ± 0,20, the memo's 17,97 shown."},
-        {"n": "8.4", "kind": "memo_issue", "detail": "The memo gives a range for the emf (13,42 V – 13,47 V): played as 13,445 ± 0,026."},
+        {"n": "8.4", "kind": "memo_issue", "detail": "The memo writes ε = 2,24(6 + 0,012) = 13,46 V; it is 13,47 V (2,24 × 6,012 = 13,467), inside its "
+                                                     "own range (13,42 V - 13,47 V): the right option shows 13,47 V."},
+        {"n": "6.4", "kind": "memo_issue", "detail": "The memo's OR route 1,164(v − 25) = v + 25 gives 329,88 m·s⁻¹, not its 329,64 m·s⁻¹ (the ratio "
+                                                     "1298/1115 rounded to 1,164); the right option follows its first route, (1) = (2)."},
     ],
 }
-out = Path(__file__).parent / "out" / "ps-p1-2025-11"
+QTOTAL = {"1": 20, "2": 17, "3": 15, "4": 11, "5": 13, "6": 12, "7": 15, "8": 20, "9": 13, "10": 14}   # the paper's [n] per question
+per_q = {}
+for m in missions:
+    got = sum(i["marks"] for i in m["items"])
+    assert got == m["marks"], (m["id"], got, m["marks"])
+    per_q[m["id"].split(".")[0]] = per_q.get(m["id"].split(".")[0], 0) + got
+    print(m["id"], "parts:", len(m["items"]), "marks:", got)
+assert per_q == QTOTAL, per_q
+# the right letter, spread evenly over A-D across the paper (Question 1 and 7.5's three-way choice included)
+at = ["ABCD"[i["a"]] for i in ITEMS if i["t"] == "mcq"]
+spread = {k: at.count(k) for k in "ABCD"}
+assert max(spread.values()) - min(spread.values()) <= 1, spread
+# and across the calculations alone: Question 1's letters are the paper's (A1 B3 C4 D2, 7.5 B), so an even paper leaves the 17
+# workings at A6 B3 C3 D5; every letter is right at least 3 times, never more than 6
+wspread = {k: ["ABCD"[i["a"]] for i in ITEMS if i["n"] in AUTHORED].count(k) for k in "ABCD"}
+assert min(wspread.values()) >= 3 and max(wspread.values()) <= 6, wspread
+print("right options, the paper:", spread, "authored:", wspread)
+total = sum(i["marks"] for i in ITEMS)
+assert total == 150, total
+print("authored:", len(AUTHORED), "parts,", AUTHORED_MARKS, "marks; statements:", len(PICKS), "parts")
+print("total:", total)
+out = Path(__file__).parent / "out" / "ps-p1-2025-11"   # written only once every check above has passed
 out.mkdir(parents=True, exist_ok=True)
 (out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper and memo PDFs and their page images (no API call)",
                                                         "scope": "Questions 1 to 10 (the whole paper)"}, "paper": paper}, indent=1, ensure_ascii=False),
                                    encoding="utf-8")
-for m in missions:
-    print(m["id"], "parts:", len(m["items"]), "marks:", sum(i["marks"] for i in m["items"]), "/", m["marks"])
-print("total:", sum(i["marks"] for m in missions for i in m["items"]))
