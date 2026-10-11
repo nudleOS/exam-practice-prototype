@@ -96,7 +96,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=293">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=294">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -3575,6 +3575,9 @@ class Component extends DCLogic {
     if (mode === "pickn") return (answer || []).filter(i => bad("o" + i)).map(i => ({ L: opts[i], row: null, i: i }));
     if (lettersOnly && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];
     if (part.ab && mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null }];   // a Venn region
+    // a wrong WORKING or text card on the page (Maths workings, MCQs under a figure or table) breaks like the MCQ card's glass and
+    // comes back dimmed (Murci 2026-10-11: "the selected wrong answer does not break like a glass like we have been doing")
+    if (mode === "mcq" && answer != null && bad("o" + answer)) return [{ L: opts[answer], row: null, i: answer }];
     return [];
   }
   // each ruled-out letter's chip as termBreak draws a field: its box, its letter centred, round, no cross (it is 42 px)
@@ -4787,10 +4790,12 @@ class Component extends DCLogic {
       if (mode === "pickn") { sel = s.picks.indexOf(i) !== -1; sp = s.edited.picks ? null : stampOf(itemsBy["o" + i]); if (!sp && Array.isArray(revealAns) && revealAns.indexOf(i) !== -1 && !sel) sp = memoStamp; }
       if (mode === "order") { const pos = s.orderSeq.indexOf(i); sel = pos !== -1; badge = sel ? String(pos + 1) : letters[i] === o ? "·" : letters[i];
         sp = sel && !s.edited.order && !seqBalls ? stampOf(itemsBy["pos" + pos]) : null; }
-      const out = (chipsOnly || mode === "pickn") && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket (a statement: gone), no stamp
+      const out = (chipsOnly || mode === "pickn" || mode === "mcq") && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket (a statement: gone), no stamp
+      // a broken working or text card comes back DIMMED, never gone (one working shows at a time: gone would leave an empty card)
+      const deadV = this.deadAttr(out, String(o).trim()), dim = mode === "mcq" && !chipsOnly && deadV === "true";
       const st = stampSty(sp), rich = this.isRich(o);
       return Object.assign({ idx: String(i), text: rich ? "" : o, badge: badge, rich: rich, plainOn: !rich, richAttr: rich ? "true" : "false", lines: rich ? this.workLines(o) : [], fon: wkOn(i) ? "true" : "false",
-        letter: chipsOnly ? String(o).trim() : "", ball: chipsOnly ? "true" : "false", dead: this.deadAttr(out, String(o).trim()), off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
+        letter: chipsOnly ? String(o).trim() : "", ball: chipsOnly ? "true" : "false", dead: dim ? "dim" : deadV, off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
         role: mode === "mcq" ? "radio" : mode === "pickn" ? "checkbox" : "button", checked: mode === "order" ? "false" : sel ? "true" : "false",
         // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
         aria: (mode === "order" ? o + (sel ? ", placed " + (s.orderSeq.indexOf(i) + 1) : ", not placed") : String(o).trim() === letters[i] ? o : letters[i] + ". " + (rich ? this.plainWork(o, true) : o)) + (sp ? ", " + sp.t : ""),

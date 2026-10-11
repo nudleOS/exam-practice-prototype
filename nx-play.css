@@ -2110,6 +2110,9 @@ body.nx-play main:not(#mq-stage) [data-chips="true"] [data-tile][data-verdict="o
    measured: the ruled-out C and E still showed as badges) */
 body.nx-play main:not(#mq-stage) [data-tile][data-dead="breaking"]:not(#nx-none) { visibility:hidden !important; }   /* its glass copy cracks in its place */
 body.nx-play main:not(#mq-stage) [data-tile][data-dead="true"]:not(#nx-none) { display:none !important; }
+/* a broken WORKING or text card (Murci 2026-10-11): it breaks into glass like every MCQ card, then comes back dimmed and out of play
+   (one working shows at a time, so gone would leave an empty card); its tab keeps the tried mark */
+body.nx-play main:not(#mq-stage) [data-tile][data-dead="dim"]:not(#nx-none) { opacity:.42; filter:saturate(.35); pointer-events:none; }
 
 /* ==== the result card is SOLID medal metal, as the MCQ's medal card (Murci, 2026-10-05: on 1.4 "it looks like it is transparent rather
    than solid silver"): the MCQ back faces' fills and 2 px ring (mcq-play.css .tile.<tier> .back; light: nx-play's), on the card and on
