@@ -21,8 +21,9 @@ transcribe_g10_math_p1_2018_11.py / transcribe_g10_math_p1_2017_11.py):
   An answer the memo states with no working (a pair of roots, asymptotes, an interval, a coordinate, a range) -> authored multiple
   choice of answers: the memo's and three common errors. 6.1 (y = −4) is one too, not a term: the term marker drops the minus sign,
   so y = 4 would pass.
-  The sketch 5.4 and the tree diagram 8.2 -> draw (self-checked against the memo's criteria); 9.2.1 (a choice and its reason) ->
-  statements, 1 mark each.
+  The tree diagram 8.2 -> draw (self-checked against the memo's criteria); the sketch 5.4 -> draw with build "sketch" (2026-10-11:
+  f and g placed on one grid, each curve drawn through its features, marked online against the memo's five criteria); 9.2.1 (a
+  choice and its reason) -> statements, 1 mark each.
   Where a part's stem, options or criteria show an EARLIER part's answer it carries "after" (the assert at the end).
 Missions: Questions 4, 5, 6 and 8 share one stem (a pattern, two functions, a graph, a bag of balls), so each is one mission;
 Questions 1, 2, 3, 7 and 9 are their numbered groups (1.1, 1.2, ...; 9.1 with its table).
@@ -273,7 +274,21 @@ q5 = [
         ["Where are the asymptotes of f, and is a in a/(x − p) + q positive or negative?", "Where does each graph cut the axes?"],
         memo="The memo's sketch: f's two branches about the dashed asymptotes x = 3 and y = 2, one top right and one bottom left, the "
              "bottom-left branch cutting the y-axis at 2/3 and the x-axis at 1; g the straight line y = x + 2 rising from bottom left to top "
-             "right through (−2 ; 0) and (0 ; 2), crossing both branches of f.", after=["5.1", "5.2", "5.3"]),
+             "right through (−2 ; 0) and (0 ; 2), crossing both branches of f.", after=["5.1", "5.2", "5.3"],
+        # built on a grid (2026-10-11, as transcribe_g11_math_p1_2017_11.py 5.7): f and g on one set of axes, each memo criterion its
+        # features (or f's shape); criterion 0 is both asymptotes of f and criterion 2 both intercepts of f, so one feature of each
+        # carries its mark. The y step is 1/3 so that f's y-intercept 2/3 is a grid point (on a coarser step no tap reaches it, and a
+        # nearby one fits no hyperbola with the other features). The memo marks no shape for g: its line is drawn through its intercepts
+        build={"kind": "sketch", "family": "hyperbola", "x": [-4, 7, 1], "y": [-4, 6, 1 / 3], "features": [
+            {"id": "fva", "kind": "vline", "label": "vertical asymptote of f", "at": 3, "tol": 0, "marks": 1, "crit": 0, "graph": "f"},
+            {"id": "fha", "kind": "hline", "label": "horizontal asymptote of f", "at": 2, "tol": 0, "marks": 0, "crit": 0, "graph": "f"},
+            {"id": "fx", "kind": "point", "label": "x-intercept of f", "at": [1, 0], "tol": 0, "marks": 1, "crit": 2, "graph": "f"},
+            {"id": "fy", "kind": "point", "label": "y-intercept of f", "at": [0, 2 / 3], "tol": 0, "marks": 0, "crit": 2, "graph": "f"},
+            {"id": "gx", "kind": "point", "label": "x-intercept of g", "at": [-2, 0], "tol": 0, "marks": 1, "crit": 3, "graph": "g"},
+            {"id": "gy", "kind": "point", "label": "y-intercept of g", "at": [0, 2], "tol": 0, "marks": 1, "crit": 4, "graph": "g"}],
+               "graphs": [{"id": "f", "family": "hyperbola", "label": "f",
+                           "shape": {"label": "Shape", "answer": "top right and bottom left", "marks": 1, "crit": 1}},
+                          {"id": "g", "family": "line", "label": "g"}]}),
     work("5.5", "Calculate the x-coordinates of the points of intersection of f and g.", 4, [
         INT + "{4}/{x − 3} = x\nx(x − 3) = 4\nx² − 3x − 4 = 0\n(x + 4)(x − 1) = 0\nx = −4 or x = 1",                 # the signs in the factors swapped
         INT + "{4}/{x − 3} = x + 4\n(x + 4)(x − 3) = 4\nx² + x − 16 = 0\nx = {−1 ± √65}/{2}\nx = 3,53 or x = −4,53",  # + 2 moved without its sign change
@@ -291,6 +306,17 @@ q5 = [
         ["What is special about the line y = x − 1 for the graph of f?", "How far is P from the point where the asymptotes cross, and which "
                                                                          "point is the same distance on the other side?"],
         after=["5.1", "5.2"])]
+for i in q5:   # the built sketch: its features' and shapes' marks are the memo criteria's, criterion by criterion; every feature names
+    b = i.get("build") or {}   # one of the two graphs, and every placed value is a grid point
+    if b.get("kind") == "sketch":
+        got = {}
+        for x in b["features"] + [g["shape"] for g in b["graphs"] if g.get("shape")]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
+        assert {f["graph"] for f in b["features"]} == {g["id"] for g in b["graphs"]}, i["n"]
+        on = lambda u, ax: abs((u - ax[0]) / ax[2] - round((u - ax[0]) / ax[2])) < 1e-6 and ax[0] <= u <= ax[1]
+        for f in b["features"]:
+            assert (on(f["at"][0], b["x"]) and on(f["at"][1], b["y"])) if f["kind"] == "point" else on(f["at"], b["y" if f["kind"] == "hline" else "x"]), (i["n"], f["id"])
 
 # ---- QUESTION 6, the question paper page 6 and the memo pages 14-16 ----
 AB = "0 = 2({1}/{2})ˣ⁺¹ − 4\n"
@@ -513,8 +539,11 @@ paper = {
                                                            "SCANNED memo (no text layer in either), read from their page images; no API call."},
         {"n": "6.1", "kind": "no_fit", "detail": "The asymptote's equation (y = −4) is an answer multiple choice, not a term: the term marker strips "
                                                  "the minus sign, so y = 4 would pass as y = −4."},
-        {"n": "5.4", "kind": "no_fit", "detail": "The sketch of f and g (5.4) and the tree diagram (8.2) are drawn on paper and self-checked against "
-                                                 "the memo's criteria (5 and 4)."},
+        {"n": "5.4", "kind": "no_fit", "detail": "The sketch of f and g (5.4) is BUILT on a grid (2026-10-11): the learner places f's two "
+                                                 "asymptotes and intercepts and g's intercepts, each curve is drawn through its features, and "
+                                                 "the memo's five criteria are marked from them (f's shape from the curve the learner's own "
+                                                 "features make). The grid's y step is 1/3, so that f's y-intercept 2/3 can be placed exactly. "
+                                                 "The tree diagram (8.2) is drawn on paper and self-checked against the memo's 4 criteria."},
         {"n": "9.2.1", "kind": "no_fit", "detail": "The choice with its reason plays as statements: the memo's NOT mutually exclusive (1) and its "
                                                    "reason P(A and B) = 0,12 ≠ 0 (1) are the two right cards; the wrong cards are false for these "
                                                    "events (P(A and B) = 0,12, P(A) + P(B) = 0,95)."},

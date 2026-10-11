@@ -17,8 +17,9 @@ How the memo's shapes map (the Grade 12 rulings of 2026-10-10, as in transcribe_
   (2.1.1 without its restriction, 1.2.2's OR form (1 − 8x)/((x + 3)(2 − x)), 5.4.1's (−2 ; 2)).
   An answer the memo states with no working (a factorised trinomial, a formula, a coordinate, a range, an interval, an axis of
   symmetry, probability notation, a choice of diagrams) -> authored multiple choice of answers: the memo's and three common errors.
-  One read-off number with no working (2.2.2, 3.1, 4.1.1, 4.1.2) stays num; the sketch 6.2 -> draw (self-checked against the
-  memo's criteria); 8.1.2 (a choice and its reason) -> statements, 1 mark each.
+  One read-off number with no working (2.2.2, 3.1, 4.1.1, 4.1.2) stays num; the sketch 6.2 -> draw with build "sketch" (2026-10-11:
+  g and h placed on one grid, each curve drawn through its features, marked online against the memo's four criteria); 8.1.2 (a
+  choice and its reason) -> statements, 1 mark each.
   Where a part's options show an EARLIER part's answer it carries "after" (see the assert below).
 Missions: Questions 3, 4, 5, 6 and 7 share a stem (a pattern, a diagram, a graph, a function, an advertisement), so each is one
 mission; Questions 1, 2 and 8 are their numbered groups (1.1, 1.2, 1.3 ...). 8.3 asks about the three Venn diagrams of 8.2, so
@@ -276,7 +277,22 @@ q6 = [
         ["Where are the asymptotes of g, and in which quadrants of them do its branches lie?", "Where do g and h cut the x-axis?"],
         memo="The memo's sketch: g's two branches about the dashed asymptotes x = 0 and y = 1, one in the top right (falling towards "
              "y = 1) and one in the bottom left, cutting the x-axis at (−3 ; 0); h the straight line y = x + 1 through (−1 ; 0) and "
-             "(0 ; 1), crossing both branches of g.", after=["6.1.1", "6.1.2"]),
+             "(0 ; 1), crossing both branches of g.", after=["6.1.1", "6.1.2"],
+        # built on a grid (2026-10-11, as transcribe_g11_math_p1_2017_11.py 5.7): g and h on one set of axes, each memo criterion its
+        # features (or a shape). Criterion 1 is both asymptotes of g and criterion 3 both x-intercepts, so one feature of each carries its
+        # mark; criterion 2 ('positive gradient of h') is h's shape. A line needs two points: h's y-intercept (0 ; 1), which the memo does
+        # not mark, is placed to draw h and carries no criterion (0 marks), so any line with a positive gradient earns criterion 2, as on
+        # paper. g (asymptotes + x-intercept) is fixed by its marked features
+        build={"kind": "sketch", "family": "hyperbola", "x": [-5, 5, 1], "y": [-5, 6, 1], "features": [
+            {"id": "gva", "kind": "vline", "label": "vertical asymptote of g", "at": 0, "tol": 0, "marks": 1, "crit": 1, "graph": "g"},
+            {"id": "gha", "kind": "hline", "label": "horizontal asymptote of g", "at": 1, "tol": 0, "marks": 0, "crit": 1, "graph": "g"},
+            {"id": "gx", "kind": "point", "label": "x-intercept of g", "at": [-3, 0], "tol": 0, "marks": 1, "crit": 3, "graph": "g"},
+            {"id": "hx", "kind": "point", "label": "x-intercept of h", "at": [-1, 0], "tol": 0, "marks": 0, "crit": 3, "graph": "h"},
+            {"id": "hy", "kind": "point", "label": "y-intercept of h", "at": [0, 1], "tol": 0, "marks": 0, "graph": "h"}],
+               "graphs": [{"id": "g", "family": "hyperbola", "label": "g",
+                           "shape": {"label": "Shape", "answer": "top right and bottom left", "marks": 1, "crit": 0}},
+                          {"id": "h", "family": "line", "label": "h",
+                           "shape": {"label": "Gradient", "answer": "positive gradient", "marks": 1, "crit": 2}}]}),
     work("6.3", "Write the equations of the asymptotes of f if f(x) = −g(x) + 5.", 3, [
         "f(x) = −{3}/{x} + 1 + 5\nf(x) = −{3}/{x} + 6\nx = 0 and y = 6",           # the minus not taken into the bracket
         "f(x) = −({3}/{x} + 1 + 5)\nf(x) = −{3}/{x} − 6\nx = 0 and y = −6",        # the + 5 put inside the bracket
@@ -284,6 +300,17 @@ q6 = [
         "f(x) = −({3}/{x} + 1) + 5\nf(x) = −{3}/{x} + 4\nx = 4 and y = 0"], 2,     # x and y swapped
         ["What is f(x) when you replace g(x) with its equation?", "How do the reflection and the shift move the asymptotes of g?"],
         after=["6.1.1"])]
+for i in q6:   # the built sketch: its features' and shapes' marks are the memo criteria's, criterion by criterion (a feature with no
+    b = i.get("build") or {}   # crit only draws its curve and earns nothing); every feature names one of the two graphs
+    if b.get("kind") == "sketch":
+        got = {}
+        for x in b["features"] + [g["shape"] for g in b.get("graphs", []) if g.get("shape")]:
+            if "crit" in x:
+                got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+            else:
+                assert x["marks"] == 0, (i["n"], x["id"])
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
+        assert {f["graph"] for f in b["features"]} == {g["id"] for g in b["graphs"]}, i["n"]
 
 # ---- QUESTION 7, the question paper page 6 and the memo page 9 ----
 q7 = [
@@ -445,8 +472,12 @@ paper = {
         {"n": "2.2.2", "kind": "no_fit", "detail": "Read-off numbers with no working stay typed on the keypad: 2.2.2 (5 integers), 3.1 (T₄ = 11), "
                                                    "4.1.1 (16 dots) and 4.1.2 (169 dots); the memo writes 4² = 16 and 13² = 169, the answer as a "
                                                    "square, not a working."},
-        {"n": "6.2", "kind": "no_fit", "detail": "The sketch of g and h is drawn on paper and self-checked against the memo's four criteria (its "
-                                                 "fourth, 'x intercepts of g and h', ends in a stray '6' in the memo, read as noise)."},
+        {"n": "6.2", "kind": "no_fit", "detail": "The sketch of g and h is BUILT on a grid (2026-10-11): the learner places g's two asymptotes, "
+                                                 "the x-intercepts of g and h and h's y-intercept, each curve is drawn through its features, "
+                                                 "and the memo's four criteria are marked from them (g's shape and h's gradient from the "
+                                                 "curves the learner's own features make). h's y-intercept, which the memo does not mark, "
+                                                 "only draws h and earns nothing. The memo's fourth criterion, 'x intercepts of g and h', "
+                                                 "ends in a stray '6', read as noise."},
         {"n": "8.1.2", "kind": "no_fit", "detail": "The choice with its reason plays as statements: the memo's NOT (1) and its reason "
                                                    "P(A and B) ≠ 0 (1) are the two right cards; the wrong cards are false for these events "
                                                    "(P(A) + P(B) = 41/40, P(A or B) = 5/7)."},

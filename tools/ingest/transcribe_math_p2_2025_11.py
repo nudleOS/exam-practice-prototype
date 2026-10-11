@@ -20,7 +20,9 @@ self-checked on paper):
   one 1-mark read-off with no working (2.1.1, 1.4, 4.1, 4.4, 7.1) -> num;
   a choice of plausible forms (the skewness, cos 40° in k, an interval whose open/closed ends matter, an equation of a graph, a
   range) -> mcq;
-  "Draw a histogram / the graph of g" -> draw with the memo's criteria (self-checked, flagged no_fit).
+  "Draw a histogram" -> draw with the memo's criteria (self-checked, flagged no_fit); "draw the graph of g" (7.2) -> draw with
+  build "sketch" (2026-10-11: its asymptotes and intercepts placed on a grid, the curve drawn through them, marked online against
+  the memo's criteria).
 A part whose working shows an EARLIER part's answer (3.3's tan θ = ½ is 3.2's gradient) opens only once that part is answered:
 GATES, written to the part's "after".
 A mission is a question with its stem and diagram; a question whose stem changes part-way is two missions (2, 5, 9, 11). An MCQ
@@ -289,11 +291,25 @@ F7 = ("The graph of f(x) = cos 2x for x from −135° to 135°, on a grid with v
 q7 = [
     num("7.1", "Write down the period of f.", 180, 0, "°",
         ["The period is the length of one full wave.", "cos 2x repeats twice as fast as cos x."]),
-    draw("7.2", "On the set of axes provided in the ANSWER BOOK, draw the graph of g(x) = tan 2x − 1 for x ∈ [−135° ; 135°].", 3, [
+    # built on the answer book's axes (2026-10-11, as transcribe_math_p1_2025_11.py 4.5): x from −135° to 135° on 22,5° steps (half the
+    # answer book's 45° lines, so the x-intercepts are grid points), y from −2 to 2. Criterion 0 is the four asymptotes and criterion 2
+    # the four intercepts, each matched as a set (three x-intercepts with one name), one feature of each carrying its mark; criterion 1
+    # is the shape of the tan curve the learner's own features fix (increasing)
+    {**draw("7.2", "On the set of axes provided in the ANSWER BOOK, draw the graph of g(x) = tan 2x − 1 for x ∈ [−135° ; 135°].", 3, [
         ["Asymptotes at x = −135°, −45°, 45° and 135°", 1],
         ["Shape: increasing tan branches, each between two asymptotes", 1],
         ["Intercepts with the axes: x-intercepts at −67,5°, 22,5° and 112,5°; y-intercept −1", 1]],
         ["tan 2x has period 90°: its asymptotes are where 2x = ±90°, ±270°.", "The − 1 shifts the whole graph one unit down."]),
+     "build": {"kind": "sketch", "family": "tan", "b": 2, "x": [-135, 135, 22.5], "y": [-2, 2, 0.5], "domain": [-135, 135], "features": [
+         {"id": "a1", "kind": "vline", "label": "asymptote", "at": -135, "tol": 0, "marks": 1, "crit": 0},
+         {"id": "a2", "kind": "vline", "label": "asymptote", "at": -45, "tol": 0, "marks": 0, "crit": 0},
+         {"id": "a3", "kind": "vline", "label": "asymptote", "at": 45, "tol": 0, "marks": 0, "crit": 0},
+         {"id": "a4", "kind": "vline", "label": "asymptote", "at": 135, "tol": 0, "marks": 0, "crit": 0},
+         {"id": "x1", "kind": "point", "label": "x-intercept", "at": [-67.5, 0], "tol": 0, "marks": 1, "crit": 2},
+         {"id": "x2", "kind": "point", "label": "x-intercept", "at": [22.5, 0], "tol": 0, "marks": 0, "crit": 2},
+         {"id": "x3", "kind": "point", "label": "x-intercept", "at": [112.5, 0], "tol": 0, "marks": 0, "crit": 2},
+         {"id": "yint", "kind": "point", "label": "y-intercept", "at": [0, -1], "tol": 0, "marks": 0, "crit": 2}],
+               "shape": {"label": "Shape", "answer": "increasing", "marks": 1, "crit": 1}}},
     mcq("7.3", "Graph f is translated 45° to the left to form graph h. Determine the equation of h in its simplest form.",
         ["h(x) = sin 2x", "h(x) = −sin 2x", "h(x) = cos(2x + 45°)", "h(x) = −cos 2x"], 1,
         ["Translating left by 45° replaces x with (x + 45°).", "cos 2(x + 45°) = cos(2x + 90°): reduce it."], figure=fig("Q7", F7)),
@@ -305,6 +321,12 @@ q7 = [
         ["(1 − tan 2x)(cos 2x) ≥ 0 is (tan 2x − 1)(cos 2x) ≤ 0: where are g and f on opposite sides of the x-axis?", "g is undefined at its asymptotes."],
         marks=4, figure=fig("Q7", F7)),
 ]
+for i in q7:   # the built sketch: its features' and shape's marks are the memo criteria's, criterion by criterion
+    if (i.get("build") or {}).get("kind") == "sketch":
+        got = {}
+        for x in i["build"]["features"] + [i["build"]["shape"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
 
 # ---- QUESTION 8, the question paper page 9 and the memo page 18 ----
 AK = "AK² = AB² + BK² = 18² + 18² [Pythagoras]\nAK = √648 = 18√2 = 25,46 cm\n"
@@ -578,10 +600,15 @@ paper = {
         {"n": "1.2", "kind": "no_fit", "detail": "A working that shows an earlier part's answer opens only once that part is answered ('after'): "
                                                  + "; ".join(k + " after " + " and ".join(v) for k, v in GATES.items()) + "."},
         {"n": "2.2", "kind": "no_fit", "detail": "The table's player numbers 1-8 are ours: the paper prints the eight scores in one row."},
-        {"n": "2.1.3", "kind": "no_fit", "detail": "Drawings (2.1.3 histogram, 7.2 graph of g) are done on paper and self-checked against the memo's "
+        {"n": "2.1.3", "kind": "no_fit", "detail": "The drawing 2.1.3 (histogram) is done on paper and self-checked against the memo's "
                                                    "criteria. The app's histogram builder marks T C L S P (6 marks), not this memo's 3-mark scheme "
                                                    "(two frequencies, all frequencies, no gaps), so 2.1.3 is a plain draw. The answer book's blank "
                                                    "grid is not used: the scan shows darker grid segments that read like pre-drawn bars."},
+        {"n": "7.2", "kind": "no_fit", "detail": "The graph of g (7.2) is BUILT on the answer book's axes (2026-10-11; the graph of f that the "
+                                                 "answer book prints is not drawn on it): the learner places the four asymptotes and the four "
+                                                 "intercepts, the tan curve is drawn through them, and the memo's three criteria are marked from "
+                                                 "them (the shape from the curve the learner's own features fix). The x steps are 22,5°, half "
+                                                 "the answer book's 45° lines, so the x-intercepts −67,5°, 22,5° and 112,5° are grid points."},
         {"n": "5.1.1", "kind": "no_fit", "detail": "Expressions in k with one step of working (5.1.1) and choices whose open or closed ends matter "
                                                    "(5.2.2, 7.4, 7.5), an equation of a graph (7.3) and the skewness (2.1.4) play as MCQs of the "
                                                    "plausible forms, all or nothing: 5.1.1 loses the memo's 'third side' mark, 7.5 (4 marks) its "

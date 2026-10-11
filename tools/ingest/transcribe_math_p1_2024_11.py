@@ -22,7 +22,9 @@ How the memo's shapes map (Mathematics: the phone has multiple choice, short tex
   trailing [..] as a proof's reason column, so the memo's S = n/2[...] is written with round brackets or with text after it),
   and every option of a part has the same shape; the stem ends "Choose the correct answer." (a short answer) or "Choose the
   correct working." (a working). The part keeps its marks. The right option's position is spread evenly over A-D.
-  "Sketch the graph" and "Draw a Venn diagram" -> draw (self-checked against the memo's criteria).
+  "Draw a Venn diagram" -> draw (self-checked against the memo's criteria); "Sketch the graph" -> draw with build "sketch"
+  (2026-10-11: its features placed on a grid and its shape chosen, the curve drawn through them, marked online against the memo's
+  criteria).
   A part whose options show an EARLIER part's answer opens only after it (`after`, GATES below).
 Missions: Questions 3, 4, 5, 6, 9, 10, 11 and 12 share a stem, a diagram or a graph, so each is one mission; Questions 1, 2, 7 and 8
 are their numbered groups (1.1, 1.2, 1.3, 2.1, 2.2 ...). A single-line MCQ in a figure mission carries the figure itself (the MCQ
@@ -197,11 +199,21 @@ q4 = [
         ["B is on f, so its coordinates satisfy f(x) = aˣ − 1.", "Substitute x = 2 and y = −5/9; remember a > 0."]),
     mcq("4.2", "Write down the range of f." + ANS, ['y < −1', 'y > −1', 'y ≥ −1', 'x > −1'], 1,
         ["aˣ is always positive.", "So which values can aˣ − 1 take?"]),
-    draw("4.3", "Sketch the graph of f. Clearly show the intercepts with the axes and asymptotes, if any.", 3, [
+    # built on a grid (2026-10-11, as transcribe_math_p1_2025_11.py 4.5): the memo's three criteria as the features the learner places
+    # and the shape. Criterion 0 '(0 ; 0)' is both intercepts with the axes (one point: the x- and y-intercept, so that no single chip
+    # tells the learner they meet at the origin), one carrying its mark. One intercept + the asymptote fix no exponential, so the
+    # learner CHOOSES the shape (pick) and the curve follows it (drawn as (½)ˣ − 1 through the placed features, not through B, which
+    # the memo does not mark)
+    {**draw("4.3", "Sketch the graph of f. Clearly show the intercepts with the axes and asymptotes, if any.", 3, [
         ["Intercept with the axes: (0 ; 0)", 1], ["Asymptote y = −1", 1], ["Decreasing shape", 1]],
         ["With 0 < a < 1, aˣ gets smaller as x gets bigger.", "Find f(0), and the horizontal asymptote from the − 1."],
         memo="The memo's sketch: a decreasing curve from the top left, through (0 ; 0) and B, levelling off above the dotted asymptote y = −1 "
              "on the right."),
+     "build": {"kind": "sketch", "family": "exponential", "x": [-4, 4, 1], "y": [-2, 6, 1], "features": [
+         {"id": "yint", "kind": "point", "label": "y-intercept", "at": [0, 0], "tol": 0, "marks": 1, "crit": 0},
+         {"id": "xint", "kind": "point", "label": "x-intercept", "at": [0, 0], "tol": 0, "marks": 0, "crit": 0},
+         {"id": "asym", "kind": "hline", "label": "asymptote", "at": -1, "tol": 0, "marks": 1, "crit": 1}],
+               "shape": {"label": "Shape", "answer": "decreasing", "marks": 1, "crit": 2, "pick": ["increasing", "decreasing"]}}},
     work("4.4", "It is further given that C is a point on f at y = 19/8.\nDetermine the coordinates of C′, the image of C, when C is reflected "
          "about the line y = x.", 3, [
         '{19}/{8} = ({2}/{3})ˣ − 1\n{27}/{8} = ({2}/{3})ˣ\n({2}/{3})³ = ({2}/{3})ˣ\nx = 3, so C(3 ; {19}/{8})\nC′({19}/{8} ; 3)',     # flips 27/8 as (2/3)³
@@ -209,6 +221,12 @@ q4 = [
         '{19}/{8} = ({2}/{3})ˣ − 1\n{27}/{8} = ({2}/{3})ˣ\n({3}/{2})³ = ({3}/{2})⁻ˣ\nx = −3, so C(−3 ; {19}/{8})\nC′(−3 ; −{19}/{8})',  # reflected in the x-axis
         '{19}/{8} = ({2}/{3})ˣ − 1\n{27}/{8} = ({2}/{3})ˣ\n({3}/{2})³ = ({3}/{2})⁻ˣ\nx = −3, so C(−3 ; {19}/{8})\nC′(−{19}/{8} ; 3)'],  # reflected in y = −x
         1, ["Put y = 19/8 into f and write both sides as powers of the same base.", "Reflecting about y = x swaps the coordinates."])]
+for i in q4:   # the built sketch: its features' and shape's marks are the memo criteria's, criterion by criterion
+    if (i.get("build") or {}).get("kind") == "sketch":
+        got = {}
+        for x in i["build"]["features"] + [i["build"]["shape"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
 
 # ---- QUESTION 5, the question paper page 5 and the memo page 8 ----
 F5 = ("Axes with origin O. The hyperbola f has a dotted vertical asymptote that meets the x-axis at 1, and a dotted horizontal asymptote "
@@ -557,8 +575,11 @@ paper = {
                                                    "inline: ¼ and ½ in 3.2, i = 0,01125 in 7.3.2 (the memo's 13,5/1200)."},
         {"n": "2.1.2", "kind": "no_fit", "detail": "Parts whose options show an earlier part's answer open only after it (after): " + "; ".join(
             "%s after %s" % (n, ", ".join(a)) for n, a in GATES.items()) + "."},
-        {"n": "4.3", "kind": "no_fit", "detail": "Drawings (4.3 the sketch of f, 11.1 the Venn diagram) are done on paper and self-checked against "
-                                                 "the memo's three criteria each."},
+        {"n": "4.3", "kind": "no_fit", "detail": "The sketch of f (4.3) is BUILT on a grid (2026-10-11): the learner places the intercepts with "
+                                                 "the axes and the asymptote and chooses the shape (one intercept and the asymptote fix no "
+                                                 "exponential), the curve is drawn through them, and the memo's three criteria are marked from "
+                                                 "them. The Venn diagram (11.1) is drawn on paper and self-checked against the memo's three "
+                                                 "criteria."},
         {"n": "5.5", "kind": "no_fit", "detail": "The memo accepts four transformations (reflect in the y-axis then 2 units right; reflect in the "
                                                  "x-axis then 4 units down; reflect about x = 1; reflect about y = −2). The MCQ offers the first; "
                                                  "each distractor was checked to change the domain or range of f (2 units left: x ≠ −3; x-axis then "

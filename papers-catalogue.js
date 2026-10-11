@@ -401,7 +401,7 @@ window.NX_CATALOGUE = {
    "missions": 41,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "9bd2270234",
+   "rev": "499a0d21c6",
    "source_pdf": "uploads/Mathematics P2 Nov 2025 Eng.pdf"
   },
   {
@@ -423,7 +423,7 @@ window.NX_CATALOGUE = {
    "missions": 39,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "9a59a55061",
+   "rev": "fb68c98fe2",
    "source_pdf": "uploads/Mathematics P1 Nov 2024 Eng.pdf"
   },
   {
@@ -445,7 +445,7 @@ window.NX_CATALOGUE = {
    "missions": 44,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "24b31094cb",
+   "rev": "00526a0e28",
    "source_pdf": "uploads/Mathematics P2 Nov 2024 Eng.pdf"
   },
   {
@@ -554,7 +554,7 @@ window.NX_CATALOGUE = {
    "questions": 8,
    "missions": 14,
    "status": "ready",
-   "rev": "e84efbb540",
+   "rev": "8962df0b20",
    "source_pdf": "uploads/Grade 10 Mathematics P1 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -576,7 +576,7 @@ window.NX_CATALOGUE = {
    "questions": 8,
    "missions": 13,
    "status": "ready",
-   "rev": "fa0f7ab0fa",
+   "rev": "24e1693df5",
    "source_pdf": "uploads/Grade 10 Mathematics P2 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -598,7 +598,7 @@ window.NX_CATALOGUE = {
    "questions": 7,
    "missions": 16,
    "status": "ready",
-   "rev": "d5b58633b9",
+   "rev": "2f6f5cb926",
    "source_pdf": "uploads/Grade 10 Mathematics P1 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },
@@ -620,7 +620,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 13,
    "status": "ready",
-   "rev": "214a27afb6",
+   "rev": "7c641ca595",
    "source_pdf": "uploads/Grade 10 Mathematics P2 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },
@@ -730,7 +730,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 18,
    "status": "ready",
-   "rev": "1b741e7414",
+   "rev": "cc52da4c6f",
    "source_pdf": "uploads/Grade 11 Mathematics P1 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
