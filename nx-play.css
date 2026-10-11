@@ -2618,6 +2618,19 @@ body.nx-play [data-ins-wait] { font-size:13px; color:var(--nx-text2); }
 .sk-chip[data-k="hline"] .sk-ic { width:18px; height:0; border-top:2px dashed var(--nx-sel-line); }
 .sk-chip[data-k="vline"] .sk-ic { width:0; height:18px; margin:0 8px; border-left:2px dashed var(--nx-sel-line); }
 .sk-chip:is([data-k="hline"], [data-k="vline"])[data-on="true"] .sk-ic { border-color:var(--nx-text); }
+/* two graphs on one set of axes: each feature wears its graph's curve colour and a badge with its name, on its chip, its placed dot and
+   tag, and its asymptote's pill (G11 P2 Nov 2017 6.2.3 had two "x-intercept"s and two "turning point"s, f's and g's alike). The badge's
+   letter is the card colour on the curve colour (dark: 4.9:1 on the accent, 7.6:1 on the amber); light deepens the badge (4.8 and 5.5:1) */
+.sk [data-g="0"] { --sk-g:var(--nx-accent); --sk-gbg:var(--nx-accent); }
+.sk [data-g="1"] { --sk-g:#e0a10f; --sk-gbg:#e0a10f; }
+html[data-nx="light"] .sk [data-g="0"] { --sk-gbg:#1667e8; }
+html[data-nx="light"] .sk [data-g="1"] { --sk-g:#b7790a; --sk-gbg:#8a5b00; }
+.sk-gb { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:16px; height:16px; padding:0 4px; margin-right:4px; box-sizing:border-box; border-radius:8px;
+  background:var(--sk-gbg); color:var(--nx-card); font-size:11px; font-weight:800; font-style:italic; line-height:1; letter-spacing:0; text-shadow:none; }
+.sk-chip[data-g] .sk-ic { border-color:var(--sk-g); }
+.sk-chip[data-g][data-k="point"][data-on="true"] .sk-ic { background:var(--sk-g); box-shadow:0 0 0 2.5px var(--nx-card), 0 0 0 4px var(--sk-g); }
+.sk-cr { display:flex; align-items:center; }
+.sk-cr .sk-cv { margin-left:0; }
 .sk-cb { display:flex; flex-direction:column; align-items:flex-start; gap:3px; min-width:0; }
 .sk-cl { overflow-wrap:anywhere; }
 .sk-cv { padding:2px 7px; margin-left:-7px; border-radius:7px; font-size:12px; font-weight:800; line-height:1.25; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--nx-text2); }
@@ -2650,6 +2663,7 @@ body.nx-play [data-ins-wait] { font-size:13px; color:var(--nx-text2); }
 .sk-pin.sk-point { width:40px; height:40px; padding:0; border:0; border-radius:50%; background:transparent; transform:translate(-50%, -50%); }
 .sk-pin.sk-point::after { content:""; position:absolute; left:50%; top:50%; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--nx-accent); box-shadow:0 0 0 2.5px var(--nx-card); }
 .sk-pin.sk-point[data-act="true"]::after { box-shadow:0 0 0 2.5px var(--nx-card), 0 0 0 5px var(--nx-sel-line); }
+.sk-pin.sk-point[data-g]::after { background:var(--sk-g); }
 .sk-pin.sk-point[data-v="ok"]::after { background:#1fbf7a; }
 .sk-pin.sk-point[data-v="bad"]::after { background:#ef5350; }
 .sk-pin:focus-visible { outline:none; }
@@ -2668,12 +2682,14 @@ body.nx-play [data-ins-wait] { font-size:13px; color:var(--nx-text2); }
 .sk-pin:is(.sk-hline, .sk-vline):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
 .sk-pin:is(.sk-hline, .sk-vline)[data-v="ok"] { border-color:#1fbf7a; }
 .sk-pin:is(.sk-hline, .sk-vline)[data-v="bad"] { border-color:#ef5350; }
-/* a placed point's coordinates, beside it (to its left near the right edge, below it near the top) */
-.sk-tag { position:absolute; pointer-events:none; transform:translate(10px, calc(-100% - 6px)); font-size:11.5px; font-weight:800; line-height:1; white-space:nowrap; color:var(--nx-text);
+.sk-pin:is(.sk-hline, .sk-vline)[data-g] { display:flex; align-items:center; }
+/* a placed point's coordinates beside it: build-play.js sets the tag's box (left, top) on the first free spot round its dot, on no other
+   tag or dot and off the axes' numbers where it can be; 15 px tall, as build-play.js reckons it */
+.sk-tag { position:absolute; pointer-events:none; display:flex; align-items:center; height:15px; font-size:11.5px; font-weight:800; line-height:1; white-space:nowrap; color:var(--nx-text);
   text-shadow:0 0 2px var(--nx-card), 0 0 3px var(--nx-card), 0 0 4px var(--nx-card); font-variant-numeric:tabular-nums; }
-.sk-tag[data-l="true"] { transform:translate(calc(-100% - 10px), calc(-100% - 6px)); }
-.sk-tag[data-b="true"] { transform:translate(10px, 8px); }
-.sk-tag[data-l="true"][data-b="true"] { transform:translate(calc(-100% - 10px), 8px); }
+.sk-tag .sk-gb { min-width:14px; height:14px; padding:0 3px; margin-right:3px; border-radius:7px; font-size:10px; }
+.sk-lead { position:absolute; left:0; top:0; overflow:visible; pointer-events:none; }   /* a tag a row off its dot hangs from it on a thin line */
+.sk-lead line { stroke:var(--nx-text2); stroke-width:1.2; stroke-linecap:round; opacity:0.8; }
 /* where a click would put the chosen feature (a mouse only: a finger has no hover) */
 .sk-ghost { position:absolute; pointer-events:none; width:16px; height:16px; margin:-8px 0 0 -8px; box-sizing:border-box; border-radius:50%; border:2px dashed var(--nx-sel-line);
   font-size:11px; font-weight:700; line-height:12px; color:var(--nx-text2); white-space:nowrap; text-indent:18px; }
@@ -2685,6 +2701,19 @@ body.nx-play [data-ins-wait] { font-size:13px; color:var(--nx-text2); }
 .sk-rm { border:0; background:none; padding:4px 0; color:var(--nx-accent); font:inherit; font-size:12.5px; font-weight:800; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
 .sk-note { margin:6px 0 0; font-size:12.5px; line-height:1.45; font-weight:600; color:#f3c14f; }
 :is(.sk-chip, .sk-op, .sk-rm):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+/* a tray whose rows and the grid would not fit in view together (build-play.js sets data-row; Maths P2 Nov 2025 7.2's eight chips at
+   360 x 702: a 257 px tray over a 223 px grid): ONE row of chips that scrolls sideways, each chip as wide as its name, the chosen one
+   kept in view; a fade marks chips past either edge, and the grid sits right under the row (the padding keeps a chip's ring and focus
+   outline inside the scroller) */
+.sk-tray[data-row="true"] .sk-ti { display:flex; gap:8px; position:relative; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;
+  padding:5px 5px 7px; margin:-5px -5px -7px; scrollbar-width:thin; }   /* (no scroll-snap: a snap undid the scroll that brings the chosen chip into view) */
+.sk-tray[data-row="true"] .sk-chip { flex:0 0 auto; max-width:230px; }
+.sk-tray[data-row="true"] .sk-cl { white-space:nowrap; }
+.sk-tray[data-row="true"] .sk-ti[data-r="true"] { -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+.sk-tray[data-row="true"] .sk-ti[data-l="true"] { -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
+.sk-tray[data-row="true"] .sk-ti[data-l="true"][data-r="true"] { -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
+@media (pointer:coarse) { .sk-tray[data-row="true"] .sk-ti { scrollbar-width:none; } .sk-tray[data-row="true"] .sk-ti::-webkit-scrollbar { display:none; } }   /* (a finger swipes it; a mouse keeps the thin bar) */
 /* the result chips: right, wrong, or right but its memo criterion's partner is not (◐) */
 .bp-chip[data-ok="part"] { background:rgba(224,161,15,0.16); color:#f3c14f; }
 html[data-nx="light"] .bp-chip[data-ok="part"] { color:#855400; }
