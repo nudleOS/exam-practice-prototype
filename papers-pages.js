@@ -1751,6 +1751,38 @@ window.NX_PAGES = {
    }
   }
  },
+ "g10-math-p2-2018-11": {
+  "qp": {
+   "pages": 9,
+   "src": "assets/papers/g10-math-p2-2018-11/qp-",
+   "pdf": "uploads/Grade 10 Mathematics P2 Nov 2018 Eng.pdf",
+   "w": 1000,
+   "h": 1413,
+   "find": {
+    "1": 3,
+    "2": 4,
+    "3.1": 5,
+    "3.2": 5,
+    "3.3": 5,
+    "4.1": 6,
+    "4.2": 6,
+    "5.1": 6,
+    "5.2": 7,
+    "6": 7,
+    "7": 8,
+    "8.1": 9,
+    "8.2": 9
+   }
+  },
+  "mg": {
+   "pages": 13,
+   "src": "uploads/papers/g10-math-p2-2018-11/mg-",
+   "pdf": "uploads/Grade 10 Mathematics P2 Nov 2018 MG Afr & Eng.pdf",
+   "w": 1000,
+   "h": 1413,
+   "find": {}
+  }
+ },
  "g10-math-p1-2017-11": {
   "qp": {
    "pages": 7,

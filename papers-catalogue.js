@@ -559,6 +559,28 @@ window.NX_CATALOGUE = {
    "provenance_label": "DBE common paper · November 2018"
   },
   {
+   "id": "g10-math-p2-2018-11",
+   "title": "Mathematics P2",
+   "subject": "Mathematics",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2018",
+   "year": 2018,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 8,
+   "missions": 13,
+   "status": "ready",
+   "rev": "fa0f7ab0fa",
+   "source_pdf": "uploads/Grade 10 Mathematics P2 Nov 2018 Eng.pdf",
+   "provenance_label": "DBE common paper · November 2018"
+  },
+  {
    "id": "g10-math-p1-2017-11",
    "title": "Mathematics P1",
    "subject": "Mathematics",
