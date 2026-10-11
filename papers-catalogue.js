@@ -735,6 +735,28 @@ window.NX_CATALOGUE = {
    "provenance_label": "DBE common paper · November 2018"
   },
   {
+   "id": "g11-math-p2-2018-11",
+   "title": "Mathematics P2",
+   "subject": "Mathematics",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2018",
+   "year": 2018,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 180,
+   "questions": 11,
+   "missions": 19,
+   "status": "ready",
+   "rev": "d306e241bc",
+   "source_pdf": "uploads/Grade 11 Mathematics P2 Nov 2018 Eng.pdf",
+   "provenance_label": "DBE common paper · November 2018"
+  },
+  {
    "id": "g11-ps-p1-2018-11",
    "title": "Physical Sciences P1",
    "subject": "Physical Sciences",
@@ -754,6 +776,28 @@ window.NX_CATALOGUE = {
    "status": "ready",
    "rev": "2e4d85a890",
    "source_pdf": "uploads/Grade 11 Physical Sciences P1 Nov 2018 Eng.pdf",
+   "provenance_label": "DBE common paper · November 2018"
+  },
+  {
+   "id": "g11-ps-p2-2018-11",
+   "title": "Physical Sciences P2",
+   "subject": "Physical Sciences",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2018",
+   "year": 2018,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 180,
+   "questions": 10,
+   "missions": 13,
+   "status": "ready",
+   "rev": "0c1bf085c5",
+   "source_pdf": "uploads/Grade 11 Physical Sciences P2 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   }
  ]
