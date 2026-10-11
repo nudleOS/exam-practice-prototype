@@ -2691,3 +2691,26 @@ html[data-nx="light"] .bp-chip[data-ok="part"] { color:#855400; }
 html[data-nx="light"] .sk-note { color:#855400; }
 html[data-nx="light"] .sk-svg path.sk-c2 { stroke:#b7790a; }
 html[data-nx="light"] .sk-svg text.sk-c2 { fill:#b7790a; }
+
+/* ---- Long question text, condensed (Murci, 2026-10-11: B + A; nx-fold.js decides what folds) ----
+   A long stem's SETUP folds to two lines behind "Read more"; its ASK (the instruction, printed last) always shows. A stem whose ask
+   can't be told apart folds whole, to three lines. The folded text stays in the page, so a screen reader still reads all of it. */
+body.nx-play [data-stem] [data-fold-text] { display:block; }
+body.nx-play [data-stem] [data-fold-text][data-open="false"] { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
+body.nx-play [data-stem][data-fold="whole"] [data-fold-text][data-open="false"] { -webkit-line-clamp:3; line-clamp:3; }
+body.nx-play [data-stem] [data-fold-ask] { display:block; margin-top:8px; }
+body.nx-play [data-stem][data-fold="whole"] [data-fold-ask] { display:none; }   /* (DC wraps a value in a span, so :empty never matches) */
+body.nx-play [data-stem] [data-fold-more] { display:inline-flex; align-items:center; min-height:40px; margin:0; padding:2px 0; border:0; background:none;
+  color:var(--tint); font:inherit; font-size:15px !important; font-weight:700 !important; letter-spacing:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+body.nx-play [data-stem] [data-fold-more]:focus-visible { outline:2px solid var(--tint); outline-offset:2px; border-radius:6px; }
+@media (max-width:600px) { body.nx-play [data-stem] [data-fold-more] { font-size:14px !important; } }
+/* the MCQ panel (mcq-play.js): no sheet, so a long lead-in or extract folds in place (three lines), and a long stem as above */
+body.nx-play .mcqp h1 .fold-text { display:block; }
+body.nx-play .mcqp .fold-text[data-open="false"] { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; line-clamp:3; overflow:hidden; }
+body.nx-play .mcqp h1[data-fold="split"] .fold-text[data-open="false"] { -webkit-line-clamp:2; line-clamp:2; }
+body.nx-play .mcqp h1 .fold-ask { display:block; margin-top:8px; }
+body.nx-play .mcqp .fold-more { display:inline-flex; align-items:center; min-height:40px; margin:0 0 4px; padding:2px 0; border:0; background:none;
+  color:var(--tint); font:inherit; font-size:15px !important; font-weight:700 !important; letter-spacing:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+body.nx-play .mcqp h1 .fold-more { display:flex; }
+body.nx-play .mcqp .fold-more:focus-visible { outline:2px solid var(--tint); outline-offset:2px; border-radius:6px; }
+@media (max-width:600px) { body.nx-play .mcqp .fold-more { font-size:14px !important; } }

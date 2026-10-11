@@ -223,17 +223,26 @@
       // text, then the group's own lead-in line (opts.leadFor, "1.2 Give the correct ..."), then the sub-question with its number
       const panel = opts.look === "panel", lead = panel && opts.leadFor ? String(opts.leadFor(it) || "") : "";
       const esc = t => t.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      // long text (Murci, 2026-10-11, nx-fold.js): the panel has no sheet, so a long lead-in or extract folds in place behind "Read
+      // more", and a long stem's setup folds to two lines with its ask always shown, as on the play screen
+      const F = window.NXFold, more = '<button type="button" class="fold-more" aria-expanded="false">Read more</button>';
+      const leadFold = !!F && F.leadLong(lead), descFold = !!F && F.ctxLong(desc), sf = F ? F.split(stem) : null;
+      const num = `<span class="num">${it.n}</span>`;
+      const stemHTML = !sf ? `<h1>${num}<span>${stem}</span></h1>`
+        : `<h1 data-fold="${sf.ask ? "split" : "whole"}"><span class="fold-text" data-open="false">${num}${sf.setup}</span>${more}${sf.ask ? `<span class="fold-ask">${sf.ask}</span>` : ""}</h1>`;
       st.innerHTML = (panel
         // one line (Murci, 2026-09-30): the paper's question ("Question 1") beside its part's chip (1.1.1), the marks on the right
-        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="tries" role="img"></span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span>${S.practice ? "" : `<span class="qfirst">first try only</span>`}</div>` + (lead ? `<p class="qlead"><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` : "")
+        ? `<div class="qhead"><span class="qid"><span class="qlabel">Question ${String(it.n).split(".")[0]}</span>${S.practice ? `<span class="qpractice">Practice round · no marks or XP</span>` : ""}</span><span class="tries" role="img"></span><span class="qmarks" aria-label="${it.marks} marks">${it.marks}<span class="mw"> ${it.marks === 1 ? "mark" : "marks"}</span></span>${S.practice ? "" : `<span class="qfirst">first try only</span>`}</div>` + (lead ? `<p class="qlead${leadFold ? " fold-text" : ""}"${leadFold ? ' data-open="false"' : ""}><b>${esc(String(grp.id || ""))}</b> ${esc(lead)}</p>` + (leadFold ? more : "") : "")
         : `<div class="qhead">${k > 0 ? `<button class="qback" id="mq-qback" aria-label="Previous question: ${ORDER[k - 1]}">‹</button>` : ""}<span class="qtitle">${grp.title || ""}</span><span class="tries"></span></div>`) +
-        (desc ? `<p class="qdesc">${desc}</p>` : "") +
-        `<h1><span class="num">${it.n}</span><span>${stem}</span></h1>` +
+        (desc ? `<p class="qdesc${descFold ? " fold-text" : ""}"${descFold ? ' data-open="false"' : ""}>${desc}</p>` + (descFold ? more : "") : "") +
+        stemHTML +
         (ab ? `<div class="ab"><div><b>A</b>${ab[2]}</div><div><b>B</b>${ab[3]}</div></div>` : "") +
       // the paper's own figure (opts gives it as it.img {src, w, h, alt}): under the stem, as printed; a tap enlarges it (2026-10-03, Murci:
       // "the real paper had images on MCQ but our MCQs dont have any of those images")
       (it.img ? `<figure class="qimg" role="button" tabindex="0" aria-label="Figure for ${it.n}. Tap to enlarge"><img src="${it.img.src}" width="${it.img.w}" height="${it.img.h}" alt="${esc(it.img.alt || "")}"></figure>` :
       it.fig ? `<div class="qfig"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/></svg><span>The diagram is on ${it.fig} of the paper</span></div>` : "");   // a question never loses its figure (the paper images are not in yet)
+      st.querySelectorAll(".fold-more").forEach(b => { b.onclick = () => { const t = b.previousElementSibling, open = t.dataset.open !== "true";
+        t.dataset.open = String(open); b.setAttribute("aria-expanded", String(open)); b.textContent = open ? "Show less" : "Read more"; if (opts.fit) fitCards(); }; });
       const qim = st.querySelector(".qimg");
       if (qim) { const im = qim.querySelector("img"); if (opts.fit) im.addEventListener("load", () => fitCards(), { once: true });
         const zoom = () => { qim.classList.toggle("big"); qim.setAttribute("aria-label", "Figure for " + it.n + (qim.classList.contains("big") ? ". Tap to make smaller" : ". Tap to enlarge")); };

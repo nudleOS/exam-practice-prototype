@@ -32,7 +32,8 @@
     ids.forEach(function (id) { var el = document.createElement("script"); el.src = "tools/ingest/out/" + id + "/paper.js?v=" + (rev[id] || Date.now());   // (a paper under review, ?ingested=, is always fresh)
       el.onerror = function () { window.__ingestWant--; console.warn("[ingest] could not load " + id); }; document.head.appendChild(el); }); })();</script>
 <script src="papers-pages.js?v=18"></script>
-  <script src="mcq-play.js?v=67"></script>
+  <script src="nx-fold.js?v=1"></script>   <!-- long question text, condensed (Murci, 2026-10-11: B + A), read by the play screen and mcq-play -->
+  <script src="mcq-play.js?v=68"></script>
   <script src="build-play.js?v=20"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03; graph sketches, 2026-10-11 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
@@ -96,7 +97,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=296">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=297">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -740,6 +741,7 @@
             <div data-ctx="true" data-open="{{ ctxOpen }}" style="border-radius:16px; border:1px solid var(--line); background:var(--card2, rgba(var(--nx-c, 29,32,35), 0.82))">
               <button onClick="{{ toggleCtx }}" aria-expanded="{{ ctxOpen }}" style="width:100%; min-height:44px; display:flex; align-items:center; gap:10px; padding:10px 14px; border:none; background:transparent; color:var(--text); cursor:pointer; text-align:left">
                 <span style="flex:none; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3)">Shared information</span>
+                <sc-if value="{{ ctxHasWords }}" hint-placeholder-val="{{ false }}"><span data-ctx-words="true" style="flex:none; font-size:12.5px; font-weight:700; color:var(--text3)">{{ ctxWordsLabel }}</span></sc-if>
                 <span style="flex:1; min-width:0; font-size:12.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:{{ ctxPeekDisplay }}">{{ ctxPeek }}</span>
                 <span style="flex:none; font-size:12.5px; font-weight:700; color:var(--tint)">{{ ctxAction }}</span>
               </button>
@@ -786,7 +788,9 @@
             </div>
           </sc-if>
 
-          <h2 data-stem="true" tabIndex="-1" style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty; outline:none"><sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-stemnum="true">{{ partNumber }}</span></sc-if>{{ stem }}</h2>
+          <!-- a long stem folds (2026-10-11, nx-fold.js): the setup to two lines behind Read more, the ask always shown. The button sits
+               INSIDE the heading: the figure's row logic reads the first sibling after [data-stem] as the first answer -->
+          <h2 data-stem="true" data-fold="{{ stemFoldKind }}" tabIndex="-1" style="margin:0; font-size:{{ stemSize }}; line-height:1.45; font-weight:700; text-wrap:pretty; outline:none"><sc-if value="{{ stemPlain }}" hint-placeholder-val="{{ true }}"><sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-stemnum="true">{{ partNumber }}</span></sc-if>{{ stem }}</sc-if><sc-if value="{{ stemFolds }}" hint-placeholder-val="{{ false }}"><span data-fold-text="true" data-open="{{ stemOpenStr }}"><sc-if value="{{ nxLook }}" hint-placeholder-val="{{ false }}"><span data-stemnum="true">{{ partNumber }}</span></sc-if>{{ stemSetup }}</span><button type="button" data-fold-more="true" onClick="{{ toggleStem }}" aria-expanded="{{ stemOpenStr }}">{{ stemMoreLabel }}</button><span data-fold-ask="true">{{ stemAsk }}</span></sc-if></h2>
 
           <sc-if value="{{ showRules }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
@@ -1995,7 +1999,7 @@ class Component extends DCLogic {
     kit: false, kitTab: "rules", reduced: false,
     studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyFolder: null, studyErr: "",
     paperSourceOpen: false, paperSourceId: null, paperSourcePage: 1, paperSourceUrl: "",
-    home: null, menu: null, selQual: "high_school", selSubj: "Life Sciences", selPaper: "ls-p1-2026", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", lastMult: 1, ctxOpen: null, kbOff: 0, footH: 120,
+    home: null, menu: null, selQual: "high_school", selSubj: "Life Sciences", selPaper: "ls-p1-2026", sheet: null, query: "", optIdx: 0, pop: null, picking: false, bubbleMsg: "", ticketSeen: false, sheetBack: false, vh: 800, card: null, cel: null, litHold: null, mapClip: "greet", mapMode: null, roadPx: 0, barOpen: false, barSeq: 0, edited: {}, memoSeen: false, playClip: "greet", lastMult: 1, ctxOpen: null, stemOpen: false, kbOff: 0, footH: 120,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", pickWarn: 0, lastSub: null, describeOpen: false, sceneOn: true, figBig: false, srLive: "", runLog: [], missionStart: null, doneCount: null, doneGrow: false, revisit: false, drill: null, mapView: "paper", bus: busEmpty(), homeClip: "greet", posterMissing: false, swap: 0, modelReady: false, saveData: false, disp: { xp: 0, marks: 0, days: 0 } };
 
   // ── The question paper and its memo (2026-10-02): page images (NX_PAGES), opened at the question's page. A phone: a panel
@@ -3754,7 +3758,7 @@ class Component extends DCLogic {
     (this._dims || []).forEach(a => a.cancel()); this._dims = []; this._rolledFor = null; clearTimeout(this._glassT);
     clearTimeout(this._seqT); this._seqBusy = false; document.querySelectorAll("[data-seqtrack]").forEach(t => { t.classList.remove("nx-pulsing"); t.querySelectorAll("[data-ball]").forEach(b => { delete b.dataset.lit; b.style.visibility = ""; }); });
     this.setState(Object.assign({ inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, matchCard: null, matchMiss: [], matchBreak: [], build: {}, drawn: false, reply: null, marking: false,
-    barOpen: false, edited: {}, memoSeen: false, ctxOpen: null,
+    barOpen: false, edited: {}, memoSeen: false, ctxOpen: null, stemOpen: false,
     pick: null, picks: [], orderSeq: [], letter: "", lname: "", lrows: [], deadFresh: [], term: "", numVal: "", chipDraft: "", kp: null, kpExpr: "", kpErr: "", lastSub: null, describeOpen: false, wkIdx: 0, wkDir: 0 }, extra || {}), () => { this.react("greet"); if (this.state.screen === "play") window.scrollTo(0, 0); }); }
   // While a Hall paper is open, practice on that paper waits: the door leads back to the Hall.
   // "What cost you marks" (2026-10-02): the paper's mark (and its first-try mark once a retake changed it), one plain line, then
@@ -5146,9 +5150,16 @@ class Component extends DCLogic {
     };
     // a phone: the extract is a one-line card that opens a bottom sheet, closed at first so the question stays in view (Murci,
     // 2026-10-03: "Extract as a card on phones"); wider screens keep it open inline on a mission's first question
-    const ctxOpen = s.ctxOpen != null ? s.ctxOpen : phone ? false : (s.drill ? true : s.pi === 0);
-    const ctxText = part._context != null ? part._context : mission ? mission.context : "";
+    // long text (Murci, 2026-10-11, B + A; nx-fold.js): a lead-in over 40 words reads in the sheet (playHeadVals drops its line), and
+    // a sheet over 60 words starts closed on every screen size, so the question is what shows first
+    const FOLD = window.NXFold, leadRaw = (mission && mission.lead) || "", leadInSheet = FOLD.leadLong(leadRaw);
+    const ctxOwn = part._context != null ? part._context : mission ? mission.context : "";
+    const ctxText = leadInSheet ? (ctxOwn ? leadRaw + "\n\n" + ctxOwn : leadRaw) : ctxOwn;
+    const ctxWords = FOLD.words(ctxText);
+    const ctxOpen = s.ctxOpen != null ? s.ctxOpen : phone || FOLD.ctxLong(ctxText) ? false : (s.drill ? true : s.pi === 0);
     const ctxTable = part._table !== undefined ? part._table : mission ? mission.table || null : null;
+    // A: a long stem's setup folds to two lines behind "Read more"; its ask always shows (a stem with no ask apart folds whole)
+    const stemFold = FOLD.split(part.stem);
     const ctxView = ctxTable ? tableView(ctxTable) : null;
     const locked = closed || s.marking || (s.barOpen && !!reply);
     const nFields = mode === "steps" ? part.steps.length : mode === "list" ? (part.count || 4) : 0;
@@ -5191,6 +5202,15 @@ class Component extends DCLogic {
       ctxRole: phone ? "dialog" : "region", ctxModal: phone ? "true" : "false", ctxSheetTitle: (mission && mission.kind) || "Shared information", ctxAction: ctxOpen ? "Hide" : "Read", ctxPeekDisplay: ctxOpen ? "none" : "block",
       hasContext: !!ctxText || !!ctxTable, context: ctxText, hasCtxText: !!ctxText,
       ctxPeek: ctxText ? ctxText.split("\n")[0] : ctxTable ? ctxTable.title || "A table of results" : "",
+      // its length, so a learner knows what Read opens ("· 63 words"; a table alone says nothing more than its title)
+      ctxHasWords: ctxWords > 0, ctxWordsLabel: "· " + ctxWords + (ctxWords === 1 ? " word" : " words"),
+      // the stem's fold
+      stemFolds: !!stemFold, stemPlain: !stemFold, stemFoldKind: !stemFold ? "none" : stemFold.ask ? "split" : "whole",
+      stemSetup: stemFold ? stemFold.setup : "", stemAsk: stemFold ? stemFold.ask : "", stemOpenStr: s.stemOpen ? "true" : "false",
+      stemMoreLabel: s.stemOpen ? "Show less" : "Read more",
+      toggleStem: () => { const open = !this.state.stemOpen; this.setState({ stemOpen: open }, () => { if (open) return;
+        // folding back: the question's top stays in view (a long setup, read and folded, left the learner below it)
+        const h = document.querySelector("[data-stem]"); if (h && h.getBoundingClientRect().top < 80) window.scrollBy({ top: h.getBoundingClientRect().top - 96, behavior: s.reduced ? "auto" : "smooth" }); }); },
       ctxHasTable: !!ctxView, ctxHasTableTitle: !!(ctxTable && ctxTable.title), ctxTableTitle: ctxTable ? ctxTable.title || "" : "",
       ctxTableLabel: ctxTable ? ctxTable.title || ctxTable.head.join(", ") : "", ctxTableCols: ctxView ? ctxView.cols : "", ctxTableHead: ctxView ? ctxView.head : [],
       // the table's room: the question column (640 px on wide layouts, as the figures), less the sheet's padding and the border
@@ -5295,7 +5315,7 @@ class Component extends DCLogic {
       nxProgLabel: (this.mission() || {}).title || "",
       nxProgShort: String((this.mission() || {}).title || "").replace(/^Question\s*/i, "Q "),   // a phone's fallback, "Q 1.2" (fitWhere)
       // the paper's order in the panel (Murci, 2026-09-30): the group's own lead-in line under "Question 1", then the numbered sub-question
-      nxHasLead: !!(this.mission() || {}).lead, nxLead: (this.mission() || {}).lead || "", nxLeadNum: (this.mission() || {}).id || "",
+      nxHasLead: !!(this.mission() || {}).lead && !window.NXFold.leadLong((this.mission() || {}).lead), nxLead:   /* a long lead reads in the sheet (2026-10-11) */ (this.mission() || {}).lead || "", nxLeadNum: (this.mission() || {}).id || "",
       ...this.nxMapVals(s, true), hasPartTopic: !!nxTopic, partTopic: nxTopic, coachFit: "0.8",   // 0.8 = the MCQ robot's framing
       // the header's way back to the papers is gone (Murci, 2026-10-03: "that Back to map icon should say as such but not be on the
       // question navbar but instead at the top of the questions modal"): "Back to map" leads the question map; a drill keeps its X
