@@ -779,6 +779,28 @@ window.NX_CATALOGUE = {
    "provenance_label": "DBE common paper · November 2017"
   },
   {
+   "id": "g11-math-p2-2017-11",
+   "title": "Mathematics P2",
+   "subject": "Mathematics",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2017",
+   "year": 2017,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 180,
+   "questions": 12,
+   "missions": 17,
+   "status": "ready",
+   "rev": "9289c88667",
+   "source_pdf": "uploads/Grade 11 Mathematics P2 Nov 2017 Eng.pdf",
+   "provenance_label": "DBE common paper · November 2017"
+  },
+  {
    "id": "g11-ps-p1-2018-11",
    "title": "Physical Sciences P1",
    "subject": "Physical Sciences",
