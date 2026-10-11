@@ -559,6 +559,28 @@ window.NX_CATALOGUE = {
    "provenance_label": "DBE common paper · November 2018"
   },
   {
+   "id": "g10-math-p1-2017-11",
+   "title": "Mathematics P1",
+   "subject": "Mathematics",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2017",
+   "year": 2017,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 7,
+   "missions": 16,
+   "status": "ready",
+   "rev": "ba4e2edd44",
+   "source_pdf": "uploads/Grade 10 Mathematics P1 Nov 2017 Eng.pdf",
+   "provenance_label": "DBE common paper · November 2017"
+  },
+  {
    "id": "g10-ps-p1-2018-11",
    "title": "Physical Sciences P1",
    "subject": "Physical Sciences",
