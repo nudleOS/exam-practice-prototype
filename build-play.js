@@ -9,6 +9,10 @@
    - "boxplot" (Maths P2 Nov 2024 2.4, Grade 10 P2 2017 1.4 and 2018 1.5; 2026-10-11) a box and whisker diagram: the five values placed on
      the paper's scaled line, the box and whiskers drawn from them.
    - "numline" (Grade 10 P1 2017 2.1.2; 2026-10-11) an inequality on a number line: its end(s), open or closed dots, and the shading.
+   - "venn" (Grade 10 P1 2017 7.2.1, Grade 11 P1 2017 9.1, Maths P1 Nov 2024 11.1; 2026-10-11) a Venn diagram: the number (or the form in
+     the unknown, x − 20) in each region of two or three circles. VT_V marks this file's Venn and tree builders.
+   - "tree" (Grade 11 P1 2017 8.1.1 and 2018 8.2; 2026-10-11) a probability tree: on each drawn branch its outcome and its probability (a
+     fraction or a decimal), and each end's outcome.
    The host (Exam Practice) owns the ANSWER (its state, so Check, marking and "same answer" work as for every other type); this
    module owns only its DOM and its step. A learner who drew it on paper gets the criteria as a self-check (shown, never banked).
 
@@ -854,6 +858,266 @@
         return { shade: "Shading", end0: tw ? "Left end" : "End", end1: "Right end", circle0: tw ? "Left dot" : "Open or closed dot", circle1: "Right dot" }[k] || k; } });
   }
 
+  // ── the VENN diagram (2026-10-11, "venn"): "Draw a Venn diagram to represent the information" BUILT: two or three circles in the
+  // universal set, labelled as the paper labels its sets (never with a count). Each region is a button on the diagram; the one chosen
+  // is filled in the editor under it: its number typed (the phone's number keys) or stepped with − and +, and Enter goes on to the next
+  // region with the keys still up, so the diagram stays in view while it fills. The outside region shows only where the memo fills
+  // one. Where the memo's diagram carries an unknown (x − 20, 26 − x), every region also takes a FORM: the number alone, x, x + n,
+  // x − n or n − x, the same five in every region, so none points at the regions that hold x. The answer is the regions' entries:
+  // the marker reads only those, against the memo's.
+  //   cfg   { sets: [{ id: "S", name?: "smartphone" }] (2 or 3; each id one letter, as the paper labels the circle), outside: bool,
+  //           unknown?: "x" }
+  //   value { n: { region: whole number }, f: { region: "x" | "x+n" | "x-n" | "n-x" } } (no f: the number alone); a region is the ids
+  //           of the sets it lies in, in the sets' order ("S", "ST", "RVC"), or "out"
+  let vtUid = 0;
+  const vnRegions = (ids, outside) => (ids.length === 2 ? [ids[0], ids[0] + ids[1], ids[1]]
+    : [ids[0], ids[1], ids[2], ids[0] + ids[1], ids[0] + ids[2], ids[1] + ids[2], ids.join("")]).concat(outside ? ["out"] : []);
+  const vnName = (r, ids) => r === "out" ? (ids.length === 2 ? "Outside both circles" : "Outside all three circles") : r.length === 1 ? r + " only"
+    : r.length === ids.length ? (ids.length === 2 ? r[0] + " and " + r[1] : r[0] + ", " + r[1] + " and " + r[2]) : r[0] + " and " + r[1] + " only";
+  const VNF = ["n", "x", "x+n", "x-n", "n-x"];
+  const vnText = (f, n, X) => { const m = typeof n === "number" ? String(n) : "n";
+    return f === "x" ? X : f === "x+n" ? X + " + " + m : f === "x-n" ? X + " − " + m : f === "n-x" ? m + " − " + X : m; };
+  // the diagram's geometry in px for a width W: the circles, each region's label point, each set's label (outside its circle)
+  function vnGeo(ids, W, outside) {
+    const three = ids.length === 3, r = Math.round(W * (three ? 0.215 : 0.235)), cx = W / 2;
+    let C, H;
+    if (!three) { const d = r * 0.95; H = Math.round(2 * r + 64); C = [[cx - d / 2, H / 2 + 4], [cx + d / 2, H / 2 + 4]]; }
+    else { const d = r * 1.1, top = r + 34; H = Math.round(top + d * 0.866 + r + 30); C = [[cx - d / 2, top], [cx + d / 2, top], [cx, top + d * 0.866]]; }
+    const G = [C.reduce((t, c) => t + c[0], 0) / C.length, C.reduce((t, c) => t + c[1], 0) / C.length];
+    const away = (p, from, k) => { const dx = p[0] - from[0], dy = p[1] - from[1], L = Math.hypot(dx, dy) || 1; return [p[0] + dx / L * k, p[1] + dy / L * k]; };
+    const at = {};
+    if (!three) { at[ids[0]] = [C[0][0] - r * 0.52, C[0][1]]; at[ids[0] + ids[1]] = [cx, C[0][1]]; at[ids[1]] = [C[1][0] + r * 0.52, C[1][1]]; }
+    else { ids.forEach((id, k) => { at[id] = away(C[k], G, r * 0.52); });
+      // (0.55 r out from the two centres' midpoint: still 0.78 r from each, inside both; at 0.4 r the 44 x 40 buttons of the lower pairs
+      // overlapped the middle one at 320 px)
+      [[0, 1, 2], [0, 2, 1], [1, 2, 0]].forEach(([a, b, c]) => { at[ids[a] + ids[b]] = away([(C[a][0] + C[b][0]) / 2, (C[a][1] + C[b][1]) / 2], C[c], r * 0.55); });
+      at[ids.join("")] = G; }
+    if (outside) at.out = [W - 36, H - 24];
+    const lab = C.map((c, k) => three && k === 2 ? [c[0] + r * 0.82, c[1] + r * 0.86] : [c[0] + (k ? 1 : -1) * r * 0.78, c[1] - r * 0.84]);
+    return { r: r, C: C, H: H, at: at, lab: lab };
+  }
+  function venn(host, o) {
+    const cfg = o.cfg, sets = (cfg.sets || []).slice(0, 3), ids = sets.map(s => s.id), X = cfg.unknown || "", R = vnRegions(ids, !!cfg.outside), uid = "vt" + (++vtUid);
+    const nameOf = r => vnName(r, ids);
+    const subOf = r => { if (r === "out") return ""; const nm = r.split("").map(c => (sets.find(s => s.id === c) || {}).name); if (nm.some(x => !x)) return "";
+      return r.length === 1 ? nm[0] + " only" : nm.slice(0, -1).join(", ") + " and " + nm[nm.length - 1] + (r.length < ids.length ? " only" : ""); };
+    const norm = val => { const x = clone(val), b = { n: {}, f: {} };
+      R.forEach(r => { const n = (x.n || {})[r], f = (x.f || {})[r]; if (typeof n === "number" && isFinite(n) && n >= 0) b.n[r] = Math.round(n); if (X && VNF.indexOf(f) > 0) b.f[r] = f; });
+      return b; };
+    let v = norm(o.value), locked = false, items = null, W = 0, ro = null, sel = R[0];
+    const F = r => v.f[r] || "n", has = r => F(r) === "x" || typeof v.n[r] === "number", text = r => has(r) ? vnText(F(r), v.n[r], X) : "";
+    const spoken = t => t.replace(/ − /g, " minus ").replace(/ \+ /g, " plus ");
+    const emit = () => o.onChange(clone(v));
+    const vt = r => { const it = items && items.find(x => x.key === r); return it ? (it.verdict === "correct" || it.verdict === "partial" ? "ok" : "bad") : ""; };
+    host.innerHTML = `<div class="bp vn" data-locked="false"><div class="vn-plot"><svg class="vn-svg" aria-hidden="true" focusable="false"></svg>`
+      + `<div class="vn-regs" role="group" aria-label="The regions of the Venn diagram"></div></div><div class="vn-ed"></div><p class="sk-hint vn-hint"></p>`
+      + `<div class="vt-out"></div><p class="sr-only" aria-live="polite"></p></div>`;
+    const root = host.firstChild, plot = root.querySelector(".vn-plot"), svgEl = root.querySelector(".vn-svg"), regs = root.querySelector(".vn-regs"),
+      ed = root.querySelector(".vn-ed"), hint = root.querySelector(".vn-hint"), out = root.querySelector(".vt-out"), live = root.querySelector("[aria-live]");
+    const say = s => { live.textContent = s; };
+    let g = null;
+    // the circles, the set labels, and the chosen region shaded: clipped to the circles it lies in, the others masked out
+    function svgHtml() {
+      const c = (k, at) => `<circle cx="${g.C[k][0].toFixed(1)}" cy="${g.C[k][1].toFixed(1)}" r="${g.r}"${at || ""}/>`;
+      let s = `<rect x="1" y="1" width="${W - 2}" height="${g.H - 2}" rx="14" class="vn-u"/>`;
+      if (!locked && sel) { const inn = sel === "out" ? [] : sel.split("").map(id => ids.indexOf(id)), outK = ids.map((_, k) => k).filter(k => inn.indexOf(k) === -1);
+        s += `<defs>${inn.map(k => `<clipPath id="${uid}-c${k}">${c(k)}</clipPath>`).join("")}<mask id="${uid}-m"><rect x="0" y="0" width="${W}" height="${g.H}" fill="#fff"/>${outK.map(k => c(k, ' fill="#000"')).join("")}</mask></defs>`
+          + `<g mask="url(#${uid}-m)">${inn.reduce((h, k) => `<g clip-path="url(#${uid}-c${k})">${h}</g>`, `<rect x="2" y="2" width="${W - 4}" height="${g.H - 4}" rx="13" class="vn-hi"/>`)}</g>`; }
+      g.C.forEach((_, k) => { s += c(k, ' class="vn-c"'); });
+      ids.forEach((id, k) => { s += `<text x="${g.lab[k][0].toFixed(1)}" y="${g.lab[k][1].toFixed(1)}" class="vn-set" text-anchor="middle" dominant-baseline="middle">${esc(id)}</text>`; });
+      return s;
+    }
+    const regLabel = r => nameOf(r) + (text(r) ? ": " + spoken(text(r)) : ", empty");
+    const regHtml = r => { const p = g.at[r], t = text(r);
+      return `<button type="button" class="vn-r" data-r="${r}" data-v="${vt(r)}" aria-pressed="${!locked && sel === r}" style="left:${p[0].toFixed(1)}px;top:${p[1].toFixed(1)}px"`
+        + `${locked ? " disabled" : ""} aria-label="${esc(regLabel(r))}">${t ? `<span class="vn-t">${esc(t)}</span>` : `<span class="vn-q" aria-hidden="true">?</span>`}</button>`; };
+    // the editor: the chosen region's name, with an unknown its form, then its number (typed or stepped). (The form sits ABOVE the field:
+    // with the phone's keys up the page holds the field just over the coach strip, and a row under it went behind the strip at 360x702)
+    function edHtml() {
+      return `<div class="vn-eh"><label class="vn-nm" for="${uid}-in"><b></b><span class="vn-sub"></span></label><button type="button" class="vn-next"></button></div>`
+        + `<div class="vn-ctl">` + (X ? `<div class="vn-fm" role="group" aria-label="What the region holds">${VNF.map(k => `<button type="button" class="vn-f" data-f="${k}" aria-pressed="false"></button>`).join("")}</div>` : "")
+        + `<div class="vn-st" role="group" aria-label="The number"><button type="button" class="vn-nb" data-d="-1" aria-label="One fewer">−</button>`
+        + `<input id="${uid}-in" class="vn-in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false">`
+        + `<button type="button" class="vn-nb" data-d="1" aria-label="One more">+</button></div></div>`;
+    }
+    function paintEd() {   // in place: the field keeps its focus (and the phone its keys) as the learner moves from region to region
+      if (locked) return; const r = sel, f = F(r), n = v.n[r], last = R.indexOf(r) === R.length - 1, inp = ed.querySelector(".vn-in"), sub = subOf(r);
+      ed.querySelector(".vn-nm b").textContent = nameOf(r); const se = ed.querySelector(".vn-sub"); se.textContent = sub; se.hidden = !sub;
+      ed.querySelector(".vn-next").textContent = last ? "First region" : "Next region";
+      inp.disabled = f === "x"; inp.placeholder = f === "x" ? X : ""; inp.value = f === "x" || typeof n !== "number" ? "" : String(n); inp.enterKeyHint = last ? "done" : "next";
+      ed.querySelectorAll(".vn-nb").forEach(b => { b.disabled = f === "x" || (b.dataset.d === "-1" && !(n > 0)); });
+      ed.querySelectorAll(".vn-f").forEach(b => { b.textContent = vnText(b.dataset.f, n, X); b.setAttribute("aria-pressed", String(f === b.dataset.f)); });
+    }
+    function paintRegs() {
+      svgEl.innerHTML = svgHtml();
+      regs.querySelectorAll(".vn-r").forEach(b => { const r = b.dataset.r, t = text(r); b.setAttribute("aria-pressed", String(!locked && sel === r)); b.dataset.v = vt(r);
+        b.setAttribute("aria-label", regLabel(r)); b.innerHTML = t ? `<span class="vn-t">${esc(t)}</span>` : `<span class="vn-q" aria-hidden="true">?</span>`; });
+      const n = R.filter(has).length;
+      hint.textContent = locked ? "" : (X ? "Tap a region, then type its number or step it with − and +. A region with " + X + " in it: choose its form (n is the number you type). "
+        : "Tap a region, then type its number or step it with − and +. ") + n + " of " + R.length + " regions filled.";
+      hint.hidden = locked;
+    }
+    function resHtml() {
+      if (!items) return ""; const its = items.filter(it => R.indexOf(it.key) !== -1);
+      return `<div class="bp-chips sk-res" role="status">${its.map(it => { const s = it.verdict === "correct" ? "true" : it.verdict === "partial" ? "part" : "false";
+        return `<span class="bp-chip" data-ok="${s}">${s === "true" ? "✓" : s === "part" ? "◐" : "✕"} ${esc(nameOf(it.key))}${it.available ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
+    }
+    function choose(r, focus) { sel = r; paintRegs(); paintEd(); say(regLabel(r));
+      if (focus) { const inp = ed.querySelector(".vn-in"), tgt = inp && !inp.disabled ? inp : ed.querySelector('.vn-f[aria-pressed="true"]'); if (tgt) tgt.focus({ preventScroll: true });
+        ed.scrollIntoView({ block: "nearest", behavior: o.reduced ? "auto" : "smooth" }); } }
+    const next = () => R[(R.indexOf(sel) + 1) % R.length];
+    function render(focusSel) {
+      if (focusSel === undefined) { const a = document.activeElement; focusSel = a && root.contains(a) ? (a.classList.contains("vn-in") ? ".vn-in" : a.dataset.r ? `.vn-r[data-r="${a.dataset.r}"]`
+        : a.dataset.f ? `.vn-f[data-f="${a.dataset.f}"]` : a.dataset.d ? `.vn-nb[data-d="${a.dataset.d}"]` : a.classList.contains("vn-next") ? ".vn-next" : null) : null; }
+      W = Math.max(260, Math.min(520, Math.floor(host.getBoundingClientRect().width || 320))); g = vnGeo(ids, W, !!cfg.outside);
+      root.dataset.locked = String(locked); if (!R.includes(sel)) sel = R[0];
+      plot.style.width = W + "px"; plot.style.height = g.H + "px";
+      svgEl.setAttribute("viewBox", "0 0 " + W + " " + g.H); svgEl.setAttribute("width", W); svgEl.setAttribute("height", g.H);
+      regs.innerHTML = R.map(regHtml).join(""); ed.innerHTML = locked ? "" : edHtml(); ed.hidden = locked;
+      paintRegs(); paintEd(); out.innerHTML = resHtml(); wire();
+      if (focusSel) { const nd = root.querySelector(focusSel); if (nd && !nd.disabled) nd.focus({ preventScroll: true }); }
+    }
+    function setN(n) { const r = sel; if (n == null) delete v.n[r]; else v.n[r] = Math.max(0, Math.min(9999, n)); paintRegs(); paintEd(); emit(); }
+    function wire() {
+      regs.querySelectorAll(".vn-r").forEach(b => { b.onclick = () => { if (!locked) choose(b.dataset.r, true); }; });
+      if (locked) return;
+      const inp = ed.querySelector(".vn-in");
+      inp.oninput = () => { const d = inp.value.replace(/\D/g, "").slice(0, 4); if (d !== inp.value) inp.value = d; const r = sel;
+        if (d === "") delete v.n[r]; else v.n[r] = +d;
+        paintRegs(); ed.querySelectorAll(".vn-f").forEach(b => { b.textContent = vnText(b.dataset.f, v.n[r], X); });
+        ed.querySelectorAll('.vn-nb[data-d="-1"]').forEach(b => { b.disabled = !(v.n[r] > 0); }); emit(); };
+      inp.onkeydown = e => { if (e.key !== "Enter") return; e.preventDefault(); if (R.indexOf(sel) === R.length - 1) { inp.blur(); return; } choose(next(), true); };
+      ed.querySelectorAll(".vn-nb").forEach(b => { b.onclick = () => { const n = v.n[sel], d = +b.dataset.d; setN(typeof n === "number" ? n + d : d > 0 ? 1 : 0); say(regLabel(sel)); }; });
+      ed.querySelectorAll(".vn-f").forEach(b => { b.onclick = () => { if (b.dataset.f === "n") delete v.f[sel]; else v.f[sel] = b.dataset.f; paintRegs(); paintEd(); emit(); say(regLabel(sel)); }; });
+      ed.querySelector(".vn-next").onclick = () => choose(next(), false);
+    }
+    // a tap on the diagram away from a region's button: the nearest region to it
+    plot.addEventListener("click", e => { if (locked || e.target.closest(".vn-r")) return; const b = plot.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top;
+      let best = "", bd = 64; R.forEach(r => { const d = Math.hypot(g.at[r][0] - x, g.at[r][1] - y); if (d < bd) { bd = d; best = r; } }); if (best) choose(best, true); });
+    render(null);
+    if (window.ResizeObserver) { ro = new ResizeObserver(() => { const w = Math.max(260, Math.min(520, Math.floor(host.getBoundingClientRect().width || 320))); if (Math.abs(w - W) >= 2) render(); }); ro.observe(host); }
+    return { sync(s) {
+        const nv = norm(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v), its = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? s.items : null;
+        const lockCh = locked !== !!s.locked, itCh = JSON.stringify(items) !== JSON.stringify(its);
+        v = nv; locked = !!s.locked; items = its;
+        if (changed && !R.some(has)) sel = R[0];   // a fresh try starts at the first region
+        if (changed || lockCh) render(); else if (itCh) { paintRegs(); out.innerHTML = resHtml(); } },   // (marks alone: the field under the learner's finger stays)
+      destroy() { if (ro) ro.disconnect(); host.innerHTML = ""; } };
+  }
+
+  // ── the TREE diagram (2026-10-11, "tree"): "Draw a tree diagram ... show the probabilities on EACH branch and the outcomes" BUILT: the
+  // branches are drawn (two stages, as many as the stem's events give each point), with the stages' names; on each branch the learner
+  // chooses its outcome (the stem's outcomes, the same choices on every branch, so the drawing never says which is where) and types its
+  // probability: a fraction (the top over the bottom, two fields on the phone's number keys) or a decimal (the top field alone, 0,6).
+  // Where the memo marks them, each end's outcome is chosen too: "(B ; R)". Enter steps through the number fields in reading order.
+  // The answer is what is chosen and typed: the marker reads only that, against the memo's tree.
+  //   cfg   { outcomes: [{ id: "B", name: "blue" }], stages: [first, second], skel: [n0, n1, ...] (how many branches follow each first-stage
+  //           branch; the first stage has skel.length), ends: bool }
+  //   value { l: { path: outcome id }, p: { path: [top, bottom] (strings, bottom "" for a decimal) }, o: { path: "B;R" } }
+  //           path "i" (the i-th first-stage branch) or "i.j" (the j-th branch after it)
+  const trNum = s => { s = String(s == null ? "" : s).trim().replace(",", "."); return /^\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN; };
+  const trVal = p => { const t = Array.isArray(p) ? p : [], d = String(t[1] == null ? "" : t[1]).trim(); return d === "" ? trNum(t[0]) : trNum(t[0]) / trNum(d); };
+  function tree(host, o) {
+    const cfg = o.cfg, OUT = (cfg.outcomes || []).map(x => x.id), skel = cfg.skel || [], ends = !!cfg.ends, uid = "vt" + (++vtUid), st = cfg.stages || ["First stage", "Second stage"];
+    const kids = i => Array.from({ length: skel[i] }, (_, j) => i + "." + j), P2 = skel.flatMap((_, i) => kids(i));
+    const ALL = skel.flatMap((_, i) => [String(i)].concat(kids(i)));   // reading order: a branch, then the branches after it
+    const combos = OUT.flatMap(a => OUT.map(b => a + ";" + b)), cText = c => "(" + c.split(";").join(" ; ") + ")";
+    const norm = val => { const x = clone(val), b = { l: {}, p: {}, o: {} };
+      ALL.forEach(k => { const l = (x.l || {})[k], p = (x.p || {})[k]; if (OUT.indexOf(l) !== -1) b.l[k] = l;
+        if (Array.isArray(p) && String(p[0] || "") + String(p[1] || "") !== "") b.p[k] = [String(p[0] || ""), String(p[1] || "")]; });
+      if (ends) P2.forEach(k => { const c = (x.o || {})[k]; if (combos.indexOf(c) !== -1) b.o[k] = c; });
+      return b; };
+    let v = norm(o.value), locked = false, items = null, W = 0, ro = null;
+    const emit = () => o.onChange(clone(v));
+    const vt = k => { const it = items && items.find(x => x.key === k); return it ? (it.verdict === "correct" ? "ok" : "bad") : ""; };
+    const bn = k => "branch " + k.split(".").map(x => +x + 1).join(".");   // "branch 2.1": the first after the second
+    host.innerHTML = `<div class="bp tr" data-locked="false"><p class="tr-key"></p><div class="tr-plot"><svg class="tr-svg" aria-hidden="true" focusable="false"></svg><div class="tr-in"></div></div>`
+      + `<p class="sk-hint tr-hint"></p><div class="tr-note"></div><div class="vt-out"></div></div>`;
+    const root = host.firstChild, key = root.querySelector(".tr-key"), plot = root.querySelector(".tr-plot"), svgEl = root.querySelector(".tr-svg"), box = root.querySelector(".tr-in"),
+      hint = root.querySelector(".tr-hint"), note = root.querySelector(".tr-note"), out = root.querySelector(".vt-out");
+    key.innerHTML = (cfg.outcomes || []).map(x => `<span><b>${esc(x.id)}</b>${x.name ? " " + esc(x.name) : ""}</span>`).join("");
+    // the tree's geometry for a card W wide: two columns of branch cells (a fraction, then the outcome), the ends' outcomes after them,
+    // the leaves 92 px apart (a fraction is two 40 px fields), each first-stage cell centred on the branches after it. Under 328 px (a
+    // 320 px phone) the fields narrow to 42 px and the ends' outcomes to 64; the room left goes first to the gap before the outcomes (up
+    // to 24 px: "Second marble" ran into "Outcome" at 820 px), then to the branches
+    function geo() {
+      const tight = W < 328, FW = tight ? 42 : 44, CW = 2 * FW + 4, OW = ends ? (tight ? 64 : 76) : 0, nL = P2.length, PIT = 92, head = 28;
+      const free = W - 10 - 2 * CW - OW, g3 = ends ? Math.max(6, Math.min(24, free - 40)) : 0, rest = free - g3;
+      const g1 = Math.max(14, Math.min(110, rest * 0.45)), g2 = Math.max(14, Math.min(130, rest - g1));
+      const x1 = 10 + g1, x2 = x1 + CW + g2, x3 = x2 + CW + g3, ys = {}; let k = 0;
+      skel.forEach((n, i) => { for (let j = 0; j < n; j++, k++) ys[i + "." + j] = head + k * PIT + PIT / 2; ys[i] = (ys[i + ".0"] + ys[i + "." + (n - 1)]) / 2; });
+      const y0 = skel.length ? (ys["0"] + ys[String(skel.length - 1)]) / 2 : head;
+      return { head: head, FW: FW, CW: CW, OW: OW, x1: x1, x2: x2, x3: x3, ys: ys, y0: y0, H: head + nL * PIT, Wt: ends ? x3 + OW : x2 + CW };
+    }
+    const frac = (k, stage) => { const p = v.p[k] || ["", ""], nm = bn(k) + " (" + st[stage] + ")";
+      return `<div class="tr-fr" data-v="${vt("s:p:" + k)}"><input class="tr-pn" data-k="${k}" data-h="0" type="text" inputmode="decimal" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="${esc(nm)}: probability, the top of the fraction or a decimal" value="${esc(p[0])}"${locked ? " disabled" : ""}>`
+        + `<i class="tr-bar" aria-hidden="true"></i><input class="tr-pd" data-k="${k}" data-h="1" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="${esc(nm)}: probability, the bottom of the fraction" value="${esc(p[1])}"${locked ? " disabled" : ""}></div>`; };
+    const sel = (cls, k, opts, val, label) => `<select class="${cls}" data-k="${k}" data-v="${vt((cls === "tr-l" ? "s:lab:" : "s:out:") + k)}" data-empty="${!val}" aria-label="${esc(label)}"${locked ? " disabled" : ""}>`
+      + `<option value=""${val ? "" : " selected"}>?</option>${opts.map(([vv, t]) => `<option value="${esc(vv)}"${val === vv ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
+    function render(focusSel) {
+      if (focusSel === undefined) { const a = document.activeElement; focusSel = a && root.contains(a) && a.dataset.k ? `.${a.className.split(" ")[0]}[data-k="${a.dataset.k}"]` : null; }
+      W = Math.max(280, Math.min(640, Math.floor(host.getBoundingClientRect().width || 320)));
+      const G = geo(); root.dataset.locked = String(locked);
+      plot.style.width = G.Wt + "px"; plot.style.height = G.H + "px"; plot.style.setProperty("--tr-fw", G.FW + "px"); plot.style.setProperty("--tr-ow", G.OW + "px");
+      svgEl.setAttribute("viewBox", "0 0 " + G.Wt + " " + G.H); svgEl.setAttribute("width", G.Wt); svgEl.setAttribute("height", G.H);
+      const ln = (a, b, c, d) => `<line x1="${a.toFixed(1)}" y1="${b.toFixed(1)}" x2="${c.toFixed(1)}" y2="${d.toFixed(1)}" class="tr-ln"/>`;
+      let s = `<circle cx="7" cy="${G.y0.toFixed(1)}" r="4" class="tr-root"/>`;
+      skel.forEach((n, i) => { s += ln(7, G.y0, G.x1, G.ys[i]); kids(i).forEach(k => { s += ln(G.x1 + G.CW, G.ys[i], G.x2, G.ys[k]); }); });
+      svgEl.innerHTML = s;
+      const L = OUT.map(x => [x, x]), cell = (k, x, stage) => `<div class="tr-cell" style="left:${x.toFixed(1)}px;top:${(G.ys[k] - 42).toFixed(1)}px">${frac(k, stage)}`
+        + sel("tr-l", k, L, v.l[k], bn(k) + " (" + st[stage] + "): its outcome") + `</div>`;
+      box.innerHTML = `<span class="tr-h" style="left:${G.x1.toFixed(1)}px">${esc(st[0])}</span><span class="tr-h" style="left:${G.x2.toFixed(1)}px">${esc(st[1])}</span>`
+        + (ends ? `<span class="tr-h" style="right:0">Outcome</span>` : "")   /* (flush right, as its column is: at 320 px "Second marble" ran into it) */
+        + skel.map((_, i) => cell(String(i), G.x1, 0) + kids(i).map(k => cell(k, G.x2, 1)
+          + (ends ? `<div class="tr-end" style="left:${G.x3.toFixed(1)}px;top:${(G.ys[k] - 22).toFixed(1)}px">${sel("tr-o", k, combos.map(c => [c, cText(c)]), v.o[k], "The outcome at the end of " + bn(k))}</div>` : "")).join("")).join("");
+      paint(); out.innerHTML = resHtml(); wire();
+      if (focusSel) { const nd = root.querySelector(focusSel); if (nd && !nd.disabled) nd.focus({ preventScroll: true }); }
+    }
+    // what is NOT re-drawn as the learner types: the verdicts, the count, and a general rule's note (never the answer): the branches
+    // from one point add up to 1, and no probability is more than 1
+    function paint() {
+      // (a decimal in the top box: the bar and the empty bottom box fade, so 0,4 does not read as a fraction left unfinished)
+      box.querySelectorAll(".tr-fr").forEach(f => { const top = f.querySelector(".tr-pn"), bot = f.querySelector(".tr-pd"); f.dataset.v = vt("s:p:" + top.dataset.k);
+        f.dataset.dec = String(/[.,]/.test(top.value) && !bot.value); });
+      box.querySelectorAll("select").forEach(e => { e.dataset.v = vt((e.classList.contains("tr-l") ? "s:lab:" : "s:out:") + e.dataset.k); e.dataset.empty = String(!e.value); });
+      const done = ALL.filter(k => v.l[k] && v.p[k] && v.p[k][0] !== "").length + (ends ? P2.filter(k => v.o[k]).length : 0), all = ALL.length + (ends ? P2.length : 0);
+      hint.textContent = locked ? "" : "On each branch choose its outcome and type its probability: a fraction (top over bottom) or a decimal in the top box alone"
+        + (ends ? "; at each end choose the outcome. " : ". ") + done + " of " + all + " done.";
+      hint.hidden = locked;
+      const val = k => trVal(v.p[k]), groups = [[skel.map((_, i) => String(i)), "the " + st[0].toLowerCase() + "'s branches"]].concat(skel.map((_, i) => [kids(i), "the branches after " + bn(String(i))]));
+      const over = ALL.some(k => val(k) > 1 + 1e-9), off = groups.filter(([ks]) => ks.every(k => isFinite(val(k))) && Math.abs(ks.reduce((t, k) => t + val(k), 0) - 1) > 1e-6);
+      note.innerHTML = locked ? "" : (over ? `<p class="sk-note">A probability is never more than 1.</p>` : "")
+        + (off.length ? `<p class="sk-note">The probabilities on the branches from one point add up to 1: ${esc(off[0][1])} do not.</p>` : "");
+    }
+    const CRN = { branches: "Branches", p: "Probabilities", p1: "First-stage probabilities", p2: "Second-stage probabilities", out: "Outcomes" };
+    function resHtml() {
+      if (!items) return ""; const its = items.filter(it => it.key.slice(0, 2) !== "s:");
+      return `<div class="bp-chips sk-res" role="status">${its.map(it => { const s = it.verdict === "correct" ? "true" : it.verdict === "partial" ? "part" : "false";
+        const nm = CRN[it.key] || (it.key.slice(0, 7) === "branch:" ? "Branch " + it.key.slice(7).split(">").join(" → ") : it.key);
+        return `<span class="bp-chip" data-ok="${s}">${s === "true" ? "✓" : s === "part" ? "◐" : "✕"} ${esc(nm)}${it.available ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
+    }
+    function wire() {
+      if (locked) return;
+      const order = [...box.querySelectorAll(".tr-pn, .tr-pd")];
+      order.forEach((inp, idx) => {
+        inp.oninput = () => { const k = inp.dataset.k, h = +inp.dataset.h;
+          let t = h ? inp.value.replace(/\D/g, "").slice(0, 4) : inp.value.replace(/[^0-9.,]/g, "").replace(/([.,].*)[.,]/g, "$1").slice(0, 6);
+          if (t !== inp.value) inp.value = t; const p = (v.p[k] || ["", ""]).slice(); p[h] = t;
+          if (p[0] === "" && p[1] === "") delete v.p[k]; else v.p[k] = p; paint(); emit(); };
+        inp.onkeydown = e => { if (e.key !== "Enter") return; e.preventDefault(); const nx = order[idx + 1]; if (nx) nx.focus(); else inp.blur(); };
+      });
+      box.querySelectorAll("select").forEach(e => { e.onchange = () => { const k = e.dataset.k, m = e.classList.contains("tr-l") ? v.l : v.o; if (e.value) m[k] = e.value; else delete m[k]; paint(); emit(); }; });
+    }
+    render(null);
+    if (window.ResizeObserver) { ro = new ResizeObserver(() => { const w = Math.max(280, Math.min(640, Math.floor(host.getBoundingClientRect().width || 320))); if (Math.abs(w - W) >= 2) render(); }); ro.observe(host); }
+    return { sync(s) {
+        const nv = norm(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v), its = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? s.items : null;
+        const lockCh = locked !== !!s.locked, itCh = JSON.stringify(items) !== JSON.stringify(its);
+        v = nv; locked = !!s.locked; items = its;
+        if (changed || lockCh) render(); else if (itCh) { paint(); out.innerHTML = resHtml(); } },   // (marks alone: the field being typed in stays)
+      destroy() { if (ro) ro.disconnect(); host.innerHTML = ""; } };
+  }
+
   // each kind names its marker's items (the memo's own words); a paper may override them with cfg.labels. (No paper ever carried
   // labels: chipRow read undefined[key] and threw on every render after a Check, so the T C L S P chips never showed; 2026-10-06)
   const LABELS = { hist: { T: "Type", C: "Caption", L: "Axes labels", S: "Scale", P: "Plotting" } };
@@ -870,5 +1134,5 @@
 
   // (fit: the sketch's curve fit, for a self-test; SKETCH_V / LINE_V: markers a test reads to prove this file's sketch / line builders
   // are the ones loaded)
-  window.BuildPlay = { SKETCH_V: "sketch-2", LINE_V: "line-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch, boxplot: boxplot, numline: numline }[o.kind] || stems)(host, o); } };
+  window.BuildPlay = { SKETCH_V: "sketch-2", LINE_V: "line-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch, boxplot: boxplot, numline: numline, venn: venn, tree: tree }[o.kind] || stems)(host, o); }, VT_V: "vt-6", trVal: trVal };
 })();

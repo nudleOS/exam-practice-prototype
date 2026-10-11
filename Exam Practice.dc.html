@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=78"></script>
+<script src="papers-catalogue.js?v=79"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -34,7 +34,7 @@
 <script src="papers-pages.js?v=21"></script>
   <script src="nx-fold.js?v=1"></script>   <!-- long question text, condensed (Murci, 2026-10-11: B + A), read by the play screen and mcq-play -->
   <script src="mcq-play.js?v=68"></script>
-  <script src="build-play.js?v=22"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03; graph sketches, box and whisker diagrams, number lines, 2026-10-11 -->
+  <script src="build-play.js?v=23"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03; graph sketches, box and whisker diagrams, number lines, 2026-10-11 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -97,7 +97,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=299">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=300">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1941,7 +1941,7 @@ function buildPapers() {
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "geno", alleles: q.alleles, count: q.count, per: q.per === 4 ? 4 : 2 } }); }
           if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : b.kind === "cross" ? { cross: b } : b.kind === "sketch" ? { sketch: b }
-              : b.kind === "boxplot" ? { boxplot: b } : b.kind === "numline" ? { numline: b } : { stems: b });
+              : b.kind === "boxplot" ? { boxplot: b } : b.kind === "numline" ? { numline: b } : b.kind === "venn" ? { venn: b } : b.kind === "tree" ? { tree: b } : { stems: b });
             // a cross keeps its criteria OUT of the part: they name its answers ("P1 genotypes: AA x AG"); its memo shows them at the end
             if (b.kind === "cross") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "cross", alleles: b.alleles, phenos: b.phenos.slice().sort(), gens: b.gens } });
             // a graph sketch (2026-10-11): the part gets the grid, the family and each feature's NAME; where each belongs (at, alt, tol), its
@@ -1953,6 +1953,12 @@ function buildPapers() {
             // a box and whisker diagram or a number line (2026-10-11): the part gets the paper's scale only; the memo's values, ends, dots,
             // shading, tol and criteria stay in the key (the criteria name the answers: "The box: from Q₁ = 46 to Q₃ = 73")
             if (b.kind === "boxplot" || b.kind === "numline") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: b.kind, x: b.x, tick: b.tick, label: b.label, unit: b.unit } });
+            // a Venn diagram or a tree diagram (2026-10-11): the part gets the drawing's frame only: the sets (as the paper labels them), the
+            // outside region or not, the unknown's letter; a tree's outcomes, stage names and how many branches leave each point. What goes in
+            // each region, each branch's outcome and probability and the criteria stay in the key ("20 in the overlap of S and T")
+            if (b.kind === "venn") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "venn", sets: b.sets.map(s => ({ id: s.id, name: s.name })), outside: !!b.outside, unknown: b.unknown || undefined } });
+            if (b.kind === "tree") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "tree", outcomes: b.outcomes.map(x => ({ id: x.id, name: x.name })), stages: b.stages,
+              skel: b.tree.map(t => t.next.length), ends: (b.crit || {}).out != null } });
             // (the answers stay in the key, never in the part; so do a paper's chip `labels`: LS P1 2026 3.6.4's named each stem's
             // ANSWER, "✕ A bends to the light" on a miss told the learner the shape; the builder's own neutral names show instead)
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
@@ -3928,8 +3934,12 @@ class Component extends DCLogic {
     // ends, their dots and its shading) is right or wrong on its own, and memo criterion k (worth[k] marks: the memo's "✓ min. & max.")
     // earns only when EVERY component it names is right; its marks sit on its first component, 0 on the rest. A right component whose
     // criterion is not complete reads "partial" (◐). The reply names a component right or wrong, never where it belongs.
-    const byCrit = (comps, worth) => { const okC = k => comps.every(c => c.crit !== k || c.ok), first = {};
-      const items = comps.filter(c => c.crit != null).map(c => { const carry = first[c.crit] == null; if (carry) first[c.crit] = c.key;
+    // any (2026-10-11, the Venn builder): the criteria (their indexes) the memo gives for ANY ONE of their components ("✓ 14 or 12 or 15"):
+    // earned when one is right, its marks then on the first right one
+    const byCrit = (comps, worth, any) => { const isAny = k => (any || []).indexOf(k) !== -1, first = {};
+      const okC = k => isAny(k) ? comps.some(c => c.crit === k && c.ok) : comps.every(c => c.crit !== k || c.ok);
+      comps.forEach(c => { if (c.crit != null && isAny(c.crit) && c.ok && first[c.crit] == null) first[c.crit] = c.key; });
+      const items = comps.filter(c => c.crit != null).map(c => { const carry = first[c.crit] == null || first[c.crit] === c.key; if (first[c.crit] == null) first[c.crit] = c.key;
         const of = carry ? (worth[c.crit] || 0) : 0, good = okC(c.crit);
         return { key: c.key, awarded: good ? of : 0, available: of, verdict: c.ok ? (good ? "correct" : "partial") : c.placed ? "incorrect" : "missing" }; });
       const got = items.reduce((t, x) => t + x.awarded, 0);
@@ -3957,6 +3967,49 @@ class Component extends DCLogic {
           { key: "circle" + i, ok: !!p && p.c === (w.closed ? "closed" : "open"), placed: !!(p && p.c), crit: crit("circle", i) }); });
       comps.push({ key: "shade", ok: a.s === b.shade, placed: !!a.s, crit: C.shade });
       return byCrit(comps, key.worth || []); }
+    // a Venn diagram (2026-10-11): each region's entry (a whole number, or with the unknown a form: n, x, x + n, x − n, n − x) against the
+    // memo's (at: a number or "x − 20", "26 − x", "x"), compared as a·x + b, so x − 20 is never 20 − x; memo criterion k earns when every
+    // region it names is right, or ANY ONE where the memo accepts one of several (any: "✓ 14 or 12 or 15"). A region no criterion names
+    // (9.1's x in the middle, given by the stem) is not marked. The items follow the criteria's order.
+    if (key.venn) { const b = key.venn, a = answer || {}, N = a.n || {}, Fm = a.f || {}, X = b.unknown || "x";
+      const lin = (f, n) => f === "x" ? [1, 0] : typeof n !== "number" ? null : f === "x+n" ? [1, n] : f === "x-n" ? [1, -n] : f === "n-x" ? [-1, n] : [0, n];
+      const memoLin = w => { if (typeof w === "number") return [0, w]; const s = String(w).replace(/\s+/g, "").replace(/[−–]/g, "-"); let m;
+        if (s === X) return [1, 0]; if ((m = s.match(/^\d+$/))) return [0, +s];
+        if (s.indexOf(X) === 0 && (m = s.slice(X.length).match(/^([+-])(\d+)$/))) return [1, m[1] === "+" ? +m[2] : -m[2]];
+        if ((m = s.match(/^(\d+)([+-])(.+)$/)) && m[3] === X) return [m[2] === "+" ? 1 : -1, +m[1]]; return null; };
+      const regs = b.regions.slice().sort((p, q) => (p.crit == null ? 1e9 : p.crit) - (q.crit == null ? 1e9 : q.crit));
+      return byCrit(regs.map(g => { const u = lin(Fm[g.in] || "n", N[g.in]), w = memoLin(g.at);
+        return { key: g.in, ok: !!u && !!w && u[0] === w[0] && Math.abs(u[1] - w[1]) < 1e-9, placed: !!u, crit: g.crit }; }), key.worth || [], b.any); }
+    // a tree diagram (2026-10-11): each branch's outcome (a point's branches in any order: a branch is paired with the memo's branch of its
+    // outcome, the first time that outcome appears at that point), its probability (equal in value: 2/4 = 1/2 = 0,5; a fraction top over
+    // bottom, or a decimal in the top alone) and each end's outcome ("B;R": the outcomes along its own branches, both right). crit: branches
+    // (every branch's outcome), p (every probability) or p1 / p2 (a stage's), out (every end); a memo branch's own crit marks its
+    // probability alone (Grade 11 2018 8.2's "✓ 18 (yellow balls)": the first ball's Y branch, 18/32). Criterion k earns when every
+    // component it names is right. The reply: one item per criterion (key: its crit name, or "branch:Y") and, with no marks, each slot
+    // right or wrong ("s:lab:", "s:p:", "s:out:" + its path) for the builder to show
+    if (key.tree) { const b = key.tree, a = answer || {}, Lb = a.l || {}, Pb = a.p || {}, Ob = a.o || {}, C = b.crit || {}, comps = [], okL = {};
+      const num = s => { s = String(s == null ? "" : s).trim().replace(",", "."); return /^\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN; };
+      const memoP = s => { const t = String(s).split("/"); return t.length === 2 ? num(t[0]) / num(t[1]) : num(t[0]); };
+      const mineP = p => { const t = Array.isArray(p) ? p : [], d = String(t[1] == null ? "" : t[1]).trim(); return d === "" ? num(t[0]) : num(t[0]) / num(d); };
+      const side = (memoKids, paths, stage, parentOk, mpath) => { const used = {};
+        paths.forEach((path, i) => { const lab = Lb[path], m = parentOk && lab && !used[lab] ? memoKids.find(t => t.id === lab) : null; if (m) used[lab] = true;
+          const pOk = !!m && Math.abs(mineP(Pb[path]) - memoP(m.p)) < 1e-9, pPlaced = !!(Pb[path] && String(Pb[path][0] || "") !== ""); okL[path] = !!m;
+          comps.push({ key: "s:lab:" + path, ok: !!m, placed: !!lab, crit: C.branches }, { key: "s:p:" + path, ok: pOk, placed: pPlaced, crit: C["p" + stage] != null ? C["p" + stage] : C.p });
+          if (m && m.crit != null) comps.push({ key: "s:pp:" + path, ok: pOk, placed: pPlaced, crit: m.crit, name: "branch:" + mpath.concat(m.id).join(">") });
+          if (stage === 1) side(m ? m.next : [], Array.from({ length: (b.tree[i] || { next: [] }).next.length }, (_, j) => path + "." + j), 2, !!m, m ? [m.id] : []); }); };
+      side(b.tree, b.tree.map((_, i) => String(i)), 1, true, []);
+      // a memo branch's own criterion with no learner branch paired to it (its outcome chosen nowhere at that point) is still owed: missing
+      const named = (t, mp) => { if (t.crit != null && !comps.some(c => c.name === "branch:" + mp.join(">"))) comps.push({ key: "s:pp:none", ok: false, placed: false, crit: t.crit, name: "branch:" + mp.join(">") }); };
+      b.tree.forEach(t => { named(t, [t.id]); (t.next || []).forEach(u => named(u, [t.id, u.id])); });
+      if (C.out != null) b.tree.forEach((t, i) => t.next.forEach((_, j) => { const p = i + "." + j;
+        comps.push({ key: "s:out:" + p, ok: okL[String(i)] && okL[p] && Ob[p] === Lb[String(i)] + ";" + Lb[p], placed: !!Ob[p], crit: C.out }); }));
+      const W = key.worth || [], idx = [...new Set(comps.filter(c => c.crit != null).map(c => c.crit))].sort((p, q) => p - q);
+      const crit = idx.map(k => { const cs = comps.filter(c => c.crit === k), good = cs.every(c => c.ok), of = W[k] || 0;
+        return { key: Object.keys(C).find(n => C[n] === k) || (cs.find(c => c.name) || {}).name || "c" + k, awarded: good ? of : 0, available: of,
+          verdict: good ? "correct" : cs.some(c => c.ok) ? "partial" : cs.some(c => c.placed) ? "incorrect" : "missing" }; });
+      const slots = comps.filter(c => /^s:(lab|p|out):/.test(c.key)).map(c => ({ key: c.key, awarded: 0, available: 0, verdict: c.ok ? "correct" : c.placed ? "incorrect" : "missing" }));
+      const got = crit.reduce((t, x) => t + x.awarded, 0);
+      return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: crit.concat(slots) }; }
     // genetics: a genotype is its two alleles in any order (Iᴮi = iIᴮ), compared EXACTLY (D is not d); a bag is a list in any order
     const gtOf = g => g.map(x => x || "").slice().sort().join("|"), bag = l => l.slice().sort().join("#");
     if (key.geno) { const a = answer || {}, used = key.geno.map(() => false), each = part.marks / key.count; let got = 0;
@@ -4995,7 +5048,8 @@ class Component extends DCLogic {
       : mode === "lettername" ? "Pick the letter and give the name" : mode === "letternames" ? "Give a letter and its name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? ""
       : mode === "build" ? ({ hist: "Choose the graph type and plot a bar", geno: "Fill every allele", cross: "Fill every allele and name an offspring phenotype",
         sketch: (part.build && (part.build.shape || {}).pick) || (part.build && (part.build.graphs || []).some(g => g.shape && g.shape.pick)) ? "Place every feature and choose the shape" : "Place every feature on the grid",
-        boxplot: "Place all five values on the line", numline: "Choose the shading, place each end and choose its dot" }[part.build && part.build.kind] || "Pick a shape for every stem") : "Enter your answer";
+        boxplot: "Place all five values on the line", numline: "Choose the shading, place each end and choose its dot", venn: "Fill every region of the diagram",
+        tree: part.build && part.build.ends ? "Give every branch its outcome and probability, and every end its outcome" : "Give every branch its outcome and probability" }[part.build && part.build.kind] || "Pick a shape for every stem") : "Enter your answer";
     return {
       // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
       // the panel 242 px over at 412x915 and pushed the figure out of sight (Murci, 2026-10-01: "be able to see the images from 1.4")
@@ -5092,6 +5146,13 @@ class Component extends DCLogic {
     // a box and whisker diagram: all five values placed; a number line: the shading chosen, and each of its ends placed with its dot chosen
     if (k === "boxplot") return ["min", "q1", "med", "q3", "max"].every(id => typeof b[id] === "number");
     if (k === "numline") return !!b.s && (b.s === "between" || b.s === "outside" ? ["0", "1"] : ["0"]).every(i => typeof b["e" + i] === "number" && !!b["c" + i]);
+    // a Venn diagram: every region filled (a number, or the form x); a tree: every branch's outcome and the top of its probability, and
+    // every end's outcome where the memo marks them
+    if (k === "venn") { const B = part.build, ids = B.sets.map(s => s.id), R = (ids.length === 2 ? [ids[0], ids.join(""), ids[1]]
+        : [ids[0], ids[1], ids[2], ids[0] + ids[1], ids[0] + ids[2], ids[1] + ids[2], ids.join("")]).concat(B.outside ? ["out"] : []);
+      return R.every(r => (b.f || {})[r] === "x" || typeof (b.n || {})[r] === "number"); }
+    if (k === "tree") { const B = part.build, P = B.skel.flatMap((n, i) => [String(i)].concat(Array.from({ length: n }, (_, j) => i + "." + j)));
+      return P.every(p => !!(b.l || {})[p] && String(((b.p || {})[p] || [])[0] || "") !== "") && (!B.ends || P.filter(p => p.indexOf(".") !== -1).every(p => !!(b.o || {})[p])); }
     return k === "hist" ? !!b.type && (b.v || []).some(x => x > 0) : (part.build ? part.build.stems : []).every(st => !!b[st.id]); }
   // letters + names: ready once one row has its letter AND its name (a learner who knows one part may send one, as a list)
   lrowsReady(s) { return (s.lrows || []).some(r => r && r.letter && String(r.name || "").trim()); }

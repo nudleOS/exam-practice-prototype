@@ -139,6 +139,52 @@ NUMLINE = obj({
                        "marks the ends apart. A criterion earns its marks only when ALL its components are right ('An open dot at −6 with "
                        "an arrow to the right', 1 mark: end 0, circle 0, shade 0); a component no criterion names is not marked"}},
     ["kind", "x", "tol", "shade", "ends", "crit"])
+# a Venn diagram and a probability tree (2026-10-11, build-play.js "venn" and "tree"); the learner sees the frame only: the sets as the
+# paper labels them; a tree's outcomes, stage names and how many branches leave each point
+VN_SET = obj({"id": {"type": "string", "description": "The set's label as the paper prints it on its circle: ONE capital letter ('S', 'R')"},
+              "name": {"type": "string", "description": "What the set is, in a word or two as the stem names it ('smartphone', 'rugby'): read "
+                       "out with each region's name"}}, ["id"])
+VENN = obj({
+    "kind": {"type": "string", "const": "venn"},
+    "sets": {"type": "array", "items": VN_SET, "description": "The 2 or 3 sets, in the order the paper names them (the first circle top "
+             "left, the second top right, the third below)"},
+    "outside": {"type": "boolean", "description": "true when the memo's diagram fills the region outside every circle (the learners in "
+                "none of the sets); false when it leaves it empty ('all the learners take at least one')"},
+    "unknown": {"type": "string", "description": "Only when the memo's diagram carries an unknown in a region ('x − 20', '26 − x', 'x'): its "
+                "letter. Every region then takes a form (the number alone, x, x + n, x − n, n − x), so none points at the regions with x"},
+    "regions": {"type": "array", "items": obj({
+        "in": {"type": "string", "description": "The region: the ids of the sets it lies in, in the sets' order ('S' = S only, 'ST' = S "
+               "and T, 'RV' = R and V only, 'RVC' = all three), or 'out' (outside every circle)"},
+        "at": {"anyOf": [INT, STR], "description": "What the memo's diagram puts there: a whole number, or an expression in the unknown "
+               "as the memo writes it: 'x', 'x − 20', 'x + 5', '26 − x'"},
+        "crit": {"type": "integer", "description": "The memo criterion (0-based index into criteria) that marks this region; leave it "
+                 "out for a region the memo does not mark (a value the stem gives: 'x in all three')"}}, ["in", "at"]),
+        "description": "EVERY region of the diagram (3 or 7, plus 'out' when outside is true), in the memo's order of ticks: the "
+                       "result chips follow it. A criterion earns its marks when ALL its regions are right ('✓ 3 ; 4 ; 5')"},
+    "any": {**INTS, "description": "The criteria (indexes) the memo gives for ANY ONE of their regions ('✓ 14 or 12 or 15': one mark for "
+            "any one of the three right)"}},
+    ["kind", "sets", "outside", "regions"])
+TR_BRANCH = {"id": {"type": "string", "description": "The branch's outcome: one of outcomes' ids"},
+             "p": {"type": "string", "description": "Its probability as the memo writes it: '3/5' or '0,6' (any equal form earns it: 2/4 = "
+                   "1/2 = 0,5)"},
+             "crit": {"type": "integer", "description": "Only where a memo criterion marks THIS branch's probability alone ('✓ 18 (number "
+                      "of yellow balls)': the Y branch, 18/32): its index"}}
+TREE = obj({
+    "kind": {"type": "string", "const": "tree"},
+    "outcomes": {"type": "array", "items": obj({"id": {"type": "string", "description": "As the memo labels the branch: 'B', 'R'"},
+                                                "name": {"type": "string", "description": "As the stem names it: 'blue'"}}, ["id"]),
+                 "description": "The outcomes the stem defines, the choices on every branch"},
+    "stages": {**STRS, "description": "The two stages' names, as the stem describes them: ['First marble', 'Second marble']"},
+    "tree": {"type": "array", "items": obj({**TR_BRANCH, "next": {"type": "array", "items": obj(TR_BRANCH, ["id", "p"]),
+                                                                  "description": "The branches after it, the second stage"}},
+                                           ["id", "p", "next"]),
+             "description": "The memo's tree, two stages: the first stage's branches, each with the branches after it. The learner sees "
+                            "only how many branches leave each point; their order on the screen is free (paired by outcome)"},
+    "crit": obj({"branches": INT, "p": INT, "p1": INT, "p2": INT, "out": INT}, []) | {
+        "description": "Each memo criterion's index (into criteria): 'branches' every branch's outcome; 'p' every probability (or p1 / p2 "
+                       "a stage's); 'out' every end's outcome, (B ; R), asked only when this is given. A criterion earns its marks when "
+                       "ALL its components are right; a criterion no component names cannot be earned (flag it)"}},
+    ["kind", "outcomes", "stages", "tree", "crit"])
 
 COMPONENTS = {
     "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
@@ -231,7 +277,14 @@ COMPONENTS = {
             NUMLINE | {"description": "Only for 'Represent the answer (an inequality or interval) on a number line': BUILT on a number line, "
                                       "the learner choosing the shading, placing each end and choosing its dot (open or filled). Each memo "
                                       "criterion names the components it needs (crit); its marks come from criteria. Keep the part's 'after' "
-                                      "when the inequality is an earlier part's answer"}]},
+                                      "when the inequality is an earlier part's answer"},
+            VENN | {"description": "Only for 'Draw / Represent the information in a Venn diagram' (two or three sets): BUILT, the learner "
+                                   "filling each region (a number, or a form in the unknown where the memo's diagram has one: x − 20). "
+                                   "Each region names its memo criterion (crit); its marks come from criteria. The criteria keep the "
+                                   "memo's own text"},
+            TREE | {"description": "Only for 'Draw a tree diagram' (two stages) the memo marks by its branches, probabilities and outcomes: "
+                                   "BUILT, the branches drawn, the learner choosing each branch's outcome, typing its probability and, "
+                                   "where crit has 'out', choosing each end's outcome. The criteria keep the memo's own text"}]},
         "memo": STR}, ["criteria"]),
 }
 

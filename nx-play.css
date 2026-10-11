@@ -2798,3 +2798,83 @@ body.nx-play .mcqp .fold-more { display:inline-flex; align-items:center; min-hei
 body.nx-play .mcqp h1 .fold-more { display:flex; }
 body.nx-play .mcqp .fold-more:focus-visible { outline:2px solid var(--tint); outline-offset:2px; border-radius:6px; }
 @media (max-width:600px) { body.nx-play .mcqp .fold-more { font-size:14px !important; } }
+
+/* ==== the VENN and TREE builders (2026-10-11, build-play.js "venn" and "tree"): the drawing on a card-token surface (--nx-card, never a
+   dark grey; never pure white in light), its lines in the theme's text colours, the chosen region in the accent. Every field and button
+   is a 40 px+ target; fields are 16 px (a phone zooms into a smaller one). ==== */
+.vt-out:empty, .tr-note:empty { display:none; }
+.vn-plot { position:relative; margin-inline:auto; max-width:100%; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.bp.vn[data-locked="true"] .vn-plot { cursor:default; }
+.vn-svg { display:block; overflow:visible; }
+.vn-svg .vn-u { fill:var(--nx-card); stroke:var(--nx-card-line); stroke-width:1.5; }
+.vn-svg .vn-c { fill:none; stroke:var(--nx-text2); stroke-width:1.7; }
+.vn-svg .vn-hi { fill:color-mix(in srgb, var(--nx-accent) 24%, transparent); }
+.vn-svg .vn-set { font-size:16px; font-weight:800; fill:var(--nx-text); }
+/* a region: its entry on the diagram, a button (transparent, so the circles read through it; a halo keeps the text clear of the lines) */
+.vn-r { position:absolute; transform:translate(-50%, -50%); min-width:44px; min-height:40px; padding:0 6px; box-sizing:border-box; display:inline-flex;
+  align-items:center; justify-content:center; border-radius:12px; border:1.5px solid transparent; background:transparent; color:var(--nx-text);
+  font:inherit; font-size:15px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; cursor:pointer; touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent; text-shadow:0 0 3px var(--nx-card), 0 0 3px var(--nx-card), 0 0 2px var(--nx-card); }
+.vn-r > span { pointer-events:none; }
+.vn-r[aria-pressed="true"] { border-color:var(--nx-sel-line); background:color-mix(in srgb, var(--nx-sel) 62%, transparent); }
+.vn-r:disabled { cursor:default; }
+.vn-q { display:inline-grid; place-items:center; width:26px; height:22px; box-sizing:border-box; border-radius:8px; border:1.5px dashed var(--nx-text2);
+  font-size:13px; font-weight:800; color:var(--nx-text2); text-shadow:none; background:var(--nx-card); }
+.vn-r[aria-pressed="true"] .vn-q { border-color:var(--nx-sel-line); color:var(--nx-text); }
+.vn-r[data-v="ok"] { color:#3ddc97; }
+.vn-r[data-v="bad"] { color:#ff8a8a; }
+/* the editor: the chosen region's name, its number (− field +) and, with an unknown, its form */
+.vn-ed { display:flex; flex-direction:column; gap:10px; }
+.vn-ed[hidden] { display:none; }
+.vn-eh { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.vn-nm { min-width:0; font-size:15px; line-height:1.3; color:var(--nx-text); }
+.vn-nm b { font-weight:800; }
+.vn-sub { display:block; font-size:12.5px; font-weight:600; color:var(--nx-text2); }
+.vn-sub[hidden] { display:none; }
+.vn-ctl { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.vn-st { display:flex; align-items:center; gap:6px; }
+.vn-nb, .vn-next, .vn-f { min-height:44px; box-sizing:border-box; border-radius:12px; border:1.5px solid var(--nx-card-line); background:var(--nx-card); color:var(--nx-text);
+  font:inherit; font-weight:800; cursor:pointer; touch-action:manipulation; }
+.vn-nb { width:44px; font-size:20px; line-height:1; }
+.vn-next { flex:none; padding:0 12px; font-size:13.5px; font-weight:700; }
+.vn-in { width:76px; height:44px; box-sizing:border-box; padding:0 6px; border-radius:12px; border:1.5px solid var(--nx-card-line); background:var(--nx-card);
+  color:var(--nx-text); font:inherit; font-size:18px; font-weight:800; text-align:center; font-variant-numeric:tabular-nums; }
+.vn-in::placeholder { color:var(--nx-text2); opacity:1; }
+.vn-fm { display:flex; flex-wrap:wrap; gap:6px; }
+.vn-f { min-width:44px; padding:0 10px; font-size:14.5px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.vn-f[aria-pressed="true"] { border-color:var(--nx-sel-line); background:var(--nx-sel); }
+:is(.vn-nb, .vn-next, .vn-f):not(:disabled):hover { border-color:var(--nx-card-hover); }
+:is(.vn-nb, .vn-next, .vn-f, .vn-in):disabled { opacity:0.45; cursor:default; }
+:is(.vn-in, .tr-fr input, .tr-l, .tr-o):focus { outline:none; border-color:var(--nx-sel-line); box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-sel-line) 26%, transparent); }
+:is(.vn-r, .vn-nb, .vn-next, .vn-f):focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+/* the tree: the stem's outcomes as a key, then the branches; each branch a fraction (two fields over a bar) and its outcome; the ends' outcomes */
+.tr-key { margin:0; display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; font-weight:600; color:var(--nx-text2); }
+.tr-key b { margin-right:4px; font-weight:800; color:var(--nx-text); }
+.tr-plot { position:relative; margin-inline:auto; max-width:100%; }
+.tr-svg { position:absolute; left:0; top:0; overflow:visible; pointer-events:none; }
+.tr-svg .tr-ln { stroke:var(--nx-text2); stroke-width:1.7; stroke-linecap:round; }
+.tr-svg .tr-root { fill:var(--nx-text2); }
+.tr-h { position:absolute; top:2px; font-size:12px; font-weight:700; color:var(--nx-text2); white-space:nowrap; }
+.tr-cell { position:absolute; display:flex; align-items:center; gap:4px; }
+.tr-end { position:absolute; }
+.tr-fr { display:flex; flex-direction:column; align-items:center; gap:2px; border-radius:12px; }
+.tr-fr input { width:var(--tr-fw, 44px); height:40px; box-sizing:border-box; padding:0 2px; border-radius:10px; border:1.5px solid var(--nx-card-line); background:var(--nx-card);
+  color:var(--nx-text); font:inherit; font-size:16px; font-weight:800; text-align:center; font-variant-numeric:tabular-nums; }
+.tr-bar { display:block; width:32px; height:2px; border-radius:1px; background:var(--nx-text); }
+.tr-fr[data-dec="true"] .tr-bar { opacity:0; }
+.tr-fr[data-dec="true"] .tr-pd:not(:focus) { opacity:0.4; border-style:dashed; }
+.tr-l, .tr-o { -webkit-appearance:none; appearance:none; height:44px; box-sizing:border-box; padding:0 4px; border-radius:10px; border:1.5px solid var(--nx-card-line);
+  background:var(--nx-card); color:var(--nx-text); font:inherit; font-size:16px; font-weight:800; text-align:center; text-align-last:center; cursor:pointer; }
+.tr-l { width:var(--tr-fw, 44px); }
+.tr-o { width:var(--tr-ow, 76px); font-variant-numeric:tabular-nums; }
+/* a tablet: the diagram's labels a step larger (sized to the device) */
+@media (min-width:700px) { .vn-r { font-size:17px; } .vn-svg .vn-set { font-size:18px; } .vn-nm { font-size:16px; } }
+:is(.tr-l, .tr-o)[data-empty="true"] { border-style:dashed; border-color:var(--nx-text2); color:var(--nx-text2); }
+:is(.tr-l, .tr-o) option { color:#15295a; background:#f7f9fd; }
+.tr-fr[data-v="ok"] input, :is(.tr-l, .tr-o)[data-v="ok"] { border-color:#3ddc97; border-style:solid; }
+.tr-fr[data-v="bad"] input, :is(.tr-l, .tr-o)[data-v="bad"] { border-color:rgba(255,107,107,0.85); border-style:solid; }
+:is(.tr-fr input, .tr-l, .tr-o):disabled { opacity:1; cursor:default; }
+html[data-nx="light"] .vn-r[data-v="ok"] { color:#0f7a4f; }
+html[data-nx="light"] .vn-r[data-v="bad"] { color:#b42318; }
+html[data-nx="light"] .tr-fr[data-v="ok"] input, html[data-nx="light"] :is(.tr-l, .tr-o)[data-v="ok"] { border-color:#0f9a63; }
+html[data-nx="light"] .tr-fr[data-v="bad"] input, html[data-nx="light"] :is(.tr-l, .tr-o)[data-v="bad"] { border-color:#c4321f; }
