@@ -17,11 +17,14 @@ import shutil
 
 import fitz  # PyMuPDF
 
-from make_catalogue import FINISHED, ROOT
+from make_catalogue import FINISHED, LOWER, ROOT
 
 PAPERS_DIR = os.path.join(os.path.expanduser("~"), "Downloads", "Grade_12_Nov_Past_Papers_2024-2025")
 DOCS = {"ls-p1-2026": {"qp": "uploads/Life Sciences P1 May-June 2026 Eng.pdf", "mg": "uploads/Life Sciences P1 May-June 2026 MG Eng.pdf"}}
 DOCS.update({pid: {"qp": "uploads/" + qp, "mg": "uploads/" + mg} for pid, (qp, mg) in FINISHED.items()})
+# Grades 10 and 11: a common paper's pages once it is transcribed (its PDFs are in uploads/, copied from the DBE download)
+DOCS.update({pid: {"qp": "uploads/" + qp, "mg": "uploads/" + mg} for pid, (qp, mg) in LOWER.items()
+             if os.path.exists(os.path.join(ROOT, "tools", "ingest", "out", pid, "paper.json"))})
 OUT = {"qp": "assets/papers/{id}/qp-{n:02d}.jpg", "mg": "uploads/papers/{id}/mg-{n:02d}.jpg"}
 WIDTH = 1000
 LBL = re.compile(r"^\s*(\d{1,2}\.\d{1,2})(?:\.\d{1,2})?(?:\s|$)", re.M)
