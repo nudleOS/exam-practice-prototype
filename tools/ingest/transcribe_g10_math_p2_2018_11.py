@@ -20,15 +20,19 @@ transcribe_g10_math_p1_2018_11.py):
   The memo's OR methods and values are other right routes and never a wrong option.
   An answer the memo states with no working (the frequency column, a ratio, a trigonometric ratio, an equation of a graph, a and b,
   an interval, a range, a one-line reason) -> authored multiple choice of answers: the memo's and three common errors.
-  One read-off number with no working (1.2, 4.2.1, 5.1.2(a)) stays num; the box and whisker diagram 1.5 and the sketch 5.1.1 ->
-  draw (self-checked against the memo's criteria); 7.1 (complete a theorem) -> statements, pick 1.
+  One read-off number with no working (1.2, 4.2.1, 5.1.2(a)) stays num; the box and whisker diagram 1.5 -> draw with build
+  "boxplot" (2026-10-11: the five values placed on the answer book's number line, the box and whiskers drawn from them, marked
+  online against the memo's three ticks); the sketch 5.1.1 -> draw with build "sketch" (2026-10-11: f placed on the answer book's grid, the
+  curve drawn through its features, marked online against the memo's three criteria); 7.1 (complete a theorem) -> statements,
+  pick 1.
   Where a part's options, cards or criteria show an EARLIER part's answer it carries "after" (the GATES assert below).
 Missions: Questions 1, 2 and 6 share one stem and diagram each, so each is one mission; Questions 3, 4, 5 and 8 change their stem
 part-way, so their numbered groups are missions (3.1, 3.2, 3.3 ...). Question 7 is ONE mission (7.1 and 7.2): 7.2.2's working names
 the theorem 7.1 completes (AP = PS [line from midpoint ∥ to one side of △]), so it opens after 7.1, and a gate only works inside
 its mission; 7.2's own stem rides in 7.2.1's and 7.2.2's question text.
 No figure comes from the answer book: its table (1.1), number line (1.5) and grid (5.1.1) are blank answer spaces (the MCQ, the draw
-memo and criteria carry them), and its other diagrams repeat the question paper's.
+memo and criteria carry them; 1.5's box and whisker diagram is built on the same line, 5.1.1's sketch on the same grid), and its
+other diagrams repeat the question paper's.
 Figure boxes are measured in PDF points (page 595 x 841, read from the PDF) from the ink on the scan (scratch tool
 lower/g10-math-p2-2018-11/figs.py) and checked on a contact sheet with ingest's 1% pad applied."""
 import json
@@ -137,8 +141,18 @@ q1 = [
         ["The rest of the box: the median 6 inside it, and the whiskers out to the minimum 1 and the maximum 9", 1]],
         ["Which five numbers does a box and whisker diagram need?", "Where are the quartiles: the middle of the lower half and of the upper "
                                                                     "half of the data?"],
-        memo="The answer book gives a number line from 0 to 10. Five-number summary: 1 ; 3 ; 6 ; 8 ; 9.", after=["1.3.1", "1.4"]),
+        memo="The answer book gives a number line from 0 to 10. Five-number summary: 1 ; 3 ; 6 ; 8 ; 9.", after=["1.3.1", "1.4"],
+        # built on the answer book's line (2026-10-11: 0 to 10, numbered every 1, a tick every half): the five values placed, the box and
+        # whiskers drawn from them, marked as the memo marks it (✓ Q₁, ✓ Q₃, ✓ rest of the box: the median and both whiskers together)
+        build={"kind": "boxplot", "x": [0, 10, 0.5], "tick": 0.5, "label": 1, "tol": 0,
+               "at": {"min": 1, "q1": 3, "med": 6, "q3": 8, "max": 9},
+               "crit": {"q1": 0, "q3": 1, "med": 2, "min": 2, "max": 2}}),
 ]
+for i in q1:   # the built box and whisker diagram: every memo criterion is earned by its values, and each value sits on the line's steps
+    b = i.get("build") or {}
+    if b.get("kind") == "boxplot":
+        assert sorted(set(b["crit"].values())) == list(range(len(i["criteria"]))), (i["n"], b["crit"])
+        assert all(b["x"][0] <= u <= b["x"][1] and abs(u / b["x"][2] - round(u / b["x"][2])) < 1e-9 for u in b["at"].values()), (i["n"], b["at"])
 
 # ---- QUESTION 2, the question paper page 4 and the memo pages 3-5 ----
 QT = "QR = QP = √34\nQT = {1}/{2}PQ = {1}/{2}√34\nArea of △QTR = {1}/{2}(QR)(QT)\n"
@@ -277,7 +291,20 @@ q51 = [
          memo="The answer book gives a grid: x from 0° to 360° across (labelled at 90, 180, 270 and 360, a line every 15°) and y from −4 to 4 "
               "up. The memo's graph: f falls from (0° ; 0) through (45° ; −3) towards the asymptote x = 90°, comes down from the top through "
               "(135° ; 3), (180° ; 0) and (225° ; −3) towards the asymptote x = 270°, then comes down from the top through (315° ; 3) to "
-              "(360° ; 0)."),
+              "(360° ; 0).",
+         # built on the answer book's grid (2026-10-11, as transcribe_math_p1_2025_11.py 4.5): criterion 0 ('Tan graph passing through
+         # (45° ; −3) or ...') is the curve's shape (a decreasing tan, from the learner's own features) with one other point, any of the
+         # memo's four (alt); criterion 1 is the three x-intercepts and criterion 2 both asymptotes, each matched as a set, one feature
+         # of each carrying its mark. The x-intercepts + the point leave the phase open; the asymptotes fix −3 tan x
+         build={"kind": "sketch", "family": "tan", "b": 1, "x": [0, 360, 15], "y": [-4, 4, 0.5], "domain": [0, 360], "features": [
+             {"id": "pt", "kind": "point", "label": "one other point", "at": [45, -3], "alt": [[135, 3], [225, -3], [315, 3]], "tol": 0,
+              "marks": 0, "crit": 0},
+             {"id": "x1", "kind": "point", "label": "x-intercept", "at": [0, 0], "tol": 0, "marks": 1, "crit": 1},
+             {"id": "x2", "kind": "point", "label": "x-intercept", "at": [180, 0], "tol": 0, "marks": 0, "crit": 1},
+             {"id": "x3", "kind": "point", "label": "x-intercept", "at": [360, 0], "tol": 0, "marks": 0, "crit": 1},
+             {"id": "a1", "kind": "vline", "label": "asymptote", "at": 90, "tol": 0, "marks": 1, "crit": 2},
+             {"id": "a2", "kind": "vline", "label": "asymptote", "at": 270, "tol": 0, "marks": 0, "crit": 2}],
+                "shape": {"label": "Shape", "answer": "decreasing", "marks": 1, "crit": 0}}),
     num("5.1.2(a)", "Hence, or otherwise, write down the period of f.", 180, 0, "°",
         ["After how many degrees does the graph of f start to repeat?", "Does multiplying tan x by −3 change how often it repeats?"]),
     mcq("5.1.2(b)", "Hence, or otherwise, write down the equation of h if h is the reflection of f about the x-axis." + ANSWER,
@@ -285,6 +312,12 @@ q51 = [
         ["When a graph is reflected about the x-axis, what happens to every y-value?", "Which part of f(x) = −3 tan x controls the sign of the "
                                                                                        "y-values?"]),
 ]
+for i in q51:   # the built sketch: its features' and shape's marks are the memo criteria's, criterion by criterion
+    if (i.get("build") or {}).get("kind") == "sketch":
+        got = {}
+        for x in i["build"]["features"] + [i["build"]["shape"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
 q52 = [
     mcq("5.2.1", "Write down the values of a and b." + ANSWER, ["a = 2 and b = 1", "a = −2 and b = 2", "a = −2 and b = 1", "a = 1 and b = −2"], 2,
         ["What is the y-value of g at x = 0°, and what is cos 0°?", "After how many degrees does g complete one full wave?"], marks=2),
@@ -486,9 +519,16 @@ paper = {
         {"n": "1.2", "kind": "no_fit", "detail": "Read-off numbers with no working stay typed on the keypad: 1.2 (42 learners), 4.2.1 (63,5°: keyed "
                                                  "at one decimal place, tolerance 0,06, so 63,4 and 63,6 are marked wrong where the memo gives "
                                                  "1/2 for incorrect rounding) and 5.1.2(a) (180°)."},
-        {"n": "1.5", "kind": "no_fit", "detail": "Drawings (1.5 the box and whisker diagram on the answer book's number line, 5.1.1 the graph of f "
-                                                 "on its grid) are done on paper and self-checked against the memo's criteria; the answer book's "
-                                                 "blank number line and grid are described in the memo text, not cropped."},
+        {"n": "1.5", "kind": "no_fit", "detail": "The box and whisker diagram 1.5 is BUILT on the answer book's number line (2026-10-11: 0 to 10, "
+                                                 "a number every 1, a tick every half): the learner places the five values, the box and "
+                                                 "whiskers are drawn from them, and the memo's three ticks are marked from them (Q₁, Q₃, and "
+                                                 "'rest of the box': the median and both whiskers together). The answer book's blank number "
+                                                 "line and grid are described in the memo text, not cropped."},
+        {"n": "5.1.1", "kind": "no_fit", "detail": "The graph of f (5.1.1) is BUILT on the answer book's grid (2026-10-11): the learner places the "
+                                                   "three x-intercepts, both asymptotes and one other point, the tan curve is drawn through them, "
+                                                   "and the memo's three criteria are marked from them (its first, 'Tan graph passing through "
+                                                   "(45° ; −3) or (135° ; 3) or (225° ; −3) or (315° ; 3)', is the curve's shape with that point, "
+                                                   "any of the four)."},
         {"n": "7.1", "kind": "no_fit", "detail": "Completing the theorem plays as statements, pick 1: the memo's 'Bisects the third side' and four "
                                                  "cards that are false for every triangle (the line is half the second side and parallel to it, "
                                                  "so neither 'equal in length to the second side' nor 'bisects the second side' holds)."},

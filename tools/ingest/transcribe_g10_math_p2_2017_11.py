@@ -20,14 +20,18 @@ transcribe_g10_math_p2_2018_11.py and transcribe_g10_math_p1_2017_11.py):
   keeps its marks, all or nothing. The memo's OR methods are other right routes and never a wrong option.
   An answer the memo states with no working (the modal class, a range, Ô₁ with its reason) -> authored multiple choice of answers:
   the memo's and three common errors. One number with no working (1.1 the median, 2.1, 5.2.1, 5.3.1, 6.1) stays num; the box and
-  whisker diagram 1.4 and the sketch 5.1 -> draw (self-checked against the memo's criteria); 3.5 (the type of quadrilateral and
-  its reason) -> statements, pick 2; 5.3.2, where the memo's answer leaves out a solution, -> a pick of one with both right
+  whisker diagram 1.4 -> draw with build "boxplot" (2026-10-11: the five values placed on the answer book's number line, the box
+  and whiskers drawn from them, marked online against the memo's three ticks); the sketch 5.1 -> draw with build "sketch" (2026-10-11:
+  f and g placed on the answer book's grid, each curve drawn through its features, marked online against the memo's six
+  criteria); 3.5 (the type of quadrilateral and its reason) -> statements, pick 2; 5.3.2, where the memo's answer leaves out a
+  solution, -> a pick of one with both right
   (Murci's memo-slip ruling, 2026-10-10).
   Where a part's options, cards or criteria show an EARLIER part's answer it carries "after" (the GATES assert below).
 Missions: Questions 1, 2, 3, 5, 6, 7 and 9 share one stem (and diagram or table) each, so each is one mission; Questions 4 and 8
 change their stem part-way, so their numbered groups are missions (4.1, 4.2, 4.3, 8.1, 8.2, 8.3).
-No figure comes from the answer book: its number line (1.4) and grid (5.1) are blank answer spaces (the draw memos describe them),
-and its other diagrams repeat the question paper's.
+No figure comes from the answer book: its number line (1.4) and grid (5.1) are blank answer spaces (the draw memos describe them;
+1.4's box and whisker diagram is built on the same line, 5.1's sketch on the same grid), and its other diagrams repeat the
+question paper's.
 Figure boxes are measured in PDF points (page 595 x 841, read from the PDF) from the ink on the scan (scratch tool
 lower/g10-math-p2-2017-11/figs.py) and checked on a contact sheet with ingest's 1% pad applied."""
 import json
@@ -120,8 +124,18 @@ q1 = [
         ["Which five numbers does a box and whisker diagram need?", "Where on the number line do the ends of the box and the line inside it "
                                                                     "go?"],
         memo="The answer book gives a number line from about 30 to 92, labelled 35 ; 40 ; … ; 90 with a tick at every whole number. "
-             "Five-number summary: 34 ; 46 ; 54 ; 73 ; 90.", after=["1.1", "1.2", "1.3"]),
+             "Five-number summary: 34 ; 46 ; 54 ; 73 ; 90.", after=["1.1", "1.2", "1.3"],
+        # built on the answer book's line (2026-10-11): the five values placed, the box and whiskers drawn from them, marked as the memo
+        # marks it (✓ min. & max., ✓ median (Q₂), ✓ Q₁ and Q₃: the two values of a tick earn it only together)
+        build={"kind": "boxplot", "x": [30, 95, 1], "tick": 1, "label": 5, "tol": 0,
+               "at": {"min": 34, "q1": 46, "med": 54, "q3": 73, "max": 90},
+               "crit": {"min": 0, "max": 0, "med": 1, "q1": 2, "q3": 2}}),
 ]
+for i in q1:   # the built box and whisker diagram: every memo criterion is earned by its values, and each value sits on the line's steps
+    b = i.get("build") or {}
+    if b.get("kind") == "boxplot":
+        assert sorted(set(b["crit"].values())) == list(range(len(i["criteria"]))), (i["n"], b["crit"])
+        assert all(b["x"][0] <= u <= b["x"][1] and abs(u / b["x"][2] - round(u / b["x"][2])) < 1e-9 for u in b["at"].values()), (i["n"], b["at"])
 
 # ---- QUESTION 2, the question paper page 3 and the memo page 3 ----
 TEMPS = {"head": ["TEMPERATURE (IN °C)", "FREQUENCY"],
@@ -255,7 +269,24 @@ q5 = [
                                                        "y = cos x?"],
         memo="The answer book gives a grid: x from −30° to 270° across (labelled every 30°, a line every 15°) and y from −3 to 3 up. The "
              "memo's graphs: f rises from (0° ; −1) to (90° ; 0), then falls to (270° ; −2); g falls from (0° ; 2) through (90° ; 0) to "
-             "(180° ; −2), then rises to (270° ; 0)."),
+             "(180° ; −2), then rises to (270° ; 0).",
+        # built on the answer book's grid (2026-10-11, as transcribe_g11_math_p2_2017_11.py 6.2.3: two trigonometric graphs on one set of
+        # axes): each memo criterion is features (or a shape) whose marks add up to its mark. f's x- and y-intercept leave sin x − 1 open
+        # (a sine through two points takes many phases), so the memo's 'shape' of f carries f's turning point (0 marks), which fixes the
+        # curve: its minimum (270° ; −2) or its maximum (90° ; 0), both turning points of f in the interval. g's three marked intercepts
+        # fix 2 cos x; criterion 4 is both x-intercepts of g, so one carries its mark. The domain draws the end points (unmarked)
+        build={"kind": "sketch", "family": "sin", "b": 1, "x": [-30, 270, 15], "y": [-3, 3, 0.5], "domain": [0, 270], "features": [
+            {"id": "fx", "kind": "point", "label": "x-intercept of f", "at": [90, 0], "tol": 0, "marks": 1, "crit": 1, "graph": "f"},
+            {"id": "fy", "kind": "point", "label": "y-intercept of f", "at": [0, -1], "tol": 0, "marks": 1, "crit": 2, "graph": "f"},
+            {"id": "ft", "kind": "point", "label": "turning point of f", "at": [270, -2], "alt": [[90, 0]], "tol": 0, "marks": 0, "crit": 0,
+             "graph": "f", "turn": True},
+            {"id": "gx1", "kind": "point", "label": "x-intercept of g", "at": [90, 0], "tol": 0, "marks": 1, "crit": 4, "graph": "g"},
+            {"id": "gx2", "kind": "point", "label": "x-intercept of g", "at": [270, 0], "tol": 0, "marks": 0, "crit": 4, "graph": "g"},
+            {"id": "gy", "kind": "point", "label": "y-intercept of g", "at": [0, 2], "tol": 0, "marks": 1, "crit": 5, "graph": "g"}],
+               "graphs": [{"id": "f", "family": "sin", "label": "f", "b": 1, "domain": [0, 270],
+                           "shape": {"label": "Shape", "answer": "drawn", "marks": 1, "crit": 0}},
+                          {"id": "g", "family": "cos", "label": "g", "b": 1, "domain": [0, 270],
+                           "shape": {"label": "Shape", "answer": "drawn", "marks": 1, "crit": 3}}]}),
     num("5.2.1", WRITE + "Amplitude of g", 2, 0, "", ["What is the amplitude of y = cos x?", "What does multiplying cos x by 2 do to the "
                                                                                             "height of the graph?"]),
     mcq("5.2.2", WRITE + "Range of f" + ANSWER, ["−2 ≤ y ≤ 0", "−1 ≤ y ≤ 1", "−2 < y < 0", "−1 ≤ y ≤ 0"], 0,
@@ -272,6 +303,14 @@ q5 = [
                "Where between 0° and 180° is the graph of f exactly one unit above the graph of g?"],
      "opts": ["x = 90°", "x = 180°", "x = 90° or x = 180°", "x = 126,87° or x = 180°"], "pool": [1, 3], "count": 1},
 ]
+for i in q5:   # the built sketch: its features' and shapes' marks are the memo criteria's, criterion by criterion; every feature names
+    b = i.get("build") or {}   # one of the two graphs
+    if b.get("kind") == "sketch":
+        got = {}
+        for x in b["features"] + [g["shape"] for g in b["graphs"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
+        assert {f["graph"] for f in b["features"]} == {g["id"] for g in b["graphs"]}, i["n"]
 
 # ---- QUESTION 6, the question paper page 6 and the memo page 8 ----
 PQ = "cos 47° = {PQ}/{21}\nPQ = 21 × cos 47°\nPQ = 14,32 m\n"
@@ -510,9 +549,16 @@ paper = {
                                                            "layer garbles fractions, roots and angle names); no API call."},
         {"n": "1.1", "kind": "no_fit", "detail": "One-number answers with no working stay typed on the keypad: 1.1 (the median 54, 2 marks), 2.1 "
                                                  "(30 days), 5.2.1 (the amplitude 2), 5.3.1 (2 solutions) and 6.1 (θ = 47°)."},
-        {"n": "1.4", "kind": "no_fit", "detail": "Drawings (1.4 the box and whisker diagram on the answer book's number line, 5.1 the graphs of f "
-                                                 "and g on its grid) are done on paper and self-checked against the memo's criteria; the answer "
-                                                 "book's blank number line and grid are described in the memo text, not cropped."},
+        {"n": "1.4", "kind": "no_fit", "detail": "The box and whisker diagram 1.4 is BUILT on the answer book's number line (2026-10-11: 30 to 95, "
+                                                 "a tick every 1, a number every 5): the learner places the five values, the box and whiskers "
+                                                 "are drawn from them, and the memo's three ticks are marked from them (min. & max. together, "
+                                                 "the median, Q₁ and Q₃ together). The answer book's blank number line and grid are described "
+                                                 "in the memo text, not cropped."},
+        {"n": "5.1", "kind": "no_fit", "detail": "The graphs of f and g (5.1) are BUILT on the answer book's grid (2026-10-11): the learner places "
+                                                 "each graph's intercepts and f's turning point, each curve is drawn through its features, and "
+                                                 "the memo's six criteria are marked from them. f's turning point (its minimum (270° ; −2) or its "
+                                                 "maximum (90° ; 0)), which the memo does not mark on its own, is part of f's shape: two "
+                                                 "intercepts do not fix a sine graph."},
         {"n": "3.5", "kind": "no_fit", "detail": "The type of quadrilateral with its motivation plays as statements, pick 2 (1 mark each, as the "
                                                  "memo's 'Rectangle' and 'reason'): the memo's choice and its reason, and four cards that are "
                                                  "false for PQRS (PQ = √5 but QR = √45, so it is neither a square nor a rhombus; m(PR) = 1/7 and "

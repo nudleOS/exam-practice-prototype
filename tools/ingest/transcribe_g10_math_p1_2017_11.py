@@ -18,7 +18,8 @@ transcribe_g10_math_p1_2018_11.py):
   An answer the memo states with no working (a pair of integers, a range, x-values read off a graph, an interval) -> authored
   multiple choice of answers: the memo's and three common errors.
   One number with no working (3.1.1, 5.2, 6.2.1, 7.1.1, 7.1.2) stays num; the one word 1.1.2 (Irrational) is a term with Rational
-  rejected; the number line 2.1.2 and the Venn diagram 7.2.1 -> draw (self-checked against the memo's criteria); the sketch 6.1.3 ->
+  rejected; the number line 2.1.2 -> draw with build "numline" (2026-10-11: the end placed, its dot and the shading chosen, marked
+  online); the Venn diagram 7.2.1 -> draw (self-checked against the memo's criteria); the sketch 6.1.3 ->
   draw with build "sketch" (2026-10-11: its features placed on a grid, the curve drawn through them, marked online).
   Where a part's stem, options or criteria show an EARLIER part's answer it carries "after" (see the assert at the end).
 Missions: Question 5 shares one stem and graph, so it is one mission; Questions 1, 2, 3, 4, 6 and 7 are their numbered groups
@@ -139,8 +140,18 @@ q21 = [
         ["Is the end point part of the solution: should its dot be open or closed?", "In which direction do the values that satisfy the "
                                                                                        "inequality lie?"],
         memo="The memo's number line: an open (unshaded) dot at −6, with 0 marked to its right, and an arrow from −6 pointing to the right.",
-        after=["2.1.1"])]
-EQS = "(1): 3x − 4y = −4 and (2): −2x − y = 10\n"
+        after=["2.1.1"],
+        # built on a number line (2026-10-11; the paper prints none, so −10 to 10): the end placed, its dot chosen, the shading chosen;
+        # the memo's one tick (answ) needs all three, so they share criterion 0
+        build={"kind": "numline", "x": [-10, 10, 1], "tick": 1, "label": 1, "tol": 0, "shade": "right",
+               "ends": [{"at": -6, "closed": False}], "crit": {"end": 0, "circle": 0, "shade": 0}})]
+for i in q21:   # the built number line: every memo criterion is earned by its components; one end for left / right, two otherwise
+    b = i.get("build") or {}
+    if b.get("kind") == "numline":
+        assert sorted(set(b["crit"].values())) == list(range(len(i["criteria"]))), (i["n"], b["crit"])
+        assert len(b["ends"]) == (2 if b["shade"] in ("between", "outside") else 1), (i["n"], b["ends"])
+        assert all(b["x"][0] <= e["at"] <= b["x"][1] and abs(e["at"] / b["x"][2] - round(e["at"] / b["x"][2])) < 1e-9 for e in b["ends"]), (i["n"], b["ends"])
+EQS ="(1): 3x − 4y = −4 and (2): −2x − y = 10\n"
 q22 = [
     work("2.2", "Solve simultaneously for x and y:\n−2x − y = 10 and 3x − 4y = −4", 4, [
         EQS + "(2) × (−4): 8x + 4y = −40 … (3)\n(1) + (3): 11x = −44\nx = −4\nSubstitute into (2): −2(−4) − y = 10\ny = 2",          # 8 − y = 10 solved as y = 2
@@ -457,7 +468,10 @@ paper = {
         {"n": "1.1.2", "kind": "no_fit", "detail": "Rational or irrational is a term: the memo's 'Irrational' (and 'irrational number', 'q is "
                                                    "irrational'), with 'Rational' and its phrasings rejected, so the two-letter difference is "
                                                    "never forgiven as a spelling slip."},
-        {"n": "2.1.2", "kind": "no_fit", "detail": "The number line (2.1.2) and the Venn diagram (7.2.1) are drawn on paper and self-checked "
+        {"n": "2.1.2", "kind": "no_fit", "detail": "The number line (2.1.2) is BUILT (2026-10-11, a line from −10 to 10: the paper prints none): "
+                                                   "the learner places the end, chooses its dot (open or closed) and the shading, and the memo's "
+                                                   "one tick needs all three (an open dot at −6, shaded to the right); it opens after 2.1.1, "
+                                                   "whose answer it shows. The Venn diagram (7.2.1) is drawn on paper and self-checked "
                                                    "against the memo's criteria; the sketch of p (6.1.3) is BUILT on a grid (2026-10-11): the "
                                                    "learner places the asymptote and both intercepts, the curve is drawn through them, and the "
                                                    "memo's three criteria are marked from the placed features and the curve's shape."},

@@ -21,7 +21,10 @@ drawings, no algebra input):
   a one-value read-off or write-down (1.2 r, 1.4 the mean, 2.1 the median, 2.2 Q₁, 6.3.2, 7.1 the asymptote's x = 90°, 7.3.1
   the period) -> num, its tolerance covering the memo's rounding (0,006 for a value keyed at two decimals);
   "How does ... influence the standard deviation" -> term (its phrasings, 'increases' / 'decreases' rejected);
-  "Draw a box and whisker diagram / the graph of g" -> draw with the memo's criteria (self-checked, flagged no_fit).
+  "Draw a box and whisker diagram" (2.4) -> draw with build "boxplot" (2026-10-11: the five values placed on the answer book's
+  scaled line, the box and whiskers drawn from them, marked online against the memo's two ticks; flagged no_fit); "draw the graph of g" (7.3.2)
+  -> draw with build "sketch" (2026-10-11: its turning points placed on a grid, the curve drawn through them, marked online
+  against the memo's criteria).
   A part whose options or criteria show an earlier part's answer opens only once that part is answered (`after`).
   Authored multiple choice (Murci, 2026-10-10) for every part a word or number marker cannot score: an interval (7.2), an expression
   in p (5.2), a general solution with working (7.4), "Show that" (3.3, 4.3, 4.4, 6.1.2), a derivation (6.1.1) and the proofs (4.6,
@@ -155,7 +158,13 @@ q2 = [
         ["You need five numbers: the minimum, Q₁, the median, Q₃ and the maximum.", "The box runs between the quartiles; the whiskers reach the "
                                                                                      "smallest and largest times."],
         memo="The answer book gives a scaled line from 0 to 120 minutes (labels every 10, ticks every 5). Five-number summary: 5 ; 44 ; 65 ; "
-             "84 ; 120.", after=["2.1", "2.2", "2.3"]),
+             "84 ; 120.", after=["2.1", "2.2", "2.3"],
+        # built on the answer book's scaled line (2026-10-11), marked as the memo marks it: ✓ box (Q₁ 44, the median 65 and Q₃ 84 together)
+        # and ✓ whiskers ending at 5 & 120 (both together). The quartiles are 2.1-2.3's ogive readings (65, 44, 84), so the line snaps to
+        # every minute (44 and 84 sit between its 5-minute ticks); the minimum and maximum are the stem's
+        build={"kind": "boxplot", "x": [0, 120, 1], "tick": 5, "label": 10, "tol": 0,
+               "at": {"min": 5, "q1": 44, "med": 65, "q3": 84, "max": 120},
+               "crit": {"q1": 0, "med": 0, "q3": 0, "min": 1, "max": 1}}),
     work("2.5", "The company manager decided that all employees who travel for an hour or more will be allowed to work from home for part of "
          "the day. What percentage of the employees will be allowed to work from home for part of the day?", 2, [
         "Number of employees who qualify = 34\n% of employees who qualify = {34}/{60} × 100\n= 56,67% of the employees",   # the memo (OR 35, 58,33%)
@@ -174,6 +183,11 @@ q2 = [
         "Number of intervals = 2,5\nTime allowed to work from home = 2,5(30 minutes)\n= 75 minutes"], 2,   # a part interval counted as a half
         ["How many minutes above an hour is 110 minutes?", "Each interval earns half an hour: 30 minutes."]),
 ]
+for i in q2:   # the built box and whisker diagram: every memo criterion is earned by its values, and each value sits on the line's steps
+    b = i.get("build") or {}
+    if b.get("kind") == "boxplot":
+        assert sorted(set(b["crit"].values())) == list(range(len(i["criteria"]))), (i["n"], b["crit"])
+        assert all(b["x"][0] <= u <= b["x"][1] and abs(u / b["x"][2] - round(u / b["x"][2])) < 1e-9 for u in b["at"].values()), (i["n"], b["at"])
 
 # ---- QUESTION 3, the question paper page 5 and the memo pages 5-7 ----
 q3 = [
@@ -378,7 +392,16 @@ q7 = [
         ["Turning points on the x-axis: x = −90° ; 90°", 1], ["Shape", 1], ["Turning point on the y-axis at (0 ; 2)", 1]],
         ["cos 2x has period 180° and lies between −1 and 1.", "The + 1 lifts the whole graph one unit up."],
         memo="The answer book's grid repeats the paper's graph of f(x) = tan x. g runs from (−180° ; 2) down to (−90° ; 0), up to (0 ; 2), "
-             "down to (90° ; 0) and up to (180° ; 2).", after=["7.3.1"]),
+             "down to (90° ; 0) and up to (180° ; 2).", after=["7.3.1"],
+        # built on a grid (2026-10-11, as transcribe_g11_math_p2_2017_11.py 6.2.3): the answer book's axes (x from −180° to 180°, y from
+        # −3 to 3; f itself is not drawn), x on 15° steps. The memo's three turning points are three features with ONE name, matched as a
+        # set: criterion 0 the two on the x-axis (one carries its mark), criterion 2 the one on the y-axis; they are also the intercepts
+        # the stem asks for, so no intercept is placed twice. The shape (criterion 1) is the cosine the learner's own points fix
+        build={"kind": "sketch", "family": "cos", "b": 2, "x": [-180, 180, 15], "y": [-3, 3, 0.5], "domain": [-180, 180], "features": [
+            {"id": "t1", "kind": "point", "label": "turning point", "at": [-90, 0], "tol": 0, "marks": 1, "crit": 0, "turn": True},
+            {"id": "t2", "kind": "point", "label": "turning point", "at": [90, 0], "tol": 0, "marks": 0, "crit": 0, "turn": True},
+            {"id": "t3", "kind": "point", "label": "turning point", "at": [0, 2], "tol": 0, "marks": 1, "crit": 2, "turn": True}],
+               "shape": {"label": "Shape", "answer": "drawn", "marks": 1, "crit": 1}}),
     mcq("7.4", "Use the graphs to determine the general solution of 2cos³ x − sin x = 0." + WORK, [
         "2cos³ x − sin x = 0\n2cos³ x = sin x\n2cos² x = {sin x}/{cos x}\n2cos² x = tan x\n2cos² x − 1 = tan x − 1\ncos 2x + 1 = tan x\n"
         "x = 45° + k.360° ; k ∈ Z",
@@ -390,6 +413,12 @@ q7 = [
         "x = 45° + k.180° ; k ∈ Z"], 1,
         ["Divide by cos x to bring in tan x, then make the left side cos 2x + 1.", "Where do the graphs of g and f meet on the grid?"], marks=4),
 ]
+for i in q7:   # the built sketch: its features' and shape's marks are the memo criteria's, criterion by criterion
+    if (i.get("build") or {}).get("kind") == "sketch":
+        got = {}
+        for x in i["build"]["features"] + [i["build"]["shape"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
 
 # ---- QUESTION 8, the question paper page 10 and the memo pages 17-18 ----
 q8 = [
@@ -622,9 +651,17 @@ paper = {
         {"n": "2.1", "kind": "low_confidence", "detail": "Ogive read-offs (2.1 median 65, 2.2 Q₁ 44) are keyed as the memo prints them with a "
                                                          "tolerance of half a minute: the memo gives one value and no range, so a reading of 64 "
                                                          "or 66 is marked wrong."},
-        {"n": "2.4", "kind": "no_fit", "detail": "Drawings (2.4 box and whisker diagram, 7.3.2 graph of g) are done on paper and self-checked "
-                                                 "against the memo's criteria; the answer book's scaled line and grid are described in each "
-                                                 "draw's memo."},
+        {"n": "2.4", "kind": "no_fit", "detail": "The box and whisker diagram 2.4 is BUILT on the answer book's scaled line (2026-10-11: 0 to 120, "
+                                                 "a number every 10, a tick every 5, placements to the minute): the learner places the five "
+                                                 "values, the box and whiskers are drawn from them, and the memo's two ticks are marked from "
+                                                 "them (the box: Q₁ 44, the median 65 and Q₃ 84 together; the whiskers: 5 and 120 together). "
+                                                 "The quartiles are 2.1-2.3's ogive readings, keyed exactly as the memo prints them (as 2.1 and "
+                                                 "2.2 are), so a box from a reading one minute off earns nothing; the memo's consistent "
+                                                 "accuracy for a learner's own readings is not followed."},
+        {"n": "7.3.2", "kind": "no_fit", "detail": "The graph of g (7.3.2) is BUILT on a grid with the answer book's axes (2026-10-11; the graph "
+                                                   "of f that the answer book prints is not drawn on it): the learner places g's three turning "
+                                                   "points, the curve is drawn through them, and the memo's three criteria are marked from "
+                                                   "them (the shape from the curve the learner's own points fix)."},
         {"n": "2.5", "kind": "no_fit", "detail": "The memo accepts two readings (34 employees, 56,67%; OR 35 employees, 58,33%): the right option "
                                                  "uses its first; no option uses the second."},
         {"n": "7.1", "kind": "no_fit", "detail": "The asymptote x = 90° plays as the number 90 on the keypad (unit °): the keypad takes no letters, "
