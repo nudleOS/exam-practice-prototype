@@ -3994,13 +3994,26 @@ class Component extends DCLogic {
     // teacher should confirm the rule): one wrong / missing / extra letter from 5 letters, two from 10; shorter terms must be exact.
     // strict (Physical Sciences P2, 2026-10-07): no slip is forgiven where one letter is another compound (hexane / hexene, H2SO4 / H2SO3);
     // the letters and digits must match in order, while spacing and punctuation are free ("dimethyl heptane", "HPO4 2-" = "HPO42-")
-    const bare = s => s.replace(/ /g, "");
-    if (key.term) { const n = norm(answer), slips = tn => key.strict ? 0 : tn.length >= 10 ? 2 : tn.length >= 5 ? 1 : 0;
+    // SIGNS (2026-10-11, as the service's 978dd4d / 49b08b2; norm drops every sign): a plain term spells a negative sign "minus" (a
+    // minus before a number, at the start or after = ( , ; [ or a comparison), so "y = 4" is not "y = -4" (Grade 11 Maths P1 2018
+    // 6.1); a strict term keeps its CHARGE signs (a + or - ending a formula: "S2+" is not "S2-", a pasted S²⁻ reads as S2-), and a
+    // strict FORMULA (a spelling holds + × ÷ * / or a spaced dash, ML P1 Nov 2024 4.1.1(a)) keeps every operator
+    const NEG_AFTER = "=(,;[<>≤≥";
+    const signed = t => String(t || "").replace(/[-−–](?=\s?\d)/g, (m, i, s) => { const before = s.slice(0, i).trimEnd(); return !before || NEG_AFTER.indexOf(before.slice(-1)) !== -1 ? " minus " : m; });
+    const tnorm = t => norm(signed(String(t || "").normalize("NFKC")));   // (NFKC as the service: a pasted H₂SO₄ or S²⁻ reads as typed)
+    const strictKey = t => String(t || "").normalize("NFKC").toLowerCase().replace(/−/g, "-").trim()
+      .replace(/(?<=[a-z0-9)\]])[+-](?=$|[\s|),;\]])/g, m => m === "+" ? "⊕" : "⊖").replace(/[^a-z0-9⊕⊖]/g, "");
+    const formulaKey = t => String(t || "").normalize("NFKC").toLowerCase().replace(/\*/g, "×").replace(/\//g, "÷").replace(/[−–]/g, "-").replace(/[^a-z0-9+\-×÷]/g, "");
+    if (key.term) { const n = tnorm(answer), slips = tn => key.strict ? 0 : tn.length >= 10 ? 2 : tn.length >= 5 ? 1 : 0;
       // a slip is forgiven only when it is a slip: not a different real term (another answer in this paper, or the part's own reject
       // list), not a change of meaning (meaningSlip)
-      const own = key.term.map(norm), other = n && own.indexOf(n) === -1 && ((SERVER.glossary[part.key.split(":")[0]] || {})[n] || (key.reject || []).some(r => norm(r) === n));
-      const hit = other ? null : key.term.find(t => { const tn = norm(t); return n === tn || (key.strict && !!n && bare(n) === bare(tn)) || (slips(tn) > 0 && lev(n, tn) <= slips(tn) && !meaningSlip(n, tn)); }), ok = hit != null;
-      const spelling = ok && norm(hit) !== n ? String(hit) : null;   // accepted with a slip: the feedback names the spelling
+      const own = key.term.map(tnorm), other = n && own.indexOf(n) === -1 && ((SERVER.glossary[part.key.split(":")[0]] || {})[n] || (key.reject || []).some(r => key.strict ? strictKey(r) === strictKey(answer) : tnorm(r) === n));
+      // strict: letters, digits (and charges, or a formula's operators) equal in order, nothing forgiven; the spelling the learner
+      // wrote is preferred, so the feedback names a spelling only when theirs differs in spacing or punctuation
+      const strictHit = () => { const formula = key.term.some(s => /[+×÷*/]|\s[-−–]\s/.test(String(s))), k = formula ? formulaKey : strictKey, ka = k(answer);
+        return !ka ? undefined : key.term.find(t => k(t) === ka && tnorm(t) === tnorm(answer)) || key.term.find(t => k(t) === ka); };
+      const hit = other ? null : key.strict ? strictHit() : key.term.find(t => { const tn = tnorm(t); return n === tn || (slips(tn) > 0 && lev(n, tn) <= slips(tn) && !meaningSlip(n, tn)); }), ok = hit != null;
+      const spelling = ok && tnorm(hit) !== n ? String(hit) : null;   // accepted with a slip: the feedback names the spelling
       return whole(ok, [{ key: "t", awarded: ok ? part.marks : 0, available: part.marks, verdict: n ? (ok ? "correct" : "incorrect") : "missing", spelling: spelling }]); }
     if (key.letter) { const m = pairMarks([answer || {}], [{ letter: key.letter, names: key.names }].concat(key.or || []), part.marks / 2, (k, kind) => kind);
       return { marks_awarded: m.got, marks: part.marks, full: m.got >= part.marks, marker: "auto", items: m.items }; }
