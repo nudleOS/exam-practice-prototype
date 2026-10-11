@@ -18,7 +18,8 @@ transcribe_g10_math_p1_2018_11.py):
   An answer the memo states with no working (a pair of integers, a range, x-values read off a graph, an interval) -> authored
   multiple choice of answers: the memo's and three common errors.
   One number with no working (3.1.1, 5.2, 6.2.1, 7.1.1, 7.1.2) stays num; the one word 1.1.2 (Irrational) is a term with Rational
-  rejected; the number line 2.1.2, the sketch 6.1.3 and the Venn diagram 7.2.1 -> draw (self-checked against the memo's criteria).
+  rejected; the number line 2.1.2 and the Venn diagram 7.2.1 -> draw (self-checked against the memo's criteria); the sketch 6.1.3 ->
+  draw with build "sketch" (2026-10-11: its features placed on a grid, the curve drawn through them, marked online).
   Where a part's stem, options or criteria show an EARLIER part's answer it carries "after" (see the assert at the end).
 Missions: Question 5 shares one stem and graph, so it is one mission; Questions 1, 2, 3, 4, 6 and 7 are their numbered groups
 (1.1, 1.2, 1.3, 2.1 ...), 6.1 (the exponential p) and 6.2 (the hyperbola sketch) apart.
@@ -296,7 +297,20 @@ q61 = [
         ["Shape: an increasing exponential curve above its asymptote", 1]],
         ["Where does p cut the y-axis: what is p(0)?", "Which horizontal line does p approach as x becomes very negative?"],
         memo="The memo's sketch: p(x) = 3ˣ − 9 rising from left to right, close above the dashed asymptote y = −9 on the left, cutting the "
-             "y-axis at (0 ; −8) and the x-axis at (2 ; 0), then rising steeply.", after=["6.1.2"])]
+             "y-axis at (0 ; −8) and the x-axis at (2 ; 0), then rising steeply.", after=["6.1.2"],
+        # built on a grid (Murci 2026-10-11, mock A): the memo's three criteria as the features the learner places, p drawn through them
+        # (the asymptote is drawn dashed, criterion 0's "dashed"); criterion 1 is both intercepts together, so one carries its mark
+        build={"kind": "sketch", "family": "exponential", "x": [-4, 4, 1], "y": [-10, 4, 1], "features": [
+            {"id": "asym", "kind": "hline", "label": "asymptote", "at": -9, "tol": 0, "marks": 1, "crit": 0},
+            {"id": "xint", "kind": "point", "label": "x-intercept", "at": [2, 0], "tol": 0, "marks": 1, "crit": 1},
+            {"id": "yint", "kind": "point", "label": "y-intercept", "at": [0, -8], "tol": 0, "marks": 0, "crit": 1}],
+               "shape": {"label": "Shape", "answer": "increasing, above", "marks": 1, "crit": 2}})]
+for i in q61:   # the built sketch: its features' and shape's marks are the memo criteria's, criterion by criterion
+    if (i.get("build") or {}).get("kind") == "sketch":
+        got = {}
+        for x in i["build"]["features"] + [i["build"]["shape"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
 q62 = [
     num("6.2.1", "Write down the value of w.", -1, 0, "",
         ["Through which point do both axes of symmetry of a hyperbola pass?", "What is the vertical asymptote of f(x) = k/x + w?"]),
@@ -443,8 +457,10 @@ paper = {
         {"n": "1.1.2", "kind": "no_fit", "detail": "Rational or irrational is a term: the memo's 'Irrational' (and 'irrational number', 'q is "
                                                    "irrational'), with 'Rational' and its phrasings rejected, so the two-letter difference is "
                                                    "never forgiven as a spelling slip."},
-        {"n": "2.1.2", "kind": "no_fit", "detail": "The number line (2.1.2), the sketch of p (6.1.3) and the Venn diagram (7.2.1) are drawn on "
-                                                   "paper and self-checked against the memo's criteria."},
+        {"n": "2.1.2", "kind": "no_fit", "detail": "The number line (2.1.2) and the Venn diagram (7.2.1) are drawn on paper and self-checked "
+                                                   "against the memo's criteria; the sketch of p (6.1.3) is BUILT on a grid (2026-10-11): the "
+                                                   "learner places the asymptote and both intercepts, the curve is drawn through them, and the "
+                                                   "memo's three criteria are marked from the placed features and the curve's shape."},
         {"n": "6.2.2", "kind": "memo_issue", "detail": "The memo's mark column reads 'subst. (2 ; −7)', but the paper's point and the memo's own "
                                                        "working are (−2 ; 7); played as (−2 ; 7) (k = −16, as the memo)."},
         {"n": "7.2.1", "kind": "memo_issue", "detail": "The memo's Venn diagram labels the tablet circle B, not T, and writes 'S = 150' for the "

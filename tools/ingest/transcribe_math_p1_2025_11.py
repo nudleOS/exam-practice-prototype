@@ -19,8 +19,9 @@ algebra input; Murci's rulings of 2026-10-10):
   appears in a wrong option (11.1.2: no option uses 72/120, the conditional reading of its wording).
   An inequality, interval, domain, range or coordinate with no working in the memo -> authored multiple choice of answers (the
   memo's and three common errors: a reversed sign, the wrong end point, x for y).
-  One read-off number with no working (4.1, 1 mark) stays num; "Draw the graph" -> draw (self-checked against the memo's
-  criteria); "Write down the asymptote" -> strict term (y = 0); "Describe the transformation" -> term (its phrasings).
+  One read-off number with no working (4.1, 1 mark) stays num; "Draw the graph" -> draw with build "sketch" (2026-10-11: its
+  features placed on a grid, the curve drawn through them, marked online against the memo's criteria); "Write down the
+  asymptote" -> strict term (y = 0); "Describe the transformation" -> term (its phrasings).
   Where a part's options show an EARLIER part's answer (3.4 shows 3.3's 19 and 360; 4.6 shows f⁻¹ and its asymptote; 5.4 shows
   P(3 ; 8); 6.2 shows p = c; 9.3 shows f″ < 0 for x < 8/3), it carries "after": it opens once that part is answered.
 Missions: Questions 3, 4, 5, 6, 9 and 10 share a stem and a graph, diagram or table, so each is one mission; Questions 1, 2, 7,
@@ -196,10 +197,18 @@ q4 = [
         ["Swap x and y, then rewrite the log as a power.", "logₐ y = x means y = aˣ."]),
     term("4.4", "Write down the equation of the asymptote of f⁻¹", ["y = 0", "y=0"],
          ["f⁻¹ is an exponential graph.", "Which horizontal line does bˣ approach but never reach?"], strict=True),
-    draw("4.5", "Draw the graph of f⁻¹ on the set of axes provided in the ANSWER BOOK. Clearly indicate the intercepts with the axes, the "
-         "coordinates of ONE other point and the asymptotes.", 3, [
+    # built on a grid (Murci 2026-10-11, mock A): the memo's three criteria as the features the learner places, f⁻¹(x) = (1/3)ˣ drawn
+    # through them. Criterion 0 (shape WITH the asymptote y = 0) is the shape and the asymptote together; criterion 2's "any other point"
+    # is every other grid point on f⁻¹: (−1 ; 3) and (−2 ; 9) ((1 ; 1/3) is off the grid's steps)
+    {**draw("4.5", "Draw the graph of f⁻¹ on the set of axes provided in the ANSWER BOOK. Clearly indicate the intercepts with the axes, the "
+            "coordinates of ONE other point and the asymptotes.", 3, [
         ["Decreasing exponential shape with the asymptote y = 0", 1], ["y-intercept (0 ; 1)", 1], ["Any other point on the graph, e.g. (−1 ; 3)", 1]],
         ["f⁻¹ is the reflection of f in the line y = x.", "Where does a graph y = bˣ cut the y-axis? Work out b⁰."]),
+     "build": {"kind": "sketch", "family": "exponential", "x": [-4, 4, 1], "y": [-2, 10, 1], "features": [
+         {"id": "asym", "kind": "hline", "label": "asymptote", "at": 0, "tol": 0, "marks": 0, "crit": 0},
+         {"id": "yint", "kind": "point", "label": "y-intercept", "at": [0, 1], "tol": 0, "marks": 1, "crit": 1},
+         {"id": "pt", "kind": "point", "label": "one other point", "at": [-1, 3], "alt": [[-2, 9]], "tol": 0, "marks": 1, "crit": 2}],
+               "shape": {"label": "Shape", "answer": "decreasing", "marks": 1, "crit": 0}}},
     work("4.6", "The graph of h is obtained when f⁻¹ is translated 5 units to the right. Determine the y-values of h where x > 4.", 2, [
         "h(x) = ({1}/{3})ˣ⁻⁵\nh(4) = ({1}/{3})⁻¹ = 3\n0 < y < 3",                               # the memo
         "h(x) = ({1}/{3})ˣ⁺⁵\nh(4) = ({1}/{3})⁹ = {1}/{19 683}\n0 < y < {1}/{19 683}",          # 'to the right' as x + 5
@@ -449,6 +458,12 @@ ANSWERS = [i["n"] for i in ITEMS if i["t"] == "mcq" and i["n"] not in AUTHORED] 
 assert ANSWERS == ["1.1.3", "4.2", "5.1", "5.2", "5.3.1", "5.3.2", "6.1", "9.2"], ANSWERS
 assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric")], "a typed calculation or a written answer is left"
 assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["4.1"]   # the one read-off number
+for i in ITEMS:   # a built sketch: its features' and shape's marks are the memo criteria's, criterion by criterion
+    if (i.get("build") or {}).get("kind") == "sketch":
+        got = {}
+        for x in i["build"]["features"] + [i["build"]["shape"]]:
+            got[x["crit"]] = got.get(x["crit"], 0) + x["marks"]
+        assert got == {k: c["marks"] for k, c in enumerate(i["criteria"])}, (i["n"], got)
 assert {i["n"]: i["after"] for i in ITEMS if i.get("after")} == {"3.4": ["3.3"], "4.6": ["4.3", "4.4"], "5.4": ["5.1", "5.2"], "6.2": ["6.1"],
                                                                   "9.3": ["9.2"]}
 for i in ITEMS:   # a line that ends in "[...]" draws as a proof's reason: no working here has one
@@ -476,7 +491,9 @@ paper = {
                                                            "text layer) and the memo's page images (its text layer garbles fractions and powers); "
                                                            "no API call."},
         {"n": "4.1", "kind": "no_fit", "detail": "One read-off number stays typed on the keypad: 4.1 (t = log₁⁄₃ 3 = −1, 1 mark, exact)."},
-        {"n": "4.5", "kind": "no_fit", "detail": "The sketch of f⁻¹ is drawn on paper and self-checked against the memo's three criteria."},
+        {"n": "4.5", "kind": "no_fit", "detail": "The sketch of f⁻¹ is BUILT on a grid (2026-10-11): the learner places the asymptote, the "
+                                                 "y-intercept and one other point, the curve is drawn through them, and the memo's three "
+                                                 "criteria are marked from the placed features and the curve's shape."},
         {"n": "4.4", "kind": "no_fit", "detail": "The asymptote's equation is a strict term (y = 0): it has no sign to lose, and x = 0 stays wrong."},
         {"n": "6.3", "kind": "no_fit", "detail": "The transformation is a term listing the memo's two answers (1 unit down OR 1 unit to the right) in "
                                                  "common phrasings, with 'up' and 'left' rejected; another wording is marked wrong."},
