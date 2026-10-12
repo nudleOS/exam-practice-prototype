@@ -81,6 +81,8 @@ LOWER = {
                             "provincial/g11-ps-p2-2025-11-ec/PHYSICAL SCIENCES P2 GRADE 11 MEMO NOVEMBER 2025 ENG & AFR_watermark.pdf"),
     "g11-ml-p1-2024-11-ec": ("provincial/g11-ml-p1-2024-11-ec/MATHS LIT P1 GR11 QP NOV 2024 ENG DD_watermark.pdf",
                             "provincial/g11-ml-p1-2024-11-ec/MATHS LIT P1 MEMO GR 11 NOV2024_English_watermark.pdf"),
+    "g11-ml-p2-2024-11-ec": ("provincial/g11-ml-p2-2024-11-ec/MATHS LIT P2 GRADE 11 NOV 2024  ENGLISH D_watermark.pdf",
+                            "provincial/g11-ml-p2-2024-11-ec/MATHS LIT P2 GRADE 11 NOV 2024 MARKING GUIDELINE_ENG_watermark.pdf"),
 }
 
 

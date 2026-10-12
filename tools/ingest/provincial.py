@@ -37,9 +37,11 @@ class Paper:
 
     # ---- figures and parts
     def fig(self, name, caption):
-        p, x0, y0, x1, y1 = self.FIGS[name]
+        """FIGS[name] = [page, x0, y0, x1, y1] in points, then optionally a dict of extra figure fields: {"source": "answer_book"}
+        for an annexure cropped from the addendum (ingest.py --answer-book), "rotate" for one printed on its side."""
+        p, x0, y0, x1, y1, *extra = self.FIGS[name]
         return {"page": p, "bbox": [round(x0 / self.W, 4), round(y0 / self.H, 4), round(x1 / self.W, 4), round(y1 / self.H, 4)],
-                "caption": caption}
+                "caption": caption, **(extra[0] if extra else {})}
 
     def _place(self, opts):
         at = "ABCD".index(self.seq[self.k])
