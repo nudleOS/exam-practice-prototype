@@ -2462,6 +2462,10 @@ class Component extends DCLogic {
     // below a laptop (a tablet, a narrow window; Murci 2026-10-08, "bigger figure, stacked"): the question on top, then the figure,
     // then the answers (nx-play reads data-figstack). A phone keeps its own layout (the figure above, folding away).
     const stack = !phone && !side && !!fbx; if (q.dataset.figstack !== String(stack)) q.dataset.figstack = String(stack);
+    // the workings' column, once the figure has its side (wkPer reads it): beside the figure it is 357 px, and two workings side by side
+    // got 174 px each, every memo line wrapping to 3-4 lines (ML P2 Nov 2025 3.2.3 at 1440 px, 2026-10-12)
+    const wkc = q.querySelector('[data-wkfocus="true"]'), wkW = wkc && wkc.parentElement ? Math.round(wkc.parentElement.getBoundingClientRect().width) : null;
+    if (wkW && wkW !== this.state.wkColW) this.setState({ wkColW: wkW });
     // (beside, the panel's fade strip shows only while the panel scrolls: as a grid row it held the frame 52 px off the panel's bottom
     // padding, measured at 1100 x 680. Scrolling is judged WITHOUT the strip, so hiding it cannot flip the answer.)
     if (side) { const af = getComputedStyle(q, "::after"), strip = q.dataset.scrolls === "true" ? (parseFloat(af.height) || 0) + (parseFloat(af.marginTop) || 0) : 0,
@@ -4507,7 +4511,9 @@ class Component extends DCLogic {
   // ---- Focus swipe: an MCQ of WORKINGS (Maths Nov 2025; Murci, 2026-10-10) ----
   // One working on a phone, two side by side from 760 px (a tablet either way up, a desktop): a working is several lines, and at about
   // 340 px a card still keeps each of the memo's lines on one line.
-  wkPer() { return (this.state.vw || innerWidth) >= 760 ? 2 : 1; }
+  // two workings side by side from 760 px, and only while their column gives each 280 px (570 with the gap): a tablet's 590-631 px
+  // column keeps its pairs (290-310 px each); the 357 px column beside a desktop's figure shows one at a time, at its full width
+  wkPer() { return (this.state.vw || innerWidth) >= 760 && !(this.state.wkColW < 570) ? 2 : 1; }
   wkTo(i, focus) { const p = this.part(); if (!p) return; const n = (p.options || []).length, per = this.wkPer(), cur = this.state.wkIdx || 0, to = Math.max(0, Math.min(n - 1, i));
     if (Math.floor(to / per) === Math.floor(cur / per)) { if (focus) this.wkFocusTile(); return; }
     this.setState({ wkIdx: to, wkDir: to > cur ? 1 : -1 }, () => { if (focus) this.wkFocusTile(); }); }
