@@ -2,6 +2,8 @@
 question an MCQ of four drawings, the memo's and three mistakes the memo marks down. The drawings are built here from
 drawings.py's primitives (no script, no link, no image: shown through an <img>). register(add) is called at the end of
 pictures.py, so ingest.py --from-json and apply_pictures.py see these parts like any other."""
+import math
+
 import drawings as D
 from drawings import L, P, T, axes, poly, svg
 
@@ -105,6 +107,89 @@ def triangle(variant, w="W", f="Fₐ = 60 N", t="T"):
     return svg(330, 215, "".join(out))
 
 
+SIDE = {"u": (0, -1), "d": (0, 1), "l": (-1, 0), "r": (1, 0)}
+
+
+def lewis(atoms, bonds, w=330, h=150, extra=""):
+    """A Lewis structure: atoms [(symbol, x, y, lone-pair sides "udlr")], bonds [(i, j, pairs)]: each shared pair two dots between the
+    atoms (across the bond line's direction), each lone pair two dots on that side of the atom."""
+    out = []
+    for i, j, n in bonds:
+        (_, x1, y1, _), (_, x2, y2, _) = atoms[i], atoms[j]
+        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+        dx, dy = x2 - x1, y2 - y1
+        ln = math.hypot(dx, dy)
+        px, py = -dy / ln, dx / ln               # across the bond
+        ax, ay = dx / ln, dy / ln                # along the bond
+        for k in range(n):
+            off = (k - (n - 1) / 2) * 9
+            cx, cy = mx + ax * off, my + ay * off
+            for s in (-1, 1):
+                out.append(D.C(cx + px * s * 4.5, cy + py * s * 4.5, 2.4, w=0, fill=D.INK))
+    for sym, x, y, lone in atoms:
+        out.append(T(x, y + 7, sym, size=20))
+        for sd in lone:
+            vx, vy = SIDE[sd]
+            cx, cy = x + vx * 19, y + vy * 19
+            for s in (-1, 1):
+                out.append(D.C(cx + vy * s * 4.5, cy + vx * s * 4.5, 2.4, w=0, fill=D.INK))
+    return svg(w, h, "".join(out) + extra)
+
+
+def profile(hr, peak, hp, labels, dotted=None, dh=None):
+    """A potential energy against course of reaction graph: the reactants' level hr, the peak, the products' level hp (numbers, kJ·mol⁻¹,
+    drawn to scale between 0 and the top), each labelled with labels[k] at the axis ("" for none); dotted: a second (catalysed) peak;
+    dh: the ΔH label beside an arrow from the reactants' level to the products'."""
+    top = max(hr, peak, hp) * 1.15
+    Y = lambda e: 196 - e * 176 / top
+    x0, x1, x2, x3 = 70, 120, 220, 310
+    out = [axes(60, 8, 318, 200, "Course of reaction", "", zero=False),
+           T(16, 104, "Potential energy (kJ·mol⁻¹)", size=10).replace("<text ", '<text transform="rotate(-90 16 104)" ', 1)]
+
+    def hump(pk, dash=None):
+        return P(f"M{x0},{Y(hr):.1f} L{x1},{Y(hr):.1f} C{x1 + 30},{Y(hr):.1f} {x1 + 25},{Y(pk):.1f} {(x1 + x2) / 2},{Y(pk):.1f} "
+                 f"C{x2 - 25},{Y(pk):.1f} {x2 - 30},{Y(hp):.1f} {x2},{Y(hp):.1f} L{x3},{Y(hp):.1f}", w=2.2, dash=dash)
+    out.append(hump(peak))
+    if dotted is not None:
+        out.append(hump(dotted, dash="5 4"))
+    for e, lab in zip((hr, peak, hp), labels):
+        if lab:
+            out += [L(60, Y(e), x3, Y(e), w=0.8, dash="2 4", color="#777"), T(56, Y(e) + 4, lab, size=10, anchor="end")]
+    if dh:
+        xa = x2 + 40
+        out += [L(xa, Y(hr), xa, Y(hp), w=1.4, arrow=True), T(xa + 6, (Y(hr) + Y(hp)) / 2 + 4, dh, size=10, anchor="start", halo=True)]
+    return svg(330, 215, "".join(out))
+
+
+def boyle(variant):
+    """Volume (cm³) against pressure (kPa), PS P2 Nov 2024 EC 4.5: A, the ideal gas (pV = 480), and B, the real gas at high pressure.
+    variant: right (B above A at high pressure) | below (B under A at high pressure) | low (B above A at LOW pressure) | line (B a
+    straight line)."""
+    X = lambda p: 50 + p * 270 / 180
+    Y = lambda v: 196 - v * 176 / 20
+    out = [axes(50, 8, 324, 196, "Pressure (kPa)", "", zero=False),
+           T(14, 104, "Volume (cm³)", size=10).replace("<text ", '<text transform="rotate(-90 14 104)" ', 1)]
+    for v in range(0, 21, 4):
+        out.append(T(46, Y(v) + 4, str(v), size=9, anchor="end"))
+    for p in range(0, 181, 30):
+        out.append(T(X(p), 208, str(p), size=9))
+    pts = [(X(p), Y(480 / p)) for p in range(25, 171, 5)]
+    out.append(poly(pts, w=2.2))
+    out.append(T(X(172), Y(480 / 170) + 14, "A", size=12, weight=700))
+    if variant == "right":
+        b = [(X(p), Y(480 / p + max(0, p - 100) * 0.03)) for p in range(100, 171, 5)]
+    elif variant == "below":
+        b = [(X(p), Y(480 / p - max(0, p - 100) * 0.025)) for p in range(100, 171, 5)]
+    elif variant == "low":
+        b = [(X(p), Y(480 / p + max(0, 60 - p) * 0.12)) for p in range(25, 61, 5)]
+    else:
+        b = [(X(100), Y(4.8)), (X(170), Y(0.5))]
+    out.append(poly(b, w=2.2, dash="5 4"))
+    bx, by = b[-1] if variant != "low" else b[0]
+    out.append(T(bx + 8, by + 4, "B", size=12, weight=700, anchor="start"))
+    return svg(334, 215, "".join(out))
+
+
 def register(add):
     # ---- Grade 11 Mathematics P2 Nov 2024 (EC) 2.4: the ogive of the boxers' weights (memo: grounding, upper limits, shape)
     U, CF = [55, 75, 95, 115, 135, 155], [1, 4, 13, 19, 22, 23]
@@ -156,3 +241,46 @@ def register(add):
         [("Lines from A to B", D.dipole("right", labels=ab, signs=sg)),
          ("Lines pushing apart between A and B, as for two like charges", D.dipole("like", labels=ab, signs=sg)),
          ("Lines between A and B with two lines crossing", D.dipole("crossing", labels=ab, signs=sg))], 1)
+
+    # ---- Grade 11 Physical Sciences P2 Nov 2024 (EC)
+    P2 = "g11-ps-p2-2024-11-ec"
+    hocl = lambda o_lone, cl_lone, n_ocl=1: lewis([("H", 80, 75, ""), ("O", 165, 75, o_lone), ("Cℓ", 250, 75, cl_lone)],
+                                                  [(0, 1, 1), (1, 2, n_ocl)])
+    add(P2, "2.3.1", ("H : O : Cℓ: two lone pairs on O, three on Cℓ, one shared pair in each bond", hocl("ud", "udr")),
+        [("O with one lone pair only", hocl("u", "udr")),
+         ("H : Cℓ : O, with Cℓ in the middle", lewis([("H", 80, 75, ""), ("Cℓ", 165, 75, "ud"), ("O", 250, 75, "udr")], [(0, 1, 1), (1, 2, 1)])),
+         ("Two shared pairs between O and Cℓ", hocl("u", "ur", 2))], 2)
+    h2s = lambda s_lone, h_lone="": lewis([("H", 90, 75, h_lone), ("S", 165, 75, s_lone), ("H", 240, 75, "")], [(0, 1, 1), (1, 2, 1)])
+    add(P2, "2.3.2", ("H : S : H with two lone pairs on S", h2s("ud")),
+        [("S with one lone pair only", h2s("u")),
+         ("S with no lone pairs", h2s("")),
+         ("A lone pair on H as well", h2s("ud", "l"))], 0)
+    nh3 = [("H", 30, 75, ""), ("N", 75, 75, "u"), ("H", 120, 75, ""), ("H", 75, 125, "")]
+    nh3b = [(0, 1, 1), (1, 2, 1), (1, 3, 1)]
+    nh4 = [("H", 240, 75, ""), ("N", 280, 75, ""), ("H", 320, 75, ""), ("H", 280, 115, ""), ("H", 280, 35, "")]
+    nh4b = [(0, 1, 1), (1, 2, 1), (1, 3, 1), (1, 4, 1)]
+    plus = T(180, 82, "+  H⁺  →", size=16)
+    shift = lambda at, dx: [(s, x + dx, y, lo) for s, x, y, lo in at]
+    bracket = P("M220,22 L214,22 L214,135 L220,135 M340,22 L346,22 L346,135 L340,135", w=1.6) + T(352, 26, "+", size=16, anchor="start")
+    add(P2, "2.4.2", ("NH₃ with its lone pair, plus H⁺, gives [NH₄]⁺: the lone pair now shared with the fourth H, in brackets with +",
+                      lewis(nh3 + nh4, nh3b + [(i + 4, j + 4, n) for i, j, n in nh4b], w=370, extra=plus + bracket)),
+        [("The same, but [NH₄] without brackets or a charge", lewis(nh3 + nh4, nh3b + [(i + 4, j + 4, n) for i, j, n in nh4b], w=370, extra=plus)),
+         ("NH₃ drawn with no lone pair on N", lewis([(s, x, y, "") for s, x, y, _ in nh3] + nh4, nh3b + [(i + 4, j + 4, n) for i, j, n in nh4b],
+                                                    w=370, extra=plus + bracket)),
+         ("NH₃ plus H⁻ (two electrons on the H) gives NH₄",
+          lewis(nh3 + [("H", 172, 75, "r")] + shift(nh4, 0), nh3b + [(i + 5, j + 5, n) for i, j, n in nh4b], w=370,
+                extra=T(145, 82, "+", size=16) + T(205, 82, "→", size=16)))], 3)
+    add(P2, "4.5", ("A the ideal curve; B, dashed, above A at high pressure", boyle("right")),
+        [("B, dashed, below A at high pressure", boyle("below")), ("B, dashed, above A at low pressure", boyle("low")),
+         ("B a straight dashed line at high pressure", boyle("line"))], 1)
+    add(P2, "5.4", ("Exothermic: reactants at 26,6, the peak at 33,33, products at 19,32 kJ·mol⁻¹, ΔH = −7,28 kJ·mol⁻¹",
+                    profile(26.6, 33.33, 19.32, ["26,6", "33,33", "19,32"], dh="ΔH = −7,28")),
+        [("Endothermic: products at 33,88 above the reactants at 26,6", profile(26.6, 40.61, 33.88, ["26,6", "40,61", "33,88"], dh="ΔH = +7,28")),
+         ("The peak labelled 6,73 (the activation energy as the peak's height)", profile(26.6, 33.33, 19.32, ["26,6", "6,73", "19,32"],
+                                                                                         dh="ΔH = −7,28")),
+         ("The products labelled −7,28 (ΔH as their energy)", profile(26.6, 33.33, 19.32, ["26,6", "33,33", "−7,28"], dh="ΔH = −7,28"))], 0)
+    add(P2, "5.5", ("A dotted curve from the same reactants to the same products, with a lower peak", profile(26.6, 33.33, 19.32, ["", "", ""],
+                                                                                                         dotted=29.5)),
+        [("A dotted curve with a higher peak", profile(26.6, 33.33, 19.32, ["", "", ""], dotted=37.5)),
+         ("A dotted curve with the same peak", profile(26.6, 33.33, 19.32, ["", "", ""], dotted=33.6)),
+         ("A dotted curve with a lower peak, on an endothermic graph", profile(26.6, 40.61, 33.88, ["", "", ""], dotted=36.5))], 2)
