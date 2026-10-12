@@ -158,7 +158,11 @@ q2 = [
         ["What does a cumulative frequency count?", "Which class's running total has counted every person in the survey?"]),
     mcq("2.3", "Write down the modal class." + ANSWER, ["80 < x ≤ 90", "30 < x ≤ 40", "50 < x ≤ 60", "40 < x ≤ 50"], 3,
         ["Which column shows how many people are in each class on its own?", "What does the mode of a data set describe?"]),
-    draw("2.4", "Draw an ogive (cumulative frequency graph) to represent the data on the grid given in the ANSWER BOOK.", 3, [
+    # BUILT on the answer book's grid (2026-10-11, build "plot"): its axes and scale as printed (age 0 to 100 and cumulative frequency 0 to
+    # 90, a number every 10, a fine line every 2; a tap snaps to 1). The tray names each class as the table does ("20 < x ≤ 30") and a
+    # "Starting point", never where they go. The memo's three ticks (memo page 4): grounding at (20 ; 0) (1: the starting point); the
+    # upper limits (1: every class at its upper limit and its cumulative frequency, within half a fine square); the shape, a smooth curve (1)
+    {**draw("2.4", "Draw an ogive (cumulative frequency graph) to represent the data on the grid given in the ANSWER BOOK.", 3, [
         ["Grounding at (20 ; 0)", 1],
         ["Plotting at the upper limits: (30 ; 7), (40 ; 27), (50 ; 52), (60 ; 64), (70 ; 72), (80 ; 76), (90 ; 80)", 1],
         ["Shape: a smooth curve", 1]],
@@ -167,6 +171,14 @@ q2 = [
         memo="The answer book gives a grid: Cumulative Frequency from 0 to 90 up (labelled every 10, a fine line every 2) and Age of person "
              "surveyed from 0 to 100 along (labelled every 10, a fine line every 2). The memo's ogive: (20 ; 0), (30 ; 7), (40 ; 27), "
              "(50 ; 52), (60 ; 64), (70 ; 72), (80 ; 76) and (90 ; 80), joined by a smooth curve.", after=["2.1"]),
+     "build": {"kind": "plot", "x": {"name": "Age of person surveyed", "min": 0, "max": 100, "step": 10, "minor": 2, "snap": 1},
+               "y": {"name": "Cumulative frequency", "min": 0, "max": 90, "step": 10, "minor": 2, "snap": 1},
+               "points": [{"id": "g", "name": "Starting point", "at": [20, 0]}]
+               + [{"id": "c%d" % k, "name": "%d < x ≤ %d" % (lo, lo + 10), "at": [lo + 10, cf]}
+                  for k, (lo, cf) in enumerate([(20, 7), (30, 27), (40, 52), (50, 64), (60, 72), (70, 76), (80, 80)])], "tol": [1, 1],
+               "tests": [{"k": "points", "name": "Starting point", "ids": ["g"]},
+                         {"k": "points", "name": "Classes plotted", "ids": ["c%d" % k for k in range(7)]},
+                         {"k": "shape", "kinds": ["curve"]}]}},
     work("2.5", "Determine the percentage of marketing calls received by people older than 54 years.", 3, [
         READ + "58\n80 − 58 = 22\n{58}/{80} × 100 = 72,5%",      # the people up to 54 used
         READ + "58\n80 − 58 = 22\n{22}/{100} × 100 = 22%",       # divided by 100, not by the 80 people
@@ -623,7 +635,16 @@ assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric", "term", "matc
 assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["1.2.2", "2.2", "6.2.1"]   # the one-number answers
 assert all(i["a"] >= 0 for i in ITEMS if i["t"] == "num"), "a signed answer belongs in a multiple choice (the keypad's sign)"
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["2.4", "6.2.3"]
-assert [i["n"] for i in ITEMS if i["t"] == "draw" and i.get("build")] == ["6.2.3"]
+assert [i["n"] for i in ITEMS if i["t"] == "draw" and i.get("build")] == ["2.4", "6.2.3"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's, every point on the grid's snap
+    b = i.get("build") or {}
+    if b.get("kind") == "plot":
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= {p["id"] for p in b["points"]} for t in b["tests"]), i["n"]
+        for k, ax in enumerate((b["x"], b["y"])):
+            for p in b["points"]:
+                u = p["at"][k]
+                assert abs(u - round(u / ax["snap"]) * ax["snap"]) <= b["tol"][k] + 1e-9 and ax["min"] <= u <= ax["max"], (i["n"], p["id"], k)
 for _m in missions:   # a gate names an EARLIER part of its own mission (the app looks a gate up inside the mission)
     _order = [i["n"] for i in _m["items"]]
     for _i in _m["items"]:
@@ -665,9 +686,10 @@ paper = {
         {"n": "1.2.2", "kind": "no_fit", "detail": "One-number answers with no working stay typed on the keypad: 1.2.2 (σ = 30,94: keyed at two "
                                                    "decimal places, tolerance 0,006, so the sample standard deviation 32,21 is marked wrong), 2.2 "
                                                    "(80 people) and 6.2.1 (180°)."},
-        {"n": "2.4", "kind": "no_fit", "detail": "The ogive (2.4) is drawn on paper and self-checked against the memo's three criteria (its 'upper "
-                                                 "limits' written out as the seven points); the answer book's blank grid is described in the "
-                                                 "memo text, not cropped."},
+        {"n": "2.4", "kind": "no_fit", "detail": "The ogive (2.4) is BUILT on the answer book's grid (2026-10-11, build 'plot'): its axes and scale "
+                                                 "as printed (a tap snaps to 1); the tray names a starting point and the seven classes, never "
+                                                 "where they go; the memo's three ticks: grounding at (20 ; 0), every class at its upper limit "
+                                                 "and cumulative frequency (within 1, half a fine square), a smooth curve."},
         {"n": "6.2.3", "kind": "no_fit", "detail": "The graphs of f and g (6.2.3) are BUILT on a grid (2026-10-11): x from −90° to 180° in steps "
                                                    "of 15° (the 45° and 135° intercepts need them), y from −2 to 2 in steps of 0,5, as the answer "
                                                    "book's grid. The memo's five criteria are the features: f's x-intercept (30° ; 0); 'shape of "

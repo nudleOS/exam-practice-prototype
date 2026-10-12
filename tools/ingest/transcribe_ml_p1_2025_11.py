@@ -276,11 +276,19 @@ q32 = [
              RANGE + "56 000 000 – 4 500 000\n= 51 500 000",
              RANGE + "34 500 000 – 3 000 000\n= 31 500 000"], 3,
          ["Range = highest − lowest.", "Use the 2021 (hatched) parts only."]),
-    draw("3.2.3", "The data in the table represents the number of LTE devices for two provinces during 2023 that has been omitted in the graph. Use the "
-         "data to complete the graph on ANSWER SHEET 3.2.", 4, [
-        ["KwaZulu-Natal: the 2023 part ends at 31 500 000", 1], ["KwaZulu-Natal: the stacked bar completed in the 2023 shading", 1],
-        ["Mpumalanga: the 2023 part ends at 14 000 000", 1], ["Mpumalanga: the stacked bar completed in the 2023 shading", 1]],
+    # BUILT (2026-10-11, the bar graph builder `hist` completing a stacked bar): the two bars the graph leaves without their 2023 part,
+    # each drawn with its printed 2021 (hatched) and 2022 (white) parts on the answer sheet's scale (to 60 000 000, a line every 1 000 000;
+    # the full graph is the figure above); the learner drags each bar's new part up from its 2022 top (snapping to 500 000) and chooses its
+    # shading from the key. The memo's four marks (memo page 14), bar by bar: the end point (1: exactly the memo's) and the complete
+    # stacked bar (1: the new part drawn in the 2023 shading, black)
+    {**draw("3.2.3", "The data in the table represents the number of LTE devices for two provinces during 2023 that has been omitted in the graph. Use the "
+            "data to complete the graph on ANSWER SHEET 3.2.", 4, [
+        ["KwaZulu-Natal end point: 31 500 000", 1], ["KwaZulu-Natal: complete stacked bar graph (the 2023 part in its shading)", 1],
+        ["Mpumalanga end point: 14 000 000", 1], ["Mpumalanga: complete stacked bar graph (the 2023 part in its shading)", 1]],
         ["Stack 2023 on top of each bar's 2022 part.", "KwaZulu-Natal's bar ends at 20 500 000 now; Mpumalanga's at 8 500 000."]),
+     "build": {"kind": "hist", "want": "bar", "use": ["Plot"], "groups": ["KwaZulu-Natal", "Mpumalanga"], "answers": [31500000, 14000000], "tol": 0,
+               "top": 60000000, "step": 10000000, "minor": 1000000, "snap": 500000, "axes": ["Province", "Number of LTE devices"],
+               "stack": {"base": [[9000000, 20500000], [3500000, 8500000]], "series": ["2021", "2022", "2023"], "fill": ["hatch", "white", "black"], "want": 2}}},
     work("3.2.4", "Determine, as a fraction, the probability of randomly selecting a province that has a total number of LTE devices less than 8 million "
          "for the three-year period.", 2,
          "Free State (7 500 000) and Northern Cape (4 500 000): 2 of the 9 provinces\nProbability = {2}/{9}", [
@@ -515,6 +523,14 @@ for _m in missions:
             _m["items"][_k]["after"] = AFTER[_it["n"]]
 assert sorted(AFTER) == sorted(i["n"] for m in missions for i in m["items"] if i.get("after"))
 assert not [i["n"] for m in missions for i in m["items"] if i["t"] in ("rubric", "steps")], "a written part or typed steps left"
+for i in [i for m in missions for i in m["items"]]:   # a completed stacked bar (build-play.js "hist" stack): its end and its shading, bar by bar
+    b = i.get("build") or {}
+    if b.get("stack"):
+        st = b["stack"]
+        assert len(i["criteria"]) == 2 * len(b["groups"]) == 2 * len(st["base"]) == 2 * len(b["answers"]), i["n"]
+        assert all(a > base[-1] and a % b["snap"] == 0 and a <= b["top"] for a, base in zip(b["answers"], st["base"])), i["n"]
+        assert len(st["series"]) == len(st["fill"]) and 0 <= st["want"] < len(st["series"]), i["n"]
+assert [i["n"] for m in missions for i in m["items"] if i.get("build")] == ["3.2.3"]
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
@@ -532,7 +548,10 @@ paper = {
                                                            "the special answer book (ANNEXURE A typed; ANSWER SHEET 3.2 and ANNEXURE B cropped from it)."},
         {"n": "4.1.1", "kind": "no_fit", "detail": "A formula plays as a strict term listing the forms a learner types (all or nothing: the memo's 1 "
                                                    "for the deposit and 1 for the variable cost)."},
-        {"n": "3.2.3", "kind": "no_fit", "detail": "Completing the stacked bar graph is drawn on paper and self-checked against the memo's criteria."},
+        {"n": "3.2.3", "kind": "no_fit", "detail": "Completing the stacked bar graph is BUILT (2026-10-11, the bar graph builder completing a "
+                                                   "stacked bar): KwaZulu-Natal's and Mpumalanga's bars with their printed 2021 and 2022 parts; "
+                                                   "the learner drags each new part up (snapping to 500 000) and chooses its shading from the "
+                                                   "key; the memo's end point and complete stacked bar (the 2023 shading) earn 1 each, bar by bar."},
         {"n": "5.1.2(a)", "kind": "no_fit", "detail": "The written answers play as statements (Murci, 2026-10-10): 5.1.2(a) picks ONE of the memo's two "
                                                       "reasons (2 marks) and 5.2.4 the trend's THREE steps (1 mark each), among clearly false "
                                                       "statements read off TABLE 8 and TABLE 10."},

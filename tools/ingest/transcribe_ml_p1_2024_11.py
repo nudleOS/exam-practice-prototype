@@ -381,12 +381,27 @@ q41 = [
          "represent the cost to hire DJ 5-Star.", ["Step graph", "Stepwise graph", "Step-wise graph"],
          ["Look at DJ 5-Star's graph between the whole hours.", "The cost stays the same for each part of an hour, then jumps: what shape does "
           "that make?"]),
-    draw("4.1.2(b)", "Use TABLE 5, showing the cost to hire DJ Rain for up to 9 hours, to draw a line graph on the same grid on the ANSWER SHEET.", 4, [
+    # BUILT on the answer sheet's grid (2026-10-11, build "plot"): its axes and scale as printed (hours 0 to 9, cost R0 to R10 000, a line
+    # every R1 000 and a fine one every R500; a tap snaps to half an hour and R250), with DJ 5-Star's step graph and DJ Cool's dash-dot line
+    # drawn as printed. The tray names a starting point and each hour of TABLE 5, never where they go. The memo's four marks (memo page 12):
+    # the starting point (0 ; 4 000), (5 ; 4 000), the end point (9 ; 9 000) (1 each), and joining ALL the points plotted on the slanted
+    # part (1: the points joined by straight lines, the hours 5 to 9 all right)
+    {**draw("4.1.2(b)", "Use TABLE 5, showing the cost to hire DJ Rain for up to 9 hours, to draw a line graph on the same grid on the ANSWER SHEET.", 4, [
         ["Starting point (0 ; 4 000)", 1], ["(5 ; 4 000)", 1], ["End point (9 ; 9 000)", 1],
         ["Joining ALL the points plotted on the slanted part of the graph", 1]],
         ["Plot each value in TABLE 5, with your P, Q and R.", "Join the points with straight lines."],
         memo="CA from 4.1.1(b). The line runs flat at R4 000 from (0 ; 4 000) to (5 ; 4 000), then rises through (6 ; 5 250), (7 ; 6 500) and "
              "(8 ; 7 750) to (9 ; 9 000)."),
+     "build": {"kind": "plot", "x": {"name": "Number of hours playing", "min": 0, "max": 9, "step": 1, "snap": 0.5},
+               "y": {"name": "Cost in rand", "min": 0, "max": 10000, "step": 1000, "minor": 500, "snap": 250},
+               "given": [{"name": "DJ 5-Star", "segs": [[h, 1000 * (h + 1), h + 1, 1000 * (h + 1)] for h in range(9)],
+                          "dots": [[h, 1000 * (h + 1), 1] for h in range(9)] + [[h + 1, 1000 * (h + 1)] for h in range(9)]},
+                         {"name": "DJ Cool", "segs": [[0, 6500, 9, 6500]], "dash": "dashdot"}],
+               "points": [{"id": "h0", "name": "Starting point", "at": [0, 4000]}]
+               + [{"id": "h%d" % h, "name": "%d hour%s" % (h, "" if h == 1 else "s"), "at": [h, c]}
+                  for h, c in [(1, 4000), (2, 4000), (3, 4000), (4, 4000), (5, 4000), (6, 5250), (7, 6500), (8, 7750), (9, 9000)]], "tol": [0.25, 125],
+               "tests": [{"k": "points", "name": "Starting point", "ids": ["h0"]}, {"k": "points", "name": "5 hours", "ids": ["h5"]},
+                         {"k": "points", "name": "9 hours", "ids": ["h9"]}, {"k": "line", "name": "The slanted part", "kinds": ["join"], "ids": ["h5", "h6", "h7", "h8", "h9"]}]}},
     mcq("4.1.3", "Lee's parents decide to hire DJ 5-Star for the 21st birthday party. DJ 5-Star will provide the music entertainment from 18:00 "
         "until 01:30.\n\nDetermine the total budgeted expenses for the party." + WORK, [
         "Time = 18:00 – 01:30\n= 7 hrs 30 min\n= 7,5 hrs\nCost for DJ = 7,5 × R1 000\n= R7 500\n"
@@ -641,6 +656,16 @@ for _m in missions:
             assert all(_order.index(e) < _order.index(_it["n"]) for e in AFTER[_it["n"]]), _it["n"]
             _it["after"] = AFTER[_it["n"]]
 assert sorted(AFTER) == sorted(i["n"] for m in missions for i in m["items"] if "after" in i)
+for i in [i for m in missions for i in m["items"]]:   # a built plot (build-play.js "plot"): one test per criterion, every point on the snap
+    b = i.get("build") or {}
+    if b.get("kind") == "plot":
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= {p["id"] for p in b["points"]} for t in b["tests"]), i["n"]
+        for k, ax in enumerate((b["x"], b["y"])):
+            for p in b["points"]:
+                u = p["at"][k]
+                assert abs(u - round(u / ax["snap"]) * ax["snap"]) <= b["tol"][k] + 1e-9 and ax["min"] <= u <= ax["max"], (i["n"], p["id"], k)
+assert [i["n"] for m in missions for i in m["items"] if (i.get("build") or {}).get("kind") == "plot"] == ["4.1.2(b)"]
 
 # the parts that played as typed numbers (steps or num) until Murci's ruling of 2026-10-10, now authored multiple choice
 AUTHORED = [i["n"] for m in missions for i in m["items"] if i["t"] == "mcq" and i["q"].endswith(WORK)]
@@ -682,8 +707,11 @@ paper = {
                                                        "wrong row, column, bar or line, rounding too early, or, in a verify part (3.1.3, "
                                                        "3.2.4(b), 4.2.3, 5.1.5), an error that turns the conclusion; each ends in a confident "
                                                        "result, and every option of a part has the same number of lines."},
-        {"n": "4.1.2(b)", "kind": "no_fit", "detail": "Drawing DJ Rain's line graph on the ANSWER SHEET is done on paper and self-checked against the "
-                                                      "memo's criteria."},
+        {"n": "4.1.2(b)", "kind": "no_fit", "detail": "DJ Rain's line graph is BUILT on the answer sheet's grid (2026-10-11, build 'plot'), DJ "
+                                                      "5-Star's and DJ Cool's graphs drawn on it as printed: the learner places a starting point and "
+                                                      "the nine hours of TABLE 5 (a tap snaps to half an hour and R250) and chooses the line; the "
+                                                      "memo's four marks: (0 ; 4 000), (5 ; 4 000), (9 ; 9 000), and the points joined by straight "
+                                                      "lines with the hours 5 to 9 right ('joining ALL the points plotted on the slanted part')."},
         {"n": "5.1.4", "kind": "no_fit", "detail": "The three sources play as statements, each card a SET of three sources: the memo's three "
                                                    "alternative sets (the only triples adding up to the 34% of borrowings) are the right cards "
                                                    "and four sets adding to 37%, 28%, 27% and 36% the wrong ones; one set is picked, worth the "

@@ -183,22 +183,43 @@ q3 = [
         ["How far does the athlete move in each 1,5 s interval from A to B?", "Are those distances equal, or does each one grow?"], marks=1),
     mcq("3.2.2", UV_Q + "B to C?", ["Motion with uniform velocity", "Uniformly accelerated motion"], 1,
         ["How far does the athlete move in each 1,5 s interval from B to C?", "Are those distances equal, or does each one grow?"], marks=1),
-    draw("3.3", "Use the information in the diagram above to draw an accurate position versus time graph on the graph paper on the attached ANSWER SHEET.", 5, [
-        ["x-axis (time) and its unit (s) correctly labelled", 1], ["y-axis (position) and its unit (m) correctly labelled", 1],
-        ["2 points correctly plotted and joined", 1], ["Shape of the graph from 0 s to 3 s: a straight line", 1],
-        ["Shape of the graph from 3 s to 7,5 s: curved", 1]],
+    # BUILT on a grid (2026-10-11, build "plot"): the memo's five ticks (memo page 4) as the learner's choices: the axes' labels from one
+    # list (1 + 1); two points right and joined (1); the shape from 0 to 3 s straight (1: the learner's points there lie on one line,
+    # joined or a smooth curve through them, which is straight where three points are) and from 3 s to 7,5 s curved (1: a smooth curve
+    # through points that do not lie on one line). The memo marks no scale: the grid is the memo's (1,5 s and 5 m a big square)
+    {**draw("3.3", "Use the information in the diagram above to draw an accurate position versus time graph on the graph paper on the attached ANSWER SHEET.", 5, [
+        ["x-axis and units correctly labelled: time (s)", 1], ["y-axis and units correctly labelled: position (m)", 1],
+        ["2 points correctly plotted and joined", 1], ["Shape of the graph (0 – 3 s): straight line", 1],
+        ["Shape of the graph 3 – 7,5 s: curved", 1]],
         ["Which quantity goes on each axis of a position versus time graph?", "Plot the six (time; position) pairs: where is the graph straight, and where does it bend?"],
         memo="The memo's graph plots (0 s; 0 m), (1,5 s; 3 m), (3 s; 6 m), (4,5 s; 12 m), (6 s; 21 m) and (7,5 s; 33 m).",
         after=["3.2.1", "3.2.2"]),   # its shape criteria show the motion in each interval (3.2's answers)
+     "build": {"kind": "plot", "x": {"min": 0, "max": 9, "step": 1.5, "minor": 0.3, "snap": 0.15}, "y": {"min": 0, "max": 35, "step": 5, "minor": 1, "snap": 0.5},
+               "labels": ["Position (m)", "Position (s)", "Time (s)", "Time (m)", "Velocity (m·s⁻¹)"], "xl": "Time (s)", "yl": "Position (m)",
+               "points": [{"id": "t%d" % k, "name": "t = %s s" % str(t).replace(".", ","), "at": [t, x]}
+                          for k, (t, x) in enumerate([(0, 0), (1.5, 3), (3, 6), (4.5, 12), (6, 21), (7.5, 33)])], "tol": [0.15, 0.5],
+               "tests": [{"k": "xl"}, {"k": "yl"}, {"k": "points", "min": 2, "joined": True},
+                         {"k": "shape", "kinds": ["join", "curve"], "range": [0, 3], "straight": True},
+                         {"k": "shape", "kinds": ["curve"], "range": [3, 7.5], "straight": False}]}},
     rub("3.4", "Define the term instantaneous velocity in words.", 2, [
         "Rate of change in position. (2)", "OR — Displacement divided by a very small time interval. (2)", "OR — Velocity at a particular time. (2)"],
         ["Is instantaneous velocity measured over a long time interval or at one moment?", "How does it differ from the average velocity over the whole race?"],
         each=2),
-    draw("3.5", "On the graph drawn for QUESTION 3.3, show how you would determine the instantaneous velocity.", 2, [
-        ["A tangent drawn to the curve at the chosen time", 2]],
+    # BUILT (2026-10-11, build "plot", tangent mode): the graph of 3.3 drawn as the memo draws it (its six points, straight to 3 s and
+    # curved after: the builder's smooth curve through them); the learner places the two ends of a straight line, drawn across the grid.
+    # The memo's ✓✓ (memo page 5: "Tangent to the curve") earns when the line touches the curve between 3,45 s and 7,05 s within 0,75 m
+    # (1,5 small squares) and never crosses it by more: a secant or a line beside the curve earns nothing. A tangent to the straight part
+    # is the line itself, not the memo's tangent to the curve
+    {**draw("3.5", "On the graph drawn for QUESTION 3.3, show how you would determine the instantaneous velocity.", 2, [
+        ["Tangent to the curve (at a chosen time)", 2]],
         ["What does the gradient of a position versus time graph give?", "How can you find the gradient of a curve at one point, when the gradient keeps changing?"],
         memo="The memo draws the tangent to the curve near 6 s.",
         after=["3.3"]),   # its criterion shows the graph's curve (3.3's shape)
+     "build": {"kind": "plot", "tangent": True, "x": {"name": "time (s)", "min": 0, "max": 9, "step": 1.5, "minor": 0.3, "snap": 0.15},
+               "y": {"name": "Position (m)", "min": 0, "max": 35, "step": 5, "minor": 1, "snap": 0.5},
+               "given": [{"name": "The graph of QUESTION 3.3", "curve": True, "pts": [[0, 0], [1.5, 3], [3, 6], [4.5, 12], [6, 21], [7.5, 33]]}],
+               "points": [{"id": "a", "name": "Line end 1"}, {"id": "b", "name": "Line end 2"}], "tol": [0.15, 0.5],
+               "tests": [{"k": "tangent", "name": "The line", "range": [3, 7.5], "tol": 0.75, "ref": [[4.5, 10.5], [7.5, 31.5]]}]}},
     work("3.6", "Calculate the velocity of the athlete at 3 s.", 4, [
         "v = {Δx}/{Δt}\nv = {12 − 6}/{4,5 − 3}\nv = 4 m·s⁻¹ right",                # the interval after 3 s (wrong part)
         "v = {Δt}/{Δx}\nv = {3 − 0}/{6 − 0}\nv = 0,5 m·s⁻¹ right",                 # the formula upside down
@@ -651,6 +672,18 @@ assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric")], "a typed ca
 assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["6.2.2", "11.1.1(a)", "11.1.1(b)", "11.2.2"], "only the read-offs stay typed numbers"
 assert [i["n"] for i in ITEMS if i["t"] == "term"] == ["7.1.2", "7.1.3", "7.4", "8.1", "8.2", "9.1"]
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["3.3", "3.5", "9.5"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's, every point on the grid's snap
+    b = i.get("build") or {}
+    if b.get("kind") == "plot":
+        ids = {p["id"] for p in b["points"]}
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= ids for t in b["tests"]), i["n"]
+        assert b.get("tangent") or all(len(p.get("at", [])) == 2 for p in b["points"]), i["n"]
+        for k, ax in enumerate((b["x"], b["y"])):
+            for p in b["points"]:
+                if "at" in p:
+                    u = p["at"][k]
+                    assert abs(u - round(u / ax["snap"]) * ax["snap"]) <= b["tol"][k] + 1e-9 and ax["min"] <= u <= ax["max"], (i["n"], p["id"], k)
 assert {i["n"]: i.get("after") for i in ITEMS if i.get("after")} == {
     "2.4": ["2.2", "2.3"], "3.3": ["3.2.1", "3.2.2"], "3.5": ["3.3"], "4.3": ["4.2.1", "4.2.2"], "5.4": ["5.2"], "5.5": ["5.4"], "6.4.2": ["6.4.1"],
     "10.4": ["10.1"], "11.1.3": ["11.1.2"], "4.4": ["4.3"], "8.3": ["8.2"], "8.4.2": ["8.4.1"], "9.4": ["9.2", "9.3"], "9.6.2": ["9.6.1"]}
@@ -691,8 +724,15 @@ paper = {
                                                     "9.6.2) pick the memo's points, 1 mark each; 8.4.2 picks one of the memo's four uses. 6.1's "
                                                     "other similarities (period, frequency, transverse) and 9.6.2's OR reading are neither right "
                                                     "nor wrong cards, so two cards for one point can never earn two marks." % len(PICKS)},
-        {"n": "3.3", "kind": "no_fit", "detail": "Drawings (3.3 on the ANSWER SHEET's graph paper, 3.5 on that graph, 9.5) are done on paper and "
-                                                 "self-checked against the memo's criteria."},
+        {"n": "9.5", "kind": "no_fit", "detail": "The magnetic field pattern (9.5) is drawn on paper and self-checked against the memo's criteria."},
+        {"n": "3.3", "kind": "no_fit", "detail": "The position versus time graph is BUILT on a grid (2026-10-11, build 'plot'): the axes' labels "
+                                                 "chosen from one list, the six points placed (snapping to 0,15 s and 0,5 m), the line chosen; "
+                                                 "the shape from 0 to 3 s earns when the learner's points there lie on one line (joined, or a "
+                                                 "smooth curve through them), from 3 s to 7,5 s when a smooth curve passes through points that "
+                                                 "do not. The memo marks no scale: the grid carries the memo's (1,5 s and 5 m a big square)."},
+        {"n": "3.5", "kind": "no_fit", "detail": "The tangent is BUILT on the graph of 3.3 as the memo draws it (2026-10-11, build 'plot', tangent "
+                                                 "mode): the learner places the two ends of a straight line; it earns the 2 marks when it touches "
+                                                 "the curved part (3,45 s to 7,05 s) within 0,75 m and never crosses it by more."},
     ],
 }
 QTOTAL = {"1": 20, "2": 12, "3": 19, "4": 18, "5": 16, "6": 12, "7": 10, "8": 9, "9": 11, "10": 11, "11": 12}   # the paper's [n] per question

@@ -204,14 +204,27 @@ q3 = [
 
 # ---- QUESTION 4, the question paper page 7 (ANSWER SHEET page 16) and the memo pages 5-7 ----
 q4 = [
-    draw("4.1", "Draw a graph of pressure versus temperature on the attached ANSWER SHEET. Extrapolate the graph so that it intersects the "
-         "y-axis.", 4, [
+    # BUILT on the answer sheet's grid (2026-10-11, build "plot"): its axes printed and labelled (Pressure (kPa) up, Temperature (K)
+    # across) on 11 big squares across and 7 up, 10 small squares in each, no numbers. The memo's four criteria (memo page 5, its graph
+    # to scale on page 12): the scale on both axes (1: 50 K and 50 kPa a big square, the only choices that hold 450 K and 280,5 kPa and
+    # use over half the grid); three or more points right (1: within half a small square of the learner's own scale); a line of best fit
+    # (1: a straight line within two small squares of each of the learner's points); drawn to the origin (1: the straight line reaches
+    # the y-axis within 7,5 kPa of 0, extrapolated as the stem asks)
+    {**draw("4.1", "Draw a graph of pressure versus temperature on the attached ANSWER SHEET. Extrapolate the graph so that it intersects the "
+            "y-axis.", 4, [
         ["Use of correct scale on both axes", 1], ["At least three (3) points plotted correctly", 1], ["Line of best fit drawn", 1],
         ["Graph drawn to the origin", 1]],
         ["Which quantity goes on the vertical axis of a graph of pressure versus temperature?",
          "What scale lets the largest temperature and the largest pressure in the table fit on the grid?"],
         memo="The memo's graph: Pressure (kPa), 0 to 300, up, against Temperature (K), 0 to 500, across: the five points of the table on a "
              "straight line, extended back through the origin."),
+     "build": {"kind": "plot", "grid": {"nx": 11, "ny": 7, "sub": 10}, "extend": True,
+               "x": {"name": "Temperature (K)", "unit": "K", "scales": [20, 25, 50, 100], "ok": [50]},
+               "y": {"name": "Pressure (kPa)", "unit": "kPa", "scales": [20, 25, 50, 100], "ok": [50]},
+               "points": [{"id": "t%d" % k, "name": "T = %d K" % t, "at": [t, p]}
+                          for k, (t, p) in enumerate([(250, 155.8), (300, 187.0), (350, 218.1), (400, 249.3), (450, 280.5)])], "tol": [2.5, 2.5],
+               "tests": [{"k": "scale"}, {"k": "points", "min": 3}, {"k": "fit", "min": 3, "tol": 10},
+                         {"k": "extrap", "name": "Extended", "x": 0, "y": 0, "tol": 7.5}]}},
     rub("4.2", "What conclusion can be made from the final graph?", 2, [
         "Pressure of an enclosed gas is directly proportional to the temperature (1) if the volume stays constant. (1)",
         "OR — As the pressure of an enclosed gas increases, the temperature increases (1) proportionately. (1)"],
@@ -694,6 +707,14 @@ assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["2.3"], "one count read of
 assert [i["n"] for i in ITEMS if i["t"] == "term"] == ["2.4", "2.5.1", "2.5.2", "8.1.3", "8.1.4", "9.4", "10.5"]
 assert [i["n"] for i in ITEMS if i.get("strict")] == ["2.4", "8.1.3", "8.1.4", "9.4"]
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["2.2.1", "2.2.2", "4.1", "7.3"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's; every value inside the grid at every
+    b = i.get("build") or {}   # scale the memo accepts (a tap snaps to a small square: always within half a small square of the value)
+    if b.get("kind") == "plot":
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= {p["id"] for p in b["points"]} for t in b["tests"]), i["n"]
+        for k, ax, n in ((0, b["x"], b["grid"]["nx"]), (1, b["y"], b["grid"]["ny"])):
+            assert set(ax["ok"]) <= set(ax["scales"]) and all(0 <= p["at"][k] <= min(ax["ok"]) * n for p in b["points"]), (i["n"], k)
+            assert all(p["at"][k] * 2 > max(ax["ok"]) * n for p in b["points"][-1:]), (i["n"], k, "an accepted scale uses under half the grid")
 assert all(nums.index(e) < nums.index(i["n"]) for i in ITEMS for e in i.get("after", [])), "a gate on a later part"
 AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn" and i["n"] in STATEMENTS]
@@ -755,8 +776,13 @@ paper = {
                                                         "wrong side; Cr unbalanced). 9.1 (an oxidation number, no working) plays as an answer "
                                                         "multiple choice; 3.4 (one of the three printed liquids) as multiple choice of the three; "
                                                         "2.3 (a count read off the Lewis structure) as a number."},
-        {"n": "2.2.1", "kind": "no_fit", "detail": "Drawings (2.2.1 and 2.2.2 the Lewis structures, 4.1 the graph on the ANSWER SHEET, 7.3 the "
+        {"n": "2.2.1", "kind": "no_fit", "detail": "Drawings (2.2.1 and 2.2.2 the Lewis structures, 7.3 the "
                                                    "potential energy sketch) are done on paper and self-checked against the memo's criteria."},
+        {"n": "4.1", "kind": "no_fit", "detail": "The graph of pressure versus temperature is BUILT on the answer sheet's grid (2026-10-11, build "
+                                                 "'plot'): 11 big squares across and 7 up, its axes printed and labelled, no numbers: the learner "
+                                                 "chooses each axis' scale (20 / 25 / 50 / 100 a big square: only 50 K and 50 kPa hold the table and "
+                                                 "use over half the grid), places the five points, draws a straight line of best fit and extends it "
+                                                 "to the y-axis ('drawn to the origin': within 7,5 kPa of 0 there)."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 10), hand-transcribed from the paper and memo PDFs and "
                                                            "their page images (the 1.3 curve and table, the 1.4 fractions, the 6.1, 6.2 and Q8 "
                                                            "figures, the memo's Lewis structures, sketch and workings are images); no API call. "

@@ -23,8 +23,9 @@ transcribe_g11_ps_p1_2018_11.py):
   right card); 4.2 (NAME AND STATE, 1 + 2) one card that names the law and states it, 3 marks; an explanation the memo ticks point by
   point -> statements, 1 mark a point; a choice with its reason in the same part (8.5) -> the choice a card beside its reason. No memo
   here weighs two sides, so no part plays as a sort.
-  "Draw" (a free-body diagram, the graph on the ANSWER SHEET, a sketch graph, a field pattern) -> draw with the memo's criteria
-  (self-checked, flagged no_fit).
+  "Draw a labelled free-body diagram" (2.3, 4.3) -> draw with build "forces" (2026-10-11: each force aimed from a dot from the same tray
+  of seven, marked online as the memo marks it: one mark a force for label and direction, −1 an additional force). Another "Draw" (the
+  graph on the ANSWER SHEET, a sketch graph, a field pattern) -> draw with the memo's criteria (self-checked, flagged no_fit).
   A part whose options, cards or criteria show an earlier part's answer opens only after it ("after"). A mission is a question with its
   stem and diagram; a sentence the paper adds part-way (4.5 "Suddenly the tow bar ...", 6.4, 6.5, 10.1.5 "The switch ... is now OPENED")
   leads the parts it belongs to; 10.2 (a geyser, a new situation) is a mission of its own. Question 9's graph sits under its own
@@ -167,7 +168,14 @@ q2 = [
         ["Tension in rope R (FR / TR) drawn and labelled", 1]],
         ["Which ropes or cables are attached to block B?", "Which force acts on block B even though nothing touches it?"],
         memo="The memo's diagram: w straight down, FC up and to the left along the cable, FR up and to the right along the rope, all from one "
-             "point. Any additional force: deduct 1 mark (maximum 2/3). Lines must touch the object (otherwise maximum 2/3)."),
+             "point. Any additional force: deduct 1 mark (maximum 2/3). Lines must touch the object (otherwise maximum 2/3).",
+        # BUILT (2026-10-11, build "forces"): the learner aims each force from the dot, from the same tray of seven; one mark each for the
+        # label AND the direction, −1 an extra force. The two tensions are both the tray's T, told apart by direction: the cable's at
+        # 180° − θ (θ = 52,77°, 2.6) = 127°, the rope's at 90° − 35° = 55°. The figure is not to scale (the cable drawn at 131°, the rope at
+        # 38°, as the memo's own diagram draws FR at about 34°), so the cable earns within 12° of 129° and the rope within 17° of 47°: an
+        # arrow along each as the figure draws it, or as the angles give it. "Lines must touch the object": every arrow starts at the dot
+        build={"kind": "forces", "body": "box", "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "T", "at": 129, "tol": 12, "crit": 1},
+                                                           {"id": "T", "at": 47, "tol": 17, "crit": 2}]}),
     num("2.4", "Determine the horizontal component of the force in rope R.", 200, 0, "N",
         ["Which horizontal forces act on block A?", "Block A does not move: what is the net horizontal force on it?"]),
     work("2.5", "Calculate the vertical component of the force in cable C.", 4, [
@@ -204,12 +212,24 @@ q3 = [
                                                          "Trolley's mass"],
          ["Which quantity, other than the two in the table, could change the acceleration?",
           "Is a controlled variable changed, measured, or kept the same?"]),
-    draw("3.3", "Use the graph paper on the ANSWER SHEET and draw a graph of the acceleration versus net force.", 4, [
-        ["Axes with a correct, appropriate scale", 1], ["3 or more coordinates correctly plotted", 2], ["A line of best fit drawn", 1]],
+    # BUILT on the answer sheet's grid (2026-10-11, build "plot"): its axes are printed and labelled (a in m·s⁻² up, F in N across) on 8 big
+    # squares across and 10 up, 10 small squares in each, with no numbers: the learner chooses each axis' scale (a value per big square),
+    # places the four points and draws the line. The memo's criteria (memo page 4): a correct, appropriate scale (1: both axes hold every
+    # value and use at least half the grid: 0,15 or 0,2 a big square; 0,1 cannot hold 1,2 N or 1,45 m·s⁻², 0,5 uses under a third);
+    # 3 or more coordinates right (2: within half a small square of the learner's own scale); a line of best fit (1: a straight line
+    # within two small squares of each of the learner's points)
+    {**draw("3.3", "Use the graph paper on the ANSWER SHEET and draw a graph of the acceleration versus net force.", 4, [
+        ["Axes with correct/appropriate scale", 1], ["3 or more coordinates correctly plotted", 2], ["Drawing a line of best fit", 1]],
         ["Which quantity goes on the vertical axis of a graph of acceleration versus net force?",
          "What scale lets the largest values in the table fit on the grid?"],
         memo="The memo's graph drawn to scale (memo page 14): a (m·s⁻²), 0 to 1,5, up, against F (N), 0 to 1,2, across; the four points of the "
              "table plotted and a straight line of best fit drawn from the origin."),
+     "build": {"kind": "plot", "grid": {"nx": 8, "ny": 10, "sub": 10},
+               "x": {"name": "F (N)", "unit": "N", "scales": [0.1, 0.15, 0.2, 0.5], "ok": [0.15, 0.2]},
+               "y": {"name": "a (m·s⁻²)", "unit": "m·s⁻²", "scales": [0.1, 0.15, 0.2, 0.5], "ok": [0.15, 0.2]},
+               "points": [{"id": "f%d" % k, "name": "F = %s N" % f.replace(".", ","), "at": [float(f), a]}
+                          for k, (f, a) in enumerate([("0.3", 0.36), ("0.6", 0.73), ("0.9", 1.09), ("1.2", 1.45)])], "tol": [0.0075, 0.0075],
+               "tests": [{"k": "scale"}, {"k": "points", "min": 3}, {"k": "fit", "min": 3, "tol": 0.03}]}},
     work("3.4", "Calculate the gradient of the graph.", 3, [
         "gradient = {1,2 − 0,3}/{1,45 − 0,36}\ngradient = 0,83",                         # upside down (Δx over Δy)
         "gradient = {1,45 − 0,36}/{0,3 − 1,2}\ngradient = −1,21",                        # the points subtracted in opposite orders (a sign slip)
@@ -246,7 +266,11 @@ q4 = [
         ["Normal force (N / FN / 12 740 N) drawn and labelled", 1], ["Applied force (FA / Fapplied / Fengine / F) drawn and labelled", 1]],
         ["Which bodies touch or pull on the tow truck?", "Which forces act vertically, and which horizontally?"],
         memo="The memo's diagram: N up, w down, FA to the left, f and T to the right, all from one point. Any additional force: deduct 1 mark "
-             "(maximum 4/5). Lines must touch the object (otherwise maximum 4/5)."),
+             "(maximum 4/5). Lines must touch the object (otherwise maximum 4/5).",
+        # BUILT (2026-10-11, build "forces"): the truck moves left (the engine's 9 000 N to the left), the car behind it pulls back on the tow
+        # bar and friction opposes the motion: FA 180°, T and f 0°, N 90°, w 270°, each within 10°; the road under the truck (0°) as the figure
+        build={"kind": "forces", "surface": 0, "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "T", "at": 0, "crit": 1}, {"id": "f", "at": 0, "crit": 2},
+                                                          {"id": "FN", "at": 90, "crit": 3}, {"id": "FA", "at": 180, "crit": 4}]}),
     work("4.4.1", MU + "magnitude of the tension in the tow bar.", 5, [
         "Fnet = ma\nFengine − f − T = 0\n9 000 − 0,45(1 300)(9,8) − T = 0\nT = 3 267 N",       # the memo
         "Fnet = ma\nFengine − f − T = 0\n9 000 − 0,45(950)(9,8) − T = 0\nT = 4 810,5 N",       # the car's mass for the truck's (the wrong body)
@@ -699,9 +723,36 @@ assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric")], "a typed ca
 assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["2.2", "2.4"]
 assert [i["n"] for i in ITEMS if i["t"] == "term"] == ["3.2.1", "3.2.2"]
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["2.3", "3.3", "4.3", "6.4.2", "8.3"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's; every value inside the grid at every
+    b = i.get("build") or {}   # scale the memo accepts (a tap snaps to a small square: always within half a small square of the value)
+    if b.get("kind") == "plot":
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= {p["id"] for p in b["points"]} for t in b["tests"]), i["n"]
+        for k, ax, n in ((0, b["x"], b["grid"]["nx"]), (1, b["y"], b["grid"]["ny"])):
+            assert set(ax["ok"]) <= set(ax["scales"]) and all(0 <= p["at"][k] <= min(ax["ok"]) * n for p in b["points"]), (i["n"], k)
+            assert all(p["at"][k] * 2 > max(ax["ok"]) * n for p in b["points"][-1:]), (i["n"], k, "an accepted scale uses under half the grid")
 AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn" and i["n"] in STATEMENTS]
 assert PICKS == ["2.1", "3.1", "4.1", "4.2", "4.5", "5.1", "6.1", "6.5.2", "7.1", "7.2", "7.4", "8.1", "8.5", "9.1", "10.1.1", "10.1.6"], PICKS
+
+FZ_IDS = ["Fg", "FN", "f", "FA", "T", "FE", "Fnet"]   # the force builder's tray (build-play.js FZ), the same for every question
+
+
+def forces_ok(i):
+    """A built force diagram: every force one of the tray's seven, every criterion earned by exactly one force (or the angle), one mark
+    each, so the marks add up to the part's."""
+    b = i["build"]
+    assert all(f["id"] in FZ_IDS for f in b["forces"]) and all(x in FZ_IDS for x in b.get("free", [])), (i["n"], "a force outside the tray")
+    crits = [f["crit"] for f in b["forces"]] + ([b["angle"]["crit"]] if "angle" in b else [])
+    assert sorted(crits) == list(range(len(i["criteria"]))), (i["n"], "every criterion earned by one force or the angle")
+    assert all(c["marks"] == 1 for c in i["criteria"]) and len(i["criteria"]) == i["marks"], (i["n"], "one mark a criterion")
+
+
+FORCES = [i["n"] for i in ITEMS if (i.get("build") or {}).get("kind") == "forces"]
+assert FORCES == ["2.3", "4.3"], FORCES
+for _i in ITEMS:
+    if _i["n"] in FORCES:
+        forces_ok(_i)
 
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
@@ -749,8 +800,19 @@ paper = {
                                                     "card); 4.2 (NAME AND STATE, 1 + 2) picks one card that names and states the law, 3 marks; 4.5 "
                                                     "and 10.1.6 pick the memo's three points, 1 mark each; 5.1 picks its two points, 1 mark each; "
                                                     "8.5 picks the choice (decreases) and its reason, 1 mark each." % len(PICKS)},
-        {"n": "2.3", "kind": "no_fit", "detail": "Drawings (2.3's and 4.3's free-body diagrams, 3.3's graph on the ANSWER SHEET's graph paper, 6.4.2's "
+        {"n": "2.3", "kind": "no_fit", "detail": "The free-body diagrams 2.3 and 4.3 are BUILT (2026-10-11, build 'forces'): the learner aims "
+                                                 "each force from a dot, from the same tray of seven forces, and the memo's marks are kept: one "
+                                                 "a force for its label AND direction (within 10°; 2.3's two tensions, both the tray's T, told "
+                                                 "apart by direction and given 12° and 17° round the figure's and the angles' directions, as the "
+                                                 "figure is not to scale), −1 for each additional force, never below 0. 'Lines must touch the "
+                                                 "object' is met by construction (every arrow starts at the dot). The other drawings (6.4.2's "
                                                  "sketch graphs, 8.3's field pattern) are done on paper and self-checked against the memo's criteria."},
+        {"n": "3.3", "kind": "no_fit", "detail": "The graph of a versus F is BUILT on the answer sheet's grid (2026-10-11, build 'plot'): 8 big "
+                                                 "squares across and 10 up, its axes printed and labelled, no numbers, so the learner chooses "
+                                                 "each axis' scale (0,1 / 0,15 / 0,2 / 0,5 a big square; 0,15 and 0,2 hold every value and use "
+                                                 "over half the grid: the memo's 'correct/appropriate scale', our reading), places the four "
+                                                 "points (within half a small square of their own scale) and draws a straight line of best fit "
+                                                 "(within two small squares of each of their points)."},
     ],
 }
 QTOTAL = {"1": 20, "2": 13, "3": 13, "4": 26, "5": 8, "6": 18, "7": 8, "8": 13, "9": 11, "10": 20}   # the paper's [n] per question

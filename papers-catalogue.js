@@ -291,7 +291,7 @@ window.NX_CATALOGUE = {
    "missions": 11,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "1b6f51329a",
+   "rev": "c83b7c4be0",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2025 Eng.pdf"
   },
   {
@@ -335,7 +335,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "bd46a1b5c1",
+   "rev": "b48b27259f",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2024 Eng.pdf"
   },
   {
@@ -401,7 +401,7 @@ window.NX_CATALOGUE = {
    "missions": 41,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "499a0d21c6",
+   "rev": "7dff159203",
    "source_pdf": "uploads/Mathematics P2 Nov 2025 Eng.pdf"
   },
   {
@@ -467,7 +467,7 @@ window.NX_CATALOGUE = {
    "missions": 47,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "b9f5ac68b3",
+   "rev": "9b05159921",
    "source_pdf": "uploads/Physical Sciences P1 Nov 2025 Eng.pdf"
   },
   {
@@ -511,7 +511,7 @@ window.NX_CATALOGUE = {
    "missions": 43,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "9a0343121a",
+   "rev": "7df4f53b85",
    "source_pdf": "uploads/Physical Sciences P1 Nov 2024 Eng.pdf"
   },
   {
@@ -642,7 +642,7 @@ window.NX_CATALOGUE = {
    "questions": 11,
    "missions": 14,
    "status": "ready",
-   "rev": "b9932868a2",
+   "rev": "93f25c8c85",
    "source_pdf": "uploads/Grade 10 Physical Sciences P1 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -686,7 +686,7 @@ window.NX_CATALOGUE = {
    "questions": 11,
    "missions": 14,
    "status": "ready",
-   "rev": "abfa2e06ef",
+   "rev": "3717a6f8aa",
    "source_pdf": "uploads/Grade 10 Physical Sciences P1 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },
@@ -752,7 +752,7 @@ window.NX_CATALOGUE = {
    "questions": 11,
    "missions": 19,
    "status": "ready",
-   "rev": "d306e241bc",
+   "rev": "8778b1888a",
    "source_pdf": "uploads/Grade 11 Mathematics P2 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -796,7 +796,7 @@ window.NX_CATALOGUE = {
    "questions": 12,
    "missions": 17,
    "status": "ready",
-   "rev": "9289c88667",
+   "rev": "9ad783578c",
    "source_pdf": "uploads/Grade 11 Mathematics P2 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },
@@ -818,7 +818,7 @@ window.NX_CATALOGUE = {
    "questions": 12,
    "missions": 16,
    "status": "ready",
-   "rev": "2e4d85a890",
+   "rev": "9d77af5bd9",
    "source_pdf": "uploads/Grade 11 Physical Sciences P1 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -840,7 +840,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 13,
    "status": "ready",
-   "rev": "0c1bf085c5",
+   "rev": "9f2e52a99e",
    "source_pdf": "uploads/Grade 11 Physical Sciences P2 Nov 2018 Eng.pdf",
    "provenance_label": "DBE common paper · November 2018"
   },
@@ -862,7 +862,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 11,
    "status": "ready",
-   "rev": "75799f0ba3",
+   "rev": "867b387116",
    "source_pdf": "uploads/Grade 11 Physical Sciences P1 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   },
@@ -884,7 +884,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 12,
    "status": "ready",
-   "rev": "098adf68fd",
+   "rev": "bc4735bc94",
    "source_pdf": "uploads/Grade 11 Physical Sciences P2 Nov 2017 Eng.pdf",
    "provenance_label": "DBE common paper · November 2017"
   }

@@ -145,6 +145,9 @@ q2 = [
         "Average speed = {distance travelled}/{time taken}\n= {800}/{30 × 60}\n= 0,44 m·s⁻¹",                    # only the last 800 m (wrong part)
         "Average speed = {time taken}/{distance travelled}\n= {30 × 60}/{500 + 800}\n= 1,38 m·s⁻¹"], 1,          # the formula upside down
         ["How far does the girl walk in total from the school to her home?", "How many seconds are there in 30 minutes?"]),
+    # (2026-10-11: NOT a force diagram, so not built with "forces": the memo marks three displacements head to tail, each "line, arrow AND
+    # 500 m / 800 m / 1 300 m", drawn to the scale 1 cm = 100 m; the force builder's arrows start at one dot, carry force names, not
+    # magnitudes, and their length is not marked. It stays self-checked until a vector scale-diagram builder exists)
     draw("2.3", "Use a vector scale diagram and represent the displacement of the boy from the time he realised he left his book at school until he "
          "reached home. Include ALL relevant information in the diagram. Use scale 1 cm = 100 m for the diagram.", 3, [
         ["A line with an arrow, labelled 500 m, pointing west: from where he turned back to the school (5 cm)", 1],
@@ -173,13 +176,23 @@ q3 = [
          ["Which quantity did the engineers set in equal steps?", "Is it the cause or the effect?"]),
     term("3.2.2", "For this test, write down the dependent variable.", ["Position", "Change in position"],
          ["Which quantity was measured at each of those moments?", "Is it the cause or the effect?"]),
-    draw("3.3", "Use the information in the table above and draw an accurate position-time graph on the graph paper on the attached ANSWER SHEET.", 5, [
-        ["y-axis (position / change in position) and its unit (m) correctly labelled", 1], ["x-axis (time) and its unit (s) correctly labelled", 1],
-        ["The points plotted and joined", 2], ["Shape of the graph: a straight line through the origin", 1]],
+    # BUILT on a grid (2026-10-11, build "plot"): the memo's mark allocation (memo page 4) as the learner's choices. Its axes' labels from
+    # one list for both axes (1 + 1); the five points of the table placed and joined by a line (2: the memo gives no split, so all five
+    # earn 2 and three or four 1, our reading); the shape (1): a straight line through the origin (a straight line, or the points joined
+    # or a smooth curve through five points that lie on one line through (0 ; 0)). The memo does not mark a scale: the grid is the memo's
+    # (1 s and 5 m a big square, five small squares in each), so the answer sheet's blank graph paper is given its numbers.
+    {**draw("3.3", "Use the information in the table above and draw an accurate position-time graph on the graph paper on the attached ANSWER SHEET.", 5, [
+        ["1 x correct y-axis label and unit: position / change in position (m)", 1], ["1 x correct x-axis label and unit: time (s)", 1],
+        ["2 x points plotted and joined", 2], ["1 x shape of graph: a straight line through the origin", 1]],
         ["Which quantity goes on each axis of a position-time graph, and in which units?",
          "Plot the five (time; position) pairs: do they lie on a straight line or on a curve?"],
         memo="The memo's graph plots (0 s; 0 m), (1 s; 5 m), (2 s; 10 m), (3 s; 15 m) and (4 s; 20 m) and joins them.",
         after=["3.2.1", "3.2.2"]),   # its axis criteria show the independent (time) and dependent (position) variables
+     "build": {"kind": "plot", "x": {"min": 0, "max": 8, "step": 1, "minor": 0.2, "snap": 0.2}, "y": {"min": 0, "max": 35, "step": 5, "minor": 1, "snap": 0.5},
+               "labels": ["Position (m)", "Position (s)", "Time (s)", "Time (m)", "Velocity (m·s⁻¹)"], "xl": "Time (s)", "yl": "Position (m)",
+               "points": [{"id": "t%d" % t, "name": "t = %d s" % t, "at": [t, 5 * t]} for t in range(5)], "tol": [0.1, 0.5],
+               "tests": [{"k": "yl"}, {"k": "xl"}, {"k": "points", "joined": True, "part": [[3, 1]]},
+                         {"k": "shape", "kinds": ["best", "join", "curve"], "straight": True, "through": [0, 0]}]}},
     work("3.4", "Calculate the gradient of the graph.", 4, [
         "Gradient = {Δy}/{Δx}\n= {20 − 5}/{4 − 1}\n= 5 m·s⁻¹",                      # the memo
         "Gradient = {Δx}/{Δy}\n= {4 − 1}/{20 − 5}\n= 0,20 m·s⁻¹",                   # the formula upside down
@@ -634,6 +647,19 @@ assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric")], "a typed ca
 assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["9.3.2", "9.3.3", "11.3.1"], "only the read-offs stay typed numbers"
 assert [i["n"] for i in ITEMS if i["t"] == "term"] == ["3.1", "3.2.1", "3.2.2", "6.3", "8.1.1", "8.1.2"]
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["2.3", "3.3", "3.5", "5.5", "6.2", "9.2"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's, every point on the grid's snap
+    b = i.get("build") or {}
+    if b.get("kind") == "plot":
+        ids = {p["id"] for p in b["points"]}
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= ids for t in b["tests"]), i["n"]
+        for k, ax in enumerate((b["x"], b["y"])):
+            for st in ([ax["snap"]] if "snap" in ax else [s / b["grid"].get("sub", 10) for s in ax["ok"]]):
+                for p in b["points"]:
+                    if "at" in p:
+                        u = p["at"][k]
+                        assert abs(u - round(u / st) * st) <= max(b["tol"][k], st / 2 if "scales" in ax else 0) + 1e-9, (i["n"], p["id"], k)
+                        assert (ax.get("min", 0) <= u <= ax["max"]) if "max" in ax else u <= min(ax["ok"]) * (b["grid"]["nx"] if k == 0 else b["grid"]["ny"]), (i["n"], p["id"])
 assert {i["n"]: i.get("after") for i in ITEMS if i.get("after")} == {
     "2.4": ["2.2", "2.3"], "3.3": ["3.2.1", "3.2.2"], "3.4": ["3.3"], "3.5": ["3.4"], "3.6": ["3.5"], "4.2.2": ["4.2.1"], "4.5": ["4.4"],
     "5.4": ["5.2"], "6.4": ["6.2", "6.3"], "11.3.2": ["11.3.1"]}
@@ -682,8 +708,13 @@ paper = {
                                                     "sum, and the same space at the same time); the choices with reasons (3.6, 11.4) pick the "
                                                     "choice and its reasons, 1 mark each; 10.4.2 picks one of the memo's three applications."
                                                     % len(PICKS)},
-        {"n": "2.3", "kind": "no_fit", "detail": "Drawings (2.3's vector scale diagram, 3.3 on the ANSWER SHEET's graph paper, 3.5, 5.5, 6.2, 9.2) are "
-                                                 "done on paper and self-checked against the memo's criteria."},
+        {"n": "2.3", "kind": "no_fit", "detail": "Drawings (2.3's vector scale diagram, 3.5, 5.5, 6.2, 9.2) are done on paper and self-checked "
+                                                 "against the memo's criteria."},
+        {"n": "3.3", "kind": "no_fit", "detail": "The position-time graph is BUILT on a grid (2026-10-11, build 'plot'): the axes' labels chosen "
+                                                 "from one list (position, time, velocity in m or s), the five points placed (snapping to 0,2 s "
+                                                 "and 0,5 m), and the line chosen (a straight line, a smooth curve or the points joined). The memo "
+                                                 "marks no scale, so the grid carries the memo's (1 s and 5 m a big square). Its '2 x points "
+                                                 "plotted and joined' gives no split: all five earn 2, three or four earn 1 (our reading)."},
     ],
 }
 QTOTAL = {"1": 20, "2": 13, "3": 16, "4": 21, "5": 15, "6": 9, "7": 15, "8": 12, "9": 8, "10": 10, "11": 11}   # the paper's [n] per question

@@ -227,13 +227,25 @@ q4 = [
          "A hypothesis is a prediction: how do you state the relationship you expect between the two variables?"], each=2,
         notes=["Criteria: the dependent (volume) and independent (pressure) variables stated correctly (1); the relationship between them stated (1)."],
         after=["4.1"]),   # its cards state the inverse relationship of pressure and volume (4.1's law)
-    draw("4.3", "Draw a graph of volume versus pressure on the ANSWER SHEET attached.", 3, [
+    # BUILT on the answer sheet's grid (2026-10-11, build "plot"): its axes printed and labelled (Volume (dm³) up, Pressure (kPa) across)
+    # on 8 big squares across and 8 up, 10 small squares in each, no numbers. The memo's criteria (memo page 6, its graph to scale on page
+    # 16): the scale on both axes (1: 50 kPa and 25 dm³ a big square, the only choices that hold 260 kPa and 174 dm³ and use over half the
+    # grid; every scale offered is even, so the memo's "table values as scale values: maximum 1/3" cannot arise here); five or more points
+    # right (1: within half a small square of the learner's own scale); a curve drawn (1: a smooth curve through points that do not lie on
+    # one line)
+    {**draw("4.3", "Draw a graph of volume versus pressure on the ANSWER SHEET attached.", 3, [
         ["Correct scale on both axes (table values used as the scale values: maximum 1/3 for the line drawn)", 1],
         ["At least five (5) points plotted correctly", 1], ["Curve drawn", 1]],
         ["Which quantity goes on the vertical axis of a graph of volume versus pressure?",
          "What scale lets the largest pressure and the largest volume in the table fit on the grid?"],
         memo="The memo's graph: Volume (dm³), 0 to 200, up, against Pressure (kPa), 0 to 300, across, the seven points of the table joined by a "
              "smooth curve."),
+     "build": {"kind": "plot", "grid": {"nx": 8, "ny": 8, "sub": 10},
+               "x": {"name": "Pressure (kPa)", "unit": "kPa", "scales": [20, 25, 50, 100], "ok": [50]},
+               "y": {"name": "Volume (dm³)", "unit": "dm³", "scales": [20, 25, 50, 100], "ok": [25]},
+               "points": [{"id": "p%d" % k, "name": "p = %d kPa" % p, "at": [p, vol]}
+                          for k, (p, vol) in enumerate([(70, 174), (95, 128), (130, 93.6), (165, 74), (205, 59), (240, 51), (260, 47)])], "tol": [2.5, 1.25],
+               "tests": [{"k": "scale"}, {"k": "points", "min": 5}, {"k": "shape", "kinds": ["curve"], "straight": False}]}},
     work("4.4", "Calculate the volume of the gas at 300 kPa.", 3, [
         "p₁V₁ = p₂V₂\n70(174) = (300)V₂\nV₂ = 40,6 dm³",                                  # the memo (it accepts 40,32 - 40,8 dm³ from any row)
         "{p₁}/{V₁} = {p₂}/{V₂}\n{70}/{174} = {300}/{V₂}\nV₂ = 745,71 dm³",                # pressure and volume taken as directly proportional
@@ -720,6 +732,15 @@ assert [i["n"] for i in ITEMS if i["t"] == "num"] == [], "no part is a one-value
 assert [i["n"] for i in ITEMS if i["t"] == "term"] == ["2.3", "4.1", "6.2.1", "8.2", "9.3", "9.5", "10.2"]
 assert [i["n"] for i in ITEMS if i.get("strict")] == ["6.2.1", "9.3", "9.5", "10.2"]
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["2.2.1", "2.2.2", "4.3", "7.4"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's; every value inside the grid at every
+    b = i.get("build") or {}   # scale the memo accepts (a tap snaps to a small square: always within half a small square of the value)
+    if b.get("kind") == "plot":
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= {p["id"] for p in b["points"]} for t in b["tests"]), i["n"]
+        for k, ax, n in ((0, b["x"], b["grid"]["nx"]), (1, b["y"], b["grid"]["ny"])):
+            top = max(p["at"][k] for p in b["points"])
+            assert set(ax["ok"]) <= set(ax["scales"]) and top <= min(ax["ok"]) * n and top * 2 > max(ax["ok"]) * n, (i["n"], k)
+            assert all(top > s * n or top * 2 <= s * n for s in ax["scales"] if s not in ax["ok"]), (i["n"], k, "a scale left out holds the data on over half the grid")
 assert all(nums.index(e) < nums.index(i["n"]) for i in ITEMS for e in i.get("after", [])), "a gate on a later part"
 AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn" and i["n"] in STATEMENTS]
@@ -785,8 +806,14 @@ paper = {
                                                         "→ NH₄⁺(aq) + Cℓ⁻(aq), is never a wrong option. 9.2 (an oxidation number, no working) plays "
                                                         "as an answer multiple choice; 3.2 (a FORMULA from the table's three substances) as "
                                                         "multiple choice of the three."},
-        {"n": "2.2.1", "kind": "no_fit", "detail": "Drawings (2.2.1 and 2.2.2 the Lewis structures, 4.3 the graph on the ANSWER SHEET, 7.4 the "
+        {"n": "2.2.1", "kind": "no_fit", "detail": "Drawings (2.2.1 and 2.2.2 the Lewis structures, 7.4 the "
                                                    "catalysed curve) are done on paper and self-checked against the memo's criteria."},
+        {"n": "4.3", "kind": "no_fit", "detail": "The graph of volume versus pressure is BUILT on the answer sheet's grid (2026-10-11, build 'plot'): "
+                                                 "8 big squares across and 8 up, its axes printed and labelled, no numbers: the learner chooses "
+                                                 "each axis' scale (20 / 25 / 50 / 100 a big square: only 50 kPa and 25 dm³ hold the table and use "
+                                                 "over half the grid), places the seven points and chooses the line (a smooth curve earns 'Curve "
+                                                 "drawn'). The memo's 'table values as scale values: maximum 1/3' cannot arise: every scale offered "
+                                                 "is even. The memo's graph plots 95 kPa at about 140 dm³; the paper's table gives 128 dm³, kept."},
         {"n": "paper", "kind": "low_confidence", "detail": "The whole paper (Questions 1 to 10), hand-transcribed from the paper and memo PDFs and "
                                                            "their page images (the 1.5 graphs, the 1.8 ions, the 6.2 and Q7 graphs, the memo's Lewis "
                                                            "structures and workings are images); no API call."},

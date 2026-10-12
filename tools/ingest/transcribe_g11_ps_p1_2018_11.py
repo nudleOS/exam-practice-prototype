@@ -24,8 +24,9 @@ transcribe_g10_ps_p1_2018_11.py / transcribe_g10_ps_p1_2017_11.py):
   A definition, law, conclusion or relationship -> statements (pick 1 card for its marks; an OR form a second right card); an
   explanation the memo ticks point by point -> statements, 1 mark a point; a choice with its reason in the same part (3.6) -> the
   choice a card beside its reason. No memo here weighs two sides, so no part plays as a sort.
-  "Draw" (a free-body diagram, a ray diagram, a graph, a vector diagram, a field pattern) -> draw with the memo's criteria (self-checked,
-  flagged no_fit).
+  "Draw a free-body diagram / a VECTOR DIAGRAM of the forces" (5.1, 9.2) -> draw with build "forces" (2026-10-11: each force aimed from
+  a dot from the same tray of seven, 9.2's angle an arc between two of the learner's lines; marked online as the memo marks it). Another
+  "Draw" (a ray diagram, a graph, a field pattern) -> draw with the memo's criteria (self-checked, flagged no_fit).
   A part whose options, cards or criteria show an earlier part's answer opens only after it ("after"). A mission is a question with
   its stem and diagram; a question whose stem or diagram changes part-way is two or three missions (7 and 7.4; 8, 8.3 and 8.5; 11 and
   11.6).
@@ -255,7 +256,12 @@ q5 = [
         ["Friction (f / Ff) drawn and labelled", 1]],
         ["Which bodies touch or pull on the crate as it slides from B to C?", "What does a rough surface add that a smooth surface does not?"],
         memo="Any additional force: deduct 1 mark (maximum 2/3). Arrowheads omitted: deduct 1 mark (maximum 2/3). Lines must touch the object "
-             "(otherwise maximum 2/3). Vectors need not be drawn to scale."),
+             "(otherwise maximum 2/3). Vectors need not be drawn to scale.",
+        # BUILT (2026-10-11, build "forces"): the slope falls to the right at 15° and the crate slides down it (towards C), so friction acts
+        # up the slope (165°) and the normal force perpendicular to it (75°), the weight straight down (270°), each within 10°. The memo's
+        # "OR both components (for one mark)" cannot be built (the tray holds the weight, not its components): the weight earns it.
+        # "Arrowheads omitted" and "lines must touch the object" cannot happen (every arrow has a head and starts at the dot)
+        build={"kind": "forces", "surface": -15, "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "FN", "at": 75, "crit": 1}, {"id": "f", "at": 165, "crit": 2}]}),
     work("5.2", "Calculate the magnitude of the acceleration of the crate while it moves from A to B.", 4, [
         "Fnet = ma\nmg cos θ = ma\n25(9,8) cos 15° = 25a\na = 9,47 m·s⁻²",              # cos for sin (the perpendicular component)
         "Fnet = ma\nmg = ma\n25(9,8) = 25a\na = 9,80 m·s⁻²",                             # the whole weight, not its component along the slope
@@ -382,7 +388,14 @@ q9 = [
         ["Weight (w / Fg) drawn and labelled", 1], ["Tension (T / FT) drawn and labelled", 1], ["Electrostatic force (FE) drawn and labelled", 1],
         ["At least one angle (20º) indicated", 1]],
         ["Which three forces act on sphere A?", "Sphere A hangs at rest: what must the three forces add up to?"],
-        memo="The memo accepts the three forces as a closed triangle (Fg down, FE horizontal, T along the string) OR drawn from one point."),
+        memo="The memo accepts the three forces as a closed triangle (Fg down, FE horizontal, T along the string) OR drawn from one point.",
+        # BUILT (2026-10-11, build "forces" with an angle): the memo (page 10) accepts the forces drawn from one point, so they are aimed from
+        # the dot (no head-to-tail mode is needed). B (negative) attracts A, which hangs to the right of the vertical: FE points right
+        # (0°), T up along the string, 20° from the vertical (110°), Fg down (270°), each within 10°. "At least ONE angle": the learner's
+        # arc between T and another of their lines (the vertical 20° or 160°, the horizontal 70° or 110°, FE 110°, Fg 160°), T and that
+        # line marked right and the size within 10° (an angle between FE and Fg says nothing of the string, so it does not earn it)
+        build={"kind": "forces", "body": "sphere", "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "T", "at": 110, "crit": 1}, {"id": "FE", "at": 0, "crit": 2}],
+               "angle": {"crit": 3, "pairs": [["T", "V", 20], ["T", "V", 160], ["T", "H", 70], ["T", "H", 110], ["T", "FE", 110], ["T", "Fg", 160]]}}),
     work("9.3", "Calculate the magnitude of the electrostatic force that sphere B exerts on sphere A.", 4, [
         "F = {kQ1Q2}/{r²}\nF = {(9 × 10⁹)(8 × 10⁻⁹)(7 × 10⁻⁹)}/{0,03}\nF = 1,68 × 10⁻⁵ N",            # r not squared
         "F = {kQ1Q2}/{r²}\nF = {(9 × 10⁹)(8 × 10⁻⁹)(7 × 10⁻⁹)}/{3²}\nF = 5,60 × 10⁻⁸ N",             # r left in cm
@@ -720,6 +733,27 @@ AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn" and i["n"] in STATEMENTS]
 assert PICKS == ["3.1", "3.2", "3.6", "4.1", "4.4", "6.1", "8.1", "8.2", "8.3", "9.1", "11.1", "11.5", "12.5"], PICKS
 
+FZ_IDS = ["Fg", "FN", "f", "FA", "T", "FE", "Fnet"]   # the force builder's tray (build-play.js FZ), the same for every question
+
+
+def forces_ok(i):
+    """A built force diagram: every force one of the tray's seven, every criterion earned by exactly one force (or the angle), one mark
+    each, so the marks add up to the part's; an angle's pairs name forces it has (or V / H)."""
+    b = i["build"]
+    assert all(f["id"] in FZ_IDS for f in b["forces"]) and all(x in FZ_IDS for x in b.get("free", [])), (i["n"], "a force outside the tray")
+    crits = [f["crit"] for f in b["forces"]] + ([b["angle"]["crit"]] if "angle" in b else [])
+    assert sorted(crits) == list(range(len(i["criteria"]))), (i["n"], "every criterion earned by one force or the angle")
+    assert all(c["marks"] == 1 for c in i["criteria"]) and len(i["criteria"]) == i["marks"], (i["n"], "one mark a criterion")
+    ids = {f["id"] for f in b["forces"]} | {"V", "H"}
+    assert all(p[0] in ids and p[1] in ids and 0 < p[2] <= 180 for p in b.get("angle", {}).get("pairs", [])), (i["n"], "angle pairs")
+
+
+FORCES = [i["n"] for i in ITEMS if (i.get("build") or {}).get("kind") == "forces"]
+assert FORCES == ["5.1", "9.2"], FORCES
+for _i in ITEMS:
+    if _i["n"] in FORCES:
+        forces_ok(_i)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Physical Sciences", "title": "Physical Sciences P1", "sitting": "November 2018", "total_marks": 150, "time": "3 hours"},
@@ -760,8 +794,17 @@ paper = {
                                                     "mark; 12.5 picks the memo's two points, 1 mark each, its OR reading (short-circuits the "
                                                     "resistors; no current through 2R) neither a right nor a wrong card, so one point twice can "
                                                     "never earn two marks." % len(PICKS)},
-        {"n": "5.1", "kind": "no_fit", "detail": "Drawings (5.1's free-body diagram, 7.4's ray diagram, 8.5's graph, 9.2's vector diagram, 10.1's field "
-                                                 "pattern) are done on paper and self-checked against the memo's criteria."},
+        {"n": "5.1", "kind": "no_fit", "detail": "The free-body diagram 5.1 and the vector diagram 9.2 are BUILT (2026-10-11, build 'forces'): "
+                                                 "the learner aims each force from a dot, from the same tray of seven forces, one mark a force "
+                                                 "for its label AND direction (within 10°), −1 for each additional force, never below 0. 5.1: "
+                                                 "the memo's 'OR both components for one mark' cannot be built (the tray holds the weight, not "
+                                                 "its components); the weight earns that mark. 9.2: the memo (page 10) accepts the forces drawn "
+                                                 "from one point as well as a closed triangle, so they are aimed from the dot (no head-to-tail "
+                                                 "mode); its 'one angle indicated' is the learner's arc between T and another of their lines "
+                                                 "(the vertical 20°, the horizontal 70°, FE or Fg), T and that line right. 'Arrowheads omitted' "
+                                                 "and 'lines must touch the object' cannot happen on screen. The other drawings (7.4's ray "
+                                                 "diagram, 8.5's graph, 10.1's field pattern) are done on paper and self-checked against the "
+                                                 "memo's criteria."},
     ],
 }
 QTOTAL = {"1": 20, "2": 10, "3": 16, "4": 9, "5": 12, "6": 8, "7": 17, "8": 9, "9": 13, "10": 9, "11": 13, "12": 14}   # the paper's [n] per question

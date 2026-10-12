@@ -20,7 +20,9 @@ How the memo's shapes map (Physical Sciences, Murci's rulings 2026-10-10):
   (STATEMENTS at the bottom: pick 1 x 2, the memo's wording right, its OR form a second right card, the wrong cards a key condition
   dropped or swapped, the inverse relation, another law's wording); a choice with its reasons ("Choose ... Explain / Give a
   reason") -> statements, the choice and each memo point a card, 1 mark each as the memo ticks them. No memo here weighs two
-  sides, so no part plays as a sort. "Draw / Sketch / Redraw" -> draw with the memo's criteria (self-checked, flagged no_fit).
+  sides, so no part plays as a sort. "Draw a (labelled) free-body diagram" (2.2, 5.3) -> draw with build "forces" (2026-10-11: each
+  force aimed from a dot from the same tray of seven, marked online as the memo marks it); another "Draw / Sketch / Redraw" -> draw
+  with the memo's criteria (self-checked, flagged no_fit).
   A part whose options, cards or criteria show an earlier part's answer opens only after it ("after"). A mission is a question with
   its stem and diagram; a question whose diagram changes part-way is two missions (7, 9, 10).
 Figure boxes are measured in PDF points (page 595.44 x 841.68) from the drawings themselves and checked on a contact sheet."""
@@ -158,7 +160,12 @@ q2 = [
         ["fs(max): Ff / fs / f / friction (force) / (static) friction, horizontal, to the left", 1], ["N: FN / normal (force), upwards", 1]],
         ["Four forces: weight, the applied force, friction and the normal force.", "Draw them from one dot, each with an arrow and a label."],
         memo="A mark for each label AND its arrow; fk not accepted as label. Any additional force(s), everything correct but no arrows, or forces "
-             "not touching the dot: max 3/4."),
+             "not touching the dot: max 3/4.",
+        # BUILT (2026-10-11, build "forces"): w 270°, N 90°, static friction against F's pull (180°), each within 10°; F at θ above the
+        # horizontal, θ found only in 2.3.1 (33,56°) and drawn at about 26° in the figure, so F earns within 14° of 34° (20° to 48°). The
+        # tray's friction is labelled f (the memo accepts f; it does not accept fk, which the tray never offers)
+        build={"kind": "forces", "surface": 0, "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "FA", "at": 34, "tol": 14, "crit": 1},
+                                                          {"id": "f", "at": 180, "crit": 2}, {"id": "FN", "at": 90, "crit": 3}]}),
     work("2.3.1", "The horizontal component of force F is 15 N. Calculate θ.", 2, [
         "Fx = F cos θ\n15 = 18 cos θ\nθ = 33,56°",                        # the memo
         "Fx = F sin θ\n15 = 18 sin θ\nθ = 56,44°",                        # the sine for the horizontal component
@@ -274,7 +281,11 @@ q5 = [
         ["w: Fw / Fg / mg / gravitational force / 29,4 N / weight, vertically downwards", 1],
         ["f: Ff / fk / (kinetic) friction / 21 N, up the incline", 1], ["N: FN / normal (force), perpendicular to the incline", 1]],
         ["Three forces once F is gone.", "Friction opposes the motion down the slope; N is perpendicular to the slope."],
-        memo="A mark for each label AND its arrow. Any additional force(s), no arrows, or forces not touching the dot: max 2/3."),
+        memo="A mark for each label AND its arrow. Any additional force(s), no arrows, or forces not touching the dot: max 2/3.",
+        # BUILT (2026-10-11, build "forces"; a force diagram, so converted): the incline falls to the right at 20° and the crate slides down
+        # it, so friction acts up the incline (160°), the normal force perpendicular to it (70°), the weight straight down (270°), each
+        # within 10°; F is gone, so an applied force is an extra (−1)
+        build={"kind": "forces", "surface": -20, "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "f", "at": 160, "crit": 1}, {"id": "FN", "at": 70, "crit": 2}]}),
     work("5.4", "Force F is removed when the crate reaches point B. The crate then experiences a constant frictional force of 21 N as it moves down the "
          "incline. Using ENERGY PRINCIPLES ONLY, determine whether the crate will pass point C.", 5, [
         "Wnet = ΔEk\nWFg + Wfk = Ekf − Eki\n(3)(9,8) sin 20° Δx cos 180° + (21)Δx cos 180° = 0 − 84\nΔx = 2,70 m\n"
@@ -685,6 +696,25 @@ assert {i["n"]: i.get("after") for i in ITEMS if i.get("after")} == {
 AUTHORED_MARKS = sum(i["marks"] for i in ITEMS if i["n"] in AUTHORED)
 PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn"]
 
+FZ_IDS = ["Fg", "FN", "f", "FA", "T", "FE", "Fnet"]   # the force builder's tray (build-play.js FZ), the same for every question
+
+
+def forces_ok(i):
+    """A built force diagram: every force one of the tray's seven, every criterion earned by exactly one force (or the angle), one mark
+    each, so the marks add up to the part's."""
+    b = i["build"]
+    assert all(f["id"] in FZ_IDS for f in b["forces"]) and all(x in FZ_IDS for x in b.get("free", [])), (i["n"], "a force outside the tray")
+    crits = [f["crit"] for f in b["forces"]] + ([b["angle"]["crit"]] if "angle" in b else [])
+    assert sorted(crits) == list(range(len(i["criteria"]))), (i["n"], "every criterion earned by one force or the angle")
+    assert all(c["marks"] == 1 for c in i["criteria"]) and len(i["criteria"]) == i["marks"], (i["n"], "one mark a criterion")
+
+
+FORCES = [i["n"] for i in ITEMS if (i.get("build") or {}).get("kind") == "forces"]
+assert FORCES == ["2.2", "5.3"], FORCES
+for _i in ITEMS:
+    if _i["n"] in FORCES:
+        forces_ok(_i)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Physical Sciences", "title": "Physical Sciences P1", "sitting": "November 2025", "total_marks": 150, "time": "3 hours"},
@@ -714,7 +744,14 @@ paper = {
                                                     "is ONE printed part (one number, the player's key), and a separate choice would mark "
                                                     "2.4's and 8.5's memo-accepted choices wrong."
                                                     % len(PICKS)},
-        {"n": "2.2", "kind": "no_fit", "detail": "Drawings (2.2, 3.5, 4.3, 5.3, 7.2, 9.4) are done on paper and self-checked against the memo's criteria."},
+        {"n": "2.2", "kind": "no_fit", "detail": "The free-body diagrams 2.2 and 5.3 are BUILT (2026-10-11, build 'forces'): the learner aims "
+                                                 "each force from a dot, from the same tray of seven forces, one mark a force for its label AND "
+                                                 "direction (within 10°; 2.2's F within 14° of 34°, as θ is found only in 2.3.1 and the figure "
+                                                 "draws it at about 26°), −1 for each additional force, never below 0 (the memo's 'max 3/4' and "
+                                                 "'max 2/3' for one extra). The tray's friction is f, which the memo accepts (fk, which 2.2's "
+                                                 "memo does not accept, is never offered). 'No arrows' and 'not touching the dot' cannot happen "
+                                                 "on screen. The other drawings (3.5, 4.3, 7.2, 9.4) are done on paper and self-checked against "
+                                                 "the memo's criteria."},
         {"n": "8.4", "kind": "memo_issue", "detail": "The memo writes ε = 2,24(6 + 0,012) = 13,46 V; it is 13,47 V (2,24 × 6,012 = 13,467), inside its "
                                                      "own range (13,42 V - 13,47 V): the right option shows 13,47 V."},
         {"n": "6.4", "kind": "memo_issue", "detail": "The memo's OR route 1,164(v − 25) = v + 25 gives 329,88 m·s⁻¹, not its 329,64 m·s⁻¹ (the ratio "

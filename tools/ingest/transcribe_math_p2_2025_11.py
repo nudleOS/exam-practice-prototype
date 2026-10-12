@@ -109,15 +109,32 @@ q21 = [
         "Number of people = 67 − 40\n= 27",                                                      # the memo
         "Number of people = 70 − 40\n= 30"], 2,                                                  # runs on to 100 minutes
         ["The cumulative frequency up to 80 minutes counts everyone with t ≤ 80.", "Take away everyone with t ≤ 40."]),
-    draw("2.1.3", "Draw a histogram to represent the information provided in the cumulative frequency table.", 3, [
+    # BUILT (2026-10-11, the histogram builder `hist`, two of its steps): the answer book prints the axes and the scale (number of people
+    # 0 to 70 in steps of 5 up, time 0 to 100 in classes of 20 across), so only the memo's marks are steps: Type, how the bars stand
+    # (touching or with gaps: the memo's "no gaps between bars", 1; the stem names the histogram, so the choice is in those words and no hint
+    # says a histogram's bars touch) and Plot, each class's bar dragged to its frequency (snapping to 1): two right earn 1, all five 2 (the
+    # memo's "two frequencies correct" and "all frequencies correct")
+    {**draw("2.1.3", "Draw a histogram to represent the information provided in the cumulative frequency table.", 3, [
         ["Two frequencies correct (the bars: 0–20: 16; 20–40: 24; 40–60: 19; 60–80: 8; 80–100: 3)", 1],
         ["All frequencies correct", 1], ["No gaps between the bars", 1]],
-        ["First turn the cumulative frequencies into the frequency of each class: subtract the one before.", "A histogram's bars touch."],
+        # (the second clue said "A histogram's bars touch.": the memo's third mark, now a choice on screen, so it asks instead)
+        ["First turn the cumulative frequencies into the frequency of each class: subtract the one before.",
+         "Look at the classes: does each one end where the next begins?"],
         memo="The answer book gives the grid: number of people (0 to 70, steps of 5) up, time t in minutes (0 to 100, classes of 20) across."),
+     "build": {"kind": "hist", "want": "histogram", "use": ["Type", "Plot"], "groups": ["0–20", "20–40", "40–60", "60–80", "80–100"],
+               "answers": [16, 24, 19, 8, 3], "tol": 0, "top": 70, "step": 5, "snap": 1, "pmin": 2, "unit": "minutes",
+               "axes": ["Time, t (in minutes)", "Number of people"], "typeQ": "How do the histogram's bars stand?", "typeHint": "",
+               "typeOpts": [["histogram", "Touching"], ["bar", "With gaps"]]}},
     mcq("2.1.4", "Comment on the skewness of the data.", ["Symmetrical", "Skewed to the right (positively skewed)",
                                                          "Skewed to the left (negatively skewed)"], 1,
         ["Work out each class's frequency: where is the peak, and which way does the tail run?", "The tail points towards the skew."]),
 ]
+for i in q21:   # the built histogram: its steps' marks (Type 1, Plot 2) are the part's, each class a whole number on the given scale
+    b = i.get("build") or {}
+    if b.get("kind") == "hist":
+        assert b["use"] == ["Type", "Plot"] and i["marks"] == 3 and sum(c["marks"] for c in i["criteria"]) == 3, i["n"]
+        assert len(b["groups"]) == len(b["answers"]) and all(0 < a <= b["top"] and a % b["snap"] == 0 for a in b["answers"]) and 1 <= b["pmin"] < len(b["answers"]), i["n"]
+        assert [16, 40, 59, 67, 70] == [sum(b["answers"][:k + 1]) for k in range(5)], "the frequencies are the table's cumulative frequencies, undone"
 MEAN9 = "{11 + 14 + 19 + 20 + 8 + 10 + 2 + 14 + x}/{9} = 12\nx + 98 = 108, so x = 10\n"
 q22 = [
     work("2.2", "How many players' points score was outside ONE standard deviation of the mean points score?", 5, [
@@ -600,10 +617,12 @@ paper = {
         {"n": "1.2", "kind": "no_fit", "detail": "A working that shows an earlier part's answer opens only once that part is answered ('after'): "
                                                  + "; ".join(k + " after " + " and ".join(v) for k, v in GATES.items()) + "."},
         {"n": "2.2", "kind": "no_fit", "detail": "The table's player numbers 1-8 are ours: the paper prints the eight scores in one row."},
-        {"n": "2.1.3", "kind": "no_fit", "detail": "The drawing 2.1.3 (histogram) is done on paper and self-checked against the memo's "
-                                                   "criteria. The app's histogram builder marks T C L S P (6 marks), not this memo's 3-mark scheme "
-                                                   "(two frequencies, all frequencies, no gaps), so 2.1.3 is a plain draw. The answer book's blank "
-                                                   "grid is not used: the scan shows darker grid segments that read like pre-drawn bars."},
+        {"n": "2.1.3", "kind": "no_fit", "detail": "The histogram 2.1.3 is BUILT (2026-10-11) with the app's histogram builder on two of its steps "
+                                                   "(use: Type and Plot; the answer book gives the axes and the scale): how the bars stand, touching "
+                                                   "or with gaps (the memo's 'no gaps between bars', 1), and each class's bar dragged to its "
+                                                   "frequency (two right 1, all five 2: 'two frequencies correct', 'all frequencies correct'). The "
+                                                   "answer book's blank grid is not cropped: the scan shows darker grid segments that read like "
+                                                   "pre-drawn bars."},
         {"n": "7.2", "kind": "no_fit", "detail": "The graph of g (7.2) is BUILT on the answer book's axes (2026-10-11; the graph of f that the "
                                                  "answer book prints is not drawn on it): the learner places the four asymptotes and the four "
                                                  "intercepts, the tan curve is drawn through them, and the memo's three criteria are marked from "

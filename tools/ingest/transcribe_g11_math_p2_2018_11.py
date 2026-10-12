@@ -163,7 +163,13 @@ q21 = [
         ["A cumulative frequency is a running total: how do you get one class's own count back from it?", "Which class's frequency equals "
                                                                                                           "its cumulative frequency?"],
         marks=3, after=["2.1.1"]),
-    draw("2.1.4", "Use the grid provided in the ANSWER BOOK to draw a frequency polygon for the data.", 4, [
+    # BUILT on the answer book's grid (2026-10-11, build "plot"): its axes and scale as printed (ages 0 to 44, a number every 5, a line
+    # every year; frequency 0 to 25, a number every 5, a line every 1; a tap snaps to half a year and to 0,5). The tray names each class as
+    # the table does ("15 ≤ x < 20"), a starting point and an end point, never where they go. The memo's four ticks (memo page 4): using
+    # the midpoints (1: every class at its midpoint); plotting the points correctly (1: every class at its frequency, so a learner who
+    # plots at the wrong x still earns the frequencies, as a memo marks them apart); the points joined by straight lines (1); grounding at
+    # (12,5 ; 0) and (42,5 ; 0) (1: both)
+    {**draw("2.1.4", "Use the grid provided in the ANSWER BOOK to draw a frequency polygon for the data.", 4, [
         ["Using the class midpoints: 17,5 ; 22,5 ; 27,5 ; 32,5 ; 37,5", 1],
         ["Plotting the points correctly: (17,5 ; 4), (22,5 ; 9), (27,5 ; 24), (32,5 ; 10), (37,5 ; 3)", 1],
         ["The points joined by straight lines", 1], ["Grounding at (12,5 ; 0) and (42,5 ; 0)", 1]],
@@ -171,6 +177,15 @@ q21 = [
         memo="The answer book gives a grid: Frequency from 0 to 25 up (labelled every 5, a line every 1) and Ages of soccer players from 0 "
              "to 40 along (labelled every 5, a line every year, running a little past 40). The memo's polygon: (12,5 ; 0), (17,5 ; 4), "
              "(22,5 ; 9), (27,5 ; 24), (32,5 ; 10), (37,5 ; 3) and (42,5 ; 0), joined by straight lines.", after=["2.1.3"]),
+     "build": {"kind": "plot", "x": {"name": "Ages of soccer players", "min": 0, "max": 44, "step": 5, "minor": 1, "snap": 0.5},
+               "y": {"name": "Frequency", "min": 0, "max": 25, "step": 5, "minor": 1, "snap": 0.5},
+               "points": [{"id": "s", "name": "Starting point", "at": [12.5, 0]}]
+               + [{"id": "c%d" % k, "name": "%d ≤ x < %d" % (lo, lo + 5), "at": [lo + 2.5, f]} for k, (lo, f) in enumerate([(15, 4), (20, 9), (25, 24), (30, 10), (35, 3)])]
+               + [{"id": "e", "name": "End point", "at": [42.5, 0]}], "tol": [0.5, 0.5],
+               "tests": [{"k": "xs", "name": "Classes' x-values", "ids": ["c%d" % k for k in range(5)]},
+                         {"k": "ys", "name": "Classes' y-values", "ids": ["c%d" % k for k in range(5)]},
+                         {"k": "line", "kinds": ["join"]},
+                         {"k": "points", "name": "Start and end points", "ids": ["s", "e"]}]}},
 ]
 q22 = [
     # 1 + 1 + 1: the choice and the memo's two arguments; the wrong cards are false for these summaries (IQR A = 34 > B = 17, the
@@ -636,6 +651,15 @@ assert not [i["n"] for i in ITEMS if i["t"] in ("steps", "rubric", "term", "matc
 assert [i["n"] for i in ITEMS if i["t"] == "num"] == ["1.1", "1.3", "2.1.1", "6.2"]   # the one-number answers
 assert all(i["a"] >= 0 for i in ITEMS if i["t"] == "num"), "a signed answer belongs in a multiple choice (the keypad's sign)"
 assert [i["n"] for i in ITEMS if i["t"] == "draw"] == ["2.1.4"]
+for i in ITEMS:   # a built plot (build-play.js "plot"): one test per memo criterion, its marks the part's, every point on the grid's snap
+    b = i.get("build") or {}
+    if b.get("kind") == "plot":
+        assert len(b["tests"]) == len(i["criteria"]) and sum(c["marks"] for c in i["criteria"]) == i["marks"], i["n"]
+        assert all(set(t.get("ids", [])) <= {p["id"] for p in b["points"]} for t in b["tests"]), i["n"]
+        for k, ax in enumerate((b["x"], b["y"])):
+            for p in b["points"]:
+                u = p["at"][k]
+                assert abs(u - round(u / ax["snap"]) * ax["snap"]) <= b["tol"][k] + 1e-9 and ax["min"] <= u <= ax["max"], (i["n"], p["id"], k)
 PICKS = [i["n"] for i in ITEMS if i["t"] == "pickn"]
 assert PICKS == ["2.2"], PICKS
 for _m in missions:   # a gate names an EARLIER part of its own mission (the app looks a gate up inside the mission)
@@ -679,8 +703,11 @@ paper = {
         {"n": "1.1", "kind": "no_fit", "detail": "One-number answers with no working stay typed on the keypad: 1.1 (4 minutes), 1.3 (σ = 5,79: keyed "
                                                  "at two decimal places, tolerance 0,006, so the sample standard deviation 6,10 is marked wrong), "
                                                  "2.1.1 (50 players) and 6.2 (c = 1)."},
-        {"n": "2.1.4", "kind": "no_fit", "detail": "The frequency polygon (2.1.4) is drawn on paper and self-checked against the memo's four "
-                                                   "criteria; the answer book's blank grid is described in the memo text, not cropped."},
+        {"n": "2.1.4", "kind": "no_fit", "detail": "The frequency polygon (2.1.4) is BUILT on the answer book's grid (2026-10-11, build 'plot'): "
+                                                   "its axes and scale as printed (to 44 years, a tap snaps to 0,5); the tray names a starting "
+                                                   "point, the five classes and an end point, never where they go; the memo's four ticks: every "
+                                                   "class at its midpoint, every class at its frequency (marked apart, our reading of 'plotting "
+                                                   "the points correctly'), the points joined by straight lines, both grounding points."},
         {"n": "2.2", "kind": "no_fit", "detail": "The choice with its two arguments plays as statements, 1 mark each: the memo's 'not valid' and its "
                                                  "two arguments (the bigger range of class A; at least 25% of class A below every mark of class B), "
                                                  "and four cards that are false for these summaries (the claim valid, IQR A = 34 > IQR B = 17, "

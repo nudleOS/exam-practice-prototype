@@ -21,8 +21,9 @@ How the memo's shapes map (Physical Sciences, Murci's rulings 2026-10-10; the pa
   (STATEMENTS at the bottom: the memo's wording right, its OR / ACCEPT forms further right cards, the wrong cards a key condition
   dropped or swapped, the inverse relation, another law's or quantity's wording); a choice with its reason or an explanation
   (2.4, 6.2, 10.2.2, 10.3.2) -> statements, the choice and each memo point a card, 1 mark each as the memo ticks them. No memo
-  here weighs two sides, so no part plays as a sort. "Draw / Sketch" -> draw with the memo's criteria (self-checked, flagged
-  no_fit). A part whose options, cards or criteria show an earlier part's answer opens only after it ("after"). A question whose
+  here weighs two sides, so no part plays as a sort. "Draw a labelled free-body diagram" (2.2, 5.2) -> draw with build "forces"
+  (2026-10-11: each force aimed from a dot from the same tray of seven, marked online as the memo marks it); another "Draw / Sketch"
+  -> draw with the memo's criteria (self-checked, flagged no_fit). A part whose options, cards or criteria show an earlier part's answer opens only after it ("after"). A question whose
   diagram changes part-way is several missions (7, 9, 10).
 Figure boxes are measured in PDF points (page 595.44 x 841.68) from the drawings themselves (scratchpad figs24.py) and checked on a
 contact sheet (sheet24.py)."""
@@ -156,7 +157,10 @@ q2 = [
     draw("2.2", "Draw a labelled free-body diagram showing ALL the HORIZONTAL forces acting on the crate JUST BEFORE it starts moving.", 2,
          [["T: tension / FT / Fstring, to the right (towards the pulley)", 1], ["fs: static friction / f / Ff, to the left", 1]],
          ["Which horizontal forces act on the crate just before it moves?", "Which way does each of them point?"],
-         memo="Mark for label and arrow. Vertical forces (w, N) shown: no penalty. Arrows not touching the dot, any other force, or no arrows: max 1/2."),
+         memo="Mark for label and arrow. Vertical forces (w, N) shown: no penalty. Arrows not touching the dot, any other force, or no arrows: max 1/2.",
+         # BUILT (2026-10-11, build "forces"): T towards the pulley (0°), static friction against it (180°), each within 10°; the memo's
+         # "do not penalise if vertical forces (w, N) are shown": Fg and FN are free (neither earn nor cost), any other force costs 1
+         build={"kind": "forces", "surface": 0, "forces": [{"id": "T", "at": 0, "crit": 0}, {"id": "f", "at": 180, "crit": 1}], "free": ["Fg", "FN"]}),
     work("2.3.1", "Calculate the coefficient of static friction (µs).", 4, [
         "T = mg = 7,4(9,8) = 72,52 N\nfs(max) = μsN\nμs(8,5)(9,8) = 72,52\nμs = 0,87",          # Y's 7,4 kg read for the start (wrong part)
         "T = mg = 4,2(9,8) = 41,16 N\nfs(max) = μsN\nμs(8,5)(9,8) = 41,16\nμs = 0,49",          # the memo (OPTION 1)
@@ -262,7 +266,11 @@ q5 = [
          [["w: weight / Fg / mg / 58,8 N / gravitational force, downwards", 1], ["N: normal force / FN, upwards", 1],
           ["f: friction / Ff / fk, to the left (against the motion)", 1], ["F: applied force / FA, at 30° above the horizontal", 1]],
          ["Which forces act on a crate pulled along a rough horizontal surface?", "Draw F at its angle: do not split it into components."],
-         memo="Mark for label and arrow. Any other force, no arrows, forces not touching the dot, or F drawn as components: max 3/4."),
+         memo="Mark for label and arrow. Any other force, no arrows, forces not touching the dot, or F drawn as components: max 3/4.",
+         # BUILT (2026-10-11, build "forces"): w 270°, N 90°, friction against the motion to the right (180°), F at 30° above the
+         # horizontal as the figure gives it (30°), each within 10°. F cannot be drawn as components (the tray holds F, not its parts)
+         build={"kind": "forces", "surface": 0, "forces": [{"id": "Fg", "at": 270, "crit": 0}, {"id": "FN", "at": 90, "crit": 1}, {"id": "f", "at": 180, "crit": 2},
+                                                           {"id": "FA", "at": 30, "crit": 3}]}),
     work("5.3", "Using ENERGY PRINCIPLES ONLY, calculate the magnitude of force F.", 4, [
         "Wnc = ΔEk + ΔEp\nWF + Wf = ½m(vf² − vi²) + mg(hf − hi)\nF(1,5)sin 30° + 10(1,5)cos 180° = ½(6)(2² − 0²) + 0\nF = 36,00 N",   # sin for cos
         "Wnc = ΔEk + ΔEp\nWF + Wf = ½m(vf² − vi²) + mg(hf − hi)\nF(1,5)cos 30° + 10(1,5)cos 180° = ½(6)(2² − 0²) + 0\nF = 20,78 N",   # the memo (OPTION 1)
@@ -719,6 +727,26 @@ for _i in ITEMS:
     if _i["t"] == "pickn" and len(_i["pool"]) > 1:
         assert _i["pool"] != list(range(len(_i["pool"]))), (_i["n"], _i["pool"])
 
+FZ_IDS = ["Fg", "FN", "f", "FA", "T", "FE", "Fnet"]   # the force builder's tray (build-play.js FZ), the same for every question
+
+
+def forces_ok(i):
+    """A built force diagram: every force one of the tray's seven, every criterion earned by exactly one force (or the angle), one mark
+    each, so the marks add up to the part's; a free force is never one the memo marks."""
+    b = i["build"]
+    assert all(f["id"] in FZ_IDS for f in b["forces"]) and all(x in FZ_IDS for x in b.get("free", [])), (i["n"], "a force outside the tray")
+    assert not {f["id"] for f in b["forces"]} & set(b.get("free", [])), (i["n"], "a marked force is free")
+    crits = [f["crit"] for f in b["forces"]] + ([b["angle"]["crit"]] if "angle" in b else [])
+    assert sorted(crits) == list(range(len(i["criteria"]))), (i["n"], "every criterion earned by one force or the angle")
+    assert all(c["marks"] == 1 for c in i["criteria"]) and len(i["criteria"]) == i["marks"], (i["n"], "one mark a criterion")
+
+
+FORCES = [i["n"] for i in ITEMS if (i.get("build") or {}).get("kind") == "forces"]
+assert FORCES == ["2.2", "5.2"], FORCES
+for _i in ITEMS:
+    if _i["n"] in FORCES:
+        forces_ok(_i)
+
 paper = {
     "catalog": "https://nexera.app/catalogs/exam/v1",
     "paper": {"subject": "Physical Sciences", "title": "Physical Sciences P1", "sitting": "November 2024", "total_marks": 150, "time": "3 hours"},
@@ -746,7 +774,13 @@ paper = {
                                                     "and a true form left out (6.2's fL < fs) is never a wrong card. 9.7's 'slower / frequency "
                                                     "decreases' (1/2) is neither right nor wrong. The choice stays a card beside its reasons: "
                                                     "each is ONE printed part (one number, the player's key)." % len(PICKS)},
-        {"n": "2.2", "kind": "no_fit", "detail": "Drawings (2.2, 3.2, 5.2, 7.2) are done on paper and self-checked against the memo's criteria."},
+        {"n": "2.2", "kind": "no_fit", "detail": "The free-body diagrams 2.2 and 5.2 are BUILT (2026-10-11, build 'forces'): the learner aims "
+                                                 "each force from a dot, from the same tray of seven forces, one mark a force for its label AND "
+                                                 "direction (within 10°), −1 for each additional force, never below 0 (the memo's 'max 1/2' and "
+                                                 "'max 3/4' for one extra). 2.2 asks for the HORIZONTAL forces: the weight and the normal force "
+                                                 "are free, as the memo's 'do not penalise if vertical forces are shown'. 'No arrows', 'not "
+                                                 "touching the dot' and 'F as components' cannot happen on screen. The other drawings (3.2, 7.2) "
+                                                 "are done on paper and self-checked against the memo's criteria."},
         {"n": "10.2.2", "kind": "memo_issue", "detail": "The memo ticks 'Only green and blue light eject electrons / red light does not' (1) and "
                                                         "'green has a lower frequency than blue ... and therefore ejects electrons with the lower "
                                                         "kinetic energy' (1); the old rubric had dropped the first point. Both are now cards."},
