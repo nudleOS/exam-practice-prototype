@@ -190,6 +190,26 @@ def boyle(variant):
     return svg(334, 215, "".join(out))
 
 
+def point_field(sign, variant, label=""):
+    """The field of one point charge (sign "+" or "−"): variant in (lines radially inwards, arrows towards the charge) | out (arrows away)
+    | circles (field lines drawn as circles) | short (lines that stop short of the charge, not starting at it)."""
+    cx, cy, out = 165, 110, []
+    if variant == "circles":
+        for r in (34, 58, 82):
+            out += [D.C(cx, cy, r, w=1.8), D.mid_arrow(cx - 6, cy - r, cx + 6, cy - r, at=0.5)]
+    else:
+        r0 = 19 if variant != "short" else 48
+        for k in range(8):
+            a = 2 * math.pi * k / 8
+            x1, y1 = cx + r0 * math.cos(a), cy + r0 * math.sin(a)
+            x2, y2 = cx + 95 * math.cos(a), cy + 95 * math.sin(a)
+            out += [L(x1, y1, x2, y2, w=1.8), D.mid_arrow(x2, y2, x1, y1) if variant in ("in", "short") else D.mid_arrow(x1, y1, x2, y2)]
+    out += [D.C(cx, cy, 17, fill="#fff"), T(cx, cy + 6, sign, size=18, weight=700)]
+    if label:
+        out.append(T(cx + 30, cy + 16, label, size=14, anchor="start", halo=True))
+    return svg(330, 220, "".join(out))
+
+
 def register(add):
     # ---- Grade 11 Mathematics P2 Nov 2024 (EC) 2.4: the ogive of the boxers' weights (memo: grounding, upper limits, shape)
     U, CF = [55, 75, 95, 115, 135, 155], [1, 4, 13, 19, 22, 23]
@@ -284,3 +304,19 @@ def register(add):
         [("A dotted curve with a higher peak", profile(26.6, 33.33, 19.32, ["", "", ""], dotted=37.5)),
          ("A dotted curve with the same peak", profile(26.6, 33.33, 19.32, ["", "", ""], dotted=33.6)),
          ("A dotted curve with a lower peak, on an endothermic graph", profile(26.6, 40.61, 33.88, ["", "", ""], dotted=36.5))], 2)
+
+    # ---- Grade 11 Physical Sciences P1 Nov 2025 (EC)
+    P3 = "g11-ps-p1-2025-11-ec"
+    n10 = [("N", 90, 64), ("F", 30, 84), ("T", 174, 78, (0, -10)), ("fk", 188, 52, (-6, 14)), ("Fg", 270, 76)]
+    add(P3, "4.2", ("N up, F at 30° above the horizontal, T and fk to the left, Fg down", D.fbd(n10)),
+        [("N, F, T and Fg, with fk to the right", D.fbd([("N", 90, 64), ("F", 30, 84), ("T", 180, 78), ("fk", 0, 50, (0, 16)), ("Fg", 270, 76)])),
+         ("F, T, fk and Fg, with no N", D.fbd([f for f in n10 if f[0] != "N"])),
+         ("N, F, T, fk and Fg, and an extra force Fnet to the right", D.fbd(n10 + [("Fnet", 0, 46, (6, 16))]))], 2)
+    add(P3, "5.2", ("T up and w down, from the dot", D.fbd([("T", 90, 70), ("w", 270, 70)], ground=False)),
+        [("w down only", D.fbd([("w", 270, 70)], ground=False)),
+         ("T and w both down", D.fbd([("T", 262, 74, (-14, 0)), ("w", 278, 70, (14, 0))], ground=False)),
+         ("T up, w down and an extra force F to the side", D.fbd([("T", 90, 70), ("w", 270, 70), ("F", 0, 60)], ground=False))], 0)
+    add(P3, "7.3.2", ("Lines radially inwards, the arrows pointing towards the −2 μC charge", point_field("−", "in")),
+        [("Lines radially outwards, the arrows pointing away from the charge", point_field("−", "out")),
+         ("Field lines drawn as circles round the charge", point_field("−", "circles")),
+         ("Inward lines that stop short of the charge", point_field("−", "short"))], 3)
