@@ -136,6 +136,38 @@ def lewis(atoms, bonds, w=330, h=150, extra=""):
     return svg(w, h, "".join(out) + extra)
 
 
+def dotsym(x, y, sym, dots, bracket="", charge=""):
+    """One atom or ion with its valence electrons as dots: dots {"u"|"d"|"l"|"r": 1 or 2} (a single electron or a pair on that
+    side); bracket "[]" draws square brackets round an ion, charge its charge at the top right ("3+", "3−")."""
+    out = [T(x, y + 7, sym, size=20)]
+    for sd, n in dots.items():
+        vx, vy = SIDE[sd]
+        cx, cy = x + vx * 19, y + vy * 19
+        for s in ((-1, 1) if n == 2 else (0,)):
+            out.append(D.C(cx + vy * s * 4.5, cy + vx * s * 4.5, 2.4, w=0, fill=D.INK))
+    if bracket:
+        out.append(T(x - 30, y + 10, "[", size=34) + T(x + 30, y + 10, "]", size=34))
+    if charge:
+        out.append(T(x + (40 if bracket else 18), y - 14, charge, size=13, anchor="start"))
+    return "".join(out)
+
+
+def ionic(left, right, w=470, h=110):
+    """An ionic Lewis equation: left and right each a list of (symbol, dots, bracket, charge), drawn with + between them and an arrow
+    from the left side to the right."""
+    out, x = [], 30
+    for side, items in ((0, left), (1, right)):
+        for k, (sym, dots, br, ch) in enumerate(items):
+            if k:
+                out.append(T(x + 8, 62, "+", size=20)); x += 26
+            x += 34 if br else 24
+            out.append(dotsym(x, 55, sym, dots, br, ch))
+            x += 52 if br else 40
+        if side == 0:
+            out.append(L(x, 55, x + 44, 55, arrow=True)); x += 70
+    return svg(w, h, "".join(out))
+
+
 def profile(hr, peak, hp, labels, dotted=None, dh=None):
     """A potential energy against course of reaction graph: the reactants' level hr, the peak, the products' level hp (numbers, kJ·mol⁻¹,
     drawn to scale between 0 and the top), each labelled with labels[k] at the axis ("" for none); dotted: a second (catalysed) peak;
@@ -413,6 +445,19 @@ def register(add):
           og("lower")),
          ("Points (55 ; 1), (75 ; 4), (95 ; 13), (115 ; 19), (135 ; 22), (155 ; 23), the curve starting at (55 ; 1)", og("float")),
          ("Points (35 ; 0), (55 ; 1), (75 ; 3), (95 ; 9), (115 ; 6), (135 ; 3), (155 ; 1): the frequencies plotted", og("freq"))], 2)
+
+    # ---- Grade 10 Physical Sciences P2 Nov 2024 (NW) 4.2.4: Aℓ + N forming aluminium nitride (memo: Aℓ with 3 electrons, N with 5,
+    # Aℓ³⁺, [N]³⁻ with 8)
+    AL, N5 = ("Aℓ", {"u": 1, "r": 1, "d": 1}, "", ""), ("N", {"u": 2, "l": 1, "r": 1, "d": 1}, "", "")
+    N8 = {"u": 2, "l": 2, "r": 2, "d": 2}
+    add("g10-ps-p2-2024-11-nw", "4.2.4",
+        ("Aℓ with three dots + N with five dots → Aℓ³⁺ and [N with eight dots]³⁻", ionic([AL, N5], [("Aℓ", {}, "", "3+"), ("N", N8, "[]", "3−")])),
+        [("Aℓ with three dots + N with five dots → Aℓ³⁺ and [N with five dots]³⁻: the three electrons not drawn on N",
+          ionic([AL, N5], [("Aℓ", {}, "", "3+"), ("N", {"u": 2, "l": 1, "r": 1, "d": 1}, "[]", "3−")])),
+         ("Aℓ with three dots + N with five dots → Aℓ³⁻ and [N with eight dots]³⁺: the charges swapped",
+          ionic([AL, N5], [("Aℓ", {}, "", "3−"), ("N", N8, "[]", "3+")])),
+         ("Aℓ with three dots + N with five dots → Aℓ⁺ and [N with six dots]⁻: one electron moved, not three",
+          ionic([AL, N5], [("Aℓ", {"u": 1, "d": 1}, "", "+"), ("N", {"u": 2, "l": 2, "r": 1, "d": 1}, "[]", "−")]))], 3)
 
     # ---- Grade 10 Mathematics P1 Nov 2024 (NW) 8.3: the Venn diagram of A and B (memo: 0,2709; 0,1591; 0,2109; 0,3591)
     add("g10-math-p1-2024-11-nw", "8.3",
