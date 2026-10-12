@@ -107,6 +107,8 @@ LOWER = {
                              "provincial/g11-geo-p1-2024-11-ec/GEOGRAPHY P1 MEMO GR11 NOV 2024 ENG_watermark.pdf"),
     "g11-geo-p2-2024-11-ec": ("provincial/g11-geo-p2-2024-11-ec/GEOGRAPHY P2 GR11 QP NOV2024 ENG D_watermark.pdf",
                              "provincial/g11-geo-p2-2024-11-ec/GEOGRAPHY P2 GR11 MEMO NOV2024_English_watermark.pdf"),
+    "g11-geo-p1-2025-11-ec": ("provincial/g11-geo-p1-2025-11-ec/GEOGRAPHY P1 QP GR11 NOV 2025 ENG_watermark.pdf",
+                             "provincial/g11-geo-p1-2025-11-ec/GEOGAPHY P1 MEMO GR11 NOV 2025 ENG_watermark.pdf"),
 }
 
 
