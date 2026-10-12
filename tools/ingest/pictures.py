@@ -207,6 +207,12 @@ add("ls-p2-2024-11", "2.2.5",
      ("Two chromosomes in one row, one shaded and one unshaded, no tips", D.metaphase2("no_tips"))], 0)
 
 
+# ---- the provincial Grade 10 and 11 papers (2026-10-12): their drawings live in pictures_lower.py
+import pictures_lower  # noqa: E402
+
+pictures_lower.register(add)
+
+
 def apply(pid, paper):
     """The paper's "draw" items listed here become "pick the drawing" MCQs (their marks and clues kept). Returns their numbers."""
     done = []
