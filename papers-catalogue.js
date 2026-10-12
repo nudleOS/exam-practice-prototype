@@ -1107,6 +1107,28 @@ window.NX_CATALOGUE = {
    "rev": "cad1df235b",
    "source_pdf": "uploads/provincial/g10-math-p2-2024-11-nw/19-NOVEMBER-2024-S2-GR10-MATHEMATICS-P2-QP-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
+  },
+  {
+   "id": "g10-ps-p1-2024-11-nw",
+   "title": "Physical Sciences P1 (Physics)",
+   "subject": "Physical Sciences",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 9,
+   "missions": 10,
+   "status": "ready",
+   "rev": "4fcc1dbfba",
+   "source_pdf": "uploads/provincial/g10-ps-p1-2024-11-nw/08-November-2024-S2-GR10-Physical-Sciences-QP-P1-ENG.pdf",
+   "provenance_label": "North West DoE · November 2024"
   }
  ]
 };

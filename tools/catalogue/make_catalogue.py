@@ -115,6 +115,8 @@ LOWER = {
                               "provincial/g10-math-p1-2024-11-nw/15-NOVEMBER-2024-S2-GR10-MATHEMATICS-P1-MG-ENG-AFR.pdf"),
     "g10-math-p2-2024-11-nw": ("provincial/g10-math-p2-2024-11-nw/19-NOVEMBER-2024-S2-GR10-MATHEMATICS-P2-QP-ENG.pdf",
                               "provincial/g10-math-p2-2024-11-nw/19-NOVEMBER-2024-S2-GR10-MATHEMATICS-P2-MG-ENG.pdf"),
+    "g10-ps-p1-2024-11-nw": ("provincial/g10-ps-p1-2024-11-nw/08-November-2024-S2-GR10-Physical-Sciences-QP-P1-ENG.pdf",
+                            "provincial/g10-ps-p1-2024-11-nw/08-November-2024-S2-GR10-Physical-Sciences-MG-P1-ENG-AFR.pdf"),
 }
 
 
