@@ -160,8 +160,14 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
         pix.save(str(out / "figures" / name))
         w, h = pix.width, pix.height
         try:  # a palette PNG: diagrams are line art (the hand-made crops were 32 colours)
-            from PIL import Image
+            from PIL import Image, ImageDraw
             im = Image.open(out / "figures" / name).convert("RGB")
+            # blank: boxes (fractions of the page, as bbox) painted white, the paper's own words caught between or under a crop's
+            # drawings (2026-10-12, PS P1 Nov 2024 Q2: the stem's last line and 2.1's question sat in the figure)
+            s = pix.width / clip.width
+            for bx0, by0, bx1, by1 in f.get("blank") or []:
+                ImageDraw.Draw(im).rectangle([(bx0 * W - clip.x0) * s, (by0 * H - clip.y0) * s, (bx1 * W - clip.x0) * s,
+                                              (by1 * H - clip.y0) * s], fill="white")
             # rotate: clockwise degrees that turn a figure printed SIDEWAYS upright (2026-10-10: ML P2 Nov 2024's ANNEXURES A and C
             # are landscape pages printed on their side; typed out, the aerial view and the map would be lost)
             r = int(f.get("rotate") or 0) % 360
@@ -177,7 +183,8 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
                 im, w, h = framed, w + 2 * i, h + 2 * i
             im.quantize(colors=32).save(out / "figures" / name, optimize=True)
         except ImportError:
-            pass
+            if f.get("blank"):   # refuse: without Pillow the paper's words would stay in the figure, unseen
+                sys.exit(f"{stem}: its figure has boxes to blank: install Pillow")
         # ?v=: the file's own hash, so a re-cropped figure is fetched fresh (2026-10-10: a browser showed the old crop, stretched
         # into the new box, after an inset changed its size under the same name)
         import hashlib

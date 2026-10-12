@@ -46,7 +46,10 @@ FIGURE = obj({
     "inset": {"type": "integer", "description": "Pixels of white margin round the crop, when a label touches its corner (the page's Hide "
                                                 "button sits on the figure's top-left corner)"},
     "rotate": {"type": "integer", "enum": [90, 180, 270], "description": "Clockwise degrees that turn a figure printed SIDEWAYS upright "
-                                                                        "(a landscape annexure on its side): 90 when its text reads bottom to top"}},
+                                                                        "(a landscape annexure on its side): 90 when its text reads bottom to top"},
+    "blank": {"type": "array", "items": {"type": "array", "items": NUM, "minItems": 4, "maxItems": 4},
+              "description": "Boxes [x0, y0, x1, y1] (fractions of the page, as bbox) painted white in the crop: the paper's own words "
+                             "caught between or under its drawings (a stem's last line, the next question)"}},
     ["page", "bbox", "caption"])
 
 

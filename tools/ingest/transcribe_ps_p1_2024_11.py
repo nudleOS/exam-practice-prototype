@@ -40,9 +40,17 @@ FIGS = {  # [page, x0, y0, x1, y1] in points
     "Q9b": [15, 100, 528, 570, 678], "Q10b": [16, 180, 252, 432, 378]}
 
 
+# the paper's words inside a crop, painted white (measured from the PDF's text, 2026-10-12): Q2's stem's last line between the two
+# drawings (the lead carries it) and 2.1's question under the graph
+BLANK = {"Q2": [[107, 368.5, 404, 385], [105, 556, 268, 572]]}
+
+
 def fig(name, caption):
     p, x0, y0, x1, y1 = FIGS[name]
-    return {"page": p, "bbox": [round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)], "caption": caption}
+    f = {"page": p, "bbox": [round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)], "caption": caption}
+    if name in BLANK:
+        f["blank"] = [[round(a / W, 4), round(b / H, 4), round(c / W, 4), round(d / H, 4)] for a, b, c, d in BLANK[name]]
+    return f
 
 
 def mcq(n, q, opts, a, clues, marks=2, **kw):
