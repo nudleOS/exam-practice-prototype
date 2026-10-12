@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=80"></script>
+<script src="papers-catalogue.js?v=81"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -97,7 +97,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=301">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -878,6 +878,7 @@
                   <span aria-hidden="true" style="width:32px; height:32px; flex:none; border-radius:10px; display:flex; align-items:center; justify-content:center; background:{{ tl.badgeBg }}; font-size:13px; font-weight:800; color:{{ tl.badgeColor }}">{{ tl.badge }}</span>
                   <span data-wktext="{{ tl.richAttr }}" style="flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.4; text-wrap:pretty">
                     <sc-if value="{{ tl.plainOn }}" hint-placeholder-val="{{ true }}">{{ tl.text }}</sc-if>
+                    <sc-if value="{{ tl.picOn }}" hint-placeholder-val="{{ false }}"><img data-optpic="true" src="{{ tl.pic }}" alt="" loading="lazy" draggable="false"></sc-if>
                     <sc-if value="{{ tl.rich }}" hint-placeholder-val="{{ false }}">
                       <sc-for list="{{ tl.lines }}" as="ln" hint-placeholder-count="2">
                         <span data-wl="true"><span data-ws="true"><sc-for list="{{ ln.segs }}" as="sg" hint-placeholder-count="1"><sc-if value="{{ sg.frac }}" hint-placeholder-val="{{ false }}"><span data-frac="true"><span data-fn="true">{{ sg.n }}</span><span data-fd="true">{{ sg.d }}</span></span></sc-if><sc-if value="{{ sg.txt }}" hint-placeholder-val="{{ true }}">{{ sg.t }}</sc-if></sc-for></span><sc-if value="{{ ln.hasReason }}" hint-placeholder-val="{{ false }}"><span data-wr="true">{{ ln.reason }}</span></sc-if></span>
@@ -1916,7 +1917,7 @@ function buildPapers() {
           SERVER.clues[key] = q.clues || [];
           const base = { key: key, board: true, number: q.n, marks: q.marks, after: q.after || null, stem: q.q, clues_available: (q.clues || []).length, img: q.img || null };   // img: an ingested MCQ's own figure
           if (q.t === "mcq") { SERVER.keys[key] = { mcq: q.a }; SERVER.memo[key] = [q.opts[q.a]];   // opt_table: options printed as a table (1.1.6), the card shows its rows
-            return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts, opt_table: q.optTable || null, ab: q.ab || null }); }
+            return Object.assign(base, { response_mode: "mcq", marking_mode: "answer", options: q.opts, opt_table: q.optTable || null, ab: q.ab || null, pics: q.pics || null }); }
           if (q.t === "pickn") { SERVER.keys[key] = { pickn: q.pool, count: q.count }; SERVER.memo[key] = q.pool.map(i => q.opts[i]); return Object.assign(base, { response_mode: "pickn", marking_mode: "answer", options: q.opts, count: q.count }); }
           if (q.t === "match") { SERVER.keys[key] = { match: q.a, each: q.each || 1 };
             SERVER.memo[key] = q.left.map((l, i) => l + " → " + String.fromCharCode(65 + q.a[i]) + ". " + q.right[q.a[i]]);
@@ -4552,6 +4553,8 @@ class Component extends DCLogic {
     // options that are WORKINGS (a line break in one) play on the page, one at a time (focus swipe, layer2Vals): the component's four
     // stacked glass cards squeezed a memo's working into a paragraph each (Murci, 2026-10-10: "squeezed ... structured as the memo")
     if ((part.options || []).some(o => String(o).indexOf("\n") !== -1)) return false;
+    // options that are DRAWINGS (2026-10-12) play on the page too, one at a time: the component's cards hold words
+    if (Array.isArray(part.pics) && part.pics.length) return false;
     // A part that is already closed opens in the page's closed view (with Replay) — but the part the component is
     // playing closes DURING its animation, and must not unmount it then.
     // (2026-09-30: a closed part the component finished opens in the component again, as it ended: seeded from mcqBook. Measured: the
@@ -5068,7 +5071,10 @@ class Component extends DCLogic {
     // FOCUS SWIPE (Maths Nov 2025, Murci 2026-10-10, picked from three mocks): an MCQ whose options are WORKINGS (an option with a line
     // break) shows one at a time at full width (two side by side from a tablet up), laid out as the memo sets it (workLines); tabs A-D
     // and a sideways swipe change which; a tap on a working answers it, as every MCQ card does (no Check: Murci, 2026-10-01)
-    const work = mode === "mcq" && opts.some(o => String(o).indexOf("\n") !== -1), wkPer = this.wkPer(), wkCur = Math.max(0, Math.min(opts.length - 1, s.wkIdx || 0)),
+    // a DRAWING to pick (2026-10-12, Murci: "pick the drawing" for every drawing question): each option is a drawing (`pics`, SVG) and its
+    // words (`options`: what a screen reader reads and the review writes); it plays as the focus swipe, one drawing at a time on a phone
+    const pics = mode === "mcq" && Array.isArray(part.pics) && part.pics.length === opts.length ? part.pics : null;
+    const work = mode === "mcq" && (!!pics || opts.some(o => String(o).indexOf("\n") !== -1)), wkPer = this.wkPer(), wkCur = Math.max(0, Math.min(opts.length - 1, s.wkIdx || 0)),
       wkPage = Math.floor(wkCur / wkPer) * wkPer, wkOn = i => !work || (i >= wkPage && i < wkPage + wkPer);
     // every working already tried wrong in this round (a tile shows only the LAST try's verdict; the tabs are the overview, so they keep
     // them all: measured, D's mark went when B was tried next). From the tries as given ("D · ..."), which name the letter.
@@ -5082,8 +5088,9 @@ class Component extends DCLogic {
       const out = (chipsOnly || mode === "pickn" || mode === "mcq") && deadT.indexOf(String(o).trim()) !== -1; if (out) { sel = false; sp = null; }   // ruled out: an empty socket (a statement: gone), no stamp
       // a broken working or text card comes back DIMMED, never gone (one working shows at a time: gone would leave an empty card)
       const deadV = this.deadAttr(out, String(o).trim()), dim = mode === "mcq" && !chipsOnly && deadV === "true";
-      const st = stampSty(sp), rich = this.isRich(o);
-      return Object.assign({ idx: String(i), text: rich ? "" : o, badge: badge, rich: rich, plainOn: !rich, richAttr: rich ? "true" : "false", lines: rich ? this.workLines(o) : [], fon: wkOn(i) ? "true" : "false",
+      const st = stampSty(sp), rich = !pics && this.isRich(o);
+      return Object.assign({ idx: String(i), text: rich || pics ? "" : o, badge: badge, rich: rich, plainOn: !rich && !pics, richAttr: rich ? "true" : "false", lines: rich ? this.workLines(o) : [],
+        picOn: !!pics, pic: pics ? "data:image/svg+xml;charset=utf-8," + encodeURIComponent(pics[i]) : "", fon: wkOn(i) ? "true" : "false",
         letter: chipsOnly ? String(o).trim() : "", ball: chipsOnly ? "true" : "false", dead: dim ? "dim" : deadV, off: locked || out, verdict: !sp ? "" : sp === memoStamp ? "memo" : /^\u2713/.test(sp.t) ? "ok" : "bad",
         role: mode === "mcq" ? "radio" : mode === "pickn" ? "checkbox" : "button", checked: mode === "order" ? "false" : sel ? "true" : "false",
         // (an option that IS its letter, a label on a figure, is read once: "A", not "A. A")
@@ -5214,7 +5221,7 @@ class Component extends DCLogic {
       wkOn: work, wkFocus: work ? "true" : "false", wkPair: work && wkPer === 2 ? "true" : "false", wkPrev: () => this.wkStep(-1), wkNext: () => this.wkStep(1),
       wkTabs: work ? tiles.map((t, i) => ({ L: letters[i], on: wkOn(i) ? "true" : "false", cur: wkOn(i) ? "true" : "false", verdict: t.verdict || (wkTried.has(i) ? "bad" : ""), go: () => this.wkTo(i),
         aria: (wkPer === 2 ? "Show workings " + letters[Math.floor(i / 2) * 2] + " and " + (letters[Math.floor(i / 2) * 2 + 1] || "") : "Show working " + letters[i]) + (t.verdict === "bad" || (!t.verdict && wkTried.has(i)) ? ", tried: wrong" : t.verdict === "ok" ? ", marked right" : t.verdict === "memo" ? ", the memo's answer" : "") })) : [],
-      wkHint: "Swipe or tap " + letters[0] + "–" + letters[Math.max(0, opts.length - 1)] + (closed ? " to look over the other workings." : " to compare the workings. Tap the one you choose to answer."),
+      wkHint: "Swipe or tap " + letters[0] + "–" + letters[Math.max(0, opts.length - 1)] + (closed ? " to look over the other " + (pics ? "drawings." : "workings.") : " to compare the " + (pics ? "drawings" : "workings") + ". Tap the one you choose to answer."),
       tilesKeys: e => { if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].indexOf(e.key) === -1) return;
         // focus swipe: left / right change the working shown (never answer); up / down do nothing (the others are not on screen)
         if (work) { e.preventDefault(); if (e.key === "ArrowLeft" || e.key === "ArrowRight") this.wkStep(e.key === "ArrowRight" ? 1 : -1, true); return; }

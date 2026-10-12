@@ -219,6 +219,10 @@ def main():
     else:
         paper, meta = call_claude(a.paper, a.memo, a.model, a.effort)
         (out / "response.json").write_text(json.dumps({"meta": meta, "paper": paper}, indent=1, ensure_ascii=False), encoding="utf-8")
+    # every drawing question as "pick the drawing" (Murci, 2026-10-12): pictures.py holds each part's drawings
+    import pictures
+    if any(p == a.id for p, _ in pictures.PICS):
+        pictures.apply(a.id, paper)
     issues = validate.check(paper)
     states = validate.review(paper, issues)
     figs = crop_figures(paper, a.paper, out, a.answer_book)

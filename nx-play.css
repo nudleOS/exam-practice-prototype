@@ -2495,6 +2495,13 @@ body.nx-play [data-track][data-wkpair="true"] { grid-template-columns:repeat(2, 
 body.nx-play [data-wkfocus="true"] [data-tile][data-fon="false"] { display:none !important; }
 body.nx-play [data-wkfocus="true"] [data-tile] { align-items:flex-start !important; padding:12px 14px !important; }
 body.nx-play [data-wktext="true"] { font-weight:400 !important; font-size:15.5px !important; line-height:1.45 !important; text-wrap:wrap !important; }
+/* a DRAWING to pick (2026-10-12): the paper's ink on a white plate, as a figure; the card's width, at most 260 px high */
+body.nx-play [data-optpic="true"] { display:block; width:100%; height:auto; max-height:260px; object-fit:contain; background:#fff; border-radius:10px; padding:6px; box-sizing:border-box; pointer-events:none; }
+/* a drawing's card: the letter (and the stamp, once marked) on a slim row, the drawing under it at the card's full width (beside the letter
+   it was 254 px on a 360 px phone) */
+body.nx-play [data-tile]:has(img[data-optpic]) { flex-wrap:wrap !important; row-gap:8px !important; padding:10px !important; }
+body.nx-play [data-tile]:has(img[data-optpic]) > [data-wktext] { order:3; flex:1 0 100% !important; }
+body.nx-play [data-tile]:has(img[data-optpic]) > span:not([data-wktext]):not(:first-child) { margin-left:auto; }
 body.nx-play [data-wl] { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; column-gap:12px; row-gap:0; padding:3px 0; }
 body.nx-play [data-ws] { flex:1 1 auto; min-width:0; overflow-wrap:anywhere; }
 /* a reason stays beside its statement while both fit; a long pair puts the reason on its own line, right-aligned (the memo wraps a

@@ -111,7 +111,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "e5de6b1910",
+   "rev": "1da6d11e46",
    "source_pdf": "uploads/Geography P1 Nov 2025 Eng.pdf",
    "printed_marks": 150
   },
@@ -134,7 +134,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "2d91a19dc0",
+   "rev": "a9b62ef08a",
    "source_pdf": "uploads/Geography P2 Nov 2025 Eng.pdf",
    "printed_marks": 150
   },
@@ -157,7 +157,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "7010588451",
+   "rev": "69ff401d9f",
    "source_pdf": "uploads/Geography P1 Nov 2024 Eng.pdf",
    "printed_marks": 150
   },
@@ -269,7 +269,7 @@ window.NX_CATALOGUE = {
    "missions": 14,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "87c3e50b17",
+   "rev": "34d4103c45",
    "source_pdf": "uploads/Life Sciences P2 Nov 2024 Eng.pdf"
   },
   {
@@ -291,7 +291,7 @@ window.NX_CATALOGUE = {
    "missions": 11,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "c83b7c4be0",
+   "rev": "ee78331e23",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2025 Eng.pdf"
   },
   {
@@ -313,7 +313,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "9bef5db38d",
+   "rev": "4d3bbc2076",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2025 Eng.pdf"
   },
   {
@@ -335,7 +335,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "b48b27259f",
+   "rev": "84315ce4c4",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2024 Eng.pdf"
   },
   {
@@ -401,7 +401,7 @@ window.NX_CATALOGUE = {
    "missions": 41,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "7dff159203",
+   "rev": "f4fc902ba1",
    "source_pdf": "uploads/Mathematics P2 Nov 2025 Eng.pdf"
   },
   {
@@ -423,7 +423,7 @@ window.NX_CATALOGUE = {
    "missions": 39,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "4dd3e36dfe",
+   "rev": "b0553b6812",
    "source_pdf": "uploads/Mathematics P1 Nov 2024 Eng.pdf"
   },
   {
@@ -467,7 +467,7 @@ window.NX_CATALOGUE = {
    "missions": 47,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "9b05159921",
+   "rev": "36f562415a",
    "source_pdf": "uploads/Physical Sciences P1 Nov 2025 Eng.pdf"
   },
   {
@@ -489,7 +489,7 @@ window.NX_CATALOGUE = {
    "missions": 34,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "862648d448",
+   "rev": "301756ab27",
    "source_pdf": "uploads/Physical Sciences P2 Nov 2025 Eng.pdf"
   },
   {
@@ -511,7 +511,7 @@ window.NX_CATALOGUE = {
    "missions": 43,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "7df4f53b85",
+   "rev": "87914092a5",
    "source_pdf": "uploads/Physical Sciences P1 Nov 2024 Eng.pdf"
   },
   {
@@ -533,7 +533,7 @@ window.NX_CATALOGUE = {
    "missions": 37,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "aa460f974f",
+   "rev": "755be57941",
    "source_pdf": "uploads/Physical Sciences P2 Nov 2024 Eng.pdf"
   },
   {
