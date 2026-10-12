@@ -84,6 +84,27 @@ def tree2(first, second, outcomes):
     return svg(340, 200, "".join(out))
 
 
+def triangle(variant, w="W", f="Fₐ = 60 N", t="T"):
+    """A closed vector diagram of three forces in equilibrium (PS P1 Nov 2024 EC 2.2): W down the left side, Fₐ along the bottom to
+    the right, T closing the triangle back to the top, head to tail, θ at the top between W and T. variant: right | tails (T drawn the
+    wrong way, so the arrows do not follow each other round) | open (the three forces from one point: a free-body diagram) | theta
+    (θ marked at the bottom right, between Fₐ and T)."""
+    A, B, Cc = (110, 30), (110, 190), (250, 190)    # top, bottom left, bottom right
+    out = []
+    if variant == "open":
+        o = (165, 110)
+        out += [L(o[0], o[1], o[0], o[1] + 85, w=2.4, arrow=True), L(o[0], o[1], o[0] + 120, o[1], w=2.4, arrow=True),
+                L(o[0], o[1], o[0] - 70, o[1] - 80, w=2.4, arrow=True), D.C(o[0], o[1], 4, fill=D.INK, w=1),
+                T(o[0] + 14, o[1] + 82, w, size=14, anchor="start", italic=True), T(o[0] + 118, o[1] - 10, f, size=13, anchor="end"),
+                T(o[0] - 74, o[1] - 84, t, size=14, italic=True), T(o[0] - 16, o[1] - 30, "θ", size=14, italic=True)]
+        return svg(330, 210, "".join(out))
+    out += [L(*A, *B, w=2.4, arrow=True), L(*B, *Cc, w=2.4, arrow=True)]
+    out.append(L(*A, *Cc, w=2.4, arrow=True) if variant == "tails" else L(*Cc, *A, w=2.4, arrow=True))
+    out += [T(96, 115, w, size=14, anchor="end", italic=True), T(180, 208, f, size=13), T(192, 100, t, size=14, italic=True, anchor="start")]
+    out.append(T(236, 178, "θ", size=14, italic=True) if variant == "theta" else T(122, 66, "θ", size=14, italic=True))
+    return svg(330, 215, "".join(out))
+
+
 def register(add):
     # ---- Grade 11 Mathematics P2 Nov 2024 (EC) 2.4: the ogive of the boxers' weights (memo: grounding, upper limits, shape)
     U, CF = [55, 75, 95, 115, 135, 155], [1, 4, 13, 19, 22, 23]
@@ -113,3 +134,25 @@ def register(add):
           tree2(S1, [[("U", "x"), ("U′", "1 − x")], [("U", "0,2x"), ("U′", "0,8x")]], OUT)),
          ("S 0,7 then U x, U′ x − 1; S′ 0,3 then U 0,2x, U′ 0,2x − 1",
           tree2(S1, [[("U", "x"), ("U′", "x − 1")], [("U", "0,2x"), ("U′", "0,2x − 1")]], OUT))], 3)
+
+    # ---- Grade 11 Physical Sciences P1 Nov 2024 (EC)
+    PS = "g11-ps-p1-2024-11-ec"
+    add(PS, "2.2", ("W down, Fₐ = 60 N to the right, T back to the top: head to tail, closed, θ between W and T", triangle("right")),
+        [("The same triangle with T pointing away from the top: the arrows do not follow each other round", triangle("tails")),
+         ("W, Fₐ and T drawn from one point, not a closed triangle", triangle("open")),
+         ("A closed triangle with θ marked between Fₐ and T", triangle("theta"))], 0)
+    # 5.2: the 3 kg block on the 30° slope (the memo's diagram): N, F, T, f and W
+    add(PS, "5.2", ("N perpendicular to the slope, F up the slope, T and f down the slope, W straight down",
+                    D.fbd([("N", 120, 66), ("F", 30, 88), ("T", 202, 80, (0, -8)), ("f", 218, 52, (-4, 12)), ("W", 270, 76)], surface=30)),
+        [("N, F, T and W, with f up the slope", D.fbd([("N", 120, 66), ("F", 30, 88), ("T", 202, 80), ("f", 30, 50, (0, 18)), ("W", 270, 76)],
+                                                      surface=30)),
+         ("F, T, f and W, with no N", D.fbd([("F", 30, 88), ("T", 202, 80, (0, -8)), ("f", 218, 52, (-4, 12)), ("W", 270, 76)], surface=30)),
+         ("N, F, T, f and W, and an extra force Fnet up the slope",
+          D.fbd([("N", 120, 66), ("F", 30, 88), ("T", 202, 80, (0, -8)), ("f", 218, 52, (-4, 12)), ("W", 270, 76), ("Fnet", 30, 44, (8, 24))],
+                surface=30))], 3)
+    # 7.2: A (−15 nC) left, B (positive) right: the lines run from B to A
+    ab, sg = ("A", "B"), ("−", "+")
+    add(PS, "7.2", ("Lines from B to A, curving between and around them, never crossing", D.dipole("reversed", labels=ab, signs=sg)),
+        [("Lines from A to B", D.dipole("right", labels=ab, signs=sg)),
+         ("Lines pushing apart between A and B, as for two like charges", D.dipole("like", labels=ab, signs=sg)),
+         ("Lines between A and B with two lines crossing", D.dipole("crossing", labels=ab, signs=sg))], 1)

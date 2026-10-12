@@ -64,6 +64,32 @@ class Paper:
         return {"t": "mcq", "n": n, "marks": marks, "q": q + ANSWER, "clues": clues, "opts": o, "a": a, **kw}
 
     @staticmethod
+    def mcq(n, q, opts, a, clues, marks=2, **kw):
+        """Multiple choice PRINTED in the paper (or a choice printed in the stem): its options and right letter as printed."""
+        return {"t": "mcq", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "a": a, **kw}
+
+    @staticmethod
+    def term(n, q, a, clues, marks=1, **kw):
+        """One term the memo names: a, the accepted words."""
+        return {"t": "term", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, **kw}
+
+    def stmt(self, n, q, marks, right, wrong, clues, each, **kw):
+        """A written answer as statements: the memo's points (right) and clearly false cards (wrong), shuffled with a fixed seed;
+        the learner picks marks/each of them, any right one counts, each right pick earns `each`."""
+        import random
+        count = marks // each
+        assert marks % each == 0 and 1 <= count <= len(right) and 5 <= len(right) + len(wrong) <= 8, n
+        assert len(set(right + wrong)) == len(right + wrong), n + ": a statement twice"
+        for salt in range(50):   # the first seed that puts no single right card first and not all right cards on top
+            order = list(range(len(right) + len(wrong)))
+            random.Random(self.pid + ":" + n + ("" if not salt else ":%d" % salt)).shuffle(order)
+            pool = sorted(k for k, i in enumerate(order) if i < len(right))
+            if (count > 1 or pool[0] != 0) and pool != list(range(len(pool))):
+                break
+        opts = [(right + wrong)[i] for i in order]
+        return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "pool": pool, "count": count, **kw}
+
+    @staticmethod
     def num(n, q, a, tol, unit, clues, marks=1, **kw):
         return {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit, **kw}
 
@@ -93,7 +119,7 @@ class Paper:
                 venn_ok(i)
             if b.get("kind") == "tree":
                 tree_ok(i)
-            assert i["t"] != "mcq" or len(i["opts"]) == 4, i["n"]
+            assert i["t"] != "mcq" or len(i["opts"]) == 4 or i["n"] not in self.authored + self.answers, i["n"]   # printed choices may be 3
         at = ["ABCD"[i["a"]] for i in items if i["t"] == "mcq" and i["n"] in self.authored + self.answers]
         spread = {k: at.count(k) for k in "ABCD"}
         assert max(spread.values()) - min(spread.values()) <= 1, spread
