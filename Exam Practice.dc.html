@@ -3818,8 +3818,8 @@ class Component extends DCLogic {
     if (!a || typeof a !== "object") return "";
     let t = "";
     if (k === "boxplot") t = [["min", "Minimum"], ["q1", "Q₁"], ["med", "median"], ["q3", "Q₃"], ["max", "maximum"]].filter(w => isN(a[w[0]])).map(w => w[1] + " " + N(a[w[0]])).join(" · ");
-    else if (k === "numline") { const end = i => isN(a["e" + i]) ? N(a["e" + i]) + (a["c" + i] ? " (" + a["c" + i] + ")" : "") : "…";
-      t = !a.s ? (isN(a.e0) ? end(0) : "") : a.s === "left" || a.s === "right" ? "Shaded " + a.s + " of " + end(0) : "Shaded " + a.s + " " + end(0) + " and " + end(1); }
+    else if (k === "numline") { const end = i => isN(a["e" + i]) ? N(a["e" + i]) + (a["c" + i] ? " (" + a["c" + i] + " dot)" : "") : "…";   // the memo's words: "Shaded to the left of 3 (closed dot)"
+      t = !a.s ? (isN(a.e0) ? end(0) : "") : a.s === "left" || a.s === "right" ? "Shaded to the " + a.s + " of " + end(0) : "Shaded " + a.s + " " + end(0) + " and " + end(1); }
     else if (k === "sketch") { const P = a.p || {}, GR = b.graphs && b.graphs.length ? b.graphs : [{ family: b.family }], deg = GR.some(g => ({ sin: 1, cos: 1, tan: 1 })[g.family]);
       t = (b.features || []).filter(f => P[f.id] != null).map(f => { const v = P[f.id];
         return f.label + " " + (f.kind === "point" ? "(" + N(v[0], deg) + " ; " + N(v[1]) + ")" : f.kind === "hline" ? "y = " + N(v) : "x = " + N(v, deg)); }).join(" · "); }
