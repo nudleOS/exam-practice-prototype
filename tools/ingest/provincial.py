@@ -120,6 +120,13 @@ class Paper:
             if b.get("kind") == "tree":
                 tree_ok(i)
             assert i["t"] != "mcq" or len(i["opts"]) == 4 or i["n"] not in self.authored + self.answers, i["n"]   # printed choices may be 3
+            # a working line ending in "[...]" draws its bracket as a proof's REASON column (platform workings.ts workLines): a
+            # concentration "[H₃O⁺]" or "[OH⁻]" at a line's end would be drawn as one
+            for o in (i.get("opts") or []) if i["t"] == "mcq" else []:
+                if "\n" in o:
+                    for ln in o.split("\n"):
+                        m = re.search(r"\[([^\[\]]+)\]\s*$", ln)
+                        assert not (m and re.search(r"[⁺⁻]|^H|^OH", m.group(1))), (i["n"], "a concentration read as a reason", ln)
         at = ["ABCD"[i["a"]] for i in items if i["t"] == "mcq" and i["n"] in self.authored + self.answers]
         spread = {k: at.count(k) for k in "ABCD"}
         assert max(spread.values()) - min(spread.values()) <= 1, spread

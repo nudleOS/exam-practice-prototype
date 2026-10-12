@@ -320,3 +320,21 @@ def register(add):
         [("Lines radially outwards, the arrows pointing away from the charge", point_field("−", "out")),
          ("Field lines drawn as circles round the charge", point_field("−", "circles")),
          ("Inward lines that stop short of the charge", point_field("−", "short"))], 3)
+
+    # ---- Grade 11 Physical Sciences P2 Nov 2025 (EC)
+    P4 = "g11-ps-p2-2025-11-ec"
+    add(P4, "2.2.1", ("H : O : Cℓ: two lone pairs on O, three on Cℓ, one shared pair in each bond", hocl("ud", "udr")),
+        [("O with one lone pair only", hocl("u", "udr")),
+         ("H : Cℓ : O, with Cℓ in the middle", lewis([("H", 80, 75, ""), ("Cℓ", 165, 75, "ud"), ("O", 250, 75, "udr")], [(0, 1, 1), (1, 2, 1)])),
+         ("Two shared pairs between O and Cℓ", hocl("u", "ur", 2))], 1)
+    hcn = lambda n_cn, n_lone, order=("H", "C", "N"): lewis([(order[0], 80, 75, ""), (order[1], 165, 75, ""), (order[2], 250, 75, n_lone)],
+                                                            [(0, 1, 1), (1, 2, n_cn)])
+    add(P4, "2.2.2", ("H : C ⋮ N: one shared pair H–C, three shared pairs C≡N, one lone pair on N", hcn(3, "r")),
+        [("Two shared pairs between C and N, two lone pairs on N", hcn(2, "ud")),
+         ("Three shared pairs between C and N, no lone pair on N", hcn(3, "")),
+         ("H : N ⋮ C, with N in the middle", hcn(3, "r", ("H", "N", "C")))], 3)
+    add(P4, "5.5", ("A dotted curve from 164,1 to 0 with a lower peak", profile(164.1, 405.3, 0, ["164,1", "", "0"], dotted=330)),
+        [("A dotted curve with a higher peak", profile(164.1, 405.3, 0, ["164,1", "", "0"], dotted=460)),
+         ("A dotted curve with the same peak", profile(164.1, 405.3, 0, ["164,1", "", "0"], dotted=408)),
+         ("A dotted curve with a lower peak, on an endothermic graph from 0 to 164,1", profile(0, 241.2, 164.1, ["0", "", "164,1"], dotted=205))],
+        0)

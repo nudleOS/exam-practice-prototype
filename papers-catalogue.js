@@ -689,6 +689,28 @@ window.NX_CATALOGUE = {
    "rev": "2132ee0055",
    "source_pdf": "uploads/provincial/g11-ps-p1-2025-11-ec/PHYSICAL SC P1 QP GR11 NOV 2025 ENG_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
+  },
+  {
+   "id": "g11-ps-p2-2025-11-ec",
+   "title": "Physical Sciences P2",
+   "subject": "Physical Sciences",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 180,
+   "questions": 9,
+   "missions": 14,
+   "status": "ready",
+   "rev": "7c3b460e15",
+   "source_pdf": "uploads/provincial/g11-ps-p2-2025-11-ec/PHYSICAL SC P2 QP GR11 NOVEMBER 2025 (2)_watermark.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2025"
   }
  ]
 };
