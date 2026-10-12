@@ -259,7 +259,47 @@ def plot(pts, xmax, ymax, xstep, ystep, xlab, ylab, join=None, title=""):
     return svg(340, 234, "".join(out))
 
 
+def bars(labels, values, ymax, ystep, xlab, ylab, title="", line=False):
+    """A bar graph of one value per category (a learner's 'histogram' of a table), or, with line=True, the same values joined as a
+    line graph; a title above when given (the memo's caption mark)."""
+    top = 30 if title else 10
+    n = len(labels)
+    X = lambda i: 58 + (i + 0.5) * 262 / n
+    Y = lambda v: 200 - v * (200 - top) / ymax
+    out = []
+    for v in range(0, ymax + 1, ystep):
+        out += [L(58, Y(v), 320, Y(v), w=0.5, color="#ccc"), T(52, Y(v) + 3, str(v), size=9, anchor="end")]
+    out.append(axes(58, top - 4, 326, Y(0), "", "", zero=False))
+    bw = 262 / n * 0.55
+    for i, (lab, v) in enumerate(zip(labels, values)):
+        if not line:
+            out.append(f'<rect x="{X(i) - bw / 2:.1f}" y="{Y(v):.1f}" width="{bw:.1f}" height="{Y(0) - Y(v):.1f}" fill="#9aa4b1" stroke-width="1.2"/>')
+        out.append(T(X(i), 213, lab, size=10))
+    if line:
+        out.append(poly([(X(i), Y(v)) for i, v in enumerate(values)], w=2))
+        out += [D.C(X(i), Y(v), 3.2, w=0, fill=D.INK) for i, v in enumerate(values)]
+    if title:
+        out.append(T(189, 16, title, size=9.5, weight=700))
+    if xlab:
+        out.append(T(189, 228, xlab, size=10))
+    if ylab:
+        out.append(T(14, (top + 200) / 2, ylab, size=9).replace("<text ", '<text transform="rotate(-90 14 %g)" ' % ((top + 200) / 2), 1))
+    return svg(340, 234, "".join(out))
+
+
 def register(add):
+    # ---- Grade 11 Life Sciences P1 Nov 2024 (EC) 2.1.1: the time to release 20 bubbles under each colour of light (memo: type of
+    # graph, caption, scale and equal bars, labels with the unit, the three bars plotted)
+    CL, TS = ["Blue", "Green", "Red"], [40, 160, 80]
+    TT = "Time to release 20 bubbles under different colours of light"
+    bl = lambda vals, title=TT, xl="Colour of light", yl="Time to release 20 bubbles (s)", line=False: bars(CL, vals, 180, 20, xl, yl, title, line)
+    add("g11-ls-p1-2024-11-ec", "2.1.1",
+        ("A captioned bar graph: Blue 40 s, Green 160 s, Red 80 s, equal bars on a 0 – 180 s scale, both axes labelled with the unit",
+         bl(TS)),
+        [("The same values joined as a line graph", bl(TS, line=True)),
+         ("A captioned bar graph with Green 80 s and Red 160 s", bl([40, 80, 160])),
+         ("The three bars with no caption and no axis labels", bl(TS, "", "", ""))], 2)
+
     # ---- Grade 11 Mathematical Literacy P1 Nov 2025 (EC) 2.2.3: builders and days, 36 builder-days (memo: the points, a smooth curve)
     BD = [(3, 12), (4, 9), (6, 6), (9, 4), (12, 3)]
     bd = lambda pts, join: plot(pts, 14, 14, 2, 2, "Number of builders", "Number of days", join)

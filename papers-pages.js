@@ -2667,5 +2667,53 @@ window.NX_PAGES = {
     "4.3": 10
    }
   }
+ },
+ "g11-ls-p1-2024-11-ec": {
+  "qp": {
+   "pages": 16,
+   "src": "assets/papers/g11-ls-p1-2024-11-ec/qp-",
+   "pdf": "uploads/provincial/g11-ls-p1-2024-11-ec/LIFE SCIENCES P1 GR11 QP NOV2024 ENG D_watermark.pdf",
+   "w": 1000,
+   "h": 1415,
+   "find": {
+    "1.1": 3,
+    "1.2": 5,
+    "1.3": 6,
+    "1.4": 6,
+    "1.5": 7,
+    "2.1": 8,
+    "2.2": 9,
+    "2.3": 9,
+    "2.4": 10,
+    "2.5": 11,
+    "3.1": 12,
+    "3.2": 13,
+    "3.3": 13,
+    "3.4": 14
+   }
+  },
+  "mg": {
+   "pages": 13,
+   "src": "uploads/papers/g11-ls-p1-2024-11-ec/mg-",
+   "pdf": "uploads/provincial/g11-ls-p1-2024-11-ec/FINAL AMENDED LIFE SCIENCES P1 GR11 MEMO NOV2024_English_watermark.pdf",
+   "w": 1000,
+   "h": 1415,
+   "find": {
+    "1.1": 4,
+    "1.2": 4,
+    "1.3": 4,
+    "1.4": 4,
+    "1.5": 5,
+    "2.1": 6,
+    "2.2": 7,
+    "2.3": 7,
+    "2.4": 8,
+    "2.5": 9,
+    "3.1": 10,
+    "3.2": 10,
+    "3.3": 11,
+    "3.4": 13
+   }
+  }
  }
 };
