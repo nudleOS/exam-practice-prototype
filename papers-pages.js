@@ -2627,5 +2627,45 @@ window.NX_PAGES = {
     "4.4": 8
    }
   }
+ },
+ "g11-ml-p2-2025-11-ec": {
+  "qp": {
+   "pages": 10,
+   "src": "assets/papers/g11-ml-p2-2025-11-ec/qp-",
+   "pdf": "uploads/provincial/g11-ml-p2-2025-11-ec/MATHS LIT GRADE 11 NOV 2025 QPAPER (2)_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 3,
+    "1.2": 4,
+    "1.3": 5,
+    "1.4": 5,
+    "2.1": 6,
+    "2.2": 6,
+    "3.1": 7,
+    "4.1": 9,
+    "4.2": 10,
+    "4.3": 10
+   }
+  },
+  "mg": {
+   "pages": 10,
+   "src": "uploads/papers/g11-ml-p2-2025-11-ec/mg-",
+   "pdf": "uploads/provincial/g11-ml-p2-2025-11-ec/MATHS LIT P2 GRADE 11 NOV 2025 MEMO ENG_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 3,
+    "1.2": 3,
+    "1.3": 3,
+    "1.4": 3,
+    "2.1": 5,
+    "2.2": 5,
+    "3.1": 7,
+    "4.1": 9,
+    "4.2": 9,
+    "4.3": 10
+   }
+  }
  }
 };

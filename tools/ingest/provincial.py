@@ -38,10 +38,12 @@ class Paper:
     # ---- figures and parts
     def fig(self, name, caption):
         """FIGS[name] = [page, x0, y0, x1, y1] in points, then optionally a dict of extra figure fields: {"source": "answer_book"}
-        for an annexure cropped from the addendum (ingest.py --answer-book), "rotate" for one printed on its side."""
+        for an annexure cropped from the addendum (ingest.py --answer-book), "rotate" for one printed on its side, and "size":
+        [w, h] for a page not the paper's size (a landscape annexure page), used for the fractions and not written out."""
         p, x0, y0, x1, y1, *extra = self.FIGS[name]
-        return {"page": p, "bbox": [round(x0 / self.W, 4), round(y0 / self.H, 4), round(x1 / self.W, 4), round(y1 / self.H, 4)],
-                "caption": caption, **(extra[0] if extra else {})}
+        extra = dict(extra[0]) if extra else {}
+        w, h = extra.pop("size", (self.W, self.H))
+        return {"page": p, "bbox": [round(x0 / w, 4), round(y0 / h, 4), round(x1 / w, 4), round(y1 / h, 4)], "caption": caption, **extra}
 
     def _place(self, opts):
         at = "ABCD".index(self.seq[self.k])
