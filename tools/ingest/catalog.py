@@ -185,6 +185,110 @@ TREE = obj({
                        "a stage's); 'out' every end's outcome, (B ; R), asked only when this is given. A criterion earns its marks when "
                        "ALL its components are right; a criterion no component names cannot be earned (flag it)"}},
     ["kind", "outcomes", "stages", "tree", "crit"])
+# a graph plotted from data (2026-10-11, build-play.js "plot"): the learner chooses the axes' labels and the scale where the memo marks
+# them, places each data point on the grid and chooses the line (a straight line of best fit, a smooth curve, the points joined); or, in
+# tangent mode, places the two ends of a straight line on a graph the paper gives. The learner sees the grid, the choices and each point's
+# NAME; where the points belong, the right labels and scales and the tests stay in the key
+PL_AXIS = obj({
+    "name": {"type": "string", "description": "The axis' label with its unit, as the paper prints it on the grid ('Cumulative frequency', "
+             "'Pressure (kPa)'); left out where the learner chooses it from labels"},
+    "unit": {"type": "string", "description": "With scales: the unit shown beside each choice ('N', 'kPa')"},
+    "min": NUM, "max": NUM,
+    "step": {"type": "number", "description": "The paper's scale: a number and a bold grid line every step"},
+    "minor": {"type": "number", "description": "The paper's scale: a fine grid line every so many units (its small squares)"},
+    "snap": {"type": "number", "description": "The paper's scale: where a tap lands; every memo value must be within tol of a multiple of it"},
+    "scales": {**NUMS, "description": "Only when the memo marks the scale and the paper's grid is blank: the values per BIG square the learner "
+               "chooses from (the axis then runs from 0 over grid's big squares; a tap snaps to a small square)"},
+    "ok": {**NUMS, "description": "With scales: the ones the memo accepts as a correct, appropriate scale: they hold every value and use at "
+           "least half of the grid"}},
+    [])
+PL_POINT = obj({"id": STR,
+                "name": {"type": "string", "description": "What the point is, as the data table names it, never where it goes: 't = 2 s', "
+                         "'20 < x ≤ 30', 'Starting point'"},
+                "at": {**NUMS, "description": "[x, y] where the memo plots it (left out for a tangent's two line ends)"}}, ["id", "name"])
+PL_TEST = obj({
+    "k": {"type": "string", "enum": ["xl", "yl", "scale", "points", "xs", "ys", "line", "shape", "fit", "extrap", "tangent"],
+          "description": "What the criterion marks: xl / yl an axis' label (with unit); scale both axes' scales among ok; points `min` of "
+                         "`ids` right in x and y; xs / ys every one of `ids` right in x (class midpoints, upper limits) or in y; line the "
+                         "line is one of `kinds` and joins `ids` (all right); shape the line is one of `kinds` (`straight`, over `range`; "
+                         "`through` a point); fit a straight line of best fit through the learner's points (within `tol`); extrap the "
+                         "straight line reaches x = `x` within `tol` of `y` (extrapolated to the axis); tangent the straight line touches "
+                         "the given curve inside `range` within `tol`"},
+    "name": {"type": "string", "description": "A NEUTRAL name for its result chip ('Shape', 'Starting point'): never the answer"},
+    "ids": {**STRS, "description": "The points the test reads (points / xs / ys: default every point with an `at`)"},
+    "min": {"type": "integer", "description": "points: how many of ids must be right ('3 or more coordinates'); fit: how many points at least"},
+    "part": {"type": "array", "items": INTS, "description": "points: [[count, marks]] for fewer right than min (the memo's '1-4 correct: 1')"},
+    "joined": {"type": "boolean", "description": "points: the memo's 'plotted AND joined': a line must be drawn too"},
+    "kinds": {"type": "array", "items": {"type": "string", "enum": ["best", "curve", "join"]}, "description": "line / shape: the lines the "
+              "memo accepts: best a straight line (of best fit), curve a smooth curve through the points, join the points joined by "
+              "straight lines"},
+    "range": {**NUMS, "description": "shape: [x0, x1] the criterion speaks of ('the graph from 3 s to 7,5 s'); tangent: the curve's x range"},
+    "straight": {"type": "boolean", "description": "shape: true the line is straight over range (the learner's points there lie on one line); "
+                 "false a curve over range (a smooth curve through points that do not)"},
+    "through": {**NUMS, "description": "shape: [x, y] the line passes through ('through the origin')"},
+    "tol": {"type": "number", "description": "fit / extrap / tangent: how far off still earns it, in y units"},
+    "x": NUM, "y": NUM,
+    "ref": {"type": "array", "items": NUMS, "description": "tangent: the memo's line, two points [[x, y], [x, y]] (for the record and the "
+            "self-test; never shown)"}},
+    ["k"])
+PL_GIVEN = obj({"name": {"type": "string", "description": "Its name in the legend, as the paper's key names it ('DJ 5-Star')"},
+                "pts": {"type": "array", "items": NUMS, "description": "Points the graph passes through"},
+                "curve": {"type": "boolean", "description": "pts joined by a smooth curve (else by straight lines)"},
+                "segs": {"type": "array", "items": NUMS, "description": "Line segments [x0, y0, x1, y1] (a step graph's steps)"},
+                "dots": {"type": "array", "items": NUMS, "description": "Dots [x, y] (filled) or [x, y, 1] (open)"},
+                "dash": {"type": "string", "enum": ["dash", "dashdot"]}}, ["name"])
+PLOT = obj({
+    "kind": {"type": "string", "const": "plot"},
+    "x": PL_AXIS, "y": PL_AXIS,
+    "grid": obj({"nx": INT, "ny": INT, "sub": INT}, ["nx", "ny"]) | {"description": "Only with scales to choose: the paper's blank grid, "
+                                                                       "its big squares across (nx) and up (ny) and small squares in each (sub)"},
+    "labels": {**STRS, "description": "Only when the memo marks the axes' labels: the labels (with units) both axes choose from, the right "
+               "ones among wrong quantities and wrong units"},
+    "xl": {"type": "string", "description": "With labels: the x-axis' right label"},
+    "yl": {"type": "string", "description": "With labels: the y-axis' right label"},
+    "points": {"type": "array", "items": PL_POINT, "description": "Every point the memo plots (a grounding point too), in the table's order"},
+    "tol": {**NUMS, "description": "[x, y]: how far from at still earns a point (half a small square of the memo's grid); a learner's coarser "
+            "scale widens it to half of their small square"},
+    "extend": {"type": "boolean", "description": "The stem asks to extrapolate: the straight line can be extended to the y-axis"},
+    "tangent": {"type": "boolean", "description": "Tangent mode: the learner places the two ends of a straight line on the given curve"},
+    "given": {"type": "array", "items": PL_GIVEN, "description": "A graph the paper prints already (drawn under the learner's)"},
+    "tests": {"type": "array", "items": PL_TEST, "description": "One per criterion, in the criteria's order: what earns it"}},
+    ["kind", "x", "y", "points", "tol", "tests"])
+HIST_STACK = obj({
+    "base": {"type": "array", "items": NUMS, "description": "Each bar's printed parts, as the tops of the stacked parts from the bottom"},
+    "series": {**STRS, "description": "The key's series, bottom to top ('2021', '2022', '2023')"},
+    "fill": {"type": "array", "items": {"type": "string", "enum": ["hatch", "white", "black"]}, "description": "Each series' shading in the key"},
+    "want": {"type": "integer", "description": "The series the new part is (its index): its shading earns the bar's completion"}},
+    ["base", "series", "fill", "want"])
+# a free-body / vector diagram of forces (2026-10-11, build-play.js "forces"): forces from the SAME tray of seven for every question,
+# each aimed from a dot; the learner sees the body's frame only (its surface, its outline, whether an angle is asked)
+FZ_IDS = ["Fg", "FN", "f", "FA", "T", "FE", "Fnet"]
+FZ_FORCE = obj({
+    "id": {"type": "string", "enum": FZ_IDS, "description": "The tray's force the memo's label means: Fg (w, Fg, FG, Fw, weight, mg, "
+           "gravitational force), FN (N, FN, normal force), f (f, Ff, fk, fs, friction), FA (F, FA, Fapplied, Fengine, applied force), T "
+           "(T, FT, TC, TR, Fstring, tension), FE (FE, electrostatic force), Fnet (net force: never acts as a separate force)"},
+    "at": {"type": "number", "description": "Its direction in degrees, anticlockwise from pointing right (0 right, 90 up, 180 left, 270 "
+           "down; a slope's normal and friction from the slope's angle: a slope falling to the right at 15°, N 75, friction up it 165)"},
+    "tol": {"type": "number", "description": "Only where the paper fixes the direction loosely (an angle θ found in a later part; a figure "
+            "not to scale): how far from at still earns it, in degrees (default: the build's tol)"},
+    "crit": {"type": "integer", "description": "0-based index of the memo criterion this force earns (one mark: its label AND direction)"}},
+    ["id", "at", "crit"])
+FORCES = obj({
+    "kind": {"type": "string", "const": "forces"},
+    "forces": {"type": "array", "items": FZ_FORCE, "description": "Every force the memo's diagram draws, in the memo's order; two of one "
+               "kind (a cable's and a rope's tension) are told apart by direction"},
+    "tol": {"type": "number", "description": "How far from at a direction still earns, in degrees (default 10)"},
+    "free": {"type": "array", "items": {"type": "string", "enum": FZ_IDS}, "description": "Forces the memo lets go unmarked ('do not "
+             "penalise if vertical forces (w, N) are shown'): neither earn nor cost. Any other force not in forces costs 1 mark"},
+    "surface": {"type": "number", "description": "The surface the body rests on, as the paper's figure draws it, in degrees (0 level, 30 "
+                "rising to the right, −15 falling to the right); leave out for a hanging body"},
+    "body": {"type": "string", "enum": ["box", "sphere"], "description": "The body's faint outline round the dot (default box on a surface)"},
+    "angle": obj({"crit": INT, "pairs": {"type": "array", "items": {"type": "array", "prefixItems": [STR, STR, NUM], "minItems": 3, "maxItems": 3},
+                                         "description": "Each angle the memo accepts: [line, line, degrees], a line a force id or 'V' "
+                                                        "(the vertical) or 'H' (the horizontal): ['T', 'V', 20]"}},
+                 ["crit", "pairs"]) | {"description": "Only where the question asks to indicate an angle: its criterion and the angles that "
+                                                      "earn it, between two of the learner's right arrows or an arrow and a guide"}},
+    ["kind", "forces"])
 
 COMPONENTS = {
     "mcq": component("mcq", "Pick ONE of 2-6 options.", {"opts": STRS, "a": {"type": "integer", "description": "0-based index of the right option"},
@@ -257,9 +361,21 @@ COMPONENTS = {
             obj({"kind": {"type": "string", "const": "hist"}, "want": {"type": "string", "enum": ["histogram", "bar", "line"]},
                  "groups": STRS, "answers": {"type": "array", "items": NUM}, "tol": NUM, "top": NUM, "steps": {"type": "array", "items": NUM},
                  "okSteps": {"type": "array", "items": NUM}, "snap": NUM, "x": STRS, "y": STRS, "capWords": {"type": "array", "items": STRS},
-                 "typeQ": STR, "typeHint": STR, "unit": STR},
-                ["kind", "want", "groups", "answers", "tol", "top", "steps", "okSteps", "x", "y", "capWords"]) | {
-                "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P: the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST; capWords: groups of words, the caption needs one word from each; okSteps: Y-axis steps the memo accepts"},
+                 "typeQ": STR, "typeHint": {"type": "string", "description": "A hint under the type choice; \"\" for none (the default hint "
+                                                                             "says a histogram's bars touch)"}, "unit": STR,
+                 "use": {"type": "array", "items": {"type": "string", "enum": ["Type", "Caption", "Axes", "Scale", "Plot"]},
+                         "description": "Only the steps the memo marks (the answer book gives the axes and scale: ['Type', 'Plot']); default all five"},
+                 "step": {"type": "number", "description": "Without the Scale step: the given y step"},
+                 "minor": {"type": "number", "description": "A fine grid line every so many units (as the paper's graph prints them)"},
+                 "axes": {**STRS, "description": "Without the Axes step: the given [x label, y label]"},
+                 "typeOpts": {"type": "array", "items": STRS, "description": "The type choice's own words: [[type, words]] ([['histogram', "
+                              "'Touching'], ['bar', 'With gaps']]: a stem that names the histogram marks only 'no gaps')"},
+                 "pmin": {"type": "integer", "description": "Right bars for P's first mark (default 1: '1 to 3 correct'; 2: 'two frequencies correct')"},
+                 "stack": HIST_STACK | {"description": "Only to COMPLETE a stacked bar graph the paper prints (with use ['Plot']): groups are the bars "
+                                                       "to complete, answers their new tops; each bar earns its end (E) and its completion in the "
+                                                       "key's series `want` (F), worth taken from criteria in that order, bar by bar"}},
+                ["kind", "want", "groups", "answers", "tol", "top"]) | {
+                "description": "Only when the paper asks to DRAW a bar graph / histogram / line graph the memo marks by T C L S P (or a part of them, use), or to complete a stacked bar graph (stack): the graph is BUILT on the phone step by step. want: the right type; groups: the X categories in order; answers: each group's value; x / y: the axis label choices, the right one FIRST (with the Axes step); capWords: groups of words, the caption needs one word from each (with the Caption step); steps / okSteps: the Y-axis steps offered and accepted (with the Scale step)"},
             obj({"kind": {"type": "string", "const": "cross"}, "alleles": STRS, "phenos": STRS,
                  "parents": {"type": "array", "items": obj({"pheno": STR, "geno": STRS}, ["pheno", "geno"])},
                  "offspring": {"type": "array", "items": obj({"geno": STRS, "pheno": STR}, ["geno", "pheno"])},
@@ -284,7 +400,17 @@ COMPONENTS = {
                                    "memo's own text"},
             TREE | {"description": "Only for 'Draw a tree diagram' (two stages) the memo marks by its branches, probabilities and outcomes: "
                                    "BUILT, the branches drawn, the learner choosing each branch's outcome, typing its probability and, "
-                                   "where crit has 'out', choosing each end's outcome. The criteria keep the memo's own text"}]},
+                                   "where crit has 'out', choosing each end's outcome. The criteria keep the memo's own text"},
+            PLOT | {"description": "Only for 'Draw a graph of ... / plot the data / draw an ogive / a frequency polygon / a line graph on the "
+                                   "grid' the memo marks by its axes, scale, points and line: BUILT on a grid, the learner choosing the labels "
+                                   "and scale where the memo marks them, placing each point and choosing the line; or (tangent) drawing a "
+                                   "straight line on the graph the paper gives. One test per criterion; a criterion nothing can earn is "
+                                   "flagged. The criteria keep the memo's own text"},
+            FORCES | {"description": "Only for 'Draw a (labelled) free-body diagram / a vector diagram of the forces acting on ...' the memo "
+                                     "marks one mark per force (label and arrow) and 'any additional force: deduct 1': BUILT from a dot, the "
+                                     "learner aiming each force from the same tray of seven. Each force names its criterion; the angle too "
+                                     "where one is asked. Not for a vector SCALE diagram of displacements (lengths and magnitudes marked). "
+                                     "The criteria keep the memo's own text"}]},
         "memo": STR}, ["criteria"]),
 }
 

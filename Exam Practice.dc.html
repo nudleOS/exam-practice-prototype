@@ -15,7 +15,7 @@
   <script type="module" src="model-floor.js?v=23"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.js" integrity="sha256-SfS8vFbnzrXD0l0T2x0NqWW2zRyKVKcHuwVb4GhbCpU=" crossorigin="anonymous"></script>
   <script src="paper-ls-p1-2026.js?v=6"></script>
-<script src="papers-catalogue.js?v=79"></script>
+<script src="papers-catalogue.js?v=80"></script>
   <!-- The papers the ingestion pipeline has FINISHED load with the page, so the paper map opens them: the catalogue's "ready"
        papers (tools/catalogue/make_catalogue.py, FINISHED: one list, which also gives each its question paper for the viewer).
        Until 2026-10-07 only a ?ingested=<id> link loaded a paper, one at a time, and the map said "still preparing" for every
@@ -34,7 +34,7 @@
 <script src="papers-pages.js?v=21"></script>
   <script src="nx-fold.js?v=1"></script>   <!-- long question text, condensed (Murci, 2026-10-11: B + A), read by the play screen and mcq-play -->
   <script src="mcq-play.js?v=68"></script>
-  <script src="build-play.js?v=23"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03; graph sketches, box and whisker diagrams, number lines, 2026-10-11 -->
+  <script src="build-play.js?v=24"></script>   <!-- the drawing questions as builders (3.1.3 histogram, 3.6.4 stems), 2026-10-03; graph sketches, box and whisker diagrams, number lines, 2026-10-11 -->
   <style>
     :root { --bg:#191b1e; --panel:#202327; --panel2:#1d2023; --field:#23262a; --line:#2a2e33; --line2:#363b41; --hover:#272b30;
       --text:#eceded; --text2:#a4a9ae; --text3:#8f9499; --text4:#878c91; --tint:#81b1ff;
@@ -97,7 +97,7 @@
     @media (prefers-reduced-transparency: reduce) { .glass-card, .glass-card[data-tone] { -webkit-backdrop-filter:none; backdrop-filter:none; background-color:var(--nx-c-hex, #1e2128); } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
-  <link rel="stylesheet" href="nx-play.css?v=300">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
+  <link rel="stylesheet" href="nx-play.css?v=301">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
   <link rel="stylesheet" href="nx-map.css?v=55">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
@@ -1941,7 +1941,7 @@ function buildPapers() {
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "geno", alleles: q.alleles, count: q.count, per: q.per === 4 ? 4 : 2 } }); }
           if (q.t === "draw" && q.build) { SERVER.memo[key] = (q.criteria || []).map(c => c[0]).concat(q.memo ? [q.memo] : []);
             const b = q.build; SERVER.keys[key] = Object.assign({ worth: (q.criteria || []).map(c => c[1]).concat(q.memo ? [0] : []) }, b.kind === "hist" ? { hist: b } : b.kind === "cross" ? { cross: b } : b.kind === "sketch" ? { sketch: b }
-              : b.kind === "boxplot" ? { boxplot: b } : b.kind === "numline" ? { numline: b } : b.kind === "venn" ? { venn: b } : b.kind === "tree" ? { tree: b } : { stems: b });
+              : b.kind === "boxplot" ? { boxplot: b } : b.kind === "numline" ? { numline: b } : b.kind === "venn" ? { venn: b } : b.kind === "tree" ? { tree: b } : b.kind === "plot" ? { plot: b } : b.kind === "forces" ? { forces: b } : { stems: b });
             // a cross keeps its criteria OUT of the part: they name its answers ("P1 genotypes: AA x AG"); its memo shows them at the end
             if (b.kind === "cross") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "cross", alleles: b.alleles, phenos: b.phenos.slice().sort(), gens: b.gens } });
             // a graph sketch (2026-10-11): the part gets the grid, the family and each feature's NAME; where each belongs (at, alt, tol), its
@@ -1959,6 +1959,26 @@ function buildPapers() {
             if (b.kind === "venn") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "venn", sets: b.sets.map(s => ({ id: s.id, name: s.name })), outside: !!b.outside, unknown: b.unknown || undefined } });
             if (b.kind === "tree") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "tree", outcomes: b.outcomes.map(x => ({ id: x.id, name: x.name })), stages: b.stages,
               skel: b.tree.map(t => t.next.length), ends: (b.crit || {}).out != null } });
+            // a force diagram (2026-10-11, the force builder): the part gets the body's frame only: the surface it rests on as the figure
+            // draws it, its outline, and whether an angle is asked. The forces that act, their directions, the forces the memo lets go
+            // unmarked (free), the tolerance and the criteria stay in the key ("Normal force (N / FN) drawn and labelled, up")
+            if (b.kind === "forces") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "forces",
+              surface: typeof b.surface === "number" ? b.surface : undefined, body: b.body || undefined, angle: !!b.angle } });
+            // a graph plotted from data (2026-10-11, the plot builder): the part gets the grid (the paper's scale, or the scale choices and
+            // the blank grid's squares), the label choices (sorted), each point's NAME, the graph the paper prints already and each
+            // criterion's neutral chip name. Where each point belongs, the right labels and scales, the tolerances and the tests stay in the key
+            if (b.kind === "plot") { const ax = c => ({ name: c.name, unit: c.unit, min: c.min, max: c.max, step: c.step, minor: c.minor, snap: c.snap,
+                scales: c.scales ? c.scales.slice().sort((p, q) => p - q) : undefined });
+              const CN = { xl: "x-axis label", yl: "y-axis label", scale: "Scale", points: "Points", xs: "Points' x-values", ys: "Points' y-values", line: "Line",
+                shape: "Shape", fit: "Line of best fit", extrap: "Extrapolation", tangent: "Straight line" };
+              return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "plot", x: ax(b.x), y: ax(b.y), grid: b.grid,
+                labels: b.labels ? b.labels.slice().sort() : undefined, points: b.points.map(p => ({ id: p.id, name: p.name })), extend: !!b.extend || undefined,
+                tangent: !!b.tangent || undefined, given: b.given, names: b.tests.map(t => t.name || CN[t.k] || "Criterion") } }); }
+            // a bar graph or histogram: its groups, the scale choices and label choices (sorted), never the right type, caption words,
+            // values or tolerance; a stacked bar's printed parts and its key, never which series the new part is
+            if (b.kind === "hist") return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: { kind: "hist", groups: b.groups, top: b.top,
+              steps: b.steps, snap: b.snap, unit: b.unit, x: b.x ? b.x.slice().sort() : undefined, y: b.y ? b.y.slice().sort() : undefined, typeQ: b.typeQ, typeHint: b.typeHint,
+              use: b.use, step: b.step, minor: b.minor, axes: b.axes, typeOpts: b.typeOpts, stack: b.stack ? { base: b.stack.base, series: b.stack.series, fill: b.stack.fill } : undefined } });
             // (the answers stay in the key, never in the part; so do a paper's chip `labels`: LS P1 2026 3.6.4's named each stem's
             // ANSWER, "✕ A bends to the light" on a miss told the learner the shape; the builder's own neutral names show instead)
             return Object.assign(base, { response_mode: "build", marking_mode: "answer", build: Object.assign({}, b, { criteria: q.criteria || [], answers: undefined, okSteps: undefined,
@@ -3895,16 +3915,93 @@ class Component extends DCLogic {
       const tot = Lo + An + Sy + Or; return { marks_awarded: tot, marks: part.marks || 8, full: tot >= (part.marks || 8), marker: "insight", items: items }; }
     // a built drawing, marked like the memo: the histogram's T C L S P (P: 2 for all four bars, 1 for one to three; a bar or line
     // graph loses T and S, the memo's rule), the stems one mark each
-    if (key.hist) { const h = key.hist, a = answer || {}, cap = " " + norm(a.cap) + " ";
-      const T = a.type === (h.want || "histogram"), C = h.capWords.every(g => g.some(w => cap.indexOf(" " + w) !== -1)), L = a.xl === h.x[0] && a.yl === h.y[0];
-      const S = T && h.okSteps.indexOf(a.step) !== -1, n = (a.v || []).filter((x, k) => Math.abs(x - h.answers[k]) <= h.tol).length, P = n === h.answers.length ? 2 : n > 0 ? 1 : 0;
+    // (2026-10-11) `use`: only the steps the memo marks are shown and marked (Maths P2 Nov 2025 2.1.3: T, "no gaps", and P, "two
+    // frequencies correct" + "all frequencies correct": pmin 2); `stack`: a stacked bar completed (ML P1 Nov 2025 3.2.3), each bar's end
+    // (E, within tol of the memo's) and its completion in the series the memo shades (F: the shading chosen and the part drawn), worth[]
+    // in that order, bar by bar
+    if (key.hist) { const h = key.hist, a = answer || {}, cap = " " + norm(a.cap) + " ", U = Array.isArray(h.use) && h.use.length ? h.use : ["Type", "Caption", "Axes", "Scale", "Plot"];
       const it = (k, got, of) => ({ key: k, awarded: got, available: of, verdict: got >= of ? "correct" : got > 0 ? "partial" : "incorrect" });
-      const items = [it("T", T ? 1 : 0, 1), it("C", C ? 1 : 0, 1), it("L", L ? 1 : 0, 1), it("S", S ? 1 : 0, 1), it("P", P, 2)];
+      let items;
+      if (h.stack) { const W = key.worth || [], top = k => h.stack.base[k][h.stack.base[k].length - 1];
+        items = h.groups.flatMap((g, k) => { const val = (a.v || [])[k], on = typeof val === "number" && val > top(k) + 1e-9;
+          const E = on && Math.abs(val - h.answers[k]) <= (h.tol || 0) + 1e-9, F = on && (a.sh || [])[k] === h.stack.want;
+          return [it("E" + k, E ? W[2 * k] || 0 : 0, W[2 * k] || 0), it("F" + k, F ? W[2 * k + 1] || 0 : 0, W[2 * k + 1] || 0)]; }); }
+      else { const T = a.type === (h.want || "histogram"), C = (h.capWords || []).every(g => g.some(w => cap.indexOf(" " + w) !== -1)), L = !!h.x && !!h.y && a.xl === h.x[0] && a.yl === h.y[0];
+        const S = T && (h.okSteps || []).indexOf(a.step) !== -1, n = (a.v || []).filter((x, k) => Math.abs(x - h.answers[k]) <= h.tol + 1e-9).length;
+        const P = n === h.answers.length ? 2 : n >= (h.pmin || 1) ? 1 : 0, STEP = { T: "Type", C: "Caption", L: "Axes", S: "Scale", P: "Plot" };
+        items = [it("T", T ? 1 : 0, 1), it("C", C ? 1 : 0, 1), it("L", L ? 1 : 0, 1), it("S", S ? 1 : 0, 1), it("P", P, 2)].filter(x => U.indexOf(STEP[x.key]) !== -1); }
       const got = items.reduce((t, x) => t + x.awarded, 0);
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items }; }
     if (key.stems) { const a = answer || {}, items = key.stems.stems.map(st => ({ key: st.id, awarded: a[st.id] === st.ans ? 1 : 0, available: 1, verdict: a[st.id] === st.ans ? "correct" : a[st.id] ? "incorrect" : "missing" }));
       const got = items.reduce((t, x) => t + x.awarded, 0);
       return { marks_awarded: got, marks: part.marks, full: got === part.marks, marker: "auto", items: items }; }
+    // a graph PLOTTED from data (2026-10-11, build-play.js "plot"), marked criterion by criterion as the memo marks it (tests[k] marks
+    // criterion k, worth[k] its marks). A point is right within tol of the memo's place: the key's tol, or half a small square of the
+    // learner's OWN scale where that is coarser (a memo marks the plotting on the learner's axes). The line: "best" a straight line through
+    // its two ends a, b; "join" / "curve" through the learner's own points in x order. The tests:
+    //   xl / yl   the axis' label chosen right              scale   both axes' scales among the memo's (ok)
+    //   points    `min` of `ids` (default: every point) right in x and y (`part`: [[count, marks]] for fewer; `joined`: a line drawn too)
+    //   xs / ys   every one of `ids` right in x (or in y)    line    the line is one of `kinds`, drawn, and every one of `ids` right
+    //   shape     the line is one of `kinds`; `straight`: over `range` the learner's points lie on one line (a straight line always does),
+    //             false: a smooth curve through points that do not; `through`: the line passes through [x, y]
+    //   fit       a straight line within `tol` (at least two small squares) of every one of the learner's points, at least `min` of them
+    //   extrap    the straight line reaches x = `x` and is within `tol` of `y` there (extrapolated to the axis)
+    //   tangent   the straight line through the learner's ends a, b touches the given curve (the builder's Akima spline) inside `range`,
+    //             10% in from its ends, within `tol`, never crossing it by more: a secant crosses it, a line beside it never touches
+    // The reply: one item per criterion ("c" + k) and each point right or wrong ("s:" + id, no marks) for the builder to show.
+    if (key.plot) { const b = key.plot, a = answer || {}, P = a.p || {}, W = key.worth || [], E = 1e-6, sub = (b.grid || {}).sub || 10, tol = b.tol || [0, 0];
+      const own = (c, s) => c && c.scales && typeof s === "number" && s > 0 ? s / sub / 2 : 0;
+      const tx = Math.max(tol[0], own(b.x, a.sx)), ty = Math.max(tol[1], own(b.y, a.sy));
+      const isPt = u => Array.isArray(u) && u.length === 2 && u.every(n => typeof n === "number" && isFinite(n)), has = id => isPt(P[id]);
+      const at = id => (b.points.find(q => q.id === id) || {}).at;
+      const okX = id => has(id) && isPt(at(id)) && Math.abs(P[id][0] - at(id)[0]) <= tx + E, okY = id => has(id) && isPt(at(id)) && Math.abs(P[id][1] - at(id)[1]) <= ty + E;
+      const okP = id => okX(id) && okY(id), plS = ps => ps.slice().sort((p, q) => p[0] - q[0]).filter((p, k, A) => !k || Math.abs(p[0] - A[k - 1][0]) > 1e-9);
+      const mine = plS(b.points.filter(q => has(q.id)).map(q => P[q.id]));
+      const k0 = a.k, line = k0 === "best" && isPt(a.a) && isPt(a.b) && Math.abs(a.b[0] - a.a[0]) > E ? { m: (a.b[1] - a.a[1]) / (a.b[0] - a.a[0]), a: a.a, b: a.b } : null;
+      const Lx = x => line.a[1] + line.m * (x - line.a[0]);
+      const drawn = k0 === "best" ? !!line : (k0 === "join" || k0 === "curve") && mine.length >= 2;
+      const inR = r => Array.isArray(r) ? mine.filter(p => p[0] >= r[0] - tx - E && p[0] <= r[1] + tx + E) : mine;
+      const straight = ps => { if (ps.length < 3) return ps.length === 2; const f = ps[0], l = ps[ps.length - 1]; if (Math.abs(l[0] - f[0]) < E) return false;
+        const m = (l[1] - f[1]) / (l[0] - f[0]); return ps.every(p => Math.abs(f[1] + m * (p[0] - f[0]) - p[1]) <= ty + E); };
+      const akima = Q => { const n = Q.length; if (n < 2) return null; const x = Q.map(p => p[0]), y = Q.map(p => p[1]), m = [];   // (build-play.js akima, the same)
+        for (let i = 0; i < n - 1; i++) m.push((y[i + 1] - y[i]) / (x[i + 1] - x[i]));
+        if (n === 2) return u => u < x[0] - 1e-9 || u > x[1] + 1e-9 ? NaN : y[0] + m[0] * (u - x[0]);
+        const M = i => i >= 0 && i < n - 1 ? m[i] : i === -1 ? 2 * m[0] - m[1] : i === -2 ? 3 * m[0] - 2 * m[1] : i === n - 1 ? 2 * m[n - 2] - m[n - 3] : 3 * m[n - 2] - 2 * m[n - 3];
+        const t = x.map((_, i) => { const w1 = Math.abs(M(i + 1) - M(i)), w2 = Math.abs(M(i - 1) - M(i - 2)); return w1 + w2 < 1e-12 ? (M(i - 1) + M(i)) / 2 : (w1 * M(i - 1) + w2 * M(i)) / (w1 + w2); });
+        return u => { if (!(u >= x[0] - 1e-9 && u <= x[n - 1] + 1e-9)) return NaN; let i = 0; while (i < n - 2 && u > x[i + 1]) i++;
+          const h = x[i + 1] - x[i], s = (u - x[i]) / h, s2 = s * s, s3 = s2 * s;
+          return (2 * s3 - 3 * s2 + 1) * y[i] + (s3 - 2 * s2 + s) * h * t[i] + (-2 * s3 + 3 * s2) * y[i + 1] + (s3 - s2) * h * t[i + 1]; }; };
+      const test = (t, k) => { const ids = t.ids || b.points.filter(q => isPt(q.at)).map(q => q.id), of = W[k] || 0, ok = (c, touched) => [c ? of : 0, !!touched];
+        if (t.k === "xl" || t.k === "yl") return ok(!!a[t.k] && a[t.k] === b[t.k], !!a[t.k]);
+        if (t.k === "scale") return ok((b.x.ok || []).indexOf(a.sx) !== -1 && (b.y.ok || []).indexOf(a.sy) !== -1, a.sx != null || a.sy != null);
+        if (t.k === "points") { const n = ids.filter(okP).length; let got = n >= (t.min || ids.length) ? of : 0;
+          if (!got) (t.part || []).forEach(q => { if (n >= q[0] && q[1] > got) got = q[1]; });
+          if (t.joined && !drawn) got = 0;
+          return [got, ids.some(has)]; }
+        if (t.k === "xs") return ok(ids.every(okX), ids.some(has));
+        if (t.k === "ys") return ok(ids.every(okY), ids.some(has));
+        if (t.k === "line") return ok(drawn && (t.kinds || []).indexOf(k0) !== -1 && (t.ids || []).every(okP), !!k0);
+        if (t.k === "shape") { let c = drawn && (t.kinds || []).indexOf(k0) !== -1;
+          if (c && t.straight === true) c = k0 === "best" || straight(inR(t.range));
+          if (c && t.straight === false) c = k0 === "curve" && inR(t.range).length >= 3 && !straight(inR(t.range));
+          if (c && isPt(t.through)) c = k0 === "best" ? t.through[0] >= Math.min(line.a[0], line.b[0]) - tx - E && t.through[0] <= Math.max(line.a[0], line.b[0]) + tx + E
+              && Math.abs(Lx(t.through[0]) - t.through[1]) <= ty + E
+            : mine.some(p => Math.abs(p[0] - t.through[0]) <= tx + E && Math.abs(p[1] - t.through[1]) <= ty + E);
+          return ok(c, !!k0); }
+        if (t.k === "fit") { const tf = Math.max(t.tol || 0, 4 * ty); return ok(!!line && mine.length >= (t.min || 3) && mine.every(p => Math.abs(Lx(p[0]) - p[1]) <= tf + E), !!k0); }
+        if (t.k === "extrap") return ok(!!line && Math.min(line.a[0], line.b[0]) <= t.x + tx + E && Math.abs(Lx(t.x) - t.y) <= Math.max(t.tol || 0, ty) + E, !!k0);
+        if (t.k === "tangent") { const A = P.a, B = P.b, g = (b.given || []).find(s => s.curve && Array.isArray(s.pts)), f = g ? akima(plS(g.pts)) : null;
+          if (!isPt(A) || !isPt(B) || Math.abs(B[0] - A[0]) < E || !f) return [0, isPt(A) || isPt(B)];
+          const m = (B[1] - A[1]) / (B[0] - A[0]), r0 = t.range[0], r1 = t.range[1], mg = 0.1 * (r1 - r0), tt = t.tol || 0; let lo = Infinity, hi = -Infinity, xl = r0, xh = r0;
+          for (let i = 0; i <= 240; i++) { const x = r0 + (r1 - r0) * i / 240, d = f(x) - (A[1] + m * (x - A[0])); if (d < lo) { lo = d; xl = x; } if (d > hi) { hi = d; xh = x; } }
+          const inside = x => x > r0 + mg && x < r1 - mg;
+          return ok((lo >= -tt - E && lo <= tt + E && inside(xl)) || (hi <= tt + E && hi >= -tt - E && inside(xh)), true); }
+        return [0, false]; };
+      const items = (b.tests || []).map((t, k) => { const r = test(t, k), of = W[k] || 0;
+        return { key: "c" + k, awarded: r[0], available: of, verdict: of > 0 && r[0] >= of ? "correct" : r[0] > 0 ? "partial" : r[1] ? "incorrect" : "missing" }; })
+        .concat(b.points.filter(q => isPt(q.at)).map(q => ({ key: "s:" + q.id, awarded: 0, available: 0, verdict: okP(q.id) ? "correct" : has(q.id) ? "incorrect" : "missing" })));
+      const got = items.reduce((t, x) => t + x.awarded, 0);
+      return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items }; }
     // a graph sketch (2026-10-11), marked as the memo marks it: each feature placed within its tol of where the memo puts it (at, or an
     // `alt` the memo also accepts: "(45° ; −3) or (135° ; 3)") earns its marks; the shape earns its marks when the curve the learner's own
     // points make (or the shape chosen, where the features leave it open) is the memo's ("decreasing" is met by "decreasing, above").
@@ -4010,6 +4107,34 @@ class Component extends DCLogic {
       const slots = comps.filter(c => /^s:(lab|p|out):/.test(c.key)).map(c => ({ key: c.key, awarded: 0, available: 0, verdict: c.ok ? "correct" : c.placed ? "incorrect" : "missing" }));
       const got = crit.reduce((t, x) => t + x.awarded, 0);
       return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: crit.concat(slots) }; }
+    // a force diagram (2026-10-11), marked as the memo marks it: one mark per force for its label AND its direction (within tol of the
+    // memo's: 10° unless the force carries its own), minus 1 for each extra force, never below 0; a force the memo lets go unmarked (free:
+    // "do not penalise if vertical forces are shown") neither earns nor costs. A learner's arrow pairs with an unpaired memo force of its
+    // label, one it points along first; a second arrow of a label already paired is extra. Where an angle is asked, its two lines (two of
+    // the learner's arrows that are right, or an arrow and a guide) must be a pair the memo accepts, measuring its size within tol. The
+    // points come from the criteria through byCrit (a criterion earns when all its forces are right). The reply's items name only the
+    // learner's OWN arrows (f<i>: correct, incorrect = the wrong way, extra, unmarked); a force left out is COUNTED ("missing", n), never named
+    if (key.forces) { const b = key.forces, a = answer || {}, F = (Array.isArray(a.f) ? a.f : []).filter(x => x && typeof x.a === "number"), T = b.tol || 10, free = b.free || [];
+      const nrm = d => ((d % 360) + 360) % 360, dif = (p, q) => { const d = Math.abs(nrm(p) - nrm(q)); return Math.min(d, 360 - d); };
+      const used = b.forces.map(() => false), res = F.map(() => ""), hit = F.map(() => -1);
+      F.forEach((ar, i) => { const k = b.forces.findIndex((m, j) => !used[j] && m.id === ar.l && dif(m.at, ar.a) <= (m.tol != null ? m.tol : T)); if (k >= 0) { used[k] = true; res[i] = "ok"; hit[i] = k; } });
+      F.forEach((ar, i) => { if (res[i]) return; const k = b.forces.findIndex((m, j) => !used[j] && m.id === ar.l);
+        if (k >= 0) { used[k] = true; res[i] = "way"; hit[i] = k; } else res[i] = free.indexOf(ar.l) !== -1 ? "free" : "extra"; });
+      const ray = r => { let m = /^f(\d+)$/.exec(r || ""); if (m) { const i = +m[1], ar = F[i]; return ar ? { a: ar.a, l: ar.l, ok: res[i] === "ok" } : null; }
+        m = /^([VH])(\d+)$/.exec(r || ""); return m ? { a: +m[2], l: m[1], ok: true } : null; };
+      const A = b.angle && Array.isArray(a.ang) && a.ang.length === 2 ? a.ang.map(ray) : null, angPlaced = !!(A && A[0] && A[1]);
+      const angOk = angPlaced && A[0].ok && A[1].ok && b.angle.pairs.some(p => ((A[0].l === p[0] && A[1].l === p[1]) || (A[0].l === p[1] && A[1].l === p[0])) && Math.abs(dif(A[0].a, A[1].a) - p[2]) <= T);
+      const base = byCrit(b.forces.map((m, j) => ({ key: "k" + j, ok: F.some((_, i) => hit[i] === j && res[i] === "ok"), placed: used[j], crit: m.crit }))
+        .concat(b.angle ? [{ key: "angle", ok: angOk, placed: angPlaced, crit: b.angle.crit }] : []), key.worth || []);
+      const by = {}; base.items.forEach(x => { by[x.key] = x; });
+      const extra = res.filter(r => r === "extra").length, miss = used.filter(u => !u).length;
+      const items = F.map((ar, i) => { const it = hit[i] >= 0 ? by["k" + hit[i]] : null;
+        return res[i] === "ok" || res[i] === "way" ? { key: "f" + i, awarded: res[i] === "ok" && it ? it.awarded : 0, available: it ? it.available : 0, verdict: res[i] === "ok" ? "correct" : "incorrect" }
+          : { key: "f" + i, awarded: 0, available: 0, verdict: res[i] === "free" ? "unmarked" : "extra", penalty: res[i] === "extra" ? 1 : 0 }; })
+        .concat(miss ? [{ key: "missing", awarded: 0, available: b.forces.reduce((t, m, j) => t + (used[j] ? 0 : (by["k" + j] || {}).available || 0), 0), verdict: "missing", n: miss }] : [])
+        .concat(b.angle && by.angle ? [by.angle] : []);
+      const got = Math.max(0, Math.min(part.marks, base.marks_awarded - extra));
+      return { marks_awarded: got, marks: part.marks, full: got >= part.marks, marker: "auto", items: items }; }
     // genetics: a genotype is its two alleles in any order (Iᴮi = iIᴮ), compared EXACTLY (D is not d); a bag is a list in any order
     const gtOf = g => g.map(x => x || "").slice().sort().join("|"), bag = l => l.slice().sort().join("#");
     if (key.geno) { const a = answer || {}, used = key.geno.map(() => false), each = part.marks / key.count; let got = 0;
@@ -5046,10 +5171,13 @@ class Component extends DCLogic {
         border: set ? "transparent" : "var(--line2)", tap: () => set ? this.kpSet() : this.kpPress(lab) }; });
     const reason = mode === "mcq" ? "Pick one answer" : mode === "pickn" ? "Pick " + need + " · " + pickedN + " picked" : mode === "order" ? "Place all " + opts.length + " · " + s.orderSeq.length + " placed"
       : mode === "lettername" ? "Pick the letter and give the name" : mode === "letternames" ? "Give a letter and its name" : mode === "list" ? "Name at least one" : mode === "match" ? "Pair at least one" : mode === "draw" ? ""
-      : mode === "build" ? ({ hist: "Choose the graph type and plot a bar", geno: "Fill every allele", cross: "Fill every allele and name an offspring phenotype",
+      : mode === "build" ? ({ hist: (pb => pb.stack ? "Draw each bar's new part and choose its shading" : (pb.use || ["Type"]).indexOf("Type") === -1 ? "Plot a bar"
+          : "Choose the graph type and plot a bar")(part.build || {}),
+        plot: (pb => pb.tangent ? "Place both ends of the line" : (pb.labels ? "Choose both axes' labels, " : "") + (pb.grid ? "choose the scale, " : "")
+          + "place every point and choose the line")(part.build || {}).replace(/^c/, "C"), geno: "Fill every allele", cross: "Fill every allele and name an offspring phenotype",
         sketch: (part.build && (part.build.shape || {}).pick) || (part.build && (part.build.graphs || []).some(g => g.shape && g.shape.pick)) ? "Place every feature and choose the shape" : "Place every feature on the grid",
         boxplot: "Place all five values on the line", numline: "Choose the shading, place each end and choose its dot", venn: "Fill every region of the diagram",
-        tree: part.build && part.build.ends ? "Give every branch its outcome and probability, and every end its outcome" : "Give every branch its outcome and probability" }[part.build && part.build.kind] || "Pick a shape for every stem") : "Enter your answer";
+        forces: "Draw at least one force", tree: part.build && part.build.ends ? "Give every branch its outcome and probability, and every end its outcome" : "Give every branch its outcome and probability" }[part.build && part.build.kind] || "Pick a shape for every stem") : "Enter your answer";
     return {
       // options that are only letters (the letters on a figure, as 1.4.2's P..T) as one row of chips, not a card each: five cards ran
       // the panel 242 px over at 412x915 and pushed the figure out of sight (Murci, 2026-10-01: "be able to see the images from 1.4")
@@ -5153,7 +5281,18 @@ class Component extends DCLogic {
       return R.every(r => (b.f || {})[r] === "x" || typeof (b.n || {})[r] === "number"); }
     if (k === "tree") { const B = part.build, P = B.skel.flatMap((n, i) => [String(i)].concat(Array.from({ length: n }, (_, j) => i + "." + j)));
       return P.every(p => !!(b.l || {})[p] && String(((b.p || {})[p] || [])[0] || "") !== "") && (!B.ends || P.filter(p => p.indexOf(".") !== -1).every(p => !!(b.o || {})[p])); }
-    return k === "hist" ? !!b.type && (b.v || []).some(x => x > 0) : (part.build ? part.build.stems : []).every(st => !!b[st.id]); }
+    // a force diagram: at least one arrow (the forces left out, and an angle not marked, cost their marks, as on paper)
+    if (k === "forces") return Array.isArray(b.f) && b.f.length > 0;
+    // a plotted graph: every point placed, the labels and the scale chosen where the part asks, and a line chosen (a straight line with its
+    // two ends); a tangent: both ends placed. A histogram that skips the Type step (`use`) needs only a bar; a stacked bar each new part
+    // drawn and shaded
+    if (k === "plot") { const B = part.build, P = b.p || {}, pt = u => Array.isArray(u) && u.length === 2;
+      return (B.points || []).every(q => pt(P[q.id])) && (!B.labels || (!!b.xl && !!b.yl)) && (!B.grid || (b.sx > 0 && b.sy > 0))
+        && (!!B.tangent || B.lines === false || (!!b.k && (b.k !== "best" || (pt(b.a) && pt(b.b))))); }
+    if (k === "hist") { const B = part.build, top = i => B.stack ? B.stack.base[i][B.stack.base[i].length - 1] : 0;
+      if (B.stack) return B.groups.every((_, i) => (b.v || [])[i] > top(i) && (b.sh || [])[i] >= 0);
+      return ((B.use || ["Type"]).indexOf("Type") === -1 || !!b.type) && (b.v || []).some(x => x > 0); }
+    return (part.build ? part.build.stems : []).every(st => !!b[st.id]); }
   // letters + names: ready once one row has its letter AND its name (a learner who knows one part may send one, as a list)
   lrowsReady(s) { return (s.lrows || []).some(r => r && r.letter && String(r.name || "").trim()); }
   // a row's letter or name; a letter already on another row moves here (two rows never name one part)

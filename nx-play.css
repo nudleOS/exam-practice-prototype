@@ -2878,3 +2878,157 @@ html[data-nx="light"] .vn-r[data-v="ok"] { color:#0f7a4f; }
 html[data-nx="light"] .vn-r[data-v="bad"] { color:#b42318; }
 html[data-nx="light"] .tr-fr[data-v="ok"] input, html[data-nx="light"] :is(.tr-l, .tr-o)[data-v="ok"] { border-color:#0f9a63; }
 html[data-nx="light"] .tr-fr[data-v="bad"] input, html[data-nx="light"] :is(.tr-l, .tr-o)[data-v="bad"] { border-color:#c4321f; }
+
+/* ==== a GRAPH PLOTTED FROM DATA (2026-10-11, build-play.js "plot"): the sketch's chips, picks, pins and tags (.sk-*) on a grid of the
+   paper's small and big squares; the grid and every control on the MCQ card tokens (--nx-card..., never a dark grey; never pure white in
+   light), the learner's line in the accent, a graph the paper prints in the text colours (dashed as printed). Targets >= 40 px. ==== */
+.pl-setup:empty, .pl-legend:empty, .pl-nudge:empty, .pl-lines:empty, .pl-foot:empty { display:none; }
+.pl-setup { display:flex; flex-direction:column; gap:10px; }
+.pl-labs { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; }
+.pl-lab { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.pl-sel { -webkit-appearance:none; appearance:none; width:100%; min-height:44px; box-sizing:border-box; padding:0 34px 0 12px; border-radius:12px; border:1.5px solid var(--nx-card-line);
+  background:var(--nx-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238ea3c7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color:var(--nx-text); font:inherit; font-size:16px; font-weight:700; cursor:pointer; }
+.pl-sel:focus { outline:none; border-color:var(--nx-sel-line); box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-sel-line) 26%, transparent); }
+.pl-sel:disabled { cursor:default; opacity:1; }
+.pl-sel option { color:#15295a; background:#f7f9fd; }
+.pl-scale { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
+.pl-scale .sk-pl { grid-column:1 / -1; }
+.pl-scale .sk-op { min-height:44px; padding:0 6px; font-variant-numeric:tabular-nums; }
+.pl-svg { display:block; overflow:visible; }
+.pl-svg .pl-bg { fill:var(--nx-card); }
+.pl-svg .pl-frame { fill:none; stroke:color-mix(in srgb, var(--nx-text2) 38%, var(--nx-card)); stroke-width:1.2; }
+.pl-svg .pl-grid { stroke:color-mix(in srgb, var(--nx-text2) 17%, var(--nx-card)); stroke-width:0.8; }
+.pl-svg .pl-grid2 { stroke:color-mix(in srgb, var(--nx-text2) 38%, var(--nx-card)); stroke-width:1.2; }
+.pl-svg .pl-axis { stroke:var(--nx-text2); stroke-width:1.6; }
+.pl-svg .pl-arrow { fill:var(--nx-text2); }
+.pl-svg .pl-tick { font-size:11px; font-weight:600; fill:var(--nx-text2); paint-order:stroke; stroke:var(--nx-card); stroke-width:3px; stroke-linejoin:round; font-variant-numeric:tabular-nums; }
+.pl-svg .pl-name { font-size:12px; font-weight:700; fill:var(--nx-text); }
+.pl-svg .pl-name0 { font-weight:600; font-style:italic; fill:var(--nx-text2); }
+.pl-svg .pl-line { fill:none; stroke:var(--nx-accent); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.pl-gv { fill:none; stroke:var(--nx-text2); stroke-width:2; stroke-linecap:round; }
+.pl-gv.pl-g1 { stroke:#e0a10f; }
+.pl-gv.pl-g2 { stroke:#c46be0; }
+.pl-gv.pl-dash { stroke-dasharray:6 5; }
+.pl-gv.pl-dashdot { stroke-dasharray:10 4 2.5 4; stroke-linecap:butt; }
+.pl-svg .pl-gdot { fill:var(--nx-text2); stroke:var(--nx-text2); stroke-width:1.6; }
+.pl-svg .pl-gdot.pl-g1 { fill:#e0a10f; stroke:#e0a10f; }
+.pl-svg .pl-gdot.pl-open { fill:var(--nx-card); }
+.pl-legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; font-weight:700; color:var(--nx-text2); }
+.pl-lg { display:inline-flex; align-items:center; gap:6px; }
+.pl-lg svg { flex:none; overflow:visible; }
+/* the straight line's two ends: a hollow ring in the accent (a point is a filled dot), the same 40 px finger target */
+.sk-pin.sk-point.pl-end::after { width:16px; height:16px; margin:-8px 0 0 -8px; box-sizing:border-box; background:var(--nx-card); border:3px solid var(--nx-accent); }
+/* the line's three choices: one even row at any width (one per row at 360 px read as a list), each its picture over its name */
+.pl-kinds { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; }
+.pl-kinds .sk-pl { grid-column:1 / -1; }
+.pl-kinds .pl-k { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; min-height:60px; padding:6px 4px; font-size:13px; line-height:1.15; text-align:center; }
+.pl-kinds .pl-k svg { flex:none; }
+.pl-kinds .pl-k:disabled { opacity:0.5; }
+.pl-acts { gap:4px 18px; }
+.pl-nbs { display:inline-flex; gap:6px; }
+.nl-nb.pl-nb { min-width:44px; width:44px; padding:0; font-size:18px; }
+html[data-nx="light"] .pl-gv.pl-g1, html[data-nx="light"] .pl-svg .pl-gdot.pl-g1 { stroke:#b7790a; }
+html[data-nx="light"] .pl-svg .pl-gdot.pl-g1 { fill:#b7790a; }
+@media (min-width:700px) { .pl-svg .pl-name { font-size:13px; } }
+
+/* ==== the histogram builder's additions (2026-10-11): a stacked bar's parts in the paper's key (hatched, white, black: the paper's own,
+   so "white" stays light and "black" dark in both themes, each edged to read on the card; light is never pure white), the new part
+   dashed until it is shaded, the key's swatches on the shading buttons; the minor grid lines a stacked graph prints ==== */
+.bp-chart .bp-minor { opacity:0.5; }
+.bp-chart .bp-s { stroke:var(--nx-text2, #a9b4d6); stroke-width:1; }
+.bp-chart .bp-f-white, .bp-chart .bp-hb { fill:#eef2f8; }
+.bp-chart .bp-f-black { fill:#141922; }
+.bp-chart .bp-hl { stroke:#141922; stroke-width:1.5; }
+.bp-chart .bp-sx { fill:transparent; stroke:var(--nx-accent, #81b1ff); stroke-width:1.5; stroke-dasharray:4 3; }
+.bp-key { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; font-weight:700; color:var(--nx-text2, #a9b4d6); }
+.bp-key span { display:inline-flex; align-items:center; gap:6px; }
+.bp-sw { display:inline-block; flex:none; width:20px; height:15px; box-sizing:border-box; border:1px solid var(--nx-text2, #a9b4d6); border-radius:3px; }
+.bp-sw.bp-f-white { background:#eef2f8; }
+.bp-sw.bp-f-black { background:#141922; }
+.bp-sw.bp-f-hatch { background:repeating-linear-gradient(45deg, #141922 0 1.5px, #eef2f8 1.5px 4.5px); }
+.bp-shades .bp-opt { flex-direction:row; gap:8px; min-height:48px; }
+
+/* ==== the FORCE DIAGRAM builder (2026-10-11, build-play.js "forces"; Murci picked direction A of the mock-up, "tap and aim"): the
+   tray of the same seven forces and the diagram on the MCQ card tokens (--nx-card, --nx-card-line, --nx-sel, --nx-badge: never a dark
+   grey, never pure white in light); the arrows in the accent, green or red once marked; the angle's arc amber. The diagram lets the
+   page scroll under a swipe; only an arrow's head (a 44 px button) holds the finger. From 600 px the diagram sits beside the tray. ==== */
+.fz { gap:12px; }
+.fz-lay { display:grid; gap:12px; grid-template-columns:minmax(0, 1fr); grid-template-areas:"tray" "main" "side"; }
+.fz-lay[data-wide="true"] { grid-template-columns:auto minmax(0, 1fr); grid-template-areas:"main tray" "main side"; grid-template-rows:auto 1fr; column-gap:22px; align-items:start; }
+.fz-tray { grid-area:tray; display:flex; flex-direction:column; gap:8px; min-width:0; }
+.fz-main { grid-area:main; min-width:0; display:flex; justify-content:center; }
+.fz-side { grid-area:side; min-width:0; display:flex; flex-direction:column; gap:10px; }
+.fz-side .sk-hint[hidden] { display:none; }
+.fz-side .fz-hint { min-height:48px; align-content:flex-start; }   /* two lines held: a hint that grew moved the host's Check arrow, which scrolled the page again */
+/* a force: its symbol over its name (four to a row at 360 px when the tray wraps) */
+.fz-ti { display:grid; grid-template-columns:repeat(auto-fill, minmax(70px, 1fr)); gap:8px; }
+.fz-chip { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-width:0; min-height:60px; padding:7px 4px 6px;
+  box-sizing:border-box; border-radius:14px; border:1.5px solid var(--nx-card-line); background:var(--nx-card); color:var(--nx-text); font:inherit; text-align:center;
+  cursor:pointer; touch-action:manipulation; transition:border-color 140ms ease, background 140ms ease; }
+.fz-chip:not(:disabled):hover { border-color:var(--nx-card-hover); }
+.fz-chip[aria-pressed="true"] { border-color:var(--nx-sel-line); background:var(--nx-sel); box-shadow:0 0 0 3px color-mix(in srgb, var(--nx-sel-line) 22%, transparent); }
+.fz-chip:disabled { cursor:default; }
+.fz-chip:focus-visible { outline:3px solid #81b1ff; outline-offset:2px; }
+.fz-sym { font-family:"Times New Roman", Georgia, serif; font-size:19px; font-weight:700; line-height:1; white-space:nowrap; color:var(--nx-text); }
+.fz-sym i { font-style:italic; }
+.fz-sym sub { font-size:0.62em; font-style:normal; vertical-align:-0.25em; margin-left:1px; }
+.fz-cs { font-size:11px; font-weight:600; line-height:1.2; color:var(--nx-text2); overflow-wrap:normal; }
+.fz-count { position:absolute; top:4px; right:4px; min-width:18px; height:18px; padding:0 5px; box-sizing:border-box; border-radius:9px; display:inline-grid; place-items:center;
+  background:var(--nx-badge); color:var(--nx-badge-ink); font-size:11px; font-weight:800; line-height:1; }
+.fz-chip-ang { grid-column:1 / -1; flex-direction:row; min-height:46px; gap:8px; }
+.fz-chip-ang .fz-cs { font-size:13px; font-weight:700; color:var(--nx-text); }
+.fz-angic { font-size:20px; line-height:1; color:#e0a10f; }
+html[data-nx="light"] .fz-angic { color:#8a5b00; }
+/* a phone (the tray and the diagram would not fit in view together): ONE row of chips that scrolls sideways, the chosen one kept in
+   view; a fade marks chips past either edge (the sketch builder's row) */
+.fz-tray[data-row="true"] .fz-ti { display:flex; gap:8px; position:relative; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; padding:5px 5px 7px; margin:-5px -5px -7px; scrollbar-width:thin; }
+.fz-tray[data-row="true"] .fz-chip { flex:0 0 74px; min-height:54px; padding:5px 4px 4px; gap:3px; }
+.fz-tray[data-row="true"] .fz-chip-ang { flex:0 0 auto; flex-direction:column; gap:2px; min-height:54px; padding:5px 12px; }
+.fz-tray[data-row="true"] .fz-chip-ang .fz-cs { font-size:11px; font-weight:600; color:var(--nx-text2); white-space:nowrap; }
+.fz-tray[data-row="true"] .fz-ti[data-r="true"] { -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+.fz-tray[data-row="true"] .fz-ti[data-l="true"] { -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
+.fz-tray[data-row="true"] .fz-ti[data-l="true"][data-r="true"] { -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
+@media (pointer:coarse) { .fz-tray[data-row="true"] .fz-ti { scrollbar-width:none; } .fz-tray[data-row="true"] .fz-ti::-webkit-scrollbar { display:none; } }
+/* the diagram: a faint body (on its surface, as the paper's figure draws it), a uniform ring, the dashed guides, the arrows */
+.fz-plot { position:relative; max-width:100%; touch-action:pan-y; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent; cursor:crosshair; }
+.fz[data-locked="true"] .fz-plot { cursor:default; }
+.fz-svg { display:block; overflow:visible; }
+.fz-svg .fz-bg { fill:var(--nx-card); stroke:var(--nx-card-line); stroke-width:1; }
+.fz-svg .fz-ring { fill:none; stroke:var(--nx-card-line); stroke-width:1.2; }
+.fz-svg .fz-tick { stroke:var(--nx-card-line); stroke-width:1.3; }
+.fz-svg .fz-tick2 { stroke:var(--nx-text2); stroke-width:1.3; opacity:0.55; }
+.fz-svg .fz-guide { stroke:var(--nx-text2); stroke-width:1; stroke-dasharray:3 5; opacity:0.5; }
+.fz-svg .fz-ghost { fill:none; stroke:var(--nx-text2); stroke-width:1.3; stroke-dasharray:5 4; opacity:0.42; }
+.fz-svg .fz-surf { stroke:var(--nx-text2); stroke-width:1.6; opacity:0.45; }
+.fz-svg .fz-ar { fill:none; stroke:var(--nx-accent); stroke-width:2.8; stroke-linecap:round; }
+.fz-svg .fz-hd { fill:var(--nx-accent); }
+.fz-svg .fz-g[data-sel="true"] .fz-ar { stroke-width:3.8; }
+.fz-svg .fz-g[data-v="ok"] .fz-ar { stroke:#1fbf7a; } .fz-svg .fz-g[data-v="ok"] .fz-hd { fill:#1fbf7a; }
+.fz-svg .fz-g[data-v="bad"] .fz-ar { stroke:#ef5350; } .fz-svg .fz-g[data-v="bad"] .fz-hd { fill:#ef5350; }
+html[data-nx="light"] .fz-svg .fz-g[data-v="ok"] .fz-ar { stroke:#13885a; } html[data-nx="light"] .fz-svg .fz-g[data-v="ok"] .fz-hd { fill:#13885a; }
+html[data-nx="light"] .fz-svg .fz-g[data-v="bad"] .fz-ar { stroke:#cf3434; } html[data-nx="light"] .fz-svg .fz-g[data-v="bad"] .fz-hd { fill:#cf3434; }
+.fz-svg .fz-g[data-temp="true"] { opacity:0.45; }
+.fz-svg .fz-selr { fill:none; stroke:var(--nx-sel-line); stroke-width:2.2; }
+.fz-svg .fz-lab { font-family:"Times New Roman", Georgia, serif; font-size:18px; font-weight:700; fill:var(--nx-text); paint-order:stroke; stroke:var(--nx-card); stroke-width:4px; stroke-linejoin:round; }
+.fz-svg .fz-sub { font-size:11.5px; }
+.fz-svg .fz-dot { fill:var(--nx-text); }
+.fz-svg .fz-arc { fill:none; stroke:#e0a10f; stroke-width:2.2; }
+.fz-svg .fz-arct { fill:#e0a10f; font-size:12.5px; font-weight:800; paint-order:stroke; stroke:var(--nx-card); stroke-width:3.5px; stroke-linejoin:round; }
+.fz-svg .fz-pick { stroke:#e0a10f; stroke-width:3; stroke-linecap:round; opacity:0.85; }
+html[data-nx="light"] .fz-svg .fz-arc, html[data-nx="light"] .fz-svg .fz-pick { stroke:#a86f08; }
+html[data-nx="light"] .fz-svg .fz-arct { fill:#8a5b00; }
+.fz-pins { position:absolute; inset:0; pointer-events:none; }
+.fz-pin { position:absolute; pointer-events:auto; width:44px; height:44px; margin:-22px 0 0 -22px; padding:0; border:0; border-radius:50%; background:transparent; cursor:grab; touch-action:none; -webkit-tap-highlight-color:transparent; }
+.fz[data-locked="true"] .fz-pin { pointer-events:none; cursor:default; }
+.fz-pin:focus-visible { outline:3px solid #81b1ff; outline-offset:-5px; }
+html[data-nx="light"] :is(.fz-pin, .fz-chip):focus-visible { outline-color:#2b6be0; }
+/* while an angle is marked: a button at each end of the guides (the keyboard's way to a guide), the first line chosen ringed */
+.fz-gp { cursor:pointer; touch-action:manipulation; }
+.fz-gp::after { content:""; position:absolute; left:50%; top:50%; width:16px; height:16px; margin:-8px 0 0 -8px; box-sizing:border-box; border-radius:50%; border:2px dashed #e0a10f; background:var(--nx-card); }
+html[data-nx="light"] .fz-gp::after { border-color:#a86f08; }
+.fz-pin[data-pick="true"]::before { content:""; position:absolute; inset:7px; border-radius:50%; border:2.5px solid #e0a10f; }
+/* the marks: each of the learner's own arrows right, the wrong way, extra (−1) or not marked here; a force left out only counted */
+.fz-rc .fz-sym { font-size:14px; color:inherit; }
+.fz .bp-chip[data-ok="info"] { background:var(--nx-badge); color:var(--nx-badge-ink); }

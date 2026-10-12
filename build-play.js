@@ -13,8 +13,13 @@
      the unknown, x − 20) in each region of two or three circles. VT_V marks this file's Venn and tree builders.
    - "tree" (Grade 11 P1 2017 8.1.1 and 2018 8.2; 2026-10-11) a probability tree: on each drawn branch its outcome and its probability (a
      fraction or a decimal), and each end's outcome.
+   - "plot" (Grade 10/11 Physical Sciences, Grade 11 Maths P2, ML P1 Nov 2024; 2026-10-11) a graph plotted from data: the axes' labels and
+     the scale chosen where the memo marks them, each data point placed on the grid, then the line (a straight line of best fit, a smooth
+     curve or the points joined), extended to the axis where asked; or a straight line drawn on a given graph (a tangent). PLOT_V marks it.
+   - "forces" (Grade 11 and 12 Physical Sciences P1; 2026-10-11) a free-body (or vector) diagram: forces from the same tray of seven, each
+     aimed from the dot by a tap (or dragged, or turned with the arrow keys), and an angle between two lines where asked. FORCE_V marks it.
    The host (Exam Practice) owns the ANSWER (its state, so Check, marking and "same answer" work as for every other type); this
-   module owns only its DOM and its step. A learner who drew it on paper gets the criteria as a self-check (shown, never banked).
+   module owns only its DOM and its step. Nothing offers "draw it on paper" (Murci 2026-10-11: every drawing part is built on screen).
 
    window.BuildPlay.mount(host, { kind, cfg, value, onChange(value), reduced }) -> { sync({ value, locked, items, itemsFor }), destroy() }
      value      the answer so far ({} at the start)
@@ -31,65 +36,98 @@
 
   // ── the histogram builder
   // (the axis-label choices are listed SORTED: the config keeps the right one first, which a learner could read as the answer)
+  // (2026-10-11, the plot builder's agent) a part may use only some steps (`use`: Maths P2 Nov 2025 2.1.3 marks the bars and "no gaps",
+  // on the answer book's given axes and scale: Type and Plot; `step` the given scale, `axes` the given labels, `typeOpts` the type
+  // choices' words, `pmin` how many right bars earn P's first mark); and a STACKED bar may be completed (`stack`, ML P1 Nov 2025 3.2.3:
+  // each bar's printed parts drawn, the learner drags its new part up from their top and chooses its shading from the key). No "drew it
+  // on paper" link any more (Murci 2026-10-11: "on paper" is never shown; every drawing part is built on screen)
+  let hsN = 0;
   function hist(host, o) {
-    const cfg = o.cfg, STEPS = ["Type", "Caption", "Axes", "Scale", "Plot"];
-    let v = Object.assign({ type: "", cap: "", xl: "", yl: "", step: 0, v: cfg.groups.map(() => 0) }, clone(o.value));
-    let i = 0, locked = false, chips = "", paper = false, drag = false;   // drag: a bar is held (sync waits; a redraw would drop it)
+    const cfg = o.cfg, ALL = ["Type", "Caption", "Axes", "Scale", "Plot"], STEPS = Array.isArray(cfg.use) && cfg.use.length ? ALL.filter(s => cfg.use.indexOf(s) !== -1) : ALL;
+    const ST = cfg.stack && Array.isArray(cfg.stack.base) ? cfg.stack : null, uid = "hs" + (++hsN);
+    const lo = k => ST ? ST.base[k][ST.base[k].length - 1] : 0;   // where a bar's drag starts: 0, or the top of its printed parts
+    const blank = () => Object.assign({ type: "", cap: "", xl: "", yl: "", step: 0, v: cfg.groups.map((_, k) => lo(k)) }, ST ? { sh: cfg.groups.map(() => -1) } : {});
+    let v = Object.assign(blank(), clone(o.value));
+    let i = 0, locked = false, chips = "", drag = false;   // drag: a bar is held (sync waits; a redraw would drop it)
     const set = patch => { v = Object.assign(v, patch); o.onChange(clone(v)); };
-    const done = k => k === 0 ? !!v.type : k === 1 ? v.cap.trim().length > 5 : k === 2 ? !!(v.xl && v.yl) : k === 3 ? !!v.step : v.v.some(x => x > 0);
-    const max = () => { const st = v.step || cfg.steps[1]; return Math.ceil(cfg.top / st) * st; };
+    const done = k => { const s = STEPS[k]; return s === "Type" ? !!v.type : s === "Caption" ? v.cap.trim().length > 5 : s === "Axes" ? !!(v.xl && v.yl) : s === "Scale" ? !!v.step
+      : ST ? cfg.groups.every((_, j) => v.v[j] > lo(j) && v.sh[j] >= 0) : v.v.some(x => x > 0); };
+    const stepOf = () => v.step || cfg.step || cfg.steps[1];
+    const max = () => { const st = stepOf(); return Math.ceil(cfg.top / st) * st; };
+    const num = n => String(Math.round(n * 1000) / 1000).replace(".", ",").replace(/^(\d+)/, d => d.replace(/\B(?=(\d{3})+(?!\d))/g, " "));
+    // a stacked part's fill: the key's (hatched / white / black, as the paper prints them, in both themes)
+    const fill = j => ST ? ` class="bp-s bp-f-${esc(ST.fill[j] || "white")}"${ST.fill[j] === "hatch" ? ` fill="url(#${uid}h)"` : ""}` : "";
     function chart() {
-      const st = v.step || cfg.steps[1], mx = max(), X0 = 48, X1 = 292, Y0 = 180, Y1 = 14, w = (X1 - X0) / cfg.groups.length, gap = v.type === "bar" ? 12 : 0;
+      const st = stepOf(), mx = max(), labs = []; for (let t = 0; t <= mx + 1e-9; t += st) labs.push(t);
+      // (the left margin holds the longest number: "60 000 000" ran into the axis at 48)
+      const X0 = Math.max(48, 12 + Math.max(...labs.map(t => num(t).length)) * 5.2), X1 = 292, Y0 = 180, Y1 = 14, w = (X1 - X0) / cfg.groups.length;
+      const gap = ST ? Math.max(12, w - 64) : v.type === "bar" ? 12 : 0;
       const y = n => Y0 - (n / mx) * (Y0 - Y1); let g = "", b = "";
-      for (let t = 0; t <= mx; t += st) g += `<line x1="${X0}" x2="${X1}" y1="${y(t)}" y2="${y(t)}" class="bp-grid"/><text x="${X0 - 5}" y="${y(t) + 3}" class="bp-tick" text-anchor="end">${t}</text>`;
+      if (cfg.minor > 0) for (let t = cfg.minor; t < mx - 1e-9; t += cfg.minor) if (Math.abs(t / st - Math.round(t / st)) > 1e-6) g += `<line x1="${X0}" x2="${X1}" y1="${y(t)}" y2="${y(t)}" class="bp-grid bp-minor"/>`;
+      labs.forEach(t => { g += `<line x1="${X0}" x2="${X1}" y1="${y(t)}" y2="${y(t)}" class="bp-grid"/><text x="${X0 - 5}" y="${y(t) + 3}" class="bp-tick" text-anchor="end">${num(t)}</text>`; });
       v.v.forEach((n, k) => { const x = X0 + k * w + gap / 2, bw = w - gap;
-        if (v.type !== "line") b += `<rect x="${x}" y="${y(n)}" width="${bw}" height="${Y0 - y(n)}" class="bp-barr"/>`;
-        b += `<g class="bp-h" data-k="${k}" tabindex="${locked ? -1 : 0}" role="slider" aria-label="${esc(cfg.groups[k])} ${esc(cfg.unit || "years")}" aria-valuemin="0" aria-valuemax="${mx}" aria-valuenow="${n}" aria-valuetext="${n}">`
-          + (v.type === "line" ? `<circle cx="${x + bw / 2}" cy="${y(n)}" r="7" class="bp-knob"/>` : `<rect x="${x + bw / 2 - 15}" y="${y(n) - 7}" width="30" height="14" rx="7" class="bp-knob"/>`)
+        if (ST) { let y0 = 0; ST.base[k].forEach((top, j) => { b += `<rect x="${x}" y="${y(top)}" width="${bw}" height="${Math.max(0, y(y0) - y(top))}"${fill(j)}/>`; y0 = top; });
+          if (n > lo(k)) b += `<rect x="${x}" y="${y(n)}" width="${bw}" height="${y(lo(k)) - y(n)}"${v.sh[k] >= 0 ? fill(v.sh[k]) : ' class="bp-s bp-sx"'}/>`; }
+        else if (v.type !== "line") b += `<rect x="${x}" y="${y(n)}" width="${bw}" height="${Y0 - y(n)}" class="bp-barr"/>`;
+        b += `<g class="bp-h" data-k="${k}" tabindex="${locked ? -1 : 0}" role="slider" aria-label="${esc(cfg.groups[k])}${ST ? ": the top of the new part" : " " + esc(cfg.unit || "years")}" aria-valuemin="${lo(k)}" aria-valuemax="${mx}" aria-valuenow="${n}" aria-valuetext="${num(n)}">`
+          + (v.type === "line" && !ST ? `<circle cx="${x + bw / 2}" cy="${y(n)}" r="7" class="bp-knob"/>` : `<rect x="${x + bw / 2 - 15}" y="${y(n) - 7}" width="30" height="14" rx="7" class="bp-knob"/>`)
           + `<rect x="${x}" y="${Math.min(y(n) - 18, Y0 - 30)}" width="${bw}" height="40" fill="transparent"/></g>`
-          + `<text x="${x + bw / 2}" y="${y(n) - 12}" class="bp-val" text-anchor="middle">${n || ""}</text>`
+          + `<text x="${x + bw / 2}" y="${y(n) - 12}" class="bp-val" text-anchor="middle">${n > lo(k) ? num(n) : ""}</text>`
           + `<text x="${X0 + k * w + w / 2}" y="${Y0 + 21}" class="bp-tick" text-anchor="middle">${esc(cfg.groups[k])}</text>`; });
-      if (v.type === "line") b = `<polyline points="${v.v.map((n, k) => (X0 + k * w + w / 2) + "," + y(n)).join(" ")}" class="bp-line"/>` + b;
+      if (v.type === "line" && !ST) b = `<polyline points="${v.v.map((n, k) => (X0 + k * w + w / 2) + "," + y(n)).join(" ")}" class="bp-line"/>` + b;
+      // the axes' names: the learner's choice where the Axes step is used, else the paper's (`axes`)
+      const AXS = STEPS.indexOf("Axes") !== -1 ? null : cfg.axes || ["", ""], xl = AXS ? AXS[0] : v.xl || "X-axis label?", yl = AXS ? AXS[1] : v.yl ? v.yl.replace(/ \(per .*\)$/, "") : "Y-axis label?";
       return `<svg class="bp-chart" viewBox="0 0 300 223" aria-label="Your graph">`
+        + (ST ? `<defs><pattern id="${uid}h" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" class="bp-hb"/><line x1="0" y1="0" x2="0" y2="5" class="bp-hl"/></pattern></defs>` : "")
         + `<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="bp-axis"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="bp-axis"/>${g}${b}`
-        + `<text x="170" y="220" class="bp-alab" text-anchor="middle">${esc(v.xl || "X-axis label?")}</text>`
-        + `<text transform="translate(10,98) rotate(-90)" class="bp-alab" text-anchor="middle">${esc(v.yl ? v.yl.replace(/ \(per .*\)$/, "") : "Y-axis label?")}</text></svg>`;
+        + `<text x="170" y="220" class="bp-alab" text-anchor="middle">${esc(xl)}</text>`
+        + `<text transform="translate(10,98) rotate(-90)" class="bp-alab" text-anchor="middle">${esc(yl)}</text></svg>`;
     }
+    // a stacked bar's key (the paper's) and each bar's new part's shading
+    const sw = j => `<i class="bp-sw bp-f-${esc(ST.fill[j] || "white")}" aria-hidden="true"></i>`;
+    const shades = () => `<div class="bp-key" aria-hidden="true">${ST.series.map((s, j) => `<span>${sw(j)}${esc(s)}</span>`).join("")}</div>`
+      + cfg.groups.map((g, k) => `<div class="bp-grp" role="group" aria-label="${esc(g)}: the shading of its new part"><p class="bp-q">${esc(g)}: shade the new part as</p>`
+        + `<div class="bp-opts bp-shades">${ST.series.map((s, j) => `<button type="button" class="bp-opt bp-shade" data-sh="${k}:${j}" aria-pressed="${v.sh[k] === j}"${locked ? " disabled" : ""}>${sw(j)}<span>${esc(s)}</span></button>`).join("")}</div></div>`).join("");
     function body() {
-      if (i === 0) return `<div class="bp-grp"><p class="bp-q">${esc(cfg.typeQ || "Which graph shows age GROUPS against a number?")}</p><div class="bp-opts">`
-        + [["histogram", "Histogram"], ["bar", "Bar graph"], ["line", "Line graph"]].map(([k, t]) =>
-          `<button type="button" class="bp-opt" data-type="${k}" aria-pressed="${v.type === k}">${ICON[k]}<span>${t}</span></button>`).join("") + `</div></div>`
-        + `<p class="bp-hint">${esc(cfg.typeHint || "A histogram's bars touch: its groups run on with no gaps.")}</p>`;
-      if (i === 1) return `<div class="bp-grp"><label class="bp-q" for="bp-cap">The caption: name BOTH variables</label>`
+      const s = STEPS[i];
+      // (typeOpts: the paper's own words for the choice; typeHint "" shows none: "a histogram's bars touch" answered 2.1.3's "no gaps")
+      if (s === "Type") return `<div class="bp-grp"><p class="bp-q">${esc(cfg.typeQ || "Which graph shows age GROUPS against a number?")}</p><div class="bp-opts">`
+        + (Array.isArray(cfg.typeOpts) && cfg.typeOpts.length ? cfg.typeOpts : [["histogram", "Histogram"], ["bar", "Bar graph"], ["line", "Line graph"]]).map(([k, t]) =>
+          `<button type="button" class="bp-opt" data-type="${esc(k)}" aria-pressed="${v.type === k}">${ICON[k] || ""}<span>${esc(t)}</span></button>`).join("") + `</div></div>`
+        + (cfg.typeHint === "" ? "" : `<p class="bp-hint">${esc(cfg.typeHint || "A histogram's bars touch: its groups run on with no gaps.")}</p>`);
+      if (s === "Caption") return `<div class="bp-grp"><label class="bp-q" for="bp-cap">The caption: name BOTH variables</label>`
         + `<textarea id="bp-cap" class="bp-in" rows="2" maxlength="160" placeholder="The number of … in different …" autocapitalize="off" spellcheck="false">${esc(v.cap)}</textarea></div>`
         + `<p class="bp-hint">What changes along the bottom, and what was counted.</p>`;
-      if (i === 2) return `<div class="bp-grp"><label class="bp-q" for="bp-x">The X-axis (along the bottom)</label><select id="bp-x" class="bp-in"><option value="">Choose…</option>${[...cfg.x].sort().map(t => `<option${v.xl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`
+      if (s === "Axes") return `<div class="bp-grp"><label class="bp-q" for="bp-x">The X-axis (along the bottom)</label><select id="bp-x" class="bp-in"><option value="">Choose…</option>${[...cfg.x].sort().map(t => `<option${v.xl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`
         + `<div class="bp-grp"><label class="bp-q" for="bp-y">The Y-axis (up the side)</label><select id="bp-y" class="bp-in"><option value="">Choose…</option>${[...cfg.y].sort().map(t => `<option${v.yl === t ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`;
-      if (i === 3) return `<div class="bp-grp"><p class="bp-q">The Y-axis goes up in steps of</p><div class="bp-opts">${cfg.steps.map(s => `<button type="button" class="bp-opt" data-step="${s}" aria-pressed="${v.step === s}">${s}</button>`).join("")}</div></div>${chart()}`;
-      return chart() + `<p class="bp-hint">Drag each bar to its value (arrow keys work too). The table is in the shared information.</p>`;
+      if (s === "Scale") return `<div class="bp-grp"><p class="bp-q">The Y-axis goes up in steps of</p><div class="bp-opts">${cfg.steps.map(s => `<button type="button" class="bp-opt" data-step="${s}" aria-pressed="${v.step === s}">${s}</button>`).join("")}</div></div>${chart()}`;
+      return chart() + (ST ? shades() + `<p class="bp-hint">Drag each bar's new part up to its value (arrow keys work too), then choose its shading from the key.</p>`
+        : `<p class="bp-hint">Drag each bar to its value (arrow keys work too). The table is in the shared information.</p>`);
     }
     function draw(keepFocus) {
-      const f = keepFocus && document.activeElement && host.contains(document.activeElement) ? document.activeElement.dataset.k : null;
-      host.innerHTML = `<div class="bp" data-locked="${locked}"><div class="bp-steps">${STEPS.map((s, k) =>
-        `<button type="button" class="bp-step" data-i="${k}" aria-current="${k === i ? "step" : "false"}" data-done="${done(k) && k !== i}"><span class="sr-only">Step ${k + 1}: </span>${s}${done(k) && k !== i ? '<span class="sr-only">, done</span>' : ""}</button>`).join("")}</div>`
+      const a = keepFocus && document.activeElement && host.contains(document.activeElement) ? document.activeElement : null, f = a ? a.dataset.k : null, fs = a ? a.dataset.sh : null;
+      const last = i >= STEPS.length - 1;
+      host.innerHTML = `<div class="bp" data-locked="${locked}">` + (STEPS.length > 1 ? `<div class="bp-steps" style="grid-template-columns:repeat(${STEPS.length}, minmax(0, 1fr))">${STEPS.map((s, k) =>
+        `<button type="button" class="bp-step" data-i="${k}" aria-current="${k === i ? "step" : "false"}" data-done="${done(k) && k !== i}"><span class="sr-only">Step ${k + 1}: </span>${s}${done(k) && k !== i ? '<span class="sr-only">, done</span>' : ""}</button>`).join("")}</div>` : "")
         + `<div class="bp-body">${body()}</div>${chips}`
-        + `<div class="bp-foot">${i < 4 ? `<button type="button" class="nxb nxb-sec nxb-sm bp-next">Next step</button>` : `<span></span>`}<button type="button" class="bp-paper">I drew it on paper</button></div>`
-        + (paper ? selfCheck(cfg.criteria) : "") + `</div>`;
+        + (last ? "" : `<div class="bp-foot"><button type="button" class="nxb nxb-sec nxb-sm bp-next">Next step</button><span></span></div>`) + `</div>`;
       wire(); if (f != null) { const n = host.querySelector(`.bp-h[data-k="${f}"]`); if (n) n.focus({ preventScroll: true }); }
+      if (fs != null) { const n = host.querySelector(`[data-sh="${fs}"]`); if (n) n.focus({ preventScroll: true }); }
     }
     function wire() {
       const q = s => host.querySelectorAll(s), off = () => locked;
       q(".bp-step").forEach(b => b.onclick = () => { i = +b.dataset.i; draw(); });
       q("[data-type]").forEach(b => b.onclick = () => { if (off()) return; set({ type: b.dataset.type }); draw(); });
       q("[data-step]").forEach(b => b.onclick = () => { if (off()) return; set({ step: +b.dataset.step }); draw(); });
-      const cap = host.querySelector("#bp-cap"); if (cap) { cap.disabled = locked; cap.oninput = e => { set({ cap: e.target.value }); host.querySelectorAll(".bp-step")[1].dataset.done = "false"; }; }
+      q("[data-sh]").forEach(b => b.onclick = () => { if (off()) return; const [k, j] = b.dataset.sh.split(":").map(Number), sh = v.sh.slice(); sh[k] = j; set({ sh: sh }); draw(true); });
+      const cap = host.querySelector("#bp-cap"), ci = STEPS.indexOf("Caption");
+      if (cap) { cap.disabled = locked; cap.oninput = e => { set({ cap: e.target.value }); const sb = host.querySelectorAll(".bp-step")[ci]; if (sb) sb.dataset.done = "false"; }; }
       const xs = host.querySelector("#bp-x"), ys = host.querySelector("#bp-y");
       if (xs) { xs.disabled = ys.disabled = locked; xs.onchange = e => set({ xl: e.target.value }); ys.onchange = e => set({ yl: e.target.value }); }
       const nx = host.querySelector(".bp-next"); if (nx) nx.onclick = () => { i++; draw(); const b = host.querySelector(".bp-body"); if (b) b.scrollIntoView({ block: "nearest" }); };
-      host.querySelector(".bp-paper").onclick = () => { paper = !paper; draw(); };
-      const ch = host.querySelector(".bp-chart"); if (!ch || i !== 4 || locked) return;
+      const ch = host.querySelector(".bp-chart"); if (!ch || STEPS[i] !== "Plot" || locked) return;
       let k = -1; const mx = max();
-      const at = e => { const r = ch.getBoundingClientRect(), yy = (e.clientY - r.top) * 223 / r.height; const sn = cfg.snap || 10; return Math.max(0, Math.min(mx, Math.round((180 - yy) / 166 * mx / sn) * sn)); };
+      const at = e => { const r = ch.getBoundingClientRect(), yy = (e.clientY - r.top) * 223 / r.height; const sn = cfg.snap || 10; return Math.max(lo(k), Math.min(mx, Math.round((180 - yy) / 166 * mx / sn) * sn)); };
       const put = (kk, n) => { const a = v.v.slice(); a[kk] = n; set({ v: a }); };
       // (a drag repaints the svg's CHILDREN only: rebuilding the svg would drop the pointer capture, and a finger that slid past the
       // chart's edge would stop moving the bar)
@@ -99,12 +137,14 @@
       const end = () => { if (k < 0) return; const kk = k; k = -1; drag = false; document.documentElement.classList.remove("bp-drag"); o.onChange(clone(v)) /* one more update: the host reveals its Check now the bar is let go */; draw(); const n = host.querySelector(`.bp-h[data-k="${kk}"]`); if (n) n.focus({ preventScroll: true }); };
       ch.onpointerup = end; ch.onpointercancel = end;
       q(".bp-h").forEach(h => h.onkeydown = e => { const sn = cfg.snap || 10, d = { ArrowUp: sn, ArrowRight: sn, ArrowDown: -sn, ArrowLeft: -sn, PageUp: 5 * sn, PageDown: -5 * sn }[e.key];
-        if (d == null) return; e.preventDefault(); const kk = +h.dataset.k; put(kk, Math.max(0, Math.min(mx, v.v[kk] + d))); draw(true); });
+        if (d == null) return; e.preventDefault(); const kk = +h.dataset.k; put(kk, Math.max(lo(kk), Math.min(mx, v.v[kk] + d))); draw(true); });
     }
     draw();
-    return { sync(s) { const nv = Object.assign({ type: "", cap: "", xl: "", yl: "", step: 0, v: cfg.groups.map(() => 0) }, clone(s.value));
+    // a stacked bar's chips name its bar: "KwaZulu-Natal: its end", "KwaZulu-Natal: completed"
+    const stackLabels = () => Object.fromEntries(cfg.groups.flatMap((g, k) => [["E" + k, g + ": its end"], ["F" + k, g + ": completed"]]));
+    return { sync(s) { const nv = Object.assign(blank(), clone(s.value));
         const changed = JSON.stringify(nv) !== JSON.stringify(v), was = locked + chips; v = nv; locked = !!s.locked;
-        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, cfg.labels || LABELS.hist) : "";
+        chips = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? chipRow(s.items, ST ? stackLabels() : cfg.labels || LABELS.hist) : "";
         if (changed && !Object.keys(s.value || {}).length) i = 0;   // a fresh try (Practise again / a retake) starts at step 1
         if ((changed || was !== locked + chips) && !drag) draw(true); },
       destroy() { document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
@@ -113,7 +153,7 @@
   // ── the stems
   function stems(host, o) {
     const cfg = o.cfg, SH = [["left", "bends left"], ["up", "grows straight up"], ["right", "bends right"], ["none", "no growth"]];
-    let v = clone(o.value), locked = false, chips = "", paper = false;
+    let v = clone(o.value), locked = false, chips = "";
     const X = [74, 167, 260];   // each stem's x in the box (of 300); its buttons sit centred under it (--x)
     const stem = (st, k) => { const x = X[k], s = v[st.id] || "", top = s === "up" ? 58 : 100;
       const d = s === "left" ? `M${x} 160V112Q${x} 82 ${x - 22} 72` : s === "right" ? `M${x} 160V112Q${x} 82 ${x + 22} 72` : `M${x} 160V${top}`;
@@ -128,11 +168,9 @@
         + `<rect x="54" y="160" width="226" height="18" rx="4" fill="#eee" stroke="#222"/>${cfg.stems.map(stem).join("")}</svg>`
         + `<div class="bp-cols">${cfg.stems.map((st, k) => `<div class="bp-sg" role="group" aria-label="Stem ${st.id}" style="--x:${(X[k] / 300).toFixed(4)}">${SH.map(([s, nm]) =>
           `<button type="button" class="bp-sh bp-sh-${s}" data-id="${st.id}" data-s="${s}" aria-pressed="${v[st.id] === s}" aria-label="Stem ${st.id}: ${nm}"${locked ? " disabled" : ""}>${ICON[s]}</button>`).join("")}</div>`).join("")}</div>`
-        + `<p class="bp-hint">Tap how each stem looks after five days.</p>${chips}`
-        + `<div class="bp-foot"><span></span><button type="button" class="bp-paper">I drew it on paper</button></div>${paper ? selfCheck(cfg.criteria) : ""}</div>`;
+        + `<p class="bp-hint">Tap how each stem looks after five days.</p>${chips}</div>`;   // (no "drew it on paper": Murci 2026-10-11)
       host.querySelectorAll(".bp-sh").forEach(b => b.onclick = () => { if (locked) return; v[b.dataset.id] = b.dataset.s; o.onChange(clone(v)); draw();
         const n = host.querySelector(`.bp-sh[data-id="${b.dataset.id}"][data-s="${b.dataset.s}"]`); if (n) n.focus({ preventScroll: true }); });
-      host.querySelector(".bp-paper").onclick = () => { paper = !paper; draw(); };
     }
     draw();
     return { sync(s) { const nv = clone(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v), was = locked + chips; v = nv; locked = !!s.locked;
@@ -1118,6 +1156,572 @@
       destroy() { if (ro) ro.disconnect(); host.innerHTML = ""; } };
   }
 
+  // ── a GRAPH PLOTTED FROM DATA (2026-10-11, "plot"): "Use the information in the table and draw an accurate graph" BUILT on a grid.
+  // Where the memo marks them, the axes' labels (both chosen from one list of quantities with units, sorted) and the scale (a value per
+  // big square of the paper's blank grid) are chosen first. Each row of the data table is a chip, named as the table names it ("t = 2 s",
+  // "20 < x ≤ 30", "Starting point"), never where it goes: tap one, then tap the grid (it snaps to the scale's step), drag a placed
+  // point, or nudge the chosen one with the arrow buttons; keyboard: Enter on a chip places it mid-grid, the arrows move it (Shift: 5
+  // steps), Delete removes it. Then the line: a straight line (fitted to the learner's own points; its two ends drag; extended to the
+  // y-axis where the stem asks), a smooth curve through the points (Akima: straight wherever three points in a row are, no overshoot),
+  // or the points joined by straight lines (an ogive's or a frequency polygon's, a line graph). A graph the paper already prints is drawn
+  // under it (`given`). Tangent mode: a straight line through two ends the learner places, drawn across the given graph. The answer is
+  // what is chosen and placed: the marker reads only that, against the memo's criteria, never the drawing.
+  //   cfg   { x, y: { name?, min, max, step, minor?, snap } (the paper's scale) | { name?, unit, scales: [value per big square] } (chosen),
+  //           grid?: { nx, ny, sub } (with scales: big squares across and up, small squares in each), labels?: [quantities with units],
+  //           points: [{ id, name }], extend?, tangent?, lines?: false, given?: [{ name, pts?, curve?, segs?, dots?, dash? }],
+  //           names: [each memo criterion's NEUTRAL chip name] }
+  //   value { xl, yl, sx, sy, p: { id: [x, y] }, k: "best" | "curve" | "join", a, b: [x, y] (the straight line's ends), lf (the line
+  //           follows the fit to the points), ex (extended to the y-axis) }
+  let plN = 0;
+  const PLK = [["best", "Straight line"], ["curve", "Smooth curve"], ["join", "Join the points"]];
+  const plIc = d => `<svg viewBox="0 0 28 18" width="28" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const plDot = (x, y) => `<circle cx="${x}" cy="${y}" r="1.9" fill="currentColor" stroke="none"/>`;
+  const PLI = { best: plIc('<path d="M3 15L25 3"/>' + plDot(8, 10.8) + plDot(14, 9) + plDot(19, 5.2)),
+    curve: plIc('<path d="M3 15C11 14 15 4 25 3"/>' + plDot(9, 13.4) + plDot(17, 6.6)), join: plIc('<path d="M3 15L10 8L17 11L25 3"/>' + plDot(10, 8) + plDot(17, 11)) };
+  // an Akima spline through points sorted by x, one per x: f(x), NaN outside them. Each point's slope is a weighted mean of its
+  // neighbours' (the weights the slope changes further out), so where three points lie in a row the curve between them IS the line
+  // (Grade 10 P1 2018 3.3: straight from 0 to 3 s, curved after) and it never overshoots a corner the way a cubic spline does
+  function akima(P) {
+    const n = P.length; if (n < 2) return null;
+    const x = P.map(p => p[0]), y = P.map(p => p[1]), m = [];
+    for (let i = 0; i < n - 1; i++) m.push((y[i + 1] - y[i]) / (x[i + 1] - x[i]));
+    if (n === 2) return u => u < x[0] - 1e-9 || u > x[1] + 1e-9 ? NaN : y[0] + m[0] * (u - x[0]);
+    const M = i => i >= 0 && i < n - 1 ? m[i] : i === -1 ? 2 * m[0] - m[1] : i === -2 ? 3 * m[0] - 2 * m[1] : i === n - 1 ? 2 * m[n - 2] - m[n - 3] : 3 * m[n - 2] - 2 * m[n - 3];
+    const t = x.map((_, i) => { const w1 = Math.abs(M(i + 1) - M(i)), w2 = Math.abs(M(i - 1) - M(i - 2)); return w1 + w2 < 1e-12 ? (M(i - 1) + M(i)) / 2 : (w1 * M(i - 1) + w2 * M(i)) / (w1 + w2); });
+    return u => { if (!(u >= x[0] - 1e-9 && u <= x[n - 1] + 1e-9)) return NaN; let i = 0; while (i < n - 2 && u > x[i + 1]) i++;
+      const h = x[i + 1] - x[i], s = (u - x[i]) / h, s2 = s * s, s3 = s2 * s;
+      return (2 * s3 - 3 * s2 + 1) * y[i] + (s3 - 2 * s2 + s) * h * t[i] + (-2 * s3 + 3 * s2) * y[i + 1] + (s3 - s2) * h * t[i + 1]; };
+  }
+  // a number as the paper prints it: a decimal comma, thousands spaced (4 000, 0,735)
+  const pfmt = n => { const r = Math.round(n * 1000) / 1000, s = String(Math.abs(r)).split("."); s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, " "); return (r < 0 ? "−" : "") + s.join(","); };
+  // points sorted by x, one per x (a second at the same x is left out of a line through them)
+  const plSorted = ps => ps.slice().sort((p, q) => p[0] - q[0]).filter((p, k, A) => !k || Math.abs(p[0] - A[k - 1][0]) > 1e-9);
+  function plot(host, o) {
+    const cfg = o.cfg, uid = "pl" + (++plN), PT = Array.isArray(cfg.points) ? cfg.points : [], TAN = !!cfg.tangent, LINES = !TAN && cfg.lines !== false;
+    const CH = !!(cfg.grid && cfg.x.scales && cfg.y.scales), SUB = CH ? cfg.grid.sub || 10 : 0, NAMES = cfg.names || [];
+    const LAB = Array.isArray(cfg.labels) && cfg.labels.length ? cfg.labels.slice().sort() : null;
+    const isPt = u => Array.isArray(u) && u.length === 2 && u.every(n => typeof n === "number" && isFinite(n));
+    const normV = val => { const x = clone(val), r = { p: {} };
+      if (x.p && typeof x.p === "object") PT.forEach(q => { if (isPt(x.p[q.id])) r.p[q.id] = x.p[q.id].slice(); });
+      if (LAB) ["xl", "yl"].forEach(k => { if (LAB.indexOf(x[k]) !== -1) r[k] = x[k]; });
+      if (CH) [["sx", cfg.x], ["sy", cfg.y]].forEach(([k, c]) => { if (c.scales.indexOf(x[k]) !== -1) r[k] = x[k]; });
+      if (LINES && PLK.some(q => q[0] === x.k)) r.k = x.k;
+      if (r.k === "best" && isPt(x.a) && isPt(x.b)) { r.a = x.a.slice(); r.b = x.b.slice(); }
+      if (r.k === "best" && x.lf) r.lf = 1;
+      if (r.k === "best" && x.ex) r.ex = 1;
+      return r; };
+    let v = normV(o.value), locked = false, items = null, drag = null, W = 0, VH = 0, ro = null, pinUp = 0, sel = "", AX = null, AY = null;
+    const placed = id => isPt(v.p[id]), ptName = id => ((PT.find(q => q.id === id) || {}).name || "");
+    const firstOpen = after => { const i = PT.findIndex(q => q.id === after), L = PT.slice(i + 1).concat(PT.slice(0, i + 1)); return (L.find(q => !placed(q.id)) || {}).id || ""; };
+    let act = firstOpen("");
+    // an axis as it stands: the paper's, or from the learner's scale (from 0, a bold line every big square, a tap snaps to a small
+    // square), null until it is chosen
+    const axis = (c, s, n) => c.scales ? (s ? { min: 0, max: +(s * n).toFixed(9), step: s, minor: s / SUB, snap: +(s / SUB).toFixed(9) } : null)
+      : { min: c.min, max: c.max, step: c.step, minor: c.minor || 0, snap: c.snap || c.minor || c.step };
+    const resolve = () => { AX = axis(cfg.x, v.sx, CH ? cfg.grid.nx : 0); AY = axis(cfg.y, v.sy, CH ? cfg.grid.ny : 0); };
+    resolve();
+    const ready = () => !!(AX && AY);
+    const snapA = (u, A) => +(Math.max(A.min, Math.min(A.max, A.min + Math.round((u - A.min) / A.snap) * A.snap))).toFixed(9);
+    const mine = () => PT.filter(q => placed(q.id)).map(q => v.p[q.id]);
+    // the straight line fitted to the learner's own points (least squares), from the first point's x (or the y-axis, extended) to the last
+    const refit = () => { const ps = mine(), n = ps.length; if (n < 2) { delete v.a; delete v.b; return; }
+      const mx = ps.reduce((t, p) => t + p[0], 0) / n, my = ps.reduce((t, p) => t + p[1], 0) / n, sxx = ps.reduce((t, p) => t + (p[0] - mx) * (p[0] - mx), 0);
+      if (sxx < 1e-12) { delete v.a; delete v.b; return; }
+      const m = ps.reduce((t, p) => t + (p[0] - mx) * (p[1] - my), 0) / sxx, f = x => my + m * (x - mx), r = q => +q.toFixed(9);
+      const xs = ps.map(p => p[0]), x0 = v.ex && AX ? AX.min : Math.min(...xs), x1 = Math.max(...xs);
+      v.a = [r(x0), r(f(x0))]; v.b = [r(x1), r(f(x1))]; };
+    // extended to the y-axis: a fitted line refits from it; a line the learner placed moves its left end along itself
+    const extend = () => { if (!AX || !v.a || !v.b) return; v.ex = 1; if (v.lf) return;
+      const L = v.a[0] <= v.b[0] ? "a" : "b", R = L === "a" ? "b" : "a", m = (v[R][1] - v[L][1]) / (v[R][0] - v[L][0]); if (!isFinite(m)) return;
+      v[L] = [AX.min, +(v[R][1] + m * (AX.min - v[R][0])).toFixed(9)]; };
+    const emit = () => { resolve(); if (v.k === "best" && v.lf) refit(); v = normV(v); o.onChange(clone(v)); };
+    // a text's width in this builder's font (the y numbers set the left margin)
+    let FONT = "sans-serif", ctx2 = null;
+    const tw = (s, size, weight) => { try { ctx2 = ctx2 || document.createElement("canvas").getContext("2d"); ctx2.font = (weight || 600) + " " + size + "px " + FONT; return ctx2.measureText(s).width + 1; }
+      catch (_) { return s.length * size * 0.6; } };
+    const inView = () => { for (let n = host.parentElement; n && n !== document.body; n = n.parentElement) { const ov = getComputedStyle(n).overflowY;
+        if ((ov === "auto" || ov === "scroll") && n.clientHeight > 200 && n.clientHeight < (window.innerHeight || 700) - 40) return n.clientHeight; }
+      return (window.innerHeight || 700) - (document.body.classList.contains("nx-compact") ? 210 : 120); };
+    const ticks = A => { const out = []; for (let i = 0; A.min + i * A.step <= A.max + 1e-9; i++) out.push(+(A.min + i * A.step).toFixed(9)); return out; };
+    const cardW = () => Math.max(240, Math.min(560, Math.floor(host.clientWidth || host.getBoundingClientRect().width || 320)));   // (layout width: a client rect is post-transform)
+    const onStep = (u, A) => Math.abs((u - A.min) / A.step - Math.round((u - A.min) / A.step)) < 1e-6;
+    // the axis to draw: the real one, or (a scale still to choose) the blank grid's big squares
+    const drawAx = (A, n) => A || { min: 0, max: n, step: 1, minor: SUB ? 1 / SUB : 0, blank: true };
+    // the grid as large as the card allows (560 px at most) and no taller than ~60% of what is in view, so the tray, the grid and the
+    // line's choice are seen close together; a blank grid's squares stay square
+    function geo() {
+      const DX = drawAx(AX, CH ? cfg.grid.nx : 1), DY = drawAx(AY, CH ? cfg.grid.ny : 1), nx = (DX.max - DX.min) / DX.step, ny = (DY.max - DY.min) / DY.step;
+      const yw = DY.blank ? 8 : Math.max(...ticks(DY).map(u => tw(pfmt(u), 11, 600)));
+      const L = Math.ceil(yw) + 12, R = 18, T = 30, B = 40, A = CH ? ny / nx : Math.max(0.62, Math.min(1.15, ny / nx));
+      let pw = Math.max(180, W - L - R), ph = pw * A; const cap = Math.max(190, Math.round(VH * 0.6) - T - B);
+      if (ph > cap) { ph = cap; pw = Math.min(pw, Math.max(170, ph / A)); }
+      return { DX: DX, DY: DY, w: Math.round(L + pw + R), h: Math.round(T + ph + B), L: L, T: T, pw: pw, ph: ph,
+        X: x => L + (x - DX.min) / (DX.max - DX.min) * pw, Y: y => T + (DY.max - y) / (DY.max - DY.min) * ph,
+        ux: px => DX.min + (px - L) / pw * (DX.max - DX.min), uy: py => DY.max - (py - T) / ph * (DY.max - DY.min) };
+    }
+    const pathThrough = (G, ps, curve) => { if (!curve || ps.length < 3) return ps.map((p, k) => (k ? "L" : "M") + G.X(p[0]).toFixed(1) + " " + G.Y(p[1]).toFixed(1)).join("");
+      const f = akima(ps), x0 = ps[0][0], x1 = ps[ps.length - 1][0], N = 160; let d = "";
+      for (let i = 0; i <= N; i++) { const x = x0 + (x1 - x0) * i / N; d += (i ? "L" : "M") + G.X(x).toFixed(1) + " " + G.Y(f(x)).toFixed(1); } return d; };
+    function svgInner(G) {
+      const DX = G.DX, DY = G.DY, x0 = G.X(DX.min), y0 = G.Y(DY.min), xe = G.L + G.pw, ye = G.T;
+      const vl = (u, c) => `<line x1="${G.X(u).toFixed(1)}" x2="${G.X(u).toFixed(1)}" y1="${ye}" y2="${y0.toFixed(1)}" class="${c}"/>`;
+      const hl = (u, c) => `<line x1="${x0.toFixed(1)}" x2="${xe.toFixed(1)}" y1="${G.Y(u).toFixed(1)}" y2="${G.Y(u).toFixed(1)}" class="${c}"/>`;
+      let g = "", t = "";
+      // the small squares (while 3.5 px apart), then a bold line every step
+      if (DX.minor > 0 && DX.minor / (DX.max - DX.min) * G.pw >= 3.5) for (let i = 1; DX.min + i * DX.minor < DX.max - 1e-9; i++) { const u = DX.min + i * DX.minor; if (!onStep(u, DX)) g += vl(u, "pl-grid"); }
+      if (DY.minor > 0 && DY.minor / (DY.max - DY.min) * G.ph >= 3.5) for (let i = 1; DY.min + i * DY.minor < DY.max - 1e-9; i++) { const u = DY.min + i * DY.minor; if (!onStep(u, DY)) g += hl(u, "pl-grid"); }
+      ticks(DX).forEach(u => { g += vl(u, "pl-grid2"); }); ticks(DY).forEach(u => { g += hl(u, "pl-grid2"); });
+      // the numbers: every k-th step, k the first that leaves room; one 0 at the corner
+      const zero = !DX.blank && !DY.blank && DX.min === 0 && DY.min === 0;
+      if (!DX.blank) { const tx = ticks(DX), wx = Math.max(...tx.map(u => tw(pfmt(u), 11, 600))), px = G.pw / ((DX.max - DX.min) / DX.step), k = [1, 2, 3, 4, 5, 10, 20].find(k => k * px >= wx + 6) || 50;
+        tx.forEach((u, i) => { if (i % k || (zero && u === 0)) return; t += `<text x="${G.X(u).toFixed(1)}" y="${(y0 + 15).toFixed(1)}" class="pl-tick" text-anchor="middle">${pfmt(u)}</text>`; }); }
+      if (!DY.blank) { const ty = ticks(DY), py = G.ph / ((DY.max - DY.min) / DY.step), k = [1, 2, 3, 4, 5, 10, 20].find(k => k * py >= 15) || 50;
+        ty.forEach((u, i) => { if (i % k || (zero && u === 0)) return; t += `<text x="${(x0 - 5).toFixed(1)}" y="${(G.Y(u) + 4).toFixed(1)}" class="pl-tick" text-anchor="end">${pfmt(u)}</text>`; }); }
+      if (zero) t += `<text x="${(x0 - 5).toFixed(1)}" y="${(y0 + 15).toFixed(1)}" class="pl-tick" text-anchor="end">0</text>`;
+      // the axes and their names: the paper's, or the learner's choice ("choose its label" until one is chosen)
+      const ax = `<line x1="${x0.toFixed(1)}" x2="${(xe + 8).toFixed(1)}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" class="pl-axis"/><path d="M${(xe + 15).toFixed(1)} ${y0.toFixed(1)}l-8 -4v8z" class="pl-arrow"/>`
+        + `<line x1="${x0.toFixed(1)}" x2="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" y2="${ye - 8}" class="pl-axis"/><path d="M${x0.toFixed(1)} ${ye - 15}l-4 8h8z" class="pl-arrow"/>`;
+      const yN = LAB ? v.yl : cfg.y.name, xN = LAB ? v.xl : cfg.x.name;
+      t += `<text x="${(x0 + 10).toFixed(1)}" y="${ye - 12}" class="pl-name${yN ? "" : " pl-name0"}">${esc(yN || (LAB ? "y-axis: choose its label" : ""))}</text>`
+        + `<text x="${xe.toFixed(1)}" y="${G.h - 6}" class="pl-name${xN ? "" : " pl-name0"}" text-anchor="end">${esc(xN || (LAB ? "x-axis: choose its label" : ""))}</text>`;
+      // the graph the paper prints already, then the learner's line (or the tangent mode's line across the grid)
+      let gv = "", ln = "";
+      (cfg.given || []).forEach((s, si) => { const cls = `pl-gv pl-g${si % 3}${s.dash ? " pl-" + s.dash : ""}`;
+        (s.segs || []).forEach(q => { gv += `<line x1="${G.X(q[0]).toFixed(1)}" y1="${G.Y(q[1]).toFixed(1)}" x2="${G.X(q[2]).toFixed(1)}" y2="${G.Y(q[3]).toFixed(1)}" class="${cls}"/>`; });
+        if (Array.isArray(s.pts) && s.pts.length > 1) gv += `<path d="${pathThrough(G, plSorted(s.pts), !!s.curve)}" class="${cls}"/>`;
+        (s.dots || []).forEach(d => { gv += `<circle cx="${G.X(d[0]).toFixed(1)}" cy="${G.Y(d[1]).toFixed(1)}" r="3.4" class="pl-gdot pl-g${si % 3}${d[2] ? " pl-open" : ""}"/>`; }); });
+      if (!DX.blank && !DY.blank && LINES && v.k) { const ps = plSorted(mine());
+        if (v.k === "best" && v.a && v.b) ln = `<line x1="${G.X(v.a[0]).toFixed(1)}" y1="${G.Y(v.a[1]).toFixed(1)}" x2="${G.X(v.b[0]).toFixed(1)}" y2="${G.Y(v.b[1]).toFixed(1)}" class="pl-line"/>`;
+        else if (v.k !== "best" && ps.length >= 2) ln = `<path d="${pathThrough(G, ps, v.k === "curve")}" class="pl-line"/>`; }
+      if (TAN && !DX.blank && placed("a") && placed("b")) { const A = v.p.a, B = v.p.b;
+        if (Math.abs(B[0] - A[0]) < 1e-9) { if (Math.abs(B[1] - A[1]) > 1e-9) ln = vl(A[0], "pl-line"); }
+        else { const m = (B[1] - A[1]) / (B[0] - A[0]), f = x => A[1] + m * (x - A[0]);
+          ln = `<line x1="${x0.toFixed(1)}" y1="${G.Y(f(DX.min)).toFixed(1)}" x2="${xe.toFixed(1)}" y2="${G.Y(f(DX.max)).toFixed(1)}" class="pl-line"/>`; } }
+      return `<defs><clipPath id="${uid}c"><rect x="${G.L}" y="${G.T}" width="${G.pw}" height="${G.ph}"/></clipPath></defs>`
+        + `<rect x="${G.L}" y="${G.T}" width="${G.pw}" height="${G.ph}" class="pl-bg"/>${g}<rect x="${G.L}" y="${G.T}" width="${G.pw}" height="${G.ph}" class="pl-frame"/>`
+        + `${ax}${t}<g clip-path="url(#${uid}c)">${gv}${ln}</g>`;
+    }
+    const valText = u => "(" + pfmt(u[0]) + " ; " + pfmt(u[1]) + ")", spoken = u => "x " + pfmt(u[0]) + ", y " + pfmt(u[1]);
+    const vt = id => { const it = items && items.find(x => x.key === "s:" + id); return it ? (it.verdict === "correct" ? "ok" : it.verdict === "incorrect" ? "bad" : "") : ""; };
+    const ENDS = [["@a", "a", "Line end 1"], ["@b", "b", "Line end 2"]];
+    const valOf = id => id[0] === "@" ? v[id.slice(1)] : v.p[id];
+    const nameOf = id => id[0] === "@" ? (id === "@a" ? "Line end 1" : "Line end 2") : ptName(id);
+    const has = id => isPt(valOf(id));
+    function pinsHtml(G) {
+      if (!ready()) return "";
+      const cx = px => Math.max(0, Math.min(G.w, px)), cy = py => Math.max(0, Math.min(G.h, py));
+      const pin = (id, cls, u, label) => `<button type="button" class="sk-pin sk-point ${cls}" data-pin="${esc(id)}" data-act="${sel === id}" data-v="${vt(id)}"${locked ? ' tabindex="-1"' : ""}`
+        + ` style="left:${cx(G.X(u[0])).toFixed(1)}px;top:${cy(G.Y(u[1])).toFixed(1)}px" aria-label="${esc(label)} at ${esc(spoken(u))}${locked ? "" : ". Arrow keys move it" + (id[0] === "@" ? "" : ", Delete removes it")}"></button>`;
+      let h = PT.filter(q => placed(q.id)).map(q => pin(q.id, "pl-pin", v.p[q.id], q.name)).join("");
+      if (LINES && v.k === "best" && v.a && v.b && !locked) h += ENDS.map(([id, k, nm]) => pin(id, "pl-end", v[k], nm + " of the straight line")).join("");
+      const su = sel && has(sel) ? valOf(sel) : null;
+      if (su) { const tx = valText(su), w = tw(tx, 11.5, 800) + 2, px = cx(G.X(su[0])), py = cy(G.Y(su[1])); let x = px + 11, y = py - 25;
+        if (x + w > G.w - 2) x = px - 11 - w; if (y < 2) y = py + 10;
+        h += `<span class="sk-tag pl-tag" aria-hidden="true" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px">${tx}</span>`; }
+      return h;
+    }
+    const chip = q => { const on = placed(q.id);
+      return `<button type="button" class="sk-chip pl-chip" data-f="${esc(q.id)}" data-k="point" data-on="${on}" data-v="${vt(q.id)}" aria-pressed="${act === q.id}"${locked ? " disabled" : ""}`
+        + ` aria-label="${esc(q.name)}${on ? ", at " + esc(spoken(v.p[q.id])) : ", not placed"}"><span class="sk-ic" aria-hidden="true"></span>`
+        + `<span class="sk-cb"><span class="sk-cl">${esc(q.name)}</span><span class="sk-cv" data-on="${on}">${on ? valText(v.p[q.id]) : "not placed"}</span></span></button>`; };
+    function setupHtml() {
+      let s = "";
+      if (LAB) s += `<div class="pl-labs">` + [["x", "Across (x-axis)"], ["y", "Up (y-axis)"]].map(([k, t]) => `<label class="pl-lab"><span class="sk-pl">${t}</span>`
+        + `<select class="pl-sel" data-ax="${k}" aria-label="${t}: its label"${locked ? " disabled" : ""}><option value="">Choose its label…</option>${LAB.map(q => `<option${v[k + "l"] === q ? " selected" : ""}>${esc(q)}</option>`).join("")}</select></label>`).join("") + `</div>`;
+      // (the unit once, in the row's name: "0,15 m·s⁻²" on each of four buttons wrapped them to two rows at 360 px)
+      if (CH) s += [["x", "Across"], ["y", "Up"]].map(([k, t]) => { const c = cfg[k], u = c.unit ? " (" + esc(c.unit) + ")" : "";
+        return `<div class="sk-pick pl-scale" role="group" aria-label="${t}: the value of one big square${esc(c.unit ? ", in " + c.unit : "")}"><span class="sk-pl">${t}: one big square is${u}</span>`
+          + c.scales.map(sv => `<button type="button" class="sk-op" data-sc="${k}:${sv}" aria-pressed="${v["s" + k] === sv}"${locked ? " disabled" : ""}>${pfmt(sv)}</button>`).join("") + `</div>`; }).join("");
+      return s;
+    }
+    function linesHtml() {
+      if (!LINES) return "";
+      let s = `<div class="sk-pick pl-kinds" role="group" aria-label="The line"><span class="sk-pl">The line</span>`
+        + PLK.map(([k, t]) => `<button type="button" class="sk-op pl-k" data-k="${k}" aria-pressed="${v.k === k}"${locked || !ready() ? " disabled" : ""}>${PLI[k]}<span>${t}</span></button>`).join("") + `</div>`;
+      if (v.k === "best" && !locked && ready()) { const acts = [];
+        if (!v.lf && mine().length >= 2) acts.push(`<button type="button" class="sk-rm pl-fit">Fit it to my points</button>`);
+        if (cfg.extend && v.a && v.b && Math.min(v.a[0], v.b[0]) > AX.min + 1e-9) acts.push(`<button type="button" class="sk-rm pl-ext">Extend it to the y-axis</button>`);
+        if (acts.length) s += `<p class="sk-hint pl-acts">${acts.join("")}</p>`; }
+      return s;
+    }
+    // the chosen point (or line end): its place and one snap step either way on each axis (44 px targets), and Remove
+    function nudgeHtml() {
+      if (locked || !sel || !ready() || !has(sel)) return ""; const u = valOf(sel), nm = nameOf(sel), sx = pfmt(AX.snap), sy = pfmt(AY.snap);
+      return `<div class="nl-nd pl-nd" role="group" aria-label="Move ${esc(nm)}"><span class="nl-ndl">${esc(nm)} <b>${valText(u)}</b></span><span class="pl-nbs">`
+        + [["x:-1", "←", "left", sx], ["x:1", "→", "right", sx], ["y:-1", "↓", "down", sy], ["y:1", "↑", "up", sy]].map(([d, g, w, st]) =>
+          `<button type="button" class="nl-nb pl-nb" data-nd="${d}" aria-label="Move it ${st} ${w}">${g}</button>`).join("")
+        + `</span>${sel[0] === "@" ? "" : `<button type="button" class="sk-rm nl-rm pl-rm">Remove</button>`}</div>`;
+    }
+    function footHtml() {
+      if (locked) return "";
+      const s = !ready() ? "Choose the scale on both axes first, then place the points."
+        : act ? (placed(act) ? "Tap the grid to move “" : "Tap the grid to place “") + ptName(act) + "”."
+        : LINES && !v.k ? "Now choose the line." : LINES && v.k === "best" ? "Drag either end of the line to move it." : "Tap a point to nudge it, or drag it.";
+      return `<p class="sk-hint">${esc(s)}</p>` + (LINES && v.k && mine().length < 2 ? `<p class="sk-note">Place at least two points to draw a line.</p>` : "");
+    }
+    function resHtml() {
+      if (!items) return ""; const its = items.filter(it => /^c\d+$/.test(it.key));
+      return `<div class="bp-chips sk-res" role="status">${its.map(it => { const s = it.available > 0 && it.awarded >= it.available ? "true" : it.awarded > 0 ? "part" : "false";
+        return `<span class="bp-chip" data-ok="${s}">${s === "true" ? "✓" : s === "part" ? "◐" : "✕"} ${esc(NAMES[+it.key.slice(1)] || "Criterion " + (+it.key.slice(1) + 1))}${it.available ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
+    }
+    host.innerHTML = `<div class="bp sk pl" data-locked="false"><div class="pl-setup"></div><div class="sk-tray pl-tray" role="group" aria-label="${TAN ? "The ends of the straight line" : "The points to plot"}"></div>`
+      + `<div class="sk-plot pl-plot" role="group"><svg class="pl-svg" aria-hidden="true" focusable="false"></svg><div class="sk-pins"></div></div>`
+      + `<div class="pl-legend"></div><div class="pl-nudge"></div><div class="pl-lines"></div><div class="pl-foot"></div><div class="sk-out"></div><p class="sr-only" aria-live="polite"></p></div>`;
+    const root = host.firstChild, $ = s => root.querySelector(s), setup = $(".pl-setup"), tray = $(".pl-tray"), plotEl = $(".pl-plot"), svgEl = $(".pl-svg"), pins = $(".sk-pins"),
+      legend = $(".pl-legend"), nudge = $(".pl-nudge"), lines = $(".pl-lines"), foot = $(".pl-foot"), out = $(".sk-out"), live = $("[aria-live]");
+    const say = s => { live.textContent = s; };
+    function paint() { const G = geo(); svgEl.setAttribute("viewBox", "0 0 " + G.w + " " + G.h); svgEl.setAttribute("width", G.w); svgEl.setAttribute("height", G.h);
+      plotEl.style.width = G.w + "px"; plotEl.style.height = G.h + "px"; svgEl.innerHTML = svgInner(G); return G; }
+    function render(focusSel) {
+      if (focusSel === undefined) { const a = document.activeElement, d = a && root.contains(a) ? a.dataset : null;
+        focusSel = !d ? null : d.pin ? `[data-pin="${d.pin}"]` : d.f ? `[data-f="${d.f}"]` : d.sc ? `[data-sc="${d.sc}"]` : d.ax ? `select[data-ax="${d.ax}"]` : d.nd ? `[data-nd="${d.nd}"]`
+          : a.classList.contains("pl-k") ? `.pl-k[data-k="${d.k}"]` : a.classList.contains("pl-fit") ? ".pl-fit" : a.classList.contains("pl-ext") ? ".pl-ext" : null; }
+      W = cardW(); VH = inView();
+      try { FONT = getComputedStyle(root).fontFamily || FONT; } catch (_) { /* no style: the fallback measure */ }
+      resolve(); root.dataset.locked = String(locked);
+      if (locked) { act = ""; sel = ""; }
+      if (sel && !has(sel)) sel = "";
+      setup.innerHTML = setupHtml();
+      const G = paint();
+      pins.innerHTML = pinsHtml(G);
+      // a tray whose rows and the grid would not fit in view together becomes ONE row of chips that scrolls sideways (the sketch's rule:
+      // ML P1 Nov 2024 4.1.2(b) has ten points)
+      const cols = Math.max(1, Math.floor(((tray.clientWidth || W) + 8) / 144)), rows = Math.ceil(PT.length / cols);
+      const row = rows > 2 && 28 + rows * 60 + 12 + G.h > VH - 24, ti0 = tray.querySelector(".sk-ti"), sl = ti0 ? ti0.scrollLeft : 0, n = PT.filter(q => placed(q.id)).length;
+      tray.dataset.row = String(row);
+      tray.innerHTML = `<p class="sk-th"><span>${locked ? (TAN ? "Your line's ends" : "Your points") : TAN ? "Tap an end, then tap the grid" : "Tap a point, then tap the grid"}</span><span class="sk-n">${n} of ${PT.length} placed</span></p>`
+        + `<div class="sk-ti">${PT.map(chip).join("")}</div>`;
+      if (row) keepInRow(sl);
+      plotEl.setAttribute("aria-label", ready() ? "Graph grid: x from " + pfmt(AX.min) + " to " + pfmt(AX.max) + ", y from " + pfmt(AY.min) + " to " + pfmt(AY.max) : "Graph grid: choose the scale first");
+      legend.innerHTML = (cfg.given || []).map((s, si) => `<span class="pl-lg"><svg viewBox="0 0 30 10" width="30" height="10" aria-hidden="true"><line x1="2" y1="5" x2="28" y2="5" class="pl-gv pl-g${si % 3}${s.dash ? " pl-" + s.dash : ""}"/></svg>${esc(s.name)}</span>`).join("");
+      nudge.innerHTML = nudgeHtml(); lines.innerHTML = linesHtml(); foot.innerHTML = footHtml(); out.innerHTML = resHtml();
+      wire();
+      if (focusSel) { const nd = root.querySelector(focusSel); if (nd && !nd.disabled) nd.focus({ preventScroll: true }); }
+    }
+    function keepInRow(sl) { const ti = tray.querySelector(".sk-ti"); if (!ti) return; ti.scrollLeft = sl;
+      const edge = () => { ti.dataset.l = String(ti.scrollLeft > 2); ti.dataset.r = String(ti.scrollLeft + ti.clientWidth < ti.scrollWidth - 2); };
+      ti.onscroll = edge;
+      const c = ti.querySelector('[aria-pressed="true"]');
+      if (c) { const l = c.offsetLeft, r = l + c.offsetWidth, m = 36; let to = ti.scrollLeft;
+        if (l - m < to) to = Math.max(0, l - m); else if (r + m > to + ti.clientWidth) to = r + m - ti.clientWidth;
+        if (Math.abs(to - ti.scrollLeft) > 1) ti.scrollTo({ left: to, behavior: o.reduced ? "auto" : "smooth" }); }
+      edge(); }
+    const fromEvent = e => { const r = svgEl.getBoundingClientRect(), G = geo(), px = (e.clientX - r.left) * G.w / (r.width || G.w), py = (e.clientY - r.top) * G.h / (r.height || G.h);
+      return [snapA(G.ux(px), AX), snapA(G.uy(py), AY)]; };
+    const nearest = e => { const r = svgEl.getBoundingClientRect(), G = geo(), px = (e.clientX - r.left) * G.w / (r.width || G.w), py = (e.clientY - r.top) * G.h / (r.height || G.h);
+      let best = "", bd = 26; PT.forEach(q => { if (!placed(q.id)) return; const d = Math.hypot(G.X(v.p[q.id][0]) - px, G.Y(v.p[q.id][1]) - py); if (d < bd) { bd = d; best = q.id; } }); return best; };
+    // a point placed or moved (announced), or a line end moved (the line then stays where the learner put it: no more fitting)
+    const setVal = (id, u, quiet) => { if (id[0] === "@") { v[id.slice(1)] = u; delete v.lf; return; }
+      const was = placed(id); v.p[id] = u; if (!quiet) say(ptName(id) + (was ? " moved to " : " placed at ") + spoken(u)); };
+    function wire() {
+      setup.querySelectorAll("select[data-ax]").forEach(s => s.onchange = () => { if (locked) return; const k = s.dataset.ax + "l"; if (s.value) v[k] = s.value; else delete v[k];
+        say((s.dataset.ax === "x" ? "The x-axis: " : "The y-axis: ") + (s.value || "no label")); emit(); render(`select[data-ax="${s.dataset.ax}"]`); });
+      setup.querySelectorAll("[data-sc]").forEach(b => b.onclick = () => { if (locked) return; const [k, val] = b.dataset.sc.split(":"); v["s" + k] = +val;
+        say((k === "x" ? "Across" : "Up") + ", one big square is " + pfmt(+val) + " " + (cfg[k].unit || "")); emit(); render(`[data-sc="${b.dataset.sc}"]`); });
+      tray.querySelectorAll("[data-f]").forEach(b => b.onclick = e => { if (locked) return; const id = b.dataset.f; act = id; if (placed(id)) sel = id;
+        if (!ready()) { say("Choose the scale on both axes first"); render(`[data-f="${id}"]`); return; }
+        if (e.detail === 0) {   // the keyboard (or a screen reader): placed mid-grid if new, then its pin takes the focus for the arrows
+          if (!placed(id)) { setVal(id, [snapA((AX.min + AX.max) / 2, AX), snapA((AY.min + AY.max) / 2, AY)]); emit(); }
+          sel = id; render(`[data-pin="${id}"]`); return; }
+        render(`[data-f="${id}"]`); });
+      lines.querySelectorAll(".pl-k").forEach(b => b.onclick = () => { if (locked || !ready()) return; v.k = b.dataset.k;
+        if (v.k === "best") v.lf = 1; else { delete v.a; delete v.b; delete v.lf; delete v.ex; if (sel[0] === "@") sel = ""; }
+        say((PLK.find(q => q[0] === v.k) || [])[1] + " chosen"); emit(); render(`.pl-k[data-k="${v.k}"]`); });
+      const fit = lines.querySelector(".pl-fit"); if (fit) fit.onclick = () => { if (locked) return; v.lf = 1; emit(); say("The line is fitted to your points"); render('.pl-k[data-k="best"]'); };
+      const ext = lines.querySelector(".pl-ext"); if (ext) ext.onclick = () => { if (locked) return; extend(); emit(); say("The line is extended to the y-axis"); render('.pl-k[data-k="best"]'); };
+      nudge.querySelectorAll("[data-nd]").forEach(b => b.onclick = () => { if (locked || !sel || !has(sel)) return; const [ax, d] = b.dataset.nd.split(":"), u = valOf(sel).slice();
+        if (ax === "x") u[0] = snapA(u[0] + +d * AX.snap, AX); else u[1] = snapA(u[1] + +d * AY.snap, AY); setVal(sel, u); emit(); render(`[data-nd="${b.dataset.nd}"]`); });
+      const rm = nudge.querySelector(".pl-rm"); if (rm) rm.onclick = () => { if (locked || !sel || sel[0] === "@") return; const id = sel; delete v.p[id]; sel = ""; act = id; say(ptName(id) + " removed"); emit(); render(`[data-f="${id}"]`); };
+      // a tap on the grid places (or moves) the chosen point, or with none chosen picks the nearest one; a swipe scrolls the page
+      plotEl.onclick = e => { if (locked || drag || e.target.closest(".sk-pin") || Date.now() - pinUp < 450) return;
+        if (!ready()) { say("Choose the scale on both axes first"); return; }
+        if (!act) { const id = nearest(e); if (id) { sel = id; render(null); } return; }
+        const id = act, was = placed(id); setVal(id, fromEvent(e)); sel = id; act = was ? "" : firstOpen(id); emit(); render(null); };
+      pins.querySelectorAll(".sk-pin").forEach(b => { const id = b.dataset.pin;
+        b.onpointerdown = e => { if (locked) return; e.preventDefault(); e.stopPropagation(); try { b.setPointerCapture(e.pointerId); } catch (_) { /* a synthetic pointer */ }
+          b.focus({ preventScroll: true }); const r = svgEl.getBoundingClientRect(), G = geo(), s = r.width / G.w, cur = valOf(id);
+          drag = { id: id, x: e.clientX, y: e.clientY, ox: r.left + G.X(cur[0]) * s - e.clientX, oy: r.top + G.Y(cur[1]) * s - e.clientY, moved: false }; document.documentElement.classList.add("bp-drag"); };
+        b.onpointermove = e => { if (!drag || drag.id !== id) return; if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 4) return; drag.moved = true;
+          const u = fromEvent({ clientX: e.clientX + drag.ox, clientY: e.clientY + drag.oy }), cur = valOf(id); if (u[0] === cur[0] && u[1] === cur[1]) return;
+          setVal(id, u, true); if (v.k === "best" && v.lf && id[0] !== "@") refit();
+          const G = paint(); b.style.left = G.X(u[0]) + "px"; b.style.top = G.Y(u[1]) + "px";   // (this pin moves; the grid and the line repaint under it)
+          const tag = pins.querySelector(".pl-tag"); if (tag) { tag.textContent = valText(u); tag.style.left = (G.X(u[0]) + 11) + "px"; tag.style.top = (G.Y(u[1]) - 25) + "px"; } };
+        const end = () => { if (!drag || drag.id !== id) return; const moved = drag.moved; drag = null; pinUp = Date.now(); document.documentElement.classList.remove("bp-drag");
+          sel = id; if (moved) { say(nameOf(id) + " moved to " + spoken(valOf(id))); if (act === id) act = ""; emit(); } render(`[data-pin="${id}"]`); };
+        b.onpointerup = end; b.onpointercancel = end; b.onclick = e => e.stopPropagation();
+        b.onkeydown = e => { if (locked) return; const st = e.shiftKey ? 5 : 1, d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key], cur = valOf(id);
+          if (d) { e.preventDefault(); const u = [snapA(cur[0] + d[0] * st * AX.snap, AX), snapA(cur[1] + d[1] * st * AY.snap, AY)]; if (u[0] === cur[0] && u[1] === cur[1]) return;
+            sel = id; setVal(id, u); emit(); render(`[data-pin="${id}"]`); return; }
+          if ((e.key === "Delete" || e.key === "Backspace") && id[0] !== "@") { e.preventDefault(); delete v.p[id]; sel = ""; act = id; say(ptName(id) + " removed"); emit(); render(`[data-f="${id}"]`); return; }
+          if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); const nx = e.key === "Enter" && id[0] !== "@" ? firstOpen(id) : ""; if (nx) act = nx;
+            render(nx ? `[data-f="${nx}"]` : id[0] === "@" ? '.pl-k[data-k="best"]' : `[data-f="${id}"]`); } };
+      });
+    }
+    render(null);
+    // (the first render is mid-transition: a scaled card measured 277 px for 328 and the play screen's compact class was not on yet, so
+    // the grid grew 27 px on the first tap; it is measured again two frames and a moment later, and on any resize)
+    const refresh = () => { if (!drag && root.isConnected && (Math.abs(cardW() - W) >= 2 || Math.abs(inView() - VH) >= 8)) render(); };
+    requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(refresh, 150)));
+    if (window.ResizeObserver) { ro = new ResizeObserver(refresh); ro.observe(host); }
+    const mo = window.MutationObserver ? new MutationObserver(refresh) : null;   // (the compact class lands on the body after the mount)
+    if (mo) mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    return { sync(s) { const nv = normV(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v);
+        const its = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? s.items : null, was = locked + "|" + JSON.stringify(items);
+        v = nv; locked = !!s.locked; items = its; resolve();
+        if (changed && !Object.keys(nv.p).length) { act = firstOpen(""); sel = ""; }   // a fresh try starts at the first point
+        // (the host's render can change the room: the play screen turns compact after the builder mounts, and the card's 459 px scroller
+        // gives way to the page: re-measured here, as the host syncs after each render)
+        const room = Math.abs(cardW() - W) >= 2 || Math.abs(inView() - VH) >= 8;
+        if ((changed || room || was !== locked + "|" + JSON.stringify(items)) && !drag) render(); },
+      destroy() { if (ro) ro.disconnect(); if (mo) mo.disconnect(); document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
+  }
+
+  // ── the FORCE DIAGRAM builder (2026-10-11, "forces"; Murci picked direction A of the mock-up, "tap and aim"): "Draw a labelled
+  // free-body diagram" BUILT from a dot. The tray holds the SAME seven forces for every force question (never only the ones that act,
+  // so it tells nothing): tap a force, then tap the diagram where it points; the arrow grows from the dot towards the tap, in 5° steps
+  // on a uniform ring (no tick sits on the right answer). Tap a head to choose it, then tap the diagram to re-aim it, or drag its head;
+  // Remove sits by the hint. Keyboard: Enter on a force draws it pointing right with its head focused, the arrow keys turn it (5°,
+  // Shift 15°), Delete removes it. Where the question asks for an angle (a VECTOR DIAGRAM, "indicate at least ONE angle"): Mark an
+  // angle, then two lines (an arrow, or a dashed guide: by a tap near it or its button); the arc shows the angle between them, worked
+  // out from the learner's own arrows. Length is not marked (a free-body memo marks label and direction). The answer is the arrows
+  // (label, direction) and the angle's two lines; the marker reads only those, against the memo's forces.
+  //   cfg   { surface?: degrees (the surface the body rests on, as the paper's figure draws it: 0 level, 30 rising to the right, −15
+  //           falling to the right), body?: "box" | "sphere" (a faint outline round the dot), angle?: true }
+  //   value { f: [{ l: a force id (FZ), a: degrees anticlockwise from the right, r: length as a share of the ring (0,3 to 1) }],
+  //           ang?: [line, line] (a line: "f<i>", the i-th arrow, or a guide: "V90" up, "V270" down, "H0" right, "H180" left) }
+  const FZ = [{ id: "Fg", s: "F", sub: "g", name: "weight" }, { id: "FN", s: "F", sub: "N", name: "normal force" }, { id: "f", s: "f", sub: "", name: "friction" },
+    { id: "FA", s: "F", sub: "A", name: "applied force" }, { id: "T", s: "T", sub: "", name: "tension" }, { id: "FE", s: "F", sub: "E", name: "electrostatic force" },
+    { id: "Fnet", s: "F", sub: "net", name: "net force" }];
+  const FZG = [["V90", "the vertical, up", 90], ["V270", "the vertical, down", 270], ["H0", "the horizontal, right", 0], ["H180", "the horizontal, left", 180]];
+  const fzL = id => FZ.find(x => x.id === id), fzName = id => (fzL(id) || {}).name || "arrow";
+  const fzSym = id => { const l = fzL(id); return l ? `<i>${l.s}</i>${l.sub ? `<sub>${l.sub}</sub>` : ""}` : "?"; };
+  const fzSvgSym = id => { const l = fzL(id); return l ? `<tspan font-style="italic">${l.s}</tspan>${l.sub ? `<tspan class="fz-sub" dy="4">${l.sub}</tspan>` : ""}` : "?"; };
+  const fzN = a => ((Math.round(a) % 360) + 360) % 360, fzDif = (p, q) => { const d = Math.abs(fzN(p) - fzN(q)); return Math.min(d, 360 - d); };
+  const fzSnap = a => fzN(Math.round(a / 5) * 5), fzAng = (dx, dy) => fzN(Math.atan2(-dy, dx) * 180 / Math.PI), fzRad = a => a * Math.PI / 180, f1 = n => n.toFixed(1);
+  // neutral words for a direction (the page's own terms: never "perpendicular to the slope", which would name an answer)
+  const fzWords = a => { a = fzN(a);
+    if (a === 0) return "pointing right"; if (a === 90) return "pointing straight up"; if (a === 180) return "pointing left"; if (a === 270) return "pointing straight down";
+    if (a < 90) return "pointing up and right, " + a + "° above the horizontal"; if (a < 180) return "pointing up and left, " + (180 - a) + "° above the horizontal";
+    if (a < 270) return "pointing down and left, " + (a - 180) + "° below the horizontal"; return "pointing down and right, " + (360 - a) + "° below the horizontal"; };
+  let fzUid = 0;
+  function forces(host, o) {
+    const cfg = o.cfg, uid = "fz" + (++fzUid), ANG = !!cfg.angle, SURF = typeof cfg.surface === "number" ? cfg.surface : null, BODY = cfg.body || (SURF != null ? "box" : "");
+    const normV = val => { const x = clone(val), f = (Array.isArray(x.f) ? x.f : []).filter(ar => ar && fzL(ar.l) && typeof ar.a === "number" && isFinite(ar.a))
+        .map(ar => ({ l: ar.l, a: fzN(ar.a), r: Math.max(0.3, Math.min(1, typeof ar.r === "number" && isFinite(ar.r) ? Math.round(ar.r * 100) / 100 : 0.8)) }));
+      const okRef = r => typeof r === "string" && (/^f\d+$/.test(r) ? +r.slice(1) < f.length : FZG.some(g => g[0] === r));
+      const b = { f: f }; if (ANG && Array.isArray(x.ang) && x.ang.length === 2 && x.ang.every(okRef) && x.ang[0] !== x.ang[1]) b.ang = x.ang.slice(); return b; };
+    let v = normV(o.value), locked = false, items = null, act = "", sel = -1, pick = null, drag = null, pinUp = 0, W = 0, VH = 0, G = null, ro = null;
+    const emit = () => o.onChange(clone(v));
+    // what is in view (the scroller the builder sits in, else the window less the header and the dock), as the sketch builder reckons it
+    const inView = () => { for (let n = host.parentElement; n && n !== document.body; n = n.parentElement) { const ov = getComputedStyle(n).overflowY;
+        if ((ov === "auto" || ov === "scroll") && n.clientHeight > 200 && n.clientHeight < (window.innerHeight || 700) - 40) return n.clientHeight; }
+      return (window.innerHeight || 700) - (document.body.classList.contains("nx-compact") ? 210 : 120); };
+    // the diagram: a phone's whole width, never so tall that the tray, the diagram, the hint and the host's Check arrow are not in view
+    // together (the first arrow opens Check, and the host scrolls the page to bring it over the face strip: at 360 x 702 a 328 px
+    // diagram pushed the tray under the header, so the next force could not be picked without scrolling back); from 560 px (a tablet's
+    // card is 590) a square beside the tray (the tray, the hint and the marks to its right), as tall as the card's view allows
+    function geo() {
+      const wide = W >= 560; let w, h;
+      if (wide) { w = h = Math.max(280, Math.min(420, Math.round(W * 0.56), VH - 120)); }
+      else { w = W; h = Math.max(220, Math.min(W, 340, VH - 250)); }
+      return { w: w, h: h, cx: Math.round(w / 2), cy: Math.round(h / 2), R: Math.round(Math.min(w, h) / 2 - 30), wide: wide };
+    }
+    const tip = ar => ({ x: G.cx + Math.cos(fzRad(ar.a)) * ar.r * G.R, y: G.cy - Math.sin(fzRad(ar.a)) * ar.r * G.R });
+    const verdict = i => { const it = items && items.find(x => x.key === "f" + i); return !it ? "" : it.verdict === "correct" ? "ok" : it.verdict === "unmarked" ? "" : "bad"; };
+    const lineRay = ref => { if (typeof ref !== "string") return null; if (ref[0] === "f") { const ar = v.f[+ref.slice(1)]; return ar ? ar.a : null; } const g = FZG.find(x => x[0] === ref); return g ? g[2] : null; };
+    const lineName = ref => ref[0] === "f" ? "the " + fzName((v.f[+ref.slice(1)] || {}).l) : (FZG.find(x => x[0] === ref) || [0, "a line"])[1];
+    const angInfo = () => { if (!v.ang) return null; const p = lineRay(v.ang[0]), q = lineRay(v.ang[1]); return p == null || q == null ? null : { p: p, q: q, val: fzDif(p, q) }; };
+    // each label beyond its head; where it would sit on another label, another arrow, the dot or the edge, the least bad of a few spots
+    // round the head (two arrows the same way, as the tow truck's f and T, get their labels side by side)
+    function labelSpots(list) {
+      const segs = list.map(p => [G.cx, G.cy, p.t.x, p.t.y]), out = [], placed = [];
+      const dseg = (x, y, s) => { const vx = s[2] - s[0], vy = s[3] - s[1], L2 = vx * vx + vy * vy || 1, t = Math.max(0, Math.min(1, ((x - s[0]) * vx + (y - s[1]) * vy) / L2));
+        return Math.hypot(x - s[0] - t * vx, y - s[1] - t * vy); };
+      list.forEach((p, k) => { const dx = Math.cos(fzRad(p.a)), dy = -Math.sin(fzRad(p.a)), px = -dy, py = dx, l = fzL(p.l) || { sub: "" }, wl = 13 + l.sub.length * 7;
+        let best = null, bs = Infinity;
+        [[17, 0], [17, 21], [17, -21], [17, 40], [17, -40], [32, 0], [4, 26], [4, -26], [32, 24], [32, -24]].forEach(([al, off], ci) => {
+          const x = p.t.x + dx * al + px * off, y = p.t.y + dy * al + py * off + 1; let s = ci * 0.1;
+          if (x - wl / 2 < 3 || x + wl / 2 > G.w - 3 || y < 11 || y > G.h - 11) s += 100;
+          if (placed.some(q => Math.abs(q.x - x) < (q.w + wl) / 2 + 3 && Math.abs(q.y - y) < 19)) s += 1000;
+          segs.forEach((sg, j) => { if (j !== k && dseg(x, y, sg) < 12) s += 5; });
+          if (Math.hypot(x - G.cx, y - G.cy) < 18) s += 50;
+          if (s < bs) { bs = s; best = { x: x, y: y, w: wl }; } });
+        placed.push(best); out[k] = best; });
+      return out;
+    }
+    function arrowSvg(ar, i, lab, temp) {
+      const a = fzRad(ar.a), dx = Math.cos(a), dy = -Math.sin(a), t = tip(ar), bx = t.x - dx * 12, by = t.y - dy * 12, px = -dy, py = dx;
+      return `<g class="fz-g" data-sel="${!temp && sel === i}" data-v="${temp ? "" : verdict(i)}" data-temp="${!!temp}"><line x1="${G.cx}" y1="${G.cy}" x2="${f1(bx)}" y2="${f1(by)}" class="fz-ar"/>`
+        + `<path d="M${f1(t.x)} ${f1(t.y)}L${f1(bx + px * 6.5)} ${f1(by + py * 6.5)}L${f1(bx - px * 6.5)} ${f1(by - py * 6.5)}Z" class="fz-hd"/>`
+        + (!temp && sel === i ? `<circle cx="${f1(t.x)}" cy="${f1(t.y)}" r="15" class="fz-selr"/>` : "")
+        + (lab ? `<text x="${f1(lab.x)}" y="${f1(lab.y)}" class="fz-lab" text-anchor="middle" dominant-baseline="central">${fzSvgSym(ar.l)}</text>` : "") + `</g>`;
+    }
+    function svgInner(temp) {
+      const w = G.w, h = G.h, cx = G.cx, cy = G.cy, R = G.R;
+      let s = `<defs><clipPath id="${uid}c"><rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="13"/></clipPath></defs><rect x="0.5" y="0.5" width="${w - 1}" height="${h - 1}" rx="14" class="fz-bg"/>`;
+      // the body, faint: on the surface the paper's figure gives (so no hint), or a block or sphere on its own
+      if (SURF != null) { const a = fzRad(SURF), ux = Math.cos(a), uy = -Math.sin(a), nx = -Math.sin(a), ny = -Math.cos(a), x0 = cx - nx * 23, y0 = cy - ny * 23;
+        s += `<g clip-path="url(#${uid}c)"><line x1="${f1(x0 - ux * w)}" y1="${f1(y0 - uy * w)}" x2="${f1(x0 + ux * w)}" y2="${f1(y0 + uy * w)}" class="fz-surf"/></g>`; }
+      if (BODY === "sphere") s += `<circle cx="${cx}" cy="${cy}" r="19" class="fz-ghost"/>`;
+      else if (BODY) s += `<rect x="${cx - 21}" y="${cy - 21}" width="42" height="42" rx="3" class="fz-ghost"${SURF ? ` transform="rotate(${-SURF} ${cx} ${cy})"` : ""}/>`;
+      // a uniform protractor ring (a tick every 15°, the same for every question) and the dashed vertical and horizontal guides
+      s += `<circle cx="${cx}" cy="${cy}" r="${R}" class="fz-ring"/>`;
+      for (let k = 0; k < 24; k++) { const a = fzRad(k * 15), big = k % 6 === 0, r0 = R - (big ? 10 : 5);
+        s += `<line x1="${f1(cx + Math.cos(a) * r0)}" y1="${f1(cy - Math.sin(a) * r0)}" x2="${f1(cx + Math.cos(a) * R)}" y2="${f1(cy - Math.sin(a) * R)}" class="${big ? "fz-tick2" : "fz-tick"}"/>`; }
+      s += `<line x1="${cx - R}" x2="${cx + R}" y1="${cy}" y2="${cy}" class="fz-guide"/><line x1="${cx}" x2="${cx}" y1="${cy - R}" y2="${cy + R}" class="fz-guide"/>`;
+      if (pick && pick.first) { const a = lineRay(pick.first); if (a != null) s += `<line x1="${cx}" y1="${cy}" x2="${f1(cx + Math.cos(fzRad(a)) * R)}" y2="${f1(cy - Math.sin(fzRad(a)) * R)}" class="fz-pick"/>`; }
+      const A = angInfo();
+      if (A) { const r = 34; let a1 = A.p, a2 = A.q; if (fzN(a2 - a1) > 180) { const t = a1; a1 = a2; a2 = t; }
+        const p1 = [cx + Math.cos(fzRad(a1)) * r, cy - Math.sin(fzRad(a1)) * r], p2 = [cx + Math.cos(fzRad(a2)) * r, cy - Math.sin(fzRad(a2)) * r], mid = fzRad(a1 + fzN(a2 - a1) / 2);
+        s += `<path d="M${f1(p1[0])} ${f1(p1[1])}A${r} ${r} 0 0 0 ${f1(p2[0])} ${f1(p2[1])}" class="fz-arc"/>`
+          + `<text x="${f1(cx + Math.cos(mid) * (r + 15))}" y="${f1(cy - Math.sin(mid) * (r + 15))}" class="fz-arct" text-anchor="middle" dominant-baseline="central">${Math.round(A.val)}°</text>`; }
+      const list = v.f.map(ar => ({ a: ar.a, l: ar.l, t: tip(ar) })), labs = labelSpots(list);
+      v.f.forEach((ar, i) => { s += arrowSvg(ar, i, labs[i], false); });
+      if (temp) s += arrowSvg(temp, -1, null, true);
+      return s + `<circle cx="${cx}" cy="${cy}" r="6.5" class="fz-dot"/>`;
+    }
+    host.innerHTML = `<div class="bp fz" data-locked="false"><div class="fz-lay"><div class="fz-tray"></div>`
+      + `<div class="fz-main"><div class="fz-plot" role="group"><svg class="fz-svg" aria-hidden="true" focusable="false"></svg><div class="fz-pins"></div></div></div>`
+      + `<div class="fz-side"><p class="sk-hint fz-hint"></p><div class="fz-out"></div></div></div><p class="sr-only" aria-live="polite"></p></div>`;
+    const root = host.firstChild, lay = root.querySelector(".fz-lay"), tray = root.querySelector(".fz-tray"), plot = root.querySelector(".fz-plot"), svgEl = root.querySelector(".fz-svg"),
+      pins = root.querySelector(".fz-pins"), hint = root.querySelector(".fz-hint"), out = root.querySelector(".fz-out"), live = root.querySelector("[aria-live]");
+    const say = s => { live.textContent = ""; setTimeout(() => { live.textContent = s; }, 30); };
+    function paint(temp) { svgEl.setAttribute("viewBox", "0 0 " + G.w + " " + G.h); svgEl.setAttribute("width", G.w); svgEl.setAttribute("height", G.h);
+      plot.style.width = G.w + "px"; plot.style.height = G.h + "px"; svgEl.innerHTML = svgInner(temp); }
+    const chip = l => { const n = v.f.filter(a => a.l === l.id).length;
+      return `<button type="button" class="fz-chip" data-force="${l.id}" aria-pressed="${act === l.id}"${locked ? " disabled" : ""} aria-label="${esc(l.name)}${n ? ", " + n + " drawn" : ""}">`
+        + `<span class="fz-sym" aria-hidden="true">${fzSym(l.id)}</span><span class="fz-cs" aria-hidden="true">${esc(l.name)}</span>${n ? `<span class="fz-count" aria-hidden="true">${n}</span>` : ""}</button>`; };
+    function resHtml() {
+      if (!items) return ""; const ch = [];
+      v.f.forEach((ar, i) => { const it = items.find(x => x.key === "f" + i); if (!it) return;
+        const t = it.verdict === "correct" ? ["true", "✓", it.available ? " " + it.awarded + "/" + it.available : ""] : it.verdict === "unmarked" ? ["info", "·", " not marked here"]
+          : it.verdict === "extra" ? ["false", "✕", " extra force −1"] : ["false", "✕", " wrong way 0/" + (it.available || 1)];
+        ch.push(`<span class="bp-chip fz-rc" data-ok="${t[0]}">${t[1]} <span class="fz-sym">${fzSym(ar.l)}</span>${t[2]}</span>`); });
+      // a force left out is COUNTED, never named: a retry is not handed the answer
+      const miss = items.find(x => x.key === "missing"); if (miss && miss.n) ch.push(`<span class="bp-chip" data-ok="info">${miss.n} ${miss.n > 1 ? "forces" : "force"} missing</span>`);
+      const an = items.find(x => x.key === "angle");
+      if (an) { const ok = an.verdict === "correct"; ch.push(`<span class="bp-chip" data-ok="${ok}">${ok ? "✓" : "✕"} Angle${an.available ? " " + an.awarded + "/" + an.available : ""}</span>`); }
+      return `<div class="bp-chips sk-res fz-res" role="status">${ch.join("")}</div>`;
+    }
+    function hintHtml() {
+      if (locked) return "";
+      if (pick) return (pick.first ? "Now the second line: tap near it, or its button." : "The angle's first line: tap near an arrow or a dashed guide.")
+        + ` <button type="button" class="sk-rm" data-cancel>Cancel</button>`;
+      if (act) return "Tap the diagram in the direction the " + esc(fzName(act)) + " points.";
+      // (short, so the hint keeps to two lines: "the electrostatic force" ran it to three, which moved the host's Check and scrolled the page)
+      if (sel >= 0 && v.f[sel]) return "Tap to re-aim it, or drag its head. <button type=\"button\" class=\"sk-rm\" data-rm>Remove</button>";
+      if (!v.f.length) return "Pick a force, then tap the diagram where it points. Every arrow starts at the dot.";
+      return "Tap an arrow's head to change it." + (v.ang ? ` <button type="button" class="sk-rm" data-noang>Remove the angle</button>` : "");
+    }
+    function render(focusSel) {
+      if (focusSel === undefined) { const a = document.activeElement; focusSel = a && root.contains(a) ? (a.dataset.i != null ? `[data-i="${a.dataset.i}"]` : a.dataset.force ? `[data-force="${a.dataset.force}"]`
+        : a.dataset.gp ? `[data-gp="${a.dataset.gp}"]` : null) : null; }
+      W = Math.max(260, Math.min(760, Math.floor(host.getBoundingClientRect().width || 320))); VH = inView(); G = geo();
+      root.dataset.locked = String(locked); lay.dataset.wide = String(G.wide);
+      paint();
+      plot.setAttribute("aria-label", "Force diagram: every arrow starts at the dot. " + v.f.length + (v.f.length === 1 ? " arrow" : " arrows") + (angInfo() ? ", an angle of " + angInfo().val + "° marked" : ""));
+      // a phone (the diagram under the tray, not beside it): ONE row of chips that scrolls sideways, the chosen one kept in view (the
+      // sketch builder's row), so the tray and the diagram are in view together above the dock; beside the diagram, the chips wrap
+      const row = !G.wide, ti0 = tray.querySelector(".fz-ti"), sl = ti0 ? ti0.scrollLeft : 0;
+      tray.dataset.row = String(row);
+      tray.innerHTML = `<p class="sk-th"><span>${locked ? "Your forces" : "Tap a force, then tap where it points"}</span><span class="sk-n">${v.f.length} ${v.f.length === 1 ? "arrow" : "arrows"}</span></p>`
+        + `<div class="fz-ti" role="group" aria-label="Forces">${FZ.map(chip).join("")}`
+        + (ANG ? `<button type="button" class="fz-chip fz-chip-ang" data-force="angle" aria-pressed="${!!pick}"${locked ? " disabled" : ""}><span class="fz-angic" aria-hidden="true">∠</span><span class="fz-cs">${v.ang ? "Mark the angle again" : "Mark an angle"}</span></button>` : "")
+        + `</div>`;
+      if (row) keepInRow(sl);
+      // the heads (44 px finger targets) and, while an angle is being marked, a button at each end of the guides
+      pins.innerHTML = v.f.map((ar, i) => { const t = tip(ar);
+        return `<button type="button" class="fz-pin" data-i="${i}" data-pick="${!!(pick && pick.first === "f" + i)}" style="left:${f1(t.x)}px;top:${f1(t.y)}px"${locked ? ' tabindex="-1"' : ""}`
+          + ` aria-label="${esc(fzName(ar.l))}, ${fzWords(ar.a)}${locked ? "" : pick ? ". Choose it as a line of the angle" : ". Arrow keys turn it, Delete removes it"}"></button>`; }).join("")
+        + (pick && !locked ? FZG.map(g => `<button type="button" class="fz-pin fz-gp" data-gp="${g[0]}" data-pick="${pick.first === g[0]}" style="left:${f1(G.cx + Math.cos(fzRad(g[2])) * (G.R + 14))}px;top:${f1(G.cy - Math.sin(fzRad(g[2])) * (G.R + 14))}px" aria-label="${esc(g[1])}"></button>`).join("") : "");
+      hint.innerHTML = hintHtml(); hint.hidden = locked;
+      out.innerHTML = resHtml();
+      wire();
+      if (focusSel) { const nd = root.querySelector(focusSel); if (nd && !nd.disabled) nd.focus({ preventScroll: true }); }
+    }
+    function keepInRow(sl) { const ti = tray.querySelector(".fz-ti"); if (!ti) return; ti.scrollLeft = sl;
+      const edge = () => { ti.dataset.l = String(ti.scrollLeft > 2); ti.dataset.r = String(ti.scrollLeft + ti.clientWidth < ti.scrollWidth - 2); };
+      ti.onscroll = edge;
+      const c = ti.querySelector('[aria-pressed="true"]');
+      if (c) { const l = c.offsetLeft, r = l + c.offsetWidth, m = 36; let to = ti.scrollLeft;
+        if (l - m < to) to = Math.max(0, l - m); else if (r + m > to + ti.clientWidth) to = r + m - ti.clientWidth;
+        if (Math.abs(to - ti.scrollLeft) > 1) ti.scrollTo({ left: to, behavior: o.reduced ? "auto" : "smooth" }); }
+      edge(); }
+    // remove arrow i: the angle loses a line on it, the lines after it shift down
+    function drop(i) { const nm = fzName(v.f[i].l); v.f.splice(i, 1);
+      if (v.ang) { const fix = r => r[0] !== "f" ? r : +r.slice(1) === i ? null : +r.slice(1) > i ? "f" + (+r.slice(1) - 1) : r, a = v.ang.map(fix); if (a[0] && a[1]) v.ang = a; else delete v.ang; }
+      sel = -1; emit(); say(nm + " removed"); }
+    function pickLine(ref) {
+      if (!pick) return; if (!pick.first) { pick.first = ref; say(lineName(ref) + " chosen. Now the second line."); render(); return; }
+      if (ref === pick.first) return;
+      v.ang = [pick.first, ref]; pick = null; emit(); const A = angInfo();
+      say("Angle marked between " + lineName(v.ang[0]) + " and " + lineName(v.ang[1]) + ": " + (A ? A.val : 0) + " degrees"); render(`[data-force="angle"]`);
+    }
+    // the line nearest a tap's direction (an arrow before a guide), within 25°
+    const nearestLine = ta => { const c = v.f.map((ar, i) => ({ ref: "f" + i, a: ar.a, pri: 0 })).concat(FZG.map(g => ({ ref: g[0], a: g[2], pri: 1 })));
+      c.sort((p, q) => (fzDif(p.a, ta) - fzDif(q.a, ta)) || (p.pri - q.pri)); return c[0] && fzDif(c[0].a, ta) <= 25 ? c[0].ref : null; };
+    const at = e => { const r = svgEl.getBoundingClientRect(), s = (r.width || G.w) / G.w, x = (e.clientX - r.left) / s, y = (e.clientY - r.top) / s, dx = x - G.cx, dy = y - G.cy;
+      return { a: fzSnap(fzAng(dx, dy)), d: Math.hypot(dx, dy) }; };
+    const lenOf = d => Math.round(Math.max(46, Math.min(G.R, d)) / G.R * 100) / 100;
+    function wire() {
+      // (data-force, not data-l: the row's scroller carries data-l / data-r, its fades, and a click on a chip bubbled to it as a "false" force)
+      tray.querySelectorAll("[data-force]").forEach(b => b.onclick = e => { if (locked) return; const id = b.dataset.force;
+        if (id === "angle") { pick = pick ? null : { first: null }; act = ""; sel = -1; if (pick) say("Marking an angle: choose its first line."); render(`[data-force="angle"]`); return; }
+        pick = null; sel = -1;
+        if (e.detail === 0) {   // the keyboard (or a screen reader): drawn pointing right, its head takes the focus for the arrow keys
+          v.f.push({ l: id, a: 0, r: 0.8 }); act = ""; sel = v.f.length - 1; emit(); say(fzName(id) + " drawn, pointing right. The arrow keys turn it.");
+          render(`[data-i="${v.f.length - 1}"]`); return; }
+        act = act === id ? "" : id; render(`[data-force="${id}"]`); });
+      const on = (s, fn) => { const n = hint.querySelector(s); if (n) n.onclick = fn; };
+      on("[data-rm]", () => { if (sel < 0) return; drop(sel); render(".fz-chip"); });
+      on("[data-cancel]", () => { pick = null; render(`[data-force="angle"]`); });
+      on("[data-noang]", () => { delete v.ang; emit(); say("Angle removed"); render(`[data-force="angle"]`); });
+      pins.querySelectorAll("[data-gp]").forEach(b => { b.onclick = e => { e.stopPropagation(); pickLine(b.dataset.gp); }; });
+      pins.querySelectorAll("[data-i]").forEach(p => {
+        const i = +p.dataset.i;
+        p.onpointerdown = e => { if (locked || pick) return; e.preventDefault(); e.stopPropagation(); p.setPointerCapture(e.pointerId); drag = { i: i, x: e.clientX, y: e.clientY, moved: false };
+          document.documentElement.classList.add("bp-drag"); };
+        p.onpointermove = e => { if (!drag || drag.i !== i) return; if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 5) return; drag.moved = true;
+          const c = at(e); if (c.d < 12) return; v.f[i].a = c.a; v.f[i].r = lenOf(c.d); sel = i; paint(); const t = tip(v.f[i]); p.style.left = t.x + "px"; p.style.top = t.y + "px"; };
+        const end = () => { if (!drag || drag.i !== i) return; const moved = drag.moved; drag = null; pinUp = Date.now(); document.documentElement.classList.remove("bp-drag");
+          if (moved) { emit(); say(fzName(v.f[i].l) + " turned, " + fzWords(v.f[i].a)); }
+          act = ""; sel = moved ? i : (sel === i ? -1 : i); render(`[data-i="${i}"]`); };
+        p.onpointerup = end; p.onpointercancel = end;
+        p.onclick = e => { e.stopPropagation(); if (locked) return; if (pick) { pickLine("f" + i); return; } if (e.detail === 0) { sel = sel === i ? -1 : i; act = ""; render(`[data-i="${i}"]`); } };
+        p.onkeydown = e => { if (locked || pick) return; const k = e.key, st = e.shiftKey ? 15 : 5;
+          if (["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"].indexOf(k) !== -1) { e.preventDefault(); v.f[i].a = fzN(v.f[i].a + (k === "ArrowUp" || k === "ArrowLeft" ? st : -st)); sel = i;
+            emit(); say(fzWords(v.f[i].a)); render(`[data-i="${i}"]`); }
+          else if (k === "Delete" || k === "Backspace") { e.preventDefault(); drop(i); render(".fz-chip"); }
+          else if (k === "Escape") { e.preventDefault(); sel = -1; render(`[data-i="${i}"]`); } };
+      });
+    }
+    // a tap on the diagram: aims the chosen force (or re-aims the chosen arrow), or picks an angle's line; the diagram lets the page
+    // scroll under a swipe (only the heads hold the finger)
+    plot.addEventListener("click", e => {
+      if (locked || drag || e.target.closest(".fz-pin") || Date.now() - pinUp < 400) return;
+      const c = at(e);
+      if (pick) { if (c.d < 14) return; const r = nearestLine(c.a); if (r) pickLine(r); return; }
+      if (c.d < 16) { hint.textContent = "Tap away from the dot, in the direction the force points."; return; }
+      if (act) { v.f.push({ l: act, a: c.a, r: lenOf(c.d) }); sel = v.f.length - 1; say(fzName(act) + " drawn, " + fzWords(c.a)); act = ""; emit(); render(null); return; }
+      if (sel >= 0 && v.f[sel]) { v.f[sel].a = c.a; v.f[sel].r = lenOf(c.d); say(fzName(v.f[sel].l) + " turned, " + fzWords(c.a)); emit(); render(null); return; }
+      hint.textContent = "Pick a force first.";
+    });
+    // a mouse sees where its click would put the arrow (a finger has no hover)
+    plot.addEventListener("pointermove", e => { if (e.pointerType !== "mouse" || locked || drag || pick || !(act || sel >= 0) || e.target.closest(".fz-pin")) return;
+      const c = at(e); if (c.d < 16) { paint(); return; } paint({ l: act || v.f[sel].l, a: c.a, r: lenOf(c.d) }); });
+    plot.addEventListener("pointerleave", () => { if (!drag && G) paint(); });
+    render(null);
+    if (window.ResizeObserver) { ro = new ResizeObserver(() => { const w = Math.max(260, Math.min(760, Math.floor(host.getBoundingClientRect().width || 320))); if (Math.abs(w - W) >= 2 && !drag) render(); }); ro.observe(host); }
+    return { sync(s) { const nv = normV(s.value), changed = JSON.stringify(nv) !== JSON.stringify(v);
+        const its = s.items && s.itemsFor === JSON.stringify(s.value || {}) ? s.items : null, was = locked + "|" + JSON.stringify(items);
+        if (its && !items) { act = ""; sel = -1; pick = null; }   // just marked: the marks show on the arrows, none of them chosen
+        v = nv; locked = !!s.locked; items = its;
+        if (sel >= v.f.length) sel = -1;
+        if (locked) { act = ""; sel = -1; pick = null; }
+        if ((changed || was !== locked + "|" + JSON.stringify(items)) && !drag) render(); },
+      destroy() { if (ro) ro.disconnect(); document.documentElement.classList.remove("bp-drag"); host.innerHTML = ""; } };
+  }
+
   // each kind names its marker's items (the memo's own words); a paper may override them with cfg.labels. (No paper ever carried
   // labels: chipRow read undefined[key] and threw on every render after a Check, so the T C L S P chips never showed; 2026-10-06)
   const LABELS = { hist: { T: "Type", C: "Caption", L: "Axes labels", S: "Scale", P: "Plotting" } };
@@ -1126,13 +1730,10 @@
     return `<div class="bp-chips" role="status">${items.map(it => { const ok = it.awarded >= it.available;
       return `<span class="bp-chip" data-ok="${ok}">${ok ? "✓" : it.awarded > 0 ? "◐" : "✕"} ${esc(labels[it.key] || it.key)}${it.available > 1 ? " " + it.awarded + "/" + it.available : ""}</span>`; }).join("")}</div>`;
   }
-  // drew it on paper: the memo's criteria to tick, shown and never banked (a self-ticked mark is not a mark)
-  function selfCheck(criteria) {
-    return `<div class="bp-self"><p class="bp-q">Drew it on paper? Tick what your drawing has.</p>${criteria.map((c, k) =>
-      `<label class="bp-tick-row"><input type="checkbox"> ${esc(c[0])}</label>`).join("")}<p class="bp-hint">A self-check: it guides you, it is not marked.</p></div>`;
-  }
 
   // (fit: the sketch's curve fit, for a self-test; SKETCH_V / LINE_V: markers a test reads to prove this file's sketch / line builders
   // are the ones loaded)
-  window.BuildPlay = { SKETCH_V: "sketch-2", LINE_V: "line-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch, boxplot: boxplot, numline: numline, venn: venn, tree: tree }[o.kind] || stems)(host, o); }, VT_V: "vt-6", trVal: trVal };
+  window.BuildPlay = { SKETCH_V: "sketch-2", LINE_V: "line-1", fit: skFit, mount(host, o) { return ({ hist: hist, geno: geno, cross: cross, sketch: sketch, boxplot: boxplot, numline: numline, venn: venn, tree: tree, plot: plot, forces: forces }[o.kind] || stems)(host, o); }, VT_V: "vt-6", trVal: trVal,
+    FORCE_V: "forces-1", FZ: FZ.map(l => l.id),   // (FORCE_V proves this file's force-diagram builder is the one loaded; FZ: its tray, the same for every question)
+    PLOT_V: "plot-1", akima: akima };   // (akima: the plot builder's curve, for a self-test; PLOT_V proves this file's plot builder is the one loaded)
 })();
