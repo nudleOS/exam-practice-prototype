@@ -16,7 +16,9 @@ for pid in sys.argv[1:]:
     report = json.loads((out / "report.json").read_text(encoding="utf-8"))
     done = pictures.apply(pid, paper)
     issues = validate.check(paper)
-    bad = [x for x in issues if x["n"] in done]
+    # a schema error is named by its path ("sections/0/missions/1/items/3"), not a part number: every one counts (2026-10-12: the
+    # schema had no `pics`, and its errors on the new MCQs were filtered out here)
+    bad = [x for x in issues if x["n"] in done or "/" in x["n"]]
     for x in bad:
         print(f"  {x['severity']:5} {x['n']:10} {x['msg']}")
     if any(x["severity"] == "error" for x in bad):

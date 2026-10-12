@@ -207,6 +207,13 @@
                "type": "string"
               }
              },
+             "pics": {
+              "type": "array",
+              "items": {
+               "type": "string"
+              },
+              "description": "Optional (pick the drawing, 2026-10-12): one self-contained SVG per option, in the options' order, shown as an image; the option's words are what a screen reader reads"
+             },
              "a": {
               "type": "integer",
               "description": "0-based index of the right option"
