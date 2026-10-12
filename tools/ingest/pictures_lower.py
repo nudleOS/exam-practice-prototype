@@ -287,7 +287,80 @@ def bars(labels, values, ymax, ystep, xlab, ylab, title="", line=False):
     return svg(340, 234, "".join(out))
 
 
+def bacterium(variant):
+    """A labelled bacterium (a learner's drawing of 'micro-organism X'): right (cell wall, cell membrane, cytoplasm, ribosomes,
+    nucleoid, plasmid, flagellum, captioned) | bare (the outline only: no labels, no caption) | nucleus (a nucleus and a
+    mitochondrion drawn in, as for a eukaryote) | virus (a virus: a protein coat round DNA, tail fibres)."""
+    out = []
+    lab = lambda x0, y0, x1, y1, s, anchor="start": [L(x0, y0, x1, y1, w=1), T(x1 + (4 if anchor == "start" else -4), y1 + 4, s, size=11,
+                                                                               anchor=anchor)]
+    if variant == "virus":
+        out += [P("M150,40 L195,65 L195,115 L150,140 L105,115 L105,65 Z", w=2.2), P("M130,80 q10,-12 20,0 t20,0 M128,100 q10,12 22,0 t22,0",
+                                                                                      w=1.6),
+                L(150, 140, 150, 185, w=3), L(150, 185, 120, 205, w=1.5), L(150, 185, 180, 205, w=1.5)]
+        out += lab(195, 70, 245, 55, "Protein coat") + lab(165, 90, 245, 95, "DNA") + lab(152, 170, 245, 160, "Tail")
+        out.append(T(170, 222, "Structure of micro-organism X", size=12, weight=700))
+        return svg(340, 234, "".join(out))
+    out += [P("M80,70 h140 a45,45 0 0 1 0,90 h-140 a45,45 0 0 1 0,-90 Z", w=2.4), P("M84,78 h132 a37,37 0 0 1 0,74 h-132 a37,37 0 0 1 0,-74 Z",
+                                                                                      w=1.2),
+            P("M265,115 q15,-14 30,0 t30,0", w=1.6)]
+    if variant != "nucleus":
+        out += [P("M110,105 q15,-15 30,0 t30,0 t30,0 M118,125 q15,15 30,0 t30,0", w=1.6), D.C(205, 135, 9, w=1.4)]
+    for x, y in [(100, 95), (120, 140), (175, 90), (235, 100), (230, 140), (160, 145)]:
+        out.append(D.C(x, y, 2, w=0, fill=D.INK))
+    if variant == "nucleus":
+        out += [D.C(150, 115, 22, w=1.8), D.C(150, 115, 6, w=0, fill=D.INK), P("M190,125 h40 a10,10 0 0 1 0,20 h-40 a10,10 0 0 1 0,-20 Z", w=1.4)]
+        out += lab(150, 93, 150, 40, "Nucleus") + lab(225, 140, 250, 195, "Mitochondrion") + lab(85, 72, 30, 30, "Cell wall")
+        out.append(T(170, 222, "Structure of micro-organism X", size=12, weight=700))
+        return svg(340, 234, "".join(out))
+    if variant == "right":
+        out += lab(95, 70, 60, 40, "Cell wall", "end") + lab(150, 78, 150, 40, "Cell membrane") + lab(175, 90, 240, 40, "Ribosome")
+        out += lab(140, 105, 70, 205, "Nucleoid (DNA)") + lab(205, 144, 210, 205, "Plasmid") + lab(300, 112, 325, 70, "Flagellum", "end")
+        out += lab(120, 140, 20, 185, "Cytoplasm")
+        out.append(T(170, 226, "Structure of a bacterium", size=12, weight=700))
+    return svg(340, 234, "".join(out))
+
+
+def pie(values, labels, title=""):
+    """A pie chart of percentages (one sector each, clockwise from 12 o'clock), each sector labelled with its name and value;
+    a title above when given."""
+    import math
+    cx, cy, r = 100, 128, 80
+    fills = ["#5b6573", "#9aa4b1", "#c9d0d8", "#eef1f4"]
+    out, a = [], -90.0
+    for k, (v, name) in enumerate(zip(values, labels)):
+        b = a + v * 3.6
+        x0, y0 = cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a))
+        x1, y1 = cx + r * math.cos(math.radians(b)), cy + r * math.sin(math.radians(b))
+        out.append(f'<path d="M{cx},{cy} L{x0:.1f},{y0:.1f} A{r},{r} 0 {1 if b - a > 180 else 0} 1 {x1:.1f},{y1:.1f} Z" fill="{fills[k % 4]}" '
+                   f'stroke-width="1.4"/>')
+        out += [f'<rect x="190" y="{60 + k * 26}" width="12" height="12" fill="{fills[k % 4]}" stroke-width="1"/>',
+                T(206, 70 + k * 26, f"{name} {str(v).replace('.', ',')}%", size=9, anchor="start")]
+        a = b
+    if title:
+        out.append(T(180, 18, title, size=10, weight=700))
+    return svg(360, 234, "".join(out))
+
+
 def register(add):
+    # ---- Grade 11 Life Sciences P2 Nov 2024 (EC) 2.1.4: a labelled bacterium (memo: correct diagram, caption, any three labels)
+    add("g11-ls-p2-2024-11-ec", "2.1.4",
+        ("A captioned bacterium labelled cell wall, cell membrane, cytoplasm, ribosome, nucleoid (DNA), plasmid and flagellum",
+         bacterium("right")),
+        [("The bacterium's outline with no labels and no caption", bacterium("bare")),
+         ("A cell drawn with a nucleus and a mitochondrion", bacterium("nucleus")),
+         ("A virus: a protein coat round DNA, with a tail", bacterium("virus"))], 3)
+    # ---- 3.2.5: the pie chart of plastic waste in 2019 (memo: pie chart, title, calculations, key, proportions)
+    PL = ["Landfill sites", "Incinerated", "Released into the environment", "Recycled"]
+    PT = "Percentage of plastic waste by type of plastic waste, 2019"
+    add("g11-ls-p2-2024-11-ec", "3.2.5",
+        ("A titled pie chart with a key: landfill sites 49,3%, incinerated 19%, released into the environment 22,4%, recycled 9,3%",
+         pie([49.3, 19, 22.4, 9.3], PL, PT)),
+        [("Four equal sectors of 25% each", pie([25, 25, 25, 25], PL, PT)),
+         ("Landfill sites 19% and incinerated 49,3%: two sectors swapped", pie([19, 49.3, 22.4, 9.3], PL, PT)),
+         ("The percentages drawn as a bar graph", bars(["Landfill", "Burned", "Released", "Recycled"], [49, 19, 22, 9], 60, 10,
+                                                       "Type of plastic waste", "Percentage (%)", PT))], 0)
+
     # ---- Grade 11 Life Sciences P1 Nov 2024 (EC) 2.1.1: the time to release 20 bubbles under each colour of light (memo: type of
     # graph, caption, scale and equal bars, labels with the unit, the three bars plotted)
     CL, TS = ["Blue", "Green", "Red"], [40, 160, 80]
