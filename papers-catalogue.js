@@ -711,6 +711,28 @@ window.NX_CATALOGUE = {
    "rev": "7c3b460e15",
    "source_pdf": "uploads/provincial/g11-ps-p2-2025-11-ec/PHYSICAL SC P2 QP GR11 NOVEMBER 2025 (2)_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
+  },
+  {
+   "id": "g11-ml-p1-2024-11-ec",
+   "title": "Mathematical Literacy P1",
+   "subject": "Mathematical Literacy",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 4,
+   "missions": 9,
+   "status": "ready",
+   "rev": "0f685f9ede",
+   "source_pdf": "uploads/provincial/g11-ml-p1-2024-11-ec/MATHS LIT P1 GR11 QP NOV 2024 ENG DD_watermark.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2024"
   }
  ]
 };

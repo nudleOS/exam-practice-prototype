@@ -210,6 +210,29 @@ def point_field(sign, variant, label=""):
     return svg(330, 220, "".join(out))
 
 
+def breakeven(income, b=None, xmax=110, ymax=16000, xstep=10, ystep=2000, cost=(2400, 50), xlab="Number of learners", ylab="Cost in rands"):
+    """The answer sheet's graph (ML P1 Nov 2024 EC 4.1.3/4.1.4): the printed cost line (cost = a + b·n, dots every 10) and the learner's
+    income line from income[0] to income[1] (two (n ; rand) points, drawn dashed-free), with point B marked when given."""
+    X = lambda n: 52 + n * 268 / xmax
+    Y = lambda r: 196 - r * 180 / ymax
+    out = []
+    for r in range(0, ymax + 1, ystep):
+        out += [L(X(0), Y(r), X(xmax), Y(r), w=0.5, color="#ccc"), T(48, Y(r) + 3, f"{r:,}".replace(",", " "), size=8, anchor="end")]
+    for n in range(0, xmax + 1, xstep):
+        out += [L(X(n), Y(0), X(n), Y(ymax), w=0.5, color="#ccc"), T(X(n), 208, str(n), size=8)]
+    out.append(axes(X(0), 6, X(xmax) + 6, Y(0), "", "", zero=False))
+    a, s = cost
+    out.append(L(X(0), Y(a), X(100), Y(a + s * 100), w=1.8, color="#777"))
+    for n in range(0, 101, 10):
+        out.append(D.C(X(n), Y(a + s * n), 2.2, w=0, fill="#777"))
+    (n0, r0), (n1, r1) = income
+    out.append(L(X(n0), Y(r0), X(n1), Y(r1), w=2.4))
+    if b:
+        out += [D.C(X(b[0]), Y(b[1]), 4, w=0, fill=D.INK), T(X(b[0]) - 6, Y(b[1]) - 8, "B", size=13, weight=700, anchor="end", halo=True)]
+    out += [T(186, 222, xlab, size=9), T(12, 104, ylab, size=9).replace("<text ", '<text transform="rotate(-90 12 104)" ', 1)]
+    return svg(330, 228, "".join(out))
+
+
 def register(add):
     # ---- Grade 11 Mathematics P2 Nov 2024 (EC) 2.4: the ogive of the boxers' weights (memo: grounding, upper limits, shape)
     U, CF = [55, 75, 95, 115, 135, 155], [1, 4, 13, 19, 22, 23]
@@ -338,3 +361,15 @@ def register(add):
          ("A dotted curve with the same peak", profile(164.1, 405.3, 0, ["164,1", "", "0"], dotted=408)),
          ("A dotted curve with a lower peak, on an endothermic graph from 0 to 164,1", profile(0, 241.2, 164.1, ["0", "", "164,1"], dotted=205))],
         0)
+
+    # ---- Grade 11 Mathematical Literacy P1 Nov 2024 (EC) 4.1.3 / 4.1.4: the income line on the answer sheet, and the break-even point B
+    ML1 = "g11-ml-p1-2024-11-ec"
+    INC = ((0, 0), (100, 15000))
+    add(ML1, "4.1.3", ("A straight line from (0 ; 0) to (100 ; 15 000)", breakeven(INC)),
+        [("A straight line from (0 ; 2 400) to (100 ; 15 000)", breakeven(((0, 2400), (100, 15000)))),
+         ("A straight line from (0 ; 0) to (50 ; 7 500), stopping at 50 learners", breakeven(((0, 0), (50, 7500)))),
+         ("A straight line from (0 ; 0) to (100 ; 1 500)", breakeven(((0, 0), (100, 1500))))], 0)
+    add(ML1, "4.1.4", ("B where the income line crosses the cost line, at 24 learners (R3 600)", breakeven(INC, (24, 3600))),
+        [("B at (0 ; 2 400), where the cost line starts", breakeven(INC, (0, 2400))),
+         ("B at (50 ; 4 900) on the cost line", breakeven(INC, (50, 4900))),
+         ("B at (100 ; 15 000), the end of the income line", breakeven(INC, (100, 15000)))], 2)
