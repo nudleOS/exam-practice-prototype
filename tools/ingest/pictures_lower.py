@@ -56,6 +56,34 @@ def smooth(pts):
     return d
 
 
+def venn2(a_only, both, b_only, outside, names=("A", "B"), space="S"):
+    """Two overlapping circles in a rectangle, a value in each region ("" leaves a region empty)."""
+    out = [D.R(8, 8, 324, 184, sw=2), D.C(130, 100, 70), D.C(210, 100, 70),
+           T(80, 34, names[0], size=15), T(260, 34, names[1], size=15), T(318, 28, space, size=13, anchor="end")]
+    for x, y, v in ((100, 105, a_only), (170, 105, both), (240, 105, b_only), (300, 180, outside)):
+        if v != "":
+            out.append(T(x, y, v, size=14))
+    return svg(340, 200, "".join(out))
+
+
+def tree2(first, second, outcomes):
+    """A two-stage tree: first = [(event, p), (event, p)]; second = per first branch [(event, p), (event, p)]; outcomes: the four
+    end labels (top to bottom) or None."""
+    out, ys = [], [(40, 0), (40, 1), (150, 0), (150, 1)]
+    x0, y0, x1, x2 = 14, 100, 130, 250
+    mid = [52, 148]
+    for i, ((ev, p), ym) in enumerate(zip(first, mid)):
+        out += [L(x0, y0, x1, ym, w=1.8), T((x0 + x1) / 2 - 6, (y0 + ym) / 2 + (-8 if i == 0 else 16), p, size=12, anchor="end"),
+                T(x1 + 2, ym + 5, ev, size=13, anchor="start")]
+        for j, (ev2, p2) in enumerate(second[i]):
+            ye = ym - 26 + 52 * j
+            out += [L(x1 + 18, ym, x2, ye, w=1.8), T((x1 + 18 + x2) / 2, (ym + ye) / 2 + (-6 if j == 0 else 15), p2, size=12),
+                    T(x2 + 4, ye + 5, ev2, size=13, anchor="start")]
+            if outcomes:
+                out.append(T(x2 + 32, ye + 5, outcomes[2 * i + j], size=11, anchor="start"))
+    return svg(340, 200, "".join(out))
+
+
 def register(add):
     # ---- Grade 11 Mathematics P2 Nov 2024 (EC) 2.4: the ogive of the boxers' weights (memo: grounding, upper limits, shape)
     U, CF = [55, 75, 95, 115, 135, 155], [1, 4, 13, 19, 22, 23]
@@ -66,3 +94,22 @@ def register(add):
           og("lower")),
          ("Points (55 ; 1), (75 ; 4), (95 ; 13), (115 ; 19), (135 ; 22), (155 ; 23), the curve starting at (55 ; 1)", og("float")),
          ("Points (35 ; 0), (55 ; 1), (75 ; 3), (95 ; 9), (115 ; 6), (135 ; 3), (155 ; 1): the frequencies plotted", og("freq"))], 2)
+
+    # ---- Grade 11 Mathematics P1 Nov 2025 (EC) 9.1.2: the Venn diagram of independent A and B (memo: 0,18; 0,12 and 0,42; 0,28)
+    add("g11-math-p1-2025-11-ec", "9.1.2",
+        ("0,12 in A only, 0,18 in both, 0,42 in B only, 0,28 outside the circles", venn2("0,12", "0,18", "0,42", "0,28")),
+        [("0,3 in A only, 0 in both, 0,6 in B only, 0,1 outside: no overlap", venn2("0,3", "0", "0,6", "0,1")),
+         ("0,3 in A only, 0,18 in both, 0,6 in B only, 0,28 outside: the totals in the only-regions", venn2("0,3", "0,18", "0,6", "0,28")),
+         ("0,12 in A only, 0,18 in both, 0,42 in B only, nothing outside the circles", venn2("0,12", "0,18", "0,42", ""))], 1)
+    # ---- 9.3.1: the tree of sunny weather (S) and sunscreen (U) (memo: first branches, second branches, outcomes)
+    S1 = [("S", "0,7"), ("S′", "0,3")]
+    OUT = ["SU", "SU′", "S′U", "S′U′"]
+    add("g11-math-p1-2025-11-ec", "9.3.1",
+        ("S 0,7 then U x, U′ 1 − x; S′ 0,3 then U 0,2x, U′ 1 − 0,2x; outcomes SU, SU′, S′U, S′U′",
+         tree2(S1, [[("U", "x"), ("U′", "1 − x")], [("U", "0,2x"), ("U′", "1 − 0,2x")]], OUT)),
+        [("S 0,7 then U x, U′ 1 − x; S′ 0,3 then U x, U′ 1 − x: the same chances after not sunny",
+          tree2(S1, [[("U", "x"), ("U′", "1 − x")], [("U", "x"), ("U′", "1 − x")]], OUT)),
+         ("S 0,7 then U x, U′ 1 − x; S′ 0,3 then U 0,2x, U′ 0,8x",
+          tree2(S1, [[("U", "x"), ("U′", "1 − x")], [("U", "0,2x"), ("U′", "0,8x")]], OUT)),
+         ("S 0,7 then U x, U′ x − 1; S′ 0,3 then U 0,2x, U′ 0,2x − 1",
+          tree2(S1, [[("U", "x"), ("U′", "x − 1")], [("U", "0,2x"), ("U′", "0,2x − 1")]], OUT))], 3)

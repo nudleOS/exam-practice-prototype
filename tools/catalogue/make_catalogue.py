@@ -67,6 +67,8 @@ LOWER = {
                                "provincial/g11-math-p1-2024-11-ec/MATHS P1 MEMO GR11 NOV2024_ENG_AFR_watermark.pdf"),
     "g11-math-p2-2024-11-ec": ("provincial/g11-math-p2-2024-11-ec/MATHS P2 QP GR11 2024 ENG D_watermark.pdf",
                                "provincial/g11-math-p2-2024-11-ec/MATHS P2 GRADE 11 NOV 2024 ENG_AFR MARKING GUIDELINE_watermark.pdf"),
+    "g11-math-p1-2025-11-ec": ("provincial/g11-math-p1-2025-11-ec/MATHS P1 QP GR11 NOV 2025 ENG_watermark.pdf",
+                               "provincial/g11-math-p1-2025-11-ec/MATHS P1 MEMO GR11 NOV 2025 E+A_watermark.pdf"),
 }
 
 
