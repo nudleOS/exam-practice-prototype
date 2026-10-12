@@ -1063,6 +1063,28 @@ window.NX_CATALOGUE = {
    "rev": "d6fcb96b37",
    "source_pdf": "uploads/provincial/g11-geo-p2-2025-11-ec/GEOGRAPHY P2 GR11 QP NOV2025_English_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
+  },
+  {
+   "id": "g10-math-p1-2024-11-nw",
+   "title": "Mathematics P1",
+   "subject": "Mathematics",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 9,
+   "missions": 15,
+   "status": "ready",
+   "rev": "9b4c928f91",
+   "source_pdf": "uploads/provincial/g10-math-p1-2024-11-nw/15-NOVEMBER-2024-S2-GR10-MATHEMATICS-P1-QP-ENG.pdf",
+   "provenance_label": "North West DoE · November 2024"
   }
  ]
 };

@@ -414,6 +414,14 @@ def register(add):
          ("Points (55 ; 1), (75 ; 4), (95 ; 13), (115 ; 19), (135 ; 22), (155 ; 23), the curve starting at (55 ; 1)", og("float")),
          ("Points (35 ; 0), (55 ; 1), (75 ; 3), (95 ; 9), (115 ; 6), (135 ; 3), (155 ; 1): the frequencies plotted", og("freq"))], 2)
 
+    # ---- Grade 10 Mathematics P1 Nov 2024 (NW) 8.3: the Venn diagram of A and B (memo: 0,2709; 0,1591; 0,2109; 0,3591)
+    add("g10-math-p1-2024-11-nw", "8.3",
+        ("0,2709 in A only, 0,1591 in both, 0,2109 in B only, 0,3591 outside the circles", venn2("0,2709", "0,1591", "0,2109", "0,3591")),
+        [("0,43 in A only, 0,1591 in both, 0,37 in B only, 0,0409 outside: the totals in the only-regions",
+          venn2("0,43", "0,1591", "0,37", "0,0409")),
+         ("0,43 in A only, 0 in both, 0,37 in B only, 0,2 outside: no overlap", venn2("0,43", "0", "0,37", "0,2")),
+         ("0,2709 in A only, 0,1591 in both, 0,2109 in B only, nothing outside the circles", venn2("0,2709", "0,1591", "0,2109", ""))], 2)
+
     # ---- Grade 11 Mathematics P1 Nov 2025 (EC) 9.1.2: the Venn diagram of independent A and B (memo: 0,18; 0,12 and 0,42; 0,28)
     add("g11-math-p1-2025-11-ec", "9.1.2",
         ("0,12 in A only, 0,18 in both, 0,42 in B only, 0,28 outside the circles", venn2("0,12", "0,18", "0,42", "0,28")),

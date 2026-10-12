@@ -111,6 +111,8 @@ LOWER = {
                              "provincial/g11-geo-p1-2025-11-ec/GEOGAPHY P1 MEMO GR11 NOV 2025 ENG_watermark.pdf"),
     "g11-geo-p2-2025-11-ec": ("provincial/g11-geo-p2-2025-11-ec/GEOGRAPHY P2 GR11 QP NOV2025_English_watermark.pdf",
                              "provincial/g11-geo-p2-2025-11-ec/GEOGRAPHY P2 GR11  NOV2025 ENGLISH MARKING GUIDELINE_watermark.pdf"),
+    "g10-math-p1-2024-11-nw": ("provincial/g10-math-p1-2024-11-nw/15-NOVEMBER-2024-S2-GR10-MATHEMATICS-P1-QP-ENG.pdf",
+                              "provincial/g10-math-p1-2024-11-nw/15-NOVEMBER-2024-S2-GR10-MATHEMATICS-P1-MG-ENG-AFR.pdf"),
 }
 
 
