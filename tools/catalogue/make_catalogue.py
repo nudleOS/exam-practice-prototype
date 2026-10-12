@@ -99,6 +99,8 @@ LOWER = {
                             "provincial/g11-bs-p1-2024-11-ec/BUSINESS STUDIES P1 GR11 MEMO NOV2024 -English_watermark.pdf"),
     "g11-bs-p2-2024-11-ec": ("provincial/g11-bs-p2-2024-11-ec/BUSINESS STUDIES gr 11 P2 QP ENG D_watermark.pdf",
                             "provincial/g11-bs-p2-2024-11-ec/BUSINESS STUDIES GR 11 P2 MG_ENG_watermark.pdf"),
+    "g11-bs-p1-2025-11-ec": ("provincial/g11-bs-p1-2025-11-ec/BSTD P1 GRADE 11 Nov 2025 ENG_watermark.pdf",
+                            "provincial/g11-bs-p1-2025-11-ec/BUSINESS STUDIES GRADE 11 NOV 2025 MARKING GUIDELINE_watermark.pdf"),
 }
 
 
