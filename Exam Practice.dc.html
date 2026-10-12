@@ -3802,10 +3802,30 @@ class Component extends DCLogic {
     if (mode === "lettername") return [a.letter, a.name].filter(Boolean).join(" · ");
     if (mode === "letternames") return (a || []).map(r => [r.letter, r.name].filter(Boolean).join(" · ")).filter(Boolean).join("; ");
     if (mode === "match") return (a || []).map((r, l) => r == null ? "" : ((part.match || {}).left || [])[l] + " → " + L(r)).filter(Boolean).join("; ");
-    if (mode === "draw" || mode === "build") return "";
+    // a drawing or a build in words (2026-10-12: the report card read "✓ Try 1: (no answer)" beside a full-marks box plot)
+    if (mode === "draw") return a === true ? "Drawn" : "";
+    if (mode === "build") return this.buildText(part, a);
     if (Array.isArray(a)) return a.filter(x => x != null && String(x).trim()).join(", ");
     if (typeof a === "object") return Object.values(a).filter(v => v !== "" && v != null).join(" · ");
     const t = String(a).replace(/\s+/g, " ").trim(); return t.length > 160 ? t.slice(0, 157) + "…" : t;
+  }
+  // A build as the learner made it, in the words its chips and the memo use, so a try reads against its memo line: a box plot's
+  // five values ("Minimum 5 · Q₁ 44 · median 65 · Q₃ 84 · maximum 120"), a number line's shading and ends, a sketch's placed
+  // features ("turning point (−90° ; 0)"), a bar graph's type and bars. Any other build: "Built on screen" (never "(no answer)").
+  buildText(part, a) {
+    const b = part.build || {}, k = b.kind, isN = n => typeof n === "number" && isFinite(n);
+    const N = (n, deg) => { const r = Math.round(n * 100) / 100; return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ",") + (deg ? "°" : ""); };
+    if (!a || typeof a !== "object") return "";
+    let t = "";
+    if (k === "boxplot") t = [["min", "Minimum"], ["q1", "Q₁"], ["med", "median"], ["q3", "Q₃"], ["max", "maximum"]].filter(w => isN(a[w[0]])).map(w => w[1] + " " + N(a[w[0]])).join(" · ");
+    else if (k === "numline") { const end = i => isN(a["e" + i]) ? N(a["e" + i]) + (a["c" + i] ? " (" + a["c" + i] + ")" : "") : "…";
+      t = !a.s ? (isN(a.e0) ? end(0) : "") : a.s === "left" || a.s === "right" ? "Shaded " + a.s + " of " + end(0) : "Shaded " + a.s + " " + end(0) + " and " + end(1); }
+    else if (k === "sketch") { const P = a.p || {}, GR = b.graphs && b.graphs.length ? b.graphs : [{ family: b.family }], deg = GR.some(g => ({ sin: 1, cos: 1, tan: 1 })[g.family]);
+      t = (b.features || []).filter(f => P[f.id] != null).map(f => { const v = P[f.id];
+        return f.label + " " + (f.kind === "point" ? "(" + N(v[0], deg) + " ; " + N(v[1]) + ")" : f.kind === "hline" ? "y = " + N(v) : "x = " + N(v, deg)); }).join(" · "); }
+    else if (k === "hist" && Array.isArray(a.v)) t = ({ histogram: "Histogram", bar: "Bar graph" }[a.type] || "Graph") + " · " + a.v.filter(isN).map(n => N(n)).join(", ");
+    t = t || "Built on screen";
+    return t.length > 160 ? t.slice(0, 157) + "…" : t;
   }
   // Review my paper as a report card (Murci 2026-10-08, direction A): the header (ring, marks, tier, medal tally), Lost marks / All
   // questions, then every question under its mission's heading. Flat (headings and rows in one list): one template loop.
