@@ -93,6 +93,17 @@ class Paper:
         opts = [(right + wrong)[i] for i in order]
         return {"t": "pickn", "n": n, "marks": marks, "q": q, "clues": clues, "opts": opts, "pool": pool, "count": count, **kw}
 
+    def sort(self, n, q, bins, rows, clues, **kw):
+        """A tabulated comparison as a SORT (as Grade 12 LS P2 Nov 2024 3.4.3): each row a statement sorted into its column, one mark a
+        row (the memo's table mark is the sort's own column layout); rows shuffled with a fixed seed; every bin used."""
+        import random
+        order = list(range(len(rows)))
+        random.Random(self.pid + ":sort:" + n).shuffle(order)
+        rows = [rows[i] for i in order]
+        assert len({b for _, b in rows}) == len(bins), n + ": every column needs a row"
+        return {"t": "match", "n": n, "marks": len(rows), "q": q + " Sort each statement.", "clues": clues, "left": [r for r, _ in rows],
+                "right": bins, "a": [b for _, b in rows], "heads": ["STATEMENTS", "SORT INTO"], "groups": True, **kw}
+
     @staticmethod
     def num(n, q, a, tol, unit, clues, marks=1, **kw):
         return {"t": "num", "n": n, "marks": marks, "q": q, "clues": clues, "a": a, "tol": tol, "unit": unit, **kw}

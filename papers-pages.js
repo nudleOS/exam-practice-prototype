@@ -2766,5 +2766,53 @@ window.NX_PAGES = {
     "3.5": 10
    }
   }
+ },
+ "g11-ls-p1-2025-11-ec": {
+  "qp": {
+   "pages": 16,
+   "src": "assets/papers/g11-ls-p1-2025-11-ec/qp-",
+   "pdf": "uploads/provincial/g11-ls-p1-2025-11-ec/LIFE SCIENCES P1 GR11 QP NOV2025_English_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 3,
+    "1.2": 6,
+    "1.3": 6,
+    "1.4": 7,
+    "1.5": 8,
+    "2.1": 9,
+    "2.2": 10,
+    "2.3": 11,
+    "2.4": 12,
+    "3.1": 13,
+    "3.2": 14,
+    "3.3": 14,
+    "3.4": 15,
+    "3.5": 16
+   }
+  },
+  "mg": {
+   "pages": 10,
+   "src": "uploads/papers/g11-ls-p1-2025-11-ec/mg-",
+   "pdf": "uploads/provincial/g11-ls-p1-2025-11-ec/LIFE SCIENCES P1 GR11 MEMO NOV2025_English_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 4,
+    "1.2": 4,
+    "1.3": 4,
+    "1.4": 4,
+    "1.5": 4,
+    "2.1": 5,
+    "2.2": 6,
+    "2.3": 6,
+    "2.4": 7,
+    "3.1": 8,
+    "3.2": 8,
+    "3.3": 9,
+    "3.4": 9,
+    "3.5": 9
+   }
+  }
  }
 };
