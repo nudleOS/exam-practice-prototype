@@ -83,6 +83,8 @@ LOWER = {
                             "provincial/g11-ml-p1-2024-11-ec/MATHS LIT P1 MEMO GR 11 NOV2024_English_watermark.pdf"),
     "g11-ml-p2-2024-11-ec": ("provincial/g11-ml-p2-2024-11-ec/MATHS LIT P2 GRADE 11 NOV 2024  ENGLISH D_watermark.pdf",
                             "provincial/g11-ml-p2-2024-11-ec/MATHS LIT P2 GRADE 11 NOV 2024 MARKING GUIDELINE_ENG_watermark.pdf"),
+    "g11-ml-p1-2025-11-ec": ("provincial/g11-ml-p1-2025-11-ec/MATHS LITERACY P1 GR11 QP NOV2025_English_watermark.pdf",
+                            "provincial/g11-ml-p1-2025-11-ec/MATHS LITERACY P1 GR11 MEMO NOV2025_English_watermark.pdf"),
 }
 
 

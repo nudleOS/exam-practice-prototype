@@ -2583,5 +2583,49 @@ window.NX_PAGES = {
     "4.2": 10
    }
   }
+ },
+ "g11-ml-p1-2025-11-ec": {
+  "qp": {
+   "pages": 10,
+   "src": "assets/papers/g11-ml-p1-2025-11-ec/qp-",
+   "pdf": "uploads/provincial/g11-ml-p1-2025-11-ec/MATHS LITERACY P1 GR11 QP NOV2025_English_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 3,
+    "1.2": 3,
+    "1.3": 4,
+    "2.1": 5,
+    "2.2": 5,
+    "2.3": 5,
+    "3.1": 6,
+    "3.2": 6,
+    "4.1": 7,
+    "4.2": 8,
+    "4.3": 8,
+    "4.4": 8
+   }
+  },
+  "mg": {
+   "pages": 8,
+   "src": "uploads/papers/g11-ml-p1-2025-11-ec/mg-",
+   "pdf": "uploads/provincial/g11-ml-p1-2025-11-ec/MATHS LITERACY P1 GR11 MEMO NOV2025_English_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 3,
+    "1.2": 3,
+    "1.3": 3,
+    "2.1": 4,
+    "2.2": 4,
+    "2.3": 5,
+    "3.1": 6,
+    "3.2": 6,
+    "4.1": 7,
+    "4.2": 7,
+    "4.3": 7,
+    "4.4": 8
+   }
+  }
  }
 };

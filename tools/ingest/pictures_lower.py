@@ -233,7 +233,54 @@ def breakeven(income, b=None, xmax=110, ymax=16000, xstep=10, ystep=2000, cost=(
     return svg(330, 228, "".join(out))
 
 
+def plot(pts, xmax, ymax, xstep, ystep, xlab, ylab, join=None, title=""):
+    """Points on a grid from (0 ; 0) (a learner's graph or scatter plot on an answer sheet): join None (a scatter plot) |
+    "line" (straight segments in the order given) | "smooth" (one smooth curve, in the order given); a title above when given."""
+    top = 30 if title else 10
+    X = lambda v: 58 + v * 262 / xmax
+    Y = lambda v: 200 - v * (200 - top) / ymax
+    out = []
+    for v in range(0, ymax + 1, ystep):
+        out += [L(X(0), Y(v), X(xmax), Y(v), w=0.5, color="#ccc"), T(52, Y(v) + 3, str(v), size=9, anchor="end")]
+    for v in range(0, xmax + 1, xstep):
+        out += [L(X(v), Y(0), X(v), Y(ymax), w=0.5, color="#ccc"), T(X(v), 213, str(v), size=9)]
+    out.append(axes(X(0), top - 4, X(xmax) + 6, Y(0), "", "", zero=False))
+    sp = [(X(a), Y(b)) for a, b in pts]
+    if join == "line":
+        out.append(poly(sp, w=2))
+    if join == "smooth":
+        out.append(P(smooth(sp), w=2.2))
+    for x, y in sp:
+        out.append(D.C(x, y, 3.2, w=0, fill=D.INK))
+    if title:
+        out.append(T(189, 16, title, size=10, weight=700))
+    out += [T(189, 228, xlab, size=10), T(14, (top + 200) / 2, ylab, size=10).replace("<text ", '<text transform="rotate(-90 14 %g)" '
+                                                                                       % ((top + 200) / 2), 1)]
+    return svg(340, 234, "".join(out))
+
+
 def register(add):
+    # ---- Grade 11 Mathematical Literacy P1 Nov 2025 (EC) 2.2.3: builders and days, 36 builder-days (memo: the points, a smooth curve)
+    BD = [(3, 12), (4, 9), (6, 6), (9, 4), (12, 3)]
+    bd = lambda pts, join: plot(pts, 14, 14, 2, 2, "Number of builders", "Number of days", join)
+    add("g11-ml-p1-2025-11-ec", "2.2.3",
+        ("Points (3 ; 12), (4 ; 9), (6 ; 6), (9 ; 4), (12 ; 3) joined by a smooth curve", bd(BD, "smooth")),
+        [("The same five points, not joined", bd(BD, None)),
+         ("Points (3 ; 12), (4 ; 11), (6 ; 9), (9 ; 6), (12 ; 3) on a straight line: builders + days kept at 15",
+          bd([(3, 12), (4, 11), (6, 9), (9, 6), (12, 3)], "line")),
+         ("The same five points joined by straight lines", bd(BD, "line"))], 2)
+    # ---- 3.2: the scatter plot of antibiotics (x) and learners who contracted TB (y), classes A to I (memo: points, title, axes)
+    AB = [(35, 40), (30, 45), (10, 50), (50, 5), (45, 20), (35, 25), (20, 50), (55, 10), (10, 55)]
+    TB = "The results of learners who contracted TB"
+    sc = lambda pts, xl, yl, join=None, title=TB: plot(pts, 60, 60, 10, 10, xl, yl, join, title)
+    NA, NT = "Number of antibiotics", "Learners who contracted TB"
+    add("g11-ml-p1-2025-11-ec", "3.2",
+        ("A titled scatter plot: antibiotics on the x-axis, learners with TB on the y-axis, the nine points (35 ; 40), (30 ; 45), (10 ; 50), "
+         "(50 ; 5), (45 ; 20), (35 ; 25), (20 ; 50), (55 ; 10), (10 ; 55)", sc(AB, NA, NT)),
+        [("The axes swapped: learners with TB on the x-axis, antibiotics on the y-axis", sc([(b, a) for a, b in AB], NT, NA)),
+         ("The same nine points joined class by class as a line graph", sc(AB, NA, NT, "line")),
+         ("The points plotted with no title", sc(AB, NA, NT, None, ""))], 1)
+
     # ---- Grade 11 Mathematics P2 Nov 2024 (EC) 2.4: the ogive of the boxers' weights (memo: grounding, upper limits, shape)
     U, CF = [55, 75, 95, 115, 135, 155], [1, 4, 13, 19, 22, 23]
     og = lambda v: ogive(U, CF, 35, v, xlab="Mass (kg)", xstep=20)
