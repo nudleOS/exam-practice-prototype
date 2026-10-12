@@ -997,6 +997,28 @@ window.NX_CATALOGUE = {
    "rev": "ff8f14f50d",
    "source_pdf": "uploads/provincial/g11-geo-p1-2024-11-ec/GEOGRAPHY P1 QP GR11 NOV 2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
+  },
+  {
+   "id": "g11-geo-p2-2024-11-ec",
+   "title": "Geography P2",
+   "subject": "Geography",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 134,
+   "duration_minutes": 180,
+   "questions": 3,
+   "missions": 13,
+   "status": "ready",
+   "rev": "a76f78abaa",
+   "source_pdf": "uploads/provincial/g11-geo-p2-2024-11-ec/GEOGRAPHY P2 GR11 QP NOV2024 ENG D_watermark.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2024"
   }
  ]
 };

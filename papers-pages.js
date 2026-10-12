@@ -3262,5 +3262,51 @@ window.NX_PAGES = {
     "3.3": 8
    }
   }
+ },
+ "g11-geo-p2-2024-11-ec": {
+  "qp": {
+   "pages": 24,
+   "src": "assets/papers/g11-geo-p2-2024-11-ec/qp-",
+   "pdf": "uploads/provincial/g11-geo-p2-2024-11-ec/GEOGRAPHY P2 GR11 QP NOV2024 ENG D_watermark.pdf",
+   "w": 1000,
+   "h": 1415,
+   "find": {
+    "1.1": 3,
+    "1.2": 5,
+    "1.3": 7,
+    "1.4": 8,
+    "1.5": 9,
+    "2.1": 10,
+    "2.2": 11,
+    "2.3": 12,
+    "2.4": 13,
+    "2.5": 14,
+    "3.1": 17,
+    "3.2": 18,
+    "3.3": 19
+   }
+  },
+  "mg": {
+   "pages": 12,
+   "src": "uploads/papers/g11-geo-p2-2024-11-ec/mg-",
+   "pdf": "uploads/provincial/g11-geo-p2-2024-11-ec/GEOGRAPHY P2 GR11 MEMO NOV2024_English_watermark.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 2,
+    "1.2": 2,
+    "1.3": 2,
+    "1.4": 4,
+    "1.5": 5,
+    "2.1": 7,
+    "2.2": 7,
+    "2.3": 7,
+    "2.4": 8,
+    "2.5": 9,
+    "3.1": 11,
+    "3.2": 11,
+    "3.3": 12
+   }
+  }
  }
 };
