@@ -343,6 +343,16 @@ def pie(values, labels, title=""):
 
 
 def register(add):
+    # ---- Grade 11 Life Sciences P2 Nov 2025 (EC) 3.3.4: the rate of photosynthesis in the groups WITH microplastics (B, C, D; memo:
+    # type, caption, labels with units, scale and equal bars, the plotted values)
+    MT = "Rate of photosynthesis for different groups of microplastics"
+    mb = lambda labs, vals, title=MT, xl="Groups", yl="Rate of photosynthesis (%)", line=False: bars(labs, vals, 100, 10, xl, yl, title, line)
+    add("g11-ls-p2-2025-11-ec", "3.3.4",
+        ("A captioned bar graph of groups B 85%, C 67% and D 53%, equal bars, both axes labelled with the unit", mb(["B", "C", "D"],
+                                                                                                                  [85, 67, 53])),
+        [("The same values joined as a line graph", mb(["B", "C", "D"], [85, 67, 53], line=True)),
+         ("A captioned bar graph that includes group A, the group with no microplastics", mb(["A", "B", "C", "D"], [100, 85, 67, 53])),
+         ("The three bars with no caption and no axis labels", mb(["B", "C", "D"], [85, 67, 53], "", "", ""))], 1)
     # ---- Grade 11 Life Sciences P2 Nov 2024 (EC) 2.1.4: a labelled bacterium (memo: correct diagram, caption, any three labels)
     add("g11-ls-p2-2024-11-ec", "2.1.4",
         ("A captioned bacterium labelled cell wall, cell membrane, cytoplasm, ribosome, nucleoid (DNA), plasmid and flagellum",

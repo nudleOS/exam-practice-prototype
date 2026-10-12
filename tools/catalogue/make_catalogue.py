@@ -93,6 +93,8 @@ LOWER = {
                             "provincial/g11-ls-p2-2024-11-ec/LIFE SCIENCES P2 GR11 MEMO NOV2024_English_watermark.pdf"),
     "g11-ls-p1-2025-11-ec": ("provincial/g11-ls-p1-2025-11-ec/LIFE SCIENCES P1 GR11 QP NOV2025_English_watermark.pdf",
                             "provincial/g11-ls-p1-2025-11-ec/LIFE SCIENCES P1 GR11 MEMO NOV2025_English_watermark.pdf"),
+    "g11-ls-p2-2025-11-ec": ("provincial/g11-ls-p2-2025-11-ec/LIFE SCIENCES P2 QP GR11 NOV 2025 ENG_watermark.pdf",
+                            "provincial/g11-ls-p2-2025-11-ec/LIFE SCIENCES P2 MEMO GR11 NOV 2025 ENG_watermark.pdf"),
 }
 
 

@@ -865,6 +865,28 @@ window.NX_CATALOGUE = {
    "rev": "65da7b24aa",
    "source_pdf": "uploads/provincial/g11-ls-p1-2025-11-ec/LIFE SCIENCES P1 GR11 QP NOV2025_English_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
+  },
+  {
+   "id": "g11-ls-p2-2025-11-ec",
+   "title": "Life Sciences P2",
+   "subject": "Life Sciences",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 150,
+   "questions": 3,
+   "missions": 14,
+   "status": "ready",
+   "rev": "0e5b48c5b4",
+   "source_pdf": "uploads/provincial/g11-ls-p2-2025-11-ec/LIFE SCIENCES P2 QP GR11 NOV 2025 ENG_watermark.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2025"
   }
  ]
 };
