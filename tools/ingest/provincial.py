@@ -114,7 +114,10 @@ class Paper:
                 **({"memo": memo} if memo else {}), **kw}
 
     # ---- the checks, then response.json
-    def finish(self, missions, meta, flags, qtotal, total, after, scope):
+    def finish(self, missions, meta, flags, qtotal, total, after, scope, sections=None):
+        """sections: None (one section, every question answered) or [(title, total, answer_any or None, [question numbers])], as a
+        Business Studies paper's 'Section B: answer any TWO' (its total is answer_any questions' marks, each question worth total /
+        answer_any); `total` is then the paper's playable total, the sum of the sections' totals."""
         items = [i for m in missions for i in m["items"]]
         per_q = {}
         for m in missions:
@@ -124,7 +127,15 @@ class Paper:
             per_q[q] = per_q.get(q, 0) + got
             print(m["id"], "parts:", len(m["items"]), "marks:", got, "/", m["marks"])
         assert per_q == qtotal, per_q
-        assert sum(i["marks"] for i in items) == total, sum(i["marks"] for i in items)
+        if sections:
+            for title, stotal, any_n, qs in sections:
+                if any_n:
+                    assert all(per_q[q] * any_n == stotal for q in qs), (title, [per_q[q] for q in qs])
+                else:
+                    assert sum(per_q[q] for q in qs) == stotal, title
+            assert sorted(q for *_, qs in sections for q in qs) == sorted(per_q) and sum(t for _, t, _, _ in sections) == total
+        else:
+            assert sum(i["marks"] for i in items) == total, sum(i["marks"] for i in items)
         assert len({i["n"] for i in items}) == len(items), "a part number twice"
         for i in items:
             b = i.get("build") or {}
@@ -149,13 +160,26 @@ class Paper:
         print("right letters:", spread, "workings:", worked, "| workings", len(self.authored), "answers", len(self.answers))
         got_after = {i["n"]: i["after"] for i in items if i.get("after")}
         assert got_after == after, got_after
-        paper = {"catalog": "https://nexera.app/catalogs/exam/v1", "paper": meta,
-                 "sections": [{"title": meta["subject"], "total": total, "missions": missions}], "flags": flags}
+        secs = ([{"title": title, "total": stotal, **({"answer_any": any_n} if any_n else {}),
+                  "missions": [m for m in missions if m["id"].split(".")[0] in qs]} for title, stotal, any_n, qs in sections] if sections
+                else [{"title": meta["subject"], "total": total, "missions": missions}])
+        paper = {"catalog": "https://nexera.app/catalogs/exam/v1", "paper": meta, "sections": secs, "flags": flags}
         out = Path(__file__).parent / "out" / self.pid   # written only once every check above has passed
         out.mkdir(parents=True, exist_ok=True)
         (out / "response.json").write_text(json.dumps({"meta": {"transcribed": "by hand from the question paper and the memo (no API call)",
                                                                  "scope": scope}, "paper": paper}, indent=1, ensure_ascii=False), encoding="utf-8")
         print("total:", total, "->", out / "response.json")
+
+    @staticmethod
+    def essay(nums, parts, examples, insight_clues):
+        """An essay as SECTIONS (Grade 12 Business Studies, Murci 2026-10-10): the memo's headings, each statements or a sort, their facts
+        summing to the memo's cap of 32, then an INSIGHT part (LASO, 8) worked out from the picks; examples: [(part number, card)]."""
+        ex = [[n, next(p for p in parts if p["n"] == n)["opts" if "opts" in next(p for p in parts if p["n"] == n) else "left"].index(t)]
+              for n, t in examples]
+        assert sum(p["marks"] for p in parts) == 32, [p["marks"] for p in parts]
+        return parts + [{"t": "insight", "n": nums, "marks": 8, "q": "Insight: your essay's layout, analysis, synthesis and originality, "
+                         "worked out from your picks.", "clues": insight_clues, "of": [p["n"] for p in parts], "intro": parts[0]["n"],
+                         "conclusion": parts[-1]["n"], "examples": ex}]
 
     def flag_workings(self, extra=""):
         return {"n": self.authored[0], "kind": "no_fit",
@@ -168,6 +192,11 @@ class Paper:
                 "detail": "Authored multiple choice, answers: " + ", ".join(self.answers) + " ask for an answer the memo states with no "
                           "working that a word marker cannot read: four options, the memo's answer and three common errors, 0 or full "
                           "marks." + (" " + extra if extra else "")}
+
+
+def sentences(text):
+    """A scenario's sentences, as printed (each ends with a full stop): the cards of a 'quote from the scenario' part."""
+    return [x.strip().rstrip(".") + "." for x in text.split(". ") if x.strip()]
 
 
 def sketch_ok(i):
