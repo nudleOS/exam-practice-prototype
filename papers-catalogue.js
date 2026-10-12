@@ -909,6 +909,28 @@ window.NX_CATALOGUE = {
    "rev": "aa1fde70e5",
    "source_pdf": "uploads/provincial/g11-bs-p1-2024-11-ec/BUSINESS STUDIES P1 GR 11 NOV Final ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
+  },
+  {
+   "id": "g11-bs-p2-2024-11-ec",
+   "title": "Business Studies P2",
+   "subject": "Business Studies",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 11,
+   "level": "G11",
+   "level_detail": "Grade 11",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 120,
+   "questions": 6,
+   "missions": 8,
+   "status": "ready",
+   "rev": "473835dc58",
+   "source_pdf": "uploads/provincial/g11-bs-p2-2024-11-ec/BUSINESS STUDIES gr 11 P2 QP ENG D_watermark.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2024"
   }
  ]
 };
