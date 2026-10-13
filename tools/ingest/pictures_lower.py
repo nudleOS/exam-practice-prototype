@@ -413,6 +413,24 @@ def root_hair(variant):
     return svg(360, 250, "".join(out))
 
 
+def food_pyramid(levels):
+    """A three-level food (number) pyramid: levels top to bottom, each a list of text lines written inside its band."""
+    ax, ay, by, l, r = 180, 12, 212, 10, 350
+    xs = lambda y: (ax - (y - ay) / (by - ay) * (ax - l), ax + (y - ay) / (by - ay) * (r - ax))   # the sides at height y
+    out = [P(f"M{ax},{ay} L{r},{by} L{l},{by} Z", w=2)]
+    cuts = [ay + (by - ay) * k / 3 for k in (1, 2)]
+    for y in cuts:
+        x0, x1 = xs(y)
+        out.append(L(x0, y, x1, y, w=1.6))
+    bands = [(ay, cuts[0]), (cuts[0], cuts[1]), (cuts[1], by)]
+    for (y0, y1), lines in zip(bands, levels):
+        top = y0 == ay   # the apex band is narrow: smaller text, set lower
+        mid = y0 + (y1 - y0) * (0.7 if top else 0.55)
+        for k, t in enumerate(lines):
+            out.append(T(ax, mid + (k - (len(lines) - 1) / 2) * (11 if top else 13) + 4, t, size=9.5 if top else 11))
+    return svg(360, 222, "".join(out))
+
+
 def pie(values, labels, title=""):
     """A pie chart of percentages (one sector each, clockwise from 12 o'clock), each sector labelled with its name and value;
     a title above when given."""
@@ -534,6 +552,26 @@ def register(add):
         [("The same values joined as two line graphs", bars2(AG, MEN, WOM, ["Men", "Women"], 40, 5, OX, OY, OT, line=True)),
          ("The bar graph with no caption and no axis labels", bars2(AG, MEN, WOM, ["Men", "Women"], 40, 5, "", "", "")),
          ("A captioned bar graph with the men's and the women's values swapped", bars2(AG, WOM, MEN, ["Men", "Women"], 40, 5, OX, OY, OT))], 2)
+
+    # ---- Grade 10 Life Sciences P2 Nov 2024 (NW) 1.5.4: a food pyramid of three trophic levels (memo: foxes and owls; grasshopper and
+    # bird; carrot, grasses, grain)
+    LS2 = "g10-ls-p2-2024-11-nw"
+    TOP, MID, BASE = ["Foxes and", "owls"], ["Grasshoppers", "and birds"], ["Carrots, grasses", "and grains"]
+    add(LS2, "1.5.4", ("Foxes and owls at the top, grasshoppers and birds in the middle, carrots, grasses and grains at the base",
+                       food_pyramid([TOP, MID, BASE])),
+        [("Carrots, grasses and grains at the top, foxes and owls at the base: the pyramid upside down", food_pyramid([["Carrots,", "grasses and", "grains"], MID, TOP])),
+         ("Foxes and owls at the top, the plants in the middle, grasshoppers and birds at the base", food_pyramid([TOP, BASE, MID])),
+         ("Foxes and grasshoppers at the top, owls and birds in the middle, the plants at the base: the levels mixed",
+          food_pyramid([["Foxes and", "grasshoppers"], ["Owls", "and birds"], BASE]))], 3)
+    # ---- 3.1.4: the average potato yield from 20 °C to 30 °C at both light levels (memo: type, caption, labels, scale, plotting)
+    PT, PX, PY = "Average yield of potatoes at different temperatures", "Temperature (°C)", "Average yield per plant (kg)"
+    TT, LO, HI = ["20", "25", "30"], [3.6, 3.5, 2.5], [8.5, 7.8, 6.2]
+    add(LS2, "3.1.4", ("A captioned bar graph, low and high light side by side at 20, 25 and 30 °C, both axes labelled, a key",
+                       bars2(TT, LO, HI, ["Low light", "High light"], 10, 1, PX, PY, PT)),
+        [("The same values joined as two line graphs", bars2(TT, LO, HI, ["Low light", "High light"], 10, 1, PX, PY, PT, line=True)),
+         ("The bar graph with no caption and no axis labels", bars2(TT, LO, HI, ["Low light", "High light"], 10, 1, "", "", "")),
+         ("A captioned bar graph with the low and high light values swapped",
+          bars2(TT, HI, LO, ["Low light", "High light"], 10, 1, PX, PY, PT))], 1)
 
     # ---- Grade 10 Mathematics P1 Nov 2024 (NW) 8.3: the Venn diagram of A and B (memo: 0,2709; 0,1591; 0,2109; 0,3591)
     add("g10-math-p1-2024-11-nw", "8.3",
