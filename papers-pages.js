@@ -3782,5 +3782,51 @@ window.NX_PAGES = {
     "4.2": 7
    }
   }
+ },
+ "g10-ml-p2-2024-11-nw": {
+  "qp": {
+   "pages": 7,
+   "src": "assets/papers/g10-ml-p2-2024-11-nw/qp-",
+   "pdf": "uploads/provincial/g10-ml-p2-2024-11-nw/19-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P2-ENG-QP.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 3,
+    "1.2": 3,
+    "1.3": 3,
+    "2.1": 4,
+    "2.2": 4,
+    "3.1": 5,
+    "3.2": 5,
+    "3.3": 5,
+    "3.4": 5,
+    "3.5": 5,
+    "3.6": 6,
+    "4.1": 6,
+    "4.2": 7
+   }
+  },
+  "mg": {
+   "pages": 5,
+   "src": "uploads/papers/g10-ml-p2-2024-11-nw/mg-",
+   "pdf": "uploads/provincial/g10-ml-p2-2024-11-nw/19-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P2-ENG-MG.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1.1": 2,
+    "1.2": 2,
+    "1.3": 2,
+    "2.1": 3,
+    "2.2": 3,
+    "3.1": 4,
+    "3.2": 4,
+    "3.3": 4,
+    "3.4": 4,
+    "3.5": 4,
+    "3.6": 4,
+    "4.1": 5,
+    "4.2": 5
+   }
+  }
  }
 };

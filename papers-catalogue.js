@@ -1173,6 +1173,28 @@ window.NX_CATALOGUE = {
    "rev": "852036a39a",
    "source_pdf": "uploads/provincial/g10-ml-p1-2024-11-nw/15-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P1-ENG-QP.pdf",
    "provenance_label": "North West DoE · November 2024"
+  },
+  {
+   "id": "g10-ml-p2-2024-11-nw",
+   "title": "Mathematical Literacy P2",
+   "subject": "Mathematical Literacy",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 75,
+   "duration_minutes": 60,
+   "questions": 4,
+   "missions": 8,
+   "status": "ready",
+   "rev": "a39d8fcf32",
+   "source_pdf": "uploads/provincial/g10-ml-p2-2024-11-nw/19-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P2-ENG-QP.pdf",
+   "provenance_label": "North West DoE · November 2024"
   }
  ]
 };
