@@ -137,6 +137,8 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
     made = set()   # the crop files written so far
     (out / "figures").mkdir(parents=True, exist_ok=True)
 
+    DENSITY = 2   # figure pixels per display pixel (2026-10-13)
+
     def crop(f, stem):
         doc = docs["answer_book" if (f or {}).get("source") == "answer_book" else "paper"]
         if f and doc is None:
@@ -150,7 +152,10 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
         clip = fitz.Rect(max(0, x0 - pad) * W, max(0, y0 - pad) * H, min(1, x1 + pad) * W, min(1, y1 + pad) * H)
         if clip.is_empty:
             return None
-        pix = page.get_pixmap(dpi=150, clip=clip)
+        # 300 dpi, twice the display size (Murci 2026-10-13: "i want images to be [clear] when expanded or not when in the frame":
+        # at 150 dpi a figure drawn ~340 px wide on the P30 lite, ~3 device pixels to a CSS pixel, was stretched 2-3x); w and h below
+        # stay the DISPLAY size (the 150 dpi one), so every layout reads the same shape and the browser gets 2x pixels
+        pix = page.get_pixmap(dpi=150 * DENSITY, clip=clip)
         name = f"q{stem.replace('.', '_')}.png"
         # refuse, not repair: a mission and one of its parts with the same number and each its own figure would write the
         # same file, the part's crop silently replacing the mission's (2026-10-11, found transcribing Grade 11 PS P1 2018)
@@ -176,7 +181,7 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
                 w, h = im.size
             # inset: a white margin round a crop whose labels touch its corner, where the figure's Hide button sits on the page
             # (2026-10-10, Geography P1 Nov 2024 2.1.6: the button covered option "Y")
-            i = int(f.get("inset") or 0)
+            i = int(f.get("inset") or 0) * DENSITY   # an inset is in display pixels
             if i > 0:
                 framed = Image.new("RGB", (w + 2 * i, h + 2 * i), "white")
                 framed.paste(im, (i, i))
@@ -189,7 +194,7 @@ def crop_figures(paper, paper_pdf, out, answer_book=None):
         # into the new box, after an inset changed its size under the same name)
         import hashlib
         v = hashlib.sha1((out / "figures" / name).read_bytes()).hexdigest()[:10]
-        return {"src": f"tools/ingest/out/{out.name}/figures/{name}?v={v}", "w": w, "h": h}
+        return {"src": f"tools/ingest/out/{out.name}/figures/{name}?v={v}", "w": round(w / DENSITY), "h": round(h / DENSITY)}
 
     for sec in paper["sections"]:
         for m in sec["missions"]:
