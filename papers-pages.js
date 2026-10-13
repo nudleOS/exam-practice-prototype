@@ -4289,5 +4289,44 @@ window.NX_PAGES = {
     "9": 10
    }
   }
+ },
+ "g10-ps-p1-2025-11-kzn": {
+  "qp": {
+   "pages": 13,
+   "src": "assets/papers/g10-ps-p1-2025-11-kzn/qp-",
+   "pdf": "uploads/provincial/g10-ps-p1-2025-11-kzn/g10-ps-p1-2025-11-kzn QP.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1": 3,
+    "2": 5,
+    "2.2": 6,
+    "3": 6,
+    "4": 7,
+    "5": 8,
+    "6": 9,
+    "6.2": 10,
+    "7": 11,
+    "8": 12
+   }
+  },
+  "mg": {
+   "pages": 6,
+   "src": "uploads/papers/g10-ps-p1-2025-11-kzn/mg-",
+   "pdf": "uploads/provincial/g10-ps-p1-2025-11-kzn/g10-ps-p1-2025-11-kzn MG.pdf",
+   "w": 1000,
+   "h": 1414,
+   "find": {
+    "1": 2,
+    "2": 2,
+    "2.2": 3,
+    "3": 3,
+    "4": 3,
+    "5": 4,
+    "6": 5,
+    "7": 6,
+    "8": 6
+   }
+  }
  }
 };

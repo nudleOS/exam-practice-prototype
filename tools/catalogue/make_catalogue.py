@@ -139,6 +139,8 @@ LOWER = {
                                "provincial/g10-math-p1-2025-11-kzn/g10-math-p1-2025-11-kzn MG.pdf"),
     "g10-math-p2-2025-11-kzn": ("provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn QP.pdf",
                                "provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn MG.pdf"),
+    "g10-ps-p1-2025-11-kzn": ("provincial/g10-ps-p1-2025-11-kzn/g10-ps-p1-2025-11-kzn QP.pdf",
+                             "provincial/g10-ps-p1-2025-11-kzn/g10-ps-p1-2025-11-kzn MG.pdf"),
 }
 
 

@@ -1371,6 +1371,28 @@ window.NX_CATALOGUE = {
    "rev": "96c644dab0",
    "source_pdf": "uploads/provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
+  },
+  {
+   "id": "g10-ps-p1-2025-11-kzn",
+   "title": "Physical Sciences P1 (Physics)",
+   "subject": "Physical Sciences",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 8,
+   "missions": 10,
+   "status": "ready",
+   "rev": "a78b4f1f35",
+   "source_pdf": "uploads/provincial/g10-ps-p1-2025-11-kzn/g10-ps-p1-2025-11-kzn QP.pdf",
+   "provenance_label": "KwaZulu-Natal DoE · November 2025"
   }
  ]
 };
