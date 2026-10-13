@@ -125,6 +125,8 @@ LOWER = {
                             "provincial/g10-ml-p2-2024-11-nw/19-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P2-ENG-MG.pdf"),
     "g10-ls-p1-2024-11-nw": ("provincial/g10-ls-p1-2024-11-nw/22-November-2024-S2-Gr10-Life-Sciences-QP-P1-ENG.pdf",
                             "provincial/g10-ls-p1-2024-11-nw/22-November-2024-S2-Gr10-Life-Sciences-MG-P1-ENG.pdf"),
+    "g10-ls-p2-2024-11-nw": ("provincial/g10-ls-p2-2024-11-nw/11-NOVEMBER-24-S2-NW-GR10-LIFE-SCIENCES-QP-P2-ENG.pdf",
+                            "provincial/g10-ls-p2-2024-11-nw/11-NOVEMBER-24-S2-NW-GR-10-LIFE-SCIENCES-MG-ENG-P2.pdf"),
 }
 
 
