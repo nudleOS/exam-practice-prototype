@@ -1195,6 +1195,28 @@ window.NX_CATALOGUE = {
    "rev": "a39d8fcf32",
    "source_pdf": "uploads/provincial/g10-ml-p2-2024-11-nw/19-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P2-ENG-QP.pdf",
    "provenance_label": "North West DoE · November 2024"
+  },
+  {
+   "id": "g10-ls-p1-2024-11-nw",
+   "title": "Life Sciences P1",
+   "subject": "Life Sciences",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 150,
+   "questions": 3,
+   "missions": 17,
+   "status": "ready",
+   "rev": "a82f3fed13",
+   "source_pdf": "uploads/provincial/g10-ls-p1-2024-11-nw/22-November-2024-S2-Gr10-Life-Sciences-QP-P1-ENG.pdf",
+   "provenance_label": "North West DoE · November 2024"
   }
  ]
 };
