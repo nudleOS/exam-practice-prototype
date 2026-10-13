@@ -129,6 +129,8 @@ LOWER = {
                             "provincial/g10-ls-p2-2024-11-nw/11-NOVEMBER-24-S2-NW-GR-10-LIFE-SCIENCES-MG-ENG-P2.pdf"),
     "g10-bs-p1-2024-11-nw": ("provincial/g10-bs-p1-2024-11-nw/12-November-24-NW-GR10-S2-BUSINESS-STUDIES-QP-P1-ENG.pdf",
                             "provincial/g10-bs-p1-2024-11-nw/12-November-2024-NW-GR10-S2-Business-Studies-MG-P1-ENG.pdf"),
+    "g10-bs-p2-2024-11-nw": ("provincial/g10-bs-p2-2024-11-nw/21-NOVEMBER-2024-NW-GR-10-S2-BUSINESS-STUDIES-QP-ENG.pdf",
+                            "provincial/g10-bs-p2-2024-11-nw/21-NOVEMBER-2024-NW-GR-10-S2-BUSINESS-STUDIES-MG-ENG.pdf"),
 }
 
 
