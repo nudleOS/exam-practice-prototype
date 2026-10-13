@@ -1305,6 +1305,28 @@ window.NX_CATALOGUE = {
    "rev": "3f4dd94242",
    "source_pdf": "uploads/provincial/g10-geo-p1-2024-11-nw/06-NOVEMBER-24-NW-GR10-S2-Gography-QP-P1-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
+  },
+  {
+   "id": "g10-geo-p2-2024-11-nw",
+   "title": "Geography P2",
+   "subject": "Geography",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 130,
+   "duration_minutes": 180,
+   "questions": 3,
+   "missions": 11,
+   "status": "ready",
+   "rev": "fad0bd5a33",
+   "source_pdf": "uploads/provincial/g10-geo-p2-2024-11-nw/11-November-24-NW-GR10-S2-GEOGRAPHY-QP-P2-ENG.pdf",
+   "provenance_label": "North West DoE · November 2024"
   }
  ]
 };

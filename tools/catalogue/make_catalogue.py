@@ -133,6 +133,8 @@ LOWER = {
                             "provincial/g10-bs-p2-2024-11-nw/21-NOVEMBER-2024-NW-GR-10-S2-BUSINESS-STUDIES-MG-ENG.pdf"),
     "g10-geo-p1-2024-11-nw": ("provincial/g10-geo-p1-2024-11-nw/06-NOVEMBER-24-NW-GR10-S2-Gography-QP-P1-ENG.pdf",
                              "provincial/g10-geo-p1-2024-11-nw/06-November-24-NW-GR-10-S2-Geography-MG-P1-ENG.pdf"),
+    "g10-geo-p2-2024-11-nw": ("provincial/g10-geo-p2-2024-11-nw/11-November-24-NW-GR10-S2-GEOGRAPHY-QP-P2-ENG.pdf",
+                             "provincial/g10-geo-p2-2024-11-nw/11-November-24-NW-GR10-S2-GEOGRAPHY-MG-P2-ENG.pdf"),
 }
 
 
