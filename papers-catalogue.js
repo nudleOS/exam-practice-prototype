@@ -1239,6 +1239,28 @@ window.NX_CATALOGUE = {
    "rev": "2f38ab382c",
    "source_pdf": "uploads/provincial/g10-ls-p2-2024-11-nw/11-NOVEMBER-24-S2-NW-GR10-LIFE-SCIENCES-QP-P2-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
+  },
+  {
+   "id": "g10-bs-p1-2024-11-nw",
+   "title": "Business Studies P1",
+   "subject": "Business Studies",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 150,
+   "duration_minutes": 120,
+   "questions": 6,
+   "missions": 8,
+   "status": "ready",
+   "rev": "a3c412b3cc",
+   "source_pdf": "uploads/provincial/g10-bs-p1-2024-11-nw/12-November-24-NW-GR10-S2-BUSINESS-STUDIES-QP-P1-ENG.pdf",
+   "provenance_label": "North West DoE · November 2024"
   }
  ]
 };
