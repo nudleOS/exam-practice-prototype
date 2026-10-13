@@ -353,6 +353,66 @@ def bacterium(variant):
     return svg(340, 234, "".join(out))
 
 
+def bars2(labels, a, b, names, ymax, ystep, xlab, ylab, title="", line=False):
+    """A bar graph of TWO values per category (men and women, say), side by side with a key; line=True joins each series as a line
+    graph instead; a title above when given (the memo's caption mark)."""
+    top = 30 if title else 10
+    n = len(labels)
+    X = lambda i: 58 + (i + 0.5) * 262 / n
+    Y = lambda v: 200 - v * (200 - top) / ymax
+    fills = ["#c4ccd6", "#3d4652"]
+    out = []
+    for v in range(0, ymax + 1, ystep):
+        out += [L(58, Y(v), 320, Y(v), w=0.5, color="#ccc"), T(52, Y(v) + 3, str(v), size=9, anchor="end")]
+    out.append(axes(58, top - 4, 326, Y(0), "", "", zero=False))
+    bw = 262 / n * 0.3
+    for k, vals in enumerate((a, b)):
+        if line:
+            out.append(poly([(X(i), Y(v)) for i, v in enumerate(vals)], w=2, dash=None if k else "5 3"))
+            out += [D.C(X(i), Y(v), 3, w=0, fill=D.INK) for i, v in enumerate(vals)]
+        else:
+            for i, v in enumerate(vals):
+                x = X(i) + (k - 1) * bw
+                out.append(f'<rect x="{x:.1f}" y="{Y(v):.1f}" width="{bw:.1f}" height="{Y(0) - Y(v):.1f}" fill="{fills[k]}" stroke-width="1"/>')
+    for i, lab in enumerate(labels):
+        out.append(T(X(i), 213, lab, size=10))
+    for k, nm in enumerate(names):   # the key
+        y = top + 4 + k * 14
+        out.append(L(76, y, 92, y, w=2, dash=None if k else "5 3") if line else
+                   f'<rect x="76" y="{y - 5}" width="14" height="10" fill="{fills[k]}" stroke-width="1"/>')
+        out.append(T(96, y + 4, nm, size=9.5, anchor="start"))
+    if title:
+        out.append(T(189, 16, title, size=9.5, weight=700))
+    if xlab:
+        out.append(T(189, 228, xlab, size=10))
+    if ylab:
+        out.append(T(14, (top + 200) / 2, ylab, size=9).replace("<text ", '<text transform="rotate(-90 14 %g)" ' % ((top + 200) / 2), 1))
+    return svg(340, 234, "".join(out))
+
+
+def root_hair(variant):
+    """A labelled root hair (an epidermal cell with its long outgrowth): right (cell wall, cell membrane, nucleus, vacuole, cytoplasm,
+    captioned) | bare (no labels, no caption) | nocap (labelled, no caption) | walls (the hair drawn as a row of cells with cross
+    walls, labelled and captioned)."""
+    out = [P("M30,110 H300 a15,15 0 0 1 0,30 H110 V200 H30 Z", w=2.4), P("M35,115 H300 a10,10 0 0 1 0,20 H105 V195 H35 Z", w=1.1),
+           P("M42,122 H240 a6,6 0 0 1 0,12 H98 V188 H42 Z", w=1.3), D.R(115, 145, 80, 55, sw=2), D.R(195, 145, 80, 55, sw=2),
+           D.C(275, 125, 6, w=0, fill=D.INK)]
+    for x, y in [(38, 150), (38, 175), (100, 160), (70, 192), (150, 118), (200, 132), (255, 118)]:
+        out.append(D.C(x, y, 1.6, w=0, fill=D.INK))
+    if variant == "walls":
+        for x in (150, 200, 250):
+            out.append(L(x, 110, x, 140, w=2))
+        out += [D.C(130, 125, 5, w=0, fill=D.INK), D.C(180, 125, 5, w=0, fill=D.INK), D.C(228, 125, 5, w=0, fill=D.INK)]
+    lab = lambda x0, y0, x1, y1, t, anchor="start": [L(x0, y0, x1, y1, w=1), T(x1 + (4 if anchor == "start" else -4), y1 + 4, t, size=11,
+                                                                               anchor=anchor)]
+    if variant != "bare":
+        out += lab(200, 110, 215, 60, "Cell wall") + lab(150, 115, 120, 40, "Cell membrane") + lab(275, 125, 300, 80, "Nucleus")
+        out += lab(180, 130, 230, 222, "Vacuole") + lab(70, 192, 40, 222, "Cytoplasm")
+    if variant in ("right", "walls"):
+        out.append(T(180, 244, "Structure of a root hair", size=12, weight=700))
+    return svg(360, 250, "".join(out))
+
+
 def pie(values, labels, title=""):
     """A pie chart of percentages (one sector each, clockwise from 12 o'clock), each sector labelled with its name and value;
     a title above when given."""
@@ -458,6 +518,22 @@ def register(add):
           ionic([AL, N5], [("Aℓ", {}, "", "3−"), ("N", N8, "[]", "3+")])),
          ("Aℓ with three dots + N with five dots → Aℓ⁺ and [N with six dots]⁻: one electron moved, not three",
           ionic([AL, N5], [("Aℓ", {"u": 1, "d": 1}, "", "+"), ("N", {"u": 2, "l": 2, "r": 1, "d": 1}, "[]", "−")]))], 3)
+
+    # ---- Grade 10 Life Sciences P1 Nov 2024 (NW) 2.6.3: a labelled root hair (memo: caption, correct drawing, any one label)
+    LS1 = "g10-ls-p1-2024-11-nw"
+    add(LS1, "2.6.3", ("A captioned root hair: one epidermal cell with a long outgrowth, labelled cell wall, cell membrane, nucleus, vacuole "
+                       "and cytoplasm", root_hair("right")),
+        [("The root hair's outline with no labels and no caption", root_hair("bare")),
+         ("The labelled root hair with no caption", root_hair("nocap")),
+         ("A captioned, labelled root hair drawn as a row of cells with cross walls and a nucleus in each", root_hair("walls"))], 0)
+    # ---- 3.3.3: the frequency of osteoporosis by age group for men and women (memo: caption, type, labels, scale, plotting)
+    AG, MEN, WOM = ["20-35", "36-50", "51-65", "65-80"], [0, 2, 8, 26], [2, 5, 25, 35]
+    OT, OX, OY = "Frequency of osteoporosis in men and women", "Age group (years)", "Frequency of osteoporosis (%)"
+    add(LS1, "3.3.3", ("A captioned bar graph, men and women side by side in each age group, both axes labelled, a key",
+                       bars2(AG, MEN, WOM, ["Men", "Women"], 40, 5, OX, OY, OT)),
+        [("The same values joined as two line graphs", bars2(AG, MEN, WOM, ["Men", "Women"], 40, 5, OX, OY, OT, line=True)),
+         ("The bar graph with no caption and no axis labels", bars2(AG, MEN, WOM, ["Men", "Women"], 40, 5, "", "", "")),
+         ("A captioned bar graph with the men's and the women's values swapped", bars2(AG, WOM, MEN, ["Men", "Women"], 40, 5, OX, OY, OT))], 2)
 
     # ---- Grade 10 Mathematics P1 Nov 2024 (NW) 8.3: the Venn diagram of A and B (memo: 0,2709; 0,1591; 0,2109; 0,3591)
     add("g10-math-p1-2024-11-nw", "8.3",
