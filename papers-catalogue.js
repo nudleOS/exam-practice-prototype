@@ -111,7 +111,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "1da6d11e46",
+   "rev": "921307e95d",
    "source_pdf": "uploads/Geography P1 Nov 2025 Eng.pdf",
    "printed_marks": 150
   },
@@ -134,7 +134,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "a9b62ef08a",
+   "rev": "c9ab9519fd",
    "source_pdf": "uploads/Geography P2 Nov 2025 Eng.pdf",
    "printed_marks": 150
   },
@@ -157,7 +157,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "69ff401d9f",
+   "rev": "75ff4ba5c3",
    "source_pdf": "uploads/Geography P1 Nov 2024 Eng.pdf",
    "printed_marks": 150
   },
@@ -180,7 +180,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "14672e3eba",
+   "rev": "bdb9274ce9",
    "source_pdf": "uploads/Geography P2 Nov 2024 Eng.pdf",
    "printed_marks": 150
   },
@@ -203,7 +203,7 @@ window.NX_CATALOGUE = {
    "missions": 15,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "1e6e49d4e8",
+   "rev": "ee05067f25",
    "source_pdf": "uploads/Life Sciences P1 Nov 2025 Eng.pdf"
   },
   {
@@ -225,7 +225,7 @@ window.NX_CATALOGUE = {
    "missions": 14,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "faa909db7f",
+   "rev": "20ade7ab5d",
    "source_pdf": "uploads/Life Sciences P2 Nov 2025 Eng.pdf"
   },
   {
@@ -247,7 +247,7 @@ window.NX_CATALOGUE = {
    "missions": 16,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "384e133b97",
+   "rev": "6aa482eed0",
    "source_pdf": "uploads/Life Sciences P1 Nov 2024 Eng.pdf"
   },
   {
@@ -269,7 +269,7 @@ window.NX_CATALOGUE = {
    "missions": 14,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "34d4103c45",
+   "rev": "cf8da97511",
    "source_pdf": "uploads/Life Sciences P2 Nov 2024 Eng.pdf"
   },
   {
@@ -291,7 +291,7 @@ window.NX_CATALOGUE = {
    "missions": 11,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "ee78331e23",
+   "rev": "0c486a903a",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2025 Eng.pdf"
   },
   {
@@ -313,7 +313,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "4d3bbc2076",
+   "rev": "523288645f",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2025 Eng.pdf"
   },
   {
@@ -335,7 +335,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "84315ce4c4",
+   "rev": "ca2e9e81d6",
    "source_pdf": "uploads/Mathematical Literacy P1 Nov 2024 Eng.pdf"
   },
   {
@@ -357,7 +357,7 @@ window.NX_CATALOGUE = {
    "missions": 13,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "1bff9940d4",
+   "rev": "18b29c0517",
    "source_pdf": "uploads/Mathematical Literacy P2 Nov 2024 Eng.pdf"
   },
   {
@@ -379,7 +379,7 @@ window.NX_CATALOGUE = {
    "missions": 37,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "7a7552c840",
+   "rev": "11c3f7ad0d",
    "source_pdf": "uploads/Mathematics P1 Nov 2025 Eng.pdf"
   },
   {
@@ -401,7 +401,7 @@ window.NX_CATALOGUE = {
    "missions": 41,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "f4fc902ba1",
+   "rev": "1b32b9ff90",
    "source_pdf": "uploads/Mathematics P2 Nov 2025 Eng.pdf"
   },
   {
@@ -423,7 +423,7 @@ window.NX_CATALOGUE = {
    "missions": 39,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "b0553b6812",
+   "rev": "aadd38a0d6",
    "source_pdf": "uploads/Mathematics P1 Nov 2024 Eng.pdf"
   },
   {
@@ -445,7 +445,7 @@ window.NX_CATALOGUE = {
    "missions": 44,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "00526a0e28",
+   "rev": "87cd67483f",
    "source_pdf": "uploads/Mathematics P2 Nov 2024 Eng.pdf"
   },
   {
@@ -467,7 +467,7 @@ window.NX_CATALOGUE = {
    "missions": 47,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "36f562415a",
+   "rev": "d1d6724b1f",
    "source_pdf": "uploads/Physical Sciences P1 Nov 2025 Eng.pdf"
   },
   {
@@ -489,7 +489,7 @@ window.NX_CATALOGUE = {
    "missions": 34,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2025",
-   "rev": "301756ab27",
+   "rev": "a9ea50c04a",
    "source_pdf": "uploads/Physical Sciences P2 Nov 2025 Eng.pdf"
   },
   {
@@ -511,7 +511,7 @@ window.NX_CATALOGUE = {
    "missions": 43,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "87914092a5",
+   "rev": "6f2e452709",
    "source_pdf": "uploads/Physical Sciences P1 Nov 2024 Eng.pdf"
   },
   {
@@ -533,7 +533,7 @@ window.NX_CATALOGUE = {
    "missions": 37,
    "status": "ready",
    "provenance_label": "DBE question paper · November 2024",
-   "rev": "755be57941",
+   "rev": "e4efca7052",
    "source_pdf": "uploads/Physical Sciences P2 Nov 2024 Eng.pdf"
   },
   {
@@ -554,7 +554,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 18,
    "status": "ready",
-   "rev": "12735d6a2d",
+   "rev": "763add7c0a",
    "source_pdf": "uploads/provincial/g11-math-p1-2024-11-ec/MATHS P1 QP GR11 NOV2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -576,7 +576,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 20,
    "status": "ready",
-   "rev": "921258614f",
+   "rev": "22226b124a",
    "source_pdf": "uploads/provincial/g11-math-p2-2024-11-ec/MATHS P2 QP GR11 2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -598,7 +598,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 21,
    "status": "ready",
-   "rev": "3f2976a767",
+   "rev": "0b076eda65",
    "source_pdf": "uploads/provincial/g11-math-p1-2025-11-ec/MATHS P1 QP GR11 NOV 2025 ENG_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -620,7 +620,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 17,
    "status": "ready",
-   "rev": "db9cc05b06",
+   "rev": "5b0e8a7a94",
    "source_pdf": "uploads/provincial/g11-math-p2-2025-11-ec/MATHS P2 QP GR 11 2025 ENG_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -642,7 +642,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 11,
    "status": "ready",
-   "rev": "4e79888b68",
+   "rev": "5078a91e56",
    "source_pdf": "uploads/provincial/g11-ps-p1-2024-11-ec/PHYS SCIENCES  P1 QP GR11 NOV 2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -664,7 +664,7 @@ window.NX_CATALOGUE = {
    "questions": 8,
    "missions": 13,
    "status": "ready",
-   "rev": "598604c75c",
+   "rev": "00a77dc339",
    "source_pdf": "uploads/provincial/g11-ps-p2-2024-11-ec/PHYSICAL Sc. P2 QP GR11 NOV 2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -686,7 +686,7 @@ window.NX_CATALOGUE = {
    "questions": 10,
    "missions": 13,
    "status": "ready",
-   "rev": "2132ee0055",
+   "rev": "414b2efe33",
    "source_pdf": "uploads/provincial/g11-ps-p1-2025-11-ec/PHYSICAL SC P1 QP GR11 NOV 2025 ENG_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -708,7 +708,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 14,
    "status": "ready",
-   "rev": "7c3b460e15",
+   "rev": "66095fbed1",
    "source_pdf": "uploads/provincial/g11-ps-p2-2025-11-ec/PHYSICAL SC P2 QP GR11 NOVEMBER 2025 (2)_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -730,7 +730,7 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 9,
    "status": "ready",
-   "rev": "0f685f9ede",
+   "rev": "e64a1f7c79",
    "source_pdf": "uploads/provincial/g11-ml-p1-2024-11-ec/MATHS LIT P1 GR11 QP NOV 2024 ENG DD_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -752,7 +752,7 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 10,
    "status": "ready",
-   "rev": "9a87ba9c9b",
+   "rev": "10050a0ebc",
    "source_pdf": "uploads/provincial/g11-ml-p2-2024-11-ec/MATHS LIT P2 GRADE 11 NOV 2024  ENGLISH D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -774,7 +774,7 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 12,
    "status": "ready",
-   "rev": "0d49114ad9",
+   "rev": "87be61523e",
    "source_pdf": "uploads/provincial/g11-ml-p1-2025-11-ec/MATHS LITERACY P1 GR11 QP NOV2025_English_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -796,7 +796,7 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 10,
    "status": "ready",
-   "rev": "06e7f4b734",
+   "rev": "6a4c72a2ec",
    "source_pdf": "uploads/provincial/g11-ml-p2-2025-11-ec/MATHS LIT GRADE 11 NOV 2025 QPAPER (2)_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -818,7 +818,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 14,
    "status": "ready",
-   "rev": "1556303d58",
+   "rev": "6ef688f45c",
    "source_pdf": "uploads/provincial/g11-ls-p1-2024-11-ec/LIFE SCIENCES P1 GR11 QP NOV2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -840,7 +840,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 16,
    "status": "ready",
-   "rev": "f3d4434dc3",
+   "rev": "21171e946b",
    "source_pdf": "uploads/provincial/g11-ls-p2-2024-11-ec/LIFE SCIENCES P2 GR11 QP NOV2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -862,7 +862,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 14,
    "status": "ready",
-   "rev": "65da7b24aa",
+   "rev": "28818265c3",
    "source_pdf": "uploads/provincial/g11-ls-p1-2025-11-ec/LIFE SCIENCES P1 GR11 QP NOV2025_English_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -884,7 +884,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 14,
    "status": "ready",
-   "rev": "0e5b48c5b4",
+   "rev": "0ad4f36161",
    "source_pdf": "uploads/provincial/g11-ls-p2-2025-11-ec/LIFE SCIENCES P2 QP GR11 NOV 2025 ENG_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -994,7 +994,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 11,
    "status": "ready",
-   "rev": "ff8f14f50d",
+   "rev": "8672e73c77",
    "source_pdf": "uploads/provincial/g11-geo-p1-2024-11-ec/GEOGRAPHY P1 QP GR11 NOV 2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -1016,7 +1016,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 13,
    "status": "ready",
-   "rev": "a76f78abaa",
+   "rev": "9f1aba9a2f",
    "source_pdf": "uploads/provincial/g11-geo-p2-2024-11-ec/GEOGRAPHY P2 GR11 QP NOV2024 ENG D_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
   },
@@ -1038,7 +1038,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 11,
    "status": "ready",
-   "rev": "467973ff8b",
+   "rev": "eddf0a70fb",
    "source_pdf": "uploads/provincial/g11-geo-p1-2025-11-ec/GEOGRAPHY P1 QP GR11 NOV 2025 ENG_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -1060,7 +1060,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 14,
    "status": "ready",
-   "rev": "d6fcb96b37",
+   "rev": "ee75cfc2c2",
    "source_pdf": "uploads/provincial/g11-geo-p2-2025-11-ec/GEOGRAPHY P2 GR11 QP NOV2025_English_watermark.pdf",
    "provenance_label": "Eastern Cape DoE · November 2025"
   },
@@ -1082,7 +1082,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 15,
    "status": "ready",
-   "rev": "9b4c928f91",
+   "rev": "16b1d4c22d",
    "source_pdf": "uploads/provincial/g10-math-p1-2024-11-nw/15-NOVEMBER-2024-S2-GR10-MATHEMATICS-P1-QP-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1104,7 +1104,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 12,
    "status": "ready",
-   "rev": "cad1df235b",
+   "rev": "12db482531",
    "source_pdf": "uploads/provincial/g10-math-p2-2024-11-nw/19-NOVEMBER-2024-S2-GR10-MATHEMATICS-P2-QP-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1126,7 +1126,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 10,
    "status": "ready",
-   "rev": "4fcc1dbfba",
+   "rev": "caadf83933",
    "source_pdf": "uploads/provincial/g10-ps-p1-2024-11-nw/08-November-2024-S2-GR10-Physical-Sciences-QP-P1-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1148,7 +1148,7 @@ window.NX_CATALOGUE = {
    "questions": 8,
    "missions": 13,
    "status": "ready",
-   "rev": "19313152c6",
+   "rev": "7181302cef",
    "source_pdf": "uploads/provincial/g10-ps-p2-2024-11-nw/13-November-2024-NW-S2-GR10-Physical-Sciences-QP-P2-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1170,7 +1170,7 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 8,
    "status": "ready",
-   "rev": "852036a39a",
+   "rev": "3c64a94191",
    "source_pdf": "uploads/provincial/g10-ml-p1-2024-11-nw/15-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P1-ENG-QP.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1192,7 +1192,7 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 8,
    "status": "ready",
-   "rev": "a39d8fcf32",
+   "rev": "44e68948de",
    "source_pdf": "uploads/provincial/g10-ml-p2-2024-11-nw/19-NOVEMBER-2024-NW-S2-GR10-MATHEMATICAL-LITERACY-P2-ENG-QP.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1214,7 +1214,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 17,
    "status": "ready",
-   "rev": "a82f3fed13",
+   "rev": "88c0c2d0ec",
    "source_pdf": "uploads/provincial/g10-ls-p1-2024-11-nw/22-November-2024-S2-Gr10-Life-Sciences-QP-P1-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1236,7 +1236,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 15,
    "status": "ready",
-   "rev": "2f38ab382c",
+   "rev": "a66e407385",
    "source_pdf": "uploads/provincial/g10-ls-p2-2024-11-nw/11-NOVEMBER-24-S2-NW-GR10-LIFE-SCIENCES-QP-P2-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1302,7 +1302,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 13,
    "status": "ready",
-   "rev": "3f4dd94242",
+   "rev": "e29af173b9",
    "source_pdf": "uploads/provincial/g10-geo-p1-2024-11-nw/06-NOVEMBER-24-NW-GR10-S2-Gography-QP-P1-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1324,7 +1324,7 @@ window.NX_CATALOGUE = {
    "questions": 3,
    "missions": 11,
    "status": "ready",
-   "rev": "fad0bd5a33",
+   "rev": "46c9bcc80c",
    "source_pdf": "uploads/provincial/g10-geo-p2-2024-11-nw/11-November-24-NW-GR10-S2-GEOGRAPHY-QP-P2-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
   },
@@ -1346,7 +1346,7 @@ window.NX_CATALOGUE = {
    "questions": 7,
    "missions": 10,
    "status": "ready",
-   "rev": "491ac75571",
+   "rev": "1126d882e2",
    "source_pdf": "uploads/provincial/g10-math-p1-2025-11-kzn/g10-math-p1-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
   },
@@ -1368,7 +1368,7 @@ window.NX_CATALOGUE = {
    "questions": 9,
    "missions": 12,
    "status": "ready",
-   "rev": "96c644dab0",
+   "rev": "18a9303a5e",
    "source_pdf": "uploads/provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
   },
@@ -1390,7 +1390,7 @@ window.NX_CATALOGUE = {
    "questions": 8,
    "missions": 10,
    "status": "ready",
-   "rev": "a78b4f1f35",
+   "rev": "99e793782c",
    "source_pdf": "uploads/provincial/g10-ps-p1-2025-11-kzn/g10-ps-p1-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
   },
@@ -1412,7 +1412,7 @@ window.NX_CATALOGUE = {
    "questions": 7,
    "missions": 10,
    "status": "ready",
-   "rev": "42a249793b",
+   "rev": "151ac60818",
    "source_pdf": "uploads/provincial/g10-ps-p2-2025-11-kzn/g10-ps-p2-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
   },
@@ -1434,8 +1434,30 @@ window.NX_CATALOGUE = {
    "questions": 4,
    "missions": 7,
    "status": "ready",
-   "rev": "6298ab39ff",
+   "rev": "b9bb5b81ef",
    "source_pdf": "uploads/provincial/g10-ml-p1-2025-11-ecort/g10-ml-p1-2025-11-ecort QP.pdf",
+   "provenance_label": "Eastern Cape DoE (OR Tambo) · November 2025"
+  },
+  {
+   "id": "g10-ml-p2-2025-11-ecort",
+   "title": "Mathematical Literacy P2",
+   "subject": "Mathematical Literacy",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 75,
+   "duration_minutes": 60,
+   "questions": 4,
+   "missions": 6,
+   "status": "ready",
+   "rev": "a3502cc939",
+   "source_pdf": "uploads/provincial/g10-ml-p2-2025-11-ecort/g10-ml-p2-2025-11-ecort QP.pdf",
    "provenance_label": "Eastern Cape DoE (OR Tambo) · November 2025"
   }
  ]
