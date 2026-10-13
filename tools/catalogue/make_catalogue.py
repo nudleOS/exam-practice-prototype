@@ -137,6 +137,8 @@ LOWER = {
                              "provincial/g10-geo-p2-2024-11-nw/11-November-24-NW-GR10-S2-GEOGRAPHY-MG-P2-ENG.pdf"),
     "g10-math-p1-2025-11-kzn": ("provincial/g10-math-p1-2025-11-kzn/g10-math-p1-2025-11-kzn QP.pdf",
                                "provincial/g10-math-p1-2025-11-kzn/g10-math-p1-2025-11-kzn MG.pdf"),
+    "g10-math-p2-2025-11-kzn": ("provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn QP.pdf",
+                               "provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn MG.pdf"),
 }
 
 

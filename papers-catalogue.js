@@ -1349,6 +1349,28 @@ window.NX_CATALOGUE = {
    "rev": "491ac75571",
    "source_pdf": "uploads/provincial/g10-math-p1-2025-11-kzn/g10-math-p1-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
+  },
+  {
+   "id": "g10-math-p2-2025-11-kzn",
+   "title": "Mathematics P2",
+   "subject": "Mathematics",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 9,
+   "missions": 12,
+   "status": "ready",
+   "rev": "96c644dab0",
+   "source_pdf": "uploads/provincial/g10-math-p2-2025-11-kzn/g10-math-p2-2025-11-kzn QP.pdf",
+   "provenance_label": "KwaZulu-Natal DoE · November 2025"
   }
  ]
 };
