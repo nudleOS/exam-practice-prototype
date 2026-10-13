@@ -168,6 +168,16 @@ def ionic(left, right, w=470, h=110):
     return svg(w, h, "".join(out))
 
 
+def ion_row(items, w=430, h=110):
+    """Atoms or ions in a row with no arrow (a Lewis diagram of an ionic compound): items as ionic()'s, (symbol, dots, bracket, charge)."""
+    out, x = [], 24
+    for sym, dots, br, ch in items:
+        x += 34 if br else 24
+        out.append(dotsym(x, 55, sym, dots, br, ch))
+        x += 62 if br else 46
+    return svg(w, h, "".join(out))
+
+
 def profile(hr, peak, hp, labels, dotted=None, dh=None):
     """A potential energy against course of reaction graph: the reactants' level hr, the peak, the products' level hp (numbers, kJ·mol⁻¹,
     drawn to scale between 0 and the top), each labelled with labels[k] at the axis ("" for none); dotted: a second (catalysed) peak;
@@ -599,6 +609,17 @@ def register(add):
         [("An increasing curve above a dashed asymptote below the x-axis: b > 1", expo_graph(1, 2, -3)),
          ("A decreasing curve above a dashed asymptote above the x-axis: q > 0", expo_graph(1, 0.5, 1)),
          ("A decreasing curve below a dashed asymptote below the x-axis: a < 0", expo_graph(-1, 2, -1))], 0)
+
+    # ---- Grade 10 Physical Sciences P2 Nov 2025 (KZN) 4.2.2: the Lewis diagram of magnesium chloride (memo: [Cl]⁻ Mg²⁺ [Cl]⁻, each Cl with
+    # eight electrons)
+    CL8 = {"u": 2, "d": 2, "l": 2, "r": 2}
+    add("g10-ps-p2-2025-11-kzn", "4.2.2",
+        ("[Cl with eight dots]⁻ Mg²⁺ [Cl with eight dots]⁻", ion_row([("Cl", CL8, "[]", "−"), ("Mg", {}, "", "2+"), ("Cl", CL8, "[]", "−")])),
+        [("[Cl with seven dots]⁻ Mg²⁺ [Cl with seven dots]⁻: the electrons Mg gave not drawn",
+          ion_row([("Cl", {"u": 2, "d": 2, "l": 2, "r": 1}, "[]", "−"), ("Mg", {}, "", "2+"), ("Cl", {"u": 2, "d": 2, "l": 2, "r": 1}, "[]", "−")])),
+         ("Mg²⁺ with one [Cl with eight dots]⁻: one chloride ion only", ion_row([("Mg", {}, "", "2+"), ("Cl", CL8, "[]", "−")])),
+         ("[Cl with eight dots]²⁺ Mg⁻ [Cl with eight dots]²⁺: the charges swapped",
+          ion_row([("Cl", CL8, "[]", "2+"), ("Mg", {}, "", "−"), ("Cl", CL8, "[]", "2+")]))], 0)
 
     # ---- Grade 10 Mathematics P1 Nov 2024 (NW) 8.3: the Venn diagram of A and B (memo: 0,2709; 0,1591; 0,2109; 0,3591)
     add("g10-math-p1-2024-11-nw", "8.3",
