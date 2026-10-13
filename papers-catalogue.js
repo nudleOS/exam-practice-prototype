@@ -1327,6 +1327,28 @@ window.NX_CATALOGUE = {
    "rev": "fad0bd5a33",
    "source_pdf": "uploads/provincial/g10-geo-p2-2024-11-nw/11-November-24-NW-GR10-S2-GEOGRAPHY-QP-P2-ENG.pdf",
    "provenance_label": "North West DoE · November 2024"
+  },
+  {
+   "id": "g10-math-p1-2025-11-kzn",
+   "title": "Mathematics P1",
+   "subject": "Mathematics",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 100,
+   "duration_minutes": 120,
+   "questions": 7,
+   "missions": 10,
+   "status": "ready",
+   "rev": "491ac75571",
+   "source_pdf": "uploads/provincial/g10-math-p1-2025-11-kzn/g10-math-p1-2025-11-kzn QP.pdf",
+   "provenance_label": "KwaZulu-Natal DoE · November 2025"
   }
  ]
 };
