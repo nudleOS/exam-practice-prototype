@@ -431,6 +431,25 @@ def food_pyramid(levels):
     return svg(360, 222, "".join(out))
 
 
+def expo_graph(a, b, q, name="p"):
+    """A sketch of y = a·bˣ + q on unnumbered axes (x from −3 to 3, y from −6 to 6): the curve, its dashed horizontal asymptote y = q and
+    the graph's name; for 'sketch from properties' questions, where only the shape, the asymptote's side and the intercepts' signs count."""
+    X = lambda x: 180 + x * 50
+    Y = lambda y: 120 - y * 16
+    out = [L(20, 120, 340, 120, w=1.2, arrow=True), L(180, 222, 180, 14, w=1.2, arrow=True), T(334, 136, "x", size=12, italic=True),
+           T(190, 20, "y", size=12, italic=True), T(170, 134, "O", size=11), L(24, Y(q), 336, Y(q), w=1.2, dash="6 4")]
+    pts = []
+    for k in range(121):
+        x = -3 + 6 * k / 120
+        y = a * b ** x + q
+        if -6.5 <= y <= 6.5:
+            pts.append((X(x), Y(y)))
+    out.append(poly(pts, w=2.2))
+    lx, ly = pts[len(pts) // 5]
+    out.append(T(lx + 14, ly - 6, name, size=13, italic=True))
+    return svg(360, 240, "".join(out))
+
+
 def pie(values, labels, title=""):
     """A pie chart of percentages (one sector each, clockwise from 12 o'clock), each sector labelled with its name and value;
     a title above when given."""
@@ -572,6 +591,14 @@ def register(add):
          ("The bar graph with no caption and no axis labels", bars2(TT, LO, HI, ["Low light", "High light"], 10, 1, "", "", "")),
          ("A captioned bar graph with the low and high light values swapped",
           bars2(TT, HI, LO, ["Low light", "High light"], 10, 1, PX, PY, PT))], 1)
+
+    # ---- Grade 10 Mathematics P1 Nov 2025 (KZN) 5.2: p(x) = a·bˣ + q with a > 0, 0 < b < 1, q < 0 (memo: decreasing shape, the intercepts,
+    # a horizontal asymptote below the x-axis)
+    add("g10-math-p1-2025-11-kzn", "5.2",
+        ("A decreasing curve above a dashed asymptote below the x-axis, cutting both axes", expo_graph(1, 0.5, -3)),
+        [("An increasing curve above a dashed asymptote below the x-axis: b > 1", expo_graph(1, 2, -3)),
+         ("A decreasing curve above a dashed asymptote above the x-axis: q > 0", expo_graph(1, 0.5, 1)),
+         ("A decreasing curve below a dashed asymptote below the x-axis: a < 0", expo_graph(-1, 2, -1))], 0)
 
     # ---- Grade 10 Mathematics P1 Nov 2024 (NW) 8.3: the Venn diagram of A and B (memo: 0,2709; 0,1591; 0,2109; 0,3591)
     add("g10-math-p1-2024-11-nw", "8.3",
