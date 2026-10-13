@@ -1415,6 +1415,28 @@ window.NX_CATALOGUE = {
    "rev": "42a249793b",
    "source_pdf": "uploads/provincial/g10-ps-p2-2025-11-kzn/g10-ps-p2-2025-11-kzn QP.pdf",
    "provenance_label": "KwaZulu-Natal DoE · November 2025"
+  },
+  {
+   "id": "g10-ml-p1-2025-11-ecort",
+   "title": "Mathematical Literacy P1",
+   "subject": "Mathematical Literacy",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 75,
+   "duration_minutes": 60,
+   "questions": 4,
+   "missions": 7,
+   "status": "ready",
+   "rev": "6298ab39ff",
+   "source_pdf": "uploads/provincial/g10-ml-p1-2025-11-ecort/g10-ml-p1-2025-11-ecort QP.pdf",
+   "provenance_label": "Eastern Cape DoE (OR Tambo) · November 2025"
   }
  ]
 };
