@@ -19,6 +19,13 @@ them). Until that is on file, `SHOWN_LEVELS` keeps Grade 10 and 11 hidden on the
 **Gaps (none published for Grade 10 Nov 2025, searched 2026-10-12: ecexams, NW, KZN via stanmorephysics, testpapers):**
 Life Sciences P1, Life Sciences P2, Geography P2. Their stand-ins are the Eastern Cape Nov 2024 papers.
 
+**Not used: the KZN Nov 2025 Business Studies P1 and P2 (found 2026-10-16).** Both are word for word the North West Nov 2024
+papers already in the set (`g10-bs-p1-2024-11-nw`, `g10-bs-p2-2024-11-nw`): the same questions, case studies (Finah
+Supermarket, Handa Manufacturers, Primax Stores, Maria's Pizza …) and essays. Shipping them would give learners one paper
+under two years, so they are not transcribed. No other Grade 10 Business Studies Nov 2025 paper, and no Eastern Cape Nov
+2024 one, was found (searched 2026-10-16: stanmorephysics by name, testpapers, myexampapers, hlayiso). Grade 10 Business
+Studies is the two NW 2024 papers. The files stay in `uploads/provincial/` as the record.
+
 ## Every file
 
 | Paper id | File | Bytes | sha256 | URL |
@@ -152,8 +159,8 @@ Life Sciences P1, Life Sciences P2, Geography P2. Their stand-ins are the Easter
 - `g10-math-p2-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education
 - `g10-ps-p1-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education
 - `g10-ps-p2-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education
-- `g10-bs-p1-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education
-- `g10-bs-p2-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education
+- `g10-bs-p1-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education; NOT USED: the NW Nov 2024 P1 word for word
+- `g10-bs-p2-2025-11-kzn`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the KwaZulu-Natal Department of Education; NOT USED: the NW Nov 2024 P2 word for word
 - `g10-geo-p1-2025-11-ec`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the Eastern Cape Department of Education
 - `g10-ml-p1-2025-11-ecort`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the Eastern Cape Department of Education, OR Tambo district
 - `g10-ml-p2-2025-11-ecort`: re-published by Stanmore Secondary (stanmorephysics.com), a teachers' resource site; set by the Eastern Cape Department of Education, OR Tambo district
