@@ -1459,6 +1459,28 @@ window.NX_CATALOGUE = {
    "rev": "a3502cc939",
    "source_pdf": "uploads/provincial/g10-ml-p2-2025-11-ecort/g10-ml-p2-2025-11-ecort QP.pdf",
    "provenance_label": "Eastern Cape DoE (OR Tambo) · November 2025"
+  },
+  {
+   "id": "g10-geo-p1-2025-11-ec",
+   "title": "Geography P1",
+   "subject": "Geography",
+   "paper_no": 1,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2025",
+   "year": 2025,
+   "month": 11,
+   "total_marks": 134,
+   "duration_minutes": 180,
+   "questions": 3,
+   "missions": 13,
+   "status": "ready",
+   "rev": "544fd5e5ad",
+   "source_pdf": "uploads/provincial/g10-geo-p1-2025-11-ec/g10-geo-p1-2025-11-ec QP.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2025"
   }
  ]
 };
