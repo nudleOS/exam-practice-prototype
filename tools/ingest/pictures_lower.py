@@ -424,15 +424,17 @@ def root_hair(variant):
 
 
 def food_pyramid(levels):
-    """A three-level food (number) pyramid: levels top to bottom, each a list of text lines written inside its band."""
+    """A food (number or energy) pyramid of any number of levels: levels top to bottom, each a list of text lines written inside
+    its band."""
     ax, ay, by, l, r = 180, 12, 212, 10, 350
     xs = lambda y: (ax - (y - ay) / (by - ay) * (ax - l), ax + (y - ay) / (by - ay) * (r - ax))   # the sides at height y
     out = [P(f"M{ax},{ay} L{r},{by} L{l},{by} Z", w=2)]
-    cuts = [ay + (by - ay) * k / 3 for k in (1, 2)]
+    n = len(levels)
+    cuts = [ay + (by - ay) * k / n for k in range(1, n)]
     for y in cuts:
         x0, x1 = xs(y)
         out.append(L(x0, y, x1, y, w=1.6))
-    bands = [(ay, cuts[0]), (cuts[0], cuts[1]), (cuts[1], by)]
+    bands = list(zip([ay] + cuts, cuts + [by]))
     for (y0, y1), lines in zip(bands, levels):
         top = y0 == ay   # the apex band is narrow: smaller text, set lower
         mid = y0 + (y1 - y0) * (0.7 if top else 0.55)
@@ -593,6 +595,29 @@ def register(add):
          ("The line graph with no caption and no axis labels", rb("", "", "")),
          ("The axes swapped: ribosomes on the x-axis, age on the y-axis",
           plot([(b, a) for a, b in RB], 50, 40, 5, 5, RY, RX, "line", RT))], 1)
+
+    # ---- Grade 10 Life Sciences P2 Nov 2024 (EC) 2.1.5: the energy pyramid to the adder, 14% passed on (memo: heading; heather 5 500,
+    # beetle 770, shrew 108, adder 15)
+    E = "kJ/m²/year"
+    add("g10-ls-p2-2024-11-ec", "2.1.5",
+        ("Adder 15, shrew 108, beetle 770 and heather 5 500 kJ/m²/year, top to bottom",
+         food_pyramid([["Adder", "15"], ["Shrew 108 " + E], ["Beetle 770 " + E], ["Heather 5 500 " + E]])),
+        [("Heather 5 500 at the top and the adder 15 at the base: the pyramid upside down",
+          food_pyramid([["Heather", "5 500"], ["Beetle 770 " + E], ["Shrew 108 " + E], ["Adder 15 " + E]])),
+         ("Adder 3 498, shrew 4 068, beetle 4 730, heather 5 500: 14% taken away at each level, not passed on",
+          food_pyramid([["Adder", "3 498"], ["Shrew 4 068 " + E], ["Beetle 4 730 " + E], ["Heather 5 500 " + E]])),
+         ("Shrew at the top, the adder below it: the two predators swapped",
+          food_pyramid([["Shrew", "15"], ["Adder 108 " + E], ["Beetle 770 " + E], ["Heather 5 500 " + E]]))], 2)
+    # ---- 2.2.7: the mass increase of the three plants (memo: type, caption, labels with the unit, scale, the three bars)
+    PN, PI = ["Aloe", "Prickly Pear", "Spekboom"], [42, 53, 96]
+    PC, PX, PY = "Mass increase of three plants after a month", "Type of plant", "Mass increase (g)"
+    add("g10-ls-p2-2024-11-ec", "2.2.7",
+        ("A captioned bar graph: Aloe 42 g, Prickly Pear 53 g, Spekboom 96 g, equal bars, both axes labelled with the unit",
+         bars(PN, PI, 100, 10, PX, PY, PC)),
+        [("The same values joined as a line graph", bars(PN, PI, 100, 10, PX, PY, PC, line=True)),
+         ("The three bars with no caption and no axis labels", bars(PN, PI, 100, 10, "", "", "")),
+         ("The end masses plotted (842, 853 and 896 g), not the increases",
+          bars(PN, [842, 853, 896], 900, 100, PX, "Mass at the end (g)", PC))], 3)
 
     # ---- Grade 10 Life Sciences P2 Nov 2024 (NW) 1.5.4: a food pyramid of three trophic levels (memo: foxes and owls; grasshopper and
     # bird; carrot, grasses, grain)
