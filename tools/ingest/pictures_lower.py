@@ -582,6 +582,18 @@ def register(add):
          ("The bar graph with no caption and no axis labels", bars2(AG, MEN, WOM, ["Men", "Women"], 40, 5, "", "", "")),
          ("A captioned bar graph with the men's and the women's values swapped", bars2(AG, WOM, MEN, ["Men", "Women"], 40, 5, OX, OY, OT))], 2)
 
+    # ---- Grade 10 Life Sciences P1 Nov 2024 (EC) 3.6.3: the number of ribosomes against the age of the leaf (memo: caption, type,
+    # labels with units, scale, the five points plotted)
+    RB = [(5, 17), (15, 32), (20, 40), (30, 45), (35, 45)]
+    RT, RX, RY = "Number of ribosomes in leaves of different ages", "Age of the leaf (days)", "Ribosomes (per 10 cm²)"
+    rb = lambda title=RT, xl=RX, yl=RY: plot(RB, 40, 50, 5, 5, xl, yl, "line", title)
+    add("g10-ls-p1-2024-11-ec", "3.6.3",
+        ("A captioned line graph: (5 ; 17), (15 ; 32), (20 ; 40), (30 ; 45), (35 ; 45) joined, both axes labelled with units", rb()),
+        [("The same values drawn as a bar graph", bars(["5", "15", "20", "30", "35"], [17, 32, 40, 45, 45], 50, 5, RX, RY, RT)),
+         ("The line graph with no caption and no axis labels", rb("", "", "")),
+         ("The axes swapped: ribosomes on the x-axis, age on the y-axis",
+          plot([(b, a) for a, b in RB], 50, 40, 5, 5, RY, RX, "line", RT))], 1)
+
     # ---- Grade 10 Life Sciences P2 Nov 2024 (NW) 1.5.4: a food pyramid of three trophic levels (memo: foxes and owls; grasshopper and
     # bird; carrot, grasses, grain)
     LS2 = "g10-ls-p2-2024-11-nw"
