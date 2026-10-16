@@ -1525,6 +1525,28 @@ window.NX_CATALOGUE = {
    "rev": "77f64f6989",
    "source_pdf": "uploads/provincial/g10-ls-p2-2024-11-ec/g10-ls-p2-2024-11-ec QP.pdf",
    "provenance_label": "Eastern Cape DoE · November 2024"
+  },
+  {
+   "id": "g10-geo-p2-2024-11-ec",
+   "title": "Geography P2",
+   "subject": "Geography",
+   "paper_no": 2,
+   "qualification": "high_school",
+   "curriculum": "CAPS",
+   "grade": 10,
+   "level": "G10",
+   "level_detail": "Grade 10",
+   "sitting": "November 2024",
+   "year": 2024,
+   "month": 11,
+   "total_marks": 139,
+   "duration_minutes": 180,
+   "questions": 3,
+   "missions": 13,
+   "status": "ready",
+   "rev": "c33d795e9d",
+   "source_pdf": "uploads/provincial/g10-geo-p2-2024-11-ec/g10-geo-p2-2024-11-ec QP.pdf",
+   "provenance_label": "Eastern Cape DoE · November 2024"
   }
  ]
 };
