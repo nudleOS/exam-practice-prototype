@@ -578,7 +578,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-card { --sc: #93a4d6; --sc-rgb: 147, 164, 214; position: relative; flex: none; width: 150px; height: 280px; padding: 0; overflow: hidden; scroll-snap-align: start;
   height: clamp(280px, calc(100dvh - 250px), 460px);   /* a phone's cards fill the screen below the title: no empty half */
   border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.06); color: #ffffff; font: inherit; text-align: left; cursor: pointer;
-  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.45), transparent 70%), linear-gradient(180deg, #0a1f4a, #04132e);
+  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, rgba(10, 31, 74, 0.62), rgba(4, 19, 46, 0.84));
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);   /* frosted: the companion behind the cards shows through, softly */
   transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
 .hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 .hm-card > .hm-art { position: absolute; bottom: -6px; left: 50%; height: 88%; width: auto; transform: translateX(-50%); opacity: 0.9; pointer-events: none;
@@ -684,10 +685,10 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-pick-guide > b { display: block; color: #81b1ff; }
 .hm-pick:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (min-width: 600px) {
-  .hm-bgbot { left: 0; bottom: -150px; width: 33%; height: calc(100% + 220px); }   /* never up into the top bar or over the logo */
+  .hm-bgbot { left: 6%; bottom: -150px; width: 40%; height: calc(100% + 220px); }   /* under the first cards: behind the row; never up into the top bar */
   .hm-choose > .hm-kick { margin-left: 33%; }
   .hm-deck { margin-left: 33%; margin-right: 0; }
-  .hm-pick-guide { left: 17%; top: -62px; max-width: 200px; font-size: 13px; }
+  .hm-pick-guide { left: 2%; top: -40px; max-width: 190px; font-size: 13px; border-radius: 16px 16px 4px 16px; }
   .hm-headblock { align-items: flex-start !important; padding-left: calc(20px + (100% - 40px) * 0.33) !important; padding-right: 20px !important; }   /* over the home's inline styles */
   .hm-headblock > h1 { text-align: left !important; }
 }
@@ -727,6 +728,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 }
 /* desktop: the cards grow with the screen's height, so the page ends in a calm margin, not a void (2026-10-25) */
 @media (min-width: 1100px) { .hm-card { height: clamp(340px, calc(100dvh - 330px), 440px); } }
+/* a tablet's cards wrap to two rows: a wider (so taller) companion fills the left instead of leaving its top half empty */
+@media (min-width: 600px) and (max-width: 1099px) { .hm-bgbot { left: -6%; width: 60%; } }
 
 /* the arrow at the cards' end (Murci 2026-10-25): where the cards slide (a phone today: all five fit on a tablet or a desktop), a
    round button at their right end nudges 4 px the way they slide; a tap slides one card on; at the last card it fades away */
