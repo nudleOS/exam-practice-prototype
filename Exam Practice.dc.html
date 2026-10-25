@@ -98,11 +98,11 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=76">
+  <link rel="stylesheet" href="nx-map.css?v=78">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
-<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; min-height:100svh; position:relative; overflow-x:clip; background:radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
+<div data-screen-label="{{ screenLabel }}" style="min-height:100vh; min-height:100svh; position:relative; overflow-x:clip; background:linear-gradient(rgba(0,0,0,var(--scr-dim,0)), rgba(0,0,0,var(--scr-dim,0))), radial-gradient(900px 520px at 50% -10%, rgba(0,104,248,0.12), transparent 70%), radial-gradient(1100px 560px at 50% 112%, rgba(30,70,255,0.16), transparent 65%), var(--bg)">
   <p aria-live="polite" style="position:absolute; width:1px; height:1px; margin:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap">{{ srLive }}</p>
 
   <sc-if value="{{ mapPopOn }}" hint-placeholder-val="{{ false }}">
@@ -225,8 +225,6 @@
           <sc-if value="{{ hmHasNote }}" hint-placeholder-val="{{ false }}"><p class="lv-err hm-note" role="alert">{{ hmNote }}</p></sc-if>
           <!-- the companion stands in the page's first quarter, the cards start beside it (Murci 2026-10-25) -->
           <img class="hm-bgbot" src="assets/home-robot.webp" alt="" aria-hidden="true" decoding="async">
-          <!-- Surprise me (Murci picked it 2026-10-25, of three placements): the companion offers to pick a paper -->
-          <button type="button" class="hm-pick hm-pick-guide" data-hmsurprise="true" onClick="{{ hmSurprise }}">Not sure where to start? <b>Let me pick a paper</b></button>
           <span class="pm-kicker hm-kick">Choose an industry</span>
           <div class="hm-deckwrap">
           <div class="hm-deck" data-hmdeck="true" onScroll="{{ hmDeckScroll }}">
@@ -435,33 +433,39 @@
         </div>
         <!-- the industry page (Murci 2026-10-25): the professional at work, the map as a small box beside them (it opens the road in a
              centred modal), then the industry's subjects with their papers; a paper's details open in place under its row -->
-        <section class="ind" data-ind="true" style="--ic:{{ indC }}; --ic-rgb:{{ indRgb }}" aria-labelledby="ind-name">
+        <section class="ind" data-ind="true" aria-labelledby="ind-name">
           <div class="ind-hero">
             <figure class="ind-pro">
               <img class="ind-pro-media" src="assets/home-robot.webp" alt="" decoding="async">
               <figcaption class="ind-pro-cap">A professional at work · video coming</figcaption>
             </figure>
             <button type="button" class="ind-mapbox" data-indmap="true" onClick="{{ indMapGo }}" aria-haspopup="dialog">
-              <svg class="ind-mapbox-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M18 78 H58 C72 78 72 58 86 58 H102 M102 58 C112 58 112 38 102 38 H38 C24 38 24 18 38 18 H60" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"></path><circle cx="18" cy="78" r="7"></circle><circle cx="58" cy="78" r="7"></circle><circle cx="102" cy="58" r="7"></circle><circle cx="38" cy="38" r="7"></circle><path d="M60 8h10v6a5 5 0 0 1-10 0z" fill="currentColor"></path></svg>
+              <svg class="ind-mapbox-art" viewBox="0 0 160 120" aria-hidden="true"><path d="M68 16 H48 Q40 16 40 24 V50 H120 Q136 50 136 66 V76 Q136 92 120 92 H40 Q24 92 24 104 V112" fill="none" stroke="rgba(147,164,214,0.55)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path><circle cx="80" cy="16" r="12" fill="#03122c" stroke="rgba(245,196,67,0.3)" stroke-width="1.5"></circle><path d="M75 10h10v4a5 5 0 0 1-10 0z M80 19v3 M76.5 23h7" fill="none" stroke="rgba(245,196,67,0.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="40" cy="50" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M37.5 46v8l6.5-4z" fill="#93a4d6"></path><circle cx="120" cy="50" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M117.5 46v8l6.5-4z" fill="#93a4d6"></path><circle cx="40" cy="92" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M37.5 88v8l6.5-4z" fill="#93a4d6"></path><circle cx="120" cy="92" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M117.5 88v8l6.5-4z" fill="#93a4d6"></path><circle cx="24" cy="112" r="4" fill="#06132f" stroke="rgba(147,164,214,0.85)" stroke-width="2"></circle></svg>
               <b class="ind-mapbox-t">Your path</b>
               <span class="ind-mapbox-s">{{ indPaperCount }} papers · open the map</span>
             </button>
           </div>
           <div class="ind-intro">
-            <span class="pm-ico ind-ico" data-icon="{{ indIcon }}" style="--sc:{{ indC }}; --sc-rgb:{{ indRgb }}" aria-hidden="true"></span>
+            <span class="pm-ico ind-ico" data-icon="{{ indIcon }}" aria-hidden="true"></span>
             <h1 class="ind-name" id="ind-name">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
             <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
           </div>
           <div class="ind-secs">
             <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="2">
-              <section class="ind-sec" style="--sc:{{ sec.c }}; --sc-rgb:{{ sec.rgb }}">
-                <div class="ind-sec-head">
-                  <span class="pm-ico" data-icon="{{ sec.icon }}" aria-hidden="true"></span>
-                  <span class="ind-sec-txt"><h2 class="ind-sec-name">{{ sec.name }}</h2><span class="ind-tag" data-kind="{{ sec.tagKind }}">{{ sec.tag }}</span></span>
-                </div>
+              <section class="ind-sec" data-open="{{ sec.open }}">
+                <h2 class="ind-sec-h">
+                  <button type="button" class="ind-sec-head" aria-expanded="{{ sec.open }}" onClick="{{ sec.toggle }}">
+                    <span class="pm-ico" data-icon="{{ sec.icon }}" aria-hidden="true"></span>
+                    <span class="ind-sec-txt">
+                      <span class="ind-sec-name">{{ sec.name }}</span>
+                      <span class="ind-sec-meta"><span class="ind-tag" data-kind="{{ sec.tagKind }}">{{ sec.tag }}</span><span class="ind-sec-sum">{{ sec.sum }}</span></span>
+                    </span>
+                    <svg class="ind-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                  </button>
+                </h2>
+                <sc-if value="{{ sec.isOpen }}" hint-placeholder-val="{{ false }}">
                 <sc-if value="{{ sec.hasNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note">{{ sec.note }}</p></sc-if>
-                <sc-if value="{{ sec.noPapers }}" hint-placeholder-val="{{ false }}"><p class="ind-note">No papers at this level yet.</p></sc-if>
                 <ul class="ind-papers">
                   <sc-for list="{{ sec.papers }}" as="pp" hint-placeholder-count="2">
                     <li class="ind-paper" data-indpaper="{{ pp.id }}" data-state="{{ pp.state }}">
@@ -488,6 +492,7 @@
                     </li>
                   </sc-for>
                 </ul>
+                </sc-if>
               </section>
             </sc-for>
           </div>
@@ -3025,8 +3030,8 @@ class Component extends DCLogic {
   }
   // a paper picked on the road (the map modal) or by Surprise me: the modal closes and the paper's details open IN PLACE on the
   // industry page, scrolled into view (Murci 2026-10-25: no paper sheet)
-  pmOpenPaper(id) {
-    this.setState({ pmOpen: id, pmMapOpen: false }, () => { const row = document.querySelector('[data-indpaper="' + id + '"]');
+  pmOpenPaper(id) { const p = this.pmAllPapers().filter(q => q.id === id)[0];
+    this.setState({ pmOpen: id, pmMapOpen: false, ...(p ? { indFold: { ...(this.state.indFold || {}), [p.subject]: true } } : {}) }, () => { const row = document.querySelector('[data-indpaper="' + id + '"]');
       if (row) row.scrollIntoView({ behavior: this.state.reduced ? "auto" : "smooth", block: "center" });
       const h = document.getElementById("pm-title"); if (h) h.focus({ preventScroll: true }); }); }
   // design preview: Business Studies with Nov 2024 P1 done (gold) and P2 racing at 40%; replays each time it is picked
@@ -3198,9 +3203,15 @@ class Component extends DCLogic {
     const sel = all.filter(x => x.p.id === s.pmOpen)[0] || null, g = sel && sel.g, p = sel && sel.p;
     // the industry page: its subjects (each tagged as the mapping states it), their papers newest first, and the map modal
     const closeMap = () => this.setState({ pmMapOpen: false }, () => { const t = document.querySelector("[data-indmap]"); if (t) t.focus(); });
+    const folds = s.indFold || {};
     const indSecs = ind.subjects.map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
       const ps = L.papers.filter(q => q.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
-      return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, tag: SUBJECT_TAG[sb[1]], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2], noPapers: !ps.length,
+      // a subject folds (Murci 2026-10-25: "not so cluttered"); by default the one holding the open or the under-way paper is open
+      const going = ps.filter(x => x.state === "going").length, done = ps.filter(x => x.state === "done").length;
+      const open = n in folds ? folds[n] : ps.some(x => x.p.id === s.pmOpen || x.state === "going");
+      return { name: n, icon: look.icon, tag: SUBJECT_TAG[sb[1]], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2],
+        sum: !ps.length ? "No papers at this level yet" : ps.length + (ps.length === 1 ? " paper" : " papers") + (going ? " · " + going + " under way" : "") + (done ? " · " + done + " done" : ""),
+        open: open ? "true" : "false", isOpen: open, toggle: () => this.setState({ indFold: { ...folds, [n]: !open } }),
         papers: ps.map(x => { const open = s.pmOpen === x.p.id;
           return { id: x.p.id, name: x.name, meta: x.meta, state: x.state, open: open ? "true" : "false", isOpen: open,
             tap: () => this.setState({ pmOpen: open ? null : x.p.id }) }; }) }; });
@@ -4799,8 +4810,6 @@ class Component extends DCLogic {
     const count = (q, l) => all.filter(p => p.qualification === q && p.level === l).length;
     // the cards are industries (Murci 2026-10-25): a card opens its industry's page, the second page
     const go = key => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false, hmDeckEnd: false }); this.pmGoMap(); };   /* back home, the deck starts at its first card again: so does the arrow */
-    const indOf = n => INDUSTRIES.filter(x => x.subjects.some(sb => sb[0] === n))[0];
-    const fresh = L.papers.filter(p => { const g = this.pmProgress(p); return g && !g.done && indOf(p.subject); });
     return {
       hmFieldsOn: STUDY_QUALS.length > 1,
       hmFields: STUDY_QUALS.map(q => ({ label: q.label, on: q.id === lv.qualification ? "true" : "false",
@@ -4826,11 +4835,7 @@ class Component extends DCLogic {
       hmDeckScroll: e => { const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
         if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); },
       hmDeckNext: () => { const d = document.querySelector("[data-hmdeck]"), c = d && d.querySelector(".hm-card");
-        if (d) d.scrollBy({ left: c ? c.offsetWidth + 12 : 160, behavior: s.reduced ? "auto" : "smooth" }); },
-      // Surprise me: the companion's offer on the home (Murci 2026-10-25), an unfinished paper opened on its industry page
-      hmSurprise: () => { if (!fresh.length) { this.setState({ hmNote: "Every paper here is done. Pick an industry to practise one again." }); return; }
-        const p = fresh[Math.floor(Math.random() * fresh.length)];
-        this.pmPickSubj(p.subject); this.setState({ pmInd: indOf(p.subject).key, hmOpen: null, hmNote: "", pmMapOpen: false, hmDeckEnd: false }); this.pmGoMap(() => this.pmOpenPaper(p.id)); } };
+        if (d) d.scrollBy({ left: c ? c.offsetWidth + 12 : 160, behavior: s.reduced ? "auto" : "smooth" }); } };
   }
 
   // ── Topic drills (brief 10): one topic, six parts, recipes and unseen parts before repeats.

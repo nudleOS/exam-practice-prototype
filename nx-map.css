@@ -623,20 +623,29 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-pro > .ind-pro-cap { position: absolute; left: 0; bottom: 0; font-size: 11.5px; color: #8fa0d6; }
 .ind-mapbox { align-self: start; min-height: 150px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 4px; padding: 12px; border-radius: 18px; text-align: left; cursor: pointer;
   border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); color: #eef3ff; font: inherit; }
-.ind-mapbox > .ind-mapbox-art { width: 100%; height: auto; margin-bottom: auto; color: var(--ic); fill: rgba(var(--ic-rgb), 0.55); }
+.ind-mapbox > .ind-mapbox-art { width: 100%; height: auto; margin-bottom: auto; }   /* the real map in small: its colours are its own */
 .ind-mapbox > .ind-mapbox-t { font-size: 14px; font-weight: 800; }
 .ind-mapbox > .ind-mapbox-s { font-size: 11.5px; line-height: 1.35; color: #b9cdf0; }
 .ind-mapbox:focus-visible, .ind-prow:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .ind-intro { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; row-gap: 4px; align-items: center; }
-.ind-intro > .ind-ico { grid-row: 1; }
+.ind-intro > .ind-ico { grid-row: 1; --sc: var(--ic); --sc-rgb: var(--ic-rgb); }   /* the page's one accent (no industry hue) */
 .ind-intro > .ind-name { grid-row: 1; margin: 0; font-size: clamp(22px, 3vw, 32px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #eef3ff; }
 .ind-intro > .ind-blurb, .ind-intro > .ind-careers { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: #b8c4ea; }
 .ind-careers > .ind-k { margin-right: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ic); }
-.ind-secs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px 40px; }
+.ind-secs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }   /* one list of folding subjects */
 .ind-sec, .ind-after { --sc: #93a4d6; --sc-rgb: 147, 164, 214; display: flex; flex-direction: column; gap: 8px; }
-.ind-sec-head { display: flex; align-items: center; gap: 12px; }
-.ind-sec-txt { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
-.ind-sec-name { margin: 0; font-size: 17px; font-weight: 800; color: var(--sc); }
+.ind-sec-h { margin: 0; }
+.ind-sec-head { box-sizing: border-box; width: 100%; min-height: 68px; display: grid; grid-template-columns: 40px minmax(0, 1fr) 20px; align-items: center; gap: 12px;
+  padding: 10px 2px; border: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.ind-sec-head:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.ind-sec-txt { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; }
+.ind-sec-txt > .ind-sec-name { font-size: 16.5px; font-weight: 800; color: #eef3ff; }
+.ind-sec-txt > .ind-sec-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.ind-sec-meta > .ind-sec-sum { font-size: 12.5px; font-weight: 500; color: #9fb0dd; }
+.ind-sec-head > .ind-chev { color: #8fa0d6; transition: transform 200ms; }
+.ind-sec-head[aria-expanded="true"] > .ind-chev { transform: rotate(180deg); }
+.ind-sec[data-open="true"] { padding-bottom: 10px; }
+.ind-after > .ind-sec-name { margin: 0; font-size: 16.5px; font-weight: 800; color: #eef3ff; }
 .ind-tag { padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; border: 1px solid rgba(var(--sc-rgb), 0.55); color: #dfe6ff; }
 .ind-tag[data-kind="required"] { background: rgba(var(--sc-rgb), 0.22); border-color: transparent; }
 .ind-tag[data-kind="unverified"], .ind-tag[data-kind="some"] { border-style: dashed; color: #b9cdf0; }
@@ -661,17 +670,18 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   .ind-mapbox { min-height: 200px; padding: 16px; }   /* a SMALL box beside the professional (Murci 2026-10-25), never their full height */
   .ind-mapbox > .ind-mapbox-t { font-size: 16px; }
-  .ind-secs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ind-sec > .ind-papers, .ind-sec > .ind-note { margin-left: 52px; }   /* the papers line up with their subject's name */
 }
 @media (min-width: 1100px) {
   .ind-pro { height: 420px; }
 }
-@media (prefers-reduced-motion: reduce) { .ind-prow > .ind-chev { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ind-prow > .ind-chev, .ind-sec-head > .ind-chev { transition: none; } }
 
 /* -- Home, 2026-10-25 (Murci): the cards start a quarter into the page and the companion stands in that first quarter as the page's
    backdrop (on a phone it is wider and the deck scrolls beside it). A mouse opens a card by hovering and a click goes in; on a
    tablet-width window hover only reveals the text (widening there would wrap the card away from the pointer). A touch screen
-   taps to open, then to go. "Surprise me" is no card: the companion offers to pick a paper (Murci picked it of three placements). */
+   taps to open, then to go. The page is a little darker than the other screens (Murci 2026-10-25); the companion makes no offer. */
+[data-screen-label="01 Pick"] { --scr-dim: 0.32; }   /* read by the screen wrapper's inline background (Exam Practice.dc.html) */
 .hm-choose { position: relative; max-width: none; }
 .hm-bgbot { position: absolute; left: -8%; bottom: -90px; width: 60%; height: calc(100% + 210px); object-fit: contain; object-position: 50% 100%;
   pointer-events: none; z-index: 0; opacity: 0.42; filter: saturate(0.55) brightness(0.9);
@@ -679,22 +689,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-choose > .hm-kick, .hm-choose > .hm-deckwrap, .hm-choose > .hm-note { position: relative; z-index: 1; }
 .hm-choose > .hm-kick { margin-left: 28%; }
 .hm-deck { margin-left: 28%; margin-right: -16px; padding-left: 0; scroll-padding-left: 0; }
-.hm-pick { font: inherit; color: #dfe6ff; cursor: pointer; }
-.hm-pick-guide { position: absolute; z-index: 2; left: 2%; top: -112px; max-width: min(46%, 230px); padding: 10px 12px; border-radius: 16px 16px 16px 4px;
-  border: 1px solid rgba(129, 177, 255, 0.4); background: rgba(6, 26, 58, 0.94); font-size: 12.5px; line-height: 1.4; text-align: left; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4); }
-.hm-pick-guide > b { display: block; color: #81b1ff; }
-.hm-pick:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (min-width: 600px) {
   .hm-bgbot { left: 6%; bottom: -150px; width: 40%; height: calc(100% + 220px); }   /* under the first cards: behind the row; never up into the top bar */
   .hm-choose > .hm-kick { margin-left: 33%; }
   .hm-deck { margin-left: 33%; margin-right: 0; }
-  .hm-pick-guide { left: 2%; top: -40px; max-width: 190px; font-size: 13px; border-radius: 16px 16px 4px 16px; }
   .hm-headblock { align-items: flex-start !important; padding-left: calc(20px + (100% - 40px) * 0.33) !important; padding-right: 20px !important; }   /* over the home's inline styles */
   .hm-headblock > h1 { text-align: left !important; }
 }
 @media (min-width: 600px) and (max-width: 1099px) {
-  /* a tablet's companion stands low beside two rows of cards: its offer sits in the flow under the title, on the content's left edge */
-  .hm-pick-guide { position: relative; left: auto; top: auto; align-self: flex-start; margin-left: 33%; max-width: 300px; }
   .hm-card { width: calc((100% - 24px) / 3); }
   .hm-card[aria-expanded="true"] { width: calc((100% - 12px) * 2 / 3); }
 }
@@ -723,8 +725,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-fact > b { color: #eef3ff; }
 @media (max-width: 599px) {
   .pm-cont-txt > .pm-cont-k { display: none; }
-  /* a phone's companion stands low beside the cards: its offer sits in the flow at the quarter line, never on the top bar */
-  .hm-pick-guide { position: relative; left: auto; top: auto; align-self: flex-start; margin-left: 28%; max-width: 72%; box-sizing: border-box; }
 }
 /* desktop: the cards grow with the screen's height, so the page ends in a calm margin, not a void (2026-10-25) */
 @media (min-width: 1100px) { .hm-card { height: clamp(340px, calc(100dvh - 330px), 440px); } }
@@ -766,11 +766,12 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-pro > .ind-pro-cap { display: none; }   /* the placeholder caption has no room beside the map box */
   .ind .ind-intro { align-self: end; max-width: 560px; padding: 0 18px 22px; }
   .ind .ind-intro > .ind-name { font-size: clamp(26px, 4vw, 42px); }
-  .ind .ind-mapbox { align-self: start; justify-self: end; margin: 14px; width: 132px; min-height: 0; padding: 10px; }
+  .ind .ind-mapbox { align-self: start; justify-self: end; margin: 64px 14px 14px; width: 132px; min-height: 0; padding: 10px; }   /* a little lower (Murci 2026-10-25) */
   .ind .ind-mapbox > .ind-mapbox-art { margin-bottom: 4px; }
 }
 @media (min-width: 600px) {
   .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "pro map" "intro intro" "secs secs" "after after"; column-gap: 16px; }
+  .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */
 }
 @media (min-width: 600px) and (max-width: 1099px) {
   .ind-pro > .ind-pro-cap { display: none; }   /* a tablet's stage is too narrow: the placeholder caption ran into the feet (142 px free, 218 needed) */
