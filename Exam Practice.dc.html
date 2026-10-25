@@ -5668,7 +5668,7 @@ class Component extends DCLogic {
     const locked = closed || s.marking;
     const primaryLabel = !part ? "" : s.marking ? "Being marked…" : closed ? (s.pi < (mission ? mission.parts.length - 1 : 0) ? "Next" : "Finish")
       : mode === "draw" ? "I've drawn it" : reply && reply.waiting ? "Next" : "Check";
-    const canCheck = !this.gateOpen(part) ? false : mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
+    const canCheck = !part || !this.gateOpen(part) ? false : mode === "steps" ? part.steps.some(st => String(s.inputs[st.id] || "").trim())
       : mode === "list" ? s.list.some(x => String(x || "").trim()) : mode === "rubric" ? !!s.written.trim() : mode === "insight" ? this.insightReady(part) : mode === "match" ? part.match.left.every((_, l) => s.matchPairs[l] != null)
       : mode === "mcq" ? s.pick != null : mode === "pickn" ? s.picks.length === (part.count || 1) : mode === "order" ? s.orderSeq.length === (part.options || []).length
       : mode === "lettername" ? !!(s.letter && String(s.lname).trim()) : mode === "letternames" ? this.lrowsReady(s) : mode === "term" ? !!String(s.term).trim() : mode === "num" ? !!String(s.numVal).trim()
