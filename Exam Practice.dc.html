@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=64">
+  <link rel="stylesheet" href="nx-map.css?v=67">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -186,7 +186,7 @@
       </div>
       </sc-if>
 
-      <div data-key="{{ homeKey }}" style="grid-area:head; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ headPad }}; animation:rise 520ms cubic-bezier(0.22,0.61,0.36,1) both">
+      <div class="hm-headblock" data-key="{{ homeKey }}" style="grid-area:head; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; padding:{{ headPad }}; animation:rise 520ms cubic-bezier(0.22,0.61,0.36,1) both">
         <h1 style="margin:0; font-size:{{ homeH1 }}; font-weight:800; letter-spacing:-0.03em; line-height:1.05; text-align:center; text-wrap:balance; max-width:760px">{{ homeTitle }}</h1>
         <sc-if value="{{ hasHomeSub }}" hint-placeholder-val="{{ true }}">
           <p style="margin:0; font-size:{{ homeSubSize }}; line-height:1.55; color:var(--text2); text-align:center; text-wrap:pretty; max-width:520px">{{ homeSub }}</p>
@@ -228,12 +228,12 @@
           <!-- Surprise me (Murci picked it 2026-10-25, of three placements): the companion offers to pick a paper -->
           <button type="button" class="hm-pick hm-pick-guide" data-hmsurprise="true" onClick="{{ hmSurprise }}">Not sure where to start? <b>Let me pick a paper</b></button>
           <span class="pm-kicker hm-kick">Choose an industry</span>
-          <div class="hm-deck" data-hmdeck="true">
+          <div class="hm-deckwrap">
+          <div class="hm-deck" data-hmdeck="true" onScroll="{{ hmDeckScroll }}">
             <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="5">
               <button type="button" class="hm-card" data-hmcard="{{ c.key }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
                 <img class="hm-art" src="assets/home-robot.webp" alt="" loading="lazy" decoding="async">
                 <span class="hm-shade" aria-hidden="true"></span>
-                <span class="pm-ico hm-cico" data-icon="{{ c.icon }}" aria-hidden="true"></span>
                 <span class="hm-ctext">
                   <b class="hm-cname">{{ c.name }}</b>
                   <span class="hm-more">
@@ -245,6 +245,9 @@
                 </span>
               </button>
             </sc-for>
+          </div>
+          <!-- the way the cards slide (Murci 2026-10-25): an arrow at their end, nudging gently; it slides one card on, and fades at the last -->
+          <button type="button" class="hm-next" data-hmnext="true" data-end="{{ hmDeckEnd }}" onClick="{{ hmDeckNext }}" aria-label="More industries"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
           </div>
         </div>
       </div>
@@ -4795,7 +4798,7 @@ class Component extends DCLogic {
       this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); };
     const count = (q, l) => all.filter(p => p.qualification === q && p.level === l).length;
     // the cards are industries (Murci 2026-10-25): a card opens its industry's page, the second page
-    const go = key => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false }); this.pmGoMap(); };
+    const go = key => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false, hmDeckEnd: false }); this.pmGoMap(); };   /* back home, the deck starts at its first card again: so does the arrow */
     const indOf = n => INDUSTRIES.filter(x => x.subjects.some(sb => sb[0] === n))[0];
     const fresh = L.papers.filter(p => { const g = this.pmProgress(p); return g && !g.done && indOf(p.subject); });
     return {
@@ -4818,10 +4821,16 @@ class Component extends DCLogic {
           tap: () => { if (open || window.matchMedia("(hover: hover) and (pointer: fine)").matches) { go(ind.key); return; }
             this.setState({ hmOpen: ind.key, hmNote: "" }, () => { const el = document.querySelector('[data-hmcard="' + ind.key + '"]');   /* an opened card is read whole: in view after its width grows */
               if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; }),
+      // the arrow at the cards' end: slides one card on; at the last card it fades (the deck reports its scroll)
+      hmDeckEnd: s.hmDeckEnd ? "true" : "false",
+      hmDeckScroll: e => { const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
+        if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); },
+      hmDeckNext: () => { const d = document.querySelector("[data-hmdeck]"), c = d && d.querySelector(".hm-card");
+        if (d) d.scrollBy({ left: c ? c.offsetWidth + 12 : 160, behavior: s.reduced ? "auto" : "smooth" }); },
       // Surprise me: the companion's offer on the home (Murci 2026-10-25), an unfinished paper opened on its industry page
       hmSurprise: () => { if (!fresh.length) { this.setState({ hmNote: "Every paper here is done. Pick an industry to practise one again." }); return; }
         const p = fresh[Math.floor(Math.random() * fresh.length)];
-        this.pmPickSubj(p.subject); this.setState({ pmInd: indOf(p.subject).key, hmOpen: null, hmNote: "", pmMapOpen: false }); this.pmGoMap(() => this.pmOpenPaper(p.id)); } };
+        this.pmPickSubj(p.subject); this.setState({ pmInd: indOf(p.subject).key, hmOpen: null, hmNote: "", pmMapOpen: false, hmDeckEnd: false }); this.pmGoMap(() => this.pmOpenPaper(p.id)); } };
   }
 
   // ── Topic drills (brief 10): one topic, six parts, recipes and unseen parts before repeats.

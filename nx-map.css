@@ -577,16 +577,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-deck::-webkit-scrollbar { display: none; }
 .hm-card { --sc: #93a4d6; --sc-rgb: 147, 164, 214; position: relative; flex: none; width: 150px; height: 280px; padding: 0; overflow: hidden; scroll-snap-align: start;
   height: clamp(280px, calc(100dvh - 250px), 460px);   /* a phone's cards fill the screen below the title: no empty half */
-  border-radius: 18px; border: 1px solid rgba(var(--sc-rgb), 0.35); color: #ffffff; font: inherit; text-align: left; cursor: pointer;
+  border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.06); color: #ffffff; font: inherit; text-align: left; cursor: pointer;
   background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.45), transparent 70%), linear-gradient(180deg, #0a1f4a, #04132e);
   transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
-.hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 0 0 2px var(--sc), 0 18px 40px rgba(0, 0, 0, 0.45); }
+.hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 .hm-card > .hm-art { position: absolute; bottom: -6px; left: 50%; height: 88%; width: auto; transform: translateX(-50%); opacity: 0.9; pointer-events: none;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); transition: left 320ms, opacity 320ms; }
 .hm-card[aria-expanded="true"] > .hm-art { left: 74%; opacity: 0.55; }
 .hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 18, 44, 0.1) 30%, rgba(3, 18, 44, 0.92) 100%); }
-.hm-card > .hm-cico { position: absolute; top: 12px; left: 12px; width: 34px; height: 34px; border-radius: 10px; }
-.hm-card > .hm-cico::after { inset: 8px; }
 .hm-card > .hm-ctext { position: absolute; left: 12px; right: 12px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
 .hm-ctext > .hm-cname { font-size: 16px; font-weight: 700; line-height: 1.2; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
 .hm-ctext > .hm-more { display: none; flex-direction: column; align-items: flex-start; gap: 3px; }
@@ -676,29 +674,35 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    tablet-width window hover only reveals the text (widening there would wrap the card away from the pointer). A touch screen
    taps to open, then to go. "Surprise me" is no card: the companion offers to pick a paper (Murci picked it of three placements). */
 .hm-choose { position: relative; max-width: none; }
-.hm-bgbot { position: absolute; left: -2%; bottom: 0; width: 42%; height: calc(100% + 120px); object-fit: contain; object-position: 50% 100%;
-  pointer-events: none; z-index: 0; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5)); }
-.hm-choose > .hm-kick, .hm-choose > .hm-deck, .hm-choose > .hm-note { position: relative; z-index: 1; }
-.hm-choose > .hm-kick { margin-left: 25%; }
-.hm-deck { margin-left: 25%; margin-right: -16px; padding-left: 0; scroll-padding-left: 0; }
+.hm-bgbot { position: absolute; left: -8%; bottom: -90px; width: 60%; height: calc(100% + 210px); object-fit: contain; object-position: 50% 100%;
+  pointer-events: none; z-index: 0; opacity: 0.42; filter: saturate(0.55) brightness(0.9);
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%); mask-image: linear-gradient(180deg, #000 55%, transparent 100%); }
+.hm-choose > .hm-kick, .hm-choose > .hm-deckwrap, .hm-choose > .hm-note { position: relative; z-index: 1; }
+.hm-choose > .hm-kick { margin-left: 28%; }
+.hm-deck { margin-left: 28%; margin-right: -16px; padding-left: 0; scroll-padding-left: 0; }
 .hm-pick { font: inherit; color: #dfe6ff; cursor: pointer; }
 .hm-pick-guide { position: absolute; z-index: 2; left: 2%; top: -112px; max-width: min(46%, 230px); padding: 10px 12px; border-radius: 16px 16px 16px 4px;
   border: 1px solid rgba(129, 177, 255, 0.4); background: rgba(6, 26, 58, 0.94); font-size: 12.5px; line-height: 1.4; text-align: left; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4); }
 .hm-pick-guide > b { display: block; color: #81b1ff; }
 .hm-pick:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (min-width: 600px) {
-  .hm-bgbot { left: 0; width: 25%; height: calc(100% + 70px); }   /* never up into the top bar or over the logo */
-  .hm-deck { margin-right: 0; }
-  .hm-pick-guide { left: 15%; top: -58px; max-width: 240px; font-size: 13.5px; }
+  .hm-bgbot { left: 0; bottom: -150px; width: 33%; height: calc(100% + 220px); }   /* never up into the top bar or over the logo */
+  .hm-choose > .hm-kick { margin-left: 33%; }
+  .hm-deck { margin-left: 33%; margin-right: 0; }
+  .hm-pick-guide { left: 17%; top: -62px; max-width: 200px; font-size: 13px; }
+  .hm-headblock { align-items: flex-start !important; padding-left: calc(20px + (100% - 40px) * 0.33) !important; padding-right: 20px !important; }   /* over the home's inline styles */
+  .hm-headblock > h1 { text-align: left !important; }
 }
 @media (min-width: 600px) and (max-width: 1099px) {
+  /* a tablet's companion stands low beside two rows of cards: its offer sits in the flow under the title, on the content's left edge */
+  .hm-pick-guide { position: relative; left: auto; top: auto; align-self: flex-start; margin-left: 33%; max-width: 300px; }
   .hm-card { width: calc((100% - 24px) / 3); }
   .hm-card[aria-expanded="true"] { width: calc((100% - 12px) * 2 / 3); }
 }
 @media (hover: hover) and (pointer: fine) {
   .hm-card:hover .hm-more, .hm-card:focus-visible .hm-more { display: flex; }
   .hm-card:hover > .hm-art, .hm-card:focus-visible > .hm-art { opacity: 0.55; }
-  .hm-card:hover, .hm-card:focus-visible { box-shadow: 0 0 0 2px var(--sc), 0 18px 40px rgba(0, 0, 0, 0.45); }
+  .hm-card:hover, .hm-card:focus-visible { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 1100px) {
   .hm-card:hover, .hm-card:focus-visible { flex-grow: 2.6; }
@@ -721,5 +725,22 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (max-width: 599px) {
   .pm-cont-txt > .pm-cont-k { display: none; }
   /* a phone's companion stands low beside the cards: its offer sits in the flow at the quarter line, never on the top bar */
-  .hm-pick-guide { position: relative; left: auto; top: auto; align-self: flex-start; margin-left: 25%; max-width: 75%; box-sizing: border-box; }
+  .hm-pick-guide { position: relative; left: auto; top: auto; align-self: flex-start; margin-left: 28%; max-width: 72%; box-sizing: border-box; }
 }
+/* desktop: the cards grow with the screen's height, so the page ends in a calm margin, not a void (2026-10-25) */
+@media (min-width: 1100px) { .hm-card { height: clamp(340px, calc(100dvh - 330px), 440px); } }
+
+/* the arrow at the cards' end (Murci 2026-10-25): where the cards slide (a phone today: all five fit on a tablet or a desktop), a
+   round button at their right end nudges 4 px the way they slide; a tap slides one card on; at the last card it fades away */
+.hm-deckwrap { position: relative; align-self: stretch; }
+.hm-next { display: none; position: absolute; z-index: 3; right: 2px; top: 50%; width: 44px; height: 44px; margin-top: -22px; place-items: center; padding: 0;
+  border-radius: 50%; border: 1px solid rgba(129, 177, 255, 0.45); background: rgba(6, 26, 58, 0.88); color: #81b1ff; cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45); transition: opacity 200ms; }
+.hm-next > svg { animation: nxe-nudge 1.8s ease-in-out infinite; }
+.hm-next:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+@keyframes nxe-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+@media (max-width: 599px) {
+  .hm-next { display: grid; }
+  .hm-next[data-end="true"] { opacity: 0; pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce) { .hm-next > svg { animation: none; } }
