@@ -674,8 +674,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* -- Home, 2026-10-25 (Murci): the cards start a quarter into the page and the companion stands in that first quarter as the page's
    backdrop (on a phone it is wider and the deck scrolls beside it). A mouse opens a card by hovering and a click goes in; on a
    tablet-width window hover only reveals the text (widening there would wrap the card away from the pointer). A touch screen
-   taps to open, then to go. "Surprise me" is no card: three placements to try in the design preview (A the companion offers it,
-   B a pill under the title, C a dice in the top bar). */
+   taps to open, then to go. "Surprise me" is no card: the companion offers to pick a paper (Murci picked it of three placements). */
 .hm-choose { position: relative; max-width: none; }
 .hm-bgbot { position: absolute; left: -2%; bottom: 0; width: 42%; height: calc(100% + 120px); object-fit: contain; object-position: 50% 100%;
   pointer-events: none; z-index: 0; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5)); }
@@ -686,10 +685,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-pick-guide { position: absolute; z-index: 2; left: 2%; top: -112px; max-width: min(46%, 230px); padding: 10px 12px; border-radius: 16px 16px 16px 4px;
   border: 1px solid rgba(129, 177, 255, 0.4); background: rgba(6, 26, 58, 0.94); font-size: 12.5px; line-height: 1.4; text-align: left; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4); }
 .hm-pick-guide > b { display: block; color: #81b1ff; }
-.hm-pick-pill { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin-top: 6px; padding: 0 14px; border-radius: 999px;
-  border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.08); font-size: 13.5px; font-weight: 600; }
-.hm-pick-top { width: 44px; height: 44px; flex: none; display: grid; place-items: center; margin-right: 8px; border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); }
 .hm-pick:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (min-width: 600px) {
   .hm-bgbot { left: 0; width: 25%; height: calc(100% + 70px); }   /* never up into the top bar or over the logo */
