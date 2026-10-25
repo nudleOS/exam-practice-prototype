@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=67">
+  <link rel="stylesheet" href="nx-map.css?v=72">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -435,7 +435,7 @@
         </div>
         <!-- the industry page (Murci 2026-10-25): the professional at work, the map as a small box beside them (it opens the road in a
              centred modal), then the industry's subjects with their papers; a paper's details open in place under its row -->
-        <section class="ind" data-ind="true" style="--ic:{{ indC }}; --ic-rgb:{{ indRgb }}" aria-labelledby="ind-name">
+        <section class="ind" data-ind="true" data-layout="{{ indLayout }}" style="--ic:{{ indC }}; --ic-rgb:{{ indRgb }}" aria-labelledby="ind-name">
           <div class="ind-hero">
             <figure class="ind-pro">
               <img class="ind-pro-media" src="assets/home-robot.webp" alt="" decoding="async">
@@ -500,6 +500,13 @@
               </sc-for>
             </section>
           </sc-if>
+          <!-- three designs of this page for Murci to choose from (2026-10-25); design preview only, not in the product -->
+          <div class="ind-pv" role="group" aria-label="Design preview: industry page layout">
+            <span class="ind-pv-k">Design preview</span>
+            <sc-for list="{{ indLayouts }}" as="lo" hint-placeholder-count="3">
+              <button type="button" class="ind-pv-b" aria-pressed="{{ lo.on }}" onClick="{{ lo.pick }}">{{ lo.label }}</button>
+            </sc-for>
+          </div>
         </section>
         <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
           <section class="pm-empty" data-pmempty="true" aria-labelledby="pm-empty-title">
@@ -3228,6 +3235,10 @@ class Component extends DCLogic {
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon,
       indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.papers.length, 0),
       indHasAfter: !!ind.after, indAfter: (ind.after || []).map(a => ({ code: a[0], text: a[1] })),
+      // three designs of the industry page to choose from (Murci 2026-10-25; design preview): A split, B stage, C side by side
+      indLayout: s.indLayout || "a",
+      indLayouts: [["a", "A · Split"], ["b", "B · Stage"], ["c", "C · Side by side"]].map(([k, l]) => ({ label: l, on: (s.indLayout || "a") === k ? "true" : "false",
+        pick: () => this.setState({ indLayout: k }, () => window.scrollTo(0, 0)) })),
       indMapOpen: !!s.pmMapOpen && !s.finishCard, indMapClose: closeMap,
       indMapGo: () => this.setState({ pmMapOpen: true }, () => { const h = document.getElementById("ind-map-title"); if (h) h.focus({ preventScroll: true }); }),
       indMapKeys: e => { if (e.key === "Escape") { e.preventDefault(); closeMap(); } },

@@ -615,8 +615,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .pm-ico[data-icon="building"] { --ico: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M3 21h18M5 21V7l7-4 7 4v14M9 9h1M14 9h1M9 13h1M14 13h1M9 17h6v4H9z%22/%3E%3C/svg%3E"); }
 .pm-ico[data-icon="heart"] { --ico: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z%22/%3E%3Cpath d=%22M3.5 12h4l2-3 3 6 2-3h6%22/%3E%3C/svg%3E"); }
 
-.ind { --ic: #93a4d6; --ic-rgb: 147, 164, 214; box-sizing: border-box; width: 100%; max-width: 1100px; margin: 0 auto 32px; display: flex; flex-direction: column; gap: 18px; }
-.ind-hero { display: grid; grid-template-columns: minmax(0, 1fr) 116px; gap: 12px; align-items: stretch; }
+.ind { --ic: #93a4d6; --ic-rgb: 147, 164, 214; box-sizing: border-box; width: 100%; max-width: 1100px; margin: 0 auto 32px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.ind-hero { display: contents; }   /* its children are the page's grid items: each design places them */
 .ind-pro { position: relative; margin: 0; height: clamp(260px, 44dvh, 420px); background: radial-gradient(55% 50% at 50% 88%, rgba(var(--ic-rgb), 0.32), transparent 72%); }
 .ind-pro > .ind-pro-media { position: absolute; left: 50%; bottom: -8px; height: 96%; width: auto; transform: translateX(-50%); filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5)); }
 .ind-pro > .ind-pro-cap { position: absolute; left: 0; bottom: 0; font-size: 11.5px; color: #8fa0d6; }
@@ -658,13 +658,11 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-modal { position: relative; z-index: 1; box-sizing: border-box; width: min(1000px, 100%); max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior: contain;
   padding: 14px 20px 20px; border-radius: 22px; background: #061a3a; border: 1px solid rgba(129, 177, 255, 0.25); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55); }
 @media (min-width: 600px) {
-  .ind-hero { grid-template-columns: minmax(0, 1fr) 200px; gap: 16px; }
   .ind-mapbox { min-height: 200px; padding: 16px; }   /* a SMALL box beside the professional (Murci 2026-10-25), never their full height */
   .ind-mapbox > .ind-mapbox-t { font-size: 16px; }
   .ind-secs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1100px) {
-  .ind-hero { grid-template-columns: minmax(0, 1fr) 240px; }
   .ind-pro { height: 420px; }
 }
 @media (prefers-reduced-motion: reduce) { .ind-prow > .ind-chev { transition: none; } }
@@ -744,3 +742,70 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-next[data-end="true"] { opacity: 0; pointer-events: none; }
 }
 @media (prefers-reduced-motion: reduce) { .hm-next > svg { animation: none; } }
+
+/* -- Three designs of the industry page (Murci 2026-10-25, design preview). Same content, three layouts:
+   A Split: the professional large with the map as a small box beside them; the intro, then the subjects in two columns.
+   B Stage: a cinematic hero; the industry's name, blurb and careers over the stage (the Sanlam reference's expanded card), the map
+     a small box in its top corner; the subjects one calm list below.
+   C Side by side: a reading layout; on a desktop the professional, the intro and the map hold the left column while the subjects
+     fill the right; on a phone a smaller professional sits beside the intro, the map a slim strip under them. */
+.ind-pro { grid-area: pro; }
+.ind-mapbox { grid-area: map; }
+.ind-intro { grid-area: intro; }
+.ind-secs { grid-area: secs; }
+.ind-after { grid-area: after; }
+
+.ind[data-layout="a"] { grid-template-columns: minmax(0, 1fr) 116px; grid-template-areas: "pro map" "intro intro" "secs secs" "after after"; column-gap: 12px; }
+
+.ind[data-layout="b"] { grid-template-areas: "pro" "secs" "after"; }
+.ind[data-layout="b"] .ind-intro, .ind[data-layout="b"] .ind-mapbox { grid-area: pro; z-index: 2; }
+.ind[data-layout="b"] .ind-pro { height: clamp(420px, 66dvh, 580px); overflow: hidden; border-radius: 24px;
+  background: radial-gradient(60% 60% at 74% 92%, rgba(var(--ic-rgb), 0.34), transparent 72%); }
+.ind[data-layout="b"] .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 42%, rgba(3, 18, 44, 0.92) 100%); pointer-events: none; }
+.ind[data-layout="b"] .ind-pro > .ind-pro-media { left: 72%; height: 100%; }
+.ind[data-layout="b"] .ind-pro > .ind-pro-cap { left: 18px; bottom: auto; top: 16px; z-index: 1; }   /* top-left: the map box holds the top-right */
+.ind[data-layout="b"] .ind-intro { align-self: end; max-width: 560px; padding: 0 18px 22px; }
+.ind[data-layout="b"] .ind-intro > .ind-name { font-size: clamp(26px, 4vw, 42px); }
+.ind[data-layout="b"] .ind-mapbox { align-self: start; justify-self: end; margin: 14px; width: 132px; min-height: 0; padding: 10px; }   /* top-right on every size: the caption holds the top-left */
+.ind[data-layout="b"] .ind-mapbox > .ind-mapbox-art { margin-bottom: 4px; }
+.ind[data-layout="b"] .ind-secs { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+
+.ind[data-layout="c"] { grid-template-columns: minmax(0, 42%) minmax(0, 1fr); grid-template-areas: "pro intro" "map map" "secs secs" "after after"; column-gap: 14px; align-items: center; }
+.ind[data-layout="c"] .ind-pro { height: 230px; }
+.ind[data-layout="c"] .ind-pro > .ind-pro-cap { display: none; }
+.ind[data-layout="c"] .ind-intro > .ind-name { font-size: 22px; }
+.ind[data-layout="c"] .ind-mapbox { align-self: stretch; min-height: 0; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; padding: 10px 14px; }
+.ind[data-layout="c"] .ind-mapbox > .ind-mapbox-art { width: 72px; flex: none; margin: 0; }
+
+@media (min-width: 600px) {
+  .ind[data-layout="a"] { grid-template-columns: minmax(0, 1fr) 200px; column-gap: 16px; }
+  .ind[data-layout="b"] .ind-mapbox { justify-self: end; width: 180px; padding: 14px; }
+  .ind[data-layout="b"] .ind-intro { padding: 0 32px 32px; }
+}
+@media (min-width: 900px) {
+  /* the left column keeps together at the top: the subjects' extra height goes to an empty last row of its own, never into gaps
+     between the professional, the intro and the map (it opened a 220 px gap and a 281 px map box) */
+  .ind[data-layout="c"] { grid-template-columns: minmax(300px, 38%) minmax(0, 1fr); grid-template-areas: "pro secs" "intro secs" "map secs" ". secs" ". after";
+    grid-template-rows: auto auto auto 1fr auto; column-gap: 48px; row-gap: 16px; align-items: start; }
+  .ind[data-layout="c"] .ind-mapbox { align-self: start; }
+  .ind[data-layout="c"] .ind-pro { height: 340px; }
+  .ind[data-layout="c"] .ind-pro > .ind-pro-cap { display: block; }
+  .ind[data-layout="c"] .ind-secs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 1100px) {
+  .ind[data-layout="a"] { grid-template-columns: minmax(0, 1fr) 240px; }
+}
+
+/* the design preview's switch (not in the product): bottom-left, out of the content's way */
+.ind-pv { position: fixed; left: 12px; bottom: 12px; z-index: 40; display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 12px;
+  background: rgba(25, 27, 30, 0.94); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45); }
+.ind-pv > .ind-pv-k { padding: 0 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #8f9499; }
+.ind-pv > .ind-pv-b { min-height: 32px; padding: 0 10px; border: 0; border-radius: 9px; background: none; color: #8f9499; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.ind-pv > .ind-pv-b[aria-pressed="true"] { background: rgba(0, 104, 248, 0.18); color: #ffffff; }
+@media (max-width: 599px) {
+  .ind-pv > .ind-pv-k { display: none; }
+  /* Stage on a phone: the professional left of centre so the map box sits beside them, not on their face; the placeholder
+     caption (until the real clips arrive) has no room beside the map box */
+  .ind[data-layout="b"] .ind-pro > .ind-pro-media { left: 34%; }
+  .ind[data-layout="b"] .ind-pro > .ind-pro-cap { display: none; }
+}
