@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=60">
+  <link rel="stylesheet" href="nx-map.css?v=63">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -164,6 +164,10 @@
         <span class="nx-brand hm-brand"><span class="nx-nudle">Nudle</span><span class="nx-sep" aria-hidden="true"></span><img class="nx-nexera" src="assets/nexera-wordmark.webp" alt="Nexera"></span>
         <span class="hm-title">Exam practice</span>
         <span style="flex:1; min-width:0"></span>
+        <!-- Surprise me, option C (design preview): a dice button in the top bar -->
+        <sc-if value="{{ hmSurpTop }}" hint-placeholder-val="{{ false }}">
+          <button type="button" class="hm-pick hm-pick-top" data-hmsurprise="true" onClick="{{ hmSurprise }}" aria-label="Pick a paper for me" title="Pick a paper for me"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor"></circle></svg></button>
+        </sc-if>
         <div class="hm-right">
           <div class="hm-role" role="group" aria-label="Prototype role" style="display:flex; flex:none; gap:2px; padding:3px; border:1px solid rgba(255,255,255,0.08); border-radius:12px; background:rgba(var(--nx-c, 32,35,39),0.72)">
             <button aria-current="page" style="min-height:30px; padding:0 8px; border:0; border-radius:9px; background:rgba(0,104,248,0.2); color:#ffffff; font-size:11.5px; font-weight:700" title="Learner"><svg class="hm-ri" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg><span class="hm-rw">Learner</span></button>
@@ -183,6 +187,13 @@
             <button onClick="{{ hm.pick }}" aria-pressed="{{ hm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ hm.bg }}; color:{{ hm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ hm.label }}</button>
           </sc-for>
         </div>
+        <!-- where "Surprise me" lives: three options for Murci to try (2026-10-25: "rethink that surprise me card") -->
+        <span style="padding:4px 4px 0; font-size:12px; font-weight:700; color:var(--text3)">Surprise me</span>
+        <div role="group" aria-label="Where Surprise me lives" style="display:flex; flex-wrap:wrap; gap:2px; padding:3px; border-radius:12px; background:rgba(var(--nx-c, 32,35,39), 0.6); border:1px solid rgba(255,255,255,0.06)">
+          <sc-for list="{{ surpModes }}" as="sm" hint-placeholder-count="3">
+            <button onClick="{{ sm.pick }}" aria-pressed="{{ sm.on }}" style="min-height:32px; padding:0 9px; border:none; border-radius:9px; background:{{ sm.bg }}; color:{{ sm.color }}; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap">{{ sm.label }}</button>
+          </sc-for>
+        </div>
       </div>
       </sc-if>
 
@@ -190,6 +201,10 @@
         <h1 style="margin:0; font-size:{{ homeH1 }}; font-weight:800; letter-spacing:-0.03em; line-height:1.05; text-align:center; text-wrap:balance; max-width:760px">{{ homeTitle }}</h1>
         <sc-if value="{{ hasHomeSub }}" hint-placeholder-val="{{ true }}">
           <p style="margin:0; font-size:{{ homeSubSize }}; line-height:1.55; color:var(--text2); text-align:center; text-wrap:pretty; max-width:520px">{{ homeSub }}</p>
+        </sc-if>
+        <!-- Surprise me, option B (design preview): a small pill under the title -->
+        <sc-if value="{{ hmSurpPill }}" hint-placeholder-val="{{ false }}">
+          <button type="button" class="hm-pick hm-pick-pill" data-hmsurprise="true" onClick="{{ hmSurprise }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor"></circle></svg>Pick a paper for me</button>
         </sc-if>
       </div>
 
@@ -223,13 +238,15 @@
             </div>
           </sc-if>
           <sc-if value="{{ hmHasNote }}" hint-placeholder-val="{{ false }}"><p class="lv-err hm-note" role="alert">{{ hmNote }}</p></sc-if>
+          <!-- the companion stands in the page's first quarter, the cards start beside it (Murci 2026-10-25) -->
+          <img class="hm-bgbot" src="assets/home-robot.webp" alt="" aria-hidden="true" decoding="async">
+          <!-- Surprise me, option A (design preview): the companion offers to pick -->
+          <sc-if value="{{ hmSurpGuide }}" hint-placeholder-val="{{ false }}">
+            <button type="button" class="hm-pick hm-pick-guide" data-hmsurprise="true" onClick="{{ hmSurprise }}">Not sure where to start? <b>Let me pick a paper</b></button>
+          </sc-if>
           <span class="pm-kicker hm-kick">Choose an industry</span>
           <div class="hm-deck" data-hmdeck="true">
-            <button type="button" class="hm-card hm-surprise" data-hmsurprise="true" onClick="{{ hmSurprise }}">
-              <svg class="hm-shuffle" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h4c4 0 6 10 10 10h4M3 17h4c1.5 0 2.7-1.4 3.7-3M14 9.5C15 8 16 7 17 7h4M18 4l3 3-3 3M18 14l3 3-3 3"></path></svg>
-              <b class="hm-sname">Surprise me</b><small class="hm-snote">a paper you haven't finished</small>
-            </button>
-            <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="6">
+            <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="5">
               <button type="button" class="hm-card" data-hmcard="{{ c.key }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
                 <img class="hm-art" src="assets/home-robot.webp" alt="" loading="lazy" decoding="async">
                 <span class="hm-shade" aria-hidden="true"></span>
@@ -414,18 +431,19 @@
     <main data-pmap="true" class="pm" style="--pm-w:{{ pmRoadW }}">
       <div class="pm-col">
         <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
-        <!-- the second page opens with the learner's paper under way and the grade (Murci, 2026-10-25) -->
+        <!-- the second page opens with the learner's paper under way and the grade (Murci, 2026-10-25), minimal: one slim line each,
+             no boxes ("needs the same thinking to be minimal and not take that much space") -->
         <div class="pm-lead">
           <sc-if value="{{ pmContinueOn }}" hint-placeholder-val="{{ false }}">
-            <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
-              <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:13px; font-weight:600; color:#b9bec4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
-              <span style="font-size:19px; font-weight:700; letter-spacing:-0.02em; line-height:1.25">{{ continueTitle }}</span>
-              <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ continueLabel }}</button>
-            </div>
+            <button type="button" class="pm-cont" data-continuecard="true" data-mapcontinue="true" onClick="{{ continueGo }}">
+              <span class="glass-dot" aria-hidden="true"></span>
+              <span class="pm-cont-txt"><span class="pm-cont-k">{{ resumeKicker }}</span><span class="pm-cont-t">{{ continueTitle }}</span></span>
+              <b class="pm-cont-go">{{ continueLabel }} →</b>
+            </button>
           </sc-if>
-          <div class="hm-grades" role="group" aria-label="{{ hmGradeLabel }}">
+          <div class="pm-grades" role="group" aria-label="{{ hmGradeLabel }}">
             <sc-for list="{{ hmGrades }}" as="g" hint-placeholder-count="3">
-              <button type="button" class="hm-grade" aria-pressed="{{ g.on }}" onClick="{{ g.pick }}">{{ g.label }}</button>
+              <button type="button" class="pm-gr" aria-pressed="{{ g.on }}" onClick="{{ g.pick }}">{{ g.label }}</button>
             </sc-for>
           </div>
         </div>
@@ -469,11 +487,11 @@
                         <div class="ind-detail" data-inddetail="true">
                           <span class="pm-kicker">{{ pmKicker }}</span>
                           <h3 class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</h3>
-                          <div class="pm-stats">
+                          <p class="ind-facts">
                             <sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3">
-                              <span class="pm-stat"><span>{{ st.label }}</span><b>{{ st.value }}</b></span>
+                              <span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span>
                             </sc-for>
-                          </div>
+                          </p>
                           <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
                           <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><p class="pm-sheet-note">{{ pmSheetNote }}</p></sc-if>
                           <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
@@ -4813,9 +4831,15 @@ class Component extends DCLogic {
           meta: withPapers + (withPapers === 1 ? " subject · " : " subjects · ") + ps.length + (ps.length === 1 ? " paper" : " papers") + (done ? " · " + done + " done" : ""),
           meta2: ind.careers.join(" · "),
           hasMeter: done > 0, pct: ps.length ? Math.round(done / ps.length * 100) + "%" : "0%",
-          tap: () => { if (open) { go(ind.key); return; }
+          // a mouse opens a card by hovering (Murci 2026-10-25), so its click goes straight in; a touch screen taps to open, then to go
+          tap: () => { if (open || window.matchMedia("(hover: hover) and (pointer: fine)").matches) { go(ind.key); return; }
             this.setState({ hmOpen: ind.key, hmNote: "" }, () => { const el = document.querySelector('[data-hmcard="' + ind.key + '"]');   /* an opened card is read whole: in view after its width grows */
               if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; }),
+      // where Surprise me lives (design preview; Murci 2026-10-25: "rethink that surprise me card"): A the companion offers it (the
+      // default), B a pill under the title, C a dice in the top bar
+      hmSurpGuide: (s.hmSurp || "guide") === "guide", hmSurpPill: s.hmSurp === "pill", hmSurpTop: s.hmSurp === "top",
+      surpModes: [["guide", "A · Companion"], ["pill", "B · Pill"], ["top", "C · Top bar"]].map(([k, l]) => { const on = (s.hmSurp || "guide") === k;
+        return { label: l, on: on, pick: () => this.setState({ hmSurp: k }), bg: on ? "rgba(0,104,248,0.18)" : "transparent", color: on ? "#ffffff" : "var(--text3)" }; }),
       hmSurprise: () => { if (!fresh.length) { this.setState({ hmNote: "Every paper here is done. Pick an industry to practise one again." }); return; }
         const p = fresh[Math.floor(Math.random() * fresh.length)];
         this.pmPickSubj(p.subject); this.setState({ pmInd: indOf(p.subject).key, hmOpen: null, hmNote: "", pmMapOpen: false }); this.pmGoMap(() => this.pmOpenPaper(p.id)); } };
