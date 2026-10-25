@@ -17,13 +17,13 @@
 .pm-chip { box-sizing: border-box; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 11px; border-radius: 999px;
   border: 1px solid rgba(129, 177, 255, 0.24); background: transparent; color: #c9d2f0; font: inherit; font-size: 12.5px; font-weight: 600;
   white-space: nowrap; cursor: pointer; }
-.pm-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--sc); }
 .pm-chip[aria-pressed="true"] { background: var(--sc); border-color: var(--sc); color: #04122c; }
-.pm-chip[aria-pressed="true"] .pm-dot { background: #04122c; }
 .pm-chip:focus-visible, .pm-node:focus-visible, .pm-go:focus-visible, .pm-src:focus-visible, .pm-x:focus-visible { outline: 3px solid #81b1ff; outline-offset: 3px; }
 
 /* a subject and its path */
 .pm-group { margin: 22px 0 18px; --sc: #93a4d6; --sc-rgb: 147, 164, 214; }
+/* the map and its subject sheet in one colour, like the industry page (Murci 2026-10-25): no subject hues on chips or roads */
+.ind-modal, .pm-sheet-wrap { --sc: #93a4d6; --sc-rgb: 147, 164, 214; }
 .pm-subj { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; }
 .pm-ico { width: 40px; height: 40px; flex: none; border-radius: 12px; background: rgba(var(--sc-rgb), 0.16); position: relative; }
 .pm-ico::after { content: ""; position: absolute; inset: 9px; background: var(--sc); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
@@ -194,7 +194,6 @@
 @media (max-width: 599px) {
   .pm-chips-toggle { box-sizing: border-box; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: 999px;
     border: 1px solid rgba(129, 177, 255, 0.3); background: rgba(var(--sc-rgb, 91, 140, 255), 0.06); color: #eef2ff; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
-  .pm-chips-toggle .pm-dot { background: var(--sc); }
   .pm-chips[data-collapsed="true"] .pm-chip { display: none; }
   .pm-chips-toggle:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 }
@@ -582,8 +581,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);   /* frosted: the companion behind the cards shows through, softly */
   transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
 .hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
-.hm-card > .hm-art { position: absolute; bottom: -6px; left: 50%; height: 88%; width: auto; transform: translateX(-50%); opacity: 0.9; pointer-events: none;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); transition: left 320ms, opacity 320ms; }
+/* each card shows its industry's professional with their hologram (Murci 2026-10-25), the same 2:3 stack as the industry page */
+.hm-card > .hm-art { position: absolute; bottom: -6px; left: 50%; height: 88%; width: auto; aspect-ratio: 2 / 3; transform: translateX(-50%); opacity: 0.9; pointer-events: none;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); transition: left 320ms, opacity 320ms;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }
+/* five cards at once on a P30 lite: their holograms only rise and fall (transform alone runs on the compositor); the industry page's
+   one hologram also brightens as on the Nexera hero */
+.hm-card > .hm-art > .ind-pro-obj { animation-name: nx-pro-lift; }   /* more specific than the shared rule below */
+@keyframes nx-pro-lift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-16px) scale(1.02); } }
 .hm-card[aria-expanded="true"] > .hm-art { left: 74%; opacity: 0.55; }
 .hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 18, 44, 0.1) 30%, rgba(3, 18, 44, 0.92) 100%); }
 .hm-card > .hm-ctext { position: absolute; left: 12px; right: 12px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
@@ -617,7 +622,15 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind { --ic: #93a4d6; --ic-rgb: 147, 164, 214; box-sizing: border-box; width: 100%; max-width: 1100px; margin: 0 auto 32px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .ind-hero { display: contents; }   /* its children are the page's grid items: each design places them */
 .ind-pro { position: relative; margin: 0; height: clamp(260px, 44dvh, 420px); background: radial-gradient(55% 50% at 50% 88%, rgba(var(--ic-rgb), 0.32), transparent 72%); }
-.ind-pro > .ind-pro-media { position: absolute; left: 50%; bottom: -8px; height: 96%; width: auto; transform: translateX(-50%); filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5)); }
+.ind-pro > .ind-pro-media { position: absolute; left: 50%; bottom: -8px; height: 96%; width: auto; aspect-ratio: 2 / 3; transform: translateX(-50%); filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }   /* the cut-out ends at the waist: fade it */
+/* the person and their hologram share one 2:3 frame (as on the Nexera hero); the hologram floats over the cupped hands: 16 px up,
+   2% larger and brighter at the half-way point of a 3.4 s loop (the hero's heroObj keyframes) */
+.ind-pro-media > img, .hm-art > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.ind-pro-media > .ind-pro-obj, .hm-art > .ind-pro-obj { inset: auto; left: 27.5%; bottom: 20%; width: 45%; height: 45%; object-fit: cover; transform-origin: 50% 100%;
+  mix-blend-mode: screen; animation: nx-pro-obj 3.4s ease-in-out infinite; }   /* over the cupped hands: the hero's own box, measured */
+@keyframes nx-pro-obj { 0%, 100% { filter: brightness(0.95); transform: translateY(0) scale(1); } 50% { filter: brightness(1.18); transform: translateY(-16px) scale(1.02); } }
+@media (prefers-reduced-motion: reduce) { .ind-pro-media > .ind-pro-obj, .hm-art > .ind-pro-obj { animation: none; } }
 .ind-pro > .ind-pro-cap { position: absolute; left: 0; bottom: 0; font-size: 11.5px; color: #8fa0d6; }
 .ind-mapbox { align-self: start; min-height: 150px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 4px; padding: 12px; border-radius: 18px; text-align: left; cursor: pointer;
   border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); color: #eef3ff; font: inherit; }
