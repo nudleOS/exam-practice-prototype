@@ -1,6 +1,6 @@
 # Industry → subject mapping (first cut, for Murci's approval)
 
-**Status:** DRAFT, 2026-10-25. Nothing ships until Murci approves it.
+**Status:** APPROVED by Murci, 2026-10-25 (5 cards; Geography and Business Studies shown as "Recommended (unverified)"; Maths Lit only on Health and Environment with "check your faculty"; RE5 / RE1 on Finance as the step after school). The gaps below still close before learners see it.
 **What it decides:** which industry cards the home shows, and which subjects (with their past papers) each industry page lists.
 **Rule (Murci, 2026-10-25):** only industries where we have papers today; every subject claim cited; Murci approves.
 
