@@ -557,3 +557,58 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .rc-main .rc-k { font-size: 12px; }
   .rc-main .rc-v { font-size: clamp(14px, 1.05vw, 16px); }
 }
+
+/* ── Home chooser, direction A (Murci, 2026-10-25; mocks: exam-design-mocks/map-chooser). Field chips (only when more than one
+   field is shown), a grade switch, then tall subject cards with the companion on them: a phone scrolls them sideways, a tablet
+   lays them in a grid of four, a desktop in one row where the opened card widens. Class and child selectors only: the runtime
+   wraps every {{ value }} in a span. */
+.hm-choose { align-self: stretch; width: 100%; max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.hm-fields { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.hm-field { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.08);
+  color: #dfe6ff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.hm-field[aria-pressed="true"] { background: #ffffff; border-color: #ffffff; color: #0b1d47; }
+.hm-grades { display: inline-flex; gap: 2px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); }
+.hm-grade { min-height: 40px; padding: 0 16px; border: 0; border-radius: 10px; background: none; color: var(--text2); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.hm-grade[aria-pressed="true"] { background: var(--cobalt, #1e46ff); color: #ffffff; }
+.hm-field:focus-visible, .hm-grade:focus-visible, .hm-card:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.hm-note { text-align: center; }
+.hm-kick { align-self: flex-start; margin-top: 4px; }
+.hm-deck { align-self: stretch; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; padding: 4px 16px 14px; margin: 0 -16px; scrollbar-width: none; }
+.hm-deck::-webkit-scrollbar { display: none; }
+.hm-card { --sc: #93a4d6; --sc-rgb: 147, 164, 214; position: relative; flex: none; width: 150px; height: 280px; padding: 0; overflow: hidden; scroll-snap-align: start;
+  height: clamp(280px, calc(100dvh - 250px), 460px);   /* a phone's cards fill the screen below the title: no empty half */
+  border-radius: 18px; border: 1px solid rgba(var(--sc-rgb), 0.35); color: #ffffff; font: inherit; text-align: left; cursor: pointer;
+  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.45), transparent 70%), linear-gradient(180deg, #0a1f4a, #04132e);
+  transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
+.hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 0 0 2px var(--sc), 0 18px 40px rgba(0, 0, 0, 0.45); }
+.hm-card > .hm-art { position: absolute; bottom: -6px; left: 50%; height: 88%; width: auto; transform: translateX(-50%); opacity: 0.9; pointer-events: none;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); transition: left 320ms, opacity 320ms; }
+.hm-card[aria-expanded="true"] > .hm-art { left: 74%; opacity: 0.55; }
+.hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 18, 44, 0.1) 30%, rgba(3, 18, 44, 0.92) 100%); }
+.hm-card > .hm-cico { position: absolute; top: 12px; left: 12px; width: 34px; height: 34px; border-radius: 10px; }
+.hm-card > .hm-cico::after { inset: 8px; }
+.hm-card > .hm-ctext { position: absolute; left: 12px; right: 12px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
+.hm-ctext > .hm-cname { font-size: 16px; font-weight: 700; line-height: 1.2; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
+.hm-ctext > .hm-more { display: none; flex-direction: column; align-items: flex-start; gap: 3px; }
+.hm-card[aria-expanded="true"] .hm-more { display: flex; }
+.hm-more > .hm-meta { font-size: 12.5px; line-height: 1.45; color: #d7defa; }
+.hm-more > .hm-meter { align-self: stretch; height: 4px; margin-top: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.hm-meter > i { display: block; height: 100%; background: var(--sc); }
+.hm-more > .hm-go { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 8px; padding: 0 14px; border-radius: 12px; background: var(--grad); font-size: 13px; font-weight: 700; }
+.hm-surprise { --sc: #81b1ff; --sc-rgb: 129, 177, 255; display: grid; place-items: center; align-content: center; gap: 10px; text-align: center; background: #000814; }
+.hm-surprise > .hm-shuffle { color: #81b1ff; }
+.hm-surprise > .hm-sname { font-size: 16px; font-weight: 700; }
+.hm-surprise > .hm-snote { padding: 0 14px; font-size: 12px; color: var(--text2); }
+@media (min-width: 600px) {
+  .hm-deck { flex-wrap: wrap; overflow: visible; margin: 0; padding: 4px 0 14px; }
+  .hm-card { width: calc((100% - 36px) / 4); height: 320px; }
+  .hm-card[aria-expanded="true"] { width: calc((100% - 12px) / 2); }
+}
+@media (min-width: 1100px) {
+  .hm-deck { flex-wrap: nowrap; }
+  .hm-card { width: auto; flex: 1 1 0; height: 340px; }
+  .hm-card[aria-expanded="true"] { width: auto; flex-grow: 2.6; }
+}
+@media (prefers-reduced-motion: reduce) { .hm-card, .hm-card > .hm-art { transition: none; } }
+/* the map's lead (Murci, 2026-10-25: "needs to appear on the second page"): the paper under way, then the grade switch */
+.pm-lead { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 4px 0 16px; }

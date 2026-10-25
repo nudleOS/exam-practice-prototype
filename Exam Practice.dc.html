@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=55">
+  <link rel="stylesheet" href="nx-map.css?v=58">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -193,7 +193,7 @@
         </sc-if>
       </div>
 
-      <div data-stage="true" style="grid-area:stage; position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}">
+      <div data-stage="true" style="grid-area:stage; position:relative; z-index:1; flex:1 1 0; min-height:{{ stageMin }}; display:{{ stageDisplay }}">
         <span aria-hidden="true" style="position:absolute; left:50%; bottom:9.7%; height:{{ posterH }}; aspect-ratio:527 / 960; transform:translateX(-50%); opacity:{{ posterOpacity }}; transition:opacity 600ms ease; pointer-events:none">
           <sc-if value="{{ posterImgOn }}" hint-placeholder-val="{{ false }}">
             <img src="assets/home-robot.webp" alt="" onError="{{ posterFailed }}" decoding="async" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:50% 100%" />
@@ -212,17 +212,41 @@
       </div>
 
       <div style="grid-area:act; position:relative; z-index:3; flex:none; display:flex; flex-direction:column; align-items:center; gap:12px; padding:{{ actionPad }}; background:{{ actBg }}">
-        <button type="button" class="hm-level-link" data-trigger="level" onClick="{{ lvOpenGo }}" aria-haspopup="dialog" aria-label="{{ hmLevelAria }}">{{ hmLevelTitle }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
-        <sc-if value="{{ showContinueCard }}" hint-placeholder-val="{{ false }}">
-          <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
-            <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:13px; font-weight:600; color:#b9bec4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
-            <span style="font-size:19px; font-weight:700; letter-spacing:-0.02em; line-height:1.25">{{ continueTitle }}</span>
-            <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ continueLabel }}</button>
+        <!-- Direction A (Murci, 2026-10-25): the home chooses. Field (only when more than one is shown), then a tall card per subject.
+             The Continue card and the grade switch live on the map, the second page (Murci, 2026-10-25). -->
+        <div class="hm-choose" data-hmchoose="true">
+          <sc-if value="{{ hmFieldsOn }}" hint-placeholder-val="{{ false }}">
+            <div class="hm-fields" role="group" aria-label="What you study">
+              <sc-for list="{{ hmFields }}" as="f" hint-placeholder-count="2">
+                <button type="button" class="hm-field" aria-pressed="{{ f.on }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hmHasNote }}" hint-placeholder-val="{{ false }}"><p class="lv-err hm-note" role="alert">{{ hmNote }}</p></sc-if>
+          <span class="pm-kicker hm-kick">Your subjects</span>
+          <div class="hm-deck" data-hmdeck="true">
+            <button type="button" class="hm-card hm-surprise" data-hmsurprise="true" onClick="{{ hmSurprise }}">
+              <svg class="hm-shuffle" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h4c4 0 6 10 10 10h4M3 17h4c1.5 0 2.7-1.4 3.7-3M14 9.5C15 8 16 7 17 7h4M18 4l3 3-3 3M18 14l3 3-3 3"></path></svg>
+              <b class="hm-sname">Surprise me</b><small class="hm-snote">a paper you haven't finished</small>
+            </button>
+            <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="6">
+              <button type="button" class="hm-card" data-hmcard="{{ c.name }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
+                <img class="hm-art" src="assets/home-robot.webp" alt="" loading="lazy" decoding="async">
+                <span class="hm-shade" aria-hidden="true"></span>
+                <span class="pm-ico hm-cico" data-icon="{{ c.icon }}" aria-hidden="true"></span>
+                <span class="hm-ctext">
+                  <b class="hm-cname">{{ c.name }}</b>
+                  <span class="hm-more">
+                    <span class="hm-meta">{{ c.meta }}</span>
+                    <span class="hm-meta">{{ c.meta2 }}</span>
+                    <sc-if value="{{ c.hasMeter }}" hint-placeholder-val="{{ false }}"><span class="hm-meter" aria-hidden="true"><i style="width:{{ c.pct }}"></i></span></sc-if>
+                    <span class="hm-go">Open papers <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+                  </span>
+                </span>
+              </button>
+            </sc-for>
           </div>
-        </sc-if>
-        <sc-if value="{{ showStartBlock }}" hint-placeholder-val="{{ true }}">
-          <button data-homestart="true" onClick="{{ hmMapGo }}" style="box-sizing:border-box; width:{{ startW }}; min-height:56px; padding:0 22px; border:none; border-radius:18px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 12px 30px rgba(30,70,255,0.36)">Start</button>
-        </sc-if>
+        </div>
       </div>
 
       <sc-if value="{{ progressOpen }}" hint-placeholder-val="{{ false }}">
@@ -390,6 +414,21 @@
     <main data-pmap="true" class="pm" style="padding-right:{{ pmPadR }}; --pm-w:{{ pmRoadW }}">
       <div class="pm-col">
         <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
+        <!-- the second page opens with the learner's paper under way and the grade (Murci, 2026-10-25) -->
+        <div class="pm-lead">
+          <sc-if value="{{ pmContinueOn }}" hint-placeholder-val="{{ false }}">
+            <div data-continuecard="true" class="glass-card" style="width:min(460px, 100%); display:flex; flex-direction:column; gap:7px; padding:16px 16px 16px 18px; text-align:left">
+              <span style="display:flex; align-items:center; gap:8px; min-width:0"><span class="glass-dot" aria-hidden="true"></span><span style="min-width:0; font-size:13px; font-weight:600; color:#b9bec4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ resumeKicker }}</span></span>
+              <span style="font-size:19px; font-weight:700; letter-spacing:-0.02em; line-height:1.25">{{ continueTitle }}</span>
+              <button data-homecontinue="true" class="glass-cta" onClick="{{ continueGo }}" style="box-sizing:border-box; width:100%; min-height:52px; margin-top:8px; border:none; border-radius:14px; background:var(--grad); color:#ffffff; font-size:16px; font-weight:700; cursor:pointer">{{ continueLabel }}</button>
+            </div>
+          </sc-if>
+          <div class="hm-grades" role="group" aria-label="{{ hmGradeLabel }}">
+            <sc-for list="{{ hmGrades }}" as="g" hint-placeholder-count="3">
+              <button type="button" class="hm-grade" aria-pressed="{{ g.on }}" onClick="{{ g.pick }}">{{ g.label }}</button>
+            </sc-for>
+          </div>
+        </div>
         <div class="pm-chips" role="group" aria-label="Show papers for" data-collapsed="{{ pmChipsCollapsed }}">
           <div class="pm-chip-row" data-chiprow="true">
             <button type="button" class="pm-chips-toggle" aria-expanded="{{ pmChipsOpenAttr }}" onClick="{{ pmChipsToggle }}" style="--sc:{{ pmPickC }}"><span class="pm-dot" aria-hidden="true"></span>{{ pmPickLabel }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pmChipsChevron }}"></path></svg></button>
@@ -2877,7 +2916,7 @@ class Component extends DCLogic {
         this.setState({ studies: row, studiesAsked: true, lvOpen: false, lvDraft: null, lvErr: "" }, () => this.pmGoMap());   /* the subject stays (a new level falls back to its first) */ } };
   }
   // Open the paper map; a returning learner's progress (the 21 of 150 the home describes) comes too, as Continue does.
-  pmGoMap() { const s = this.state, go = () => this.setState({ screen: "map", pmOpen: null, sheet: null, pop: null }, () => window.scrollTo(0, 0));
+  pmGoMap(then) { const s = this.state, go = () => this.setState({ screen: "map", pmOpen: null, sheet: null, pop: null }, () => { window.scrollTo(0, 0); if (then) then(); });
     if (s.home !== "first" && !Object.keys(s.prog || {}).length) this.seedMap("progress", go); else go(); }
   // A paper's marks from a value per part (its best, or its first try). A section that says "Answer any N" (answer_any: Business
   // Studies' Section B any TWO, C any ONE) counts its N best questions, a question being the missions that share a first number
@@ -4649,12 +4688,53 @@ class Component extends DCLogic {
     const returning = s.home !== "first" && s.screen === "pick", picking = returning && s.picking, showPicker = !returning || picking;
     return { homeCtaBg: "var(--grad)", homeCtaBorder: "none", homeStartShadow: "0 12px 30px rgba(30,70,255,0.36)", homeContinueShadow: "0 14px 36px rgba(30,70,255,0.38)",
       homeContinueAnim: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite",
-      showContinueCard: returning && !picking, showStartBlock: showPicker,
-      // the level line (2026-10-02): one line of text; it opens the study-level sheet, which opens the map
-      hmLevelTitle: this.levelName(this.pmLevel(s)) + " past papers",
-      hmLevelAria: this.levelName(this.pmLevel(s)) + " past papers. Change the study level or open the papers",
-      hmMapGo: () => this.pmGoMap(),
-      ...this.lvVals(s, (s.vw || 800) < 600) };
+      // the Continue card sits on the map, the second page (Murci, 2026-10-25): shown while the learner has a paper under way
+      pmContinueOn: s.home !== "first",
+      ...this.lvVals(s, (s.vw || 800) < 600), ...this.hmDeckVals(s) };
+  }
+  // Direction A of the card chooser (Murci picked it 2026-10-25, from a Sanlam training page he liked; the three mocks are in
+  // exam-design-mocks/map-chooser). The home chooses: the field (only when more than one is shown), the grade, then one tall card
+  // per subject with the companion on it. A first tap opens a card (papers, sittings, marks, time, progress), a second tap (or its
+  // Open papers) opens today's road on that subject: the map and its rulings are unchanged. Surprise me opens the road on a paper
+  // the learner has not finished, with that paper's sheet open.
+  hmDeckVals(s) {
+    const L = this.pmList(s), lv = L.level, all = this.pmAllPapers();
+    const hrs = m => { const h = Math.floor(m / 60), r = m % 60; return h + (r === 30 ? "½" : r ? ":" + r : "") + " h"; };
+    const short = t => String(t || "").replace(/^(January|February|March|April|May|June|July|August|September|October|November|December)\b/, w => w.slice(0, 3));
+    const span = (xs, f) => { const u = xs.filter((x, i) => xs.indexOf(x) === i).sort((a, b) => a - b); return u.length > 1 ? f(u[0]) + "–" + f(u[u.length - 1]) : f(u[0]); };
+    const order = Object.keys(SUBJECT_LOOK);
+    const subjects = []; L.papers.forEach(p => { if (subjects.indexOf(p.subject) === -1) subjects.push(p.subject); });
+    subjects.sort((a, b) => ((order.indexOf(a) + 1) || 99) - ((order.indexOf(b) + 1) || 99) || a.localeCompare(b));
+    // the grade switch and the field chips save at once, as the level sheet's "Show past papers" does
+    const save = (qualification, level) => { let row = null;
+      try { row = STUDIES_API.put({ qualification: qualification, level: level, subjects: [] }); }
+      catch (e) { this.setState({ hmNote: e && e.message ? e.message : "That didn't save. Try again." }); return; }
+      this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); };
+    const count = (q, l) => all.filter(p => p.qualification === q && p.level === l).length;
+    const go = n => { this.pmPickSubj(n); this.setState({ hmOpen: null, hmNote: "" }); this.pmGoMap(); };
+    const fresh = L.papers.filter(p => { const g = this.pmProgress(p); return g && !g.done; });
+    return {
+      hmFieldsOn: STUDY_QUALS.length > 1,
+      hmFields: STUDY_QUALS.map(q => ({ label: q.label, on: q.id === lv.qualification ? "true" : "false",
+        pick: () => { if (q.id === lv.qualification) return; const ready = q.levels.slice().reverse().filter(l => count(q.id, l))[0];
+          save(q.id, ready || q.levels[q.levels.length - 1]); } })),
+      hmGradeLabel: lv.qualification === "ncv" ? "Level" : "Grade",
+      hmGrades: (SERVICE_LEVELS[lv.qualification] || []).map(l => ({ label: LEVEL_LABEL(l), on: l === lv.level ? "true" : "false",
+        pick: () => { if (l !== lv.level) save(lv.qualification, l); } })),
+      hmHasNote: !!s.hmNote, hmNote: s.hmNote || "",
+      hmCards: subjects.map(n => { const ps = L.papers.filter(p => p.subject === n), look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
+        const when = ps.map(p => short(p.sitting)).filter((x, i, a) => a.indexOf(x) === i);
+        const done = ps.filter(p => { const g = this.pmProgress(p); return g && g.done; }).length, open = s.hmOpen === n;
+        return { name: n, c: look.c, rgb: look.rgb, icon: look.icon, open: open ? "true" : "false",
+          meta: ps.length + (ps.length === 1 ? " paper" : " papers") + " · " + (when.length <= 2 ? when.join(" & ") : when.length + " sittings"),
+          meta2: span(ps.map(p => p.total_marks), x => x) + " marks · " + span(ps.map(p => p.duration_minutes), hrs) + (ps.length > 1 ? " each" : "") + (done ? " · " + done + " done" : ""),
+          hasMeter: done > 0, pct: Math.round(done / ps.length * 100) + "%",
+          tap: () => { if (open) { go(n); return; }
+            this.setState({ hmOpen: n, hmNote: "" }, () => { const el = document.querySelector('[data-hmcard="' + n + '"]');   /* an opened card is read whole: in view after its width grows */
+              if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; }),
+      hmSurprise: () => { if (!fresh.length) { this.setState({ hmNote: "Every paper here is done. Pick a subject to practise one again." }); return; }
+        const p = fresh[Math.floor(Math.random() * fresh.length)];
+        this.pmPickSubj(p.subject); this.setState({ hmOpen: null, hmNote: "" }); this.pmGoMap(() => this.pmOpenSheet(p.id)); } };
   }
 
   // ── Topic drills (brief 10): one topic, six parts, recipes and unseen parts before repeats.
@@ -5760,8 +5840,10 @@ class Component extends DCLogic {
 
     return {
       headerDisplay: s.screen === "pick" || s.screen === "play" ? "none" : "flex",
-      homeDisplay: tabletLand ? "grid" : "flex",
-      actBg: tabletLand ? "transparent" : "linear-gradient(180deg, rgba(3,18,44,0), rgba(3,18,44,0.94) 48%)",
+      // Direction A (2026-10-25): the companion rides on the subject cards, so the home's robot stage and its two-column landscape
+      // tablet split give way to one column (the stage's values below stay until the platform port deletes them)
+      homeDisplay: "flex", stageDisplay: "none",
+      actBg: "transparent",
       isReturning: returning, showPicker: showPicker, showContinue: returning && !picking, picking: picking,
       homeKey: home + (picking ? "p" : ""), homeTitle: showPicker && !returning ? "Beat the paper." : returning && !picking ? "Welcome back." : "Pick a paper.",
       // A returning learner's paper is named by the ticket under Continue, so no subline repeats it.
