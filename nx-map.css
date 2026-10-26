@@ -651,7 +651,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 
 .ind { --ic: #93a4d6; --ic-rgb: 147, 164, 214; box-sizing: border-box; width: 100%; max-width: 1100px; margin: 0 auto 32px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .ind-hero { display: contents; }   /* its children are the page's grid items: each design places them */
-.ind-pro { position: relative; margin: 0; height: clamp(260px, 44dvh, 420px); background: radial-gradient(55% 50% at 50% 88%, rgba(var(--ic-rgb), 0.32), transparent 72%); }
+.ind-pro { position: relative; margin: 0; height: clamp(300px, 50dvh, 480px); }   /* no glow under the professional (Murci 2026-10-26); a little larger (was up to 420) */
 .ind-pro > .ind-pro-media { position: absolute; left: 50%; bottom: -8px; height: 96%; width: auto; aspect-ratio: 2 / 3; transform: translateX(-50%); filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
   -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }   /* the cut-out ends at the waist: fade it */
 /* the person and their hologram share one 2:3 frame (as on the Nexera hero); the hologram floats over the cupped hands: 16 px up,
@@ -703,7 +703,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind-sec > .ind-note, .ind-sec > .ind-detail { margin-left: 52px; }   /* under the subject's name */
 }
 @media (min-width: 1100px) {
-  .ind-pro { height: 420px; }
+  .ind-pro { height: 480px; }
 }
 
 /* -- Home, 2026-10-25 (Murci): the cards start a quarter into the page and the companion stands in that first quarter as the page's
@@ -783,8 +783,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (max-width: 599px) {
   .ind { grid-template-areas: "pro" "secs" "after"; }
   .ind .ind-intro, .ind .ind-mapbox { grid-area: pro; z-index: 2; }
-  .ind .ind-pro { height: clamp(420px, 66dvh, 580px); overflow: hidden; border-radius: 24px;
-    background: radial-gradient(60% 60% at 74% 92%, rgba(var(--ic-rgb), 0.34), transparent 72%); }
+  .ind .ind-pro { height: clamp(460px, 72dvh, 640px); overflow: hidden; border-radius: 24px; }   /* no glow; the professional a little larger (was 66dvh, max 580) */
   .ind .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 42%, rgba(3, 18, 44, 0.92) 100%); pointer-events: none; }
   .ind .ind-pro > .ind-pro-media { left: 34%; height: 100%; }   /* left of centre: the map box sits beside them, not on their face */
   .ind .ind-pro > .ind-pro-cap { display: none; }   /* the placeholder caption has no room beside the map box */
