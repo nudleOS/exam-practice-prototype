@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=98">
+  <link rel="stylesheet" href="nx-map.css?v=100">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -482,15 +482,16 @@
             <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
           </div>
           <div class="ind-secs">
-            <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="2">
-              <section class="ind-sec">
-                <div class="ind-sec-row">
-                  <span class="pm-ico" data-icon="{{ sec.icon }}" aria-hidden="true"></span>
-                  <span class="ind-sec-txt">
-                    <h2 class="ind-sec-name">{{ sec.name }}</h2>
-                    <span class="ind-sec-meta"><span class="ind-tag" data-kind="{{ sec.tagKind }}">{{ sec.tag }}</span><span class="ind-sec-sum">{{ sec.sum }}</span></span>
-                  </span>
-                </div>
+            <!-- the subjects as tabs (Murci picked A, 2026-10-26: the list was "too much ... clutter"): one subject's papers at a time -->
+            <div class="ind-tabs" role="tablist" aria-label="Subjects">
+              <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="3">
+                <button type="button" role="tab" class="ind-tab" id="{{ sec.tabId }}" aria-selected="{{ sec.on }}" aria-controls="ind-panel" tabIndex="{{ sec.tabIx }}" onClick="{{ sec.pickTab }}" onKeyDown="{{ indTabKeys }}">{{ sec.name }}</button>
+              </sc-for>
+            </div>
+            <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="1">
+              <sc-if value="{{ sec.isOn }}" hint-placeholder-val="{{ false }}">
+              <section class="ind-sec" id="ind-panel" role="tabpanel" aria-labelledby="{{ sec.tabId }}">
+                <p class="ind-sec-meta"><span class="ind-tag" data-kind="{{ sec.tagKind }}">{{ sec.tag }}</span><span class="ind-sec-sum">{{ sec.sum }}</span></p>
                 <sc-if value="{{ sec.hasNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note">{{ sec.note }}</p></sc-if>
                 <!-- the year shelf (Murci picked A, 2026-10-26): every paper a chip, grouped by sitting; one tap opens its details -->
                 <div class="ind-shelf">
@@ -522,6 +523,7 @@
                   </div>
                 </sc-if>
               </section>
+              </sc-if>
             </sc-for>
           </div>
           <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
@@ -3298,7 +3300,12 @@ class Component extends DCLogic {
       const mine = ps.some(x => x.p.id === s.pmOpen);
       return { name: n, icon: look.icon, tag: SUBJECT_TAG[sb[1]], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2],
         sum: !ps.length ? "No papers at this level yet" : ps.length + (ps.length === 1 ? " paper" : " papers") + (going ? " · " + going + " under way" : "") + (done ? " · " + done + " done" : ""),
-        sel: mine ? s.pmOpen : "", hasPick: mine, count: ps.length, sits: sitsOf(n, ps) }; });
+        sel: mine ? s.pmOpen : "", hasPick: mine, going: going > 0, count: ps.length, sits: sitsOf(n, ps) }; });
+    // the tab shown: the subject holding the open paper, else the learner's pick, else the one with a paper under way, else the
+    // first; picking another tab closes a paper open elsewhere (so the pick wins)
+    const tabName = (indSecs.filter(x => x.hasPick)[0] || indSecs.filter(x => x.name === (s.indTabs || {})[ind.key])[0] || indSecs.filter(x => x.going)[0] || indSecs[0] || {}).name;
+    indSecs.forEach((x, i) => { x.isOn = x.name === tabName; x.on = x.isOn ? "true" : "false"; x.tabIx = x.isOn ? "0" : "-1"; x.tabId = "ind-tab-" + i;
+      x.pickTab = () => this.setState({ indTabs: { ...(s.indTabs || {}), [ind.key]: x.name }, pmOpen: x.hasPick ? s.pmOpen : null }); });
     const go = sel && g ? (sel.state === "done" ? { label: "Review my paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id, screen: "summary" }, () => window.scrollTo(0, 0)) }
       : { label: sel.state === "going" ? "Continue at " + sel.nextId : "Start paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id }, () => this.openMission(Math.max(0, g.next))) }) : null;
     return {
@@ -3322,6 +3329,11 @@ class Component extends DCLogic {
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
       indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0),
+      // the tabs' keys (ARIA tabs): the arrows step and wrap, Home and End jump; the new tab is selected and focused
+      indTabKeys: e => { const live = () => [...document.querySelectorAll(".ind-tab")].filter(t => !t.closest("x-dc")), tabs = live(), i = tabs.indexOf(e.currentTarget);
+        const j = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i - 1 + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+        if (j < 0) return; e.preventDefault(); tabs[j].click();
+        requestAnimationFrame(() => { const t = live()[j]; if (t) { t.focus(); t.scrollIntoView({ inline: "nearest", block: "nearest" }); } }); },
       indHasAfter: !!ind.after, indAfter: (ind.after || []).map(a => ({ code: a[0], text: a[1] })),
       indMapOpen: !!s.pmMapOpen && !s.finishCard, indMapClose: closeMap,
       indMapGo: () => this.setState({ pmMapOpen: true }, () => { const h = document.getElementById("ind-map-title"); if (h) h.focus({ preventScroll: true }); }),
