@@ -773,7 +773,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* -- The industry page's layout (Murci picked 2026-10-25, of three designs): B Stage on a phone, A Split from a tablet up.
    Stage: the professional fills a stage with the industry's name, blurb and careers over it (the Sanlam reference's expanded
      card), the map a small box in its top-right corner; the subjects one calm list below.
-   Split: the professional large with the map as a small box beside them; the intro, then the subjects in two columns. */
+   Split: the professional large with the map as a small box beside them; the intro, then the subjects in two columns.
+   2026-10-26 (Murci): on every size the name, blurb and careers sit at the stage's TOP-LEFT, layered over it, and the
+   professional moves to the stage's RIGHT: read first, then see the person. */
 .ind-pro { grid-area: pro; }
 .ind-mapbox { grid-area: map; }
 .ind-intro { grid-area: intro; }
@@ -784,20 +786,24 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind { grid-template-areas: "pro" "secs" "after"; }
   .ind .ind-intro, .ind .ind-mapbox { grid-area: pro; z-index: 2; }
   .ind .ind-pro { height: clamp(460px, 72dvh, 640px); overflow: hidden; border-radius: 24px; }   /* no glow; the professional a little larger (was 66dvh, max 580) */
-  .ind .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 42%, rgba(3, 18, 44, 0.92) 100%); pointer-events: none; }
-  .ind .ind-pro > .ind-pro-media { left: 34%; height: 100%; }   /* left of centre: the map box sits beside them, not on their face */
+  /* the text at the top: a soft dark fade behind it; the professional right of centre and a little lower, the face under the text */
+  .ind .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 12, 36, 0.9) 0%, rgba(3, 12, 36, 0.55) 26%, transparent 46%); pointer-events: none; }
+  .ind .ind-pro > .ind-pro-media { left: 62%; height: 80%; }
   .ind .ind-pro > .ind-pro-cap { display: none; }   /* the placeholder caption has no room beside the map box */
-  .ind .ind-intro { align-self: end; max-width: 560px; padding: 0 18px 22px; }
+  .ind .ind-intro { align-self: start; max-width: 560px; padding: 18px 18px 0; }
   .ind .ind-intro > .ind-name { font-size: clamp(26px, 4vw, 42px); }
-  .ind .ind-mapbox { align-self: start; justify-self: end; margin: 64px 14px 14px; width: 132px; min-height: 0; padding: 10px; }   /* a little lower (Murci 2026-10-25) */
+  .ind .ind-mapbox { align-self: end; justify-self: start; margin: 14px; width: 132px; min-height: 0; padding: 10px; }   /* bottom-left: the text holds the top, the person the right */
   .ind .ind-mapbox > .ind-mapbox-art { margin-bottom: 4px; }
 }
 @media (min-width: 600px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "pro map" "intro intro" "secs secs" "after after"; column-gap: 16px; }
+  .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "pro map" "secs secs" "after after"; column-gap: 16px; }
+  .ind .ind-intro { grid-area: pro; z-index: 2; align-self: start; justify-self: start; max-width: min(46%, 460px); padding: 28px 0 0 28px; }
+  .ind-pro > .ind-pro-media { left: 74%; }   /* the stage's right side */
   .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */
 }
 @media (min-width: 600px) and (max-width: 1099px) {
   .ind-pro > .ind-pro-cap { display: none; }   /* a tablet's stage is too narrow: the placeholder caption ran into the feet (142 px free, 218 needed) */
+  .ind-pro > .ind-pro-media { left: 68%; }   /* a tablet's stage is narrow: at 74% the person ran 31 px past it, under the map box */
 }
 @media (min-width: 1100px) {
   .ind { grid-template-columns: minmax(0, 1fr) 240px; }
