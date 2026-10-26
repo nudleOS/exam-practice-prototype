@@ -877,3 +877,13 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-pv { position: static; }
 }
 @media (min-width: 600px) { .hm-search { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: clamp(220px, 34vw, 440px); } }
+
+/* -- A desktop's home title across the companion's belly (Murci 2026-10-26): the words sit where bellySync() measures the belly
+   (--belly-l / --belly-y), over the dimmed figure, ending before the cards; the page's own h1 stays for screen readers only */
+.hm-belly { display: none; }
+@media (min-width: 1100px) {
+  .hm-belly { display: block; position: absolute; z-index: 1; left: var(--belly-l, 0px); top: var(--belly-y, 50%); transform: translateY(-50%);
+    font-size: clamp(36px, 3.1vw, 50px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; color: #ffffff; white-space: nowrap;
+    pointer-events: none; text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6); }
+  .hm-headblock > h1 { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap !important; }
+}

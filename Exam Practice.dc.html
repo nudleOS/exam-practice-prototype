@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=97">
+  <link rel="stylesheet" href="nx-map.css?v=98">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -243,6 +243,8 @@
           <sc-if value="{{ hmHasNote }}" hint-placeholder-val="{{ false }}"><p class="lv-err hm-note" role="alert">{{ hmNote }}</p></sc-if>
           <!-- the companion stands in the page's first quarter, the cards start beside it (Murci 2026-10-25) -->
           <img class="hm-bgbot" src="assets/home-robot.webp" alt="" aria-hidden="true" decoding="async">
+          <!-- a desktop shows the title across the companion's belly (Murci 2026-10-26); the page's h1 stays for screen readers -->
+          <span class="hm-belly" aria-hidden="true">{{ homeTitle }}</span>
           <span class="pm-kicker hm-kick">Choose an industry</span>
           <div class="hm-deckwrap">
           <div class="hm-deck" data-hmdeck="true" onScroll="{{ hmDeckScroll }}">
@@ -2423,8 +2425,20 @@ class Component extends DCLogic {
   // scrolls, and the arrow showed and did nothing); runs after each render, so a resize or a widened card is seen too
   deckEndSync() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
     const end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8; if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); }
+  // the desktop title across the companion's belly: measure where the figure is drawn (contain, anchored at the feet) and set
+  // --belly-l / --belly-y on .hm-choose; centred on the belly, shifted left so it ends 16 px before the first card
+  bellySync() { const live = sel => [...document.querySelectorAll(sel)].find(e => !e.closest("x-dc"));
+    const box = live(".hm-choose"), bot = live(".hm-bgbot"), t = live(".hm-belly"), deck = live(".hm-deck");
+    if (!box || !bot || !t || !deck || getComputedStyle(t).display === "none") return;
+    if (!bot.complete || !bot.naturalWidth) { bot.addEventListener("load", () => this.bellySync(), { once: true }); return; }
+    const b = bot.getBoundingClientRect(), c = box.getBoundingClientRect(), k = Math.min(b.width / bot.naturalWidth, b.height / bot.naturalHeight);
+    const dw = bot.naturalWidth * k, dh = bot.naturalHeight * k, dx = b.left + (b.width - dw) / 2, dy = b.bottom - dh;
+    const bx = dx + dw * 0.44, by = dy + dh * 0.39, w = t.offsetWidth, stop = deck.getBoundingClientRect().left - 16;
+    box.style.setProperty("--belly-l", Math.round(Math.min(bx - w / 2, stop - w) - c.left) + "px");
+    box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
     this.deckEndSync();
+    this.bellySync();
     this.buildSync();
     this.progSync();
     this.gateSync();
