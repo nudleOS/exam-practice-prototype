@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=108">
+  <link rel="stylesheet" href="nx-map.css?v=110">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2451,6 +2451,25 @@ class Component extends DCLogic {
   // scrolls, and the arrow showed and did nothing); runs after each render, so a resize or a widened card is seen too
   deckEndSync() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
     const end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8; if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); }
+  // the bend (Murci 2026-10-26: the cards slid past should "truly look like a bend they go into"): the row runs straight, then
+  // curves away into the screen at the deck's start. A card reaching the start turns on its vertical axis about its right edge
+  // (its left edge goes deep) and slides into the bend zone (the deck's left padding), where the cards already round the bend
+  // pile up as thinner, darker slivers. Placed from the deck's scroll on every scroll event, so it follows the finger both ways;
+  // the snap slots never move (a moved snap target breaks the snap). Reduced motion: the plain stack.
+  hmBend() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
+    const slots = [...d.children].filter(e => e.classList.contains("hm-slot")); if (slots.length < 2) return;
+    const cs = getComputedStyle(d), pad = parseFloat(cs.paddingLeft) || 0, tilt = parseFloat(cs.getPropertyValue("--hm-tilt")) || 0;
+    const step = slots[1].offsetLeft - slots[0].offsetLeft, still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const P = "perspective(1400px) ", tuck = 24, gap = pad * 0.36;   // a bent card's right edge tucks 24 px under the next card
+    slots.forEach(sl => { const c = sl.firstElementChild; if (!c) return;
+      const u = (sl.offsetLeft - slots[0].offsetLeft - d.scrollLeft) / step;   // 0 at the start, 1 one place on, below 0 in the bend
+      if (still || u >= 0 || !pad) { c.style.transform = tilt ? P + "rotateY(" + tilt + "deg)" : ""; c.style.filter = ""; return; }
+      const k = -u, e = Math.min(k, 1), s = e * e * (3 - 2 * e), W = c.offsetWidth;   // s: smoothstep into the bend
+      const right = k <= 1 ? pad + W + (tuck - W) * s : pad + tuck - gap * (k - 1);    // where its right edge goes
+      const deg = k <= 1 ? tilt + (-64 - tilt) * s : Math.max(-84, -64 - 8 * (k - 1));
+      const lit = k <= 1 ? 1 - 0.45 * s : Math.max(0.2, 0.55 - 0.12 * (k - 1));
+      c.style.transform = "translateX(" + (right - (pad + u * step + W)).toFixed(1) + "px) " + P + "rotateY(" + deg.toFixed(2) + "deg)";
+      c.style.filter = "brightness(" + lit.toFixed(3) + ")"; }); }
   // the desktop title across the companion's belly: measure where the figure is drawn (contain, anchored at the feet) and set
   // --belly-l / --belly-y on .hm-choose; centred on the belly, shifted left so it ends 16 px before the first card
   bellySync() { const live = sel => [...document.querySelectorAll(sel)].find(e => !e.closest("x-dc"));
@@ -2459,11 +2478,11 @@ class Component extends DCLogic {
     if (!bot.complete || !bot.naturalWidth) { bot.addEventListener("load", () => this.bellySync(), { once: true }); return; }
     const b = bot.getBoundingClientRect(), c = box.getBoundingClientRect(), k = Math.min(b.width / bot.naturalWidth, b.height / bot.naturalHeight);
     const dw = bot.naturalWidth * k, dh = bot.naturalHeight * k, dx = b.left + (b.width - dw) / 2, dy = b.bottom - dh;
-    const bx = dx + dw * 0.44, by = dy + dh * 0.39, w = t.offsetWidth, stop = deck.getBoundingClientRect().left - 16;
+    const bx = dx + dw * 0.44, by = dy + dh * 0.45,   /* a bit lower (Murci 2026-10-26; was 0.39) */ w = t.offsetWidth, stop = deck.getBoundingClientRect().left - 8;   /* before the bend zone */
     box.style.setProperty("--belly-l", Math.round(Math.min(bx - w / 2, stop - w) - c.left) + "px");
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
-    this.deckEndSync();
+    this.deckEndSync(); this.hmBend();
     this.bellySync();
     this.buildSync();
     this.progSync();
@@ -4955,10 +4974,10 @@ class Component extends DCLogic {
               if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; }),
       // the arrow at the cards' end: slides one card on; at the last card it fades (the deck reports its scroll)
       hmDeckEnd: s.hmDeckEnd ? "true" : "false",
-      hmDeckScroll: e => { const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
+      hmDeckScroll: e => { this.hmBend(); const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
         if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); },
-      hmDeckNext: () => { const d = document.querySelector("[data-hmdeck]"), c = d && d.querySelector(".hm-card");
-        if (d) d.scrollBy({ left: c ? c.offsetWidth - 18 : 132,   /* one card on: the cards overlap by 18 px */ behavior: s.reduced ? "auto" : "smooth" }); },
+      hmDeckNext: () => { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")), sl = d ? d.querySelectorAll(".hm-slot") : [];
+        if (d) d.scrollBy({ left: sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : 132,   /* one card on (the overlap differs per device) */ behavior: s.reduced ? "auto" : "smooth" }); },
       ...this.hmSearchVals(s, L, go) };
   }
   // the home's search (Murci 2026-10-26: the "Exam practice" title becomes a search bar): industries by name, careers, subjects

@@ -607,28 +607,20 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (prefers-reduced-motion: reduce) { .hm-card, .hm-card > .hm-art { transition: none; } }
 /* the cards sit slightly stacked (Murci 2026-10-26, from a frame of the Back transition), on every device: each overlaps the
    one before it by 18 px, the later card on top, a soft shadow on its left edge giving the depth (the frosted card above also
-   blurs the one under it); a card hovered or opened comes to the front, so its widened text is never under its neighbour */
+   blurs the one under it); a card opened (touch) comes to the front, so its widened text is never under its neighbour */
 .hm-deck { gap: 0; }
 .hm-slot { flex: none; display: flex; scroll-snap-align: start; }   /* the unmoving snap target around each gliding card */
 .hm-slot + .hm-slot { margin-left: -18px; }
 .hm-card { box-shadow: -14px 0 26px -10px rgba(0, 0, 0, 0.6); }
 .hm-card[aria-expanded="true"] { z-index: 2; }
-@media (hover: hover) and (pointer: fine) { .hm-card:hover, .hm-card:focus-visible { z-index: 2; } }
-/* the slide-over stack (Murci 2026-10-26, picked A of three, "front card bigger"): driven by the deck's own scroll, so the
-   motion follows the finger both ways. Over the last card-width before a card reaches the deck's start it eases from full
-   size to 94% (so at rest the card at the start sits a little smaller under the next one); then, as the next card glides
-   over it, it stays pinned at the start (translateX by its own width cancels the scroll), shrinking to 86% and darkening
-   (2026-10-26: it faded to 35% opacity, which read as see-through). Transform and brightness. No scroll-driven animations (Firefox today) or reduced motion: the plain
-   stacked deck. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .hm-card { transform-origin: 0% 50%; animation: hm-glide linear both; animation-timeline: view(inline); animation-range: exit -100% exit 100%; }
-  }
-}
-@keyframes hm-glide {
-  0% { transform: translateX(0) scale(1); filter: brightness(1); }
-  50% { transform: translateX(0) scale(0.94); filter: brightness(0.92); }
-  100% { transform: translateX(100%) scale(0.86); filter: brightness(0.45); }   /* covered: it sinks into shadow, never see-through */
+/* a desktop's stack (Murci 2026-10-26: "overlap a little bit more as a proper stack ... a bit 3D stacked, not too much"): 56 px
+   overlap, each card leaning 9 deg on its vertical axis (--hm-tilt, read by hmBend(), which sets every card's transform), so its
+   covered right edge recedes under the next card. The bend: hmBend() in the page script; the deck's left padding is the bend
+   zone where the cards rounding it gather (56 px on a phone, 96 from a tablet). */
+.hm-card { transform-origin: 100% 50%; will-change: transform; }
+@media (min-width: 1100px) {
+  .hm-slot + .hm-slot { margin-left: -56px; }
+  .hm-deck { --hm-tilt: 9deg; }
 }
 /* the map's lead (Murci, 2026-10-25: "needs to appear on the second page"): the paper under way, then the grade switch */
 
@@ -722,23 +714,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%); mask-image: linear-gradient(180deg, #000 55%, transparent 100%); }
 .hm-choose > .hm-kickrow, .hm-choose > .hm-deckwrap, .hm-choose > .hm-note { position: relative; z-index: 1; }
 .hm-choose > .hm-kickrow { margin-left: 28%; }
-.hm-deck { margin-left: 28%; margin-right: -16px; padding-left: 0; scroll-padding-left: 0; }
+.hm-deck { margin-left: calc(28% - 56px); margin-right: -16px; padding-left: 56px; scroll-padding-left: 56px; }   /* the first card stays at 28%; left of it, the bend zone */
 @media (min-width: 600px) {
   .hm-bgbot { left: 6%; bottom: -150px; width: 40%; height: calc(100% + 220px); }   /* under the first cards: behind the row; never up into the top bar */
   .hm-choose > .hm-kickrow { margin-left: 33%; }
   @media (min-width: 1100px) { .hm-choose > .hm-kickrow { margin-top: 36px; } }   /* a desktop's cards a bit lower (Murci 2026-10-26) */
-  .hm-deck { margin-left: 33%; margin-right: 0; }
+  .hm-deck { margin-left: calc(33% - 96px); margin-right: 0; padding-left: 96px; scroll-padding-left: 96px; }
   .hm-headblock { align-items: flex-start !important; padding-left: calc(20px + (100% - 40px) * 0.33) !important; padding-right: 20px !important; }   /* over the home's inline styles */
   .hm-headblock > h1 { text-align: left !important; }
-}
-@media (hover: hover) and (pointer: fine) {
-  .hm-card:hover .hm-more, .hm-card:focus-visible .hm-more { display: flex; }
-  .hm-card:hover > .hm-art, .hm-card:focus-visible > .hm-art { opacity: 0.55; }
-  .hm-card:hover, .hm-card:focus-visible { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
-}
-@media (hover: hover) and (pointer: fine) and (min-width: 1100px) {
-  .hm-card:hover, .hm-card:focus-visible { width: 380px; }
-  .hm-card:hover > .hm-art, .hm-card:focus-visible > .hm-art { left: 74%; }
 }
 
 /* the home's school-level pill (Murci 2026-10-26): set once beside "Choose an industry"; reads "Secondary school · Grade 12" */
