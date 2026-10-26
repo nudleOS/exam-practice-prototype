@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=102">
+  <link rel="stylesheet" href="nx-map.css?v=104">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -442,16 +442,9 @@
     <main data-pmap="true" class="pm" style="--pm-w:{{ pmRoadW }}">
       <div class="pm-col">
         <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
-        <!-- the second page opens with the learner's paper under way and the grade (Murci, 2026-10-25), minimal: one slim line each,
-             no boxes ("needs the same thinking to be minimal and not take that much space") -->
+        <!-- the second page's top line: the grade (Murci, 2026-10-25); the Continue line went 2026-10-26 (Murci: remove it; the year
+             shelf shows the paper under way) -->
         <div class="pm-lead">
-          <sc-if value="{{ pmContinueOn }}" hint-placeholder-val="{{ false }}">
-            <button type="button" class="pm-cont" data-continuecard="true" data-mapcontinue="true" onClick="{{ continueGo }}">
-              <span class="glass-dot" aria-hidden="true"></span>
-              <span class="pm-cont-txt"><span class="pm-cont-k">{{ resumeKicker }}</span><span class="pm-cont-t">{{ continueTitle }}</span></span>
-              <b class="pm-cont-go">{{ continueLabel }} →</b>
-            </button>
-          </sc-if>
           <div class="pm-grades" role="group" aria-label="{{ hmGradeLabel }}">
             <sc-for list="{{ hmGrades }}" as="g" hint-placeholder-count="3">
               <button type="button" class="pm-gr" aria-pressed="{{ g.on }}" onClick="{{ g.pick }}">{{ g.label }}</button>
@@ -4887,8 +4880,6 @@ class Component extends DCLogic {
     const returning = s.home !== "first" && s.screen === "pick", picking = returning && s.picking, showPicker = !returning || picking;
     return { homeCtaBg: "var(--grad)", homeCtaBorder: "none", homeStartShadow: "0 12px 30px rgba(30,70,255,0.36)", homeContinueShadow: "0 14px 36px rgba(30,70,255,0.38)",
       homeContinueAnim: s.reduced ? "none" : "breathe 3.2s ease-in-out infinite",
-      // the Continue card sits on the map, the second page (Murci, 2026-10-25): shown while the learner has a paper under way
-      pmContinueOn: s.home !== "first",
       ...this.lvVals(s, (s.vw || 800) < 600), ...this.hmDeckVals(s) };
   }
   // Direction A of the card chooser (Murci picked it 2026-10-25, from a Sanlam training page he liked; the three mocks are in

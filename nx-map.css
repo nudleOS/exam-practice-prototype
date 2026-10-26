@@ -581,7 +581,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* solid (Murci 2026-10-26: the stacked cards "appear transparent on top of each" other): an opaque body, the same colours the
      frosted glass showed over the page, so a card on top hides the one under it; the companion behind the deck is hidden where
      the cards cover him */
-  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, #111316, #090a0c);   /* near-black, never #000 (Murci 2026-10-26) */
+  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, #0a1d45, #04122b);   /* dark blue (Murci 2026-10-26: "dark blue please, not black") */
   transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
 .hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 /* each card shows its industry's professional with their hologram (Murci 2026-10-25), the same 2:3 stack as the industry page */
@@ -593,7 +593,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-card > .hm-art > .ind-pro-obj { animation-name: nx-pro-lift; }   /* more specific than the shared rule below */
 @keyframes nx-pro-lift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-16px) scale(1.02); } }
 .hm-card[aria-expanded="true"] > .hm-art { left: 74%; opacity: 0.55; }
-.hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(9, 10, 12, 0.1) 30%, rgba(9, 10, 12, 0.92) 100%); }
+.hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 18, 44, 0.1) 30%, rgba(3, 18, 44, 0.92) 100%); }
 .hm-card > .hm-ctext { position: absolute; left: 12px; right: 12px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
 .hm-ctext > .hm-cname { font-size: 16px; font-weight: 700; line-height: 1.2; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
 .hm-ctext > .hm-more { display: none; flex-direction: column; align-items: flex-start; gap: 3px; }
@@ -723,7 +723,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    backdrop (on a phone it is wider and the deck scrolls beside it). A mouse opens a card by hovering and a click goes in; on a
    tablet-width window hover only reveals the text (widening there would wrap the card away from the pointer). A touch screen
    taps to open, then to go. The page is a little darker than the other screens (Murci 2026-10-25); the companion makes no offer. */
-[data-screen-label="01 Pick"] { --scr-dim: 0.32; }   /* read by the screen wrapper's inline background (Exam Practice.dc.html) */
+[data-screen-label="01 Pick"] { --scr-dim: 0.5; }   /* darker again (Murci 2026-10-26: "more darker"; was 0.32) */   /* read by the screen wrapper's inline background (Exam Practice.dc.html) */
 .hm-choose { position: relative; max-width: none; }
 .hm-bgbot { position: absolute; left: -8%; bottom: -90px; width: 60%; height: calc(100% + 210px); object-fit: contain; object-position: 50% 100%;
   pointer-events: none; z-index: 0; opacity: 0.42; filter: saturate(0.55) brightness(0.9);
@@ -748,21 +748,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-card:hover > .hm-art, .hm-card:focus-visible > .hm-art { left: 74%; }
 }
 
-/* the map's lead, minimal (Murci 2026-10-25): the paper under way as one line of text with its Continue, the grades as text tabs */
-.pm-cont { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; min-height: 44px; padding: 0; border: 0; background: none;
-  color: #dfe6ff; font: inherit; text-align: left; cursor: pointer; }
-.pm-cont > .pm-cont-txt { display: flex; gap: 6px; min-width: 0; font-size: 13.5px; white-space: nowrap; overflow: hidden; }
-.pm-cont-txt > .pm-cont-k { color: #9fb0dd; overflow: hidden; text-overflow: ellipsis; }
-.pm-cont-txt > .pm-cont-t { font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
-.pm-cont > .pm-cont-go { flex: none; font-size: 13.5px; color: #81b1ff; white-space: nowrap; }
+/* the map's lead, minimal (Murci 2026-10-25): the grades as text tabs (the Continue line went 2026-10-26) */
 .pm-grades { display: flex; gap: 16px; }
 .pm-gr { min-height: 44px; padding: 0 2px; border: 0; border-bottom: 2px solid transparent; background: none; color: #8fa0d6; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .pm-gr[aria-pressed="true"] { color: #eef3ff; border-bottom-color: #5b8cff; }
-.pm-cont:focus-visible, .pm-gr:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.pm-gr:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .ind-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13.5px; color: #9fb0dd; }
 .ind-fact > b { color: #eef3ff; }
 @media (max-width: 599px) {
-  .pm-cont-txt > .pm-cont-k { display: none; }
   /* a phone's home top (Murci 2026-10-25: "control the spacing"): 28 px under the top bar, the title centred
      (2026-10-26; it sat on the cards' left edge), 10 px to the label, 12 px to the cards; the cards shorter by the same 30 px */
   .hm-headblock { align-items: center !important; padding: 20px 16px 0 !important; }   /* centred on a phone (Murci 2026-10-26); 28 px from the search to the title */
@@ -803,14 +796,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 12, 36, 0.9) 0%, rgba(3, 12, 36, 0.55) 26%, transparent 46%); pointer-events: none; }
   .ind .ind-pro > .ind-pro-media { left: 62%; height: 80%; }
   .ind .ind-pro > .ind-pro-cap { display: none; }   /* the placeholder caption has no room beside the map box */
-  .ind .ind-intro { align-self: start; max-width: 560px; padding: 18px 18px 0; }
+  .ind .ind-intro { align-self: start; max-width: 560px; padding: 28px 18px 0; }   /* 10 px lower (2026-10-26); more would cover the face */
   .ind .ind-intro > .ind-name { font-size: clamp(26px, 4vw, 42px); }
   .ind .ind-mapbox { align-self: end; justify-self: start; margin: 14px; width: 132px; min-height: 0; padding: 10px; }   /* bottom-left: the text holds the top, the person the right */
   .ind .ind-mapbox > .ind-mapbox-art { margin-bottom: 4px; }
 }
 @media (min-width: 600px) {
   .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "pro map" "secs secs" "after after"; column-gap: 16px; }
-  .ind .ind-intro { grid-area: pro; z-index: 2; align-self: start; justify-self: start; max-width: min(46%, 460px); padding: 28px 0 0 28px; }
+  .ind .ind-intro { grid-area: pro; z-index: 2; align-self: center; justify-self: start; max-width: min(46%, 460px); padding: 0 0 0 28px; }   /* centred on the stage's left (Murci 2026-10-26) */
   .ind-pro > .ind-pro-media { left: 74%; }   /* the stage's right side */
   .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */
 }
