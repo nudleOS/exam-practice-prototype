@@ -577,8 +577,10 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-card { --sc: #93a4d6; --sc-rgb: 147, 164, 214; position: relative; flex: none; width: 150px; height: 280px; padding: 0; overflow: hidden;
   height: clamp(280px, calc(100dvh - 250px), 460px);   /* a phone's cards fill the screen below the title: no empty half */
   border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.06); color: #ffffff; font: inherit; text-align: left; cursor: pointer;
-  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, rgba(10, 31, 74, 0.62), rgba(4, 19, 46, 0.84));
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);   /* frosted: the companion behind the cards shows through, softly */
+  /* solid (Murci 2026-10-26: the stacked cards "appear transparent on top of each" other): an opaque body, the same colours the
+     frosted glass showed over the page, so a card on top hides the one under it; the companion behind the deck is hidden where
+     the cards cover him */
+  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, #0a1d45, #04122b);
   transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
 .hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 /* each card shows its industry's professional with their hologram (Murci 2026-10-25), the same 2:3 stack as the industry page */
@@ -620,8 +622,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the slide-over stack (Murci 2026-10-26, picked A of three, "front card bigger"): driven by the deck's own scroll, so the
    motion follows the finger both ways. Over the last card-width before a card reaches the deck's start it eases from full
    size to 94% (so at rest the card at the start sits a little smaller under the next one); then, as the next card glides
-   over it, it stays pinned at the start (translateX by its own width cancels the scroll), shrinking to 86% and fading.
-   Transform and opacity only (the compositor's). No scroll-driven animations (Firefox today) or reduced motion: the plain
+   over it, it stays pinned at the start (translateX by its own width cancels the scroll), shrinking to 86% and darkening
+   (2026-10-26: it faded to 35% opacity, which read as see-through). Transform and brightness. No scroll-driven animations (Firefox today) or reduced motion: the plain
    stacked deck. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
@@ -629,9 +631,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   }
 }
 @keyframes hm-glide {
-  0% { transform: translateX(0) scale(1); opacity: 1; }
-  50% { transform: translateX(0) scale(0.94); opacity: 1; }
-  100% { transform: translateX(100%) scale(0.86); opacity: 0.35; }
+  0% { transform: translateX(0) scale(1); filter: brightness(1); }
+  50% { transform: translateX(0) scale(0.94); filter: brightness(0.92); }
+  100% { transform: translateX(100%) scale(0.86); filter: brightness(0.45); }   /* covered: it sinks into shadow, never see-through */
 }
 /* the map's lead (Murci, 2026-10-25: "needs to appear on the second page"): the paper under way, then the grade switch */
 .pm-lead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; margin: 0 0 10px; }
