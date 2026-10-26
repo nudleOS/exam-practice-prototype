@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=96">
+  <link rel="stylesheet" href="nx-map.css?v=97">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -1774,7 +1774,20 @@ const INDUSTRIES = [
   { key: "finance", words: "accountant accounting banker banking actuary economist economics insurance broker investment auditor business entrepreneur management marketing money", pro: "office", name: "Finance, Insurance & Business", icon: "chart", c: "#2dd4bf", rgb: "45,212,191",
     blurb: "Help people and businesses plan, protect and grow their money.", careers: ["Financial adviser", "Insurance broker", "Accountant"],
     subjects: [["Mathematics", "required"], ["Business Studies", "unverified"]],
-    after: [["RE5", "Representatives: your licence to advise clients."], ["RE1", "Key individuals: lead a financial services business."]] }];
+    after: [["RE5", "Representatives: your licence to advise clients."], ["RE1", "Key individuals: lead a financial services business."]] },
+  // added 2026-10-26 (Murci approved; the mapping doc's "Added 2026-10-26": sources 20-29, Education's from search snippets only)
+  { key: "ict", words: "software developer programmer programming coding code computer computers data analyst scientist cybersecurity security ai tech technology it network web app", pro: "robotics", name: "ICT & Digital", icon: "calc", c: "#22d3ee", rgb: "34,211,238",
+    blurb: "Build the software, data and networks the world runs on.", careers: ["Software developer", "Data analyst", "Cybersecurity analyst"],
+    subjects: [["Mathematics", "required"], ["Physical Sciences", "some", "Or Life Sciences: some programmes ask for one science."], ["Life Sciences", "some", "Or Physical Sciences: some programmes ask for one science."]] },
+  { key: "transport", words: "pilot aviation aircraft airline flying logistics supply chain transport shipping freight rail trucking air traffic maritime", pro: "astronaut", name: "Transport, Logistics & Aviation", icon: "globe", c: "#f59e0b", rgb: "245,158,11",
+    blurb: "Move people and goods by road, rail, sea and air, safely and on time.", careers: ["Logistics planner", "Commercial pilot", "Aircraft maintenance engineer"],
+    subjects: [["Mathematics", "required"], ["Physical Sciences", "recommended", "Required for pilot training."], ["Mathematical Literacy", "some"]] },
+  { key: "mining", words: "mining miner mine geologist geology minerals metallurgy energy power electricity solar renewable oil gas electrical engineer", pro: "electrician", name: "Mining & Energy", icon: "gear", c: "#eab308", rgb: "234,179,8",
+    blurb: "Find the minerals and make the power that everything we use depends on.", careers: ["Mining engineer", "Geologist", "Power engineer"],
+    subjects: [["Mathematics", "required"], ["Physical Sciences", "required"], ["Geography", "unverified"]] },
+  { key: "education", words: "teacher teaching educator school tutor lecturer social worker counsellor coach foundation phase", pro: "office", name: "Education & Social Services", icon: "book", c: "#a78bfa", rgb: "167,139,250",
+    blurb: "Teach, guide and support people to learn and grow.", careers: ["Foundation phase teacher", "Maths teacher", "Science teacher"],
+    subjects: [["Mathematics", "some", "Foundation phase: Maths or Maths Lit, at some universities."], ["Mathematical Literacy", "some"], ["Life Sciences", "some", "To teach Life Sciences."], ["Physical Sciences", "some", "To teach Physical Sciences."]] }];
 const SUBJECT_TAG = { required: "Required", recommended: "Recommended", unverified: "Recommended (unverified)", some: "Accepted by some programmes · check your faculty" };
 const PAPER_UNITS = { "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
 const PROG_SHORT = { ncv: "NC(V)", high_school: "High school" };
