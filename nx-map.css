@@ -581,7 +581,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* solid (Murci 2026-10-26: the stacked cards "appear transparent on top of each" other): an opaque body, the same colours the
      frosted glass showed over the page, so a card on top hides the one under it; the companion behind the deck is hidden where
      the cards cover him */
-  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, #0a1d45, #04122b);
+  background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, #111316, #090a0c);   /* near-black, never #000 (Murci 2026-10-26) */
   transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1), flex-grow 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms; }
 .hm-card[aria-expanded="true"] { width: 260px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
 /* each card shows its industry's professional with their hologram (Murci 2026-10-25), the same 2:3 stack as the industry page */
@@ -593,7 +593,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-card > .hm-art > .ind-pro-obj { animation-name: nx-pro-lift; }   /* more specific than the shared rule below */
 @keyframes nx-pro-lift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-16px) scale(1.02); } }
 .hm-card[aria-expanded="true"] > .hm-art { left: 74%; opacity: 0.55; }
-.hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 18, 44, 0.1) 30%, rgba(3, 18, 44, 0.92) 100%); }
+.hm-card > .hm-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(9, 10, 12, 0.1) 30%, rgba(9, 10, 12, 0.92) 100%); }
 .hm-card > .hm-ctext { position: absolute; left: 12px; right: 12px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
 .hm-ctext > .hm-cname { font-size: 16px; font-weight: 700; line-height: 1.2; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
 .hm-ctext > .hm-more { display: none; flex-direction: column; align-items: flex-start; gap: 3px; }
