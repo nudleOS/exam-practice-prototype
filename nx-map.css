@@ -563,16 +563,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    lays them in a grid of four, a desktop in one row where the opened card widens. Class and child selectors only: the runtime
    wraps every {{ value }} in a span. */
 .hm-choose { align-self: stretch; width: 100%; max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.hm-fields { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.hm-field { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.08);
-  color: #dfe6ff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-.hm-field[aria-pressed="true"] { background: #ffffff; border-color: #ffffff; color: #0b1d47; }
-.hm-grades { display: inline-flex; gap: 2px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); }
-.hm-grade { min-height: 40px; padding: 0 16px; border: 0; border-radius: 10px; background: none; color: var(--text2); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
-.hm-grade[aria-pressed="true"] { background: var(--cobalt, #1e46ff); color: #ffffff; }
-.hm-field:focus-visible, .hm-grade:focus-visible, .hm-card:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.hm-card:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .hm-note { text-align: center; }
-.hm-kickrow { align-self: stretch; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.hm-kickrow { align-self: stretch; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 4px; }
 .hm-kickrow > .hm-kick { margin: 0; }
 .hm-deck { align-self: stretch; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; padding: 4px 16px 14px; margin: 0 -16px; scrollbar-width: none; }
 .hm-deck::-webkit-scrollbar { display: none; }
@@ -749,14 +742,16 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-card:hover > .hm-art, .hm-card:focus-visible > .hm-art { left: 74%; }
 }
 
-/* the home's grade pill (Murci picked A, 2026-10-26): set once beside "Choose an industry"; a native select, styled as a pill */
-.hm-lvpick { position: relative; display: inline-flex; flex: none; }
-.hm-lvpick > .hm-lvsel { -webkit-appearance: none; appearance: none; box-sizing: border-box; min-height: 36px; padding: 0 30px 0 13px; border-radius: 999px;
-  border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.12); color: #dfe6ff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+/* the home's school-level pill (Murci 2026-10-26): set once beside "Choose an industry"; reads "Secondary school · Grade 12" */
+.hm-lvpick { position: relative; display: inline-flex; align-items: center; flex: none; box-sizing: border-box; min-height: 36px; padding: 0 30px 0 13px; border-radius: 999px;
+  border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.12); color: #dfe6ff; font-size: 13px; font-weight: 700; white-space: nowrap; }
+/* the native select lies transparent over the pill: its own text would show only "Grade 12", the pill shows the school too.
+   16 px stops iOS zooming on focus. */
+.hm-lvpick > .hm-lvsel { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; font-size: 16px; }
 .hm-lvpick > svg { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); color: #9fbcff; pointer-events: none; }
-.hm-lvsel option { background: #0d1a3f; color: #ffffff; }
-.hm-lvsel:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
-@media (pointer: coarse) { .hm-lvpick > .hm-lvsel { min-height: 44px; } }   /* a finger's target */
+.hm-lvsel option, .hm-lvsel optgroup { background: #0d1a3f; color: #ffffff; }
+.hm-lvpick:has(> .hm-lvsel:focus-visible) { outline: 3px solid #81b1ff; outline-offset: 2px; }
+@media (pointer: coarse) { .hm-lvpick { min-height: 44px; } }   /* a finger's target */
 .ind-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13.5px; color: #9fb0dd; }
 .ind-fact > b { color: #eef3ff; }
 @media (max-width: 599px) {

@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=107">
+  <link rel="stylesheet" href="nx-map.css?v=108">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -233,13 +233,6 @@
         <!-- Direction A (Murci, 2026-10-25): the home chooses. Field (only when more than one is shown), then a tall card per subject.
              The Continue card and the grade switch live on the map, the second page (Murci, 2026-10-25). -->
         <div class="hm-choose" data-hmchoose="true">
-          <sc-if value="{{ hmFieldsOn }}" hint-placeholder-val="{{ false }}">
-            <div class="hm-fields" role="group" aria-label="What you study">
-              <sc-for list="{{ hmFields }}" as="f" hint-placeholder-count="2">
-                <button type="button" class="hm-field" aria-pressed="{{ f.on }}" onClick="{{ f.pick }}">{{ f.label }}</button>
-              </sc-for>
-            </div>
-          </sc-if>
           <sc-if value="{{ hmHasNote }}" hint-placeholder-val="{{ false }}"><p class="lv-err hm-note" role="alert">{{ hmNote }}</p></sc-if>
           <!-- the companion stands in the page's first quarter, the cards start beside it (Murci 2026-10-25) -->
           <img class="hm-bgbot" src="assets/home-robot.webp" alt="" aria-hidden="true" decoding="async">
@@ -249,9 +242,13 @@
           <div class="hm-kickrow">
             <span class="pm-kicker hm-kick">Choose an industry</span>
             <span class="hm-lvpick">
-              <select class="hm-lvsel" aria-label="{{ hmGradeLabel }}" value="{{ hmGradeVal }}" onChange="{{ hmGradePick }}">
-                <sc-for list="{{ hmGrades }}" as="g" hint-placeholder-count="3">
-                  <option value="{{ g.value }}">{{ g.label }}</option>
+              <!-- the pill shows "school · level"; the transparent native select over it opens the grouped menu (Murci 2026-10-26) -->
+              <span class="hm-lvtxt" aria-hidden="true">{{ hmLvText }}</span>
+              <select class="hm-lvsel" aria-label="School level" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
+                <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
+                  <optgroup label="{{ g.label }}">
+                    <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                  </optgroup>
                 </sc-for>
               </select>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
@@ -476,6 +473,8 @@
             <p class="ind-blurb">{{ indBlurb }}</p>
             <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
           </div>
+          <!-- a level with no papers at all shows its on-the-way card instead (TVET, University: Murci 2026-10-26) -->
+          <sc-if value="{{ indHasSecs }}" hint-placeholder-val="{{ true }}">
           <div class="ind-secs">
             <!-- the subjects as tabs (Murci picked A, 2026-10-26: the list was "too much ... clutter"): one subject's papers at a time -->
             <div class="ind-tabs" role="tablist" aria-label="Subjects">
@@ -521,6 +520,7 @@
               </sc-if>
             </sc-for>
           </div>
+          </sc-if>
           <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
             <section class="ind-after" aria-labelledby="ind-after-title">
               <h2 class="ind-sec-name" id="ind-after-title">After school</h2>
@@ -1789,19 +1789,20 @@ const INDUSTRIES = [
     subjects: [["Mathematics", "some", "Foundation phase: Maths or Maths Lit, at some universities."], ["Mathematical Literacy", "some"], ["Life Sciences", "some", "To teach Life Sciences."], ["Physical Sciences", "some", "To teach Physical Sciences."]] }];
 const SUBJECT_TAG = { required: "Required", recommended: "Recommended", unverified: "Recommended (unverified)", some: "Accepted by some programmes · check your faculty" };
 const PAPER_UNITS = { "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
-const PROG_SHORT = { ncv: "NC(V)", high_school: "High school" };
+const PROG_SHORT = { ncv: "NC(V)", high_school: "Secondary school", university: "University" };
 const HOME_TO_LOCAL = { "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
 // Subjects without a paper are listed so the empty state is honest, not hidden.
 const OTHER_SUBJECTS = { ncv: ["Finance, Economics and Accounting", "Marketing", "Management", "Office Administration", "Information Technology and Computer Science", "Civil Engineering & Building Construction", "Electrical Infrastructure Construction", "Education and Development", "Hospitality", "Primary Agriculture", "Tourism"] };
 // TVET (NC(V)) is hidden on the UI for now (Murci, 2026-10-09): the pickers offer high school only. The data, the mocks and
 // the service keep NC(V); set true to bring it back. A learner whose saved studies are NC(V) falls back to Grade 12.
-const SHOW_TVET = false;
+const SHOW_TVET = true;   // shown again 2026-10-26 (Murci): TVET and University appear, their papers "on the way"
 const shownQual = q => SHOW_TVET || q !== "ncv";
 // Study paths currently represented in this prototype. High school is Grades 10 to 12 (Murci, 2026-10-09: Grade 10 and 11
 // added; their papers come after Grade 12's are polished, so they show "No papers yet" until then).
 const STUDY_QUALS = [{ id: "ncv", label: "NC(V)", sub: "Levels 2 to 4", levels: ["L2", "L3", "L4"] },
-  { id: "high_school", label: "High school", sub: "Grades 10 to 12", levels: ["G10", "G11", "G12"] }].filter(q => shownQual(q.id));
-const LEVEL_LABEL = c => c.charAt(0) === "L" ? "Level " + c.slice(1) : /^G\d+$/.test(c) ? "Grade " + c.slice(1) : c;
+  { id: "high_school", label: "Secondary school", sub: "Grades 10 to 12", levels: ["G10", "G11", "G12"] },
+  { id: "university", label: "University", sub: "Papers on the way", levels: ["U"] }].filter(q => shownQual(q.id));
+const LEVEL_LABEL = c => c === "U" ? "University" : c.charAt(0) === "L" ? "Level " + c.slice(1) : /^G\d+$/.test(c) ? "Grade " + c.slice(1) : c;
 // MOCK of GET /v1/curricula/ncv (nexera-exam-service 70977de, data/curricula/ncv.json): DHET's NC(V) programmes,
 // researched and cited. 17 are verified (DHET's 2026 ICASS Guidelines, Annex F); 3 are single-source and kept. A
 // programme's paper_ids are the approved papers carrying one of its subjects' codes (AET, 6021024, is Engineering and
@@ -1825,7 +1826,7 @@ const levelCode = d => { const m = /\b(N|LEVEL|L|GRADE|G)\s*(\d{1,2})\b/.exec(St
 // must be one of its qualification's; whitespace folded; duplicate subjects dropped (case-insensitive); at most 12.
 // "Show me every paper" is DELETE plus a device-only note that the learner was asked: the service stores answers,
 // never "didn't answer", so the skip lives with the client.
-const SERVICE_LEVELS = { ncv: ["L2", "L3", "L4"], high_school: ["G10", "G11", "G12"] };
+const SERVICE_LEVELS = { ncv: ["L2", "L3", "L4"], high_school: ["G10", "G11", "G12"], university: ["U"] };
 const fold = t => String(t || "").split(/\s+/).join(" ").trim();
 // A "Tabulate" answer as the marker reads it (2026-10-09): the table with its column headings (the memo's table mark: the learner
 // tabulated), then each filled cell under its column's OWN words ("Long-acting" / "Rapid-acting": the words the headings do not
@@ -3014,14 +3015,16 @@ class Component extends DCLogic {
   // the nearest level that has papers (Grade 12 today) and the level sheet.
   pmEmptyVals(s) { const L = this.pmList(s), all = this.pmAllPapers();
     if (L.papers.length) return { pmEmpty: false, pmEmptyTitle: "", pmEmptyText: "", pmEmptyHasGo: false, pmEmptyGoLabel: "", pmEmptyGo: () => {} };
-    const name = this.levelName(L.level), lv = SERVICE_LEVELS[L.level.qualification] || [];
-    const ready = lv.slice().reverse().filter(l => all.some(p => p.qualification === L.level.qualification && p.level === l))[0] || null;
-    const readyName = ready ? this.levelName({ qualification: L.level.qualification, level: ready }) : "";
+    const name = this.levelName(L.level), has = (q, l) => all.some(p => p.qualification === q && p.level === l);
+    // its own nearest level with papers first, else Secondary school's (TVET and University have none yet, Murci 2026-10-26)
+    const ready = [L.level.qualification, "high_school"].map(q => (SERVICE_LEVELS[q] || []).slice().reverse().filter(l => has(q, l))
+      .map(l => ({ qualification: q, level: l }))[0]).filter(Boolean)[0] || null;
+    const readyName = ready ? this.levelName(ready) : "";
     return { pmEmpty: true, pmEmptyTitle: name + " papers are on the way",
       pmEmptyText: "We're adding " + name + " past papers next." + (ready ? " " + readyName + " papers are ready to practise now." : ""),
       pmEmptyHasGo: !!ready, pmEmptyGoLabel: "Practise " + readyName + " papers",
       pmEmptyGo: () => { if (!ready) return; let row = null;
-        try { row = STUDIES_API.put({ qualification: L.level.qualification, level: ready, subjects: [] }); } catch (e) { return; }
+        try { row = STUDIES_API.put({ qualification: ready.qualification, level: ready.level, subjects: [] }); } catch (e) { return; }
         this.setState({ studies: row, studiesAsked: true }, () => window.scrollTo(0, 0)); } };
   }
   pmList(s) { const lv = this.pmLevel(s);
@@ -3037,7 +3040,7 @@ class Component extends DCLogic {
     return { lvOpen: !!s.lvOpen, lvLayout: phone ? "phone" : "tab", lvClose: close,
       lvKeys: e => { if (e.key === "Escape") { e.preventDefault(); close(); } },
       lvOpenGo: () => this.setState({ lvOpen: true, lvDraft: cur, lvErr: "" }, () => { const h = document.getElementById("lv-title"); if (h) h.focus({ preventScroll: true }); }),
-      lvQual: d.qualification || "", lvQuals: [{ id: "high_school", label: "High school" }, { id: "ncv", label: "TVET college · NC(V)" }].filter(q => shownQual(q.id)),
+      lvQual: d.qualification || "", lvQuals: [{ id: "high_school", label: "Secondary school" }, { id: "ncv", label: "TVET college · NC(V)" }, { id: "university", label: "University" }].filter(q => shownQual(q.id)),
       // one level only (high school: Grade 12 for now) is picked for the learner; NC(V) asks
       lvQualPick: e => { const q = e.target.value, ls = SERVICE_LEVELS[q] || [];
         this.setState({ lvDraft: { qualification: q, level: ls.length === 1 ? ls[0] : null }, lvErr: "" }); },
@@ -3323,7 +3326,7 @@ class Component extends DCLogic {
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
-      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0),
+      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0), indHasSecs: this.pmList(s).papers.length > 0,
       // the tabs' keys (ARIA tabs): the arrows step and wrap, Home and End jump; the new tab is selected and focused
       indTabKeys: e => { const live = () => [...document.querySelectorAll(".ind-tab")].filter(t => !t.closest("x-dc")), tabs = live(), i = tabs.indexOf(e.currentTarget);
         const j = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i - 1 + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
@@ -4891,25 +4894,23 @@ class Component extends DCLogic {
   // the learner has not finished, with that paper's sheet open.
   hmDeckVals(s) {
     const L = this.pmList(s), lv = L.level, all = this.pmAllPapers();
-    // the grade switch and the field chips save at once, as the level sheet's "Show past papers" does
+    // the school-level pill saves at once, as the level sheet's "Show past papers" does
     const save = (qualification, level) => { let row = null;
       try { row = STUDIES_API.put({ qualification: qualification, level: level, subjects: [] }); }
       catch (e) { this.setState({ hmNote: e && e.message ? e.message : "That didn't save. Try again." }); return; }
       this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); };
-    const count = (q, l) => all.filter(p => p.qualification === q && p.level === l).length;
     // the cards are industries (Murci 2026-10-25): a card opens its industry's page, the second page
     // focus follows the move (2026-10-26 QA: it fell to the page body both ways): the industry's title, then its card on Back
     const go = key => this.indMorph("in", key, done => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false, hmDeckEnd: false });
       this.pmGoMap(() => { const t = document.getElementById("ind-name"); if (t) t.focus({ preventScroll: true }); done(); }); });   /* back home, the deck starts at its first card again: so does the arrow */
     return {
-      hmFieldsOn: STUDY_QUALS.length > 1,
-      hmFields: STUDY_QUALS.map(q => ({ label: q.label, on: q.id === lv.qualification ? "true" : "false",
-        pick: () => { if (q.id === lv.qualification) return; const ready = q.levels.slice().reverse().filter(l => count(q.id, l))[0];
-          save(q.id, ready || q.levels[q.levels.length - 1]); } })),
-      hmGradeLabel: lv.qualification === "ncv" ? "Level" : "Grade",
-      // the grade pill on the home (Murci picked A, 2026-10-26): set once, every industry page follows it
-      hmGrades: (SERVICE_LEVELS[lv.qualification] || []).map(l => ({ label: LEVEL_LABEL(l), value: l })),
-      hmGradeVal: lv.level, hmGradePick: e => { const l = e.target.value; if (l && l !== lv.level) save(lv.qualification, l); },
+      // the school-level pill on the home (Murci 2026-10-26): it reads "Secondary school · Grade 12"; its native menu groups the
+      // levels by school; set once, every industry page follows it. A value is "qualification:level".
+      hmLvText: lv.qualification === "university" ? "University" : (lv.qualification === "ncv" ? "TVET · " : "Secondary school · ") + this.levelName(lv),
+      hmLvGroups: [["high_school", "Secondary school"], ["ncv", "TVET college"], ["university", "University"]].filter(g => shownQual(g[0]))
+        .map(g => ({ label: g[1], opts: SERVICE_LEVELS[g[0]].map(l => ({ label: this.levelName({ qualification: g[0], level: l }), value: g[0] + ":" + l })) })),
+      hmLvVal: lv.qualification + ":" + lv.level,
+      hmLvPick: e => { const v = (e.target.value || "").split(":"); if (v.length === 2 && (v[0] !== lv.qualification || v[1] !== lv.level)) save(v[0], v[1]); },
       hmHasNote: !!s.hmNote, hmNote: s.hmNote || "",
       hmCards: INDUSTRIES.map(ind => { const names = ind.subjects.map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
         const withPapers = names.filter(n => ps.some(p => p.subject === n)).length;
