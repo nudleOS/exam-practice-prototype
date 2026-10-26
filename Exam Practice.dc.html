@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=110">
+  <link rel="stylesheet" href="nx-map.css?v=111">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -122,7 +122,8 @@
     </sc-if>
     <sc-if value="{{ mapHead }}" hint-placeholder-val="{{ false }}">
       <span class="pm-head" style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; min-height:44px">
-        <h1 class="pm-title">{{ pmHeadTitle }}</h1>
+        <!-- the school level (Murci 2026-10-26): tapping it goes home to the level pill, the one place the level is set -->
+        <h1 class="pm-title"><button type="button" class="pm-lvlink" onClick="{{ pmLevelGo }}" aria-label="{{ pmLevelAria }}"><span>{{ pmHeadTitle }}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button></h1>
       </span>
     </sc-if>
     <sc-if value="{{ notMapHead }}" hint-placeholder-val="{{ true }}">
@@ -3058,6 +3059,8 @@ class Component extends DCLogic {
   pmAllPapers() { const cat = (window.NX_CATALOGUE || { papers: [] }).papers;
     return HOME.papers.concat(cat.filter(c => !HOME.papers.some(h => h.id === c.id))); }
   levelName(lv) { return (lv.qualification === "ncv" ? "NC(V) " : "") + LEVEL_LABEL(lv.level); }
+  // the school and level as the home pill and the industry page's header show them: "Secondary school · Grade 12"
+  lvText(lv) { return lv.qualification === "university" ? "University" : (lv.qualification === "ncv" ? "TVET · " : "Secondary school · ") + this.levelName(lv); }
   // A level with no papers yet (Grade 10 and 11, Murci 2026-10-09): one honest card on the map, never a blank screen. It offers
   // the nearest level that has papers (Grade 12 today) and the level sheet.
   pmEmptyVals(s) { const L = this.pmList(s), all = this.pmAllPapers(), ind = INDUSTRIES.filter(x => x.key === s.pmInd)[0];
@@ -3358,7 +3361,7 @@ class Component extends DCLogic {
     return {
       ...this.finishCardVals(s, s.vw),
       // the level's own words: "Grade 12 past papers"; NC(V) learners say "Level 4" (the full name ran past a 360 px header)
-      pmHeadTitle: LEVEL_LABEL(L.level.level) + " past papers",
+      pmHeadTitle: this.lvText(L.level), pmLevelAria: this.lvText(L.level) + ". Change your school level",
       // "More subjects" (the rest, searchable) FIRST when the level has more (Murci, 2026-10-02: at the start, not the end), then the
       // learner's subjects
       pmChips: (more.length ? [{ label: "More subjects", on: "false", c: "#8fa0d6", pick: () => this.pmOpenSubj() }] : []).concat(mine.map(n => ({ label: n, on: n === pick ? "true" : "false", c: (SUBJECT_LOOK[n] || SUBJECT_LOOK._).c,
@@ -4955,7 +4958,7 @@ class Component extends DCLogic {
     return {
       // the school-level pill on the home (Murci 2026-10-26): it reads "Secondary school · Grade 12"; its native menu groups the
       // levels by school; set once, every industry page follows it. A value is "qualification:level".
-      hmLvText: lv.qualification === "university" ? "University" : (lv.qualification === "ncv" ? "TVET · " : "Secondary school · ") + this.levelName(lv),
+      hmLvText: this.lvText(lv),
       hmLvGroups: [["high_school", "Secondary school"], ["ncv", "TVET college"], ["university", "University"]].filter(g => shownQual(g[0]))
         .map(g => ({ label: g[1], opts: SERVICE_LEVELS[g[0]].map(l => ({ label: this.levelName({ qualification: g[0], level: l }), value: g[0] + ":" + l })) })),
       hmLvVal: lv.qualification + ":" + lv.level,
@@ -6114,6 +6117,8 @@ class Component extends DCLogic {
     const sourcePaper = this.pmAllPapers().filter(p => p.id === s.paperSourceId)[0] || null;
     const activePaperSource = this.pmAllPapers().filter(p => HOME_TO_LOCAL[p.id] === s.paperId)[0] || null;
 
+    const backHome = focus => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => { window.scrollTo(0, 0); focus(); done(); });
+      if (s.screen === "map" && s.pmInd) this.indMorph("back", s.pmInd, back); else back(() => {}); };   /* the industry page shrinks into its card */
     return {
       headerDisplay: s.screen === "pick" || s.screen === "play" ? "none" : "flex",
       // Direction A (2026-10-25): the companion rides on the subject cards, so the home's robot stage and its two-column landscape
@@ -6254,11 +6259,12 @@ class Component extends DCLogic {
       pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
-      logoHome: s.screen === "map", logoPlain: s.screen !== "map", goHome: () => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => { window.scrollTo(0, 0);
-          // back home the deck starts at its first card: bring this industry's card into view (start: where the deck snaps) and focus it
-          const c = s.pmInd && document.querySelector('[data-hmcard="' + s.pmInd + '"]'); if (c) { c.scrollIntoView({ inline: "start", block: "nearest" }); c.focus({ preventScroll: true }); }
-          done(); });
-        if (s.screen === "map" && s.pmInd) this.indMorph("back", s.pmInd, back); else back(() => {}); },   /* the industry page shrinks into its card */
+      logoHome: s.screen === "map", logoPlain: s.screen !== "map",
+      // back home the deck starts at its first card: bring this industry's card into view (start: where the deck snaps) and focus it
+      goHome: () => backHome(() => { const c = s.pmInd && document.querySelector('[data-hmcard="' + s.pmInd + '"]');
+        if (c) { c.scrollIntoView({ inline: "start", block: "nearest" }); c.focus({ preventScroll: true }); } }),
+      // the header's level: home, focused on the level pill (Murci 2026-10-26)
+      pmLevelGo: () => backHome(() => { const p = [...document.querySelectorAll(".hm-lvsel")].find(e => !e.closest("x-dc")); if (p) p.focus({ preventScroll: true }); }),
       headTitle: headTitle, headSub: headSub,
       // (the review page shows the mark in large type itself, and needs the room for its title)
       showMeter: !!paper && s.screen !== "pick" && s.screen !== "map" && s.screen !== "summary", meterLabel: earned + " of " + total + " marks",
