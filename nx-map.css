@@ -138,28 +138,6 @@
   border-radius: 50%; background: #03122c; color: rgba(245, 196, 67, 0.55); }
 .pm-cup[data-done="true"] { color: #f5c443; filter: drop-shadow(0 0 10px rgba(245, 196, 67, 0.55)); }
 
-/* home: the level, one line of text (it opens the study-level sheet) */
-.hm-level-link { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border: none; border-radius: 12px;
-  background: transparent; color: #b9cdf0; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
-.hm-level-link:focus-visible, .lv-opt:focus-visible, .lv-select:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
-
-/* the level sheet */
-.lv-group { display: flex; flex-direction: column; gap: 8px; }
-.lv-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; }
-.lv-opt { box-sizing: border-box; min-height: 60px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px;
-  padding: 8px 12px; border-radius: 14px; border: 1px solid rgba(129, 177, 255, 0.25); background: transparent; color: #fff; font: inherit;
-  text-align: left; cursor: pointer; }
-.lv-opt b { font-size: 15px; font-weight: 800; }
-.lv-opt > span { font-size: 12px; color: #8fa0d6; }
-.lv-opt[aria-checked="true"] { border: 2px solid #5b8cff; background: rgba(30, 70, 255, 0.18); }
-
-/* the study-level sheet: the qualification dropdown (native: the phone's own picker), then the levels */
-.lv-field { display: flex; flex-direction: column; gap: 8px; }
-.lv-select-wrap { position: relative; display: block; }
-.lv-select { box-sizing: border-box; width: 100%; min-height: 50px; padding: 0 44px 0 14px; border-radius: 14px; border: 1px solid rgba(129, 177, 255, 0.35);
-  background: #0a1534; color: #fff; font: inherit; font-size: 15px; font-weight: 700; -webkit-appearance: none; appearance: none; cursor: pointer; }
-.lv-select option { background: #0d1a3f; color: #fff; }
-.lv-select-wrap svg { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #9fbcff; pointer-events: none; }
 .lv-err { margin: 0; font-size: 13px; color: #ff9b9b; }
 
 /* the design preview (NOT in the product): an icon-only dashed button at the end of the chip row; the paper states open in a
@@ -664,6 +642,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-secs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }   /* one list of folding subjects */
 .ind-sec, .ind-after { --sc: #93a4d6; --sc-rgb: 147, 164, 214; display: flex; flex-direction: column; gap: 8px; }
 /* the subject tabs: a row that scrolls sideways when the names don't fit; the chosen one underlined */
+/* the tabs that run off the edge (2026-10-26): a fade on the side with more (data-more, set by tabsSync), an arrow on the end side */
+.ind-tabwrap { position: relative; }
+.ind-tabs[data-more="end"] { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent); }
+.ind-tabs[data-more="start"] { -webkit-mask-image: linear-gradient(270deg, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(270deg, #000 calc(100% - 64px), transparent); }
+.ind-tabs[data-more="both"] { -webkit-mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 64px), transparent); }
+.ind-tabmore { display: none; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 999px;
+  border: 1px solid rgba(129, 177, 255, 0.35); background: #0d1a3f; color: #dfe6ff; cursor: pointer; align-items: center; justify-content: center; }
+.ind-tabs:is([data-more="end"], [data-more="both"]) + .ind-tabmore { display: flex; }
 .ind-tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 .ind-tabs::-webkit-scrollbar { display: none; }
 .ind-tab { flex: none; min-height: 46px; padding: 0 14px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: #8fa0d6;
@@ -790,6 +776,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 }
 @media (min-width: 600px) {
   .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "pro map" "secs secs" "after after"; column-gap: 16px; }
+  .ind:not(:has(.ind-mapbox)) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pro" "secs" "after"; }   /* no papers, no map box: no empty column */
   .ind .ind-intro { grid-area: pro; z-index: 2; align-self: center; justify-self: start; max-width: min(46%, 460px); padding: 0 0 0 28px; }   /* centred on the stage's left (Murci 2026-10-26) */
   .ind-pro > .ind-pro-media { left: 74%; }   /* the stage's right side */
   .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */
