@@ -616,6 +616,22 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-card { box-shadow: -14px 0 26px -10px rgba(0, 0, 0, 0.6); }
 .hm-card[aria-expanded="true"] { z-index: 2; }
 @media (hover: hover) and (pointer: fine) { .hm-card:hover, .hm-card:focus-visible { z-index: 2; } }
+/* the slide-over stack (Murci 2026-10-26, picked A of three, "front card bigger"): driven by the deck's own scroll, so the
+   motion follows the finger both ways. Over the last card-width before a card reaches the deck's start it eases from full
+   size to 94% (so at rest the card at the start sits a little smaller under the next one); then, as the next card glides
+   over it, it stays pinned at the start (translateX by its own width cancels the scroll), shrinking to 86% and fading.
+   Transform and opacity only (the compositor's). No scroll-driven animations (Firefox today) or reduced motion: the plain
+   stacked deck. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hm-card { transform-origin: 0% 50%; animation: hm-glide linear both; animation-timeline: view(inline); animation-range: exit -100% exit 100%; }
+  }
+}
+@keyframes hm-glide {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  50% { transform: translateX(0) scale(0.94); opacity: 1; }
+  100% { transform: translateX(100%) scale(0.86); opacity: 0.35; }
+}
 /* the map's lead (Murci, 2026-10-25: "needs to appear on the second page"): the paper under way, then the grade switch */
 .pm-lead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; margin: 0 0 10px; }
 
