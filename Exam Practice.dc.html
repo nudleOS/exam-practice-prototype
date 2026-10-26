@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=93">
+  <link rel="stylesheet" href="nx-map.css?v=94">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -470,17 +470,21 @@
                     <h2 class="ind-sec-name">{{ sec.name }}</h2>
                     <span class="ind-sec-meta"><span class="ind-tag" data-kind="{{ sec.tagKind }}">{{ sec.tag }}</span><span class="ind-sec-sum">{{ sec.sum }}</span></span>
                   </span>
-                  <span class="lv-select-wrap ind-pick">
-                    <select class="lv-select ind-select" aria-label="{{ sec.pickLabel }}" value="{{ sec.sel }}" onChange="{{ sec.pick }}">
-                      <option value="">{{ sec.prompt }}</option>
-                      <sc-for list="{{ sec.papers }}" as="pp" hint-placeholder-count="2">
-                        <option value="{{ pp.id }}">{{ pp.label }}</option>
-                      </sc-for>
-                    </select>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
-                  </span>
                 </div>
                 <sc-if value="{{ sec.hasNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note">{{ sec.note }}</p></sc-if>
+                <!-- the year shelf (Murci picked A, 2026-10-26): every paper a chip, grouped by sitting; one tap opens its details -->
+                <div class="ind-shelf">
+                  <sc-for list="{{ sec.sits }}" as="st" hint-placeholder-count="2">
+                    <div class="ind-sit" role="group" aria-label="{{ st.aria }}">
+                      <span class="ind-sit-k" aria-hidden="true">{{ st.label }}</span>
+                      <span class="ind-chips">
+                        <sc-for list="{{ st.papers }}" as="pp" hint-placeholder-count="2">
+                          <button type="button" class="ind-chip" data-state="{{ pp.state }}" aria-pressed="{{ pp.on }}" aria-label="{{ pp.aria }}" onClick="{{ pp.tap }}">{{ pp.label }}</button>
+                        </sc-for>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
                 <sc-if value="{{ sec.hasPick }}" hint-placeholder-val="{{ false }}">
                   <div class="ind-detail" data-inddetail="true" data-indpaper="{{ sec.sel }}">
                     <span class="pm-kicker">{{ pmKicker }}</span>
@@ -3230,6 +3234,17 @@ class Component extends DCLogic {
     const sel = all.filter(x => x.p.id === s.pmOpen)[0] || null, g = sel && sel.g, p = sel && sel.p;
     // the industry page: its subjects (each tagged as the mapping states it), their papers newest first, and the map modal
     const closeMap = () => this.setState({ pmMapOpen: false }, () => { const t = document.querySelector("[data-indmap]"); if (t) t.focus(); });
+    // the year shelf (Murci 2026-10-26, picked A of three): a subject's papers grouped by sitting, newest first; a chip says the
+    // paper (P1), and its state where there is one (47% under way in blue, done in gold); a tap opens it, a second tap closes it
+    const sitsOf = (n, ps) => { const out = [];
+      ps.forEach(x => { const sit = x.name.split(" · ").pop(); let g = out.filter(t => t.label === sit)[0];
+        if (!g) out.push(g = { label: sit, aria: n + ", " + sit, papers: [] });
+        const on = s.pmOpen === x.p.id, short = pno(x.p) ? "P" + pno(x.p) : sit;
+        g.papers.push({ state: x.state, on: on ? "true" : "false",
+          label: short + (x.state === "going" ? " · " + x.pct + "%" : x.state === "done" ? " · done" : x.state === "soon" ? " · soon" : ""),
+          aria: (pno(x.p) ? "Paper " + pno(x.p) + ", " : "") + sit + ". " + x.meta,
+          tap: () => this.setState({ pmOpen: on ? null : x.p.id }, () => { if (on) return; const h = document.getElementById("pm-title"); if (h) h.focus({ preventScroll: true }); }) }); });
+      return out; };
     const indSecs = ind.subjects.map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
       const ps = L.papers.filter(q => q.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
       // its papers are a dropdown (Murci 2026-10-25: "make the papers dropdowns"); the picked paper's details show under the subject,
@@ -3238,9 +3253,7 @@ class Component extends DCLogic {
       const mine = ps.some(x => x.p.id === s.pmOpen);
       return { name: n, icon: look.icon, tag: SUBJECT_TAG[sb[1]], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2],
         sum: !ps.length ? "No papers at this level yet" : ps.length + (ps.length === 1 ? " paper" : " papers") + (going ? " · " + going + " under way" : "") + (done ? " · " + done + " done" : ""),
-        sel: mine ? s.pmOpen : "", hasPick: mine, prompt: ps.length ? "Choose a paper" : "No papers yet", pickLabel: n + ": choose a paper",
-        pick: e => this.setState({ pmOpen: e.target.value || null }, () => { const h = document.getElementById("pm-title"); if (h) h.focus({ preventScroll: true }); }),
-        papers: ps.map(x => ({ id: x.p.id, label: x.name + " · " + x.meta })) }; });
+        sel: mine ? s.pmOpen : "", hasPick: mine, count: ps.length, sits: sitsOf(n, ps) }; });
     const go = sel && g ? (sel.state === "done" ? { label: "Review my paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id, screen: "summary" }, () => window.scrollTo(0, 0)) }
       : { label: sel.state === "going" ? "Continue at " + sel.nextId : "Start paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id }, () => this.openMission(Math.max(0, g.next))) }) : null;
     return {
@@ -3263,7 +3276,7 @@ class Component extends DCLogic {
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
-      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.papers.length, 0),
+      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0),
       indHasAfter: !!ind.after, indAfter: (ind.after || []).map(a => ({ code: a[0], text: a[1] })),
       indMapOpen: !!s.pmMapOpen && !s.finishCard, indMapClose: closeMap,
       indMapGo: () => this.setState({ pmMapOpen: true }, () => { const h = document.getElementById("ind-map-title"); if (h) h.focus({ preventScroll: true }); }),
