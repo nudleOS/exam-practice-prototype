@@ -63,7 +63,9 @@ path inside Engineering later. Education is the only card where Maths Lit is acc
   directly; confirm the SACAA bursary rules on the SACAA's own site (aggregators disagree on dates); check the full-time Wits
   engineering page (only the part-time one was read); confirm the DHET critical skills list before any "in demand" wording.
 
-## TVET (NC(V)): proposed 2026-10-26, NOT approved yet
+## TVET (NC(V)): APPROVED by Murci 2026-10-26, built in the prototype
+
+Rulings: ship the 8 links below; HIDE the held programmes until a second source; a TVET card with no programme shows "TVET programmes for this industry are on the way" and offers Grade 12 papers. On TVET a card's tabs are its programmes' three compulsory vocational subjects at the learner's level, each tagged with its programme.
 
 An NC(V) learner is enrolled in a **programme** (3 fundamentals + 3 compulsory vocational subjects + 1 optional, Levels 2-4),
 so a TVET industry card lists programmes, and each programme brings its own vocational subjects. The subjects per programme

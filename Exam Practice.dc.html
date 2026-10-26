@@ -1787,6 +1787,35 @@ const INDUSTRIES = [
   { key: "education", words: "teacher teaching educator school tutor lecturer social worker counsellor coach foundation phase", pro: "office", name: "Education & Social Services", icon: "book", c: "#a78bfa", rgb: "167,139,250",
     blurb: "Teach, guide and support people to learn and grow.", careers: ["Foundation phase teacher", "Maths teacher", "Science teacher"],
     subjects: [["Mathematics", "some", "Foundation phase: Maths or Maths Lit, at some universities."], ["Mathematical Literacy", "some"], ["Life Sciences", "some", "To teach Life Sciences."], ["Physical Sciences", "some", "To teach Physical Sciences."]] }];
+// TVET on the industry cards (Murci approved 2026-10-26; docs/industry-subject-mapping.md, "TVET (NC(V))"): the 8 programme ->
+// card links a college careers page backs (held: Mechatronics, Programming and Robotics, Process Plant Operations, Drawing Office
+// Practice, Primary Health, until a second source). A card with none says "on the way".
+const NCV_CARDS = { engineering: ["Engineering and Related Design"], built: ["Civil Engineering and Building Construction", "Electrical Infrastructure Construction"],
+  mining: ["Electrical Infrastructure Construction"], ict: ["Information Technology and Computer Science"], transport: ["Transport and Logistics"],
+  environment: ["Primary Agriculture"], finance: ["Finance, Economics and Accounting"] };
+// each programme's three compulsory vocational subjects per level (DHET, NC(V) Matrix of Subjects 2015; exam service
+// data/curricula/ncv.json). The fourth subject is optional and may come from any programme, so it is not listed.
+const NCV_COMPULSORY = {
+  "Engineering and Related Design": { L2: ["Engineering Fundamentals", "Engineering Systems", "Engineering Technology"],
+    L3: ["Engineering Graphics and Design", "Engineering Practice and Maintenance", "Materials Technology"],
+    L4: ["Applied Engineering Technology", "Engineering Processes", "Professional Engineering Practice"] },
+  "Civil Engineering and Building Construction": { L2: ["Construction Planning", "Materials", "Plant and Equipment"],
+    L3: ["Construction Planning", "Materials", "Plant and Equipment"], L4: ["Construction Planning", "Construction Supervision", "Materials"] },
+  "Electrical Infrastructure Construction": { L2: ["Electrical Principles and Practice", "Electronic Control and Digital Electronics", "Workshop Practice"],
+    L3: ["Electrical Principles and Practice", "Electronic Control and Digital Electronics", "Electrical Workmanship"],
+    L4: ["Electrical Principles and Practice", "Electronic Control and Digital Electronics", "Electrical Workmanship"] },
+  "Information Technology and Computer Science": { L2: ["Electronics", "Introduction to Information Systems", "Introduction to Systems Development"],
+    L3: ["Computer Hardware and Software", "Principles of Computer Programming", "Systems Analysis and Design"],
+    L4: ["Computer Programming", "Data Communication and Networking", "Systems Analysis and Design"] },
+  "Transport and Logistics": { L2: ["Freight Logistics", "Transport Economics", "Transport Operations"],
+    L3: ["Freight Logistics", "Transport Economics", "Transport Operations"], L4: ["Freight Logistics", "Transport Economics", "Transport Operations"] },
+  "Primary Agriculture": { L2: ["Animal Production", "Plant Production", "Soil Science"], L3: ["Animal Production", "Plant Production", "Soil Science"],
+    L4: ["Advanced Plant Production", "Animal Production", "Farm Planning and Mechanisation"] },
+  "Finance, Economics and Accounting": { L2: ["Applied Accounting", "Economic Environment", "Financial Management"],
+    L3: ["Applied Accounting", "Economic Environment", "Financial Management"], L4: ["Applied Accounting", "Economic Environment", "Financial Management"] } };
+// a card's subjects at a level, as [name, kind, note, programme]: the mapping's school subjects, or on TVET its programmes' subjects
+const indSubjects = (ind, lv) => lv.qualification !== "ncv" ? ind.subjects
+  : (NCV_CARDS[ind.key] || []).reduce((out, prog) => out.concat(((NCV_COMPULSORY[prog] || {})[lv.level] || []).map(n => [n, "programme", "", prog])), []);
 const SUBJECT_TAG = { required: "Required", recommended: "Recommended", unverified: "Recommended (unverified)", some: "Accepted by some programmes · check your faculty" };
 const PAPER_UNITS = { "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
 const PROG_SHORT = { ncv: "NC(V)", high_school: "Secondary school", university: "University" };
@@ -3013,15 +3042,17 @@ class Component extends DCLogic {
   levelName(lv) { return (lv.qualification === "ncv" ? "NC(V) " : "") + LEVEL_LABEL(lv.level); }
   // A level with no papers yet (Grade 10 and 11, Murci 2026-10-09): one honest card on the map, never a blank screen. It offers
   // the nearest level that has papers (Grade 12 today) and the level sheet.
-  pmEmptyVals(s) { const L = this.pmList(s), all = this.pmAllPapers();
-    if (L.papers.length) return { pmEmpty: false, pmEmptyTitle: "", pmEmptyText: "", pmEmptyHasGo: false, pmEmptyGoLabel: "", pmEmptyGo: () => {} };
+  pmEmptyVals(s) { const L = this.pmList(s), all = this.pmAllPapers(), ind = INDUSTRIES.filter(x => x.key === s.pmInd)[0];
+    const noProg = L.level.qualification === "ncv" && !!ind && !indSubjects(ind, L.level).length;   // a TVET card with no programme yet
+    if (L.papers.length && !noProg) return { pmEmpty: false, pmEmptyTitle: "", pmEmptyText: "", pmEmptyHasGo: false, pmEmptyGoLabel: "", pmEmptyGo: () => {} };
     const name = this.levelName(L.level), has = (q, l) => all.some(p => p.qualification === q && p.level === l);
     // its own nearest level with papers first, else Secondary school's (TVET and University have none yet, Murci 2026-10-26)
-    const ready = [L.level.qualification, "high_school"].map(q => (SERVICE_LEVELS[q] || []).slice().reverse().filter(l => has(q, l))
+    const ready = (noProg ? ["high_school"] : [L.level.qualification, "high_school"]).map(q => (SERVICE_LEVELS[q] || []).slice().reverse().filter(l => has(q, l))
       .map(l => ({ qualification: q, level: l }))[0]).filter(Boolean)[0] || null;
     const readyName = ready ? this.levelName(ready) : "";
-    return { pmEmpty: true, pmEmptyTitle: name + " papers are on the way",
-      pmEmptyText: "We're adding " + name + " past papers next." + (ready ? " " + readyName + " papers are ready to practise now." : ""),
+    return { pmEmpty: true, pmEmptyTitle: noProg ? "TVET programmes for this industry are on the way" : name + " papers are on the way",
+      pmEmptyText: (noProg ? "We haven't matched a TVET programme to " + ind.name + " yet." : "We're adding " + name + " past papers next.")
+        + (ready ? " " + readyName + " papers are ready to practise now." : ""),
       pmEmptyHasGo: !!ready, pmEmptyGoLabel: "Practise " + readyName + " papers",
       pmEmptyGo: () => { if (!ready) return; let row = null;
         try { row = STUDIES_API.put({ qualification: ready.qualification, level: ready.level, subjects: [] }); } catch (e) { return; }
@@ -3141,7 +3172,7 @@ class Component extends DCLogic {
     const subjects = []; L.papers.forEach(p => { if (subjects.indexOf(p.subject) === -1) subjects.push(p.subject); });
     subjects.sort((a, b) => playable(b) - playable(a) || a.localeCompare(b));
     // the industry page (Murci 2026-10-25): only the industry's subjects, in its own order (the map modal's chips too)
-    const ind = INDUSTRIES.filter(x => x.key === s.pmInd)[0] || INDUSTRIES[0], indNames = ind.subjects.map(sb => sb[0]);
+    const ind = INDUSTRIES.filter(x => x.key === s.pmInd)[0] || INDUSTRIES[0], indNames = indSubjects(ind, L.level).map(sb => sb[0]);
     const inInd = subjects.filter(n => indNames.indexOf(n) !== -1).sort((a, b) => indNames.indexOf(a) - indNames.indexOf(b));
     subjects.length = 0; inInd.forEach(n => subjects.push(n));
     // a paper's number: its own field, else its title's "P1" (the home mock's papers carry only the title)
@@ -3290,13 +3321,13 @@ class Component extends DCLogic {
           aria: (pno(x.p) ? "Paper " + pno(x.p) + ", " : "") + sit + ". " + x.meta,
           tap: () => this.setState({ pmOpen: on ? null : x.p.id }, () => { if (on) return; const h = document.getElementById("pm-title"); if (h) h.focus({ preventScroll: true }); }) }); });
       return out; };
-    const indSecs = ind.subjects.map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
+    const indSecs = indSubjects(ind, L.level).map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
       const ps = L.papers.filter(q => q.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
       // its papers are a dropdown (Murci 2026-10-25: "make the papers dropdowns"); the picked paper's details show under the subject,
       // one paper open on the page at a time
       const going = ps.filter(x => x.state === "going").length, done = ps.filter(x => x.state === "done").length;
       const mine = ps.some(x => x.p.id === s.pmOpen);
-      return { name: n, icon: look.icon, tag: SUBJECT_TAG[sb[1]], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2],
+      return { name: n, icon: look.icon, tag: SUBJECT_TAG[sb[1]] || sb[3], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2],
         sum: !ps.length ? "No papers at this level yet" : ps.length + (ps.length === 1 ? " paper" : " papers") + (going ? " · " + going + " under way" : "") + (done ? " · " + done + " done" : ""),
         sel: mine ? s.pmOpen : "", hasPick: mine, going: going > 0, count: ps.length, sits: sitsOf(n, ps) }; });
     // the tab shown: the subject holding the open paper, else the learner's pick, else the one with a paper under way, else the
@@ -3326,7 +3357,7 @@ class Component extends DCLogic {
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
-      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0), indHasSecs: this.pmList(s).papers.length > 0,
+      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0), indHasSecs: indSecs.length > 0 && this.pmList(s).papers.length > 0,
       // the tabs' keys (ARIA tabs): the arrows step and wrap, Home and End jump; the new tab is selected and focused
       indTabKeys: e => { const live = () => [...document.querySelectorAll(".ind-tab")].filter(t => !t.closest("x-dc")), tabs = live(), i = tabs.indexOf(e.currentTarget);
         const j = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i - 1 + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
@@ -4912,7 +4943,7 @@ class Component extends DCLogic {
       hmLvVal: lv.qualification + ":" + lv.level,
       hmLvPick: e => { const v = (e.target.value || "").split(":"); if (v.length === 2 && (v[0] !== lv.qualification || v[1] !== lv.level)) save(v[0], v[1]); },
       hmHasNote: !!s.hmNote, hmNote: s.hmNote || "",
-      hmCards: INDUSTRIES.map(ind => { const names = ind.subjects.map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
+      hmCards: INDUSTRIES.map(ind => { const names = indSubjects(ind, lv).map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
         const withPapers = names.filter(n => ps.some(p => p.subject === n)).length;
         const done = ps.filter(p => { const g = this.pmProgress(p); return g && g.done; }).length, open = s.hmOpen === ind.key;
         return { key: ind.key, pro: ind.pro, name: ind.name, c: ind.c, rgb: ind.rgb, icon: ind.icon, open: open ? "true" : "false",
