@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=111">
+  <link rel="stylesheet" href="nx-map.css?v=112">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2461,13 +2461,16 @@ class Component extends DCLogic {
     const slots = [...d.children].filter(e => e.classList.contains("hm-slot")); if (slots.length < 2) return;
     const cs = getComputedStyle(d), pad = parseFloat(cs.paddingLeft) || 0, tilt = parseFloat(cs.getPropertyValue("--hm-tilt")) || 0;
     const step = slots[1].offsetLeft - slots[0].offsetLeft, still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // tuned in the browser 2026-10-26: spaced 0.36 x pad and turned -64deg, the cards deeper in hid behind the one in front (7-13
+    // px showed); now each step in turns further (-72deg, then 6deg more a step) and sits ~0.36 x pad further left, so a strip
+    // of every card rounding the bend shows left of the one in front
     const P = "perspective(1400px) ", tuck = 24, gap = pad * 0.36;   // a bent card's right edge tucks 24 px under the next card
     slots.forEach(sl => { const c = sl.firstElementChild; if (!c) return;
       const u = (sl.offsetLeft - slots[0].offsetLeft - d.scrollLeft) / step;   // 0 at the start, 1 one place on, below 0 in the bend
       if (still || u >= 0 || !pad) { c.style.transform = tilt ? P + "rotateY(" + tilt + "deg)" : ""; c.style.filter = ""; return; }
       const k = -u, e = Math.min(k, 1), s = e * e * (3 - 2 * e), W = c.offsetWidth;   // s: smoothstep into the bend
       const right = k <= 1 ? pad + W + (tuck - W) * s : pad + tuck - gap * (k - 1);    // where its right edge goes
-      const deg = k <= 1 ? tilt + (-64 - tilt) * s : Math.max(-84, -64 - 8 * (k - 1));
+      const deg = k <= 1 ? tilt + (-72 - tilt) * s : Math.max(-86, -72 - 6 * (k - 1));
       const lit = k <= 1 ? 1 - 0.45 * s : Math.max(0.2, 0.55 - 0.12 * (k - 1));
       c.style.transform = "translateX(" + (right - (pad + u * step + W)).toFixed(1) + "px) " + P + "rotateY(" + deg.toFixed(2) + "deg)";
       c.style.filter = "brightness(" + lit.toFixed(3) + ")"; }); }
@@ -2480,7 +2483,7 @@ class Component extends DCLogic {
     const b = bot.getBoundingClientRect(), c = box.getBoundingClientRect(), k = Math.min(b.width / bot.naturalWidth, b.height / bot.naturalHeight);
     const dw = bot.naturalWidth * k, dh = bot.naturalHeight * k, dx = b.left + (b.width - dw) / 2, dy = b.bottom - dh;
     const bx = dx + dw * 0.44, by = dy + dh * 0.45,   /* a bit lower (Murci 2026-10-26; was 0.39) */ w = t.offsetWidth, stop = deck.getBoundingClientRect().left - 8;   /* before the bend zone */
-    box.style.setProperty("--belly-l", Math.round(Math.min(bx - w / 2, stop - w) - c.left) + "px");
+    box.style.setProperty("--belly-l", Math.round(Math.max(24, Math.min(bx - w / 2, stop - w)) - c.left) + "px");   /* never past a 24 px gutter (1280 px: it reached x -5, 2026-10-26) */
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
     this.deckEndSync(); this.hmBend();
