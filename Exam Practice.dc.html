@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=104">
+  <link rel="stylesheet" href="nx-map.css?v=106">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -245,7 +245,18 @@
           <img class="hm-bgbot" src="assets/home-robot.webp" alt="" aria-hidden="true" decoding="async">
           <!-- a desktop shows the title across the companion's belly (Murci 2026-10-26); the page's h1 stays for screen readers -->
           <span class="hm-belly" aria-hidden="true">{{ homeTitle }}</span>
-          <span class="pm-kicker hm-kick">Choose an industry</span>
+          <!-- the level, set once on the home (Murci picked A, 2026-10-26): a small pill beside the label; every industry page follows it -->
+          <div class="hm-kickrow">
+            <span class="pm-kicker hm-kick">Choose an industry</span>
+            <span class="hm-lvpick">
+              <select class="hm-lvsel" aria-label="{{ hmGradeLabel }}" value="{{ hmGradeVal }}" onChange="{{ hmGradePick }}">
+                <sc-for list="{{ hmGrades }}" as="g" hint-placeholder-count="3">
+                  <option value="{{ g.value }}">{{ g.label }}</option>
+                </sc-for>
+              </select>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </span>
+          </div>
           <div class="hm-deckwrap">
           <div class="hm-deck" data-hmdeck="true" onScroll="{{ hmDeckScroll }}">
             <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="5">
@@ -442,15 +453,7 @@
     <main data-pmap="true" class="pm" style="--pm-w:{{ pmRoadW }}">
       <div class="pm-col">
         <p aria-live="polite" class="pm-sr">{{ mapLive }}</p>
-        <!-- the second page's top line: the grade (Murci, 2026-10-25); the Continue line went 2026-10-26 (Murci: remove it; the year
-             shelf shows the paper under way) -->
-        <div class="pm-lead">
-          <div class="pm-grades" role="group" aria-label="{{ hmGradeLabel }}">
-            <sc-for list="{{ hmGrades }}" as="g" hint-placeholder-count="3">
-              <button type="button" class="pm-gr" aria-pressed="{{ g.on }}" onClick="{{ g.pick }}">{{ g.label }}</button>
-            </sc-for>
-          </div>
-        </div>
+        <!-- no top line (2026-10-26): the Continue line went, and the grade is chosen once on the home (its header names it) -->
         <!-- the industry page (Murci 2026-10-25): the professional at work, the map as a small box beside them (it opens the road in a
              centred modal), then the industry's subjects with their papers; a paper's details open in place under its row -->
         <section class="ind" data-ind="true" aria-labelledby="ind-name">
@@ -4905,8 +4908,9 @@ class Component extends DCLogic {
         pick: () => { if (q.id === lv.qualification) return; const ready = q.levels.slice().reverse().filter(l => count(q.id, l))[0];
           save(q.id, ready || q.levels[q.levels.length - 1]); } })),
       hmGradeLabel: lv.qualification === "ncv" ? "Level" : "Grade",
-      hmGrades: (SERVICE_LEVELS[lv.qualification] || []).map(l => ({ label: LEVEL_LABEL(l), on: l === lv.level ? "true" : "false",
-        pick: () => { if (l !== lv.level) save(lv.qualification, l); } })),
+      // the grade pill on the home (Murci picked A, 2026-10-26): set once, every industry page follows it
+      hmGrades: (SERVICE_LEVELS[lv.qualification] || []).map(l => ({ label: LEVEL_LABEL(l), value: l })),
+      hmGradeVal: lv.level, hmGradePick: e => { const l = e.target.value; if (l && l !== lv.level) save(lv.qualification, l); },
       hmHasNote: !!s.hmNote, hmNote: s.hmNote || "",
       hmCards: INDUSTRIES.map(ind => { const names = ind.subjects.map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
         const withPapers = names.filter(n => ps.some(p => p.subject === n)).length;
