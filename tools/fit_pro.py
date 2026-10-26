@@ -1,7 +1,10 @@
 """Turn a Gemini pair (person on white, hologram on black; prompts in _ref/nexera-hero/README.md) into the industry page's two
 layers in assets/pro/, fitted to the Nexera reference pair (healthcare).
 
-  python tools/fit_pro.py <person.jpg> <object.jpg> assets/pro/<name>-person.webp assets/pro/<name>-object.webp
+  python tools/fit_pro.py <person.jpg> <object.jpg> assets/pro/<name>-person.webp assets/pro/<name>-object.webp [--fill N] [--max-pocket N]
+  --fill N: the flood fill only crosses pixels this close to white (default 28, the edge ramp's top): lower it (12) when a
+    white garment touches the frame's white and the fill leaks into it (the pilot's shirt, 2026-10-26)
+  --max-pocket N: keep walled-in white areas larger than N px (a white ID card, 2026-10-26: 5795 px; arm gaps are < 800)
   (needs Pillow + numpy; then set the industry's `pro: "<name>"` in INDUSTRIES)
 
 person: white keyed out by a flood fill from the frame's edges (white INSIDE the figure stays) plus walled-in pure-white pockets
@@ -15,12 +18,14 @@ import numpy as np
 from PIL import Image
 
 src_person, src_object, out_person, out_object = sys.argv[1:5]
+opt = dict(zip(sys.argv[5::2], sys.argv[6::2]))
+FILL, MAX_POCKET = float(opt.get("--fill", 28)), float(opt.get("--max-pocket", "inf"))
 
 # person: white -> alpha
 rgb = np.asarray(Image.open(src_person).convert("RGB")).astype(np.float32)
 d = 255 - rgb.min(-1)                       # distance from white in the darkest channel
 LO, HI = 6.0, 28.0
-cand = d < HI
+cand = d < min(HI, FILL)
 bg = np.zeros_like(cand); bg[0, :] = cand[0, :]; bg[-1, :] = cand[-1, :]; bg[:, 0] = cand[:, 0]; bg[:, -1] = cand[:, -1]
 while True:                                 # flood fill through near-white pixels from the frame's edges
     g = bg.copy()
@@ -31,7 +36,7 @@ while True:                                 # flood fill through near-white pixe
 # background walled in by the figure (the gaps between the arms and the body): pockets of near-white the fill could not reach,
 # taken when almost pure white (mean d < 10); a lens or a highlight is greyer (the glasses measured 20.8) and stays
 from collections import deque
-inner = cand & ~bg; seen = np.zeros_like(inner); H, W = inner.shape
+inner = (d < HI) & ~bg; seen = np.zeros_like(inner); H, W = inner.shape
 for y, x in zip(*np.nonzero(inner)):
     if seen[y, x]: continue
     q = deque([(y, x)]); seen[y, x] = True; px = []
@@ -40,7 +45,7 @@ for y, x in zip(*np.nonzero(inner)):
         for ny, nx in ((cy + 1, cx), (cy - 1, cx), (cy, cx + 1), (cy, cx - 1)):
             if 0 <= ny < H and 0 <= nx < W and inner[ny, nx] and not seen[ny, nx]: seen[ny, nx] = True; q.append((ny, nx))
     ys, xs = np.array(px).T
-    if len(px) >= 30 and d[ys, xs].mean() < 10:
+    if 30 <= len(px) <= MAX_POCKET and d[ys, xs].mean() < 10:
         bg[ys, xs] = True; print("pocket removed", len(px), "px at x", xs.min(), "y", ys.min())
 alpha = np.where(bg, np.clip((d - LO) / (HI - LO), 0, 1), 1.0)
 # the drawn edge itself: 2 px next to the background are part white (a light outline once keyed); their alpha comes from how

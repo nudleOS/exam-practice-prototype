@@ -652,7 +652,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   mix-blend-mode: screen; animation: nx-pro-obj 3.4s ease-in-out infinite; }   /* over the cupped hands: the hero's own box, measured */
 @keyframes nx-pro-obj { 0%, 100% { filter: brightness(0.95); transform: translateY(0) scale(1); } 50% { filter: brightness(1.18); transform: translateY(-16px) scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .ind-pro-media > .ind-pro-obj, .hm-art > .ind-pro-obj { animation: none; } }
-.ind-pro > .ind-pro-cap { position: absolute; left: 0; bottom: 0; font-size: 11.5px; color: #8fa0d6; }
 .ind-mapbox { align-self: start; min-height: 150px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 4px; padding: 12px; border-radius: 18px; text-align: left; cursor: pointer;
   border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); color: #eef3ff; font: inherit; }
 .ind-mapbox > .ind-mapbox-art { width: 100%; height: auto; margin-bottom: auto; }   /* the real map in small: its colours are its own */
@@ -794,7 +793,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* the text at the top: a soft dark fade behind it; the professional right of centre and a little lower, the face under the text */
   .ind .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 12, 36, 0.9) 0%, rgba(3, 12, 36, 0.55) 26%, transparent 46%); pointer-events: none; }
   .ind .ind-pro > .ind-pro-media { left: 62%; height: 80%; }
-  .ind .ind-pro > .ind-pro-cap { display: none; }   /* the placeholder caption has no room beside the map box */
   .ind .ind-intro { align-self: start; max-width: 560px; padding: 28px 18px 0; }   /* 10 px lower (2026-10-26); more would cover the face */
   .ind .ind-intro > .ind-name { font-size: clamp(26px, 4vw, 42px); }
   .ind .ind-mapbox { align-self: end; justify-self: start; margin: 14px; width: 132px; min-height: 0; padding: 10px; }   /* bottom-left: the text holds the top, the person the right */
@@ -807,7 +805,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */
 }
 @media (min-width: 600px) and (max-width: 1099px) {
-  .ind-pro > .ind-pro-cap { display: none; }   /* a tablet's stage is too narrow: the placeholder caption ran into the feet (142 px free, 218 needed) */
   .ind-pro > .ind-pro-media { left: 68%; }   /* a tablet's stage is narrow: at 74% the person ran 31 px past it, under the map box */
 }
 @media (min-width: 1100px) {
