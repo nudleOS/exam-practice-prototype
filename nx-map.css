@@ -608,6 +608,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-card[aria-expanded="true"] { width: 380px; }
 }
 @media (prefers-reduced-motion: reduce) { .hm-card, .hm-card > .hm-art { transition: none; } }
+/* the cards sit slightly stacked (Murci 2026-10-26, from a frame of the Back transition), on every device: each overlaps the
+   one before it by 18 px, the later card on top, a soft shadow on its left edge giving the depth (the frosted card above also
+   blurs the one under it); a card hovered or opened comes to the front, so its widened text is never under its neighbour */
+.hm-deck { gap: 0; }
+.hm-card + .hm-card { margin-left: -18px; }
+.hm-card { box-shadow: -14px 0 26px -10px rgba(0, 0, 0, 0.6); }
+.hm-card[aria-expanded="true"] { z-index: 2; }
+@media (hover: hover) and (pointer: fine) { .hm-card:hover, .hm-card:focus-visible { z-index: 2; } }
 /* the map's lead (Murci, 2026-10-25: "needs to appear on the second page"): the paper under way, then the grade switch */
 .pm-lead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; margin: 0 0 10px; }
 

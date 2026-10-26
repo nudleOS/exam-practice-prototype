@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=85">
+  <link rel="stylesheet" href="nx-map.css?v=86">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -4853,7 +4853,7 @@ class Component extends DCLogic {
       hmDeckScroll: e => { const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
         if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); },
       hmDeckNext: () => { const d = document.querySelector("[data-hmdeck]"), c = d && d.querySelector(".hm-card");
-        if (d) d.scrollBy({ left: c ? c.offsetWidth + 12 : 160, behavior: s.reduced ? "auto" : "smooth" }); } };
+        if (d) d.scrollBy({ left: c ? c.offsetWidth - 18 : 132,   /* one card on: the cards overlap by 18 px */ behavior: s.reduced ? "auto" : "smooth" }); } };
   }
 
   // ── Topic drills (brief 10): one topic, six parts, recipes and unseen parts before repeats.
