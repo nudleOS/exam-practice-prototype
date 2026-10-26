@@ -574,7 +574,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-kick { align-self: flex-start; margin-top: 4px; }
 .hm-deck { align-self: stretch; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; padding: 4px 16px 14px; margin: 0 -16px; scrollbar-width: none; }
 .hm-deck::-webkit-scrollbar { display: none; }
-.hm-card { --sc: #93a4d6; --sc-rgb: 147, 164, 214; position: relative; flex: none; width: 150px; height: 280px; padding: 0; overflow: hidden; scroll-snap-align: start;
+.hm-card { --sc: #93a4d6; --sc-rgb: 147, 164, 214; position: relative; flex: none; width: 150px; height: 280px; padding: 0; overflow: hidden;
   height: clamp(280px, calc(100dvh - 250px), 460px);   /* a phone's cards fill the screen below the title: no empty half */
   border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.06); color: #ffffff; font: inherit; text-align: left; cursor: pointer;
   background: radial-gradient(90% 70% at 50% 100%, rgba(var(--sc-rgb), 0.4), transparent 70%), linear-gradient(180deg, rgba(10, 31, 74, 0.62), rgba(4, 19, 46, 0.84));
@@ -612,7 +612,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    one before it by 18 px, the later card on top, a soft shadow on its left edge giving the depth (the frosted card above also
    blurs the one under it); a card hovered or opened comes to the front, so its widened text is never under its neighbour */
 .hm-deck { gap: 0; }
-.hm-card + .hm-card { margin-left: -18px; }
+.hm-slot { flex: none; display: flex; scroll-snap-align: start; }   /* the unmoving snap target around each gliding card */
+.hm-slot + .hm-slot { margin-left: -18px; }
 .hm-card { box-shadow: -14px 0 26px -10px rgba(0, 0, 0, 0.6); }
 .hm-card[aria-expanded="true"] { z-index: 2; }
 @media (hover: hover) and (pointer: fine) { .hm-card:hover, .hm-card:focus-visible { z-index: 2; } }

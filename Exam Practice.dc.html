@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=87">
+  <link rel="stylesheet" href="nx-map.css?v=88">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -229,6 +229,9 @@
           <div class="hm-deckwrap">
           <div class="hm-deck" data-hmdeck="true" onScroll="{{ hmDeckScroll }}">
             <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="5">
+              <!-- the slot snaps, the card inside it glides: snapping read the gliding card's pinned position as a snap point
+                   (the deck could not scroll back to its start, 2026-10-26 QA) -->
+              <div class="hm-slot">
               <button type="button" class="hm-card" data-hmcard="{{ c.key }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
                 <span class="hm-art">
                   <img class="ind-pro-person" src="assets/pro/{{ c.pro }}-person.webp" alt="" loading="lazy" decoding="async">
@@ -245,6 +248,7 @@
                   </span>
                 </span>
               </button>
+              </div>
             </sc-for>
           </div>
           <!-- the way the cards slide (Murci 2026-10-25): an arrow at their end, nudging gently; it slides one card on, and fades at the last -->
@@ -453,7 +457,7 @@
           </div>
           <div class="ind-intro">
             <span class="pm-ico ind-ico" data-icon="{{ indIcon }}" aria-hidden="true"></span>
-            <h1 class="ind-name" id="ind-name">{{ indName }}</h1>
+            <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
             <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
           </div>
@@ -2380,7 +2384,12 @@ class Component extends DCLogic {
       this._bp = window.BuildPlay.mount(host, { kind: part.build.kind, cfg: part.build, value: s.build, reduced: s.reduced, onChange: b => this.setState({ build: b }) }); }
     const items = reply && reply.result && reply.result.items && reply.part === part.number ? reply.result.items : null;
     this._bp.sync({ value: s.build, locked: locked, items: items, itemsFor: items && this._lastAns && this._lastAns.key === part.key ? this._lastAns.v : null }); }
+  // the arrow knows the deck's end without waiting for a scroll (2026-10-26 QA: on a wide screen all five cards fit, nothing
+  // scrolls, and the arrow showed and did nothing); runs after each render, so a resize or a widened card is seen too
+  deckEndSync() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
+    const end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8; if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); }
   componentDidUpdate() {
+    this.deckEndSync();
     this.buildSync();
     this.progSync();
     this.gateSync();
@@ -3039,13 +3048,12 @@ class Component extends DCLogic {
       [[c, "ind-card"], [c && c.querySelector(".hm-art"), "ind-pro"], [c && c.querySelector(".hm-cname"), "ind-title"],
         [document.querySelector(".pm-bg"), "ind-card"], [document.querySelector(".ind-pro-media"), "ind-pro"], [document.getElementById("ind-name"), "ind-title"]]
         .forEach(([el, n]) => { if (el) el.style.viewTransitionName = on ? n : ""; }); };
+    if (this._morph === dir) return;   // a second tap while this move runs (2026-10-26 QA: a double tap ran the switch twice); Back mid-grow still goes
     const root = document.documentElement; root.classList.toggle("vt-back", dir === "back");
     name(true);
-    const t = document.startViewTransition(() => new Promise(done => update(() => {
-      // back home the deck starts at its first card: bring this industry's card into view, so the page lands on it
-      if (dir === "back") { const c = document.querySelector('[data-hmcard="' + key + '"]'); if (c) c.scrollIntoView({ inline: "start", block: "nearest" }); }   /* start: where the deck snaps (nearest left a third card cut at the edge) */
-      name(true); done(); })));
-    t.finished.finally(() => { name(false); root.classList.remove("vt-back"); });
+    const t = document.startViewTransition(() => new Promise(done => update(() => { name(true); done(); })));
+    this._morph = dir;
+    t.finished.finally(() => { name(false); root.classList.remove("vt-back"); if (this._morph === dir) this._morph = null; });
   }
   // a paper picked on the road (the map modal) or by Surprise me: the modal closes and the paper's details open IN PLACE on the
   // industry page, scrolled into view (Murci 2026-10-25: no paper sheet)
@@ -4827,7 +4835,9 @@ class Component extends DCLogic {
       this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); };
     const count = (q, l) => all.filter(p => p.qualification === q && p.level === l).length;
     // the cards are industries (Murci 2026-10-25): a card opens its industry's page, the second page
-    const go = key => this.indMorph("in", key, done => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false, hmDeckEnd: false }); this.pmGoMap(done); });   /* back home, the deck starts at its first card again: so does the arrow */
+    // focus follows the move (2026-10-26 QA: it fell to the page body both ways): the industry's title, then its card on Back
+    const go = key => this.indMorph("in", key, done => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false, hmDeckEnd: false });
+      this.pmGoMap(() => { const t = document.getElementById("ind-name"); if (t) t.focus({ preventScroll: true }); done(); }); });   /* back home, the deck starts at its first card again: so does the arrow */
     return {
       hmFieldsOn: STUDY_QUALS.length > 1,
       hmFields: STUDY_QUALS.map(q => ({ label: q.label, on: q.id === lv.qualification ? "true" : "false",
@@ -6097,7 +6107,10 @@ class Component extends DCLogic {
       pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
-      logoHome: s.screen === "map", logoPlain: s.screen !== "map", goHome: () => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => { window.scrollTo(0, 0); done(); });
+      logoHome: s.screen === "map", logoPlain: s.screen !== "map", goHome: () => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => { window.scrollTo(0, 0);
+          // back home the deck starts at its first card: bring this industry's card into view (start: where the deck snaps) and focus it
+          const c = s.pmInd && document.querySelector('[data-hmcard="' + s.pmInd + '"]'); if (c) { c.scrollIntoView({ inline: "start", block: "nearest" }); c.focus({ preventScroll: true }); }
+          done(); });
         if (s.screen === "map" && s.pmInd) this.indMorph("back", s.pmInd, back); else back(() => {}); },   /* the industry page shrinks into its card */
       headTitle: headTitle, headSub: headSub,
       // (the review page shows the mark in large type itself, and needs the room for its title)
