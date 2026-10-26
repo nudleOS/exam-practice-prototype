@@ -63,6 +63,43 @@ path inside Engineering later. Education is the only card where Maths Lit is acc
   directly; confirm the SACAA bursary rules on the SACAA's own site (aggregators disagree on dates); check the full-time Wits
   engineering page (only the part-time one was read); confirm the DHET critical skills list before any "in demand" wording.
 
+## TVET (NC(V)): proposed 2026-10-26, NOT approved yet
+
+An NC(V) learner is enrolled in a **programme** (3 fundamentals + 3 compulsory vocational subjects + 1 optional, Levels 2-4),
+so a TVET industry card lists programmes, and each programme brings its own vocational subjects. The subjects per programme
+are settled and primary-sourced: DHET's *NC(V) Matrix of Subjects 2015* plus the 2026 NC(V) ICASS Guidelines, Annex F
+(exam service `data/curricula/ncv.json`, branch feat/studies-and-curricula). This section decides only programme -> card.
+No DHET page describing NC(V) careers was found, so nothing is graded H on careers: the links rest on TVET college pages.
+
+**Ship (M: a college page read in full; two colleges where shown):**
+
+| Programme | Card | Evidence | Sources | Conf. |
+|---|---|---|---|---|
+| Engineering and Related Design | Engineering & Manufacturing | Nkangala: mechanical engineering technician, manufacturing / fabrication / maintenance technician, machine operator, production supervisor; lists Applied Engineering Technology as a vocational subject (**re-read by me 2026-10-26**). DHET files our AET L4 paper under this programme [T13] | [T1] [T13] | M |
+| Civil Engineering and Building Construction | Built Environment & Construction | Nkangala: building contractor, construction supervisor, site agent, civil engineering technician, plumber, bricklayer; Ehlanzeni: construction, plumbing, carpentry | [T2] [T3] | M (2) |
+| Electrical Infrastructure Construction | Built Environment & Construction | Nkangala: electrical contractor, installer, inspector; Ehlanzeni: electrical installation and infrastructure; False Bay: electrical engineering construction | [T4] [T5] [T6] | M (3) |
+| Electrical Infrastructure Construction | Mining & Energy (energy roles only) | False Bay: renewable energy systems, "install and maintain" solar PV and wind turbines, the Green Economy (**re-read by me 2026-10-26**; Renewable Energy Technology is listed at Level 2 only); Nkangala: power systems and renewable energy technician | [T5] [T4] | M |
+| Information Technology and Computer Science | ICT & Digital | Eastcape Midlands: IT / network technician, programmer, web developer, desktop support | [T7] | M (1) |
+| Transport and Logistics | Transport, Logistics & Aviation | False Bay: manufacturing, wholesale and retail distribution, third-party logistics | [T8] | M (1) |
+| Primary Agriculture | Environment, Agriculture & Natural Resources | Nkangala: farm manager, agricultural technician, extension officer, agribusiness; AgriSETA's scope covers the agricultural sector | [T9] [T10] | M (+ H sector) |
+| Finance, Economics and Accounting | Finance, Insurance & Business | Nkangala: accounting, financial services, insurance and investment services, bookkeeping | [T11] | M (1) |
+
+**Hold (L: one aggregator, a snippet, or an inferred link):** Mechatronics -> Engineering (one 2025 apprenticeship notice);
+Programming and Robotics -> ICT / Engineering (one aggregator; official name unconfirmed); Process Plant Operations ->
+Engineering (snippet: paper, beer and food plants); Drawing Office Practice -> Engineering / Built Environment (only a
+predecessor SAQA qualification); Primary Health -> Health (aggregator; may no longer be offered).
+
+**No card:** Hospitality, Tourism (Ehlanzeni [T12]: hospitality and tourism sectors, no card exists), Office Administration,
+Marketing, Management (nearest: Finance), Safety in Society, Process Instrumentation (no South African source found).
+**Education & Social Services** has no sourced NC(V) programme: Education and Development has no career source.
+
+### Decisions for Murci (TVET)
+
+1. Ship the 8 links above (only Engineering has a TVET paper today: Applied Engineering Technology L4, Feb 2019)?
+2. The held programmes: hide them until a second source, or show them as "Recommended (unverified)" like Geography?
+3. On TVET, show a card with no programme (Education & Social Services, and every card at a level with no papers) as
+   "papers on the way", or hide it?
+
 ## Sources
 
 **A.** UCT, Faculty of Engineering & the Built Environment, *NSC Entrance Requirements 2025* (official PDF, read in full):
@@ -100,3 +137,18 @@ Engineering: Mathematics ≥ 75–80% and Physical Sciences ≥ 70–75%; Constr
 
 Example careers are illustrative, not sourced. Research by a research agent (2026-10-25) plus source A opened and read
 directly the same day; the 2026-10-26 cards by a research agent the same day (sources 20–29).
+
+**TVET sources (2026-10-26, research agent; [T1] and [T5] re-read by me):**
+- T1. Nkangala TVET, NC(V) Engineering and Related Design (college page, read): https://ntc.edu.za/engineering-related-design.html
+- T2. Nkangala TVET, NC(V) Civil Engineering and Building Construction: https://ntc.edu.za/civil-engineering-building.html
+- T3. Ehlanzeni TVET, Civil Engineering and Building Construction: https://www.ehlanzenicollege.co.za/courses/civil-engineering-and-building-construction
+- T4. Nkangala TVET, NC(V) Electrical Infrastructure Construction: https://ntc.edu.za/electrical-infrastructure.html
+- T5. False Bay TVET, NC(V) Electrical Infrastructure Construction (read): https://falsebaycollege.co.za/engineering-studies/electrical/ncv-electrical-infrastructure-construction/
+- T6. Ehlanzeni TVET, Electrical Infrastructure Construction: https://www.ehlanzenicollege.co.za/courses/electrical-infrastructure-construction
+- T7. Eastcape Midlands TVET, IT career options: https://emcol.co.za/?p=3258
+- T8. False Bay TVET, NC(V) Transport and Logistics: https://falsebaycollege.co.za/business-studies/business/ncv-transport-and-logistics/
+- T9. Nkangala TVET, NC(V) Primary Agriculture: https://ntc.edu.za/primary-agriculture.html
+- T10. AgriSETA, About us (official, sector scope): https://www.agriseta.co.za/about-us/
+- T11. Nkangala TVET, NC(V) Finance, Economics and Accounting: https://ntc.edu.za/finance-economics-accounting.html
+- T12. Ehlanzeni TVET, Hospitality / Tourism: https://www.ehlanzenicollege.co.za/courses/hospitality , https://www.ehlanzenicollege.co.za/courses/tourism
+- T13. DHET NOLS archive, NC(V) 2019, Engineering and Related Designs / L4 (official): https://www.dhet.gov.za/NOLS%20%20NCV/2019%20February%20Supplementary%20and%20November%202019/
