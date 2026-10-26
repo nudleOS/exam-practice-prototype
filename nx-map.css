@@ -773,3 +773,37 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 1100px) {
   .ind { grid-template-columns: minmax(0, 1fr) 240px; }
 }
+
+/* -- The card grows into its industry's page, and back (Murci 2026-10-26; indMorph in Exam Practice.dc.html). Three pairs: the
+   card and the page's backdrop (ind-card), the card's professional and the page's (ind-pro), its name and the page's title
+   (ind-title). In: the home steps back under the growing card (its corners straightening); once grown, the card's backdrop
+   dissolves into the real page while the professional and the title land. Back: the page hides under its backdrop, which
+   then shrinks into the card as the home comes forward. The root group sits UNDER the named groups, so the page's own
+   snapshot (opaque) waits until the card covers the screen. */
+::view-transition-group(ind-card), ::view-transition-group(ind-pro), ::view-transition-group(ind-title) {
+  animation-duration: 480ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* the stacking is set, not left to capture order: the backdrop under the professional and the title (measured: it was drawn
+   over them, hiding both at 300 ms once it went opaque) */
+::view-transition-group(ind-card) { z-index: 1; }
+::view-transition-group(ind-pro), ::view-transition-group(ind-title) { z-index: 2; }
+::view-transition-image-pair(ind-card) { overflow: hidden; animation: nxvt-corner 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+::view-transition-old(ind-card), ::view-transition-new(ind-card) { width: 100%; height: 100%; object-fit: fill; }
+::view-transition-old(ind-card) { animation: nxvt-out 140ms ease both; }   /* the card's own text, stretched: gone fast */
+::view-transition-new(ind-card) { animation: nxvt-cover 720ms ease both; }
+::view-transition-old(root) { animation: nxvt-recede 300ms ease both; }
+::view-transition-new(root) { animation: nxvt-late 720ms linear both; }
+@keyframes nxvt-corner { from { border-radius: 18px; } to { border-radius: 0; } }
+@keyframes nxvt-out { to { opacity: 0; } }
+@keyframes nxvt-in { from { opacity: 0; } }
+@keyframes nxvt-cover { 0% { opacity: 0; } 20%, 66% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes nxvt-recede { to { opacity: 0.4; transform: scale(0.96); } }
+@keyframes nxvt-late { 0%, 66% { opacity: 0; } 67%, 100% { opacity: 1; } }
+.vt-back::view-transition-group(ind-card), .vt-back::view-transition-group(ind-pro), .vt-back::view-transition-group(ind-title) { animation-delay: 160ms; }
+.vt-back::view-transition-image-pair(ind-card) { animation: nxvt-corner-back 480ms cubic-bezier(0.2, 0.8, 0.2, 1) 160ms both; }
+.vt-back::view-transition-old(ind-card) { animation: nxvt-hide-then-go 400ms ease both; }
+.vt-back::view-transition-new(ind-card) { animation: nxvt-in 240ms ease 160ms both; }
+.vt-back::view-transition-old(root) { animation: nxvt-out 1ms linear 160ms both; }
+.vt-back::view-transition-new(root) { animation: nxvt-forward 480ms ease 160ms both; }
+@keyframes nxvt-corner-back { from { border-radius: 0; } to { border-radius: 18px; } }
+@keyframes nxvt-hide-then-go { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes nxvt-forward { from { opacity: 0.4; transform: scale(0.96); } }
