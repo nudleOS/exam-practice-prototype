@@ -2,8 +2,10 @@
    No vortex, no particles, no 3D companion, nothing animating at rest: built for a low-end phone (the P30 lite) first.
    Values come from Exam Practice.dc.html's paperMapVals(); stop and link positions are computed there in px. */
 
+/* the industry page's backdrop (Murci 2026-10-26): blue at the top sinking to black, fixed to the screen while the page scrolls;
+   the card grows into it (it is the card's pair in the view transition) */
 .pm-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(120% 55% at 50% -12%, rgba(30, 70, 255, 0.16), transparent 62%), #03122c; }
+  background: linear-gradient(180deg, #0b2a72 0%, #071a4a 30%, #030c24 62%, #000000 100%); }
 .pm { position: relative; z-index: 1; box-sizing: border-box; transition: padding-right 300ms ease; }
 .pm-col { box-sizing: border-box; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
 @media (min-width: 600px) { .pm-col { padding-left: 32px; padding-right: 32px; } }
@@ -18,6 +20,7 @@
   border: 1px solid rgba(129, 177, 255, 0.24); background: transparent; color: #c9d2f0; font: inherit; font-size: 12.5px; font-weight: 600;
   white-space: nowrap; cursor: pointer; }
 .pm-chip[aria-pressed="true"] { background: var(--sc); border-color: var(--sc); color: #04122c; }
+@media (pointer: coarse) { .pm-chip { min-height: 44px; } }   /* a finger's target on a touch screen (2026-10-26 QA: 34 px) */
 .pm-chip:focus-visible, .pm-node:focus-visible, .pm-go:focus-visible, .pm-src:focus-visible, .pm-x:focus-visible { outline: 3px solid #81b1ff; outline-offset: 3px; }
 
 /* a subject and its path */
