@@ -765,7 +765,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .pm-cont-txt > .pm-cont-k { display: none; }
   /* a phone's home top (Murci 2026-10-25: "control the spacing"): 28 px under the top bar, the title centred
      (2026-10-26; it sat on the cards' left edge), 10 px to the label, 12 px to the cards; the cards shorter by the same 30 px */
-  .hm-headblock { align-items: center !important; padding: 28px 16px 0 !important; }   /* centred on a phone (Murci 2026-10-26) */
+  .hm-headblock { align-items: center !important; padding: 20px 16px 0 !important; }   /* centred on a phone (Murci 2026-10-26); 28 px from the search to the title */
   .hm-headblock > h1 { text-align: center !important; }
   .hm-choose > .hm-kick { margin-top: 10px; }
   .hm-card { height: clamp(280px, calc(100dvh - 280px), 460px); }
@@ -858,7 +858,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 
 /* -- The home's search (Murci 2026-10-26), in the old "Exam practice" title's place: centred in the top bar from a tablet up; a
    phone wraps it onto its own full-width row under the bar. Results drop under the field: industries, then past papers. */
-.hm-top { flex-wrap: wrap; row-gap: 10px; }
+.hm-top { flex-wrap: wrap; }
 .hm-search { position: relative; z-index: 9; }
 .hm-search > .hm-q { box-sizing: border-box; width: 100%; min-height: 44px; padding: 0 14px 0 42px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.3);
   background: rgba(255, 255, 255, 0.06); color: #eef3ff; font: inherit; font-size: 14px; }
@@ -876,6 +876,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-q-none { margin: 0; padding: 12px 10px; font-size: 13.5px; line-height: 1.45; color: #9fb0dd; }
 @media (max-width: 599px) {
   .hm-search { order: 10; flex: 1 0 100%; }
+  .hm-top { row-gap: 14px !important; }   /* over the bar's inline gap: 8px; the search row: 14 px under the top row, as at its sides (it was 8; Murci 2026-10-26: "correct the spacing") */
   /* the preview button (prototype only) sat under the role switch, on the search row: beside the switch instead */
   .hm-right { flex-direction: row-reverse; align-items: center; gap: 6px; }
   .hm-pv { position: static; }
