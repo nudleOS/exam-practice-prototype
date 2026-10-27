@@ -2551,6 +2551,15 @@ class Component extends DCLogic {
     // Measured on a Galaxy A04 2026-10-27: as paused animations (the earlier way) each copy kept a layer of its own inside its
     // clipped 3D strip - a resting deck took 33 ms a frame instead of 17
     fx._obj = [...fx.querySelectorAll(".ind-pro-obj")]; fx._wrap = wrap; fx._n = n; fx._key = key; sl._fx = fx; return fx; }
+  // a phone: the bend's straight end (the deck's left edge, where the cards go) lines up with the first letter of "Choose an
+  // industry" (Murci 2026-10-27). The heading is centred, so its start moves with the screen width: measured, not a number.
+  // Wider screens keep the CSS place
+  edgeSync() { const live = sel => [...document.querySelectorAll(sel)].find(e => !e.closest("x-dc"));
+    const d = live("[data-hmdeck]"), k = live(".hm-kick"); if (!d || !k) return;
+    if (!window.matchMedia("(max-width: 599px)").matches) { if (d.style.marginLeft) d.style.marginLeft = ""; return; }
+    if (!this._edgeFonts && document.fonts) { this._edgeFonts = true; document.fonts.ready.then(() => this.edgeSync()); }   // the heading's width settles with its font
+    const r = document.createRange(); r.selectNodeContents(k); const dx = r.getBoundingClientRect().left - d.getBoundingClientRect().left;
+    if (Math.abs(dx) > 0.5) d.style.marginLeft = (parseFloat(getComputedStyle(d).marginLeft) + dx).toFixed(1) + "px"; }
   // the desktop title: --belly-y at the companion's belly (measured where the figure is drawn: contain, anchored at the feet);
   // --belly-l centres it across the space from the page's left edge to the bend (Murci 2026-10-27: equal room on both sides;
   // was centred on the belly, ending 8 px before the bend)
@@ -2566,7 +2575,7 @@ class Component extends DCLogic {
     box.style.setProperty("--belly-l", Math.round(Math.max(24, (stop - t.offsetWidth) / 2) - c.left) + "px");
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
-    this.hmLoop(true); this.hmBend(); this.hmPrep();
+    this.edgeSync(); this.hmLoop(true); this.hmBend(); this.hmPrep();
     this.bellySync();
     this.buildSync();
     this.progSync();
