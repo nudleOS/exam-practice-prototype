@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=131">
+  <link rel="stylesheet" href="nx-map.css?v=132">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -122,22 +122,6 @@
     </sc-if>
     <sc-if value="{{ mapHead }}" hint-placeholder-val="{{ false }}">
       <span class="pm-head" style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; min-height:44px">
-        <!-- the school level, chosen here on the industry page's navbar (Murci 2026-10-27; it was on the home): the pill shows
-             "school · level", the transparent native select over it opens the menu grouped by school -->
-        <span class="hm-lvpick pm-lvpick">
-          <!-- the pill shows "school · level"; the transparent native select over it opens the grouped menu (Murci 2026-10-26) -->
-          <span class="hm-lvtxt" aria-hidden="true">{{ hmLvText }}</span>
-          <!-- a phone shows only the level: beside the XP chip the full text cut off the grade (2026-10-27); the menu still names the school -->
-          <span class="hm-lvtxt hm-lvtxt-s" aria-hidden="true">{{ hmLvShort }}</span>
-          <select class="hm-lvsel" aria-label="School level" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
-            <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
-              <optgroup label="{{ g.label }}">
-                <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
-              </optgroup>
-            </sc-for>
-          </select>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
-        </span>
       </span>
     </sc-if>
     <sc-if value="{{ notMapHead }}" hint-placeholder-val="{{ true }}">
@@ -440,60 +424,47 @@
             <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
             <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
-          </div>
-          <!-- a level with no papers at all shows its on-the-way card instead (TVET, University: Murci 2026-10-26) -->
-          <sc-if value="{{ indHasSecs }}" hint-placeholder-val="{{ true }}">
-          <div class="ind-secs">
-            <!-- the subjects as tabs (Murci picked A, 2026-10-26: the list was "too much ... clutter"): one subject's papers at a time -->
-            <!-- tabs that run off the edge say so (2026-10-26): a fade on the side with more, an arrow on the end side -->
-            <div class="ind-tabwrap">
-            <div class="ind-tabs" role="tablist" aria-label="Subjects" onScroll="{{ indTabsScroll }}">
-              <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="3">
-                <button type="button" role="tab" class="ind-tab" id="{{ sec.tabId }}" aria-selected="{{ sec.on }}" aria-controls="ind-panel" tabIndex="{{ sec.tabIx }}" onClick="{{ sec.pickTab }}" onKeyDown="{{ indTabKeys }}">{{ sec.name }}</button>
-              </sc-for>
-            </div>
-            <button type="button" class="ind-tabmore" tabIndex="-1" aria-hidden="true" onClick="{{ indTabsMore }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
-            </div>
-            <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="1">
-              <sc-if value="{{ sec.isOn }}" hint-placeholder-val="{{ false }}">
-              <section class="ind-sec" id="ind-panel" role="tabpanel" aria-labelledby="{{ sec.tabId }}">
-                <!-- no tag or paper count over the shelf (Murci 2026-10-27); an empty subject still says why the shelf is empty -->
-                <sc-if value="{{ sec.isEmpty }}" hint-placeholder-val="{{ false }}"><p class="ind-sec-meta"><span class="ind-sec-sum">No papers at this level yet</span></p></sc-if>
-                <sc-if value="{{ sec.hasNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note">{{ sec.note }}</p></sc-if>
-                <!-- the year shelf (Murci picked A, 2026-10-26): every paper a chip, grouped by sitting; one tap opens its details -->
-                <div class="ind-shelf">
-                  <sc-for list="{{ sec.sits }}" as="st" hint-placeholder-count="2">
-                    <div class="ind-sit" role="group" aria-label="{{ st.aria }}">
-                      <span class="ind-sit-k" aria-hidden="true">{{ st.label }}</span>
-                      <span class="ind-chips">
-                        <sc-for list="{{ st.papers }}" as="pp" hint-placeholder-count="2">
-                          <button type="button" class="ind-chip" data-state="{{ pp.state }}" aria-pressed="{{ pp.on }}" aria-label="{{ pp.aria }}" onClick="{{ pp.tap }}">{{ pp.label }}</button>
-                        </sc-for>
-                      </span>
-                    </div>
+            <!-- the practice panel (Murci picked B, 2026-10-27): three steps, then the chosen paper and its buttons. The newest
+                 paper of the subject shown is chosen until the learner picks, so Start always has a paper -->
+            <div class="ind-pick">
+              <label class="ind-step"><span class="ind-step-k">1 · Level</span>
+                <select class="ind-sel ind-lvsel" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
+                  <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
+                    <optgroup label="{{ g.label }}">
+                      <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                    </optgroup>
                   </sc-for>
+                </select>
+              </label>
+              <label class="ind-step"><span class="ind-step-k">2 · Subject</span>
+                <select class="ind-sel" value="{{ indSubjVal }}" onChange="{{ indSubjPick }}">
+                  <sc-for list="{{ indSubjOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                </select>
+              </label>
+              <label class="ind-step"><span class="ind-step-k">3 · Paper</span>
+                <select class="ind-sel" value="{{ indPaperVal }}" onChange="{{ indPaperPick }}">
+                  <sc-if value="{{ indHasPapers }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ indPaperOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></sc-if>
+                  <sc-if value="{{ indNoPapers }}" hint-placeholder-val="{{ false }}"><option value="">No papers yet</option></sc-if>
+                </select>
+              </label>
+            </div>
+            <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
+            <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
+              <div class="ind-act" data-inddetail="true">
+                <div class="ind-act-t">
+                  <b class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</b>
+                  <span class="ind-facts"><sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3"><span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span></sc-for></span>
+                  <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
+                  <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><span class="pm-sheet-note">{{ pmSheetNote }}</span></sc-if>
                 </div>
-                <sc-if value="{{ sec.hasPick }}" hint-placeholder-val="{{ false }}">
-                  <div class="ind-detail" data-inddetail="true" data-indpaper="{{ sec.sel }}">
-                    <span class="pm-kicker">{{ pmKicker }}</span>
-                    <h3 class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</h3>
-                    <p class="ind-facts">
-                      <sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3">
-                        <span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span>
-                      </sc-for>
-                    </p>
-                    <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
-                    <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><p class="pm-sheet-note">{{ pmSheetNote }}</p></sc-if>
-                    <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
-                    <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake the paper<span>For marks only · no XP</span></button></sc-if>
-                    <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src" onClick="{{ pmSourceGo }}">View question paper</button></sc-if>
-                  </div>
-                </sc-if>
-              </section>
-              </sc-if>
-            </sc-for>
+                <div class="ind-act-b">
+                  <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
+                  <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake<span>Marks only · no XP</span></button></sc-if>
+                  <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src" onClick="{{ pmSourceGo }}">View paper</button></sc-if>
+                </div>
+              </div>
+            </sc-if>
           </div>
-          </sc-if>
           <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
             <section class="ind-after" aria-labelledby="ind-after-title">
               <h2 class="ind-sec-name" id="ind-after-title">After school</h2>
@@ -2453,11 +2424,6 @@ class Component extends DCLogic {
       c.style.transform = "translateX(" + (right - (pad + u * step + W)).toFixed(1) + "px) " + P + "rotateY(" + deg.toFixed(2) + "deg)";
       c.style.filter = "brightness(" + lit.toFixed(3) + ")";
       c.style.opacity = fade < 1 ? fade.toFixed(3) : ""; c.style.visibility = fade <= 0 ? "hidden" : ""; }); }
-  // the subject tabs' overflow (2026-10-26): data-more says which side has tabs off the edge ("start", "end", "both" or ""),
-  // for the fade and the arrow; set on the element itself on every scroll, so no re-render
-  tabsSync() { const t = [...document.querySelectorAll(".ind-tabs")].find(e => !e.closest("x-dc")); if (!t) return;
-    const max = t.scrollWidth - t.clientWidth, st = t.scrollLeft > 2, en = t.scrollLeft < max - 2;
-    t.setAttribute("data-more", st && en ? "both" : st ? "start" : en ? "end" : ""); }
   // the desktop title across the companion's belly: measure where the figure is drawn (contain, anchored at the feet) and set
   // --belly-l / --belly-y on .hm-choose; centred on the belly, shifted left so it ends 16 px before the first card
   bellySync() { const live = sel => [...document.querySelectorAll(sel)].find(e => !e.closest("x-dc"));
@@ -2470,7 +2436,7 @@ class Component extends DCLogic {
     box.style.setProperty("--belly-l", Math.round(Math.max(24, Math.min(bx - w / 2, stop - w)) - c.left) + "px");   /* never past a 24 px gutter (1280 px: it reached x -5, 2026-10-26) */
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
-    this.deckEndSync(); this.hmBend(); this.tabsSync();
+    this.deckEndSync(); this.hmBend();
     this.bellySync();
     this.buildSync();
     this.progSync();
@@ -3290,21 +3256,8 @@ class Component extends DCLogic {
             pct: x.pct + "%", deg: Math.round(3.6 * x.pct) + "deg", name: nm, meta: x.meta,
             aria: n + ", " + x.name.replace(" · ", ", ") + ". " + x.meta + ". Open paper details", open: () => this.pmOpenPaper(x.p.id) }; }) }; });
     const all = L.papers.map(info);
-    // the paper's details, open IN PLACE on the industry page under its row (Murci 2026-10-25: the paper sheet is gone)
-    const sel = all.filter(x => x.p.id === s.pmOpen)[0] || null, g = sel && sel.g, p = sel && sel.p;
     // the industry page: its subjects (each tagged as the mapping states it), their papers newest first, and the map modal
     const closeMap = () => this.setState({ pmMapOpen: false }, () => { const t = document.querySelector("[data-indmap]"); if (t) t.focus(); });
-    // the year shelf (Murci 2026-10-26, picked A of three): a subject's papers grouped by sitting, newest first; a chip says the
-    // paper (P1), and its state where there is one (47% under way in blue, done in gold); a tap opens it, a second tap closes it
-    const sitsOf = (n, ps) => { const out = [];
-      ps.forEach(x => { const sit = x.name.split(" · ").pop(); let g = out.filter(t => t.label === sit)[0];
-        if (!g) out.push(g = { label: sit, aria: n + ", " + sit, papers: [] });
-        const on = s.pmOpen === x.p.id, short = pno(x.p) ? "P" + pno(x.p) : "Paper";   /* not its sitting again: the row already says it */
-        g.papers.push({ state: x.state, on: on ? "true" : "false",
-          label: short + (x.state === "going" ? " · " + x.pct + "%" : x.state === "done" ? " · done" : x.state === "soon" ? " · soon" : ""),
-          aria: (pno(x.p) ? "Paper " + pno(x.p) + ", " : "") + sit + ". " + x.meta,
-          tap: () => this.setState({ pmOpen: on ? null : x.p.id }, () => { if (on) return; const h = document.getElementById("pm-title"); if (h) h.focus({ preventScroll: true }); }) }); });
-      return out; };
     const indSecs = indSubjects(ind, L.level).map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
       const ps = L.papers.filter(q => q.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
       // its papers are a dropdown (Murci 2026-10-25: "make the papers dropdowns"); the picked paper's details show under the subject,
@@ -3314,12 +3267,19 @@ class Component extends DCLogic {
       const note = [sb[2], SUBJECT_CAVEAT[sb[1]]].filter(Boolean).join(" ");
       return { name: n, icon: look.icon, note: note, hasNote: !!note, isEmpty: !ps.length,
         sum: !ps.length ? "No papers at this level yet" : ps.length + (ps.length === 1 ? " paper" : " papers") + (going ? " · " + going + " under way" : "") + (done ? " · " + done + " done" : ""),
-        sel: mine ? s.pmOpen : "", hasPick: mine, going: going > 0, count: ps.length, sits: sitsOf(n, ps) }; });
+        hasPick: mine, going: going > 0, count: ps.length, firstId: ps.length ? ps[0].p.id : null,
+        // the paper step's options, newest first: its sitting, its number, its state
+        opts: ps.map(x => ({ value: x.p.id, label: x.name.split(" · ").pop() + (pno(x.p) ? " · P" + pno(x.p) : "")
+          + (x.state === "going" ? " · " + x.pct + "%" : x.state === "done" ? " · done" : x.state === "soon" ? " · soon" : "") })) }; });
     // the tab shown: the subject holding the open paper, else the learner's pick, else the one with a paper under way, else the
     // first; picking another tab closes a paper open elsewhere (so the pick wins)
     const tabName = (indSecs.filter(x => x.hasPick)[0] || indSecs.filter(x => x.name === (s.indTabs || {})[ind.key])[0] || indSecs.filter(x => x.going)[0] || indSecs[0] || {}).name;
     indSecs.forEach((x, i) => { x.isOn = x.name === tabName; x.on = x.isOn ? "true" : "false"; x.tabIx = x.isOn ? "0" : "-1"; x.tabId = "ind-tab-" + i;
       x.pickTab = () => this.setState({ indTabs: { ...(s.indTabs || {}), [ind.key]: x.name }, pmOpen: x.hasPick ? s.pmOpen : null }); });
+    // the panel's paper (Murci picked B, 2026-10-27): the one picked, else the newest of the subject shown, so Start always has one
+    const tabSec = indSecs.filter(x => x.name === tabName)[0] || null;
+    const openId = (all.some(x => x.p.id === s.pmOpen) && s.pmOpen) || (tabSec && tabSec.firstId) || null;
+    const sel = all.filter(x => x.p.id === openId)[0] || null, g = sel && sel.g, p = sel && sel.p;
     const go = sel && g ? (sel.state === "done" ? { label: "Review my paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id, screen: "summary" }, () => window.scrollTo(0, 0)) }
       : { label: sel.state === "going" ? "Continue at " + sel.nextId : "Start paper", run: () => this.setState({ pmOpen: null, paperId: g.local.id }, () => this.openMission(Math.max(0, g.next))) }) : null;
     return {
@@ -3343,14 +3303,12 @@ class Component extends DCLogic {
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
-      indTabsScroll: () => this.tabsSync(),
-      indTabsMore: () => { const t = [...document.querySelectorAll(".ind-tabs")].find(e => !e.closest("x-dc"));
-        if (t) t.scrollBy({ left: t.clientWidth * 0.7, behavior: s.reduced ? "auto" : "smooth" }); }, indHasSecs: indSecs.length > 0 && this.pmList(s).papers.length > 0,
-      // the tabs' keys (ARIA tabs): the arrows step and wrap, Home and End jump; the new tab is selected and focused
-      indTabKeys: e => { const live = () => [...document.querySelectorAll(".ind-tab")].filter(t => !t.closest("x-dc")), tabs = live(), i = tabs.indexOf(e.currentTarget);
-        const j = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i - 1 + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
-        if (j < 0) return; e.preventDefault(); tabs[j].click();
-        requestAnimationFrame(() => { const t = live()[j]; if (t) { t.focus(); t.scrollIntoView({ inline: "nearest", block: "nearest" }); } }); },
+      // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
+      indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",
+      indSubjPick: e => this.setState({ indTabs: { ...(s.indTabs || {}), [ind.key]: e.target.value }, pmOpen: null }),
+      indPaperOpts: tabSec ? tabSec.opts : [], indHasPapers: !!(tabSec && tabSec.opts.length), indNoPapers: !(tabSec && tabSec.opts.length),
+      indPaperVal: openId || "", indPaperPick: e => this.setState({ pmOpen: e.target.value || null }),
+      indSubjNote: tabSec ? tabSec.note : "", indHasSubjNote: !!(tabSec && tabSec.note), indHasSel: !!sel,
       indHasAfter: !!ind.after, indAfter: (ind.after || []).map(a => ({ code: a[0], text: a[1] })),
       indMapOpen: !!s.pmMapOpen && !s.finishCard, indMapClose: closeMap,
       indMapGo: () => this.setState({ pmMapOpen: true }, () => { const h = document.getElementById("ind-map-title"); if (h) h.focus({ preventScroll: true }); }),
@@ -6232,7 +6190,7 @@ class Component extends DCLogic {
         if (c) { c.scrollIntoView({ inline: "start", block: "nearest" }); c.focus({ preventScroll: true }); } }),
       // the header's level: home, focused on the level pill (Murci 2026-10-26)
       // "Change level" on the "on the way" card: the navbar's level picker, on this page (Murci 2026-10-27)
-      pmLevelGo: () => { const p = [...document.querySelectorAll(".pm-lvpick > .hm-lvsel")].find(e => !e.closest("x-dc")); if (p) p.focus(); },
+      pmLevelGo: () => { const p = [...document.querySelectorAll(".ind-lvsel")].find(e => !e.closest("x-dc")); if (p) p.focus(); },
       headTitle: headTitle, headSub: headSub,
       // (the review page shows the mark in large type itself, and needs the room for its title)
       showMeter: !!paper && s.screen !== "pick" && s.screen !== "map" && s.screen !== "summary", meterLabel: earned + " of " + total + " marks",

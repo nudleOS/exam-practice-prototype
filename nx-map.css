@@ -638,6 +638,22 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-intro { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; row-gap: 4px; align-items: center; }
 .ind-intro > .ind-ico { grid-row: 1; --sc: var(--ic); --sc-rgb: var(--ic-rgb); }   /* the page's one accent (no industry hue) */
 .ind-intro > .ind-name { grid-row: 1; margin: 0; font-size: clamp(22px, 3vw, 32px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #eef3ff; }
+/* the practice panel (Murci picked B, 2026-10-27): 1 Level, 2 Subject, 3 Paper, then the chosen paper with its buttons */
+.ind-intro > .ind-pick, .ind-intro > .ind-act, .ind-intro > .ind-subj-note { grid-column: 1 / -1; }
+.ind-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.ind-step { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ind-step > .ind-step-k { font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em; color: #9fb0dd; }
+.ind-sel { box-sizing: border-box; width: 100%; min-height: 40px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(129, 177, 255, 0.35);
+  background: #0a1534; color: #ffffff; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.ind-sel option, .ind-sel optgroup { background: #0d1a3f; color: #ffffff; }
+.ind-sel:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+@media (pointer: coarse) { .ind-sel { min-height: 44px; font-size: 16px; } }   /* a finger's target; 16 px stops iOS zooming */
+.ind-intro > .ind-subj-note { margin: 0; font-size: 12.5px; color: #9fb0dd; }
+.ind-act { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.ind-act > .ind-act-t { flex: 1 1 170px; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ind-act-t > .ind-dtitle { font-size: 14.5px; color: #eef3ff; }
+.ind-act > .ind-act-b { display: flex; flex-wrap: wrap; gap: 8px; }
+.ind-act-b .pm-go, .ind-act-b .pm-src { width: auto; margin: 0; min-height: 44px; padding: 0 18px; }
 .ind-intro > .ind-blurb, .ind-intro > .ind-careers { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: #b8c4ea; }
 .ind-careers > .ind-k { margin-right: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ic); }
 .ind-secs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }   /* one list of folding subjects */
@@ -765,7 +781,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-after { grid-area: after; }
 
 @media (max-width: 599px) {
-  .ind { grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "secs" "pro" "map" "intro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
+  .ind { grid-template-rows: minmax(0, 1fr) auto auto auto; grid-template-areas: "pro" "map" "intro" "after"; }   /* the panel holds the steps (2026-10-27) */   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
   .ind .ind-pro { height: auto; min-height: 0; overflow: hidden; border-radius: 24px; }   /* the screen's leftover height (no scroll, 2026-10-27; was 460-640 px) */   /* no glow; the professional a little larger (was 66dvh, max 580) */
   /* the professional centred, where the text was (Murci 2026-10-27); the text is a box under the stage */
   .ind .ind-pro > .ind-pro-media { left: 50%; height: 96%; }   /* the full stage: no text over it any more */
@@ -786,8 +802,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
      stage's left, where the text was. No papers: no map box, the text box heads the column */
-  .ind { grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
-  .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
+  .ind { grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "pro map" "pro intro" "after after"; column-gap: 16px; }
+  .ind:not(:has(.ind-mapbox)) { grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "pro intro" "after after"; }
   .ind .ind-intro { align-self: stretch; align-content: center; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
   .ind .ind-intro > .ind-name { grid-row: 2; grid-column: 1 / -1; font-size: clamp(20px, 1.9vw, 26px); }   /* the icon above it: beside it, "Manufacturing" ran out of the 240 px box */
   .ind-pro > .ind-pro-media { left: 30%; }   /* where the text was */
