@@ -8,6 +8,12 @@
   background: linear-gradient(180deg, #0b2a72 0%, #071a4a 30%, #030c24 62%, #000000 100%); }
 .pm { position: relative; z-index: 1; box-sizing: border-box; transition: padding-right 300ms ease; }
 .pm-col { box-sizing: border-box; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
+/* the industry page fits the screen and never scrolls down (Murci 2026-10-27): one screen tall under the 65 px navbar; the
+   industry (.ind) takes what is left after the "on the way" card, and its stage row gives */
+main.pm[data-pmap] { height: calc(100dvh - 65px); overflow: hidden; }
+main.pm[data-pmap] > .pm-col { height: 100%; display: flex; flex-direction: column; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+main.pm[data-pmap] .ind { flex: 1 1 0; min-height: 0; margin-bottom: 0; }
+main.pm[data-pmap] .pm-empty { flex: none; margin-top: 12px; }
 @media (min-width: 600px) { .pm-col { padding-left: 32px; padding-right: 32px; } }
 /* the subjects: one column on a phone; side by side wherever two paths fit (the page's width is used, edge to edge) */
 /* auto-fit + centred tracks: one subject (a chip picked) sits in the middle, not in the first of three columns */
@@ -759,8 +765,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-after { grid-area: after; }
 
 @media (max-width: 599px) {
-  .ind { grid-template-areas: "secs" "pro" "map" "intro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
-  .ind .ind-pro { height: clamp(460px, 72dvh, 640px); overflow: hidden; border-radius: 24px; }   /* no glow; the professional a little larger (was 66dvh, max 580) */
+  .ind { grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "secs" "pro" "map" "intro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
+  .ind .ind-pro { height: auto; min-height: 0; overflow: hidden; border-radius: 24px; }   /* the screen's leftover height (no scroll, 2026-10-27; was 460-640 px) */   /* no glow; the professional a little larger (was 66dvh, max 580) */
   /* the professional centred, where the text was (Murci 2026-10-27); the text is a box under the stage */
   .ind .ind-pro > .ind-pro-media { left: 50%; height: 80%; }
   .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
@@ -775,17 +781,18 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
      stage's left, where the text was. No papers: no map box, the text box heads the column */
-  .ind { grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: auto auto 1fr auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
-  .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto 1fr auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
+  .ind { grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
+  .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
   .ind .ind-intro { align-self: start; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
   .ind .ind-intro > .ind-name { grid-row: 2; grid-column: 1 / -1; font-size: clamp(20px, 1.9vw, 26px); }   /* the icon above it: beside it, "Manufacturing" ran out of the 240 px box */
   .ind-pro > .ind-pro-media { left: 30%; }   /* where the text was */
-  .ind-mapbox > .ind-mapbox-art { max-height: 130px; }   /* the wider column (2026-10-27) grew the drawing ~250 px tall and pushed the text box down */
+  .ind .ind-pro { height: auto; min-height: 0; }   /* the leftover height beside the right column (no scroll, 2026-10-27) */
+  .ind-mapbox > .ind-mapbox-art { max-height: clamp(64px, 16dvh, 130px); }   /* shorter on a short screen (no scroll) */   /* the wider column (2026-10-27) grew the drawing ~250 px tall and pushed the text box down */
 }
 @media (min-width: 600px) and (max-width: 1099px) {
 }
 @media (min-width: 1100px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 480px; }   /* the text box wider (Murci 2026-10-27, three times; was 240, tablet 200) */
+  .ind { grid-template-columns: minmax(0, 1fr) 560px; }   /* the text box wider (Murci 2026-10-27, four times; was 240, tablet 200) */
 }
 
 /* -- The card grows into its industry's page, and back (Murci 2026-10-26; indMorph in Exam Practice.dc.html). Three pairs: the
