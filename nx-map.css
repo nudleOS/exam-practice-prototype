@@ -648,8 +648,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   mix-blend-mode: screen; animation: nx-pro-obj 3.4s ease-in-out infinite; }   /* over the cupped hands: the hero's own box, measured */
 @keyframes nx-pro-obj { 0%, 100% { filter: brightness(0.95); transform: translateY(0) scale(1); } 50% { filter: brightness(1.18); transform: translateY(-16px) scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .ind-pro-media > .ind-pro-obj, .hm-art > .ind-pro-obj { animation: none; } }
-.ind-mapbox { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 2px; padding: 14px 18px;
-  border: 0; border-radius: 0; background: none; color: #eef3ff; font: inherit; text-align: left; cursor: pointer; }
+.ind-mapbox { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; padding: 14px 18px;
+  border: 0; border-radius: 0; background: none; color: #eef3ff; font: inherit; text-align: center; cursor: pointer; }   /* "Your path" and its line centred on every screen (Murci 2026-10-27; was left) */
 .ind-mapbox > .ind-mapbox-art { position: absolute; left: 6%; top: 6%; width: 88%; height: 70%; z-index: 0; opacity: 0.45; transition: opacity 200ms; }   /* the real map in small, faint */
 .ind-hero:has(> .ind-mapbox)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 96px; z-index: 2; pointer-events: none;
   background: linear-gradient(180deg, transparent, rgba(3, 12, 36, 0.88)); }   /* the bar's shade, over the professional's waist */
@@ -806,7 +806,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
      name moves onto the card (above "Your path"; the panel's heading stays for screen readers and focus), and the panel is
      compact: two careers + "+N", Level and Subject side by side, Paper below, the paper's facts as one line, the buttons */
   .ind-hero > .ind-hero-name { display: block; position: absolute; z-index: 3; left: 16px; right: 16px; bottom: 58px; margin: 0;
-    font-size: clamp(20px, 5.6vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #ffffff; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65); pointer-events: none; }
+    font-size: clamp(20px, 5.6vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #ffffff; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65); pointer-events: none;
+    text-align: center; }   /* centred over "Your path" (Murci 2026-10-27) */
   .ind-hero:not(:has(.ind-mapbox)) > .ind-hero-name { bottom: 16px; }
   .ind .ind-intro > .ind-name, .ind .ind-step > .ind-step-k, .ind .ind-act-t > .ind-dtitle {
     position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* read by screen readers, not shown */
