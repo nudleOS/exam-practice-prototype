@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=147">
+  <link rel="stylesheet" href="nx-map.css?v=148">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -3135,11 +3135,11 @@ class Component extends DCLogic {
         [document.querySelector(".pm-bg"), "ind-card"], [document.querySelector(".ind-pro-media"), "ind-pro"], [document.getElementById("ind-name"), "ind-title"]]
         .forEach(([el, n]) => { if (el) el.style.viewTransitionName = on ? n : ""; }); };
     if (this._morph === dir) return;   // a second tap while this move runs (2026-10-26 QA: a double tap ran the switch twice); Back mid-grow still goes
-    const root = document.documentElement; root.classList.toggle("vt-back", dir === "back");
+    const root = document.documentElement; root.classList.toggle("vt-back", dir === "back"); root.classList.add("vt-ind");   /* scopes the page's fade to this move */
     name(true);
     const t = document.startViewTransition(() => new Promise(done => update(() => { name(true); done(); })));
     this._morph = dir;
-    t.finished.finally(() => { name(false); root.classList.remove("vt-back"); if (this._morph === dir) this._morph = null; });
+    t.finished.finally(() => { name(false); root.classList.remove("vt-back", "vt-ind"); if (this._morph === dir) this._morph = null; });
   }
   // a paper picked on the road (the map modal) or by Surprise me: the modal closes and the paper's details open IN PLACE on the
   // industry page, scrolled into view (Murci 2026-10-25: no paper sheet)
