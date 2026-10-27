@@ -2453,31 +2453,37 @@ class Component extends DCLogic {
   // scrolls, and the arrow showed and did nothing); runs after each render, so a resize or a widened card is seen too
   deckEndSync() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
     const end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8; if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); }
-  // the bend (Murci 2026-10-26: the cards slid past should "truly look like a bend they go into"): the row runs straight, then
-  // curves away into the screen at the deck's start. A card reaching the start turns on its vertical axis about its right edge
-  // (its left edge goes deep) and slides into the bend zone (the deck's left padding), where the cards already round the bend
-  // pile up as thinner, darker slivers. Placed from the deck's scroll on every scroll event, so it follows the finger both ways;
-  // the snap slots never move (a moved snap target breaks the snap). Reduced motion: the plain stack.
+  // the bend (Murci 2026-10-26: the cards slid past should "truly look like a bend they go into"; 2026-10-27: "as soon as they
+  // hit the curve/bend the cards need to bend also in the same angle as the bend"). One curve, and the cards ride it: the row
+  // runs straight to the deck's start, then the path turns away into the screen, its direction easing from 0 to 80deg over the
+  // first BEND px (smoothstep, so no corner). A card is a chord of that path: its left and right edges both sit ON the path,
+  // so its angle is the curve's own angle where it is, and it packs tighter the deeper it goes (each px of path moves it
+  // sideways by cos(angle) and back by sin(angle)). Angle, place and depth all come from that one curve, so there is no seam
+  // and no jump anywhere. Cards fade out as they near the deck's edge (the far side of the curve). Called once per frame from
+  // the scroll (rAF) and after each render; the snap slots never move (a moved snap target breaks the snap). Reduced motion:
+  // the plain stack. Was (2026-10-26/27) hand-tuned steps per card that drifted from the angle between the steps.
   hmBend() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
     const slots = [...d.children].filter(e => e.classList.contains("hm-slot")); if (slots.length < 2) return;
     const cs = getComputedStyle(d), pad = parseFloat(cs.paddingLeft) || 0, tilt = parseFloat(cs.getPropertyValue("--hm-tilt")) || 0;
-    const step = slots[1].offsetLeft - slots[0].offsetLeft, still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // tuned in the browser: 2026-10-26 each step in sat a fixed 0.36 x pad further left and turned 6deg more; 2026-10-27 Murci:
-    // "they look bad on the curve when more cards are being scrolled" - by the 4th card they ran past the deck's edge, nearly
-    // edge-on (-86deg), as a clipped pile of black bars over the companion. Now the steps halve (the pile bunches and stays
-    // inside the zone, at most 0.7 x pad left of the start), the turn eases toward -80deg, and the 4th card in fades away at the
-    // end of the curve, so at most three show in the bend
-    const P = "perspective(1400px) ", tuck = 24;   // a bent card's right edge tucks 24 px under the next card
-    slots.forEach(sl => { const c = sl.firstElementChild; if (!c) return;
-      const u = (sl.offsetLeft - slots[0].offsetLeft - d.scrollLeft) / step;   // 0 at the start, 1 one place on, below 0 in the bend
-      if (still || u >= 0 || !pad) { c.style.transform = tilt ? P + "rotateY(" + tilt + "deg)" : ""; c.style.filter = ""; c.style.opacity = ""; c.style.visibility = ""; return; }
-      const k = -u, e = Math.min(k, 1), s = e * e * (3 - 2 * e), W = c.offsetWidth;   // s: smoothstep into the bend
-      const deep = k <= 1 ? 0 : 1 - Math.pow(0.5, k - 1);   // 0 at one place in, towards 1 deeper: each step half the last
-      const right = k <= 1 ? pad + W + (tuck - W) * s : pad + tuck - pad * 0.7 * deep;   // where its right edge goes
-      const deg = k <= 1 ? tilt + (-70 - tilt) * s : -70 - 10 * deep;
-      const lit = k <= 1 ? 1 - 0.45 * s : 0.55 - 0.25 * deep;
-      const fade = k <= 3 ? 1 : Math.max(0, 4 - k);   // the 4th card in fades out at the end of the curve
-      c.style.transform = "translateX(" + (right - (pad + u * step + W)).toFixed(1) + "px) " + P + "rotateY(" + deg.toFixed(2) + "deg)";
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches, sx = d.scrollLeft;
+    // read every measure first, then write (a read after a write would force a style pass per card)
+    const at = slots.map(sl => ({ c: sl.firstElementChild, x: pad + sl.offsetLeft - slots[0].offsetLeft - sx, W: sl.firstElementChild ? sl.firstElementChild.offsetWidth : 0 }));
+    const MAX = 80 * Math.PI / 180, BEND = Math.max(60, pad * 1.25), P = "perspective(1400px) ";
+    const dir = t => t <= 0 ? 0 : t >= BEND ? MAX : MAX * (t / BEND) * (t / BEND) * (3 - 2 * t / BEND);   // the curve's angle t px in
+    // a point t px along the path (t < 0: on the straight, -t px right of the start) -> [x, depth]; Simpson's rule over the bend
+    const pt = t => { if (t <= 0) return [pad - t, 0];
+      const a = Math.min(t, BEND), n = 16, h = a / n; let cx = 0, sz = 0;
+      for (let i = 0; i <= n; i++) { const w = i === 0 || i === n ? 1 : i % 2 ? 4 : 2, f = dir(i * h); cx += w * Math.cos(f); sz += w * Math.sin(f); }
+      cx *= h / 3; sz *= h / 3; if (t > a) { cx += (t - a) * Math.cos(MAX); sz += (t - a) * Math.sin(MAX); }
+      return [pad - cx, sz]; };
+    const fadeOut = 0, fadeIn = pad * 0.3;   // a card's right edge fades from fadeIn px from the deck's edge to the edge itself
+    at.forEach(({ c, x, W }) => { if (!c) return;
+      if (still || x >= pad || !pad) { c.style.transform = tilt ? P + "rotateY(" + tilt + "deg)" : ""; c.style.filter = ""; c.style.opacity = ""; c.style.visibility = ""; return; }
+      const L = pt(pad - x), R = pt(pad - x - W);   // its left and right edges on the path
+      const th = Math.atan2(L[1] - R[1], R[0] - L[0]), f = th / MAX;   // the chord's angle: the curve's, where the card is
+      const deg = tilt * (1 - f) - th * 180 / Math.PI, lit = 1 - 0.5 * f;
+      const fade = Math.max(0, Math.min(1, (R[0] - fadeOut) / (fadeIn - fadeOut)));
+      c.style.transform = "translateX(" + (R[0] - (x + W)).toFixed(1) + "px) " + P + "translateZ(" + (-R[1]).toFixed(1) + "px) rotateY(" + deg.toFixed(2) + "deg)";
       c.style.filter = "brightness(" + lit.toFixed(3) + ")";
       c.style.opacity = fade < 1 ? fade.toFixed(3) : ""; c.style.visibility = fade <= 0 ? "hidden" : ""; }); }
   // the desktop title across the companion's belly: measure where the figure is drawn (contain, anchored at the feet) and set
@@ -4966,7 +4972,7 @@ class Component extends DCLogic {
               if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; }),
       // the arrow at the cards' end: slides one card on; at the last card it fades (the deck reports its scroll)
       hmDeckEnd: s.hmDeckEnd ? "true" : "false",
-      hmDeckScroll: e => { this.hmBend(); const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
+      hmDeckScroll: e => { if (!this._bendRaf) this._bendRaf = requestAnimationFrame(() => { this._bendRaf = 0; this.hmBend(); });   /* once per frame (Murci 2026-10-27: "not jam") */ const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
         if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); },
       hmDeckNext: () => { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")), sl = d ? d.querySelectorAll(".hm-slot") : [];
         if (d) d.scrollBy({ left: sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : 132,   /* one card on (the overlap differs per device) */ behavior: s.reduced ? "auto" : "smooth" }); },
