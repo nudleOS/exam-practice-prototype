@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=136">
+  <link rel="stylesheet" href="nx-map.css?v=137">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -468,10 +468,14 @@
             <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
               <section class="ind-after" aria-labelledby="ind-after-title">
                 <h2 class="ind-sec-name" id="ind-after-title">After school</h2>
-                <p class="ind-note">The regulatory exams you write once you work in financial services.</p>
-                <sc-for list="{{ indAfter }}" as="af" hint-placeholder-count="2">
-                  <div class="ind-re"><b>{{ af.code }}</b><span>{{ af.text }}</span></div>
-                </sc-for>
+                <!-- a phone folds it behind this row (Murci 2026-10-27), so the professional keeps the room; wider screens show it open -->
+                <button type="button" class="ind-after-tog" aria-expanded="{{ indAfterOpen }}" aria-controls="ind-after-body" onClick="{{ indAfterToggle }}">After school · {{ indAfterCodes }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+                <div class="ind-after-body" id="ind-after-body" data-open="{{ indAfterOpen }}">
+                  <p class="ind-note">The regulatory exams you write once you work in financial services.</p>
+                  <sc-for list="{{ indAfter }}" as="af" hint-placeholder-count="2">
+                    <div class="ind-re"><b>{{ af.code }}</b><span>{{ af.text }}</span></div>
+                  </sc-for>
+                </div>
               </section>
             </sc-if>
           </div>
@@ -3311,6 +3315,9 @@ class Component extends DCLogic {
       indPaperVal: openId || "", indPaperPick: e => this.setState({ pmOpen: e.target.value || null }),
       indSubjNote: tabSec ? tabSec.note : "", indHasSubjNote: !!(tabSec && tabSec.note), indHasSel: !!sel,
       indHasAfter: !!ind.after, indAfter: (ind.after || []).map(a => ({ code: a[0], text: a[1] })),
+      // a phone's After school, folded until tapped (Murci 2026-10-27)
+      indAfterCodes: (ind.after || []).map(a => a[0]).join(" · "), indAfterOpen: s.indAfterOpen ? "true" : "false",
+      indAfterToggle: () => this.setState({ indAfterOpen: !s.indAfterOpen }),
       indMapOpen: !!s.pmMapOpen && !s.finishCard, indMapClose: closeMap,
       indMapGo: () => this.setState({ pmMapOpen: true }, () => { const h = document.getElementById("ind-map-title"); if (h) h.focus({ preventScroll: true }); }),
       indMapKeys: e => { if (e.key === "Escape") { e.preventDefault(); closeMap(); } },

@@ -675,6 +675,18 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-intro > .ind-after { grid-column: 1 / -1; gap: 4px; margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .ind-intro > .ind-after > .ind-sec-name { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ic); }
 .ind-intro > .ind-after .ind-re { font-size: 12.5px; }
+.ind-after-body { display: flex; flex-direction: column; gap: 4px; }
+.ind-after-tog { display: none; }   /* wider screens: the block shows open */
+.ind-after-tog:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+@media (max-width: 599px) {   /* a phone folds it behind one row (Murci 2026-10-27), so the professional keeps the room */
+  .ind-intro > .ind-after { padding-top: 2px; }
+  .ind-intro > .ind-after > .ind-sec-name { display: none; }   /* the row names it */
+  .ind-after-tog { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 0; border: 0; background: none;
+    font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ic); cursor: pointer; }
+  .ind-after-tog > svg { transition: transform 200ms; }
+  .ind-after-tog[aria-expanded="true"] > svg { transform: rotate(180deg); }
+  .ind-after-body[data-open="false"] { display: none; }
+}
 .ind-modal-wrap { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 12px; }
 .ind-modal { position: relative; z-index: 1; box-sizing: border-box; width: min(1000px, 100%); max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior: contain;
   padding: 14px 20px 20px; border-radius: 22px; background: #061a3a; border: 1px solid rgba(129, 177, 255, 0.25); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55); }
@@ -737,7 +749,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* the path card, then the practice panel (Murci picked B, 2026-10-27). The page fits a phone with no scroll: tighter gaps and
      the panel without its blurb (the name + careers carry it; tablet and desktop keep it), so the professional gets the height */
   .ind { grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "pro" "intro"; row-gap: 10px; }
-  .ind .ind-intro > .ind-blurb, .ind .ind-intro > .ind-after > .ind-note { display: none; }
+  .ind .ind-intro > .ind-blurb { display: none; }
   .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 12px 14px; }
   .ind .ind-intro > .ind-name { font-size: clamp(20px, 5.6vw, 24px); }
   .ind .ind-mapbox { padding: 10px 14px; }
