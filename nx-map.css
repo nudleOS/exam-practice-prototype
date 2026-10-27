@@ -2,6 +2,12 @@
    No vortex, no particles, no 3D companion, nothing animating at rest: built for a low-end phone (the P30 lite) first.
    Values come from Exam Practice.dc.html's paperMapVals(); stop and link positions are computed there in px. */
 
+/* no pull-to-refresh (2026-10-27): on a page that does not scroll down, a real thumb's slightly downward swipe across the cards
+   was read by Chrome as "pull to refresh" and reloaded the whole app - the deck, bend and scroll all snapped back to the start
+   ("the whole thing goes back to normal again"; a Galaxy A04 page reloaded mid-swipe, navigation type "reload"). Scrolling is
+   unchanged; only the pull-to-reload gesture (and the bounce at the ends) is off */
+html, body { overscroll-behavior-y: none; }
+
 /* the industry page's backdrop (Murci 2026-10-26): blue at the top sinking to black, fixed to the screen while the page scrolls;
    the card grows into it (it is the card's pair in the view transition) */
 .pm-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
