@@ -29,8 +29,13 @@ the path map (open, close) → Back home → search (type, tap a result).
 
 ## Still open
 
+**Caveat (Murci, the same evening):** the sweep's swipes are Chrome's synthesised gestures - even speed, one at a time.
+They passed the deck checks, but Murci's real swipes on the A04 still show the deck / loop / bend misbehaving. A
+synthetic pass is not a real-finger pass; real swipes are being logged frame by frame to find what differs.
+
 | # | Item | Notes |
 |---|------|-------|
+| 0 | Real finger swipes still misbehave (deck / loop / bend) | under investigation with a frame logger during Murci's own swipes |
 | A | Frames still slow on the A04 | swipes: median 20–35 ms, with 2–5 stalls of 280–700 ms per swipe; the card-turn open stalls up to 588 ms, Back home up to 773 ms. The floating professionals (decision pending) and the strip copies are the remaining costs. |
 | B | `{{ indPro }}` image requests (404) | the page template is live markup and fetches its unfilled `src`; harmless but wasteful. |
 | C | "Design preview: paper states" button (34×34) on the industry page | prototype control; remove with the other preview buttons? |
