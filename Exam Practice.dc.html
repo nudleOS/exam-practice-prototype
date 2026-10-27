@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=115">
+  <link rel="stylesheet" href="nx-map.css?v=116">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -127,6 +127,8 @@
         <span class="hm-lvpick pm-lvpick">
           <!-- the pill shows "school · level"; the transparent native select over it opens the grouped menu (Murci 2026-10-26) -->
           <span class="hm-lvtxt" aria-hidden="true">{{ hmLvText }}</span>
+          <!-- a phone shows only the level: beside the XP chip the full text cut off the grade (2026-10-27); the menu still names the school -->
+          <span class="hm-lvtxt hm-lvtxt-s" aria-hidden="true">{{ hmLvShort }}</span>
           <select class="hm-lvsel" aria-label="School level" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
             <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
               <optgroup label="{{ g.label }}">
@@ -429,7 +431,7 @@
             <button type="button" class="ind-mapbox" data-indmap="true" onClick="{{ indMapGo }}" aria-haspopup="dialog">
               <svg class="ind-mapbox-art" viewBox="0 0 160 120" aria-hidden="true"><path d="M68 16 H48 Q40 16 40 24 V50 H120 Q136 50 136 66 V76 Q136 92 120 92 H40 Q24 92 24 104 V112" fill="none" stroke="rgba(147,164,214,0.55)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path><circle cx="80" cy="16" r="12" fill="#03122c" stroke="rgba(245,196,67,0.3)" stroke-width="1.5"></circle><path d="M75 10h10v4a5 5 0 0 1-10 0z M80 19v3 M76.5 23h7" fill="none" stroke="rgba(245,196,67,0.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="40" cy="50" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M37.5 46v8l6.5-4z" fill="#93a4d6"></path><circle cx="120" cy="50" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M117.5 46v8l6.5-4z" fill="#93a4d6"></path><circle cx="40" cy="92" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M37.5 88v8l6.5-4z" fill="#93a4d6"></path><circle cx="120" cy="92" r="9" fill="#0b1d47" stroke="#3d57a8" stroke-width="2"></circle><path d="M117.5 88v8l6.5-4z" fill="#93a4d6"></path><circle cx="24" cy="112" r="4" fill="#06132f" stroke="rgba(147,164,214,0.85)" stroke-width="2"></circle></svg>
               <b class="ind-mapbox-t">Your path</b>
-              <span class="ind-mapbox-s">{{ indPaperCount }} papers · open the map</span>
+              <span class="ind-mapbox-s">{{ indPaperLabel }} · open the map</span>
             </button>
             </sc-if>
           </div>
@@ -3292,7 +3294,7 @@ class Component extends DCLogic {
     const sitsOf = (n, ps) => { const out = [];
       ps.forEach(x => { const sit = x.name.split(" · ").pop(); let g = out.filter(t => t.label === sit)[0];
         if (!g) out.push(g = { label: sit, aria: n + ", " + sit, papers: [] });
-        const on = s.pmOpen === x.p.id, short = pno(x.p) ? "P" + pno(x.p) : sit;
+        const on = s.pmOpen === x.p.id, short = pno(x.p) ? "P" + pno(x.p) : "Paper";   /* not its sitting again: the row already says it */
         g.papers.push({ state: x.state, on: on ? "true" : "false",
           label: short + (x.state === "going" ? " · " + x.pct + "%" : x.state === "done" ? " · done" : x.state === "soon" ? " · soon" : ""),
           aria: (pno(x.p) ? "Paper " + pno(x.p) + ", " : "") + sit + ". " + x.meta,
@@ -3335,7 +3337,7 @@ class Component extends DCLogic {
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
       indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
-      indSecs: indSecs, indPaperCount: indSecs.reduce((n, sec) => n + sec.count, 0), indHasMap: indSecs.some(sec => sec.count > 0),
+      indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       indTabsScroll: () => this.tabsSync(),
       indTabsMore: () => { const t = [...document.querySelectorAll(".ind-tabs")].find(e => !e.closest("x-dc"));
         if (t) t.scrollBy({ left: t.clientWidth * 0.7, behavior: s.reduced ? "auto" : "smooth" }); }, indHasSecs: indSecs.length > 0 && this.pmList(s).papers.length > 0,
@@ -4918,7 +4920,7 @@ class Component extends DCLogic {
     return {
       // the school-level pill on the home (Murci 2026-10-26): it reads "Secondary school · Grade 12"; its native menu groups the
       // levels by school; set once, every industry page follows it. A value is "qualification:level".
-      hmLvText: this.lvText(lv),
+      hmLvText: this.lvText(lv), hmLvShort: lv.qualification === "university" ? "University" : this.levelName(lv),
       hmLvGroups: [["high_school", "Secondary school"], ["ncv", "TVET college"], ["university", "University"]].filter(g => shownQual(g[0]))
         .map(g => ({ label: g[1], opts: SERVICE_LEVELS[g[0]].map(l => ({ label: this.levelName({ qualification: g[0], level: l }), value: g[0] + ":" + l })) })),
       hmLvVal: lv.qualification + ":" + lv.level,

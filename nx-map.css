@@ -712,6 +712,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* the school-level pill (Murci 2026-10-26), in the industry page's navbar since 2026-10-27: reads "Secondary school · Grade 12" */
 .pm-lvpick { align-self: flex-start; max-width: 100%; }   /* its own width, not the navbar column's */
 .pm-lvpick > .hm-lvtxt { overflow: hidden; text-overflow: ellipsis; }
+.pm-lvpick > .hm-lvtxt-s { display: none; }
+@media (max-width: 599px) { .pm-lvpick > .hm-lvtxt { display: none; } .pm-lvpick > .hm-lvtxt-s { display: inline; } }   /* a phone: the level alone */
 .hm-lvpick { position: relative; display: inline-flex; align-items: center; flex: none; box-sizing: border-box; min-height: 36px; padding: 0 30px 0 13px; border-radius: 999px;
   border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.12); color: #dfe6ff; font-size: 13px; font-weight: 700; white-space: nowrap; }
 /* the native select lies transparent over the pill: its own text would show only "Grade 12", the pill shows the school too.
