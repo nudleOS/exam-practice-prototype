@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=183">
+  <link rel="stylesheet" href="nx-map.css?v=185">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2422,14 +2422,17 @@ class Component extends DCLogic {
       d.addEventListener("touchstart", () => { d._touch = true; clearTimeout(d._idleT); }, { passive: true });
       const lift = () => { d._touch = false; clearTimeout(d._idleT); d._idleT = setTimeout(() => this.hmLoop(), 220); };   // held still, then lifted: no fling, no scrollend
       d.addEventListener("touchend", lift, { passive: true }); d.addEventListener("touchcancel", lift, { passive: true });
-      d.addEventListener("scroll", () => clearTimeout(d._idleT), { passive: true });   // a fling follows: its scrollend does it
+      d.addEventListener("scroll", () => { clearTimeout(d._idleT); d._scrollT = performance.now(); }, { passive: true });   // a fling follows: its scrollend does it
       return; }
     if (onlyNew || d._touch) return;   /* a re-render never moves a deck that may be mid-scroll; nor does a finger on it */
     const now = performance.now(); if (now - (d._jumped || 0) < 400) return;   // one reset per stop
     // the card at the start: the slot nearest the scroll (not scroll / step: an opened card - and its copies - is wider, and the
     // first slot is one of them: the step read wrong and the loop 'reset' an opened card into the bend, 2026-10-27)
     const i = this.hmAt(d, slots), home = slots[i].offsetLeft - slots[0].offsetLeft;
-    if (i < n || i >= 2 * n) { d.scrollLeft += i < n ? set : -set; d._jumped = now; this.hmBend(); return; }
+    if (i < n || i >= 2 * n) { const sh = i < n ? n : -n;   // the bend's strips go along to the same cards in the middle set (built ones, no rebuild)
+      slots.forEach((s, k) => { const t = slots[k + sh]; if (s._fx && t && !t._fx) { t.appendChild(s._fx); t._fx = s._fx; s._fx = null; } });
+      d.scrollLeft += i < n ? set : -set; d._jumped = now; this.hmBend(); this.hmPrep(); return; }
+    this.hmPrep();
     // stopped between cards: glide onto the nearest (the browser's snap did not always finish after a real flick)
     if (Math.abs(d.scrollLeft - home) > 1.5) d.scrollTo({ left: home, behavior: this.state.reduced ? "auto" : "smooth" }); }
   // the bend (Murci 2026-10-26: the cards slid past should "truly look like a bend they go into"; 2026-10-27: "as soon as they
@@ -2470,9 +2473,7 @@ class Component extends DCLogic {
       // taken for one entering the curve: swapped for strips, its float frozen, measured on a Galaxy A04 2026-10-27)
       const flat = still || x >= pad - 1 || !pad, tR = pad - x - W;
       if (sl._fx && (flat || tR >= BEND)) put(sl._fx, "display", "none");   // not crossing the curve: no strips
-      if (flat) { put(c, "transform", tilt ? P + "rotateY(" + tilt + "deg)" : ""); put(c, "filter", ""); put(c, "opacity", ""); put(c, "visibility", "");
-        if (!still && pad && x < pad + W) this.hmStrips(sl, c, W, H);   // the next to bend: its strips built (hidden) and decoding ahead of time
-        return; }
+      if (flat) { put(c, "transform", tilt ? P + "rotateY(" + tilt + "deg)" : ""); put(c, "filter", ""); put(c, "opacity", ""); put(c, "visibility", ""); return; }
       const L = pt(pad - x), R = pt(tR);   // its left and right edges on the path
       const th = Math.atan2(L[1] - R[1], R[0] - L[0]), f = th / MAX;   // the chord's angle: the curve's, where the card is
       const deg = tilt * (1 - f) - th * 180 / Math.PI, lit = 1 - 0.5 * f;
@@ -2485,11 +2486,15 @@ class Component extends DCLogic {
       put(c, "visibility", fade <= 0 ? "hidden" : "");
       if (tR >= BEND || fade <= 0) { if (sl._fx) put(sl._fx, "display", "none"); put(c, "filter", "brightness(" + lit.toFixed(3) + ")"); put(c, "opacity", fade < 1 ? fade.toFixed(3) : ""); return; }
       // crossing the curve: the strips draw it, bent; the button stays at its chord, unseen, for taps
-      const fx = this.hmStrips(sl, c, W, H), n = fx._n, w = W / n, rx = R[0] - x;
-      // strips whose pictures are still decoding would show the card without them, or flat, for a few frames (Murci 2026-10-27:
-      // "the cards look flat and 2D glitch before it shows the right bend"): until they are ready the card itself turns at its chord
+      // its strips are built ahead while the deck rests (hmPrep); a card the swipes outran gets them now (25 ms on a Galaxy A04 -
+      // Murci 2026-10-27, quick swipes: the rigid stand-in read as "the cards break"). Pictures still decoding ("the cards look
+      // flat and 2D glitch before it shows the right bend"): the card itself turns at its chord for those few frames
+      const fx = this.hmStrips(sl, c, W, H);
       if (!fx._ready) { put(fx, "display", "none"); put(c, "filter", "brightness(" + lit.toFixed(3) + ")"); put(c, "opacity", fade < 1 ? fade.toFixed(3) : ""); return; }
+      const n = fx._n, w = W / n, rx = R[0] - x;
       put(c, "opacity", "0"); put(c, "filter", "");
+      if (fx.style.display === "none") { const lo = c.querySelector(".hm-art > .ind-pro-obj"), tf = lo ? getComputedStyle(lo).transform : "none";   // the float's pose now, so the swap does not jump
+        fx._obj.forEach(o => put(o, "transform", tf === "none" ? "" : tf)); }
       put(fx, "display", ""); put(fx, "left", ox + "px"); put(fx, "top", oy + "px"); put(fx, "opacity", fade < 1 ? fade.toFixed(3) : "");
       put(fx, "perspectiveOrigin", rx.toFixed(1) + "px 50%");   // as the plain card's: at its right edge
       put(fx._wrap, "transformOrigin", rx.toFixed(1) + "px 50% " + (-R[1]).toFixed(1) + "px");
@@ -2500,33 +2505,52 @@ class Component extends DCLogic {
       // card - turned past ~48deg - fades out by ~76deg, so it goes round the corner instead of piling up as slivers ("only
       // one card on the bend, not the swallowed ones")
       const shade = t => (0.5 * dir(t) / MAX).toFixed(3), gone = r => { const q = Math.max(0, Math.min(1, (r - 0.6) / 0.35)); return 1 - q * q * (3 - 2 * q); };
-      fx._strips.forEach((st, k) => { const tl = pad - x - k * w, tr = tl - w, B = pt(tr), a = Math.atan2(A[1] - B[1], B[0] - A[0]);
+      fx._strips.forEach((st, k) => { const tl = pad - x - k * w, tr = tl - w, B = pt(tr), a = Math.atan2(A[1] - B[1], B[0] - A[0]), o = gone(a / MAX);
+        // gone round the corner: not drawn at all, nor moved (a resting bend card is ~2/3 past the curve; as 3D layers at opacity 0
+        // those strips were still sorted and moved every frame)
+        put(st, "visibility", o < 0.005 ? "hidden" : ""); if (o < 0.005) { A = B; return; }
         put(st, "transform", "translate3d(" + (B[0] - x - (k + 1) * w).toFixed(2) + "px, 0, " + (-B[1]).toFixed(2) + "px) rotateY(" + (-a * 180 / Math.PI).toFixed(2) + "deg)");
         put(st._dim, "background", "linear-gradient(to right, rgba(0, 0, 0, " + shade(tl) + "), rgba(0, 0, 0, " + shade(tr) + "))");
-        const o = gone(a / MAX); put(st, "opacity", o > 0.999 ? "" : o.toFixed(3)); A = B; }); }); }
+        put(st, "opacity", o > 0.999 ? "" : o.toFixed(3)); A = B; }); }); }
   // a card's strips (built when it first crosses the curve, kept, rebuilt when the card's look changes): ~16 px windows onto
   // copies of the card, in a layer inside its slot. Copies are hidden from screen readers and inert; their floating
   // professional is held at the card's own pose (a copy's animation would start at 0: the strips would tear apart; and
   // measured 2026-10-27, 30 copies running it per frame cost ~2.5x the frame: paused, they paint once)
+  hmKey(c, W, H) { return c.getAttribute("aria-expanded") + "|" + W + "x" + H + "|" + c.textContent; }
+  // built ahead while the deck rests, one card per task, for the cards two quick swipes can bend: the three before the front
+  // card (in the bend, and the ones swipes back bring out of it), the front card and the next two; every other card's are dropped.
+  // Measured on a Galaxy A04 2026-10-27: built inside the scroll frame (25 innerHTML copies + the forced style flush of
+  // getAnimations) a card's strips stalled the swipe 300-850 ms, and kept for every card ever bent they held 13 layers,
+  // 4100 nodes and 444 images
+  hmPrep() { clearTimeout(this._prepT); this._prepT = setTimeout(() => {
+    const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !parseFloat(getComputedStyle(d).paddingLeft)) return;   // no bend
+    if (d._touch || performance.now() - (d._scrollT || 0) < 200) return this.hmPrep();   // moving: after it stops
+    const slots = [...d.children].filter(e => e.classList.contains("hm-slot")), i = this.hmAt(d, slots), keep = slots.slice(Math.max(0, i - 3), i + 3);
+    slots.forEach(sl => { if (sl._fx && !keep.includes(sl)) { sl._fx.remove(); sl._fx = null; } });
+    const todo = keep.find(sl => { const c = sl.firstElementChild; return c && !(sl._fx && sl._fx._key === this.hmKey(c, c.offsetWidth, c.offsetHeight)); });
+    if (todo) { const c = todo.firstElementChild; this.hmStrips(todo, c, c.offsetWidth, c.offsetHeight); this.hmPrep(); } }, 80); }
   hmStrips(sl, c, W, H) {
-    const key = c.getAttribute("aria-expanded") + "|" + W + "x" + H + "|" + c.textContent;
+    const key = this.hmKey(c, W, H);
     if (sl._fx && sl._fx.isConnected && sl._fx._key === key) return sl._fx;
     if (sl._fx) sl._fx.remove();
     const fx = document.createElement("div"), wrap = document.createElement("div"), n = Math.max(8, Math.ceil(W / 10)), w = W / n;   /* ~10 px strips (was 16: the turn between neighbours showed) */
     fx.className = "hm-bendfx"; fx.setAttribute("aria-hidden", "true"); fx.inert = true; fx.style.width = W + "px"; fx.style.height = H + "px";
     wrap.className = "hm-bendwrap"; fx.appendChild(wrap);
-    const src = c.getAnimations ? c.getAnimations({ subtree: true }).filter(a => a.effect && a.effect.target && a.effect.target.classList.contains("ind-pro-obj")) : []; fx._strips = [];
+    fx._strips = [];
     for (let k = 0; k < n; k++) { const ov = k ? 1 : 0, st = document.createElement("div"), g = document.createElement("div"), dim = document.createElement("i");
       st.className = "hm-strip"; st.style.left = (k * w - ov) + "px"; st.style.width = (w + ov) + "px";   // 1 px over the last strip: no hairline seam
       g.className = c.className + " hm-ghost"; g.setAttribute("style", c.getAttribute("style") || ""); g.setAttribute("aria-expanded", c.getAttribute("aria-expanded") || "false");
       g.style.cssText += "; width: " + W + "px; height: " + H + "px; left: " + (ov - k * w) + "px; transform: none; opacity: 1; filter: none; visibility: visible;";
       g.innerHTML = c.innerHTML; dim.className = "hm-strip-dim"; st.append(g, dim); st._dim = dim; wrap.appendChild(st); fx._strips.push(st); }
-    fx.style.display = "none"; fx._ready = false; sl.appendChild(fx);   // shown by hmBend once its pictures are decoded
+    // shown by hmBend once its pictures are decoded; at once when the card's own are (the copies share them: no wait, so a card
+    // built mid-swipe never stands in rigid - Murci 2026-10-27, swipes back and forth: "it breaks")
+    fx.style.display = "none"; fx._ready = [...c.querySelectorAll("img")].every(i => i.complete && i.naturalWidth > 0); sl.appendChild(fx);
     Promise.all([...fx.querySelectorAll("img")].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(() => { fx._ready = true; if (fx.isConnected) this.hmBend(); });
-    // held at the card's pose by CSS (paused) + a negative delay: a script pause is lost when the layer is hidden and shown
-    const pose = src.map(a => -(a.currentTime || 0) + "ms").join(", ");
-    if (pose) fx._strips.forEach(st => st.querySelectorAll(".ind-pro-obj").forEach(o => { o.style.animationDelay = pose; }));
-    fx._wrap = wrap; fx._n = n; fx._key = key; sl._fx = fx; return fx; }
+    // the copies' floating object: no animation (CSS), held still at the live card's pose by hmBend when the strips show.
+    // Measured on a Galaxy A04 2026-10-27: as paused animations (the earlier way) each copy kept a layer of its own inside its
+    // clipped 3D strip - a resting deck took 33 ms a frame instead of 17
+    fx._obj = [...fx.querySelectorAll(".ind-pro-obj")]; fx._wrap = wrap; fx._n = n; fx._key = key; sl._fx = fx; return fx; }
   // the desktop title: --belly-y at the companion's belly (measured where the figure is drawn: contain, anchored at the feet);
   // --belly-l centres it across the space from the page's left edge to the bend (Murci 2026-10-27: equal room on both sides;
   // was centred on the belly, ending 8 px before the bend)
@@ -2542,7 +2566,7 @@ class Component extends DCLogic {
     box.style.setProperty("--belly-l", Math.round(Math.max(24, (stop - t.offsetWidth) / 2) - c.left) + "px");
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
-    this.hmLoop(true); this.hmBend();
+    this.hmLoop(true); this.hmBend(); this.hmPrep();
     this.bellySync();
     this.buildSync();
     this.progSync();
