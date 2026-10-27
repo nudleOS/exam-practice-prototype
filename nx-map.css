@@ -127,11 +127,6 @@
 .pm-home img { width: 28px; height: 28px; display: block; }
 .pm-home:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 .pm-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* the header's school level (Murci 2026-10-26): a quiet button home to the level pill */
-.pm-lvlink { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-.pm-lvlink > span { overflow: hidden; text-overflow: ellipsis; }
-.pm-lvlink > svg { flex: none; color: #9fbcff; }
-.pm-lvlink:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; border-radius: 6px; }
 
 /* the cup alone at the top of a subject's path (the goal the path climbs to); gold and glowing once every paper is done */
 .pm-cup { position: absolute; left: 50%; top: 0; width: 56px; height: 56px; transform: translateX(-50%); display: grid; place-items: center;
@@ -714,7 +709,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-headblock > h1 { text-align: left !important; }
 }
 
-/* the home's school-level pill (Murci 2026-10-26): set once beside "Choose an industry"; reads "Secondary school · Grade 12" */
+/* the school-level pill (Murci 2026-10-26), in the industry page's navbar since 2026-10-27: reads "Secondary school · Grade 12" */
+.pm-lvpick { align-self: flex-start; max-width: 100%; }   /* its own width, not the navbar column's */
+.pm-lvpick > .hm-lvtxt { overflow: hidden; text-overflow: ellipsis; }
 .hm-lvpick { position: relative; display: inline-flex; align-items: center; flex: none; box-sizing: border-box; min-height: 36px; padding: 0 30px 0 13px; border-radius: 999px;
   border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.12); color: #dfe6ff; font-size: 13px; font-weight: 700; white-space: nowrap; }
 /* the native select lies transparent over the pill: its own text would show only "Grade 12", the pill shows the school too.
@@ -732,7 +729,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-headblock { align-items: center !important; padding: 20px 16px 0 !important; }   /* centred on a phone (Murci 2026-10-26); 28 px from the search to the title */
   .hm-headblock > h1 { text-align: center !important; }
   .hm-choose > .hm-kickrow { margin-top: 10px; }
-  .hm-card { height: clamp(280px, calc(100dvh - 300px), 460px); }   /* 20 px shorter for the grade pill's row (2026-10-26) */
+  .hm-card { height: clamp(280px, calc(100dvh - 280px), 460px); }   /* the level pill's row is gone (it moved to the industry page, 2026-10-27) */
 }
 
 /* the arrow at the cards' end (Murci 2026-10-25): the cards slide on every size, so a round button at their right end nudges 4 px
