@@ -553,8 +553,11 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 /* each card shows its industry's professional with their hologram (Murci 2026-10-25), the same 2:3 stack as the industry page */
 .hm-card > .hm-art { position: absolute; bottom: -6px; left: 50%; height: 100%; width: auto;   /* the professional larger (Murci 2026-10-26; was 88%) */
   aspect-ratio: 2 / 3; transform: translateX(-50%); opacity: 0.9; pointer-events: none;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); transition: left 320ms, opacity 320ms;
-  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }
+  transition: left 320ms, opacity 320ms; }
+/* measured on a Galaxy A04 2026-10-27: a drop-shadow + a fade mask on the whole frame made it a group redrawn every frame, on all
+   27 cards - one redraw of the home cost ~30 ms (30 fps cap on any scroll or float). The shadow is now on the person alone (it
+   never moves, so its drawing is kept) and the fade mask is gone (the card's own shade already darkens the bottom) */
+.hm-card > .hm-art > .ind-pro-person { filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); }
 /* five cards at once on a P30 lite: their holograms only rise and fall (transform alone runs on the compositor); the industry page's
    one hologram also brightens as on the Nexera hero */
 .hm-card > .hm-art > .ind-pro-obj { animation-name: nx-pro-lift; }   /* more specific than the shared rule below */
@@ -895,6 +898,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-bendwrap { position: absolute; inset: 0; transform-style: preserve-3d; }
 .hm-strip { position: absolute; top: 0; height: 100%; overflow: hidden; transform-origin: 100% 50%; }
 .hm-strip > .hm-ghost { position: absolute; top: 0; margin: 0; transition: none; box-shadow: none; will-change: auto; }   /* no layer per copy: only its 16 px window paints */
-.hm-strip > .hm-ghost > .hm-art { filter: none; }
+.hm-strip > .hm-ghost > .hm-art > .ind-pro-person { filter: none; }
 .hm-strip .ind-pro-obj { animation-play-state: paused !important; }   /* held at the card's pose (hmStrips sets the delay) */   /* the professional's blurred drop-shadow, per strip, per frame: measured 67 -> 42 ms a frame without it */
 .hm-strip > .hm-strip-dim { position: absolute; inset: 0; background: #000; opacity: 0; }
