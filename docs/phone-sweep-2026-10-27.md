@@ -26,6 +26,12 @@ the path map (open, close) → Back home → search (type, tap a result).
 | 12 | 30 fps cap: one redraw of the home cost ~30 ms (art frame shadow + mask) | A04 | 85cd2b2 |
 | 13 | 3.6 s of image decodes in three swipes (896 px originals) | A04 trace | 9d24105: card-sized images |
 | 14 | 1.3 s layer rebuilds per 13 s of swiping (every card's style rewritten every frame) | A04 trace | 3f6a46e: write on change |
+| 15 | Real swipes reloaded the whole app (deck, bend and scroll back to the start) | Murci; A04 navigation type "reload" mid-swipe | 12e2686: `overscroll-behavior-y: none` (Chrome's pull-to-refresh) |
+| 16 | Bend strip copies held the float as a paused animation: a layer per copy, 33 ms frames | A04, part-by-part A/B | da69718: still copies (17 ms) |
+| 17 | Strips built inside the swipe (300-850 ms stalls), kept for every card ever bent (4100 nodes, 444 images) | A04 profile | da69718: built at rest, 6 kept |
+| 18 | Fast swipes: slivers and broken cards by the bend - the bend is drawn from the main thread, a frame or more behind the phone's own scroll (10 updates 223 px apart in three swipes) | Murci; A04 | 4ffc0c5: phones get a flat deck (tablet / desktop keep the bend). A scroll-driven CSS rebuild matched the bend to 0.06 px offline but ran 83 ms frames on the A04: parked in `git stash` |
+| 19 | Sharp square corners where the deck's edge cut a card | Murci | 4ffc0c5: the edge clip is rounded like a card (18 px) |
+| 20 | A card a fast swipe brought in showed no person for ~0.7 s | A04 frame capture | a62802e: pictures eager + sync; the person's live drop-shadow removed (Murci: keep it removed) - ~16 frames -> ~3 |
 
 ## Still open
 
@@ -35,7 +41,7 @@ synthetic pass is not a real-finger pass; real swipes are being logged frame by 
 
 | # | Item | Notes |
 |---|------|-------|
-| 0 | Real finger swipes still misbehave (deck / loop / bend) | under investigation with a frame logger during Murci's own swipes |
+| 0 | Real finger swipes | after 12e2686: 105 real swipes, no reloads. Phones now flat (4ffc0c5): four fast swipes 0.4-1.1 s each (bend: 1.2-1.7 s), frames 17 / 33 / 532 ms (median / 90th pct / worst; bend 17 / 83 / 649). One ~530 ms frame per run is still unexplained |
 | A | Frames still slow on the A04 | swipes: median 20–35 ms, with 2–5 stalls of 280–700 ms per swipe; the card-turn open stalls up to 588 ms, Back home up to 773 ms. The floating professionals (decision pending) and the strip copies are the remaining costs. |
 | B | `{{ indPro }}` image requests (404) | the page template is live markup and fetches its unfilled `src`; harmless but wasteful. |
 | C | "Design preview: paper states" button (34×34) on the industry page | prototype control; remove with the other preview buttons? |
