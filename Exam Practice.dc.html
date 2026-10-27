@@ -399,6 +399,8 @@
                 <img class="ind-pro-obj" src="assets/pro/{{ indPro }}-object.webp" alt="" decoding="async">
               </span>
             </figure>
+            <!-- a phone shows the industry's name here, on the professional's card (option B, Murci 2026-10-27); the panel's h1 stays -->
+            <b class="ind-hero-name" aria-hidden="true">{{ indName }}</b>
             <!-- the path card (Murci picked B, 2026-10-27): this button is the whole card - the path drawn behind the professional,
                  its title and count on the bar at the bottom. Only when the page has papers (an empty road said "0 papers") -->
             <sc-if value="{{ indHasMap }}" hint-placeholder-val="{{ true }}">
@@ -3169,7 +3171,7 @@ class Component extends DCLogic {
     if (!document.startViewTransition || this.state.reduced || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { update(() => {}); return; }
     const from = this._hmFrom; this._hmFrom = null; const name = on => { const c = from && from.isConnected && from.dataset.hmkey === key ? from : document.querySelector('[data-hmcard="' + key + '"]');   /* the card tapped: maybe a copy (the loop) */
       [[c, "ind-card"], [c && c.querySelector(".hm-art"), "ind-pro"], [c && c.querySelector(".hm-cname"), "ind-title"],
-        [document.querySelector(".pm-bg"), "ind-card"], [document.querySelector(".ind-pro-media"), "ind-pro"], [document.getElementById("ind-name"), "ind-title"]]
+        [document.querySelector(".pm-bg"), "ind-card"], [document.querySelector(".ind-pro-media"), "ind-pro"], [[...document.querySelectorAll(".ind-hero-name")].find(e => !e.closest("x-dc") && e.offsetParent) || document.getElementById("ind-name"), "ind-title"]]   /* a phone shows the name on the card (option B) */
         .forEach(([el, n]) => { if (el) el.style.viewTransitionName = on ? n : ""; });
       if (on && c && c.style.opacity === "0") c.style.opacity = ""; };   /* a card tapped mid-bend (its strips drew it): show the button for the snapshot */
     if (this._morph === dir) return;   // a second tap while this move runs (2026-10-26 QA: a double tap ran the switch twice); Back mid-grow still goes
@@ -3395,7 +3397,7 @@ class Component extends DCLogic {
       // for presentations, not product behaviour
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
-      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indCareerMore: "+" + Math.max(0, ind.careers.length - 3) + " more",   /* a phone shows three */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro, indXp: this.xpTally(s)[ind.key] || 0,
+      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indCareerMore: "+" + Math.max(0, ind.careers.length - 2) + " more",   /* a phone shows two (option B) */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro, indXp: this.xpTally(s)[ind.key] || 0,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
       indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",

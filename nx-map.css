@@ -781,7 +781,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-practise { gap: 10px; }
   .ind .ind-act { padding: 12px 14px; }
   .ind-careers > .ind-career { padding: 2px 8px; font-size: 12px; }
-  .ind-careers > .ind-career:nth-child(n + 5):not(.ind-career-more) { display: none; }   /* the label, then three careers */
+  .ind-careers > .ind-career:nth-child(n + 4):not(.ind-career-more) { display: none; }   /* the (hidden) label, then two careers + "+N more" (option B) */
   .ind-careers > .ind-career-more { display: inline-flex; border-style: dashed; color: #9fb0dd; }
   .ind .ind-intro > .ind-careers { gap: 5px 6px; }
   /* Start and View paper side by side, half each (stacked they cost the professional ~50 px, 2026-10-27) */
@@ -796,7 +796,20 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* the boxes share the width 45:55 and grow with the screen (Murci 2026-10-27: use the sides; was a 1100 px cap, fixed columns) */
   .ind { max-width: 1560px; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: "pro intro"; column-gap: clamp(16px, 2vw, 28px); }
   main.pm[data-pmap] > .pm-col { max-width: none; padding: clamp(24px, 4.5vh, 44px) clamp(24px, 3.5vw, 64px); }   /* more room above and below, and at the sides */
+  /* option B (Murci picked it 2026-10-27): the professional's card is the taller box and the panel needs no scroll - the industry's
+     name moves onto the card (above "Your path"; the panel's heading stays for screen readers and focus), and the panel is
+     compact: two careers + "+N", Level and Subject side by side, Paper below, the paper's facts as one line, the buttons */
+  .ind-hero > .ind-hero-name { display: block; position: absolute; z-index: 3; left: 16px; right: 16px; bottom: 58px; margin: 0;
+    font-size: clamp(20px, 5.6vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #ffffff; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65); pointer-events: none; }
+  .ind-hero:not(:has(.ind-mapbox)) > .ind-hero-name { bottom: 16px; }
+  .ind .ind-intro > .ind-name, .ind .ind-step > .ind-step-k, .ind .ind-act-t > .ind-dtitle {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* read by screen readers, not shown */
+  .ind-careers > .ind-k { display: none; }
+  .ind .ind-act { padding: 0; border: 0; background: none; }
+  .ind .ind-act-t .ind-facts { font-size: 12.5px; }
+  .ind .ind-soon .ind-soon-t { display: none; }   /* "papers on the way": the title and its button say it (the sentence cost Finance NC(V) L2 the taller card) */
   .ind .ind-intro { align-self: stretch; overflow: hidden; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 22px; padding: clamp(20px, 2.2vw, 30px); gap: 12px; }
+.ind-hero-name { display: none; }   /* only a phone shows the name on the card (option B) */
   .ind .ind-intro > .ind-name { font-size: clamp(24px, 2.3vw, 32px); }
 }
 
