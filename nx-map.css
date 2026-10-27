@@ -775,7 +775,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
      stage's left, where the text was. No papers: no map box, the text box heads the column */
-  .ind { grid-template-columns: minmax(0, 1fr) 280px; grid-template-rows: auto auto 1fr auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
+  .ind { grid-template-columns: minmax(0, 1fr) 320px; grid-template-rows: auto auto 1fr auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
   .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto 1fr auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
   .ind .ind-intro { align-self: start; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
   .ind .ind-intro > .ind-name { grid-row: 2; grid-column: 1 / -1; font-size: clamp(20px, 1.9vw, 26px); }   /* the icon above it: beside it, "Manufacturing" ran out of the 240 px box */
@@ -785,7 +785,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) and (max-width: 1099px) {
 }
 @media (min-width: 1100px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 340px; }   /* the text box wider (Murci 2026-10-27; was 240, tablet 200) */
+  .ind { grid-template-columns: minmax(0, 1fr) 420px; }   /* the text box wider (Murci 2026-10-27, twice; was 240, tablet 200) */
 }
 
 /* -- The card grows into its industry's page, and back (Murci 2026-10-26; indMorph in Exam Practice.dc.html). Three pairs: the
@@ -794,20 +794,20 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    dissolves into the real page while the professional and the title land. Back: the page hides under its backdrop, which
    then shrinks into the card as the home comes forward. The root group sits UNDER the named groups, so the page's own
    snapshot (opaque) waits until the card covers the screen. */
-/* the open, slower (Murci 2026-10-27: "should not be fast ... a bit slower"): every open duration x1.6 (480 -> 780 ms); Back
-   keeps its own pace below */
+/* the open, slower (Murci 2026-10-27: "should not be fast ... a bit slower"): every open duration x1.6 (480 -> 780 ms), then
+   "slower still": x2.3 (480 -> 1100 ms); Back keeps its own pace below */
 ::view-transition-group(ind-card), ::view-transition-group(ind-pro), ::view-transition-group(ind-title) {
-  animation-duration: 780ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  animation-duration: 1100ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
 /* the stacking is set, not left to capture order: the backdrop under the professional and the title (measured: it was drawn
    over them, hiding both at 300 ms once it went opaque) */
 ::view-transition-group(ind-card) { z-index: 1; }
 ::view-transition-group(ind-pro), ::view-transition-group(ind-title) { z-index: 2; }
-::view-transition-image-pair(ind-card) { overflow: hidden; animation: nxvt-corner 780ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+::view-transition-image-pair(ind-card) { overflow: hidden; animation: nxvt-corner 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 ::view-transition-old(ind-card), ::view-transition-new(ind-card) { width: 100%; height: 100%; object-fit: fill; }
-::view-transition-old(ind-card) { animation: nxvt-out 220ms ease both; }   /* the card's own text, stretched: gone fast */
-::view-transition-new(ind-card) { animation: nxvt-cover 1150ms ease both; }
-::view-transition-old(root) { animation: nxvt-recede 480ms ease both; }
-::view-transition-new(root) { animation: nxvt-late 1150ms linear both; }
+::view-transition-old(ind-card) { animation: nxvt-out 300ms ease both; }   /* the card's own text, stretched: gone fast */
+::view-transition-new(ind-card) { animation: nxvt-cover 1650ms ease both; }
+::view-transition-old(root) { animation: nxvt-recede 680ms ease both; }
+::view-transition-new(root) { animation: nxvt-late 1650ms linear both; }
 @keyframes nxvt-corner { from { border-radius: 18px; } to { border-radius: 0; } }
 @keyframes nxvt-out { to { opacity: 0; } }
 @keyframes nxvt-in { from { opacity: 0; } }
