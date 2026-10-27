@@ -733,13 +733,13 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-choose > .hm-kickrow, .hm-choose > .hm-deckwrap, .hm-choose > .hm-note { position: relative; z-index: 1; }
 .hm-choose > .hm-kickrow { margin-left: 28%; }
 .hm-deck { margin-left: calc(36% - 56px); margin-right: -16px; padding-left: 56px; scroll-padding-left: 56px; }   /* the first card at 36% (Murci 2026-10-27: a bit further over, more of the companion shows; was 28%); left of it, the bend zone */
-@media (min-width: 600px) {
 /* a phone: no bend - the deck is flat (Murci 2026-10-27). The bend is drawn from the page's main thread while a phone scrolls the
    deck on its own thread, so on a Galaxy A04 fast swipes showed slivers and broken cards; flat, the browser moves the cards itself.
    No bend zone: the cards run straight to the deck's edge, which lines up with "Choose" (edgeSync), and hmBend leaves them flat */
 /* The deck's edge cuts the passing card: rounded like a card's own corners (18 px), on the cards' top and bottom lines (the deck's
    4 px / 14 px padding), so the cut never shows a sharp square corner (Murci 2026-10-27); the right side stays open */
 @media (max-width: 599px) { .hm-deck { padding-left: 0; scroll-padding-left: 0; clip-path: inset(4px -40px 14px 0 round 18px 0 0 18px); } }
+@media (min-width: 600px) {
   .hm-bgbot { left: 6%; bottom: -150px; width: 40%; height: calc(100% + 220px); }   /* under the first cards: behind the row; never up into the top bar */
   .hm-choose > .hm-kickrow { margin-left: 33%; }
   @media (min-width: 1100px) { .hm-choose > .hm-kickrow { margin-top: 36px; } }   /* a desktop's cards a bit lower (Murci 2026-10-26) */
@@ -750,7 +750,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 }
 .hm-choose > .hm-kickrow { margin-left: 0; justify-content: center; }   /* "Choose an industry" centred on the page (Murci 2026-10-27; was over the first card) */
 
-.ind-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13.5px; color: #9fb0dd; }
+.ind-facts { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; font-size: 13.5px; color: #9fb0dd; }   /* centred over the buttons (Murci 2026-10-27) */
 .ind-fact > b { color: #eef3ff; }
 @media (max-width: 599px) {
   /* a phone's home top (Murci 2026-10-25: "control the spacing"): 28 px under the top bar, the title centred
