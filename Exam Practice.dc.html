@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=151">
+  <link rel="stylesheet" href="nx-map.css?v=156">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2473,12 +2473,18 @@ class Component extends DCLogic {
   // and no jump anywhere. Cards fade out as they near the deck's edge (the far side of the curve). Called once per frame from
   // the scroll (rAF) and after each render; the snap slots never move (a moved snap target breaks the snap). Reduced motion:
   // the plain stack. Was (2026-10-26/27) hand-tuned steps per card that drifted from the angle between the steps.
+  // 2026-10-27 Murci: the cards must bend THEMSELVES with the bend - a rigid chord stays flat. A card crossing the curving part
+  // is drawn as thin strips (hmStrips): each strip is a window onto the same card, placed on the curve with its own angle, so
+  // the card's surface follows the curve (flat on the straight, wrapping round the bend). Its strips share one perspective (on
+  // the strip layer) so neighbouring edges meet exactly. The real button stays underneath at its chord, invisible, for taps.
+  // A card wholly past the curve (right edge >= BEND) is flat at 80deg again, so it goes back to the one plain element.
   hmBend() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
     const slots = [...d.children].filter(e => e.classList.contains("hm-slot")); if (slots.length < 2) return;
     const cs = getComputedStyle(d), pad = parseFloat(cs.paddingLeft) || 0, tilt = parseFloat(cs.getPropertyValue("--hm-tilt")) || 0;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches, sx = d.scrollLeft;
     // read every measure first, then write (a read after a write would force a style pass per card)
-    const at = slots.map(sl => ({ c: sl.firstElementChild, x: pad + sl.offsetLeft - slots[0].offsetLeft - sx, W: sl.firstElementChild ? sl.firstElementChild.offsetWidth : 0 }));
+    const at = slots.map(sl => { const c = sl.firstElementChild;
+      return { sl, c, x: pad + sl.offsetLeft - slots[0].offsetLeft - sx, W: c ? c.offsetWidth : 0, H: c ? c.offsetHeight : 0, ox: c ? c.offsetLeft : 0, oy: c ? c.offsetTop : 0 }; });
     const MAX = 80 * Math.PI / 180, BEND = Math.max(60, pad * 1.25), P = "perspective(1400px) ";
     const dir = t => t <= 0 ? 0 : t >= BEND ? MAX : MAX * (t / BEND) * (t / BEND) * (3 - 2 * t / BEND);   // the curve's angle t px in
     // a point t px along the path (t < 0: on the straight, -t px right of the start) -> [x, depth]; Simpson's rule over the bend
@@ -2488,15 +2494,52 @@ class Component extends DCLogic {
       cx *= h / 3; sz *= h / 3; if (t > a) { cx += (t - a) * Math.cos(MAX); sz += (t - a) * Math.sin(MAX); }
       return [pad - cx, sz]; };
     const fadeOut = 0, fadeIn = pad * 0.3;   // a card's right edge fades from fadeIn px from the deck's edge to the edge itself
-    at.forEach(({ c, x, W }) => { if (!c) return;
-      if (still || x >= pad || !pad) { c.style.transform = tilt ? P + "rotateY(" + tilt + "deg)" : ""; c.style.filter = ""; c.style.opacity = ""; c.style.visibility = ""; return; }
-      const L = pt(pad - x), R = pt(pad - x - W);   // its left and right edges on the path
+    at.forEach(({ sl, c, x, W, H, ox, oy }) => { if (!c) return;
+      const flat = still || x >= pad || !pad, tR = pad - x - W;
+      if (sl._fx && (flat || tR >= BEND)) sl._fx.style.display = "none";   // not crossing the curve: no strips
+      if (flat) { c.style.transform = tilt ? P + "rotateY(" + tilt + "deg)" : ""; c.style.filter = ""; c.style.opacity = ""; c.style.visibility = ""; return; }
+      const L = pt(pad - x), R = pt(tR);   // its left and right edges on the path
       const th = Math.atan2(L[1] - R[1], R[0] - L[0]), f = th / MAX;   // the chord's angle: the curve's, where the card is
       const deg = tilt * (1 - f) - th * 180 / Math.PI, lit = 1 - 0.5 * f;
-      const fade = Math.max(0, Math.min(1, (R[0] - fadeOut) / (fadeIn - fadeOut)));
+      // Murci 2026-10-27: only the card bending shows, not the ones the curve has swallowed: a card fades out as its right
+      // edge goes round the first half of the curve (the next card, bending in front, covers the hand-over)
+      const g = Math.max(0, Math.min(1, tR / (BEND * 0.5))), fade = Math.min(1 - g * g * (3 - 2 * g), Math.max(0, Math.min(1, (R[0] - fadeOut) / (fadeIn - fadeOut))));
       c.style.transform = "translateX(" + (R[0] - (x + W)).toFixed(1) + "px) " + P + "translateZ(" + (-R[1]).toFixed(1) + "px) rotateY(" + deg.toFixed(2) + "deg)";
-      c.style.filter = "brightness(" + lit.toFixed(3) + ")";
-      c.style.opacity = fade < 1 ? fade.toFixed(3) : ""; c.style.visibility = fade <= 0 ? "hidden" : ""; }); }
+      c.style.visibility = fade <= 0 ? "hidden" : "";
+      if (tR >= BEND || fade <= 0) { if (sl._fx) sl._fx.style.display = "none"; c.style.filter = "brightness(" + lit.toFixed(3) + ")"; c.style.opacity = fade < 1 ? fade.toFixed(3) : ""; return; }
+      // crossing the curve: the strips draw it, bent; the button stays at its chord, unseen, for taps
+      const fx = this.hmStrips(sl, c, W, H), n = fx._n, w = W / n, rx = R[0] - x;
+      c.style.opacity = "0"; c.style.filter = "";
+      fx.style.display = ""; fx.style.left = ox + "px"; fx.style.top = oy + "px"; fx.style.opacity = fade < 1 ? fade.toFixed(3) : "";
+      fx.style.perspectiveOrigin = rx.toFixed(1) + "px 50%";   // as the plain card's: at its right edge
+      fx._wrap.style.transformOrigin = rx.toFixed(1) + "px 50% " + (-R[1]).toFixed(1) + "px";
+      fx._wrap.style.transform = tilt ? "rotateY(" + (tilt * (1 - f)).toFixed(2) + "deg)" : "";
+      let A = L;   // strip k runs from A (its left edge, k*w in) to B (its right edge) along the path
+      fx._strips.forEach((st, k) => { const B = pt(pad - x - (k + 1) * w), a = Math.atan2(A[1] - B[1], B[0] - A[0]);
+        st.style.transform = "translate3d(" + (B[0] - x - (k + 1) * w).toFixed(2) + "px, 0, " + (-B[1]).toFixed(2) + "px) rotateY(" + (-a * 180 / Math.PI).toFixed(2) + "deg)";
+        st._dim.style.opacity = (0.5 * a / MAX).toFixed(3); A = B; }); }); }
+  // a card's strips (built when it first crosses the curve, kept, rebuilt when the card's look changes): ~16 px windows onto
+  // copies of the card, in a layer inside its slot. Copies are hidden from screen readers and inert; their floating
+  // professional is held at the card's own pose (a copy's animation would start at 0: the strips would tear apart; and
+  // measured 2026-10-27, 30 copies running it per frame cost ~2.5x the frame: paused, they paint once)
+  hmStrips(sl, c, W, H) {
+    const key = c.getAttribute("aria-expanded") + "|" + W + "x" + H + "|" + c.textContent;
+    if (sl._fx && sl._fx.isConnected && sl._fx._key === key) return sl._fx;
+    if (sl._fx) sl._fx.remove();
+    const fx = document.createElement("div"), wrap = document.createElement("div"), n = Math.max(6, Math.ceil(W / 16)), w = W / n;
+    fx.className = "hm-bendfx"; fx.setAttribute("aria-hidden", "true"); fx.inert = true; fx.style.width = W + "px"; fx.style.height = H + "px";
+    wrap.className = "hm-bendwrap"; fx.appendChild(wrap);
+    const src = c.getAnimations ? c.getAnimations({ subtree: true }).filter(a => a.effect && a.effect.target && a.effect.target.classList.contains("ind-pro-obj")) : []; fx._strips = [];
+    for (let k = 0; k < n; k++) { const ov = k ? 1 : 0, st = document.createElement("div"), g = document.createElement("div"), dim = document.createElement("i");
+      st.className = "hm-strip"; st.style.left = (k * w - ov) + "px"; st.style.width = (w + ov) + "px";   // 1 px over the last strip: no hairline seam
+      g.className = c.className + " hm-ghost"; g.setAttribute("style", c.getAttribute("style") || ""); g.setAttribute("aria-expanded", c.getAttribute("aria-expanded") || "false");
+      g.style.cssText += "; width: " + W + "px; height: " + H + "px; left: " + (ov - k * w) + "px; transform: none; opacity: 1; filter: none; visibility: visible;";
+      g.innerHTML = c.innerHTML; dim.className = "hm-strip-dim"; st.append(g, dim); st._dim = dim; wrap.appendChild(st); fx._strips.push(st); }
+    sl.appendChild(fx);
+    // held at the card's pose by CSS (paused) + a negative delay: a script pause is lost when the layer is hidden and shown
+    const pose = src.map(a => -(a.currentTime || 0) + "ms").join(", ");
+    if (pose) fx._strips.forEach(st => st.querySelectorAll(".ind-pro-obj").forEach(o => { o.style.animationDelay = pose; }));
+    fx._wrap = wrap; fx._n = n; fx._key = key; sl._fx = fx; return fx; }
   // the desktop title: --belly-y at the companion's belly (measured where the figure is drawn: contain, anchored at the feet);
   // --belly-l centres it across the space from the page's left edge to the bend (Murci 2026-10-27: equal room on both sides;
   // was centred on the belly, ending 8 px before the bend)
@@ -3153,7 +3196,8 @@ class Component extends DCLogic {
     const from = this._hmFrom; this._hmFrom = null; const name = on => { const c = from && from.isConnected && from.dataset.hmkey === key ? from : document.querySelector('[data-hmcard="' + key + '"]');   /* the card tapped: maybe a copy (the loop) */
       [[c, "ind-card"], [c && c.querySelector(".hm-art"), "ind-pro"], [c && c.querySelector(".hm-cname"), "ind-title"],
         [document.querySelector(".pm-bg"), "ind-card"], [document.querySelector(".ind-pro-media"), "ind-pro"], [document.getElementById("ind-name"), "ind-title"]]
-        .forEach(([el, n]) => { if (el) el.style.viewTransitionName = on ? n : ""; }); };
+        .forEach(([el, n]) => { if (el) el.style.viewTransitionName = on ? n : ""; });
+      if (on && c && c.style.opacity === "0") c.style.opacity = ""; };   /* a card tapped mid-bend (its strips drew it): show the button for the snapshot */
     if (this._morph === dir) return;   // a second tap while this move runs (2026-10-26 QA: a double tap ran the switch twice); Back mid-grow still goes
     const root = document.documentElement; root.classList.toggle("vt-back", dir === "back"); root.classList.add("vt-ind");   /* scopes the page's fade to this move */
     name(true);
