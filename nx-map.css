@@ -667,7 +667,10 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    three calm bands - who, what to pick, what to start - not a gap in the middle (pinned to the bottom it left one, 2026-10-27) */
 .ind-practise { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 14px; padding-top: 6px; }
 .ind-intro > .ind-practise { padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }   /* the line Finance's After school has, on every industry (Murci 2026-10-27) */
-.ind-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+/* Level and Subject side by side, the Paper (the longest choice) a full row below - on every screen (Murci 2026-10-27: desktop
+   and tablet as a phone; was three across there; a phone's three across cut the choices off: "Grade…", "Physic…", "Nov 20…") */
+.ind-pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ind-pick > .ind-step:nth-child(3) { grid-column: 1 / -1; }
 .ind-step { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .ind-step > .ind-step-k { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #9fb0dd; }
 .ind-sel { box-sizing: border-box; width: 100%; min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(129, 177, 255, 0.35);
@@ -675,15 +678,12 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-sel option, .ind-sel optgroup { background: #0d1a3f; color: #ffffff; }
 .ind-sel:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (pointer: coarse) { .ind-sel { min-height: 44px; font-size: 16px; } }   /* a finger's target; 16 px stops iOS zooming */
-/* a phone: three across cut the choices off ("Grade…", "Physic…", "Nov 20…", 2026-10-27); level + subject side by side, the paper
-   (the longest) a full row */
-@media (max-width: 599px) { .ind-pick { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ind-pick > .ind-step:nth-child(3) { grid-column: 1 / -1; } }
 .ind-practise .ind-subj-note { margin: 0; font-size: 12.5px; color: #9fb0dd; }
-/* the chosen paper: a soft inner card, its title and facts left, its buttons right */
-.ind-act { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 16px; border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); }
+/* the chosen paper: its facts as one line, no card, no title - the Paper field above already names it (Murci 2026-10-27: desktop and
+   tablet as a phone; was a soft inner card titled "Paper 1 · November 2025"). The title stays for screen readers and focus */
+.ind-act { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .ind-act > .ind-act-t { flex: 1 1 180px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.ind-act-t > .ind-dtitle { font-size: 15.5px; color: #eef3ff; }
+.ind-act-t > .ind-dtitle { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ind-paper { display: flex; flex-direction: column; gap: 12px; }   /* the paper's card, then its buttons below it */
 .ind-paper > .ind-act-b { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }   /* centred (Murci 2026-10-27) */
 .ind-act-b .pm-go, .ind-act-b .pm-src { width: auto; margin: 0; min-height: 46px; padding: 0 26px; }
@@ -791,7 +791,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-intro > .ind-blurb { display: none; }
   .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 14px 16px; gap: 8px; }
   .ind .ind-practise { gap: 10px; }
-  .ind .ind-act { padding: 12px 14px; }
   .ind-careers > .ind-career { padding: 2px 8px; font-size: 12px; }
   .ind-careers > .ind-career:nth-child(n + 4):not(.ind-career-more) { display: none; }   /* the (hidden) label, then two careers + "+N more" (option B) */
   .ind-careers > .ind-career-more { display: inline-flex; border-style: dashed; color: #9fb0dd; }
@@ -809,10 +808,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
     font-size: clamp(20px, 5.6vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #ffffff; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65); pointer-events: none;
     text-align: center; }   /* centred over "Your path" (Murci 2026-10-27) */
   .ind-hero:not(:has(.ind-mapbox)) > .ind-hero-name { bottom: 16px; }
-  .ind .ind-intro > .ind-name, .ind .ind-step > .ind-step-k, .ind .ind-act-t > .ind-dtitle {
+  .ind .ind-intro > .ind-name, .ind .ind-step > .ind-step-k {
     position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* read by screen readers, not shown */
   .ind-careers > .ind-k { display: none; }
-  .ind .ind-act { padding: 0; border: 0; background: none; }
   .ind .ind-act-t .ind-facts { font-size: 12.5px; }
   .ind .ind-soon .ind-soon-t { display: none; }   /* "papers on the way": the title and its button say it (the sentence cost Finance NC(V) L2 the taller card) */
 }
