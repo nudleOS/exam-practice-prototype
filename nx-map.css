@@ -659,44 +659,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-act-b .pm-go, .ind-act-b .pm-src { width: auto; margin: 0; min-height: 44px; padding: 0 18px; }
 .ind-intro > .ind-blurb, .ind-intro > .ind-careers { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: #b8c4ea; }
 .ind-careers > .ind-k { margin-right: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ic); }
-.ind-secs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }   /* one list of folding subjects */
-.ind-sec, .ind-after { --sc: #93a4d6; --sc-rgb: 147, 164, 214; display: flex; flex-direction: column; gap: 8px; }
-/* the subject tabs: a row that scrolls sideways when the names don't fit; the chosen one underlined */
-/* the tabs that run off the edge (2026-10-26): a fade on the side with more (data-more, set by tabsSync), an arrow on the end side */
-.ind-tabwrap { position: relative; }
-.ind-tabs[data-more="end"] { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent); }
-.ind-tabs[data-more="start"] { -webkit-mask-image: linear-gradient(270deg, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(270deg, #000 calc(100% - 64px), transparent); }
-.ind-tabs[data-more="both"] { -webkit-mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 64px), transparent); mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 64px), transparent); }
-.ind-tabmore { display: none; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 999px;
-  border: 1px solid rgba(129, 177, 255, 0.35); background: #0d1a3f; color: #dfe6ff; cursor: pointer; align-items: center; justify-content: center; }
-.ind-tabs:is([data-more="end"], [data-more="both"]) + .ind-tabmore { display: flex; }
-.ind-tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-.ind-tabs::-webkit-scrollbar { display: none; }
-.ind-tab { flex: none; min-height: 46px; padding: 0 14px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: #8fa0d6;
-  font: inherit; font-size: 14.5px; font-weight: 700; white-space: nowrap; cursor: pointer; scroll-snap-align: start; }
-.ind-tab[aria-selected="true"] { color: #eef3ff; border-bottom-color: #5b8cff; }
-.ind-tab:focus-visible { outline: 3px solid #81b1ff; outline-offset: -3px; }
-@media (hover: hover) and (pointer: fine) { .ind-tab:hover { color: #dfe6ff; } }
-.ind-sec { padding: 14px 0 6px; }   /* the tab's panel */
-/* the year shelf: each sitting a line (its label, then its papers' chips); 44 px chips, the state in the chip's colour */
-.ind-shelf { display: flex; flex-direction: column; gap: 8px; }
-.ind-sit { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 8px; }
-.ind-sit > .ind-sit-k { font-size: 12.5px; font-weight: 600; color: #9fb0dd; }
-.ind-sit > .ind-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.ind-chip { box-sizing: border-box; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(129, 177, 255, 0.3);
-  background: rgba(255, 255, 255, 0.03); color: #eef3ff; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
-.ind-chip[data-state="going"] { border-color: #5b8cff; background: rgba(91, 140, 255, 0.14); color: #cfe0ff; }
-.ind-chip[data-state="done"] { border-color: transparent; background: rgba(245, 196, 67, 0.16); color: #f5c443; }
-.ind-chip[data-state="soon"] { border-style: dashed; color: #8fa0d6; }
-.ind-chip[aria-pressed="true"] { border-color: #eef3ff; background: #eef3ff; color: #04122c; }   /* the paper whose details are open */
-.ind-chip:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
-@media (hover: hover) and (pointer: fine) { .ind-chip:hover { border-color: rgba(129, 177, 255, 0.7); } }
-.ind-sec > .ind-sec-meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
-.ind-sec-meta > .ind-sec-sum { font-size: 12.5px; font-weight: 500; color: #9fb0dd; }
+.ind-after { --sc: #93a4d6; --sc-rgb: 147, 164, 214; display: flex; flex-direction: column; gap: 8px; }
 .ind-after > .ind-sec-name { margin: 0; font-size: 16.5px; font-weight: 800; color: #eef3ff; }
 .ind-note { margin: 0; font-size: 12.5px; line-height: 1.45; color: #9fb0dd; }
-.ind-detail { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; padding: 14px 16px 16px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); }
-.ind-detail > .ind-dtitle { margin: 0; font-size: 17px; font-weight: 800; color: #eef3ff; }
 .ind-re { display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; color: #b8c4ea; }
 .ind-re > b { min-width: 42px; color: var(--ic); }
 .ind-modal-wrap { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 12px; }
@@ -705,8 +670,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   .ind-mapbox { min-height: 200px; padding: 16px; }   /* a SMALL box beside the professional (Murci 2026-10-25), never their full height */
   .ind-mapbox > .ind-mapbox-t { font-size: 16px; }
-  .ind-shelf { flex-direction: row; flex-wrap: wrap; gap: 8px 32px; }   /* the sittings side by side where they fit */
-  .ind-sit { grid-template-columns: auto auto; }
 }
 @media (min-width: 1100px) {
   .ind-pro { height: 480px; }
@@ -734,20 +697,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-headblock > h1 { text-align: left !important; }
 }
 
-/* the school-level pill (Murci 2026-10-26), in the industry page's navbar since 2026-10-27: reads "Secondary school · Grade 12" */
-.pm-lvpick { align-self: flex-start; max-width: 100%; }   /* its own width, not the navbar column's */
-.pm-lvpick > .hm-lvtxt { overflow: hidden; text-overflow: ellipsis; }
-.pm-lvpick > .hm-lvtxt-s { display: none; }
-@media (max-width: 599px) { .pm-lvpick > .hm-lvtxt { display: none; } .pm-lvpick > .hm-lvtxt-s { display: inline; } }   /* a phone: the level alone */
-.hm-lvpick { position: relative; display: inline-flex; align-items: center; flex: none; box-sizing: border-box; min-height: 36px; padding: 0 30px 0 13px; border-radius: 999px;
-  border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(129, 177, 255, 0.12); color: #dfe6ff; font-size: 13px; font-weight: 700; white-space: nowrap; }
-/* the native select lies transparent over the pill: its own text would show only "Grade 12", the pill shows the school too.
-   16 px stops iOS zooming on focus. */
-.hm-lvpick > .hm-lvsel { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; font-size: 16px; }
-.hm-lvpick > svg { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); color: #9fbcff; pointer-events: none; }
-.hm-lvsel option, .hm-lvsel optgroup { background: #0d1a3f; color: #ffffff; }
-.hm-lvpick:has(> .hm-lvsel:focus-visible) { outline: 3px solid #81b1ff; outline-offset: 2px; }
-@media (pointer: coarse) { .hm-lvpick { min-height: 44px; } }   /* a finger's target */
 .ind-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13.5px; color: #9fb0dd; }
 .ind-fact > b { color: #eef3ff; }
 @media (max-width: 599px) {
@@ -780,7 +729,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-pro { grid-area: pro; }
 .ind-mapbox { grid-area: map; }
 .ind-intro { grid-area: intro; }
-.ind-secs { grid-area: secs; }
 .ind-after { grid-area: after; }
 
 @media (max-width: 599px) {
