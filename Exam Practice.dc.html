@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=134">
+  <link rel="stylesheet" href="nx-map.css?v=135">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -420,7 +420,6 @@
             </sc-if>
           </div>
           <div class="ind-intro">
-            <span class="pm-ico ind-ico" data-icon="{{ indIcon }}" aria-hidden="true"></span>
             <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
             <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
@@ -3301,7 +3300,7 @@ class Component extends DCLogic {
       // for presentations, not product behaviour
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
-      indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indIcon: ind.icon, indPro: ind.pro,
+      indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indPro: ind.pro,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
       indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",
