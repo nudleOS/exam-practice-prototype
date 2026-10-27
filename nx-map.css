@@ -674,9 +674,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-sec > .ind-sec-meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 .ind-sec-meta > .ind-sec-sum { font-size: 12.5px; font-weight: 500; color: #9fb0dd; }
 .ind-after > .ind-sec-name { margin: 0; font-size: 16.5px; font-weight: 800; color: #eef3ff; }
-.ind-tag { padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; border: 1px solid rgba(var(--sc-rgb), 0.55); color: #dfe6ff; }
-.ind-tag[data-kind="required"] { background: rgba(var(--sc-rgb), 0.22); border-color: transparent; }
-.ind-tag[data-kind="unverified"], .ind-tag[data-kind="some"] { border-style: dashed; color: #b9cdf0; }
 .ind-note { margin: 0; font-size: 12.5px; line-height: 1.45; color: #9fb0dd; }
 .ind-detail { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; padding: 14px 16px 16px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); }
 .ind-detail > .ind-dtitle { margin: 0; font-size: 17px; font-weight: 800; color: #eef3ff; }
@@ -763,7 +760,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-after { grid-area: after; }
 
 @media (max-width: 599px) {
-  .ind { grid-template-areas: "pro" "secs" "after"; }
+  .ind { grid-template-areas: "secs" "pro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
   .ind .ind-intro, .ind .ind-mapbox { grid-area: pro; z-index: 2; }
   .ind .ind-pro { height: clamp(460px, 72dvh, 640px); overflow: hidden; border-radius: 24px; }   /* no glow; the professional a little larger (was 66dvh, max 580) */
   /* the text at the top: a soft dark fade behind it; the professional right of centre and a little lower, the face under the text */
@@ -775,8 +772,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-mapbox > .ind-mapbox-art { margin-bottom: 4px; }
 }
 @media (min-width: 600px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "pro map" "secs secs" "after after"; column-gap: 16px; }
-  .ind:not(:has(.ind-mapbox)) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pro" "secs" "after"; }   /* no papers, no map box: no empty column */
+  .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "secs secs" "pro map" "after after"; column-gap: 16px; }
+  .ind:not(:has(.ind-mapbox)) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "secs" "pro" "after"; }   /* no papers, no map box: no empty column */
   .ind .ind-intro { grid-area: pro; z-index: 2; align-self: center; justify-self: start; max-width: min(46%, 460px); padding: 0 0 0 28px; }   /* centred on the stage's left (Murci 2026-10-26) */
   .ind-pro > .ind-pro-media { left: 74%; }   /* the stage's right side */
   .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */

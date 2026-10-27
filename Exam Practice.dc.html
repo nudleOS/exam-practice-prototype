@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=113">
+  <link rel="stylesheet" href="nx-map.css?v=114">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -455,7 +455,8 @@
             <sc-for list="{{ indSecs }}" as="sec" hint-placeholder-count="1">
               <sc-if value="{{ sec.isOn }}" hint-placeholder-val="{{ false }}">
               <section class="ind-sec" id="ind-panel" role="tabpanel" aria-labelledby="{{ sec.tabId }}">
-                <p class="ind-sec-meta"><span class="ind-tag" data-kind="{{ sec.tagKind }}">{{ sec.tag }}</span><span class="ind-sec-sum">{{ sec.sum }}</span></p>
+                <!-- no tag or paper count over the shelf (Murci 2026-10-27); an empty subject still says why the shelf is empty -->
+                <sc-if value="{{ sec.isEmpty }}" hint-placeholder-val="{{ false }}"><p class="ind-sec-meta"><span class="ind-sec-sum">No papers at this level yet</span></p></sc-if>
                 <sc-if value="{{ sec.hasNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note">{{ sec.note }}</p></sc-if>
                 <!-- the year shelf (Murci picked A, 2026-10-26): every paper a chip, grouped by sitting; one tap opens its details -->
                 <div class="ind-shelf">
@@ -1786,7 +1787,8 @@ const NCV_COMPULSORY = {
 // a card's subjects at a level, as [name, kind, note, programme]: the mapping's school subjects, or on TVET its programmes' subjects
 const indSubjects = (ind, lv) => lv.qualification !== "ncv" ? ind.subjects
   : (NCV_CARDS[ind.key] || []).reduce((out, prog) => out.concat(((NCV_COMPULSORY[prog] || {})[lv.level] || []).map(n => [n, "programme", "", prog])), []);
-const SUBJECT_TAG = { required: "Required", recommended: "Recommended", unverified: "Recommended (unverified)", some: "Accepted by some programmes · check your faculty" };
+// the approved mapping's caveats (2026-10-25), shown as a subject's note now its tag is gone (2026-10-27)
+const SUBJECT_CAVEAT = { unverified: "Recommended, not yet confirmed by a university.", some: "Accepted by some programmes · check your faculty." };
 const PAPER_UNITS = { "aet-l4-2019-02": "28 parts", "ls-p1-2026": "17 missions" };
 const PROG_SHORT = { ncv: "NC(V)", high_school: "Secondary school", university: "University" };
 const HOME_TO_LOCAL = { "aet-l4-2019-02": "aet", "ls-p1-2026": "ls" };
@@ -3302,7 +3304,8 @@ class Component extends DCLogic {
       // one paper open on the page at a time
       const going = ps.filter(x => x.state === "going").length, done = ps.filter(x => x.state === "done").length;
       const mine = ps.some(x => x.p.id === s.pmOpen);
-      return { name: n, icon: look.icon, tag: SUBJECT_TAG[sb[1]] || sb[3], tagKind: sb[1], note: sb[2] || "", hasNote: !!sb[2],
+      const note = [sb[2], SUBJECT_CAVEAT[sb[1]]].filter(Boolean).join(" ");
+      return { name: n, icon: look.icon, note: note, hasNote: !!note, isEmpty: !ps.length,
         sum: !ps.length ? "No papers at this level yet" : ps.length + (ps.length === 1 ? " paper" : " papers") + (going ? " · " + going + " under way" : "") + (done ? " · " + done + " done" : ""),
         sel: mine ? s.pmOpen : "", hasPick: mine, going: going > 0, count: ps.length, sits: sitsOf(n, ps) }; });
     // the tab shown: the subject holding the open paper, else the learner's pick, else the one with a paper under way, else the
