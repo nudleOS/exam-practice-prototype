@@ -2440,7 +2440,7 @@ class Component extends DCLogic {
     // read every measure first, then write (a read after a write would force a style pass per card)
     const at = slots.map(sl => { const c = sl.firstElementChild;
       return { sl, c, x: pad + sl.offsetLeft - slots[0].offsetLeft - sx, W: c ? c.offsetWidth : 0, H: c ? c.offsetHeight : 0, ox: c ? c.offsetLeft : 0, oy: c ? c.offsetTop : 0 }; });
-    const MAX = 80 * Math.PI / 180, BEND = Math.max(60, pad * 1.25), P = "perspective(1400px) ";
+    const MAX = 80 * Math.PI / 180, BEND = Math.max(96, pad * 1.25), P = "perspective(1400px) ";   // a phone's curve over 96 px (was 70: too tight, it creased)
     const dir = t => t <= 0 ? 0 : t >= BEND ? MAX : MAX * (t / BEND) * (t / BEND) * (3 - 2 * t / BEND);   // the curve's angle t px in
     // a point t px along the path (t < 0: on the straight, -t px right of the start) -> [x, depth]; Simpson's rule over the bend
     const pt = t => { if (t <= 0) return [pad - t, 0];
@@ -2452,7 +2452,7 @@ class Component extends DCLogic {
     // opacity / visibility every frame, unchanged or not, cost 1.3 s of layer rebuilds + 0.8 s of style checks per 13 s of swiping)
     const put = (el, k, v) => { if (el.style[k] !== v) el.style[k] = v; };
     const fadeOut = 0, fadeIn = pad * 0.3;   // a card's right edge fades from fadeIn px from the deck's edge to the edge itself
-    at.forEach(({ sl, c, x, W, H, ox, oy }) => { if (!c) return;
+    at.forEach(({ sl, c, x, W, H, ox, oy }, idx) => { if (!c) return;
       // within a px of the start is the start (a phone's scroll snaps to fractional px - 1.875 dpr - and the resting front card was
       // taken for one entering the curve: swapped for strips, its float frozen, measured on a Galaxy A04 2026-10-27)
       const flat = still || x >= pad - 1 || !pad, tR = pad - x - W;
@@ -2461,9 +2461,11 @@ class Component extends DCLogic {
       const L = pt(pad - x), R = pt(tR);   // its left and right edges on the path
       const th = Math.atan2(L[1] - R[1], R[0] - L[0]), f = th / MAX;   // the chord's angle: the curve's, where the card is
       const deg = tilt * (1 - f) - th * 180 / Math.PI, lit = 1 - 0.5 * f;
-      // Murci 2026-10-27: only the card bending shows, not the ones the curve has swallowed: a card fades out as its right
-      // edge goes round the first half of the curve (the next card, bending in front, covers the hand-over)
-      const g = Math.max(0, Math.min(1, tR / (BEND * 0.5))), fade = Math.min(1 - g * g * (3 - 2 * g), Math.max(0, Math.min(1, (R[0] - fadeOut) / (fadeIn - fadeOut))));
+      // Murci 2026-10-27: only the card bending shows, not the ones the curve has swallowed. A card at rest in the bend (one place
+      // in) shows whole; as it goes deeper it fades out over the next half place - while the next card bends in - so a swipe never
+      // shows two (was: faded by its right edge, which on a desktop's 56 px overlap left the outgoing card in view mid-swipe)
+      const stp = idx + 1 < at.length ? at[idx + 1].x - x : W, g = Math.max(0, Math.min(1, (pad - x - stp) / (0.5 * stp)));
+      const fade = Math.min(1 - g * g * (3 - 2 * g), Math.max(0, Math.min(1, (R[0] - fadeOut) / (fadeIn - fadeOut))));
       put(c, "transform", "translateX(" + (R[0] - (x + W)).toFixed(1) + "px) " + P + "translateZ(" + (-R[1]).toFixed(1) + "px) rotateY(" + deg.toFixed(2) + "deg)");
       put(c, "visibility", fade <= 0 ? "hidden" : "");
       if (tR >= BEND || fade <= 0) { if (sl._fx) put(sl._fx, "display", "none"); put(c, "filter", "brightness(" + lit.toFixed(3) + ")"); put(c, "opacity", fade < 1 ? fade.toFixed(3) : ""); return; }
@@ -2475,7 +2477,12 @@ class Component extends DCLogic {
       put(fx._wrap, "transformOrigin", rx.toFixed(1) + "px 50% " + (-R[1]).toFixed(1) + "px");
       put(fx._wrap, "transform", tilt ? "rotateY(" + (tilt * (1 - f)).toFixed(2) + "deg)" : "");
       let A = L;   // strip k runs from A (its left edge, k*w in) to B (its right edge) along the path
-      fx._strips.forEach((st, k) => { const B = pt(pad - x - (k + 1) * w), a = Math.atan2(A[1] - B[1], B[0] - A[0]);
+      // seamless (Murci 2026-10-27: "broken or folded"): each strip's shade is a gradient from the curve's own angle at its left
+      // edge to the angle at its right edge, so the shading runs on without a step at any strip join; and the far part of the
+      // card - turned past ~48deg - fades out by ~76deg, so it goes round the corner instead of piling up as slivers ("only
+      // one card on the bend, not the swallowed ones")
+      const shade = t => (0.5 * dir(t) / MAX).toFixed(3), gone = r => { const q = Math.max(0, Math.min(1, (r - 0.6) / 0.35)); return 1 - q * q * (3 - 2 * q); };
+      fx._strips.forEach((st, k) => { const tl = pad - x - k * w, tr = tl - w, B = pt(tr), a = Math.atan2(A[1] - B[1], B[0] - A[0]);
         put(st, "transform", "translate3d(" + (B[0] - x - (k + 1) * w).toFixed(2) + "px, 0, " + (-B[1]).toFixed(2) + "px) rotateY(" + (-a * 180 / Math.PI).toFixed(2) + "deg)");
         put(st._dim, "opacity", (0.5 * a / MAX).toFixed(3)); A = B; }); }); }
   // a card's strips (built when it first crosses the curve, kept, rebuilt when the card's look changes): ~16 px windows onto
@@ -2486,7 +2493,7 @@ class Component extends DCLogic {
     const key = c.getAttribute("aria-expanded") + "|" + W + "x" + H + "|" + c.textContent;
     if (sl._fx && sl._fx.isConnected && sl._fx._key === key) return sl._fx;
     if (sl._fx) sl._fx.remove();
-    const fx = document.createElement("div"), wrap = document.createElement("div"), n = Math.max(6, Math.ceil(W / 16)), w = W / n;
+    const fx = document.createElement("div"), wrap = document.createElement("div"), n = Math.max(8, Math.ceil(W / 10)), w = W / n;   /* ~10 px strips (was 16: the turn between neighbours showed) */
     fx.className = "hm-bendfx"; fx.setAttribute("aria-hidden", "true"); fx.inert = true; fx.style.width = W + "px"; fx.style.height = H + "px";
     wrap.className = "hm-bendwrap"; fx.appendChild(wrap);
     const src = c.getAnimations ? c.getAnimations({ subtree: true }).filter(a => a.effect && a.effect.target && a.effect.target.classList.contains("ind-pro-obj")) : []; fx._strips = [];

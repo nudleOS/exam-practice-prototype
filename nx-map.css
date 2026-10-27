@@ -900,4 +900,4 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-strip > .hm-ghost { position: absolute; top: 0; margin: 0; transition: none; box-shadow: none; will-change: auto; }   /* no layer per copy: only its 16 px window paints */
 .hm-strip > .hm-ghost > .hm-art > .ind-pro-person { filter: none; }
 .hm-strip .ind-pro-obj { animation-play-state: paused !important; }   /* held at the card's pose (hmStrips sets the delay) */   /* the professional's blurred drop-shadow, per strip, per frame: measured 67 -> 42 ms a frame without it */
-.hm-strip > .hm-strip-dim { position: absolute; inset: 0; background: #000; opacity: 0; }
+.hm-strip > .hm-strip-dim { position: absolute; inset: 0; background: none; }   /* hmBend paints a left-to-right shade gradient: no step at the joins */
