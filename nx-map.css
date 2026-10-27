@@ -10,8 +10,8 @@
 .pm-col { box-sizing: border-box; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px calc(48px + env(safe-area-inset-bottom)); }
 /* the industry page fits the screen and never scrolls down (Murci 2026-10-27): one screen tall under the 65 px navbar; the
    industry (.ind) takes what is left after the "on the way" card, and its stage row gives */
-main.pm[data-pmap] { height: calc(100dvh - 65px); overflow: hidden; }
-main.pm[data-pmap] > .pm-col { height: 100%; display: flex; flex-direction: column; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+main.pm[data-pmap] { height: 100dvh; overflow: hidden; }   /* the whole screen: no navbar on this page (Murci 2026-10-27) */
+main.pm[data-pmap] > .pm-col { height: 100%; display: flex; flex-direction: column; padding-top: calc(clamp(12px, 2vw, 20px) + env(safe-area-inset-top)); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
 main.pm[data-pmap] .ind { flex: 1 1 0; min-height: 0; margin-bottom: 0; }
 @media (min-width: 600px) { .pm-col { padding-left: 32px; padding-right: 32px; } }
 /* the subjects: one column on a phone; side by side wherever two paths fit (the page's width is used, edge to edge) */
@@ -611,7 +611,11 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    (0), the professional (1, taps pass through), the bar's shade (2), the bar's words (3). No papers: the professional alone */
 .ind-hero { position: relative; isolation: isolate; min-height: 0; overflow: hidden; border-radius: 24px; border: 1px solid rgba(var(--ic-rgb), 0.35);
   background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.1), rgba(3, 18, 44, 0.5)); }
-.ind-pro { position: absolute; inset: 0; z-index: 1; margin: 0; pointer-events: none; }   /* no glow under the professional (Murci 2026-10-26) */
+.ind-pro { position: absolute; inset: 0; z-index: 1; margin: 0; pointer-events: none; }
+/* the page's own corners (no navbar, Murci 2026-10-27): home (the Nexera mark) top-left, the XP chip top-right, above the path */
+.ind-hero > .ind-home, .ind-hero > .ind-xp { position: absolute; top: 12px; z-index: 4; }
+.ind-hero > .ind-home { left: 12px; margin: 0; background: rgba(3, 12, 36, 0.55); border-radius: 14px; }
+.ind-hero > .ind-xp { right: 12px; height: 36px; background: rgba(3, 12, 36, 0.55); }   /* no glow under the professional (Murci 2026-10-26) */
 .ind-pro > .ind-pro-media { position: absolute; left: 50%; bottom: -8px; height: 96%; width: auto; aspect-ratio: 2 / 3; transform: translateX(-50%); filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
   -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }   /* the cut-out ends at the waist: fade it */
 /* the person and their hologram share one 2:3 frame (as on the Nexera hero); the hologram floats over the cupped hands: 16 px up,
@@ -631,37 +635,45 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-mapbox > .ind-mapbox-s { font-size: 12.5px; line-height: 1.35; color: #b9cdf0; }
 .ind-mapbox:focus-visible { outline: 3px solid #81b1ff; outline-offset: -4px; border-radius: 24px; }
 @media (hover: hover) and (pointer: fine) { .ind-mapbox:hover > .ind-mapbox-art { opacity: 0.75; } }   /* the path lights up: it is the button */
-.ind-intro { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 4px; align-items: center; }   /* no icon (Murci 2026-10-27: they took a lot of space) */
-.ind-intro > .ind-name { grid-row: 1; margin: 0; font-size: clamp(22px, 3vw, 32px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #eef3ff; }
+/* the practice panel's rhythm (Murci 2026-10-27: use all the space, calmer, easy to read, real margins): a column - the
+   information on top, the practice block pinned to the bottom (margin-top: auto) - with clear gaps between the groups */
+.ind-intro { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.ind-intro > .ind-name { margin: 0; font-size: clamp(22px, 3vw, 32px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #eef3ff; }
 /* the practice panel (Murci picked B, 2026-10-27): 1 Level, 2 Subject, 3 Paper, then the chosen paper with its buttons */
-.ind-intro > .ind-pick, .ind-intro > .ind-act, .ind-intro > .ind-subj-note { grid-column: 1 / -1; }
-.ind-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.ind-practise { margin-top: auto; padding-top: 6px; display: flex; flex-direction: column; gap: 14px; }   /* action at the bottom */
+.ind-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .ind-step { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.ind-step > .ind-step-k { font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em; color: #9fb0dd; }
-.ind-sel { box-sizing: border-box; width: 100%; min-height: 40px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(129, 177, 255, 0.35);
-  background: #0a1534; color: #ffffff; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.ind-step > .ind-step-k { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #9fb0dd; }
+.ind-sel { box-sizing: border-box; width: 100%; min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(129, 177, 255, 0.35);
+  background: #0a1534; color: #ffffff; font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; }
 .ind-sel option, .ind-sel optgroup { background: #0d1a3f; color: #ffffff; }
 .ind-sel:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (pointer: coarse) { .ind-sel { min-height: 44px; font-size: 16px; } }   /* a finger's target; 16 px stops iOS zooming */
 /* a phone: three across cut the choices off ("Grade…", "Physic…", "Nov 20…", 2026-10-27); level + subject side by side, the paper
    (the longest) a full row */
 @media (max-width: 599px) { .ind-pick { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ind-pick > .ind-step:nth-child(3) { grid-column: 1 / -1; } }
-.ind-intro > .ind-subj-note { margin: 0; font-size: 12.5px; color: #9fb0dd; }
-.ind-act { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-.ind-act > .ind-act-t { flex: 1 1 170px; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.ind-act-t > .ind-dtitle { font-size: 14.5px; color: #eef3ff; }
-.ind-act > .ind-act-b { display: flex; flex-wrap: wrap; gap: 8px; }
+.ind-practise .ind-subj-note { margin: 0; font-size: 12.5px; color: #9fb0dd; }
+/* the chosen paper: a soft inner card, its title and facts left, its buttons right */
+.ind-act { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 16px; border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); }
+.ind-act > .ind-act-t { flex: 1 1 180px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ind-act-t > .ind-dtitle { font-size: 15.5px; color: #eef3ff; }
+.ind-act > .ind-act-b { display: flex; flex-wrap: wrap; gap: 10px; }
 .ind-act-b .pm-go, .ind-act-b .pm-src { width: auto; margin: 0; min-height: 44px; padding: 0 18px; }
 .ind-soon .ind-soon-t { font-size: 13px; line-height: 1.45; color: #b8c4ea; }   /* a level with no papers yet: said in the panel */
-.ind-intro > .ind-blurb, .ind-intro > .ind-careers { grid-column: 1 / -1; margin: 0; font-size: 14px; line-height: 1.5; color: #b8c4ea; }
-.ind-careers > .ind-k { margin-right: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ic); }
+.ind-intro > .ind-blurb { margin: 0; font-size: 15px; line-height: 1.55; color: #b8c4ea; }
+/* careers as pills (Murci 2026-10-27): a short label, then one pill per career */
+.ind-intro > .ind-careers { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 2px 0 0; }
+.ind-careers > .ind-k { margin-right: 2px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ic); }
+.ind-careers > .ind-career { padding: 4px 11px; border-radius: 999px; border: 1px solid rgba(var(--ic-rgb), 0.35); background: rgba(var(--ic-rgb), 0.08);
+  font-size: 13px; font-weight: 600; color: #dfe6ff; white-space: nowrap; }
 .ind-after { --sc: #93a4d6; --sc-rgb: 147, 164, 214; display: flex; flex-direction: column; gap: 8px; }
 .ind-after > .ind-sec-name { margin: 0; font-size: 16.5px; font-weight: 800; color: #eef3ff; }
 .ind-note { margin: 0; font-size: 12.5px; line-height: 1.45; color: #9fb0dd; }
 .ind-re { display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; color: #b8c4ea; }
 .ind-re > b { min-width: 42px; color: var(--ic); }
 /* After school (Finance), inside the panel (2026-10-27: on its own it pushed the page past the screen): a compact block */
-.ind-intro > .ind-after { grid-column: 1 / -1; gap: 4px; margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.ind-intro > .ind-after { gap: 4px; margin-top: 4px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .ind-intro > .ind-after > .ind-sec-name { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ic); }
 .ind-intro > .ind-after .ind-re { font-size: 12.5px; }
 .ind-after-body { display: flex; flex-direction: column; gap: 4px; }
@@ -739,15 +751,18 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
      the panel without its blurb (the name + careers carry it; tablet and desktop keep it), so the professional gets the height */
   .ind { grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "pro" "intro"; row-gap: 10px; }
   .ind .ind-intro > .ind-blurb { display: none; }
-  .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 12px 14px; }
+  .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 14px 16px; gap: 8px; }
+  .ind .ind-practise { gap: 10px; }
+  .ind .ind-act { padding: 12px 14px; }
+  .ind-careers > .ind-career { padding: 3px 9px; font-size: 12.5px; }
   .ind .ind-intro > .ind-name { font-size: clamp(20px, 5.6vw, 24px); }
   .ind .ind-mapbox { padding: 10px 14px; }
 }
 @media (min-width: 600px) {
   /* the path card on the left, the practice panel on the right; both take the screen's leftover height (no scroll) */
   .ind { grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: minmax(0, 1fr); grid-template-areas: "pro intro"; column-gap: 16px; }
-  .ind .ind-intro { align-self: stretch; align-content: safe center; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
-  .ind .ind-intro > .ind-name { font-size: clamp(20px, 1.9vw, 26px); }
+  .ind .ind-intro { align-self: stretch; overflow: hidden; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 22px; padding: clamp(20px, 2.2vw, 30px); gap: 12px; }
+  .ind .ind-intro > .ind-name { font-size: clamp(24px, 2.3vw, 32px); }
 }
 @media (min-width: 1100px) {
   .ind { grid-template-columns: minmax(0, 1fr) 640px; }   /* the panel wider (Murci 2026-10-27; was 240, tablet 200) */

@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=139">
+  <link rel="stylesheet" href="nx-map.css?v=141">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -114,15 +114,8 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
       </button>
     </sc-if>
-    <sc-if value="{{ logoHome }}" hint-placeholder-val="{{ false }}">
-      <button type="button" class="pm-home" data-home="true" onClick="{{ goHome }}" aria-label="Home"><img src="assets/nexera-mark.png" alt="" width="28" height="28" /></button>
-    </sc-if>
     <sc-if value="{{ logoPlain }}" hint-placeholder-val="{{ true }}">
       <img src="assets/nexera-mark.png" alt="Nexera" style="width:28px; height:28px; display:{{ markDisplay }}" />
-    </sc-if>
-    <sc-if value="{{ mapHead }}" hint-placeholder-val="{{ false }}">
-      <span class="pm-head" style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; min-height:44px">
-      </span>
     </sc-if>
     <sc-if value="{{ notMapHead }}" hint-placeholder-val="{{ true }}">
     <span style="flex:1; min-width:0; display:flex; flex-direction:column">
@@ -404,6 +397,9 @@
              centred modal), then the industry's subjects with their papers; a paper's details open in place under its row -->
         <section class="ind" data-ind="true" aria-labelledby="ind-name">
           <div class="ind-hero">
+            <!-- no navbar on this page (Murci 2026-10-27): the Nexera mark (home) and the XP chip sit in this card's top corners -->
+            <button type="button" class="pm-home ind-home" data-home="true" onClick="{{ goHome }}" aria-label="Home"><img src="assets/nexera-mark.png" alt="" width="28" height="28" /></button>
+            <span class="xp-chip ind-xp" title="XP earned" aria-label="{{ xp }} XP"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ xp }}</span><span>XP</span></span>
             <figure class="ind-pro">
               <span class="ind-pro-media">
                 <img class="ind-pro-person" src="assets/pro/{{ indPro }}-person.webp" alt="" decoding="async">
@@ -423,58 +419,8 @@
           <div class="ind-intro">
             <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
-            <p class="ind-careers"><b class="ind-k">Careers</b> {{ indCareers }}</p>
-            <!-- the practice panel (Murci picked B, 2026-10-27): three steps, then the chosen paper and its buttons. The newest
-                 paper of the subject shown is chosen until the learner picks, so Start always has a paper -->
-            <div class="ind-pick">
-              <label class="ind-step"><span class="ind-step-k">1 · Level</span>
-                <select class="ind-sel ind-lvsel" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
-                  <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
-                    <optgroup label="{{ g.label }}">
-                      <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
-                    </optgroup>
-                  </sc-for>
-                </select>
-              </label>
-              <label class="ind-step"><span class="ind-step-k">2 · Subject</span>
-                <select class="ind-sel" value="{{ indSubjVal }}" onChange="{{ indSubjPick }}">
-                  <sc-for list="{{ indSubjOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
-                </select>
-              </label>
-              <label class="ind-step"><span class="ind-step-k">3 · Paper</span>
-                <select class="ind-sel" value="{{ indPaperVal }}" onChange="{{ indPaperPick }}">
-                  <sc-if value="{{ indHasPapers }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ indPaperOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></sc-if>
-                  <sc-if value="{{ indNoPapers }}" hint-placeholder-val="{{ false }}"><option value="">No papers yet</option></sc-if>
-                </select>
-              </label>
-            </div>
-            <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
-            <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
-              <div class="ind-act" data-inddetail="true">
-                <div class="ind-act-t">
-                  <b class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</b>
-                  <span class="ind-facts"><sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3"><span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span></sc-for></span>
-                  <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
-                  <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><span class="pm-sheet-note">{{ pmSheetNote }}</span></sc-if>
-                </div>
-                <div class="ind-act-b">
-                  <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
-                  <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake<span>Marks only · no XP</span></button></sc-if>
-                  <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src" onClick="{{ pmSourceGo }}">View paper</button></sc-if>
-                </div>
-              </div>
-            </sc-if>
-            <!-- a level (or a TVET industry) with no papers yet says so here, where its paper and Start would be (2026-10-27: as a
-                 separate card it squeezed this panel into what was left and cut its title off) -->
-            <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
-              <div class="ind-act ind-soon" data-pmempty="true" role="status">
-                <div class="ind-act-t">
-                  <b class="ind-dtitle">{{ pmEmptyTitle }}</b>
-                  <span class="ind-soon-t">{{ pmEmptyText }}</span>
-                </div>
-                <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
-              </div>
-            </sc-if>
+            <!-- careers as pills (Murci 2026-10-27: calmer, easier to read than one run-on line) -->
+            <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><span class="ind-career">{{ cr.name }}</span></sc-for></div>
             <!-- After school (Finance), inside the panel (2026-10-27): on its own it pushed the page past the screen -->
             <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
               <section class="ind-after" aria-labelledby="ind-after-title">
@@ -489,6 +435,60 @@
                 </div>
               </section>
             </sc-if>
+            <!-- the practice block, pinned to the panel's bottom: information above, action below (Murci 2026-10-27) -->
+            <div class="ind-practise">
+              <!-- the practice panel (Murci picked B, 2026-10-27): three steps, then the chosen paper and its buttons. The newest
+                   paper of the subject shown is chosen until the learner picks, so Start always has a paper -->
+              <div class="ind-pick">
+                <label class="ind-step"><span class="ind-step-k">1 · Level</span>
+                  <select class="ind-sel ind-lvsel" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
+                    <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
+                      <optgroup label="{{ g.label }}">
+                        <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                      </optgroup>
+                    </sc-for>
+                  </select>
+                </label>
+                <label class="ind-step"><span class="ind-step-k">2 · Subject</span>
+                  <select class="ind-sel" value="{{ indSubjVal }}" onChange="{{ indSubjPick }}">
+                    <sc-for list="{{ indSubjOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                  </select>
+                </label>
+                <label class="ind-step"><span class="ind-step-k">3 · Paper</span>
+                  <select class="ind-sel" value="{{ indPaperVal }}" onChange="{{ indPaperPick }}">
+                    <sc-if value="{{ indHasPapers }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ indPaperOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></sc-if>
+                    <sc-if value="{{ indNoPapers }}" hint-placeholder-val="{{ false }}"><option value="">No papers yet</option></sc-if>
+                  </select>
+                </label>
+              </div>
+              <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
+              <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
+                <div class="ind-act" data-inddetail="true">
+                  <div class="ind-act-t">
+                    <b class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</b>
+                    <span class="ind-facts"><sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3"><span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span></sc-for></span>
+                    <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
+                    <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><span class="pm-sheet-note">{{ pmSheetNote }}</span></sc-if>
+                  </div>
+                  <div class="ind-act-b">
+                    <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
+                    <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake<span>Marks only · no XP</span></button></sc-if>
+                    <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src" onClick="{{ pmSourceGo }}">View paper</button></sc-if>
+                  </div>
+                </div>
+              </sc-if>
+              <!-- a level (or a TVET industry) with no papers yet says so here, where its paper and Start would be (2026-10-27: as a
+                   separate card it squeezed this panel into what was left and cut its title off) -->
+              <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
+                <div class="ind-act ind-soon" data-pmempty="true" role="status">
+                  <div class="ind-act-t">
+                    <b class="ind-dtitle">{{ pmEmptyTitle }}</b>
+                    <span class="ind-soon-t">{{ pmEmptyText }}</span>
+                  </div>
+                  <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
+                </div>
+              </sc-if>
+            </div>
           </div>
         </section>
       </div>
@@ -3306,7 +3306,7 @@ class Component extends DCLogic {
       // for presentations, not product behaviour
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
-      indName: ind.name, indBlurb: ind.blurb, indCareers: ind.careers.join(" · "), indC: ind.c, indRgb: ind.rgb, indPro: ind.pro,
+      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indC: ind.c, indRgb: ind.rgb, indPro: ind.pro,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
       indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",
@@ -6053,7 +6053,7 @@ class Component extends DCLogic {
     const backHome = focus => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null }, () => { window.scrollTo(0, 0); focus(); done(); });
       if (s.screen === "map" && s.pmInd) this.indMorph("back", s.pmInd, back); else back(() => {}); };   /* the industry page shrinks into its card */
     return {
-      headerDisplay: s.screen === "pick" || s.screen === "play" ? "none" : "flex",
+      headerDisplay: s.screen === "pick" || s.screen === "play" || s.screen === "map" ? "none" : "flex",   /* the industry page: no navbar (Murci 2026-10-27) */
       // Direction A (2026-10-25): the companion rides on the subject cards, so the home's robot stage and its two-column landscape
       // tablet split give way to one column (the stage's values below stay until the platform port deletes them)
       homeDisplay: "flex", stageDisplay: "none",
@@ -6192,7 +6192,7 @@ class Component extends DCLogic {
       pad: phone ? "16px" : "28px", h1Size: phone ? "26px" : "34px", stemSize: phone ? "17px" : "19px",
       backTextDisplay: phone ? "none" : "inline", markDisplay: s.screen === "pick" || !phone ? "block" : "none", meterDisplay: phone ? "none" : "flex",
       showBack: !!bk, backLabel: bk ? bk[0] : "", goBack: bk ? bk[1] : () => {},
-      logoHome: s.screen === "map", logoPlain: s.screen !== "map",
+      logoPlain: s.screen !== "map",
       // back home the deck starts at its first card: bring this industry's card into view (start: where the deck snaps) and focus it
       goHome: () => backHome(() => { const c = s.pmInd && document.querySelector('[data-hmcard="' + s.pmInd + '"]');
         if (c) { c.scrollIntoView({ inline: "start", block: "nearest" }); c.focus({ preventScroll: true }); } }),
@@ -6227,7 +6227,7 @@ class Component extends DCLogic {
       onDrillOut: s.screen === "drillout" && !!s.drill,
       // Brief 21: the map's controls live in the top bar; the map itself is never covered.
       headBg: s.screen === "map" && !!paper && !s.classicMap ? "rgba(" + (this.nxApp() ? NX_GROUND : MAP_GROUND).rgb + ",0.97)" : "rgba(var(--nx-c, 25,27,30),0.97)",
-      mapHead: s.screen === "map", notMapHead: s.screen !== "map",
+      notMapHead: s.screen !== "map",
       mapHeadSub: ((s.mapView || "paper") === "topics" ? "Topics" : "Paper") + " · " + earned + " of " + total + " marks",
       ctInfoOpen: s.pop === "ctinfo", ctInfoBg: s.pop === "ctinfo" ? "rgba(255,255,255,0.07)" : "transparent",
       toggleCtInfo: () => s.pop === "ctinfo" ? this.closeLayer() : this.setState({ pop: "ctinfo" }),
