@@ -877,3 +877,13 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 }
 ::view-transition-group(ind-doc) { animation-duration: 620ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
 ::view-transition-old(ind-doc), ::view-transition-new(ind-doc) { height: 100%; object-fit: cover; }
+
+/* The open spins (Murci 2026-10-27: "make our industry cards fold transition to rotate 360 degrees"): while the home card grows
+   into its page, the card, its professional and its title each turn one full turn on the vertical axis, in step with the grow
+   (same length and easing, so the turn settles as the page lands). On the image pairs, not the groups: a group's transform is
+   the browser's own size-and-place animation, and a second transform there would replace it. Back stays a plain shrink. */
+@media (prefers-reduced-motion: no-preference) {
+  .vt-ind:not(.vt-back)::view-transition-image-pair(ind-card) { animation: nxvt-corner 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both, nxvt-spin 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .vt-ind:not(.vt-back)::view-transition-image-pair(ind-pro), .vt-ind:not(.vt-back)::view-transition-image-pair(ind-title) { animation: nxvt-spin 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+}
+@keyframes nxvt-spin { from { transform: perspective(1600px) rotateY(0deg); } to { transform: perspective(1600px) rotateY(360deg); } }
