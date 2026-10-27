@@ -740,7 +740,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-next > svg { animation: nxe-nudge 1.8s ease-in-out infinite; }
 .hm-next:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @keyframes nxe-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
-.hm-next[data-end="true"] { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .hm-next > svg { animation: none; } }
 
 /* -- The industry page's layout (Murci picked 2026-10-25, of three designs): B Stage on a phone, A Split from a tablet up.

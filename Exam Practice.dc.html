@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=150">
+  <link rel="stylesheet" href="nx-map.css?v=151">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -241,8 +241,8 @@
             <sc-for list="{{ hmCards }}" as="c" hint-placeholder-count="5">
               <!-- the slot snaps, the card inside it glides: snapping read the gliding card's pinned position as a snap point
                    (the deck could not scroll back to its start, 2026-10-26 QA) -->
-              <div class="hm-slot">
-              <button type="button" class="hm-card" data-hmcard="{{ c.key }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
+              <div class="hm-slot" aria-hidden="{{ c.copy }}">
+              <button type="button" class="hm-card" data-hmcard="{{ c.real }}" data-hmkey="{{ c.key }}" tabIndex="{{ c.tab }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
                 <span class="hm-art">
                   <img class="ind-pro-person" src="assets/pro/{{ c.pro }}-person.webp" alt="" loading="lazy" decoding="async">
                   <img class="ind-pro-obj" src="assets/pro/{{ c.pro }}-object.webp" alt="" loading="lazy" decoding="async">
@@ -261,8 +261,8 @@
               </div>
             </sc-for>
           </div>
-          <!-- the way the cards slide (Murci 2026-10-25): an arrow at their end, nudging gently; it slides one card on, and fades at the last -->
-          <button type="button" class="hm-next" data-hmnext="true" data-end="{{ hmDeckEnd }}" onClick="{{ hmDeckNext }}" aria-label="More industries"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+          <!-- the way the cards slide (Murci 2026-10-25): an arrow at their end, nudging gently; it slides one card on (the deck loops: no last card) -->
+          <button type="button" class="hm-next" data-hmnext="true" onClick="{{ hmDeckNext }}" aria-label="More industries"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
           </div>
         </div>
       </div>
@@ -2451,8 +2451,19 @@ class Component extends DCLogic {
     this._bp.sync({ value: s.build, locked: locked, items: items, itemsFor: items && this._lastAns && this._lastAns.key === part.key ? this._lastAns.v : null }); }
   // the arrow knows the deck's end without waiting for a scroll (2026-10-26 QA: on a wide screen all five cards fit, nothing
   // scrolls, and the arrow showed and did nothing); runs after each render, so a resize or a widened card is seen too
-  deckEndSync() { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
-    const end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8; if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); }
+  // the loop (Murci 2026-10-27: the cards gone round the bend "continue scrolling on the other side and appear once again
+  // following the last industry card"): the deck holds the industries three times and rests in the middle set. When a scroll
+  // stops outside it, the deck jumps by exactly one set: the same cards in the same places (the bend is worked out from
+  // position), so the jump cannot be seen. Only on a stop: a jump mid-swipe kills a phone's momentum. scrollend (Chrome 114,
+  // Firefox 109, Safari 26.2); older Safari: 180 ms without a scroll event. A new deck (first render, back home) starts on
+  // the middle set. snip: a fling longer than one whole set still stops at the deck's hard end (27 cards); add a 5th set if seen.
+  hmLoop(onlyNew) { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
+    const slots = [...d.children].filter(e => e.classList.contains("hm-slot")), n = slots.length / 3; if (n < 2 || n % 1) return;
+    const set = slots[n].offsetLeft - slots[0].offsetLeft, step = slots[1].offsetLeft - slots[0].offsetLeft; if (!set || !step) return;   /* not laid out yet */
+    if (!d._loop) { d._loop = true; d.scrollLeft += set; d.addEventListener("scrollend", () => this.hmLoop()); return; }   /* a new deck: onto the middle set */
+    if (onlyNew) return;   /* a re-render never moves a deck that may be mid-scroll */
+    const i = Math.round(d.scrollLeft / step); if (i < n) d.scrollLeft += set; else if (i >= 2 * n) d.scrollLeft -= set; else return;
+    this.hmBend(); }
   // the bend (Murci 2026-10-26: the cards slid past should "truly look like a bend they go into"; 2026-10-27: "as soon as they
   // hit the curve/bend the cards need to bend also in the same angle as the bend"). One curve, and the cards ride it: the row
   // runs straight to the deck's start, then the path turns away into the screen, its direction easing from 0 to 80deg over the
@@ -2501,7 +2512,7 @@ class Component extends DCLogic {
     box.style.setProperty("--belly-l", Math.round(Math.max(24, (stop - t.offsetWidth) / 2) - c.left) + "px");
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
-    this.deckEndSync(); this.hmBend();
+    this.hmLoop(true); this.hmBend();
     this.bellySync();
     this.buildSync();
     this.progSync();
@@ -3139,7 +3150,7 @@ class Component extends DCLogic {
   // the screen and calls done once the new one is in the DOM. No View Transitions, or reduced motion: the plain switch.
   indMorph(dir, key, update) {
     if (!document.startViewTransition || this.state.reduced || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { update(() => {}); return; }
-    const name = on => { const c = document.querySelector('[data-hmcard="' + key + '"]');
+    const from = this._hmFrom; this._hmFrom = null; const name = on => { const c = from && from.isConnected && from.dataset.hmkey === key ? from : document.querySelector('[data-hmcard="' + key + '"]');   /* the card tapped: maybe a copy (the loop) */
       [[c, "ind-card"], [c && c.querySelector(".hm-art"), "ind-pro"], [c && c.querySelector(".hm-cname"), "ind-title"],
         [document.querySelector(".pm-bg"), "ind-card"], [document.querySelector(".ind-pro-media"), "ind-pro"], [document.getElementById("ind-name"), "ind-title"]]
         .forEach(([el, n]) => { if (el) el.style.viewTransitionName = on ? n : ""; }); };
@@ -4951,8 +4962,8 @@ class Component extends DCLogic {
       this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); };
     // the cards are industries (Murci 2026-10-25): a card opens its industry's page, the second page
     // focus follows the move (2026-10-26 QA: it fell to the page body both ways): the industry's title, then its card on Back
-    const go = key => this.indMorph("in", key, done => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false, hmDeckEnd: false });
-      this.pmGoMap(() => { const t = document.getElementById("ind-name"); if (t) t.focus({ preventScroll: true }); done(); }); });   /* back home, the deck starts at its first card again: so does the arrow */
+    const go = (key, from) => { this._hmFrom = from || null; this.indMorph("in", key, done => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false });
+      this.pmGoMap(() => { const t = document.getElementById("ind-name"); if (t) t.focus({ preventScroll: true }); done(); }); }); };
     return {
       // the school-level pill on the home (Murci 2026-10-26): it reads "Secondary school · Grade 12"; its native menu groups the
       // levels by school; set once, every industry page follows it. A value is "qualification:level".
@@ -4962,21 +4973,21 @@ class Component extends DCLogic {
       hmLvVal: lv.qualification + ":" + lv.level,
       hmLvPick: e => { const v = (e.target.value || "").split(":"); if (v.length === 2 && (v[0] !== lv.qualification || v[1] !== lv.level)) save(v[0], v[1]); },
       hmHasNote: !!s.hmNote, hmNote: s.hmNote || "", hmXpTotal: s.xp || HOME.me.xp_total,
-      hmCards: INDUSTRIES.map(ind => { const names = indSubjects(ind, lv).map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
+      hmCards: [0, 1, 2].flatMap(copy => INDUSTRIES.map(ind => { const names = indSubjects(ind, lv).map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
         const withPapers = names.filter(n => ps.some(p => p.subject === n)).length;
         const done = ps.filter(p => { const g = this.pmProgress(p); return g && g.done; }).length, open = s.hmOpen === ind.key;
-        return { key: ind.key, pro: ind.pro, name: ind.name, c: ind.c, rgb: ind.rgb, icon: ind.icon, open: open ? "true" : "false", xp: this.xpTally(s)[ind.key] || 0,
+        return { key: ind.key, real: copy === 1 ? ind.key : "", copy: copy === 1 ? "false" : "true", tab: copy === 1 ? "0" : "-1",   /* the middle set is the real one */
+          pro: ind.pro, name: ind.name, c: ind.c, rgb: ind.rgb, icon: ind.icon, open: open ? "true" : "false", xp: this.xpTally(s)[ind.key] || 0,
           meta: withPapers + (withPapers === 1 ? " subject · " : " subjects · ") + ps.length + (ps.length === 1 ? " paper" : " papers") + (done ? " · " + done + " done" : ""),
           meta2: ind.careers.join(" · "),
           hasMeter: done > 0, pct: ps.length ? Math.round(done / ps.length * 100) + "%" : "0%",
           // a mouse opens a card by hovering (Murci 2026-10-25), so its click goes straight in; a touch screen taps to open, then to go
-          tap: () => { if (open || window.matchMedia("(hover: hover) and (pointer: fine)").matches) { go(ind.key); return; }
-            this.setState({ hmOpen: ind.key, hmNote: "" }, () => { const el = document.querySelector('[data-hmcard="' + ind.key + '"]');   /* an opened card is read whole: in view after its width grows */
-              if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; }),
-      // the arrow at the cards' end: slides one card on; at the last card it fades (the deck reports its scroll)
-      hmDeckEnd: s.hmDeckEnd ? "true" : "false",
-      hmDeckScroll: e => { if (!this._bendRaf) this._bendRaf = requestAnimationFrame(() => { this._bendRaf = 0; this.hmBend(); });   /* once per frame (Murci 2026-10-27: "not jam") */ const d = e.target, end = d.scrollLeft + d.clientWidth >= d.scrollWidth - 8;
-        if (end !== !!this.state.hmDeckEnd) this.setState({ hmDeckEnd: end }); },
+          tap: e => { const me = e && e.currentTarget; if (open || window.matchMedia("(hover: hover) and (pointer: fine)").matches) { go(ind.key, me); return; }
+            this.setState({ hmOpen: ind.key, hmNote: "" }, () => { const el = me && me.isConnected ? me : document.querySelector('[data-hmcard="' + ind.key + '"]');   /* an opened card is read whole: in view after its width grows */
+              if (el) setTimeout(() => el.scrollIntoView({ behavior: s.reduced ? "auto" : "smooth", inline: "nearest", block: "nearest" }), 340); }); } }; })),
+      // the arrow at the cards' end: slides one card on (the deck loops, so it never fades)
+      hmDeckScroll: e => { if (!this._bendRaf) this._bendRaf = requestAnimationFrame(() => { this._bendRaf = 0; this.hmBend(); });   /* once per frame (Murci 2026-10-27: "not jam") */
+        if (!("onscrollend" in window)) { clearTimeout(this._loopT); this._loopT = setTimeout(() => this.hmLoop(), 180); } },   /* older Safari: a stop = 180 ms quiet */
       hmDeckNext: () => { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")), sl = d ? d.querySelectorAll(".hm-slot") : [];
         if (d) d.scrollBy({ left: sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : 132,   /* one card on (the overlap differs per device) */ behavior: s.reduced ? "auto" : "smooth" }); },
       ...this.hmSearchVals(s, L, go) };
@@ -4999,7 +5010,7 @@ class Component extends DCLogic {
     const qPap = !q ? [] : L.papers.filter(p => indOfSubj(p.subject) && has((p.subject + " " + alias(p.subject) + " paper " + (pnoOf(p) || "") + " p" + (pnoOf(p) || "") + " " + p.sitting + " " + p.year).toLowerCase()))
       .sort((a, b) => (a.subject === "Mathematical Literacy" && !/lit/.test(q) ? 1 : 0) - (b.subject === "Mathematical Literacy" && !/lit/.test(q) ? 1 : 0))   /* "maths": Mathematics first, Maths Lit after (unless "lit" is typed) */
       .slice(0, 6).map(p => ({ title: p.subject + (pnoOf(p) ? " · Paper " + pnoOf(p) : ""), sub: p.sitting,
-        go: () => { this.setState({ hmQ: "", pmInd: indOfSubj(p.subject).key, hmOpen: null, pmMapOpen: false, hmDeckEnd: false }); this.pmGoMap(() => this.pmOpenPaper(p.id)); } }));
+        go: () => { this.setState({ hmQ: "", pmInd: indOfSubj(p.subject).key, hmOpen: null, pmMapOpen: false }); this.pmGoMap(() => this.pmOpenPaper(p.id)); } }));
     const groups = [qInd.length ? { label: "Industries", items: qInd } : null, qPap.length ? { label: "Past papers", items: qPap } : null].filter(Boolean);
     const walk = (from, d) => { const all = [...document.querySelectorAll(".hm-q-item")], i = all.indexOf(from);
       if (i + d < 0) { const inp = document.querySelector(".hm-q"); if (inp) inp.focus(); return; } if (all[i + d]) all[i + d].focus(); };
