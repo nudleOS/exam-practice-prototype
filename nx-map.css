@@ -786,18 +786,20 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
      stage's left, where the text was. No papers: no map box, the text box heads the column */
-  .ind { grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
+  .ind { grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
   .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
-  .ind .ind-intro { align-self: start; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
+  .ind .ind-intro { align-self: stretch; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
   .ind .ind-intro > .ind-name { grid-row: 2; grid-column: 1 / -1; font-size: clamp(20px, 1.9vw, 26px); }   /* the icon above it: beside it, "Manufacturing" ran out of the 240 px box */
   .ind-pro > .ind-pro-media { left: 30%; }   /* where the text was */
   .ind .ind-pro { height: auto; min-height: 0; }   /* the leftover height beside the right column (no scroll, 2026-10-27) */
-  .ind-mapbox > .ind-mapbox-art { max-height: clamp(64px, 16dvh, 130px); }   /* shorter on a short screen (no scroll) */   /* the wider column (2026-10-27) grew the drawing ~250 px tall and pushed the text box down */
+  .ind-mapbox > .ind-mapbox-art { max-height: clamp(56px, 12dvh, 110px); }   /* shorter on a short screen (no scroll); a little shorter still so the careers box can grow (2026-10-27) */
+  .ind-mapbox { justify-self: end; width: 400px; max-width: 100%; }   /* the careers box widens, not the map box (Murci 2026-10-27) */   /* the wider column (2026-10-27) grew the drawing ~250 px tall and pushed the text box down */
 }
 @media (min-width: 600px) and (max-width: 1099px) {
 }
 @media (min-width: 1100px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 560px; }   /* the text box wider (Murci 2026-10-27, four times; was 240, tablet 200) */
+  .ind { grid-template-columns: minmax(0, 1fr) 640px; }   /* the text box wider (Murci 2026-10-27, five times; was 240, tablet 200) */
+  .ind-mapbox { width: 560px; }   /* the map box keeps its width; only the careers box widened (Murci 2026-10-27) */
 }
 
 /* -- The card grows into its industry's page, and back (Murci 2026-10-26; indMorph in Exam Practice.dc.html). Three pairs: the
