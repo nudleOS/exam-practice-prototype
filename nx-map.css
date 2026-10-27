@@ -857,3 +857,21 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-right > .hm-xp-total { height: 34px; }
 .hm-card > .hm-card-xp { position: absolute; top: 10px; right: 10px; z-index: 3; height: 26px; padding: 0 9px; font-size: 12px;
   background: rgba(3, 12, 36, 0.62); pointer-events: none; }
+
+/* the original paper inside the practice panel (Murci 2026-10-27): a bar (Back, the paper's name, paper / memo, download), then
+   its pages scrolling inside the panel; the paper card grows into it (view transition "ind-doc"). A phone gives it the page */
+.ind-doc { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.ind-doc-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ind-doc-back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px 0 12px; border-radius: 12px;
+  border: 1px solid rgba(129, 177, 255, 0.35); background: rgba(3, 12, 36, 0.45); color: #eef3ff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.ind-doc-back:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.ind-doc-t { flex: 1 1 160px; min-width: 0; font-size: 15px; color: #eef3ff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ind-doc > .ind-doc-pages { padding: 0; border-radius: 12px; }
+.ind-doc > .pv-note { margin: 0; }
+.ind[data-doc="true"] .ind-intro { overflow: hidden; }
+@media (max-width: 759px) {   /* a phone: the reader takes the page while it is open */
+  .ind[data-doc="true"] { grid-template-rows: minmax(0, 1fr); grid-template-areas: "intro"; }
+  .ind[data-doc="true"] > .ind-hero { display: none; }
+}
+::view-transition-group(ind-doc) { animation-duration: 620ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+::view-transition-old(ind-doc), ::view-transition-new(ind-doc) { height: 100%; object-fit: cover; }
