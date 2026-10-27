@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=171">
+  <link rel="stylesheet" href="nx-map.css?v=173">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2484,7 +2484,8 @@ class Component extends DCLogic {
       const shade = t => (0.5 * dir(t) / MAX).toFixed(3), gone = r => { const q = Math.max(0, Math.min(1, (r - 0.6) / 0.35)); return 1 - q * q * (3 - 2 * q); };
       fx._strips.forEach((st, k) => { const tl = pad - x - k * w, tr = tl - w, B = pt(tr), a = Math.atan2(A[1] - B[1], B[0] - A[0]);
         put(st, "transform", "translate3d(" + (B[0] - x - (k + 1) * w).toFixed(2) + "px, 0, " + (-B[1]).toFixed(2) + "px) rotateY(" + (-a * 180 / Math.PI).toFixed(2) + "deg)");
-        put(st._dim, "opacity", (0.5 * a / MAX).toFixed(3)); A = B; }); }); }
+        put(st._dim, "background", "linear-gradient(to right, rgba(0, 0, 0, " + shade(tl) + "), rgba(0, 0, 0, " + shade(tr) + "))");
+        const o = gone(a / MAX); put(st, "opacity", o > 0.999 ? "" : o.toFixed(3)); A = B; }); }); }
   // a card's strips (built when it first crosses the curve, kept, rebuilt when the card's look changes): ~16 px windows onto
   // copies of the card, in a layer inside its slot. Copies are hidden from screen readers and inert; their floating
   // professional is held at the card's own pose (a copy's animation would start at 0: the strips would tear apart; and
