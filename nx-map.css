@@ -618,8 +618,12 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .pm-ico[data-icon="heart"] { --ico: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z%22/%3E%3Cpath d=%22M3.5 12h4l2-3 3 6 2-3h6%22/%3E%3C/svg%3E"); }
 
 .ind { --ic: #93a4d6; --ic-rgb: 147, 164, 214; box-sizing: border-box; width: 100%; max-width: 1100px; margin: 0 auto 32px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
-.ind-hero { display: contents; }   /* its children are the page's grid items: each design places them */
-.ind-pro { position: relative; margin: 0; height: clamp(300px, 50dvh, 480px); }   /* no glow under the professional (Murci 2026-10-26); a little larger (was up to 420) */
+/* the path card (Murci picked B, 2026-10-27): the professional stands in one card with their path drawn faintly behind them; the
+   map box is the whole card (a tap anywhere opens the map), its title and count on a shaded bar at the bottom. Layers: the path
+   (0), the professional (1, taps pass through), the bar's shade (2), the bar's words (3). No papers: the professional alone */
+.ind-hero { position: relative; isolation: isolate; min-height: 0; overflow: hidden; border-radius: 24px; border: 1px solid rgba(var(--ic-rgb), 0.35);
+  background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.1), rgba(3, 18, 44, 0.5)); }
+.ind-pro { position: absolute; inset: 0; z-index: 1; margin: 0; pointer-events: none; }   /* no glow under the professional (Murci 2026-10-26) */
 .ind-pro > .ind-pro-media { position: absolute; left: 50%; bottom: -8px; height: 96%; width: auto; aspect-ratio: 2 / 3; transform: translateX(-50%); filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
   -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }   /* the cut-out ends at the waist: fade it */
 /* the person and their hologram share one 2:3 frame (as on the Nexera hero); the hologram floats over the cupped hands: 16 px up,
@@ -629,12 +633,16 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   mix-blend-mode: screen; animation: nx-pro-obj 3.4s ease-in-out infinite; }   /* over the cupped hands: the hero's own box, measured */
 @keyframes nx-pro-obj { 0%, 100% { filter: brightness(0.95); transform: translateY(0) scale(1); } 50% { filter: brightness(1.18); transform: translateY(-16px) scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .ind-pro-media > .ind-pro-obj, .hm-art > .ind-pro-obj { animation: none; } }
-.ind-mapbox { align-self: start; min-height: 150px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 4px; padding: 12px; border-radius: 18px; text-align: left; cursor: pointer;
-  border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); color: #eef3ff; font: inherit; }
-.ind-mapbox > .ind-mapbox-art { width: 100%; height: auto; margin-bottom: auto; }   /* the real map in small: its colours are its own */
-.ind-mapbox > .ind-mapbox-t { font-size: 14px; font-weight: 800; }
-.ind-mapbox > .ind-mapbox-s { font-size: 11.5px; line-height: 1.35; color: #b9cdf0; }
-.ind-mapbox:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
+.ind-mapbox { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 2px; padding: 14px 18px;
+  border: 0; border-radius: 0; background: none; color: #eef3ff; font: inherit; text-align: left; cursor: pointer; }
+.ind-mapbox > .ind-mapbox-art { position: absolute; left: 6%; top: 6%; width: 88%; height: 70%; z-index: 0; opacity: 0.45; transition: opacity 200ms; }   /* the real map in small, faint */
+.ind-hero:has(> .ind-mapbox)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 96px; z-index: 2; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(3, 12, 36, 0.88)); }   /* the bar's shade, over the professional's waist */
+.ind-mapbox > .ind-mapbox-t, .ind-mapbox > .ind-mapbox-s { position: relative; z-index: 3; }
+.ind-mapbox > .ind-mapbox-t { font-size: 16px; font-weight: 800; }
+.ind-mapbox > .ind-mapbox-s { font-size: 12.5px; line-height: 1.35; color: #b9cdf0; }
+.ind-mapbox:focus-visible { outline: 3px solid #81b1ff; outline-offset: -4px; border-radius: 24px; }
+@media (hover: hover) and (pointer: fine) { .ind-mapbox:hover > .ind-mapbox-art { opacity: 0.75; } }   /* the path lights up: it is the button */
 .ind-intro { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 4px; align-items: center; }   /* no icon (Murci 2026-10-27: they took a lot of space) */
 .ind-intro > .ind-name { grid-row: 1; margin: 0; font-size: clamp(22px, 3vw, 32px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #eef3ff; }
 /* the practice panel (Murci picked B, 2026-10-27): 1 Level, 2 Subject, 3 Paper, then the chosen paper with its buttons */
@@ -663,16 +671,13 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-note { margin: 0; font-size: 12.5px; line-height: 1.45; color: #9fb0dd; }
 .ind-re { display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; color: #b8c4ea; }
 .ind-re > b { min-width: 42px; color: var(--ic); }
+/* After school (Finance), inside the panel (2026-10-27: on its own it pushed the page past the screen): a compact block */
+.ind-intro > .ind-after { grid-column: 1 / -1; gap: 4px; margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.ind-intro > .ind-after > .ind-sec-name { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ic); }
+.ind-intro > .ind-after .ind-re { font-size: 12.5px; }
 .ind-modal-wrap { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 12px; }
 .ind-modal { position: relative; z-index: 1; box-sizing: border-box; width: min(1000px, 100%); max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior: contain;
   padding: 14px 20px 20px; border-radius: 22px; background: #061a3a; border: 1px solid rgba(129, 177, 255, 0.25); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55); }
-@media (min-width: 600px) {
-  .ind-mapbox { min-height: 200px; padding: 16px; }   /* a SMALL box beside the professional (Murci 2026-10-25), never their full height */
-  .ind-mapbox > .ind-mapbox-t { font-size: 16px; }
-}
-@media (min-width: 1100px) {
-  .ind-pro { height: 480px; }
-}
 
 /* -- Home, 2026-10-25 (Murci): the cards start a quarter into the page and the companion stands in that first quarter as the page's
    backdrop (on a phone it is wider and the deck scrolls beside it). A mouse opens a card by hovering and a click goes in; on a
@@ -725,45 +730,26 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    Split: the professional large with the map as a small box beside them; the intro, then the subjects in two columns.
    2026-10-26 (Murci): on every size the name, blurb and careers sit at the stage's TOP-LEFT, layered over it, and the
    professional moves to the stage's RIGHT: read first, then see the person. */
-.ind-pro { grid-area: pro; }
-.ind-mapbox { grid-area: map; }
+.ind-hero { grid-area: pro; }
 .ind-intro { grid-area: intro; }
-.ind-after { grid-area: after; }
 
 @media (max-width: 599px) {
-  .ind { grid-template-rows: minmax(0, 1fr) auto auto auto; grid-template-areas: "pro" "map" "intro" "after"; }   /* the panel holds the steps (2026-10-27) */   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
-  .ind .ind-pro { height: auto; min-height: 0; overflow: hidden; border-radius: 24px; }   /* the screen's leftover height (no scroll, 2026-10-27; was 460-640 px) */   /* no glow; the professional a little larger (was 66dvh, max 580) */
-  /* the professional centred, where the text was (Murci 2026-10-27); the text is a box under the stage */
-  .ind .ind-pro > .ind-pro-media { left: 50%; height: 96%; }   /* the full stage: no text over it any more */
-  /* the page fits a phone with no scroll (2026-10-27): tighter gaps, a slim map row, and the careers box without its blurb (the
-     name + careers carry it; tablet and desktop keep the blurb), so the professional gets the height */
-  .ind { row-gap: 10px; }
-  .ind .ind-intro > .ind-blurb { display: none; }
-  .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
+  /* the path card, then the practice panel (Murci picked B, 2026-10-27). The page fits a phone with no scroll: tighter gaps and
+     the panel without its blurb (the name + careers carry it; tablet and desktop keep it), so the professional gets the height */
+  .ind { grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "pro" "intro"; row-gap: 10px; }
+  .ind .ind-intro > .ind-blurb, .ind .ind-intro > .ind-after > .ind-note { display: none; }
+  .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 12px 14px; }
   .ind .ind-intro > .ind-name { font-size: clamp(20px, 5.6vw, 24px); }
-  .ind .ind-intro { padding: 12px 14px; }
-  /* the map box: its own compact row under the stage, the text box under it (2026-10-27: on the stage's corner it covered the
-     centred professional's arm) - the small map left, its title and count right */
-  .ind .ind-mapbox { display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 12px; min-height: 0; padding: 8px 14px; }
-  .ind .ind-mapbox > .ind-mapbox-art { grid-row: 1 / 3; margin: 0; }
-  .ind .ind-mapbox > .ind-mapbox-t { align-self: end; }
-  .ind .ind-mapbox > .ind-mapbox-s { align-self: start; }
+  .ind .ind-mapbox { padding: 10px 14px; }
 }
 @media (min-width: 600px) {
-  /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
-     stage's left, where the text was. No papers: no map box, the text box heads the column */
-  .ind { grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "pro map" "pro intro" "after after"; column-gap: 16px; }
-  .ind:not(:has(.ind-mapbox)) { grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "pro intro" "after after"; }
+  /* the path card on the left, the practice panel on the right; both take the screen's leftover height (no scroll) */
+  .ind { grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: minmax(0, 1fr); grid-template-areas: "pro intro"; column-gap: 16px; }
   .ind .ind-intro { align-self: stretch; align-content: center; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
   .ind .ind-intro > .ind-name { font-size: clamp(20px, 1.9vw, 26px); }
-  .ind-pro > .ind-pro-media { left: 30%; }   /* where the text was */
-  .ind .ind-pro { height: auto; min-height: 0; }   /* the leftover height beside the right column (no scroll, 2026-10-27) */
-  .ind-mapbox > .ind-mapbox-art { max-height: clamp(56px, 12dvh, 110px); }   /* shorter on a short screen (no scroll); a little shorter still so the careers box can grow (2026-10-27) */
-  .ind .ind-mapbox { justify-self: end; width: 340px; max-width: 100%; min-height: 0; }   /* a bit narrower (Murci 2026-10-27; was 400) */   /* the careers box widens, not the map box; no 200 px floor, so the height goes to the careers box (Murci 2026-10-27) */
 }
 @media (min-width: 1100px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 640px; }   /* the text box wider (Murci 2026-10-27, five times; was 240, tablet 200) */
-  .ind .ind-mapbox { width: 480px; }   /* a bit narrower (Murci 2026-10-27; was 560) */   /* the map box keeps its width; only the careers box widened (Murci 2026-10-27) */
+  .ind { grid-template-columns: minmax(0, 1fr) 640px; }   /* the panel wider (Murci 2026-10-27; was 240, tablet 200) */
 }
 
 /* -- The card grows into its industry's page, and back (Murci 2026-10-26; indMorph in Exam Practice.dc.html). Three pairs: the
