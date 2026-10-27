@@ -748,7 +748,11 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-headblock { align-items: center !important; padding: 20px 16px 0 !important; }   /* centred on a phone (Murci 2026-10-26); 28 px from the search to the title */
   .hm-headblock > h1 { text-align: center !important; }
   .hm-choose > .hm-kickrow { margin-top: 10px; }
-  .hm-card { height: clamp(280px, calc(100dvh - 280px), 460px); }   /* the level pill's row is gone (it moved to the industry page, 2026-10-27) */
+  /* the companion larger and up, its head above the cards (Murci 2026-10-27; was 60% wide, its head ~160 px below the cards' top):
+     80% wide, its top 34 px into the section, lifted by its head's height (the head ends 22.5% down home-robot.webp, measured),
+     so the head's bottom sits 8 px above the cards on any phone height */
+  .hm-bgbot { left: -10%; top: 34px; bottom: auto; width: 80%; height: auto; transform: translateY(-22.5%); }
+  .hm-card { height: clamp(280px, calc(100dvh - 290px), 460px); }   /* the rest of a phone's home takes 290 px (measured 2026-10-27 on a 384x724 A04: with 280 the page ran 10 px past the screen and scrolled) */
 }
 
 /* the arrow at the cards' end (Murci 2026-10-25): the cards slide on every size, so a round button at their right end nudges 4 px
