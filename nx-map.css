@@ -775,7 +775,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) {
   /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
      stage's left, where the text was. No papers: no map box, the text box heads the column */
-  .ind { grid-template-columns: minmax(0, 1fr) 320px; grid-template-rows: auto auto 1fr auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
+  .ind { grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: auto auto 1fr auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
   .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto 1fr auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
   .ind .ind-intro { align-self: start; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
   .ind .ind-intro > .ind-name { grid-row: 2; grid-column: 1 / -1; font-size: clamp(20px, 1.9vw, 26px); }   /* the icon above it: beside it, "Manufacturing" ran out of the 240 px box */
@@ -785,7 +785,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (min-width: 600px) and (max-width: 1099px) {
 }
 @media (min-width: 1100px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 420px; }   /* the text box wider (Murci 2026-10-27, twice; was 240, tablet 200) */
+  .ind { grid-template-columns: minmax(0, 1fr) 480px; }   /* the text box wider (Murci 2026-10-27, three times; was 240, tablet 200) */
 }
 
 /* -- The card grows into its industry's page, and back (Murci 2026-10-26; indMorph in Exam Practice.dc.html). Three pairs: the
