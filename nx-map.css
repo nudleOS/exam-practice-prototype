@@ -893,9 +893,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-headblock > h1 { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap !important; }
 }
 
-/* XP on the home (Murci 2026-10-27): the total in the top bar; each industry card's own XP in its top-left corner (Murci 2026-10-27; was top-right) */
+/* XP on the home (Murci 2026-10-27): the total in the top bar; each industry card's own XP in its top-right corner (Murci 2026-10-27: back to the top right, after a spell top-left) */
 .hm-right > .hm-xp-total { height: 34px; }
-.hm-card > .hm-card-xp { position: absolute; top: 10px; left: 10px; z-index: 3; height: 26px; padding: 0 9px; font-size: 12px;
+.hm-card > .hm-card-xp { position: absolute; top: 10px; right: 10px; z-index: 3; height: 26px; padding: 0 9px; font-size: 12px;
   background: rgba(3, 12, 36, 0.62); pointer-events: none; }
 
 
