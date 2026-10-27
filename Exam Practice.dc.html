@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=148">
+  <link rel="stylesheet" href="nx-map.css?v=150">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2486,16 +2486,19 @@ class Component extends DCLogic {
       c.style.transform = "translateX(" + (R[0] - (x + W)).toFixed(1) + "px) " + P + "translateZ(" + (-R[1]).toFixed(1) + "px) rotateY(" + deg.toFixed(2) + "deg)";
       c.style.filter = "brightness(" + lit.toFixed(3) + ")";
       c.style.opacity = fade < 1 ? fade.toFixed(3) : ""; c.style.visibility = fade <= 0 ? "hidden" : ""; }); }
-  // the desktop title across the companion's belly: measure where the figure is drawn (contain, anchored at the feet) and set
-  // --belly-l / --belly-y on .hm-choose; centred on the belly, shifted left so it ends 16 px before the first card
+  // the desktop title: --belly-y at the companion's belly (measured where the figure is drawn: contain, anchored at the feet);
+  // --belly-l centres it across the space from the page's left edge to the bend (Murci 2026-10-27: equal room on both sides;
+  // was centred on the belly, ending 8 px before the bend)
   bellySync() { const live = sel => [...document.querySelectorAll(sel)].find(e => !e.closest("x-dc"));
     const box = live(".hm-choose"), bot = live(".hm-bgbot"), t = live(".hm-belly"), deck = live(".hm-deck");
     if (!box || !bot || !t || !deck || getComputedStyle(t).display === "none") return;
     if (!bot.complete || !bot.naturalWidth) { bot.addEventListener("load", () => this.bellySync(), { once: true }); return; }
     const b = bot.getBoundingClientRect(), c = box.getBoundingClientRect(), k = Math.min(b.width / bot.naturalWidth, b.height / bot.naturalHeight);
-    const dw = bot.naturalWidth * k, dh = bot.naturalHeight * k, dx = b.left + (b.width - dw) / 2, dy = b.bottom - dh;
-    const bx = dx + dw * 0.44, by = dy + dh * 0.45,   /* a bit lower (Murci 2026-10-26; was 0.39) */ w = t.offsetWidth, stop = deck.getBoundingClientRect().left - 8;   /* before the bend zone */
-    box.style.setProperty("--belly-l", Math.round(Math.max(24, Math.min(bx - w / 2, stop - w)) - c.left) + "px");   /* never past a 24 px gutter (1280 px: it reached x -5, 2026-10-26) */
+    const dh = bot.naturalHeight * k, dy = b.bottom - dh;
+    const by = dy + dh * 0.45,   /* a bit lower (Murci 2026-10-26; was 0.39) */ stop = deck.getBoundingClientRect().left;   /* the bend zone's outer edge: the bent cards reach it */
+    // at least 32 px each side: where the space is narrower than the title (1366 px: 333 px for 321), the title shrinks to fit
+    t.style.fontSize = ""; const w0 = t.offsetWidth, fit = Math.min(1, (stop - 64) / w0); if (fit < 1) t.style.fontSize = (parseFloat(getComputedStyle(t).fontSize) * fit).toFixed(1) + "px";
+    box.style.setProperty("--belly-l", Math.round(Math.max(24, (stop - t.offsetWidth) / 2) - c.left) + "px");
     box.style.setProperty("--belly-y", Math.round(by - c.top) + "px"); }
   componentDidUpdate() {
     this.deckEndSync(); this.hmBend();
