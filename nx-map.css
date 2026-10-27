@@ -866,7 +866,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   background: rgba(3, 12, 36, 0.62); pointer-events: none; }
 
 /* the original paper inside the practice panel (Murci 2026-10-27): a bar (Back, the paper's name, paper / memo, download), then
-   its pages scrolling inside the panel; the paper card grows into it (view transition "ind-doc"). A phone gives it the page */
+   its pages scrolling inside the panel; the paper card grows into it (view transition "ind-doc"). Murci 2026-10-27: it fills the panel's own box
+   and the box does not change - at every size (openPaperInPanel holds the panel's height while it is open; a phone no longer
+   hides the professional for it) */
 .ind-doc { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
 .ind-doc-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .ind-doc-back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px 0 12px; border-radius: 12px;
@@ -876,10 +878,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-doc > .ind-doc-pages { padding: 0; border-radius: 12px; }
 .ind-doc > .pv-note { margin: 0; }
 .ind[data-doc="true"] .ind-intro { overflow: hidden; }
-@media (max-width: 759px) {   /* a phone: the reader takes the page while it is open */
-  .ind[data-doc="true"] { grid-template-rows: minmax(0, 1fr); grid-template-areas: "intro"; }
-  .ind[data-doc="true"] > .ind-hero { display: none; }
-}
 ::view-transition-group(ind-doc) { animation-duration: 620ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
 ::view-transition-old(ind-doc), ::view-transition-new(ind-doc) { height: 100%; object-fit: cover; }
 

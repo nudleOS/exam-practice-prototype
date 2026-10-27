@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=159">
+  <link rel="stylesheet" href="nx-map.css?v=160">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2223,6 +2223,8 @@ class Component extends DCLogic {
   openPaperInPanel(id) {
     const paper = this.pmAllPapers().find(p => p.id === id); if (!paper || !paper.source_pdf) return;
     this._paperSourceOpener = document.activeElement;
+    // the paper fills the panel's box as it is: hold its height (on a phone the panel's height follows its content)
+    const box = document.querySelector(".ind-intro"); if (box) { box.style.boxSizing = "border-box"; box.style.height = box.offsetHeight + "px"; }   /* its outer height, as measured */   // snip: held at open; a resize while open keeps it (close + reopen refits)
     this.docMorph(true, done => this.setState({ paperSourceOpen: true, pvInPanel: true, paperSourceId: paper.id, paperSourcePage: 1, pvTab: "qp", pvNote: false },
       () => { this.pvScroll(false); const b = document.querySelector(".ind-doc-back"); if (b) b.focus({ preventScroll: true }); done(); }));
   }
@@ -2271,6 +2273,7 @@ class Component extends DCLogic {
   pvAtBottom() { return (this.state.vw || 800) < 1200; }
   closePaperSource() {
     if (this.state.pvInPanel) { this.docMorph(false, done => this.setState({ paperSourceOpen: false, pvInPanel: false, pvNote: false }, () => {
+      const box = document.querySelector(".ind-intro"); if (box) { box.style.height = ""; box.style.boxSizing = ""; }
       const opener = this._paperSourceOpener; this._paperSourceOpener = null; const t = document.querySelector("[data-pmsource]") || opener;
       if (t && document.body.contains(t)) t.focus({ preventScroll: true }); done(); })); return; }
     const unfold = !!this._pvFolded; this._pvFolded = false;
@@ -2613,7 +2616,9 @@ class Component extends DCLogic {
     this._lastScreen = scr;
     // the paper viewer: the page makes room (a phone: above the panel; wider: beside it, under the header), so nothing is covered
     const pvTuck = !!st.paperSourceOpen && this.pvAtBottom() && st.screen === "play" && st.kbOff > 80;   // typing: the bottom paper steps aside
-    const pvOn = !!st.paperSourceOpen && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
+    // the industry page reads the paper INSIDE its panel (pvInPanel): no side/bottom panel, so no room made for one (2026-10-27:
+    // pv-side's 560 px gap squeezed the whole industry page into its left half at 1366 px)
+    const pvOn = !!st.paperSourceOpen && !st.pvInPanel && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
     if (pvOn) document.querySelectorAll("[data-pvdrag]").forEach(el => this.pvBindDrag(el));
     if (pvKey !== this._pvKey) { this._pvKey = pvKey; document.body.classList.toggle("pv-tucked", pvTuck);
       document.body.classList.toggle("pv-bottom", pvOn && pvPhone); document.body.classList.toggle("pv-full", pvOn && pvPhone && !!st.pvFull);
