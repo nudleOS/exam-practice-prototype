@@ -270,6 +270,10 @@ body:has(.pv-drag[data-dragging]) { user-select: none; -webkit-user-select: none
 body.nx-play.pv-bottom.pv-tall [data-footer], body.nx-play.pv-bottom.pv-tall .mcqp .stage > .after { visibility: hidden; }
 /* F4 typing on a phone: the bottom paper steps aside (kept as it was) and comes back when the keyboard closes */
 body.pv-tucked .pv[data-layout="bottom"] { visibility: hidden; pointer-events: none; }
+/* the industry page: the paper rises inside the practice panel's box (Murci 2026-10-27), its size button takes it over the whole
+   page (pv-full, unchanged); the box's place and size are measured into --pv-box-* */
+body.pv-inbox .pv[data-layout="bottom"] { left: var(--pv-box-l); right: auto; width: var(--pv-box-w); bottom: var(--pv-box-b);
+  height: var(--pv-box-h); border: 1px solid rgba(129, 177, 255, 0.22); border-radius: 18px; overflow: hidden; }
 @media (max-width: 600px) { body.nx-play.pv-bottom [data-footer]:not(:has([data-keypad])), body.nx-play.pv-bottom .mcqp .stage > .after { bottom: var(--pv-h) !important; } }
 /* the paper button steps aside while the page is scrolled or the keyboard is up (it sat on the answer: measured on 2.1.4 at 360x640);
    it comes back at the top. Open, it stays: it is the paper's close too. */

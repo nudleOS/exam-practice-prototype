@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=166">
+  <link rel="stylesheet" href="nx-map.css?v=167">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2585,7 +2585,7 @@ class Component extends DCLogic {
     this._lastScreen = scr;
     // the paper viewer: the page makes room (a phone: above the panel; wider: beside it, under the header), so nothing is covered
     const pvTuck = !!st.paperSourceOpen && this.pvAtBottom() && st.screen === "play" && st.kbOff > 80;   // typing: the bottom paper steps aside
-    const pvOn = !!st.paperSourceOpen && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
+    const pvOn = !!st.paperSourceOpen && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + st.screen + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
     if (pvOn) document.querySelectorAll("[data-pvdrag]").forEach(el => this.pvBindDrag(el));
     if (pvKey !== this._pvKey) { this._pvKey = pvKey; document.body.classList.toggle("pv-tucked", pvTuck);
       document.body.classList.toggle("pv-bottom", pvOn && pvPhone); document.body.classList.toggle("pv-full", pvOn && pvPhone && !!st.pvFull);
@@ -2594,6 +2594,12 @@ class Component extends DCLogic {
       if (pvOn && !pvPhone && st.pvW) document.body.style.setProperty("--pv-w", Math.min(this.pvLimits(true).max, st.pvW) + "px"); else document.body.style.removeProperty("--pv-w");
       if (pvOn && pvPhone && st.pvH && !st.pvFull) document.body.style.setProperty("--pv-h", st.pvH + "px"); else document.body.style.removeProperty("--pv-h");
       document.body.classList.toggle("pv-tall", pvOn && pvPhone && (!!st.pvFull || (st.pvH || 0) > innerHeight * 0.6));
+      // the industry page (Murci 2026-10-27): the paper rises inside the practice panel's own box; its full-size button takes it
+      // over the whole page. The box is measured here (each size / screen change re-runs this)
+      const pvBox = pvOn && pvPhone && st.screen === "map" && !st.pvFull && [...document.querySelectorAll(".ind-intro")].find(e => !e.closest("x-dc"));
+      document.body.classList.toggle("pv-inbox", !!pvBox);
+      if (pvBox) { const r = pvBox.getBoundingClientRect(), bs = document.body.style;
+        bs.setProperty("--pv-box-l", r.left + "px"); bs.setProperty("--pv-box-w", r.width + "px"); bs.setProperty("--pv-box-b", (innerHeight - r.bottom) + "px"); bs.setProperty("--pv-box-h", r.height + "px"); }
       const hd = document.querySelector("[data-playhead]") || document.querySelector("header");
       document.body.style.setProperty("--pv-top", (pvOn && !pvPhone && hd ? Math.max(0, Math.round(hd.getBoundingClientRect().bottom)) : 0) + "px");
       requestAnimationFrame(() => window.dispatchEvent(new Event("resize"))); }
