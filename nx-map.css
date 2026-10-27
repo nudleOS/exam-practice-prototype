@@ -752,6 +752,12 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
      80% wide, its top 34 px into the section, lifted by its head's height (the head ends 22.5% down home-robot.webp, measured),
      so the head's bottom sits 8 px above the cards on any phone height */
   .hm-bgbot { left: -10%; top: 34px; bottom: auto; width: 80%; height: auto; transform: translateY(-22.5%); }
+  /* a card opened by a tap fits the screen from its place at the start (Murci's 36% start left 241 px at 384: the 260 px card ran
+     19 px off the edge, measured on a Galaxy A04 2026-10-27); start = 16 + 36% of (100vw - 32), 8 px to spare */
+  .hm-card[aria-expanded="true"] { width: min(260px, calc(64vw - 13px)); }
+  /* the Learner / Educator switch: 44 px wide each, and a 44 px tall touch area (an invisible strip above and below) */
+  .hm-role > button, .hm-role > a { position: relative; min-width: 44px; justify-content: center; }
+  .hm-role > button::after, .hm-role > a::after { content: ""; position: absolute; left: 0; right: 0; top: -7px; bottom: -7px; }
   .hm-card { height: clamp(280px, calc(100dvh - 290px), 460px); }   /* the rest of a phone's home takes 290 px (measured 2026-10-27 on a 384x724 A04: with 280 the page ran 10 px past the screen and scrolled) */
 }
 

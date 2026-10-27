@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=164">
+  <link rel="stylesheet" href="nx-map.css?v=165">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2462,12 +2462,16 @@ class Component extends DCLogic {
   // position), so the jump cannot be seen. Only on a stop: a jump mid-swipe kills a phone's momentum. scrollend (Chrome 114,
   // Firefox 109, Safari 26.2); older Safari: 180 ms without a scroll event. A new deck (first render, back home) starts on
   // the middle set. snip: a fling longer than one whole set still stops at the deck's hard end (27 cards); add a 5th set if seen.
+  hmAt(d, slots) { const o = slots[0].offsetLeft; let best = 0;
+    slots.forEach((s, k) => { if (Math.abs(s.offsetLeft - o - d.scrollLeft) < Math.abs(slots[best].offsetLeft - o - d.scrollLeft)) best = k; }); return best; }
   hmLoop(onlyNew) { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")); if (!d) return;
     const slots = [...d.children].filter(e => e.classList.contains("hm-slot")), n = slots.length / 3; if (n < 2 || n % 1) return;
-    const set = slots[n].offsetLeft - slots[0].offsetLeft, step = slots[1].offsetLeft - slots[0].offsetLeft; if (!set || !step) return;   /* not laid out yet */
+    const set = slots[n].offsetLeft - slots[0].offsetLeft; if (!set) return;   /* not laid out yet */
     if (!d._loop) { d._loop = true; d.scrollLeft += set; d.addEventListener("scrollend", () => this.hmLoop()); return; }   /* a new deck: onto the middle set */
     if (onlyNew) return;   /* a re-render never moves a deck that may be mid-scroll */
-    const i = Math.round(d.scrollLeft / step); if (i < n) d.scrollLeft += set; else if (i >= 2 * n) d.scrollLeft -= set; else return;
+    // the card at the start: the slot nearest the scroll (not scroll / step: an opened card - and its copies - is wider, and the
+    // first slot is one of them: the step read wrong and the loop 'reset' an opened card into the bend, 2026-10-27)
+    const i = this.hmAt(d, slots); if (i < n) d.scrollLeft += set; else if (i >= 2 * n) d.scrollLeft -= set; else return;
     this.hmBend(); }
   // the bend (Murci 2026-10-26: the cards slid past should "truly look like a bend they go into"; 2026-10-27: "as soon as they
   // hit the curve/bend the cards need to bend also in the same angle as the bend"). One curve, and the cards ride it: the row
@@ -2503,7 +2507,9 @@ class Component extends DCLogic {
     const put = (el, k, v) => { if (el.style[k] !== v) el.style[k] = v; };
     const fadeOut = 0, fadeIn = pad * 0.3;   // a card's right edge fades from fadeIn px from the deck's edge to the edge itself
     at.forEach(({ sl, c, x, W, H, ox, oy }) => { if (!c) return;
-      const flat = still || x >= pad || !pad, tR = pad - x - W;
+      // within a px of the start is the start (a phone's scroll snaps to fractional px - 1.875 dpr - and the resting front card was
+      // taken for one entering the curve: swapped for strips, its float frozen, measured on a Galaxy A04 2026-10-27)
+      const flat = still || x >= pad - 1 || !pad, tR = pad - x - W;
       if (sl._fx && (flat || tR >= BEND)) put(sl._fx, "display", "none");   // not crossing the curve: no strips
       if (flat) { put(c, "transform", tilt ? P + "rotateY(" + tilt + "deg)" : ""); put(c, "filter", ""); put(c, "opacity", ""); put(c, "visibility", ""); return; }
       const L = pt(pad - x), R = pt(tR);   // its left and right edges on the path
@@ -5043,7 +5049,8 @@ class Component extends DCLogic {
       hmDeckScroll: e => { if (!this._bendRaf) this._bendRaf = requestAnimationFrame(() => { this._bendRaf = 0; this.hmBend(); });   /* once per frame (Murci 2026-10-27: "not jam") */
         if (!("onscrollend" in window)) { clearTimeout(this._loopT); this._loopT = setTimeout(() => this.hmLoop(), 180); } },   /* older Safari: a stop = 180 ms quiet */
       hmDeckNext: () => { const d = [...document.querySelectorAll("[data-hmdeck]")].find(e => !e.closest("x-dc")), sl = d ? d.querySelectorAll(".hm-slot") : [];
-        if (d) d.scrollBy({ left: sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : 132,   /* one card on (the overlap differs per device) */ behavior: s.reduced ? "auto" : "smooth" }); },
+        if (!d || sl.length < 2) return; const sv = [...sl], k = this.hmAt(d, sv);   /* one card on, from the card at the start (an opened card is wider) */
+        d.scrollBy({ left: sv[k + 1] ? sv[k + 1].offsetLeft - sv[k].offsetLeft : 132, behavior: s.reduced ? "auto" : "smooth" }); },
       ...this.hmSearchVals(s, L, go) };
   }
   // the home's search (Murci 2026-10-26: the "Exam practice" title becomes a search bar): industries by name, careers, subjects
