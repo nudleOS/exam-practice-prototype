@@ -18,7 +18,7 @@ myself and all three matched exactly:
 - UMP Diploma in Nature Conservation: APS 28; English L4; Maths L2 (30%) or Maths Literacy L4; Life Sciences L4.
 - False Bay College NC(V) IT and Computer Science: its level 2-4 subject lists.
 
-A gap-filling round is running for 17 careers. They are listed under "Open".
+A gap-filling round filled 13 of the 17 open careers; what is left is under "Open after the gap round".
 
 **Blocked while researching:**
 - These sites returned 403: up.ac.za, uj.ac.za, su.ac.za, irba.co.za.
@@ -55,10 +55,10 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 |---|---|---|---|
 | Civil engineer | BSc (Eng) Civil, Wits (APS 42+) [10] | English L5, Maths L5, Physical Sciences L5 [10] | ECSA Pr Eng [2] |
 | | NC(V) Civil Engineering and Building Construction [3] | Vocational: Construction Carpentry and Roof Work; Concrete Structures; Construction Masonry and Tiling; Construction Materials; Construction Plant and Equipment; Construction Plumbing; Drawings and setting out, quantities and costing; Roads [3] | |
-| Construction manager | *open* | | |
+| Construction manager | BSc Construction Economics Management, UFS (3 years; AP 30) [59] | Maths L5; English L4; one of Physical Science / Accounting / Economics / Business L4 [59] | SACPCMP PrCM: an NQF 8 qualification (e.g. BSc Hons Construction Management) plus 5 years' experience [60] |
 | Land surveyor | Geomatics degree, UCT [11] | English, Maths, Physical Science (no levels stated; Geography not required) [11] | SAGC: candidate, mentored training, Law exam(s), then Professional [12] |
 | Architect | BAS, then Honours and MArch (Prof), UCT [13] | English 50%, Maths 50% (Maths Literacy not accepted; Physics not required); portfolio [13] | SACAP registration, required to practise [13][14] |
-| Quantity surveyor | *open* (NMU's BSc QS took its last new students in 2015) | | SACQSP: accredited degree, 33+ months in-service training, interview [15] |
+| Quantity surveyor | BSc Construction Economics Management, UFS (AP 30) [59] | Maths L5; English L4; one of Physical Science / Accounting / Economics / Business L4 [59] | SACQSP: accredited degree, 33+ months in-service training, interview [15] |
 | Town planner | BSc (URP), Wits (APS 36+) [16] | English L5, Maths L5 [16] | |
 | Electrician | NC(V) Electrical Infrastructure Construction [3] | as under Engineering | |
 
@@ -70,8 +70,8 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 | Geologist | BSc Geological Sciences, Wits (APS 42+) [18] | English L5, Maths L6, Physical Science L5 [18] | |
 | Power engineer | BSc (Eng) Electrical, Wits (nearest verified; no "power" degree found) [4] | English L5, Maths L5, Physical Sciences L5 [4] | ECSA Pr Eng [2] |
 | Metallurgist | BSc (Eng) Metallurgy and Materials, Wits (APS 42+) [19] | English L5, Maths L5, Physical Sciences L5 [19] | ECSA Pr Eng [2] |
-| Renewable energy technician | *open* | | |
-| Mine surveyor | *open* | | |
+| Renewable energy technician | National Occupational Certificate: Solar PV Standalone Systems Installer, NQF 4 (MERSETA) [61] | Entry: an NQF 3 qualification with Maths (level not stated) [61] | |
+| Mine surveyor | Mine Surveyor's Certificate of Competency under the Mine Health and Safety Act regulations [62] | *exam, experience and entry open* | |
 
 ## Health & Life Sciences
 
@@ -84,8 +84,10 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 | Nurse | BNurs, Wits [27] | English L4, Maths L4, Life and/or Physical Sciences L4 [27] | |
 | | BNurs, NWU (APS 25) [28] | Physical Science, Life Sciences or Maths L4; English or Afrikaans L4 [28] | SANC General Nursing and Midwifery, after 1 year community service [28] |
 | Radiographer | BRad Diagnostics, CUT (APS 30) [29] | Life Sciences L4, Physical Sciences L4, Maths L4, Life Orientation L3 [29] | HPCSA Diagnostic Radiographer [29] |
-| Occupational therapist | OT degree, Wits (NBT; 15 h with an OT) [30] | *levels open* | |
+| Occupational therapist | BSc OT, UWC (33 points) [63] | English L4; another language L3; Maths L3 or Maths Literacy L5; Life Sciences L4 [63] | |
+| | BOT, UKZN (30 points excl. LO) [64] | Maths L3; Life Sciences or Physical Science L3; LO L4; English L4 (the two UKZN pages differ on English) [64] | |
 | Paramedic | Bachelor of Emergency Medical Care (SAQA 91791) [31] | *levels open* | HPCSA Independent Emergency Care Practitioner [31] |
+| | Higher Certificate in Emergency Medical Care, NQF 5 (DUT per SAQA) [65] | Entry: NSC or NC(V) L4 with higher-certificate access (no subjects stated) [65] | entry-level emergency care |
 
 ## Environment, Agriculture & Natural Resources
 
@@ -106,11 +108,11 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 |---|---|---|---|
 | Financial adviser | BCom Financial Planning, NMU (FPI-accredited) [39] | Maths 50% (extended programme 45%) [39] | FPI Financial Services Associate [39]; FAIS RE5 for representatives, RE1 for key individuals [40] |
 | | NC(V) Finance, Economics and Accounting [41] | Vocational: Applied Accounting; Economic Environment; Financial Management; Project Management [41] | |
-| Insurance broker | *open* | | FAIS RE5 [40] |
+| Insurance broker | BCom Economics with Risk Management, NWU (APS 26; nearest: not a broking qualification) [66] | Maths L4, English L4 (extended programme: Maths L3 or Maths Literacy L6, English L3) [66] | FAIS RE5 [40] |
 | Accountant | BCom Accounting, Wits (APS 38+) [42] | English L5, Maths L5 [42] | SAICA CA(SA): endorsed degree and PGDA, ITC, training contract, APC [43] |
 | | NC(V) Finance, Economics and Accounting [41] | as above | |
 | Actuary | BSc Actuarial Science, Wits (APS 44+; NBT) [44] | English L7, Maths L7, Physical Science L7 [44] | ASSA Fellowship (FASSA): exams plus work experience; degree exemptions [45] |
-| Auditor | BCom Accounting, Wits (APS 38+) [42] | English L5, Maths L5 [42] | *IRBA rules open* |
+| Auditor | BCom Accounting, Wits (APS 38+) [42] | English L5, Maths L5 [42] | IRBA Public Practice Exam admission: CTA, SAICA Qualifying Exam Part I, 18 months' training, an auditing specialism course (reproduced text; may be dated) [67] |
 | Economist | BCom (Economics), Wits (APS 38+) [46] | English L5, Maths L5 [46] | |
 
 ## ICT & Digital
@@ -119,22 +121,25 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 |---|---|---|---|
 | Software developer | BSc Computer Science, Wits (APS 44+) [47] | English L5, Maths L6 [47] | |
 | | NC(V) Information Technology and Computer Science [48] | Vocational: L2 Introduction to Information Systems, Electronics, Introduction to Systems Development, Multimedia Basics; L3 Systems Analysis and Design, Computer Hardware and Software, Principles of Computer Programming, Multimedia Content; L4 Data Communication and Networking, Computer Programming, Multimedia Service, Systems Analysis and Design [48] | |
-| Data analyst | *open* | | |
-| Cybersecurity analyst | *open* | | |
+| Data analyst | BSc Statistics and Computer Science, UKZN (APS 30) [68] | Maths L4, English L4, LO L4, one of Agricultural / Life / Physical Science L4 [68] | |
+| | Diploma in IT, VUT (APS 26) [69] | English L4; Maths or Technical Maths L4 (or Maths Literacy L6) [69] | |
+| Cybersecurity analyst | Diploma in IT, VUT (nearest: general IT, no security specialism) [69] | as above [69] | |
 | Network engineer | NC(V) IT and Computer Science (L4 Data Communication and Networking) [48] | as above | |
 | IT technician | NC(V) IT and Computer Science (L3 Computer Hardware and Software) [48] | as above | |
-| UX designer | *open* | | |
+| UX designer | Diploma: Fashion, Photography, Graphic Design and Fine Art, VUT (APS 21; portfolio + interview; nearest: not UX) [70] | English L4; Maths L2 or Maths Literacy L3 [70] | |
 
 ## Transport, Logistics & Aviation
 
 | Career | Route | School subjects (minimum) | After study |
 |---|---|---|---|
 | Logistics planner | *open* | | |
-| Commercial pilot | CPL(A) under Civil Aviation Regulations 2011, Part 61 [49] | *entry criteria open* | SACAA licence [49] |
-| Aircraft maintenance engineer | *open* | | |
+| Commercial pilot | CPL(A) under Civil Aviation Regulations 2011, Part 61; training at a Part 141 school [49][71] | No school subjects in the regulation. Age 18+, Part 67 medical, theory exam, skills test, night rating; 200 h total (150 integrated), 100 h PIC (reproduced text) [71] | SACAA licence [49] |
+| Aircraft maintenance engineer | AME licence, Part 66 (licence route) [49][72] | No school subjects in the regulation. Age 21+, employed by an approved maintenance organisation, training, theory exam, experience (reproduced text) [72] | SACAA licence [49] |
 | Air traffic controller | ATNS training (2015 bursary notice; current intake not verified) [50] | Maths L4, English L4 (2015 notice) [50] | |
 | Supply chain manager | *open* | | |
-| Ship's officer | SAMTRA Mates and Masters (STCW A-II/2) [51] | *entry open* | |
+| Ship's officer | Bachelor of Nautical Science, NQF 7 (CPUT per SAQA) [73] | English, Maths, Physical Science (no levels stated); or NC(V) L4 with the same [73] | |
+| | Diploma in Nautical Studies, NQF 6 (DUT per SAQA) [74] | Entry: NSC with bachelor access or NC(V) L4 (no subjects stated); SAMSA eyesight + medical [74] | Underpins SAMSA deck officer certificates [74] |
+| | SAMTRA Mates and Masters (STCW A-II/2) [51] | *entry open* | |
 
 ## Education & Social Services
 
@@ -147,16 +152,33 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 | Social worker | BSW, UFS (top 50 selected) [56] | English L5; five academic subjects L5, one more L4 [56] | SACSSP social worker; police clearance [57] |
 | Educational psychologist | *university route open* | | HPCSA Psychology board exam (secondary source only) [58] |
 
-## Open (gap-filling round running)
+## Open after the gap round (2026-10-28)
 
-- **ICT:** Data analyst, Cybersecurity analyst, UX designer.
-- **Transport:** Logistics planner, Supply chain manager, Aircraft maintenance engineer, Commercial pilot (entry criteria),
-  Ship's officer (entry).
-- **Built:** Construction manager, Quantity surveyor.
-- **Mining:** Renewable energy technician, Mine surveyor.
-- **Health:** Occupational therapist (levels), Paramedic (levels).
-- **Finance:** Insurance broker, Auditor (IRBA).
-- **Education:** Educational psychologist.
+**No sourced route yet.** Every source sat behind a blocked site; the snippets were not opened, so they were not used.
+- Logistics planner and Supply chain manager: public diplomas exist (e.g. TUT, VUT) but their pages 404'd.
+- Educational psychologist: every university page was blocked.
+
+**Partial.**
+- Mine surveyor: the exam, experience and entry rules.
+- Paramedic: the bachelor's subject levels.
+- The FAIS RE5 rule: only a training provider stated it.
+- "Nearest route" rows (Cybersecurity, UX, Insurance broker, Soil scientist, Power engineer, Farm manager): the closest
+  verified programme, labelled as not specific to the career.
+
+**Reproduced text.** The regulation rows for pilot, AME, auditor (IRBA) and construction manager (SACPCMP) come from
+acts.co.za, a third-party reproduction of the regulations. Re-check against the official text before learners see them.
+
+## Flag: NC(V) business programmes, new intake from 2027 (UNVERIFIED, material)
+
+- **What the sources say.** Search results say some colleges take **no new Level 2 students from January 2027** in
+  Finance, Economics and Accounting, Management, Marketing and Office Administration.
+- **The circular number conflicts.** Sedibeng TVET College's 2027 prospectus cites DHET circular **T0132**; other college
+  notices cite **TC 0153**.
+- **Not confirmed.** The prospectus PDF could not be read here, and the circular itself was not found. If true, it affects
+  the Finance industry's NC(V) route (above) and the TVET market plan (project_tvet_curriculum_facts). Confirm it with DHET
+  or a college before relying on it.
+- Sources: https://www.mysedcol.co.za/_CollegeCirculars/Sedcol_Prospectus_2027.pdf (unreadable here);
+  https://varsitywise.com/posts/umalusi-phasing-out-nated-n1-n3-exams-internalizing-ncv-levels-2-3 (secondary).
 
 ## Sources
 
@@ -218,3 +240,19 @@ A gap-filling round is running for 17 careers. They are listed under "Open".
 56. https://www.ufs.ac.za/humanities/departments-and-divisions/social-work-home/prospective-students
 57. https://www.sacssp.co.za/social-work
 58. https://www.sacap.edu.za/blog/psychology/educational-psychologist/ (a private college's career guide: secondary)
+59. https://www.ufs.ac.za/natagri/departments-and-divisions/quantity-surveying-and-construction-management-home/unlisted-pages/all/bsc-quantity-surveying-bsc-hons-quantity-surveying-208
+60. https://shop.acts.co.za/project-and-construction-management-professions-act-2000/rules_for_reg_4_4__registratio.php (reproduced rules)
+61. https://allqs.saqa.org.za/showQualification.php?id=120883
+62. https://www.gov.za/node/819951 (title only; the regulations PDF was not read)
+63. https://www.uwc.ac.za/study/all-areas-of-study/departments/department-of-occupational-therapy-2/undergraduate
+64. https://ot.ukzn.ac.za/undergraduate-programmes/ and https://health-sciences.ukzn.ac.za/degrees/b-occupational-therapy/
+65. https://allqs.saqa.org.za/showQualification.php?id=119803
+66. https://commerce.nwu.ac.za/es/riskmanagement
+67. https://source.acts.co.za/auditing-profession-act-2005/bn93_3__admission_requirements.php (reproduced; may be dated)
+68. https://statistics.ukzn.ac.za/data-science/qualification/bachelor-of-science-statistics-computer-science
+69. https://vut.ac.za/?p=33848
+70. https://vut.ac.za/?p=33757
+71. https://source.acts.co.za/civil-aviation-act-2009/nr425_61_05_1_requirement.php (reproduced Part 61)
+72. https://source.acts.co.za/civil-aviation-act-2009/nr425_66_02_1_requirement.php (reproduced Part 66)
+73. https://allqs.saqa.org.za/showQualification.php?id=110050
+74. https://allqs.saqa.org.za/showQualification.php?id=94831
