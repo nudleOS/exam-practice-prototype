@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=141">
+  <link rel="stylesheet" href="nx-map.css?v=145">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -420,7 +420,7 @@
             <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
             <!-- careers as pills (Murci 2026-10-27: calmer, easier to read than one run-on line) -->
-            <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><span class="ind-career">{{ cr.name }}</span></sc-for></div>
+            <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><span class="ind-career">{{ cr.name }}</span></sc-for><span class="ind-career ind-career-more" aria-hidden="true">{{ indCareerMore }}</span></div>
             <!-- After school (Finance), inside the panel (2026-10-27): on its own it pushed the page past the screen -->
             <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
               <section class="ind-after" aria-labelledby="ind-after-title">
@@ -463,6 +463,8 @@
               </div>
               <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
               <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
+                <!-- the paper's card, then its buttons below it, centred (Murci 2026-10-27) -->
+                <div class="ind-paper">
                 <div class="ind-act" data-inddetail="true">
                   <div class="ind-act-t">
                     <b class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</b>
@@ -470,6 +472,7 @@
                     <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
                     <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><span class="pm-sheet-note">{{ pmSheetNote }}</span></sc-if>
                   </div>
+                </div>
                   <div class="ind-act-b">
                     <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
                     <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake<span>Marks only · no XP</span></button></sc-if>
@@ -480,12 +483,14 @@
               <!-- a level (or a TVET industry) with no papers yet says so here, where its paper and Start would be (2026-10-27: as a
                    separate card it squeezed this panel into what was left and cut its title off) -->
               <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
+                <div class="ind-paper">
                 <div class="ind-act ind-soon" data-pmempty="true" role="status">
                   <div class="ind-act-t">
                     <b class="ind-dtitle">{{ pmEmptyTitle }}</b>
                     <span class="ind-soon-t">{{ pmEmptyText }}</span>
                   </div>
-                  <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
+                </div>
+                <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
                 </div>
               </sc-if>
             </div>
@@ -1708,33 +1713,33 @@ const SUBJECT_LOOK = {
 // Nexera landing hero's scenes (assets/pro/, from _ref/nexera-hero) stand in until our own people in uniform are made.
 const INDUSTRIES = [
   { key: "engineering", words: "engineer engineering mechanical electrical mechatronics chemical industrial manufacturing factory technician artisan robotics machines power", pro: "engineer", name: "Engineering & Manufacturing", icon: "gear", c: "#fb923c", rgb: "251,146,60",
-    blurb: "Design, build and keep the machines, power and factories running.", careers: ["Mechanical engineer", "Electrical engineer", "Mechatronics engineer"],
+    blurb: "Design, build and keep the machines, power and factories running.", careers: ["Mechanical engineer", "Electrical engineer", "Mechatronics engineer", "Chemical engineer", "Industrial engineer", "Engineering technician", "Fitter and turner"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "required"]] },
   { key: "built", words: "architect architecture civil construction builder building quantity surveyor surveying town planner planning roads bridges property", pro: "site", name: "Built Environment & Construction", icon: "building", c: "#38bdf8", rgb: "56,189,248",
-    blurb: "Plan, survey and build the roads, bridges and buildings people use every day.", careers: ["Civil engineer", "Construction manager", "Land surveyor"],
+    blurb: "Plan, survey and build the roads, bridges and buildings people use every day.", careers: ["Civil engineer", "Construction manager", "Land surveyor", "Architect", "Quantity surveyor", "Town planner", "Electrician"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "required", "For construction studies and geomatics."]] },
   { key: "health", words: "nurse nursing doctor medicine medical dentist dentistry pharmacy physiotherapy paramedic radiographer occupational therapist vet veterinary biomedical hospital", pro: "doctor", name: "Health & Life Sciences", icon: "heart", c: "#f472b6", rgb: "244,114,182",
-    blurb: "Care for people and animals, and learn how living things work.", careers: ["Doctor", "Physiotherapist", "Pharmacist"],
+    blurb: "Care for people and animals, and learn how living things work.", careers: ["Doctor", "Physiotherapist", "Pharmacist", "Nurse", "Radiographer", "Occupational therapist", "Paramedic"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "required", "For medicine, pharmacy and veterinary science."], ["Life Sciences", "recommended"], ["Mathematical Literacy", "some"]] },
   { key: "environment", words: "farmer farming agriculture agricultural environmental conservation forestry nature wildlife ecology water climate soil animals plants marine", pro: "environmental", name: "Environment, Agriculture & Natural Resources", icon: "leaf", c: "#4ade80", rgb: "74,222,128",
-    blurb: "Grow food, protect nature and look after the land and water we all depend on.", careers: ["Agricultural scientist", "Environmental scientist", "Forester"],
+    blurb: "Grow food, protect nature and look after the land and water we all depend on.", careers: ["Agricultural scientist", "Environmental scientist", "Forester", "Farm manager", "Conservation officer", "Soil scientist"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "recommended"], ["Life Sciences", "recommended"], ["Geography", "unverified"], ["Mathematical Literacy", "some"]] },
   { key: "finance", words: "accountant accounting banker banking actuary economist economics insurance broker investment auditor business entrepreneur management marketing money", pro: "finance", name: "Finance, Insurance & Business", icon: "chart", c: "#2dd4bf", rgb: "45,212,191",
-    blurb: "Help people and businesses plan, protect and grow their money.", careers: ["Financial adviser", "Insurance broker", "Accountant"],
+    blurb: "Help people and businesses plan, protect and grow their money.", careers: ["Financial adviser", "Insurance broker", "Accountant", "Actuary", "Auditor", "Economist"],
     subjects: [["Mathematics", "required"], ["Business Studies", "unverified"]],
     after: [["RE5", "Representatives: your licence to advise clients."], ["RE1", "Key individuals: lead a financial services business."]] },
   // added 2026-10-26 (Murci approved; the mapping doc's "Added 2026-10-26": sources 20-29, Education's from search snippets only)
   { key: "ict", words: "software developer programmer programming coding code computer computers data analyst scientist cybersecurity security ai tech technology it network web app", pro: "cyber", name: "ICT & Digital", icon: "calc", c: "#22d3ee", rgb: "34,211,238",
-    blurb: "Build the software, data and networks the world runs on.", careers: ["Software developer", "Data analyst", "Cybersecurity analyst"],
+    blurb: "Build the software, data and networks the world runs on.", careers: ["Software developer", "Data analyst", "Cybersecurity analyst", "Network engineer", "IT technician", "UX designer"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "some", "Or Life Sciences: some programmes ask for one science."], ["Life Sciences", "some", "Or Physical Sciences: some programmes ask for one science."]] },
   { key: "transport", words: "pilot aviation aircraft airline flying logistics supply chain transport shipping freight rail trucking air traffic maritime", pro: "pilot", name: "Transport, Logistics & Aviation", icon: "globe", c: "#f59e0b", rgb: "245,158,11",
-    blurb: "Move people and goods by road, rail, sea and air, safely and on time.", careers: ["Logistics planner", "Commercial pilot", "Aircraft maintenance engineer"],
+    blurb: "Move people and goods by road, rail, sea and air, safely and on time.", careers: ["Logistics planner", "Commercial pilot", "Aircraft maintenance engineer", "Air traffic controller", "Supply chain manager", "Ship's officer"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "recommended", "Required for pilot training."], ["Mathematical Literacy", "some"]] },
   { key: "mining", words: "mining miner mine geologist geology minerals metallurgy energy power electricity solar renewable oil gas electrical engineer", pro: "miner", name: "Mining & Energy", icon: "gear", c: "#eab308", rgb: "234,179,8",
-    blurb: "Find the minerals and make the power that everything we use depends on.", careers: ["Mining engineer", "Geologist", "Power engineer"],
+    blurb: "Find the minerals and make the power that everything we use depends on.", careers: ["Mining engineer", "Geologist", "Power engineer", "Metallurgist", "Renewable energy technician", "Mine surveyor"],
     subjects: [["Mathematics", "required"], ["Physical Sciences", "required"], ["Geography", "unverified"]] },
   { key: "education", words: "teacher teaching educator school tutor lecturer social worker counsellor coach foundation phase", pro: "teacher", name: "Education & Social Services", icon: "book", c: "#a78bfa", rgb: "167,139,250",
-    blurb: "Teach, guide and support people to learn and grow.", careers: ["Foundation phase teacher", "Maths teacher", "Science teacher"],
+    blurb: "Teach, guide and support people to learn and grow.", careers: ["Foundation phase teacher", "Maths teacher", "Science teacher", "Early childhood practitioner", "Social worker", "Educational psychologist"],
     subjects: [["Mathematics", "some", "Foundation phase: Maths or Maths Lit, at some universities."], ["Mathematical Literacy", "some"], ["Life Sciences", "some", "To teach Life Sciences."], ["Physical Sciences", "some", "To teach Physical Sciences."]] }];
 // TVET on the industry cards (Murci approved 2026-10-26; docs/industry-subject-mapping.md, "TVET (NC(V))"): the 8 programme ->
 // card links a college careers page backs (held: Mechatronics, Programming and Robotics, Process Plant Operations, Drawing Office
@@ -3306,7 +3311,7 @@ class Component extends DCLogic {
       // for presentations, not product behaviour
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
-      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indC: ind.c, indRgb: ind.rgb, indPro: ind.pro,
+      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indCareerMore: "+" + Math.max(0, ind.careers.length - 3) + " more",   /* a phone shows three */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
       indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",
