@@ -768,12 +768,17 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind { grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "secs" "pro" "map" "intro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
   .ind .ind-pro { height: auto; min-height: 0; overflow: hidden; border-radius: 24px; }   /* the screen's leftover height (no scroll, 2026-10-27; was 460-640 px) */   /* no glow; the professional a little larger (was 66dvh, max 580) */
   /* the professional centred, where the text was (Murci 2026-10-27); the text is a box under the stage */
-  .ind .ind-pro > .ind-pro-media { left: 50%; height: 80%; }
+  .ind .ind-pro > .ind-pro-media { left: 50%; height: 96%; }   /* the full stage: no text over it any more */
+  /* the page fits a phone with no scroll (2026-10-27): tighter gaps, a slim map row, and the careers box without its blurb (the
+     name + careers carry it; tablet and desktop keep the blurb), so the professional gets the height */
+  .ind { row-gap: 10px; }
+  .ind .ind-intro > .ind-blurb { display: none; }
   .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
-  .ind .ind-intro > .ind-name { font-size: clamp(24px, 6vw, 30px); }
+  .ind .ind-intro > .ind-name { font-size: clamp(20px, 5.6vw, 24px); }
+  .ind .ind-intro { padding: 12px 14px; }
   /* the map box: its own compact row under the stage, the text box under it (2026-10-27: on the stage's corner it covered the
      centred professional's arm) - the small map left, its title and count right */
-  .ind .ind-mapbox { display: grid; grid-template-columns: 96px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 14px; min-height: 0; padding: 10px 14px; }
+  .ind .ind-mapbox { display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 12px; min-height: 0; padding: 8px 14px; }
   .ind .ind-mapbox > .ind-mapbox-art { grid-row: 1 / 3; margin: 0; }
   .ind .ind-mapbox > .ind-mapbox-t { align-self: end; }
   .ind .ind-mapbox > .ind-mapbox-s { align-self: start; }
