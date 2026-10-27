@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=165">
+  <link rel="stylesheet" href="nx-map.css?v=166">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -400,10 +400,10 @@
         <!-- no top line (2026-10-26): the Continue line went, and the grade is chosen once on the home (its header names it) -->
         <!-- the industry page (Murci 2026-10-25): the professional at work, the map as a small box beside them (it opens the road in a
              centred modal), then the industry's subjects with their papers; a paper's details open in place under its row -->
-        <section class="ind" data-ind="true" data-doc="{{ pvInPanelAttr }}" aria-labelledby="ind-name">
+        <section class="ind" data-ind="true" aria-labelledby="ind-name">
           <div class="ind-hero">
             <!-- no navbar on this page (Murci 2026-10-27): the Nexera mark (home) and the XP chip sit in this card's top corners -->
-            <button type="button" class="pm-home ind-home" data-home="true" onClick="{{ goHome }}"><span class="ind-home-t">Back</span><img src="assets/nexera-mark.png" alt="" width="28" height="28" /></button>
+            <button type="button" class="pm-home ind-home" data-home="true" onClick="{{ goHome }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Back</button>
             <span class="xp-chip ind-xp" title="XP earned in this industry" aria-label="{{ indXp }} XP in this industry"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ indXp }}</span><span>XP</span></span>
             <figure class="ind-pro">
               <span class="ind-pro-media">
@@ -422,103 +422,83 @@
             </sc-if>
           </div>
           <div class="ind-intro">
-            <sc-if value="{{ pvPanelOff }}" hint-placeholder-val="{{ true }}">
-              <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
-              <p class="ind-blurb">{{ indBlurb }}</p>
-              <!-- careers as pills (Murci 2026-10-27: calmer, easier to read than one run-on line) -->
-              <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><span class="ind-career">{{ cr.name }}</span></sc-for><span class="ind-career ind-career-more" aria-hidden="true">{{ indCareerMore }}</span></div>
-              <!-- After school (Finance), inside the panel (2026-10-27): on its own it pushed the page past the screen -->
-              <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
-                <section class="ind-after" aria-labelledby="ind-after-title">
-                  <h2 class="ind-sec-name" id="ind-after-title">After school</h2>
-                  <!-- a phone folds it behind this row (Murci 2026-10-27), so the professional keeps the room; wider screens show it open -->
-                  <button type="button" class="ind-after-tog" aria-expanded="{{ indAfterOpen }}" aria-controls="ind-after-body" onClick="{{ indAfterToggle }}">After school · {{ indAfterCodes }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
-                  <div class="ind-after-body" id="ind-after-body" data-open="{{ indAfterOpen }}">
-                    <p class="ind-note">The regulatory exams you write once you work in financial services.</p>
-                    <sc-for list="{{ indAfter }}" as="af" hint-placeholder-count="2">
-                      <div class="ind-re"><b>{{ af.code }}</b><span>{{ af.text }}</span></div>
+            <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
+            <p class="ind-blurb">{{ indBlurb }}</p>
+            <!-- careers as pills (Murci 2026-10-27: calmer, easier to read than one run-on line) -->
+            <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><span class="ind-career">{{ cr.name }}</span></sc-for><span class="ind-career ind-career-more" aria-hidden="true">{{ indCareerMore }}</span></div>
+            <!-- After school (Finance), inside the panel (2026-10-27): on its own it pushed the page past the screen -->
+            <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
+              <section class="ind-after" aria-labelledby="ind-after-title">
+                <h2 class="ind-sec-name" id="ind-after-title">After school</h2>
+                <!-- a phone folds it behind this row (Murci 2026-10-27), so the professional keeps the room; wider screens show it open -->
+                <button type="button" class="ind-after-tog" aria-expanded="{{ indAfterOpen }}" aria-controls="ind-after-body" onClick="{{ indAfterToggle }}">After school · {{ indAfterCodes }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+                <div class="ind-after-body" id="ind-after-body" data-open="{{ indAfterOpen }}">
+                  <p class="ind-note">The regulatory exams you write once you work in financial services.</p>
+                  <sc-for list="{{ indAfter }}" as="af" hint-placeholder-count="2">
+                    <div class="ind-re"><b>{{ af.code }}</b><span>{{ af.text }}</span></div>
+                  </sc-for>
+                </div>
+              </section>
+            </sc-if>
+            <!-- the practice block, pinned to the panel's bottom: information above, action below (Murci 2026-10-27) -->
+            <div class="ind-practise">
+              <!-- the practice panel (Murci picked B, 2026-10-27): three steps, then the chosen paper and its buttons. The newest
+                   paper of the subject shown is chosen until the learner picks, so Start always has a paper -->
+              <div class="ind-pick">
+                <label class="ind-step"><span class="ind-step-k">1 · Level</span>
+                  <select class="ind-sel ind-lvsel" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
+                    <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
+                      <optgroup label="{{ g.label }}">
+                        <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                      </optgroup>
                     </sc-for>
+                  </select>
+                </label>
+                <label class="ind-step"><span class="ind-step-k">2 · Subject</span>
+                  <select class="ind-sel" value="{{ indSubjVal }}" onChange="{{ indSubjPick }}">
+                    <sc-for list="{{ indSubjOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                  </select>
+                </label>
+                <label class="ind-step"><span class="ind-step-k">3 · Paper</span>
+                  <select class="ind-sel" value="{{ indPaperVal }}" onChange="{{ indPaperPick }}">
+                    <sc-if value="{{ indHasPapers }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ indPaperOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></sc-if>
+                    <sc-if value="{{ indNoPapers }}" hint-placeholder-val="{{ false }}"><option value="">No papers yet</option></sc-if>
+                  </select>
+                </label>
+              </div>
+              <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
+              <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
+                <!-- the paper's card, then its buttons below it, centred (Murci 2026-10-27) -->
+                <div class="ind-paper">
+                <div class="ind-act" data-inddetail="true">
+                  <div class="ind-act-t">
+                    <b class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</b>
+                    <span class="ind-facts"><sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3"><span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span></sc-for></span>
+                    <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
+                    <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><span class="pm-sheet-note">{{ pmSheetNote }}</span></sc-if>
                   </div>
-                </section>
+                </div>
+                  <div class="ind-act-b">
+                    <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
+                    <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake<span>Marks only · no XP</span></button></sc-if>
+                    <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src" data-pmsource="true" onClick="{{ pmSourceGo }}">View paper</button></sc-if>
+                  </div>
+                </div>
               </sc-if>
-              <!-- the practice block, pinned to the panel's bottom: information above, action below (Murci 2026-10-27) -->
-              <div class="ind-practise">
-                <!-- the practice panel (Murci picked B, 2026-10-27): three steps, then the chosen paper and its buttons. The newest
-                     paper of the subject shown is chosen until the learner picks, so Start always has a paper -->
-                <div class="ind-pick">
-                  <label class="ind-step"><span class="ind-step-k">1 · Level</span>
-                    <select class="ind-sel ind-lvsel" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
-                      <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
-                        <optgroup label="{{ g.label }}">
-                          <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
-                        </optgroup>
-                      </sc-for>
-                    </select>
-                  </label>
-                  <label class="ind-step"><span class="ind-step-k">2 · Subject</span>
-                    <select class="ind-sel" value="{{ indSubjVal }}" onChange="{{ indSubjPick }}">
-                      <sc-for list="{{ indSubjOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
-                    </select>
-                  </label>
-                  <label class="ind-step"><span class="ind-step-k">3 · Paper</span>
-                    <select class="ind-sel" value="{{ indPaperVal }}" onChange="{{ indPaperPick }}">
-                      <sc-if value="{{ indHasPapers }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ indPaperOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></sc-if>
-                      <sc-if value="{{ indNoPapers }}" hint-placeholder-val="{{ false }}"><option value="">No papers yet</option></sc-if>
-                    </select>
-                  </label>
+              <!-- a level (or a TVET industry) with no papers yet says so here, where its paper and Start would be (2026-10-27: as a
+                   separate card it squeezed this panel into what was left and cut its title off) -->
+              <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
+                <div class="ind-paper">
+                <div class="ind-act ind-soon" data-pmempty="true" role="status">
+                  <div class="ind-act-t">
+                    <b class="ind-dtitle">{{ pmEmptyTitle }}</b>
+                    <span class="ind-soon-t">{{ pmEmptyText }}</span>
+                  </div>
                 </div>
-                <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
-                <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
-                  <!-- the paper's card, then its buttons below it, centred (Murci 2026-10-27) -->
-                  <div class="ind-paper">
-                  <div class="ind-act" data-inddetail="true">
-                    <div class="ind-act-t">
-                      <b class="ind-dtitle" id="pm-title" tabIndex="-1">{{ pmTitle }}</b>
-                      <span class="ind-facts"><sc-for list="{{ pmStats }}" as="st" hint-placeholder-count="3"><span class="ind-fact">{{ st.label }} <b>{{ st.value }}</b></span></sc-for></span>
-                      <sc-if value="{{ pmHasBar }}" hint-placeholder-val="{{ false }}"><span class="pm-bar" aria-hidden="true"><span style="width:{{ pmBarPct }}"></span></span></sc-if>
-                      <sc-if value="{{ pmHasSheetNote }}" hint-placeholder-val="{{ false }}"><span class="pm-sheet-note">{{ pmSheetNote }}</span></sc-if>
-                    </div>
-                  </div>
-                    <div class="ind-act-b">
-                      <sc-if value="{{ pmHasPrimary }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmgo="true" onClick="{{ pmPrimaryGo }}">{{ pmPrimary }}</button></sc-if>
-                      <sc-if value="{{ pmHasRetake }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src pm-retake" data-pmretake="true" onClick="{{ pmRetakeGo }}">Retake<span>Marks only · no XP</span></button></sc-if>
-                      <sc-if value="{{ pmHasSource }}" hint-placeholder-val="{{ false }}"><button type="button" class="pm-src" data-pmsource="true" onClick="{{ pmSourceGo }}">View paper</button></sc-if>
-                    </div>
-                  </div>
-                </sc-if>
-                <!-- a level (or a TVET industry) with no papers yet says so here, where its paper and Start would be (2026-10-27: as a
-                     separate card it squeezed this panel into what was left and cut its title off) -->
-                <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
-                  <div class="ind-paper">
-                  <div class="ind-act ind-soon" data-pmempty="true" role="status">
-                    <div class="ind-act-t">
-                      <b class="ind-dtitle">{{ pmEmptyTitle }}</b>
-                      <span class="ind-soon-t">{{ pmEmptyText }}</span>
-                    </div>
-                  </div>
-                  <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
-                  </div>
-                </sc-if>
-              </div>
-            </sc-if>
-            <!-- the original paper, read INSIDE this panel (Murci 2026-10-27): the paper card grows into it (view transition "ind-doc") -->
-            <sc-if value="{{ pvInPanelOn }}" hint-placeholder-val="{{ false }}">
-              <div class="ind-doc" data-inddoc="true" role="region" aria-label="{{ pvAria }}" onKeyDown="{{ pvKeys }}">
-                <div class="ind-doc-bar">
-                  <button type="button" class="ind-doc-back" onClick="{{ closePaperSource }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Back</button>
-                  <b class="ind-doc-t">{{ pvDocTitle }}</b>
-                  <div class="pv-tabs" role="group" aria-label="Show">
-                    <button type="button" class="pv-tab" aria-pressed="{{ pvOnPaper }}" onClick="{{ pvShowPaper }}">Question paper</button>
-                    <button type="button" class="pv-tab" aria-pressed="{{ pvOnMemo }}" data-locked="{{ pvMemoLocked }}" onClick="{{ pvShowMemo }}" aria-label="{{ pvMemoAria }}">Memo</button>
-                  </div>
-                  <sc-if value="{{ pvCanDownload }}" hint-placeholder-val="{{ true }}"><a class="pv-ico" href="{{ pvPdf }}" download="{{ pvFile }}" aria-label="{{ pvDownloadAria }}" title="Download"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></svg></a></sc-if>
+                <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
                 </div>
-                <sc-if value="{{ pvNoteOn }}" hint-placeholder-val="{{ false }}"><p class="pv-note" role="status">The memo unlocks when you finish this paper.</p></sc-if>
-                <div class="pv-pages ind-doc-pages" data-pvpages="true" tabIndex="0" aria-label="{{ pvPagesAria }}">
-                  <sc-for list="{{ pvPages }}" as="pg" hint-placeholder-count="2"><img class="pv-page" data-page="{{ pg.n }}" src="{{ pg.src }}" alt="{{ pg.alt }}" width="{{ pvW }}" height="{{ pvH }}" loading="lazy" decoding="async" /></sc-for>
-                </div>
-              </div>
-            </sc-if>
+              </sc-if>
+            </div>
           </div>
         </section>
       </div>
@@ -2220,23 +2200,6 @@ class Component extends DCLogic {
     if (fold) this._pvFolded = true;
     this.setState({ paperSourceOpen: true, paperSourceId: paper.id, paperSourcePage: pageNo, pvTab: t, pvNote: false, ...(fold ? { figHidden: true } : {}) }, () => this.pvScroll(true));
   }
-  // the industry page's View paper (Murci 2026-10-27): the original opens INSIDE the practice panel, the paper card growing into
-  // it - a view transition as the home card's into its page ("ind-doc": the card before, the reader after; Back the other way)
-  openPaperInPanel(id) {
-    const paper = this.pmAllPapers().find(p => p.id === id); if (!paper || !paper.source_pdf) return;
-    this._paperSourceOpener = document.activeElement;
-    // the paper fills the panel's box as it is: hold its height (on a phone the panel's height follows its content)
-    const box = document.querySelector(".ind-intro"); if (box) { box.style.boxSizing = "border-box"; box.style.height = box.offsetHeight + "px"; }   /* its outer height, as measured */   // snip: held at open; a resize while open keeps it (close + reopen refits)
-    this.docMorph(true, done => this.setState({ paperSourceOpen: true, pvInPanel: true, paperSourceId: paper.id, paperSourcePage: 1, pvTab: "qp", pvNote: false },
-      () => { this.pvScroll(false); const b = document.querySelector(".ind-doc-back"); if (b) b.focus({ preventScroll: true }); done(); }));
-  }
-  docMorph(open, update) {
-    if (!document.startViewTransition || this.state.reduced || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { update(() => {}); return; }
-    const pick = () => document.querySelector(open ? ".ind-doc" : ".ind-act[data-inddetail]"), from = document.querySelector(open ? ".ind-act[data-inddetail]" : ".ind-doc");
-    if (from) from.style.viewTransitionName = "ind-doc";
-    const t = document.startViewTransition(() => new Promise(done => update(() => { if (from) from.style.viewTransitionName = ""; const to = pick(); if (to) to.style.viewTransitionName = "ind-doc"; done(); })));
-    t.finished.finally(() => document.querySelectorAll(".ind-doc, .ind-act").forEach(e => { e.style.viewTransitionName = ""; }));
-  }
   // bring the open page to the top of the panel; focus the panel's first control when it has just opened
   pvScroll(focus) {
     const box = document.querySelector("[data-pvpages]"), pg = box && box.querySelector('[data-page="' + this.state.paperSourcePage + '"]');
@@ -2272,12 +2235,9 @@ class Component extends DCLogic {
       el.addEventListener("pointermove", move); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up); });
   }
   // the paper rises from the bottom below 1200 px: beside the question it needs the window's width (the robot keeps its column)
-  pvAtBottom() { return (this.state.vw || 800) < 1200; }
+  // ... and on the industry page at every size (Murci 2026-10-27: View paper comes up from a bottom bar on all devices)
+  pvAtBottom() { return (this.state.vw || 800) < 1200 || this.state.screen === "map"; }
   closePaperSource() {
-    if (this.state.pvInPanel) { this.docMorph(false, done => this.setState({ paperSourceOpen: false, pvInPanel: false, pvNote: false }, () => {
-      const box = document.querySelector(".ind-intro"); if (box) { box.style.height = ""; box.style.boxSizing = ""; }
-      const opener = this._paperSourceOpener; this._paperSourceOpener = null; const t = document.querySelector("[data-pmsource]") || opener;
-      if (t && document.body.contains(t)) t.focus({ preventScroll: true }); done(); })); return; }
     const unfold = !!this._pvFolded; this._pvFolded = false;
     this.setState({ paperSourceOpen: false, pvFull: false, pvNote: false, ...(unfold ? { figHidden: false } : {}) }, () => {
       const opener = this._paperSourceOpener; this._paperSourceOpener = null;
@@ -2294,9 +2254,7 @@ class Component extends DCLogic {
     const L = this.paper(), H = L && this.pmAllPapers().filter(p => HOME_TO_LOCAL[p.id] === L.id && p.source_pdf)[0], HD = H && this.pvDocs(H.id);
     return {
       paperSourceOpen: !!s.paperSourceOpen, closePaperSource: () => this.closePaperSource(),
-      // the industry page reads the paper inside its panel (Murci 2026-10-27); elsewhere the side bar
-      pvAside: !!s.paperSourceOpen && !s.pvInPanel, pvInPanelOn: !!s.paperSourceOpen && !!s.pvInPanel, pvPanelOff: !(s.paperSourceOpen && s.pvInPanel),
-      pvInPanelAttr: s.paperSourceOpen && s.pvInPanel ? "true" : "false", pvDocTitle: P ? P.title + " · " + P.sitting : "",
+      pvAside: !!s.paperSourceOpen,
       pvLayout: phone ? "bottom" : "side", pvSize: phone && s.pvFull ? "full" : "half", pvIsFull: !!(phone && s.pvFull), pvIsHalf: !(phone && s.pvFull),
       pvAria: (P ? P.title + ", " : "") + what,
       pvOnPaper: tab === "qp" ? "true" : "false", pvOnMemo: tab === "mg" ? "true" : "false",
@@ -2627,9 +2585,7 @@ class Component extends DCLogic {
     this._lastScreen = scr;
     // the paper viewer: the page makes room (a phone: above the panel; wider: beside it, under the header), so nothing is covered
     const pvTuck = !!st.paperSourceOpen && this.pvAtBottom() && st.screen === "play" && st.kbOff > 80;   // typing: the bottom paper steps aside
-    // the industry page reads the paper INSIDE its panel (pvInPanel): no side/bottom panel, so no room made for one (2026-10-27:
-    // pv-side's 560 px gap squeezed the whole industry page into its left half at 1366 px)
-    const pvOn = !!st.paperSourceOpen && !st.pvInPanel && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
+    const pvOn = !!st.paperSourceOpen && !pvTuck, pvPhone = this.pvAtBottom(), pvKey = pvOn + "|" + pvTuck + "|" + pvPhone + "|" + !!st.pvFull + "|" + (st.pvW || "") + "|" + (st.pvH || "") + "|" + st.vw + "x" + st.vh;
     if (pvOn) document.querySelectorAll("[data-pvdrag]").forEach(el => this.pvBindDrag(el));
     if (pvKey !== this._pvKey) { this._pvKey = pvKey; document.body.classList.toggle("pv-tucked", pvTuck);
       document.body.classList.toggle("pv-bottom", pvOn && pvPhone); document.body.classList.toggle("pv-full", pvOn && pvPhone && !!st.pvFull);
@@ -3468,7 +3424,7 @@ class Component extends DCLogic {
         pmHasPrimary: !!go, pmPrimary: go ? go.label : "", pmPrimaryGo: () => { if (go) go.run(); },
         pmHasRetake: !!(sel && g && sel.state === "done"),   // (only a FINISHED paper, Murci 2026-10-08: Continue or Start is the way into its questions)
         pmRetakeGo: () => { if (g) this.setState({ pmOpen: null, paperId: g.local.id }, () => this.retakePaper()); },
-        pmHasSource: !!p.source_pdf, pmSourceGo: () => this.openPaperInPanel(p.id) } : {}),
+        pmHasSource: !!p.source_pdf, pmSourceGo: () => this.openPaperSource(p.id, 1) } : {}),
     };
   }
   finishToSummary() { this.closeFinish(); this.setState({ screen: "summary" }, () => window.scrollTo(0, 0)); }
@@ -6187,7 +6143,7 @@ class Component extends DCLogic {
     const sourcePaper = this.pmAllPapers().filter(p => p.id === s.paperSourceId)[0] || null;
     const activePaperSource = this.pmAllPapers().filter(p => HOME_TO_LOCAL[p.id] === s.paperId)[0] || null;
 
-    const backHome = focus => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null, paperSourceOpen: false, pvInPanel: false }, () => { window.scrollTo(0, 0); focus(); done(); });
+    const backHome = focus => { const back = done => this.setState({ screen: "pick", pmOpen: null, pop: null, paperSourceOpen: false }, () => { window.scrollTo(0, 0); focus(); done(); });
       if (s.screen === "map" && s.pmInd) this.indMorph("back", s.pmInd, back); else back(() => {}); };   /* the industry page shrinks into its card */
     return {
       headerDisplay: s.screen === "pick" || s.screen === "play" || s.screen === "map" ? "none" : "flex",   /* the industry page: no navbar (Murci 2026-10-27) */
