@@ -748,9 +748,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* the companion larger and up, its head above the cards (Murci 2026-10-27; was 60% wide, its head ~160 px below the cards' top):
      80% wide, its top 34 px into the section, lifted by its head's height (the head ends 22.5% down home-robot.webp, measured),
      so the head's bottom sits 8 px above the cards on any phone height */
-  /* its cap at the top edge of the cards, not above them (Murci 2026-10-27, after heads-level read too low): the cards start
-     42 px into this section and the cap is 0.3% down home-robot.webp (measured from its alpha) */
-  .hm-bgbot { left: -10%; top: 42px; bottom: auto; width: 80%; height: auto; transform: none; }   /* the cap 0.3% down: on the cards' top edge, never above */
+  /* its cap just below "Welcome back." (Murci 2026-10-27, after the cards' top edge, heads-level and lower tries): the title
+     ends 10 px above this section (measured at 384x724); the cap (0.3% down home-robot.webp) 4 px under it */
+  .hm-bgbot { left: -16%; top: -6px; bottom: auto; width: 80%; height: auto; transform: none; }   /* a bit further left (Murci 2026-10-27; was -10%) */
   .hm-choose { overflow-y: clip; }   /* its (faded) feet run below the section: clipped, so the page doesn't scroll; sideways untouched */
   /* a card opened by a tap fits the screen from its place at the start (Murci's 36% start left 241 px at 384: the 260 px card ran
      19 px off the edge, measured on a Galaxy A04 2026-10-27); start = 16 + 36% of (100vw - 32), 8 px to spare */
