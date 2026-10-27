@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=156">
+  <link rel="stylesheet" href="nx-map.css?v=159">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -157,7 +157,7 @@
         <!-- the search, in the title's place (Murci 2026-10-26: "remove the terms exam practice and replace it with a search bar") -->
         <div class="hm-search" role="search">
           <svg class="hm-search-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-          <input class="hm-q" type="search" placeholder="Search industries, careers, papers" aria-label="Search industries, careers and past papers" autocomplete="off" spellcheck="false" onInput="{{ hmQInput }}" onKeyDown="{{ hmQKeys }}">
+          <input class="hm-q" type="search" placeholder="Industries, careers, papers" aria-label="Search industries, careers and past papers" autocomplete="off" spellcheck="false" onInput="{{ hmQInput }}" onKeyDown="{{ hmQKeys }}">
           <p class="pm-sr" aria-live="polite">{{ hmQLive }}</p>
           <sc-if value="{{ hmQOpen }}" hint-placeholder-val="{{ false }}">
             <div class="hm-q-res">

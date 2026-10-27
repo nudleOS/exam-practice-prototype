@@ -712,7 +712,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%); mask-image: linear-gradient(180deg, #000 55%, transparent 100%); }
 .hm-choose > .hm-kickrow, .hm-choose > .hm-deckwrap, .hm-choose > .hm-note { position: relative; z-index: 1; }
 .hm-choose > .hm-kickrow { margin-left: 28%; }
-.hm-deck { margin-left: calc(28% - 56px); margin-right: -16px; padding-left: 56px; scroll-padding-left: 56px; }   /* the first card stays at 28%; left of it, the bend zone */
+.hm-deck { margin-left: calc(36% - 56px); margin-right: -16px; padding-left: 56px; scroll-padding-left: 56px; }   /* the first card at 36% (Murci 2026-10-27: a bit further over, more of the companion shows; was 28%); left of it, the bend zone */
 @media (min-width: 600px) {
   .hm-bgbot { left: 6%; bottom: -150px; width: 40%; height: calc(100% + 220px); }   /* under the first cards: behind the row; never up into the top bar */
   .hm-choose > .hm-kickrow { margin-left: 33%; }
@@ -722,6 +722,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-headblock { align-items: flex-start !important; padding-left: calc(20px + (100% - 40px) * 0.33) !important; padding-right: 20px !important; }   /* over the home's inline styles */
   .hm-headblock > h1 { text-align: left !important; }
 }
+.hm-choose > .hm-kickrow { margin-left: 0; justify-content: center; }   /* "Choose an industry" centred on the page (Murci 2026-10-27; was over the first card) */
 
 .ind-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13.5px; color: #9fb0dd; }
 .ind-fact > b { color: #eef3ff; }
@@ -839,7 +840,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .hm-q-item:hover, .hm-q-item:focus-visible { background: rgba(129, 177, 255, 0.14); outline: none; box-shadow: inset 0 0 0 2px rgba(129, 177, 255, 0.5); }
 .hm-q-none { margin: 0; padding: 12px 10px; font-size: 13.5px; line-height: 1.45; color: #9fb0dd; }
 @media (max-width: 599px) {
-  .hm-search { order: 10; flex: 1 0 100%; }
+  .hm-search { order: 10; flex: 0 0 84%; margin-inline: auto; }   /* narrower on a phone (Murci 2026-10-27; was the full row), centred */
+  .hm-search > .hm-q { font-size: 16px; }   /* under 16 px an iPhone zooms the page in on focus; the hint shortened to fit the narrower bar */
   .hm-top { row-gap: 14px !important; }   /* over the bar's inline gap: 8px; the search row: 14 px under the top row, as at its sides (it was 8; Murci 2026-10-26: "correct the spacing") */
   /* the preview button (prototype only) sat under the role switch, on the search row: beside the switch instead */
   .hm-right { flex-direction: row-reverse; align-items: center; gap: 6px; }
