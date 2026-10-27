@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=167">
+  <link rel="stylesheet" href="nx-map.css?v=168">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2599,7 +2599,7 @@ class Component extends DCLogic {
       const pvBox = pvOn && pvPhone && st.screen === "map" && !st.pvFull && [...document.querySelectorAll(".ind-intro")].find(e => !e.closest("x-dc"));
       document.body.classList.toggle("pv-inbox", !!pvBox);
       if (pvBox) { const r = pvBox.getBoundingClientRect(), bs = document.body.style;
-        bs.setProperty("--pv-box-l", r.left + "px"); bs.setProperty("--pv-box-w", r.width + "px"); bs.setProperty("--pv-box-b", (innerHeight - r.bottom) + "px"); bs.setProperty("--pv-box-h", r.height + "px"); }
+        bs.setProperty("--pv-box-l", r.left + "px"); bs.setProperty("--pv-box-w", r.width + "px"); bs.setProperty("--pv-box-t", r.top + "px");   /* from the top: innerHeight is fractional with an address bar (1 px off, A04) */ bs.setProperty("--pv-box-h", r.height + "px"); }
       const hd = document.querySelector("[data-playhead]") || document.querySelector("header");
       document.body.style.setProperty("--pv-top", (pvOn && !pvPhone && hd ? Math.max(0, Math.round(hd.getBoundingClientRect().bottom)) : 0) + "px");
       requestAnimationFrame(() => window.dispatchEvent(new Event("resize"))); }
