@@ -748,7 +748,10 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* the companion larger and up, its head above the cards (Murci 2026-10-27; was 60% wide, its head ~160 px below the cards' top):
      80% wide, its top 34 px into the section, lifted by its head's height (the head ends 22.5% down home-robot.webp, measured),
      so the head's bottom sits 8 px above the cards on any phone height */
-  .hm-bgbot { left: -10%; top: 34px; bottom: auto; width: 80%; height: auto; transform: translateY(-22.5%); }
+  /* its cap at the top edge of the cards, not above them (Murci 2026-10-27, after heads-level read too low): the cards start
+     42 px into this section and the cap is 0.3% down home-robot.webp (measured from its alpha) */
+  .hm-bgbot { left: -10%; top: 42px; bottom: auto; width: 80%; height: auto; transform: none; }   /* the cap 0.3% down: on the cards' top edge, never above */
+  .hm-choose { overflow-y: clip; }   /* its (faded) feet run below the section: clipped, so the page doesn't scroll; sideways untouched */
   /* a card opened by a tap fits the screen from its place at the start (Murci's 36% start left 241 px at 384: the 260 px card ran
      19 px off the edge, measured on a Galaxy A04 2026-10-27); start = 16 + 36% of (100vw - 32), 8 px to spare */
   .hm-card[aria-expanded="true"] { width: min(260px, calc(64vw - 13px)); }
@@ -793,12 +796,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-act-b button { flex: 1 1 0; min-width: 0; padding: 0 10px; white-space: nowrap; }
   .ind .ind-intro > .ind-name { font-size: clamp(20px, 5.6vw, 24px); }
   .ind .ind-mapbox { padding: 10px 14px; }
-}
-@media (min-width: 760px) {
-  /* the path card on the left, the practice panel on the right; both take the screen's leftover height (no scroll) */
-  /* the boxes share the width 45:55 and grow with the screen (Murci 2026-10-27: use the sides; was a 1100 px cap, fixed columns) */
-  .ind { max-width: 1560px; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: "pro intro"; column-gap: clamp(16px, 2vw, 28px); }
-  main.pm[data-pmap] > .pm-col { max-width: none; padding: clamp(24px, 4.5vh, 44px) clamp(24px, 3.5vw, 64px); }   /* more room above and below, and at the sides */
   /* option B (Murci picked it 2026-10-27): the professional's card is the taller box and the panel needs no scroll - the industry's
      name moves onto the card (above "Your path"; the panel's heading stays for screen readers and focus), and the panel is
      compact: two careers + "+N", Level and Subject side by side, Paper below, the paper's facts as one line, the buttons */
@@ -811,8 +808,14 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .ind .ind-act { padding: 0; border: 0; background: none; }
   .ind .ind-act-t .ind-facts { font-size: 12.5px; }
   .ind .ind-soon .ind-soon-t { display: none; }   /* "papers on the way": the title and its button say it (the sentence cost Finance NC(V) L2 the taller card) */
-  .ind .ind-intro { align-self: stretch; overflow: hidden; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 22px; padding: clamp(20px, 2.2vw, 30px); gap: 12px; }
+}
 .ind-hero-name { display: none; }   /* only a phone shows the name on the card (option B) */
+@media (min-width: 760px) {
+  /* the path card on the left, the practice panel on the right; both take the screen's leftover height (no scroll) */
+  /* the boxes share the width 45:55 and grow with the screen (Murci 2026-10-27: use the sides; was a 1100 px cap, fixed columns) */
+  .ind { max-width: 1560px; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: "pro intro"; column-gap: clamp(16px, 2vw, 28px); }
+  main.pm[data-pmap] > .pm-col { max-width: none; padding: clamp(24px, 4.5vh, 44px) clamp(24px, 3.5vw, 64px); }   /* more room above and below, and at the sides */
+  .ind .ind-intro { align-self: stretch; overflow: hidden; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 22px; padding: clamp(20px, 2.2vw, 30px); gap: 12px; }
   .ind .ind-intro > .ind-name { font-size: clamp(24px, 2.3vw, 32px); }
 }
 
