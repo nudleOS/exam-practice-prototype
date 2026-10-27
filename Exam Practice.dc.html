@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=145">
+  <link rel="stylesheet" href="nx-map.css?v=146">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -175,6 +175,8 @@
         </div>
         <span style="flex:1; min-width:0"></span>
         <div class="hm-right">
+          <!-- the total XP on the home (Murci 2026-10-27); each card shows its industry's -->
+          <span class="xp-chip hm-xp-total" title="XP earned, all industries" aria-label="{{ hmXpTotal }} XP in total"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ hmXpTotal }}</span><span>XP</span></span>
           <div class="hm-role" role="group" aria-label="Prototype role" style="display:flex; flex:none; gap:2px; padding:3px; border:1px solid rgba(255,255,255,0.08); border-radius:12px; background:rgba(var(--nx-c, 32,35,39),0.72)">
             <button aria-current="page" style="min-height:30px; padding:0 8px; border:0; border-radius:9px; background:rgba(0,104,248,0.2); color:#ffffff; font-size:11.5px; font-weight:700" title="Learner"><svg class="hm-ri" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg><span class="hm-rw">Learner</span></button>
             <a href="./Teach%20Exams.dc.html" style="min-height:30px; display:flex; align-items:center; padding:0 8px; border-radius:9px; color:var(--text3); font-size:11.5px; font-weight:700; text-decoration:none" title="Educator"><svg class="hm-ri" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20l4-4 4 4"></path></svg><span class="hm-rw">Educator</span></a>
@@ -246,6 +248,7 @@
                   <img class="ind-pro-obj" src="assets/pro/{{ c.pro }}-object.webp" alt="" loading="lazy" decoding="async">
                 </span>
                 <span class="hm-shade" aria-hidden="true"></span>
+                <span class="xp-chip hm-card-xp"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ c.xp }}</span><span>XP</span></span>
                 <span class="hm-ctext">
                   <b class="hm-cname">{{ c.name }}</b>
                   <span class="hm-more">
@@ -398,8 +401,8 @@
         <section class="ind" data-ind="true" aria-labelledby="ind-name">
           <div class="ind-hero">
             <!-- no navbar on this page (Murci 2026-10-27): the Nexera mark (home) and the XP chip sit in this card's top corners -->
-            <button type="button" class="pm-home ind-home" data-home="true" onClick="{{ goHome }}" aria-label="Home"><img src="assets/nexera-mark.png" alt="" width="28" height="28" /></button>
-            <span class="xp-chip ind-xp" title="XP earned" aria-label="{{ xp }} XP"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ xp }}</span><span>XP</span></span>
+            <button type="button" class="pm-home ind-home" data-home="true" onClick="{{ goHome }}"><span class="ind-home-t">Home</span><img src="assets/nexera-mark.png" alt="" width="28" height="28" /></button>
+            <span class="xp-chip ind-xp" title="XP earned in this industry" aria-label="{{ indXp }} XP in this industry"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ indXp }}</span><span>XP</span></span>
             <figure class="ind-pro">
               <span class="ind-pro-media">
                 <img class="ind-pro-person" src="assets/pro/{{ indPro }}-person.webp" alt="" decoding="async">
@@ -1666,6 +1669,8 @@ const PROG_KEY = "nexera.progress.v1";
 const INSIGHT_RULES = [["Layout", "your introduction and your conclusion are right"], ["Analysis", "every heading of the essay is answered"],
   ["Synthesis", "only right statements: every section right on its first try"], ["Originality", "you picked the example statements"]];
 const progEmpty = () => ({ v: 1, xp: 0, bestStreak: 0, last: null, papers: {} });
+// two per-industry XP tallies merged key by key, the larger wins (as the total does: a save never lowers XP)
+const xpMerge = (a, b) => { const out = Object.assign({}, a || {}); Object.keys(b || {}).forEach(k => { out[k] = Math.max(out[k] || 0, b[k] || 0); }); return out; };
 const progRead = () => { try { if (BUS_BLOCKED) throw new Error("blocked"); const d = JSON.parse(localStorage.getItem(PROG_KEY) || "null");
   return d && d.v === 1 && d.papers && typeof d.papers === "object" ? d : progEmpty(); } catch (e) { return progEmpty(); } };
 // a local calendar day, YYYY-MM-DD (the days practised: the home page counts this week's)
@@ -2168,7 +2173,7 @@ class Component extends DCLogic {
   // unless the learner picked a subject on this device. "Fresh paper" etc. in the design preview switch it off.
   state = { pmRace: true, pmSubj: "Business Studies", screen: "pick", programme: "All", paperId: null, mi: 0, pi: 0, vw: 1280,
     inputs: {}, list: [], written: "", matchSel: null, matchPairs: {}, matchCard: null, matchMiss: [], matchBreak: [], drawn: false, build: {},
-    prog: {}, xp: 0, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
+    prog: {}, xp: 0, xpInd: {}, streak: 0, bestStreak: 0, paid: {}, reply: null, marking: false, flySeq: 0,
     kit: false, kitTab: "rules", reduced: false,
     studies: null, studiesAsked: false, studyStep: 1, studyDraft: null, studyFolder: null, studyErr: "",
     paperSourceOpen: false, paperSourceId: null, paperSourcePage: 1, paperSourceUrl: "",
@@ -2901,14 +2906,14 @@ class Component extends DCLogic {
       const d = progRead(), saved = d.papers[pid];
       if (saved && !mine(st.prog).length && mine(saved.prog).length) {   // back where they left off
         this.setState({ prog: Object.assign({}, st.prog, saved.prog), paid: Object.assign({}, st.paid, saved.paid || {}),
-          xp: Math.max(st.xp || 0, d.xp || 0), bestStreak: Math.max(st.bestStreak || 0, d.bestStreak || 0) }); return; } }
+          xp: Math.max(st.xp || 0, d.xp || 0), xpInd: xpMerge(st.xpInd, d.xpInd), bestStreak: Math.max(st.bestStreak || 0, d.bestStreak || 0) }); return; } }
     const sig = [st.prog, st.paid, st.xp, st.mi, st.pi, st.screen].map(x => typeof x === "object" ? x : String(x));
     if (this._progRef && sig.every((x, i) => x === this._progRef[i])) return;
     this._progRef = sig; clearTimeout(this._progT);
     this._progT = setTimeout(() => { const s = this.state; if (s.paperId !== pid) return;
       const d = progRead(), pick = o => Object.fromEntries(mine(o).map(k => [k, o[k]]));
       d.papers[pid] = { prog: pick(s.prog), paid: pick(s.paid), mi: s.mi || 0, pi: s.pi || 0, at: Date.now() };
-      d.xp = Math.max(d.xp || 0, s.xp || 0); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid;
+      d.xp = Math.max(d.xp || 0, s.xp || 0); d.xpInd = xpMerge(d.xpInd, s.xpInd); d.bestStreak = Math.max(d.bestStreak || 0, s.bestStreak || 0); d.last = pid;
       const today = progDay(new Date()); d.days = (d.days || []).filter(x => x !== today).concat([today]).slice(-60); progWrite(d); }, 350);
   }
   // a GATED part (`after`: the earlier parts whose answers it shows; BS P1 Nov 2025 4.3.2 classifies the two sentences 4.3.1 asks the
@@ -2973,7 +2978,7 @@ class Component extends DCLogic {
         if (hit) paid[q.key] = true; }))); }
     [this._cel1, this._cel2, this._cel3, this._cel4].forEach(clearTimeout);
     this.setState({ paperId: paper.id, screen: "map", mapMode: kind, prog: prog, paid: paid, streak: 0, card: null, cel: null, litHold: null,
-      xp: kind === "fresh" ? 0 : kind === "finished14" ? 1240 : 740 }, () => {
+      xp: kind === "fresh" ? 0 : kind === "finished14" ? 1240 : 740, xpInd: kind === "fresh" ? {} : { health: kind === "finished14" ? 1240 : 740 } }, () => {
       if (kind.indexOf("fin") === 0 && kind !== "finished14") this.showFinishCard(); else this.closeFinish();
       if (after) after();
     });
@@ -3311,7 +3316,7 @@ class Component extends DCLogic {
       // for presentations, not product behaviour
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
-      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indCareerMore: "+" + Math.max(0, ind.careers.length - 3) + " more",   /* a phone shows three */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro,
+      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indCareerMore: "+" + Math.max(0, ind.careers.length - 3) + " more",   /* a phone shows three */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro, indXp: this.xpTally(s)[ind.key] || 0,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
       indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",
@@ -4010,6 +4015,11 @@ class Component extends DCLogic {
   // A drill plays as one synthetic mission of the parts it chose.
   mission() { if (this.state.drill) return this.state.drill.mission; return this.missions()[this.state.mi] || null; }
   part() { const m = this.mission(); return m ? m.parts[this.state.pi] : null; }
+  // XP per industry (Murci 2026-10-27, credited to the industry a paper was started from): xpTally is what the pages show. With no
+  // tally yet the demo's total (HOME.me.xp_total, shown while s.xp is 0) is the in-progress Life Sciences paper's: Health's. So
+  // the industries always add up to the home's total.
+  xpTally(s) { const t = s.xpInd || {}; return Object.keys(t).length ? t : s.xp ? {} : { health: HOME.me.xp_total }; }
+  xpCredit(s, xp) { const key = s.pmInd || "other", t = Object.assign({}, this.xpTally(s)); t[key] = (t[key] || 0) + xp; return t; }
   pg(key) { return this.state.prog[key] || { tries: 0, best: 0, closed: false, revealed: false, firstTryFull: false, waiting: false }; }
 
   resetInputs(extra) { if (this.nxLeave(() => this.resetNow(extra))) return; this.resetNow(extra); }
@@ -4643,7 +4653,7 @@ class Component extends DCLogic {
         matchBreak: mWrong, matchCard: null,
         marking: false, reply: reply, barOpen: !quiet && !missLive, barSeq: quiet ? s.barSeq : s.barSeq + 1, edited: {}, memoSeen: false, lastSub: mode === "steps" ? Object.assign({}, answer) : null,
         lastMult: replay || draw ? s.lastMult : result.full && tryNo === 1 ? mult : 1,
-        xp: s.xp + xp, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
+        xp: s.xp + xp, xpInd: xp ? this.xpCredit(s, xp) : s.xpInd, streak: streak, bestStreak: Math.max(s.bestStreak, streak),
         paid: result.full ? Object.assign({}, s.paid, { [part.key]: true }) : s.paid, flySeq: xp ? s.flySeq + 1 : s.flySeq,
         // The run log is what page 4 counts; `multiplier` is the server's, never recomputed here.
         runLog: s.runLog.concat([{ key: part.key, try: tryNo, full: !!result.full, xp: xp, mult: mult, revealed: revealed, replay: replay }]),
@@ -4901,11 +4911,11 @@ class Component extends DCLogic {
         .map(g => ({ label: g[1], opts: SERVICE_LEVELS[g[0]].map(l => ({ label: this.levelName({ qualification: g[0], level: l }), value: g[0] + ":" + l })) })),
       hmLvVal: lv.qualification + ":" + lv.level,
       hmLvPick: e => { const v = (e.target.value || "").split(":"); if (v.length === 2 && (v[0] !== lv.qualification || v[1] !== lv.level)) save(v[0], v[1]); },
-      hmHasNote: !!s.hmNote, hmNote: s.hmNote || "",
+      hmHasNote: !!s.hmNote, hmNote: s.hmNote || "", hmXpTotal: s.xp || HOME.me.xp_total,
       hmCards: INDUSTRIES.map(ind => { const names = indSubjects(ind, lv).map(sb => sb[0]), ps = L.papers.filter(p => names.indexOf(p.subject) !== -1);
         const withPapers = names.filter(n => ps.some(p => p.subject === n)).length;
         const done = ps.filter(p => { const g = this.pmProgress(p); return g && g.done; }).length, open = s.hmOpen === ind.key;
-        return { key: ind.key, pro: ind.pro, name: ind.name, c: ind.c, rgb: ind.rgb, icon: ind.icon, open: open ? "true" : "false",
+        return { key: ind.key, pro: ind.pro, name: ind.name, c: ind.c, rgb: ind.rgb, icon: ind.icon, open: open ? "true" : "false", xp: this.xpTally(s)[ind.key] || 0,
           meta: withPapers + (withPapers === 1 ? " subject · " : " subjects · ") + ps.length + (ps.length === 1 ? " paper" : " papers") + (done ? " · " + done + " done" : ""),
           meta2: ind.careers.join(" · "),
           hasMeter: done > 0, pct: ps.length ? Math.round(done / ps.length * 100) + "%" : "0%",
@@ -6126,7 +6136,7 @@ class Component extends DCLogic {
       practiseLabel: returning ? "Practise another paper" : "Practise a paper instead",
       hasContinueSub: !finished, continueSub: finished ? "" : resumeName + " · " + (rs.next_mission ? rs.next_mission.title : "every mission done"),
       continueGo: () => { if (rs.local) { const d = progRead(), sv = d.papers[rs.paper_id] || {}; this._progPid = rs.paper_id; this._progRef = null;   // back to their own paper, its work restored first
-          this.setState({ paperId: rs.paper_id, prog: Object.assign({}, this.state.prog, sv.prog || {}), paid: Object.assign({}, this.state.paid, sv.paid || {}), xp: Math.max(this.state.xp || 0, d.xp || 0) },
+          this.setState({ paperId: rs.paper_id, prog: Object.assign({}, this.state.prog, sv.prog || {}), paid: Object.assign({}, this.state.paid, sv.paid || {}), xp: Math.max(this.state.xp || 0, d.xp || 0), xpInd: xpMerge(this.state.xpInd, d.xpInd) },
             () => rs.finished ? this.setState({ screen: "summary" }) : this.openMission(Math.max(0, rs.next_index))); return; }
         const go = () => { if (finished) { this.setState({ paperId: HOME_TO_LOCAL[rs.paper_id], screen: "summary" }); return; }
           const ms = (this.papers || []).filter(p => p.id === HOME_TO_LOCAL[rs.paper_id])[0];
