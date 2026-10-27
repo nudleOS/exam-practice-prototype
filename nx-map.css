@@ -681,9 +681,9 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 @media (max-width: 599px) {   /* a phone folds it behind one row (Murci 2026-10-27), so the professional keeps the room */
   .ind-intro > .ind-after { padding-top: 2px; }
   .ind-intro > .ind-after > .ind-sec-name { display: none; }   /* the row names it */
-  .ind-after-tog { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 0; border: 0; background: none;
+  .ind-after-tog { display: flex; align-items: center; gap: 0.3em; width: 100%; min-height: 44px; padding: 0; border: 0; background: none;
     font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ic); cursor: pointer; }
-  .ind-after-tog > svg { transition: transform 200ms; }
+  .ind-after-tog > svg { margin-left: auto; transition: transform 200ms; }   /* the text stays together (the runtime wraps {{ values }} in a span), the chevron right */
   .ind-after-tog[aria-expanded="true"] > svg { transform: rotate(180deg); }
   .ind-after-body[data-open="false"] { display: none; }
 }
