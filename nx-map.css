@@ -759,26 +759,26 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-after { grid-area: after; }
 
 @media (max-width: 599px) {
-  .ind { grid-template-areas: "secs" "pro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
-  .ind .ind-intro, .ind .ind-mapbox { grid-area: pro; z-index: 2; }
+  .ind { grid-template-areas: "secs" "pro" "intro" "after"; }   /* the tabs + year shelf first, just below the navbar (Murci 2026-10-27) */
+  .ind .ind-mapbox { grid-area: pro; z-index: 2; }
   .ind .ind-pro { height: clamp(460px, 72dvh, 640px); overflow: hidden; border-radius: 24px; }   /* no glow; the professional a little larger (was 66dvh, max 580) */
-  /* the text at the top: a soft dark fade behind it; the professional right of centre and a little lower, the face under the text */
-  .ind .ind-pro::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 12, 36, 0.9) 0%, rgba(3, 12, 36, 0.55) 26%, transparent 46%); pointer-events: none; }
-  .ind .ind-pro > .ind-pro-media { left: 62%; height: 80%; }
-  .ind .ind-intro { align-self: start; max-width: 560px; padding: 28px 18px 0; }   /* 10 px lower (2026-10-26); more would cover the face */
-  .ind .ind-intro > .ind-name { font-size: clamp(26px, 4vw, 42px); }
-  .ind .ind-mapbox { align-self: end; justify-self: start; margin: 14px; width: 132px; min-height: 0; padding: 10px; }   /* bottom-left: the text holds the top, the person the right */
+  /* the professional centred, where the text was (Murci 2026-10-27); the text is a box under the stage */
+  .ind .ind-pro > .ind-pro-media { left: 50%; height: 80%; }
+  .ind .ind-intro { border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
+  .ind .ind-intro > .ind-name { font-size: clamp(24px, 6vw, 30px); }
+  .ind .ind-mapbox { align-self: end; justify-self: start; margin: 14px; width: 132px; min-height: 0; padding: 10px; }   /* the stage's bottom-left corner, over the text box below */
   .ind .ind-mapbox > .ind-mapbox-art { margin-bottom: 4px; }
 }
 @media (min-width: 600px) {
-  .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-areas: "secs secs" "pro map" "after after"; column-gap: 16px; }
-  .ind:not(:has(.ind-mapbox)) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "secs" "pro" "after"; }   /* no papers, no map box: no empty column */
-  .ind .ind-intro { grid-area: pro; z-index: 2; align-self: center; justify-self: start; max-width: min(46%, 460px); padding: 0 0 0 28px; }   /* centred on the stage's left (Murci 2026-10-26) */
-  .ind-pro > .ind-pro-media { left: 74%; }   /* the stage's right side */
-  .ind-mapbox { align-self: center; }   /* a little lower (Murci 2026-10-25): mid-height beside the professional */
+  /* the right column: the map box, then the industry's text in a box under it (Murci 2026-10-27); the professional on the
+     stage's left, where the text was. No papers: no map box, the text box heads the column */
+  .ind { grid-template-columns: minmax(0, 1fr) 200px; grid-template-rows: auto auto 1fr auto; grid-template-areas: "secs secs" "pro map" "pro intro" "after after"; column-gap: 16px; }
+  .ind:not(:has(.ind-mapbox)) { grid-template-rows: auto 1fr auto; grid-template-areas: "secs secs" "pro intro" "after after"; }
+  .ind .ind-intro { align-self: start; border: 1px solid rgba(var(--ic-rgb), 0.45); background: linear-gradient(180deg, rgba(var(--ic-rgb), 0.16), rgba(3, 18, 44, 0.6)); border-radius: 18px; padding: 16px; }
+  .ind .ind-intro > .ind-name { grid-row: 2; grid-column: 1 / -1; font-size: clamp(18px, 1.7vw, 22px); }   /* the icon above it: beside it, "Manufacturing" ran out of the 240 px box */
+  .ind-pro > .ind-pro-media { left: 30%; }   /* where the text was */
 }
 @media (min-width: 600px) and (max-width: 1099px) {
-  .ind-pro > .ind-pro-media { left: 68%; }   /* a tablet's stage is narrow: at 74% the person ran 31 px past it, under the map box */
 }
 @media (min-width: 1100px) {
   .ind { grid-template-columns: minmax(0, 1fr) 240px; }
