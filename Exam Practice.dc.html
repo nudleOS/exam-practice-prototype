@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=138">
+  <link rel="stylesheet" href="nx-map.css?v=139">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -464,6 +464,17 @@
                 </div>
               </div>
             </sc-if>
+            <!-- a level (or a TVET industry) with no papers yet says so here, where its paper and Start would be (2026-10-27: as a
+                 separate card it squeezed this panel into what was left and cut its title off) -->
+            <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
+              <div class="ind-act ind-soon" data-pmempty="true" role="status">
+                <div class="ind-act-t">
+                  <b class="ind-dtitle">{{ pmEmptyTitle }}</b>
+                  <span class="ind-soon-t">{{ pmEmptyText }}</span>
+                </div>
+                <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><div class="ind-act-b"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></div></sc-if>
+              </div>
+            </sc-if>
             <!-- After school (Finance), inside the panel (2026-10-27): on its own it pushed the page past the screen -->
             <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
               <section class="ind-after" aria-labelledby="ind-after-title">
@@ -480,17 +491,6 @@
             </sc-if>
           </div>
         </section>
-        <sc-if value="{{ pmEmpty }}" hint-placeholder-val="{{ false }}">
-          <section class="pm-empty" data-pmempty="true" aria-labelledby="pm-empty-title">
-            <span class="pm-empty-ico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M9 7h7M9 11h5"></path></svg></span>
-            <h2 id="pm-empty-title">{{ pmEmptyTitle }}</h2>
-            <p>{{ pmEmptyText }}</p>
-            <div class="pm-empty-acts">
-              <sc-if value="{{ pmEmptyHasGo }}" hint-placeholder-val="{{ true }}"><button type="button" class="pm-go" data-pmemptygo="true" onClick="{{ pmEmptyGo }}">{{ pmEmptyGoLabel }}</button></sc-if>
-              <button type="button" class="pm-src" onClick="{{ pmLevelGo }}">Change level</button>
-            </div>
-          </section>
-        </sc-if>
       </div>
     </main>
     <!-- the road, for learners who want that path (Murci 2026-10-25): a centred modal from the industry page's map box -->
@@ -6196,9 +6196,6 @@ class Component extends DCLogic {
       // back home the deck starts at its first card: bring this industry's card into view (start: where the deck snaps) and focus it
       goHome: () => backHome(() => { const c = s.pmInd && document.querySelector('[data-hmcard="' + s.pmInd + '"]');
         if (c) { c.scrollIntoView({ inline: "start", block: "nearest" }); c.focus({ preventScroll: true }); } }),
-      // the header's level: home, focused on the level pill (Murci 2026-10-26)
-      // "Change level" on the "on the way" card: the navbar's level picker, on this page (Murci 2026-10-27)
-      pmLevelGo: () => { const p = [...document.querySelectorAll(".ind-lvsel")].find(e => !e.closest("x-dc")); if (p) p.focus(); },
       headTitle: headTitle, headSub: headSub,
       // (the review page shows the mark in large type itself, and needs the room for its title)
       showMeter: !!paper && s.screen !== "pick" && s.screen !== "map" && s.screen !== "summary", meterLabel: earned + " of " + total + " marks",
