@@ -575,7 +575,10 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
    one before it by 18 px, the later card on top, a soft shadow on its left edge giving the depth (the frosted card above also
    blurs the one under it); a card opened (touch) comes to the front, so its widened text is never under its neighbour */
 .hm-deck { gap: 0; }
-.hm-slot { flex: none; display: flex; scroll-snap-align: start; }   /* the unmoving snap target around each gliding card */
+.hm-slot { flex: none; display: flex; scroll-snap-align: start; scroll-snap-stop: always; }   /* the unmoving snap target around each gliding card */
+/* a swipe stops at the next card, however hard (Murci 2026-10-27: on hard swipes "the whole deck just moves to the side and
+   sometimes hidden totally then comes back" - measured on a Galaxy A04: one 140 px flick flung it 8 cards, out to the deck's
+   copies and its ends, before the loop reset it) */
 .hm-slot + .hm-slot { margin-left: -18px; }
 .hm-card { box-shadow: -14px 0 26px -10px rgba(0, 0, 0, 0.6); }
 .hm-card[aria-expanded="true"] { z-index: 2; }
