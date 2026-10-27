@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=188">
+  <link rel="stylesheet" href="nx-map.css?v=192">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -2454,6 +2454,8 @@ class Component extends DCLogic {
     const cs = getComputedStyle(d), pad = parseFloat(cs.paddingLeft) || 0, tilt = parseFloat(cs.getPropertyValue("--hm-tilt")) || 0;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches, sx = d.scrollLeft;
     // read every measure first, then write (a read after a write would force a style pass per card)
+    // no bend zone (a phone, Murci 2026-10-27: flat): one pass sets every card flat, then nothing per scroll frame
+    if (!pad && d._flat) return; d._flat = !pad;
     const at = slots.map(sl => { const c = sl.firstElementChild;
       return { sl, c, x: pad + sl.offsetLeft - slots[0].offsetLeft - sx, W: c ? c.offsetWidth : 0, H: c ? c.offsetHeight : 0, ox: c ? c.offsetLeft : 0, oy: c ? c.offsetTop : 0 }; });
     const MAX = 80 * Math.PI / 180, BEND = Math.max(96, pad * 1.25), P = "perspective(1400px) ";   // a phone's curve over 96 px (was 70: too tight, it creased)
