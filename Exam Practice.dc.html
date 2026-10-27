@@ -2459,7 +2459,9 @@ class Component extends DCLogic {
       // taken for one entering the curve: swapped for strips, its float frozen, measured on a Galaxy A04 2026-10-27)
       const flat = still || x >= pad - 1 || !pad, tR = pad - x - W;
       if (sl._fx && (flat || tR >= BEND)) put(sl._fx, "display", "none");   // not crossing the curve: no strips
-      if (flat) { put(c, "transform", tilt ? P + "rotateY(" + tilt + "deg)" : ""); put(c, "filter", ""); put(c, "opacity", ""); put(c, "visibility", ""); return; }
+      if (flat) { put(c, "transform", tilt ? P + "rotateY(" + tilt + "deg)" : ""); put(c, "filter", ""); put(c, "opacity", ""); put(c, "visibility", "");
+        if (!still && pad && x < pad + W) this.hmStrips(sl, c, W, H);   // the next to bend: its strips built (hidden) and decoding ahead of time
+        return; }
       const L = pt(pad - x), R = pt(tR);   // its left and right edges on the path
       const th = Math.atan2(L[1] - R[1], R[0] - L[0]), f = th / MAX;   // the chord's angle: the curve's, where the card is
       const deg = tilt * (1 - f) - th * 180 / Math.PI, lit = 1 - 0.5 * f;
@@ -2473,6 +2475,9 @@ class Component extends DCLogic {
       if (tR >= BEND || fade <= 0) { if (sl._fx) put(sl._fx, "display", "none"); put(c, "filter", "brightness(" + lit.toFixed(3) + ")"); put(c, "opacity", fade < 1 ? fade.toFixed(3) : ""); return; }
       // crossing the curve: the strips draw it, bent; the button stays at its chord, unseen, for taps
       const fx = this.hmStrips(sl, c, W, H), n = fx._n, w = W / n, rx = R[0] - x;
+      // strips whose pictures are still decoding would show the card without them, or flat, for a few frames (Murci 2026-10-27:
+      // "the cards look flat and 2D glitch before it shows the right bend"): until they are ready the card itself turns at its chord
+      if (!fx._ready) { put(fx, "display", "none"); put(c, "filter", "brightness(" + lit.toFixed(3) + ")"); put(c, "opacity", fade < 1 ? fade.toFixed(3) : ""); return; }
       put(c, "opacity", "0"); put(c, "filter", "");
       put(fx, "display", ""); put(fx, "left", ox + "px"); put(fx, "top", oy + "px"); put(fx, "opacity", fade < 1 ? fade.toFixed(3) : "");
       put(fx, "perspectiveOrigin", rx.toFixed(1) + "px 50%");   // as the plain card's: at its right edge
@@ -2505,7 +2510,8 @@ class Component extends DCLogic {
       g.className = c.className + " hm-ghost"; g.setAttribute("style", c.getAttribute("style") || ""); g.setAttribute("aria-expanded", c.getAttribute("aria-expanded") || "false");
       g.style.cssText += "; width: " + W + "px; height: " + H + "px; left: " + (ov - k * w) + "px; transform: none; opacity: 1; filter: none; visibility: visible;";
       g.innerHTML = c.innerHTML; dim.className = "hm-strip-dim"; st.append(g, dim); st._dim = dim; wrap.appendChild(st); fx._strips.push(st); }
-    sl.appendChild(fx);
+    fx.style.display = "none"; fx._ready = false; sl.appendChild(fx);   // shown by hmBend once its pictures are decoded
+    Promise.all([...fx.querySelectorAll("img")].map(i => i.decode ? i.decode().catch(() => {}) : 0)).then(() => { fx._ready = true; if (fx.isConnected) this.hmBend(); });
     // held at the card's pose by CSS (paused) + a negative delay: a script pause is lost when the layer is hidden and shown
     const pose = src.map(a => -(a.currentTime || 0) + "ms").join(", ");
     if (pose) fx._strips.forEach(st => st.querySelectorAll(".ind-pro-obj").forEach(o => { o.style.animationDelay = pose; }));
