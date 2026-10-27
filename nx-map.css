@@ -246,12 +246,8 @@ body.nx-play.pv-bottom aside[aria-label="Your companion"], body.nx-play.pv-botto
 
 /* the paper chip on a narrow phone: the icon and the page (the word pushed the question's marks off the row at 360 px) */
 
-/* the home's top bar, right side: the Learner/Educator toggle, and the design preview's icon under it (out of the flow) */
+/* the home's top bar, right side: the total XP (Murci 2026-10-27: the Learner / Educator switch and the design-preview button removed) */
 .hm-right { position: relative; flex: none; display: flex; flex-direction: column; align-items: flex-end; }
-.hm-pv { position: absolute; top: calc(100% + 6px); right: 0; width: 36px; height: 36px; display: grid; place-items: center; padding: 0;
-  border: 1px dashed rgba(129, 177, 255, 0.4); border-radius: 50%; background: transparent; color: #8fa0d6; cursor: pointer; }
-.hm-pv[aria-expanded="true"] { color: #fff; border-color: #5b8cff; background: rgba(30, 70, 255, 0.18); }
-.hm-pv:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 
 /* the paper panel's resize handle (2026-10-02): drag it, or focus it and use the arrow keys. Bottom panel: the bar across its top
    (the grab pill in it); side panel: its left edge (a pill shows on hover / focus / drag). Its hit area is larger than its mark. */
@@ -280,15 +276,6 @@ body.pv-inbox .pv[data-layout="bottom"] { left: var(--pv-box-l); right: auto; wi
 .pv-fab { transition: opacity 150ms ease, transform 150ms ease; }
 body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { opacity: 0; transform: scale(0.85); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .pv-fab { transition: none; } }
-/* "Exam practice" at the true centre of the home's top line (Murci, 2026-10-02), at every width. Under 440 px the Learner / Educator
-   toggle shows icons (the words stay for screen readers and as a tooltip): with words it started at x 206 at 360 px, where a centred
-   title must reach 231; at 412 the title sat 1 px from the worded toggle and 3 px from the logos (22 px there, 16 px at 360). */
-.hm-role .hm-ri { display: none; }
-@media (max-width: 439px) {
-  .hm-role .hm-ri { display: block; }
-  .hm-role .hm-rw { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .hm-role > :is(button, a) { position: relative; width: 36px; justify-content: center; padding: 0 !important; display: grid !important; place-items: center; }
-}
 /* the logos bigger than the title on a phone (Murci, 2026-10-02: they read smaller, 16 px against the title's 14 at 360), and the
    centred title still clear of them: <=380 px logos 18 / 14 px, title 12 px; 381-439 px logos 20 / 16, title 13; 440-599 px 22 / 20
    and 14 (a desktop: 27 / 25 and 14). */
@@ -762,9 +749,6 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   /* a card opened by a tap fits the screen from its place at the start (Murci's 36% start left 241 px at 384: the 260 px card ran
      19 px off the edge, measured on a Galaxy A04 2026-10-27); start = 16 + 36% of (100vw - 32), 8 px to spare */
   .hm-card[aria-expanded="true"] { width: min(260px, calc(64vw - 13px)); }
-  /* the Learner / Educator switch: 44 px wide each, and a 44 px tall touch area (an invisible strip above and below) */
-  .hm-role > button, .hm-role > a { position: relative; min-width: 44px; justify-content: center; }
-  .hm-role > button::after, .hm-role > a::after { content: ""; position: absolute; left: 0; right: 0; top: -7px; bottom: -7px; }
   .hm-card { height: clamp(280px, calc(100dvh - 290px), 460px); }   /* the rest of a phone's home takes 290 px (measured 2026-10-27 on a 384x724 A04: with 280 the page ran 10 px past the screen and scrolled) */
 }
 
@@ -876,9 +860,7 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
   .hm-search { order: 10; flex: 0 0 84%; margin-inline: auto; }   /* narrower on a phone (Murci 2026-10-27; was the full row), centred */
   .hm-search > .hm-q { font-size: 16px; }   /* under 16 px an iPhone zooms the page in on focus; the hint shortened to fit the narrower bar */
   .hm-top { row-gap: 14px !important; }   /* over the bar's inline gap: 8px; the search row: 14 px under the top row, as at its sides (it was 8; Murci 2026-10-26: "correct the spacing") */
-  /* the preview button (prototype only) sat under the role switch, on the search row: beside the switch instead */
   .hm-right { flex-direction: row-reverse; align-items: center; gap: 6px; }
-  .hm-pv { position: static; }
 }
 @media (min-width: 600px) { .hm-search { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: clamp(220px, 34vw, 440px); } }
 
