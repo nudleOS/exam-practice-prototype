@@ -232,10 +232,12 @@
               <div class="hm-slot" aria-hidden="{{ c.copy }}">
               <button type="button" class="hm-card" data-hmcard="{{ c.real }}" data-hmkey="{{ c.key }}" tabIndex="{{ c.tab }}" aria-expanded="{{ c.open }}" onClick="{{ c.tap }}" style="--sc:{{ c.c }}; --sc-rgb:{{ c.rgb }}">
                 <!-- card-sized copies (assets/pro/card: person 600 px, object 320 px wide): the 896 px originals cost a Galaxy A04
-                     64 decodes / 3.6 s in three swipes (2026-10-27); the industry page keeps the originals -->
+                     64 decodes / 3.6 s in three swipes (2026-10-27); the industry page keeps the originals. Eager + sync: lazy, a card a
+                     fast swipe brought in showed no person for ~0.7 s on the A04 (fetched late, then drawn before decoded); there are only
+                     9 pictures of each kind (the loop's copies share them) -->
                 <span class="hm-art">
-                  <img class="ind-pro-person" src="assets/pro/card/{{ c.pro }}-person.webp" alt="" loading="lazy" decoding="async">
-                  <img class="ind-pro-obj" src="assets/pro/card/{{ c.pro }}-object.webp" alt="" loading="lazy" decoding="async">
+                  <img class="ind-pro-person" src="assets/pro/card/{{ c.pro }}-person.webp" alt="" loading="eager" decoding="sync">
+                  <img class="ind-pro-obj" src="assets/pro/card/{{ c.pro }}-object.webp" alt="" loading="eager" decoding="sync">
                 </span>
                 <span class="hm-shade" aria-hidden="true"></span>
                 <span class="xp-chip hm-card-xp"><svg width="15" height="15" viewBox="0 0 24 24" fill="#81b1ff" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg><span>{{ c.xp }}</span><span>XP</span></span>
