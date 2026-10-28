@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=192">
+  <link rel="stylesheet" href="nx-map.css?v=193">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -416,48 +416,42 @@
           <div class="ind-intro">
             <h1 class="ind-name" id="ind-name" tabIndex="-1">{{ indName }}</h1>
             <p class="ind-blurb">{{ indBlurb }}</p>
-            <!-- careers as pills (Murci 2026-10-27: calmer, easier to read than one run-on line) -->
-            <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><span class="ind-career">{{ cr.name }}</span></sc-for><span class="ind-career ind-career-more" aria-hidden="true">{{ indCareerMore }}</span></div>
-            <!-- After school (Finance), inside the panel (2026-10-27): on its own it pushed the page past the screen -->
-            <sc-if value="{{ indHasAfter }}" hint-placeholder-val="{{ false }}">
-              <section class="ind-after" aria-labelledby="ind-after-title">
-                <h2 class="ind-sec-name" id="ind-after-title">After school</h2>
-                <!-- a phone folds it behind this row (Murci 2026-10-27), so the professional keeps the room; wider screens show it open -->
-                <button type="button" class="ind-after-tog" aria-expanded="{{ indAfterOpen }}" aria-controls="ind-after-body" onClick="{{ indAfterToggle }}">After school · {{ indAfterCodes }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
-                <div class="ind-after-body" id="ind-after-body" data-open="{{ indAfterOpen }}">
-                  <p class="ind-note">The regulatory exams you write once you work in financial services.</p>
-                  <sc-for list="{{ indAfter }}" as="af" hint-placeholder-count="2">
-                    <div class="ind-re"><b>{{ af.code }}</b><span>{{ af.text }}</span></div>
-                  </sc-for>
-                </div>
-              </section>
-            </sc-if>
+            <!-- careers as pills (Murci 2026-10-27: calmer, easier to read than one run-on line); each picks its course (2026-10-28, A).
+                 What follows a career after study (Finance's After school RE5 / RE1, now every career's) is in the course hint below -->
+            <div class="ind-careers"><span class="ind-k">Careers</span><sc-for list="{{ indCareerList }}" as="cr" hint-placeholder-count="3"><button type="button" class="ind-career" aria-pressed="{{ cr.on }}" onClick="{{ cr.tap }}">{{ cr.name }}</button></sc-for><span class="ind-career ind-career-more" aria-hidden="true">{{ indCareerMore }}</span></div>
             <!-- the practice block, pinned to the panel's bottom: information above, action below (Murci 2026-10-27) -->
             <div class="ind-practise">
               <!-- the practice panel (Murci picked B, 2026-10-27): three steps, then the chosen paper and its buttons. The newest
                    paper of the subject shown is chosen until the learner picks, so Start always has a paper -->
               <div class="ind-pick">
-                <label class="ind-step"><span class="ind-step-k">1 · Level</span>
+                <label class="ind-step ind-step-course"><span class="ind-step-k">1 · Course</span>
+                  <select class="ind-sel ind-coursesel" value="{{ indCourseVal }}" onChange="{{ indCoursePick }}">
+                    <sc-for list="{{ indCourseOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                  </select>
+                </label>
+                <label class="ind-step"><span class="ind-step-k">2 · Level</span>
                   <select class="ind-sel ind-lvsel" value="{{ hmLvVal }}" onChange="{{ hmLvPick }}">
-                    <sc-for list="{{ hmLvGroups }}" as="g" hint-placeholder-count="3">
+                    <sc-for list="{{ indLvGroups }}" as="g" hint-placeholder-count="3">
                       <optgroup label="{{ g.label }}">
                         <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
                       </optgroup>
                     </sc-for>
                   </select>
                 </label>
-                <label class="ind-step"><span class="ind-step-k">2 · Subject</span>
+                <label class="ind-step"><span class="ind-step-k">3 · Subject</span>
                   <select class="ind-sel" value="{{ indSubjVal }}" onChange="{{ indSubjPick }}">
                     <sc-for list="{{ indSubjOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
                   </select>
                 </label>
-                <label class="ind-step"><span class="ind-step-k">3 · Paper</span>
+                <label class="ind-step ind-step-paper"><span class="ind-step-k">4 · Paper</span>
                   <select class="ind-sel" value="{{ indPaperVal }}" onChange="{{ indPaperPick }}">
                     <sc-if value="{{ indHasPapers }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ indPaperOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></sc-if>
                     <sc-if value="{{ indNoPapers }}" hint-placeholder-val="{{ false }}"><option value="">No papers yet</option></sc-if>
                   </select>
                 </label>
               </div>
+              <!-- the course's requirement as its source states it, what follows after study, and the source (opened 2026-10-28) -->
+              <sc-if value="{{ indHasHint }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-course-hint">{{ indCourseHint }} <sc-if value="{{ indHasSrc }}" hint-placeholder-val="{{ false }}"><a class="ind-src" href="{{ indCourseSrc }}" target="_blank" rel="noopener noreferrer">Source</a></sc-if></p></sc-if>
               <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
               <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
                 <!-- the paper's card, then its buttons below it, centred (Murci 2026-10-27) -->
@@ -1707,7 +1701,7 @@ const SUBJECT_LOOK = {
   _: { c: "#93a4d6", rgb: "147,164,214", icon: "book" } };
 // The industries the home offers (Murci 2026-10-25; the approved mapping, every subject cited: docs/industry-subject-mapping.md).
 // Each lists the subjects that lead into it, tagged as the sources state them: required, recommended, unverified (recommended,
-// no source opened yet) or some (accepted by some programmes only). Finance's next step comes after school: RE5 and RE1.
+// no source opened yet) or some (accepted by some programmes only). What follows study (e.g. Finance's RE5 / RE1) is in COURSES.
 // The blurbs and careers are illustrative (the mapping doc says so). `pro` names the professional shown on its page: the
 // Nexera landing hero's scenes (assets/pro/, from _ref/nexera-hero) stand in until our own people in uniform are made.
 const INDUSTRIES = [
@@ -1725,8 +1719,7 @@ const INDUSTRIES = [
     subjects: [["Mathematics", "required"], ["Physical Sciences", "recommended"], ["Life Sciences", "recommended"], ["Geography", "unverified"], ["Mathematical Literacy", "some"]] },
   { key: "finance", words: "accountant accounting banker banking actuary economist economics insurance broker investment auditor business entrepreneur management marketing money", pro: "finance", name: "Finance, Insurance & Business", icon: "chart", c: "#2dd4bf", rgb: "45,212,191",
     blurb: "Help people and businesses plan, protect and grow their money.", careers: ["Financial adviser", "Insurance broker", "Accountant", "Actuary", "Auditor", "Economist"],
-    subjects: [["Mathematics", "required"], ["Business Studies", "unverified"]],
-    after: [["RE5", "Representatives: your licence to advise clients."], ["RE1", "Key individuals: lead a financial services business."]] },
+    subjects: [["Mathematics", "required"], ["Business Studies", "unverified"]] },
   // added 2026-10-26 (Murci approved; the mapping doc's "Added 2026-10-26": sources 20-29, Education's from search snippets only)
   { key: "ict", words: "software developer programmer programming coding code computer computers data analyst scientist cybersecurity security ai tech technology it network web app", pro: "cyber", name: "ICT & Digital", icon: "calc", c: "#22d3ee", rgb: "34,211,238",
     blurb: "Build the software, data and networks the world runs on.", careers: ["Software developer", "Data analyst", "Cybersecurity analyst", "Network engineer", "IT technician", "UX designer"],
@@ -1767,6 +1760,74 @@ const NCV_COMPULSORY = {
   "Finance, Economics and Accounting": { L2: ["Applied Accounting", "Economic Environment", "Financial Management"],
     L3: ["Applied Accounting", "Economic Environment", "Financial Management"], L4: ["Applied Accounting", "Economic Environment", "Financial Management"] } };
 // a card's subjects at a level, as [name, kind, note, programme]: the mapping's school subjects, or on TVET its programmes' subjects
+// The courses behind each industry's careers (Murci 2026-10-28, direction A: a career pill sets the course; the course narrows the
+// level, the subjects and so the papers). South Africa first; every entry is sourced in docs/career-routes-za.md (researched
+// 2026-10-28, pages opened; never filled from memory). lv: "school" = a course a school learner aims at (NSC subjects in subj),
+// "ncv" = a TVET NC(V) programme (its subjects per level come from NCV_COMPULSORY), null = a licence route with no school level.
+// req is the requirement as the source states it, shown with its source link; "nearest" routes say so in their name.
+const C = (id, name, inst, lv, x, req, after, src, careers) => ({ id, name, inst, lv, subj: lv === "school" ? x : [], prog: lv === "ncv" ? x : "", req, after, src, careers });
+const WITS = "https://www.wits.ac.za/course-finder/undergraduate/", NCVDBE = "https://www.education.gov.za/Curriculum/CurriculumStatements/NationalCertificates(Vocational)NQFLevel2/NC(Vocational)AssessmentGuidelinesLevel2.aspx";
+const ECSA = "ECSA: Professional Engineer (Pr Eng), after an accredited degree, training and a review";
+const COURSES = {
+  engineering: [
+    C("eng-mech", "BSc (Eng) Mechanical Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/mechanical-engineering/", ["Mechanical engineer"]),
+    C("eng-elec", "BSc (Eng) Electrical Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/electrical-engineering/", ["Electrical engineer"]),
+    C("eng-mtx", "BIng Mechatronic Engineering", "North-West University", "school", ["Mathematics", "Physical Sciences"], "Maths L6, Physical Sciences L6, English L5 (APS 34).", ECSA, "https://studies.nwu.ac.za/undergraduate-studies/fields-study-engineering", ["Mechatronics engineer"]),
+    C("eng-chem", "BSc (Eng) Chemical Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/chemical-engineering/", ["Chemical engineer"]),
+    C("eng-ind", "BSc (Eng) Industrial Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/industrial-engineering/", ["Industrial engineer"]),
+    C("eng-ncv", "NC(V) Engineering and Related Design", "TVET college", "ncv", "Engineering and Related Design", "A TVET programme, NC(V) Levels 2 to 4; Fitting and Turning is one of its subjects.", "Fitter and turner: a trade test at a QCTO-accredited centre", NCVDBE, ["Engineering technician", "Fitter and turner"]) ],
+  built: [
+    C("blt-civil", "BSc (Eng) Civil Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/civil-engineering/", ["Civil engineer"]),
+    C("blt-cem", "BSc Construction Economics Management", "University of the Free State", "school", ["Mathematics", "Physical Sciences", "Business Studies"], "Maths L5, English L4, and one of Physical Science, Accounting, Economics or Business L4 (AP 30).", "SACPCMP Professional Construction Manager (an honours degree and 5 years' experience) or SACQSP Professional Quantity Surveyor", "https://www.ufs.ac.za/natagri/departments-and-divisions/quantity-surveying-and-construction-management-home/unlisted-pages/all/bsc-quantity-surveying-bsc-hons-quantity-surveying-208", ["Construction manager", "Quantity surveyor"]),
+    C("blt-geo", "Geomatics degree", "University of Cape Town", "school", ["Mathematics", "Physical Sciences"], "English, Maths and Physical Science (no levels stated); Geography is not required.", "SAGC: candidate, mentored training, Law exam, then Professional", "https://ebe.uct.ac.za/apply-ebe-faqs/frequently-asked-questions-geomatics", ["Land surveyor"]),
+    C("blt-arch", "Bachelor of Architectural Studies", "University of Cape Town", "school", ["Mathematics"], "English 50%, Maths 50% (Maths Literacy not accepted; Physics not required), plus a portfolio.", "SACAP registration, after the Master of Architecture (Professional)", "https://ebe.uct.ac.za/apply-ebe-faqs/frequently-asked-questions-architecture", ["Architect"]),
+    C("blt-urp", "BSc Urban and Regional Planning", "Wits", "school", ["Mathematics"], "English L5, Maths L5 (APS 36+).", "", WITS + "ebe/urban-and-regional-planning/", ["Town planner"]),
+    C("blt-ncv-civil", "NC(V) Civil Engineering and Building Construction", "TVET college", "ncv", "Civil Engineering and Building Construction", "A TVET programme, NC(V) Levels 2 to 4.", "", NCVDBE, ["Civil engineer"]),
+    C("blt-ncv-elec", "NC(V) Electrical Infrastructure Construction", "TVET college", "ncv", "Electrical Infrastructure Construction", "A TVET programme, NC(V) Levels 2 to 4.", "", NCVDBE, ["Electrician"]) ],
+  mining: [
+    C("min-mine", "BSc (Eng) Mining Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/mining-engineering/", ["Mining engineer"]),
+    C("min-geo", "BSc Geological Sciences", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L6, Physical Science L5 (APS 42+).", "", WITS + "science/geological-sciences/", ["Geologist"]),
+    C("min-elec", "BSc (Eng) Electrical Engineering (nearest route)", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/electrical-engineering/", ["Power engineer"]),
+    C("min-met", "BSc (Eng) Metallurgy and Materials Engineering", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L5, Maths L5, Physical Sciences L5 (APS 42+).", ECSA, WITS + "ebe/metallurgy-and-materials-engineering/", ["Metallurgist"]),
+    C("min-pv", "Solar PV Standalone Systems Installer (occupational certificate)", "MERSETA", "school", ["Mathematics"], "Entry: an NQF Level 3 qualification with Maths (the level is not stated).", "", "https://allqs.saqa.org.za/showQualification.php?id=120883", ["Renewable energy technician"]) ],
+  health: [
+    C("hl-med", "MBBCh (Medicine)", "Wits", "school", ["Mathematics", "Life Sciences", "Physical Sciences"], "English L5, Maths L5, Life and/or Physical Sciences L5; selection is NSC 75% plus NBT 25%.", "HPCSA, after internship and community service", WITS + "health/medicine-and-surgery", ["Doctor"]),
+    C("hl-physio", "BSc Physiotherapy", "Wits", "school", ["Mathematics", "Life Sciences", "Physical Sciences"], "English L5, Maths L5, Life and/or Physical Sciences L5, and 16 hours observing a physiotherapist.", "HPCSA: community service, then independent practice", WITS + "health/physiotherapy", ["Physiotherapist"]),
+    C("hl-pharm", "BPharm", "North-West University", "school", ["Mathematics", "Physical Sciences"], "Maths L5, Physical Sciences L5, English or Afrikaans L4 (APS 32). UKZN asks Maths L3 with Life and Physical Sciences L4.", "SAPC, the Pharmacy Council", "https://health-sciences.nwu.ac.za/pharmacy/apply-study-pharmacy", ["Pharmacist"]),
+    C("hl-nurs", "Bachelor of Nursing", "Wits", "school", ["Mathematics", "Life Sciences", "Physical Sciences"], "English L4, Maths L4, Life and/or Physical Sciences L4.", "SANC General Nursing and Midwifery, after a year of community service (NWU)", WITS + "health/nursing/", ["Nurse"]),
+    C("hl-rad", "Bachelor of Radiography in Diagnostics", "Central University of Technology", "school", ["Life Sciences", "Physical Sciences", "Mathematics"], "Life Sciences, Physical Sciences and Maths 50% each; Life Orientation 40% (APS 30).", "HPCSA Diagnostic Radiographer", "https://www.cut.ac.za/Programmes/radiography-in-diagnostics", ["Radiographer"]),
+    C("hl-ot", "BSc Occupational Therapy", "University of the Western Cape", "school", ["Mathematics", "Mathematical Literacy", "Life Sciences"], "English L4, another language L3, Maths L3 or Maths Literacy L5, Life Sciences L4 (33 points).", "", "https://www.uwc.ac.za/study/all-areas-of-study/departments/department-of-occupational-therapy-2/undergraduate", ["Occupational therapist"]),
+    C("hl-emc", "Higher Certificate in Emergency Medical Care", "Durban University of Technology", "school", [], "Entry: an NSC (or NC(V) Level 4) with higher-certificate access; no subjects are named.", "Entry-level emergency care; the Bachelor of Emergency Medical Care leads to HPCSA registration", "https://allqs.saqa.org.za/showQualification.php?id=119803", ["Paramedic"]) ],
+  environment: [
+    C("env-agric", "BSc Agriculture (Agribusiness)", "University of KwaZulu-Natal", "school", ["Mathematics", "Life Sciences", "Physical Sciences"], "English L4, Maths L4, and one of Agricultural, Life or Physical Sciences L4 (APS 28).", "SACNASP, Agricultural Science field", "https://agriculture-science.ukzn.ac.za/qualification/bachelor-of-science-in-agriculture/", ["Agricultural scientist", "Farm manager", "Soil scientist"]),
+    C("env-envsc", "BSc Environmental Science", "University of KwaZulu-Natal", "school", ["Mathematics", "Physical Sciences", "Life Sciences"], "Maths L4, and one of Physical, Life or Agricultural Sciences L4 (APS 28).", "SACNASP, Environmental Science field", "https://agriculture-science.ukzn.ac.za/qualification/bachelor-of-science-in-environmental-science/", ["Environmental scientist"]),
+    C("env-cons", "Diploma in Nature Conservation", "University of Mpumalanga", "school", ["Mathematics", "Mathematical Literacy", "Life Sciences"], "English L4, Maths L2 or Maths Literacy L4, Life Sciences L4 (APS 28).", "", "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Agriculture-and-Natural-Sciences/School-of-Biology-and-Environmental-Sciences/Diploma-in-Nature-Conservation.aspx", ["Conservation officer"]),
+    C("env-for", "BSc Forestry", "University of Mpumalanga", "school", [], "Entry requirements are not on the university's page yet.", "SACNASP (Forestry sits in Agricultural Science)", "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Agriculture-and-Natural-Sciences", ["Forester"]),
+    C("env-ncv", "NC(V) Primary Agriculture", "TVET college", "ncv", "Primary Agriculture", "A TVET programme, NC(V) Levels 2 to 4.", "", "https://ntc.edu.za/primary-agriculture.html", ["Farm manager"]) ],
+  finance: [
+    C("fin-fp", "BCom Financial Planning", "Nelson Mandela University", "school", ["Mathematics"], "Maths 50% (the extended programme asks 45%).", "FPI Financial Services Associate; the FAIS RE5 exam to advise clients (RE1 to lead a financial services business)", "https://busman.mandela.ac.za/Undergraduate-Studies/BCom-Financial-Planning-(40126)", ["Financial adviser"]),
+    C("fin-acc", "BCom Accounting", "Wits", "school", ["Mathematics"], "English L5, Maths L5 (APS 38+).", "SAICA CA(SA): a postgraduate diploma, the ITC, a training contract and the APC; IRBA's exam for registered auditors", WITS + "clm/accounting/", ["Accountant", "Auditor"]),
+    C("fin-act", "BSc Actuarial Science", "Wits", "school", ["Mathematics", "Physical Sciences"], "English L7, Maths L7, Physical Science L7 (APS 44+, plus the NBT).", "ASSA Fellowship (FASSA): its exams plus work experience", WITS + "science/actuarial-science/", ["Actuary"]),
+    C("fin-eco", "BCom Economics", "Wits", "school", ["Mathematics"], "English L5, Maths L5 (APS 38+).", "", WITS + "clm/economics/", ["Economist"]),
+    C("fin-risk", "BCom Economics with Risk Management (nearest route)", "North-West University", "school", ["Mathematics"], "Maths L4, English L4 (APS 26).", "The FAIS RE5 exam for representatives", "https://commerce.nwu.ac.za/es/riskmanagement", ["Insurance broker"]),
+    C("fin-ncv", "NC(V) Finance, Economics and Accounting", "TVET college", "ncv", "Finance, Economics and Accounting", "A TVET programme, NC(V) Levels 2 to 4.", "", "https://ewc.edu.za/programmes/business-studies/finance-economics-accounting-l4.html", ["Financial adviser", "Accountant"]) ],
+  ict: [
+    C("ict-cs", "BSc Computer Science", "Wits", "school", ["Mathematics"], "English L5, Maths L6 (APS 44+).", "", WITS + "science/computer-science/", ["Software developer"]),
+    C("ict-stat", "BSc Statistics and Computer Science", "University of KwaZulu-Natal", "school", ["Mathematics", "Life Sciences", "Physical Sciences"], "Maths L4, English L4, Life Orientation L4, and one of Agricultural, Life or Physical Science L4 (APS 30).", "", "https://statistics.ukzn.ac.za/data-science/qualification/bachelor-of-science-statistics-computer-science", ["Data analyst"]),
+    C("ict-dip", "Diploma in Information Technology", "Vaal University of Technology", "school", ["Mathematics", "Mathematical Literacy"], "English L4; Maths or Technical Maths L4, or Maths Literacy L6 (APS 26).", "", "https://vut.ac.za/?p=33848", ["Data analyst", "Cybersecurity analyst", "Network engineer", "IT technician"]),
+    C("ict-des", "Diploma in Graphic Design, Photography, Fashion and Fine Art (nearest route)", "Vaal University of Technology", "school", ["Mathematics", "Mathematical Literacy"], "English L4; Maths L2 or Maths Literacy L3 (APS 21); a portfolio and an interview.", "", "https://vut.ac.za/?p=33757", ["UX designer"]),
+    C("ict-ncv", "NC(V) Information Technology and Computer Science", "TVET college", "ncv", "Information Technology and Computer Science", "A TVET programme, NC(V) Levels 2 to 4.", "", "https://falsebaycollege.co.za/ict/ncv-information-technology-and-computer-science-level-2-4/", ["Software developer", "Network engineer", "IT technician"]) ],
+  transport: [
+    C("tr-ncv", "NC(V) Transport and Logistics", "TVET college", "ncv", "Transport and Logistics", "A TVET programme, NC(V) Levels 2 to 4.", "", "", ["Logistics planner", "Supply chain manager"]),   /* DHET NC(V) Matrix of Subjects 2015 (NCV_COMPULSORY's source): no public link */
+    C("tr-cpl", "Commercial Pilot Licence, CPL(A)", "SACAA (training at an approved flight school)", null, [], "No school subjects in the regulation: age 18+, a Part 67 medical, a theory exam, a skills test and 200 flying hours.", "SACAA licence", "https://www.caa.co.za/industry-information/personnel-licensing/licensing/", ["Commercial pilot"]),
+    C("tr-ame", "Aircraft Maintenance Engineer licence (Part 66)", "SACAA", null, [], "No school subjects in the regulation: age 21+, employed by an approved maintenance organisation, training, a theory exam and experience.", "SACAA licence", "https://www.caa.co.za/industry-information/personnel-licensing/licensing/", ["Aircraft maintenance engineer"]),
+    C("tr-atc", "Air traffic services training", "ATNS", "school", ["Mathematics"], "Maths L4, English L4 (a 2015 bursary notice; the current intake is not confirmed).", "", "https://www.sanews.gov.za/node/26440", ["Air traffic controller"]),
+    C("tr-naut", "Bachelor of Nautical Science", "Cape Peninsula University of Technology", "school", ["Mathematics", "Physical Sciences"], "English, Maths and Physical Science (no levels stated); NC(V) Level 4 with the same is also accepted.", "", "https://allqs.saqa.org.za/showQualification.php?id=110050", ["Ship's officer"]) ],
+  education: [
+    C("ed-fp", "BEd Foundation Phase Teaching", "Wits", "school", ["Mathematics", "Mathematical Literacy"], "English L5; Maths L4, or Maths Literacy L5, or Technical Maths L5 (APS 37).", "SACE registration as an educator", WITS + "humanities/bed-foundation-phase-teaching/", ["Foundation phase teacher"]),
+    C("ed-fet", "BEd Senior Phase and FET Teaching", "Wits", "school", [], "English L5 (APS 37); Maths or a science is chosen as a specialism from the second year.", "SACE registration as an educator", WITS + "humanities/bed-senior-phase-teaching", ["Maths teacher", "Science teacher"]),
+    C("ed-sw", "Bachelor of Social Work", "University of the Free State", "school", [], "English L5; five academic subjects L5 and one more L4 (the top 50 are selected).", "SACSSP registration as a social worker", "https://www.ufs.ac.za/humanities/departments-and-divisions/social-work-home/prospective-students", ["Social worker"]),
+    C("ed-ncv", "NC(V) Education and Development", "TVET college", "ncv", "Education and Development", "A TVET programme, NC(V) Levels 2 to 4.", "", "https://thekwini.edu.za/campuses", ["Early childhood practitioner"]) ] };
 const indSubjects = (ind, lv) => lv.qualification !== "ncv" ? ind.subjects
   : (NCV_CARDS[ind.key] || []).reduce((out, prog) => out.concat(((NCV_COMPULSORY[prog] || {})[lv.level] || []).map(n => [n, "programme", "", prog])), []);
 // the approved mapping's caveats (2026-10-25), shown as a subject's note now its tag is gone (2026-10-27)
@@ -3408,7 +3469,21 @@ class Component extends DCLogic {
     const all = L.papers.map(info);
     // the industry page: its subjects (each tagged as the mapping states it), their papers newest first, and the map modal
     const closeMap = () => this.setState({ pmMapOpen: false }, () => { const t = document.querySelector("[data-indmap]"); if (t) t.focus(); });
-    const indSecs = indSubjects(ind, L.level).map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
+    // the course (Murci 2026-10-28, direction A): picked in the Course field or by tapping a career. It narrows the level menu to
+    // its kind of school and the subjects to its own: a school course's named subjects, an NC(V) programme's subjects at this
+    // level. A course that names no subject with papers here keeps the industry's subjects (and says so). A course of the other
+    // kind of school than the saved level (the level changed on the home) is set aside, not forced
+    const ncvLv = L.level.qualification === "ncv", crsAll = COURSES[ind.key] || [];
+    const crsFits = c => !c.lv || (c.lv === "ncv") === ncvLv;
+    const crs = crsAll.filter(c => c.id === (s.indCourse || {})[ind.key] && crsFits(c))[0] || null, carPick = (s.indCareer || {})[ind.key] || null;
+    const subjAll = indSubjects(ind, L.level);
+    const subjCrs = !crs ? subjAll : crs.lv === "ncv" ? subjAll.filter(sb => sb[3] === crs.prog) : crs.subj.map(n => [n, "course", ""]);
+    const crsWide = !!crs && !subjCrs.length;   // nothing of its own to practise here: the industry's subjects stay
+    const pickCourse = (id, career) => { const c = crsAll.filter(x => x.id === id)[0] || null;
+      this.setState({ indCourse: { ...(s.indCourse || {}), [ind.key]: c ? c.id : "" }, indCareer: { ...(s.indCareer || {}), [ind.key]: career || null },
+        indTabs: { ...(s.indTabs || {}), [ind.key]: "" }, pmOpen: null });
+      if (c && !crsFits(c)) { if (c.lv === "ncv") this.lvSave("ncv", "L4"); else this.lvSave("high_school", "G12"); } };   // its school's top level, where the papers are
+    const indSecs = (crsWide ? subjAll : subjCrs).map(sb => { const n = sb[0], look = SUBJECT_LOOK[n] || SUBJECT_LOOK._;
       const ps = L.papers.filter(q => q.subject === n).sort((a, b) => when(b) - when(a) || (pno(a) || 0) - (pno(b) || 0)).map(info);
       // its papers are a dropdown (Murci 2026-10-25: "make the papers dropdowns"); the picked paper's details show under the subject,
       // one paper open on the page at a time
@@ -3451,7 +3526,18 @@ class Component extends DCLogic {
       // for presentations, not product behaviour
       pmRaceOn: s.pmRace ? "true" : "false", pmRaceToggle: () => s.pmRace ? this.setState({ pmRace: false, pvOpen: false }) : this.pmRaceDemo(true),
       pmGroups: groups, pmRoadW: groups[0] ? groups[0].w : "none",
-      indName: ind.name, indBlurb: ind.blurb, indCareerList: ind.careers.map(c => ({ name: c })), indCareerMore: "+" + Math.max(0, ind.careers.length - 2) + " more",   /* a phone shows two (option B) */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro, indXp: this.xpTally(s)[ind.key] || 0,
+      indName: ind.name, indBlurb: ind.blurb,
+      // a career pill is a button: it picks the career's course (the one that fits the saved level first) and narrows the page;
+      // tapped again it lets go. A career with no sourced route says so in the hint instead
+      indCareerList: ind.careers.map(c => { const r = crsAll.filter(x => x.careers.indexOf(c) !== -1), on = carPick === c;
+        return { name: c, on: on ? "true" : "false", tap: () => on ? pickCourse("", null) : pickCourse(((r.filter(crsFits)[0] || r[0]) || {}).id || "", c) }; }),
+      indCourseOpts: [{ value: "", label: "All courses" }].concat(crsAll.map(c => ({ value: c.id, label: c.name + " · " + c.inst }))),
+      indCourseVal: crs ? crs.id : "", indCoursePick: e => pickCourse(e.target.value, null),
+      indLvGroups: this.lvGroups(crs && crs.lv ? (crs.lv === "ncv" ? "ncv" : "high_school") : null),
+      indCourseHint: crs ? crs.req + (crs.after ? " After: " + crs.after + "." : "") + (crsWide ? " It names no subject with papers here, so the industry's subjects show." : "")
+        : carPick ? "No sourced study route for " + carPick.toLowerCase() + " yet." : "",
+      indHasHint: !!(crs || carPick), indCourseSrc: crs ? crs.src : "", indHasSrc: !!(crs && crs.src),
+      indCareerMore: "+" + Math.max(0, ind.careers.length - 2) + " more",   /* a phone shows two (option B) */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro, indXp: this.xpTally(s)[ind.key] || 0,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)
       indSubjOpts: indSecs.map(x => ({ value: x.name, label: x.name + (x.count ? "" : " · no papers yet") })), indSubjVal: tabName || "",
@@ -3459,10 +3545,6 @@ class Component extends DCLogic {
       indPaperOpts: tabSec ? tabSec.opts : [], indHasPapers: !!(tabSec && tabSec.opts.length), indNoPapers: !(tabSec && tabSec.opts.length),
       indPaperVal: openId || "", indPaperPick: e => this.setState({ pmOpen: e.target.value || null }),
       indSubjNote: tabSec ? tabSec.note : "", indHasSubjNote: !!(tabSec && tabSec.note), indHasSel: !!sel,
-      indHasAfter: !!ind.after, indAfter: (ind.after || []).map(a => ({ code: a[0], text: a[1] })),
-      // a phone's After school, folded until tapped (Murci 2026-10-27)
-      indAfterCodes: (ind.after || []).map(a => a[0]).join(" · "), indAfterOpen: s.indAfterOpen ? "true" : "false",
-      indAfterToggle: () => this.setState({ indAfterOpen: !s.indAfterOpen }),
       indMapOpen: !!s.pmMapOpen && !s.finishCard, indMapClose: closeMap,
       indMapGo: () => this.setState({ pmMapOpen: true }, () => { const h = document.getElementById("ind-map-title"); if (h) h.focus({ preventScroll: true }); }),
       indMapKeys: e => { if (e.key === "Escape") { e.preventDefault(); closeMap(); } },
@@ -5027,13 +5109,18 @@ class Component extends DCLogic {
   // per subject with the companion on it. A first tap opens a card (papers, sittings, marks, time, progress), a second tap (or its
   // Open papers) opens today's road on that subject: the map and its rulings are unchanged. Surprise me opens the road on a paper
   // the learner has not finished, with that paper's sheet open.
+  // the learner's school level, saved at once (the home's level pill, and an industry's course that needs another level); a
+  // value is "qualification:level"
+  lvSave(qualification, level) { let row = null;
+    try { row = STUDIES_API.put({ qualification: qualification, level: level, subjects: [] }); }
+    catch (e) { this.setState({ hmNote: e && e.message ? e.message : "That didn't save. Try again." }); return; }
+    this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); }
+  // the level menu, grouped by school; only = one qualification's group (an industry course narrows it)
+  lvGroups(only) { return [["high_school", "Secondary school"], ["ncv", "TVET college"], ["university", "University"]].filter(g => shownQual(g[0]) && (!only || g[0] === only))
+    .map(g => ({ label: g[1], opts: SERVICE_LEVELS[g[0]].map(l => ({ label: this.levelName({ qualification: g[0], level: l }), value: g[0] + ":" + l })) })); }
   hmDeckVals(s) {
     const L = this.pmList(s), lv = L.level, all = this.pmAllPapers();
-    // the school-level pill saves at once, as the level sheet's "Show past papers" does
-    const save = (qualification, level) => { let row = null;
-      try { row = STUDIES_API.put({ qualification: qualification, level: level, subjects: [] }); }
-      catch (e) { this.setState({ hmNote: e && e.message ? e.message : "That didn't save. Try again." }); return; }
-      this.setState({ studies: row, studiesAsked: true, hmOpen: null, hmNote: "" }); };
+    const save = (q, l) => this.lvSave(q, l);   // the school-level pill saves at once, as the level sheet's "Show past papers" does
     // the cards are industries (Murci 2026-10-25): a card opens its industry's page, the second page
     // focus follows the move (2026-10-26 QA: it fell to the page body both ways): the industry's title, then its card on Back
     const go = (key, from) => { this._hmFrom = from || null; this.indMorph("in", key, done => { this.setState({ pmInd: key, hmOpen: null, hmNote: "", pmOpen: null, pmMapOpen: false });
@@ -5042,8 +5129,7 @@ class Component extends DCLogic {
       // the school-level pill on the home (Murci 2026-10-26): it reads "Secondary school · Grade 12"; its native menu groups the
       // levels by school; set once, every industry page follows it. A value is "qualification:level".
       hmLvText: this.lvText(lv), hmLvShort: lv.qualification === "university" ? "University" : this.levelName(lv),
-      hmLvGroups: [["high_school", "Secondary school"], ["ncv", "TVET college"], ["university", "University"]].filter(g => shownQual(g[0]))
-        .map(g => ({ label: g[1], opts: SERVICE_LEVELS[g[0]].map(l => ({ label: this.levelName({ qualification: g[0], level: l }), value: g[0] + ":" + l })) })),
+      hmLvGroups: this.lvGroups(),
       hmLvVal: lv.qualification + ":" + lv.level,
       hmLvPick: e => { const v = (e.target.value || "").split(":"); if (v.length === 2 && (v[0] !== lv.qualification || v[1] !== lv.level)) save(v[0], v[1]); },
       hmHasNote: !!s.hmNote, hmNote: s.hmNote || "", hmXpTotal: s.xp || HOME.me.xp_total,
