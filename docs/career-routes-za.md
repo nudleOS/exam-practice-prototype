@@ -26,6 +26,19 @@ A gap-filling round filled 13 of the 17 open careers; what is left is under "Ope
 - DHET's "NC(V) Matrix of Subjects" PDF is unreadable. NC(V) subject lists therefore come from the DBE NC(V) guideline pages
   or from a college's programme page.
 
+**In the page (2026-10-28, Murci picked direction A).** `COURSES` in `Exam Practice.dc.html` holds one entry per route
+below. On the industry page:
+- **Tapping a career pill** picks its course; the one that fits the saved level comes first. Tapping it again lets go.
+- **The Course field** (step 1) lists the industry's courses, plus "All courses".
+- **A course narrows the fields below it.**
+  - Level: only its kind of school. Picking a course of the other kind saves Grade 12 or NC(V) Level 4.
+  - Subject: a school course's named subjects, or an NC(V) programme's subjects at that level.
+  - Paper follows the subject.
+- **Under the fields:** the requirement as the source states it, what follows after study, and a Source link.
+- **"After school" is gone.** Finance's Finance-only box (RE5 / RE1) is now part of the Financial adviser and Insurance broker
+  courses.
+- **When a course names no subject with papers here,** the industry's subjects show, and the hint says so.
+
 **Routes by level, as the app will use them:**
 - **School (NSC, Grades 10-12).** A course is the learner's *target*. Its required subjects are the ones to practise.
 - **TVET NC(V) L2-L4.** The course *is* the programme. It has 3 fundamentals (a language; Mathematics or Mathematical
@@ -132,11 +145,11 @@ A gap-filling round filled 13 of the 17 open careers; what is left is under "Ope
 
 | Career | Route | School subjects (minimum) | After study |
 |---|---|---|---|
-| Logistics planner | *open* | | |
+| Logistics planner | NC(V) Transport and Logistics (DHET NC(V) Matrix of Subjects 2015, the source of the page's NC(V) data; no public link) | Its subjects per level as in the page's `NCV_COMPULSORY` | |
 | Commercial pilot | CPL(A) under Civil Aviation Regulations 2011, Part 61; training at a Part 141 school [49][71] | No school subjects in the regulation. Age 18+, Part 67 medical, theory exam, skills test, night rating; 200 h total (150 integrated), 100 h PIC (reproduced text) [71] | SACAA licence [49] |
 | Aircraft maintenance engineer | AME licence, Part 66 (licence route) [49][72] | No school subjects in the regulation. Age 21+, employed by an approved maintenance organisation, training, theory exam, experience (reproduced text) [72] | SACAA licence [49] |
 | Air traffic controller | ATNS training (2015 bursary notice; current intake not verified) [50] | Maths L4, English L4 (2015 notice) [50] | |
-| Supply chain manager | *open* | | |
+| Supply chain manager | NC(V) Transport and Logistics (as above) | as above | |
 | Ship's officer | Bachelor of Nautical Science, NQF 7 (CPUT per SAQA) [73] | English, Maths, Physical Science (no levels stated); or NC(V) L4 with the same [73] | |
 | | Diploma in Nautical Studies, NQF 6 (DUT per SAQA) [74] | Entry: NSC with bachelor access or NC(V) L4 (no subjects stated); SAMSA eyesight + medical [74] | Underpins SAMSA deck officer certificates [74] |
 | | SAMTRA Mates and Masters (STCW A-II/2) [51] | *entry open* | |
@@ -155,8 +168,8 @@ A gap-filling round filled 13 of the 17 open careers; what is left is under "Ope
 ## Open after the gap round (2026-10-28)
 
 **No sourced route yet.** Every source sat behind a blocked site; the snippets were not opened, so they were not used.
-- Logistics planner and Supply chain manager: public diplomas exist (e.g. TUT, VUT) but their pages 404'd.
 - Educational psychologist: every university page was blocked.
+- Logistics planner and Supply chain manager have only the NC(V) route. The public diplomas (e.g. TUT, VUT) 404'd.
 
 **Partial.**
 - Mine surveyor: the exam, experience and entry rules.
