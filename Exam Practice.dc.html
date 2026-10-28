@@ -98,7 +98,7 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
   <link rel="stylesheet" href="nx-play.css?v=303">   <!-- the play screen's look (the boss's design, 2026-09-29): background, header, the MCQ panel -->
-  <link rel="stylesheet" href="nx-map.css?v=193">
+  <link rel="stylesheet" href="nx-map.css?v=194">
   <link rel="stylesheet" href="build-play.css?v=12">   <!-- the paper map (2026-10-02): papers only, no vortex -->
 </helmet>
 
@@ -450,8 +450,9 @@
                   </select>
                 </label>
               </div>
-              <!-- the course's requirement as its source states it, what follows after study, and the source (opened 2026-10-28) -->
-              <sc-if value="{{ indHasHint }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-course-hint">{{ indCourseHint }} <sc-if value="{{ indHasSrc }}" hint-placeholder-val="{{ false }}"><a class="ind-src" href="{{ indCourseSrc }}" target="_blank" rel="noopener noreferrer">Source</a></sc-if></p></sc-if>
+              <!-- the course's requirement as its source states it and what follows after study (sources: COURSES / the doc, not shown:
+                   Murci 2026-10-28) -->
+              <sc-if value="{{ indHasHint }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-course-hint">{{ indCourseHint }}</p></sc-if>
               <sc-if value="{{ indHasSubjNote }}" hint-placeholder-val="{{ false }}"><p class="ind-note ind-subj-note">{{ indSubjNote }}</p></sc-if>
               <sc-if value="{{ indHasSel }}" hint-placeholder-val="{{ true }}">
                 <!-- the paper's card, then its buttons below it, centred (Murci 2026-10-27) -->
@@ -3536,7 +3537,7 @@ class Component extends DCLogic {
       indLvGroups: this.lvGroups(crs && crs.lv ? (crs.lv === "ncv" ? "ncv" : "high_school") : null),
       indCourseHint: crs ? crs.req + (crs.after ? " After: " + crs.after + "." : "") + (crsWide ? " It names no subject with papers here, so the industry's subjects show." : "")
         : carPick ? "No sourced study route for " + carPick.toLowerCase() + " yet." : "",
-      indHasHint: !!(crs || carPick), indCourseSrc: crs ? crs.src : "", indHasSrc: !!(crs && crs.src),
+      indHasHint: !!(crs || carPick),
       indCareerMore: "+" + Math.max(0, ind.careers.length - 2) + " more",   /* a phone shows two (option B) */ indC: ind.c, indRgb: ind.rgb, indPro: ind.pro, indXp: this.xpTally(s)[ind.key] || 0,
       indSecs: indSecs, indPaperLabel: (n => n + (n === 1 ? " paper" : " papers"))(indSecs.reduce((n, sec) => n + sec.count, 0)), indHasMap: indSecs.some(sec => sec.count > 0),
       // the panel's steps 2 and 3 (step 1 is the level: hmLvGroups / hmLvVal / hmLvPick)

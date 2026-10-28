@@ -702,9 +702,8 @@ body.nx-play:is(.nx-scrolled, .nx-typing) .pv-fab:not([aria-expanded="true"]) { 
 .ind-careers > button.ind-career:focus-visible { outline: 3px solid #81b1ff; outline-offset: 2px; }
 @media (hover: hover) and (pointer: fine) { .ind-careers > button.ind-career:hover { border-color: rgba(var(--ic-rgb), 0.7); } }
 .ind-note { margin: 0; font-size: 12.5px; line-height: 1.45; color: #9fb0dd; }
-/* the course's requirement, what follows, and its source (opened 2026-10-28) */
+/* the course's requirement and what follows after study (its source stays in the data, not on the card: Murci 2026-10-28) */
 .ind-practise .ind-course-hint { margin: 0; }
-.ind-course-hint > .ind-src { color: #81b1ff; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 .ind-modal-wrap { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 12px; }
 .ind-modal { position: relative; z-index: 1; box-sizing: border-box; width: min(1000px, 100%); max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior: contain;
   padding: 14px 20px 20px; border-radius: 22px; background: #061a3a; border: 1px solid rgba(129, 177, 255, 0.25); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55); }

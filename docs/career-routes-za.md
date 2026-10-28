@@ -34,7 +34,7 @@ below. On the industry page:
   - Level: only its kind of school. Picking a course of the other kind saves Grade 12 or NC(V) Level 4.
   - Subject: a school course's named subjects, or an NC(V) programme's subjects at that level.
   - Paper follows the subject.
-- **Under the fields:** the requirement as the source states it, what follows after study, and a Source link.
+- **Under the fields:** the requirement as the source states it and what follows after study. The source link is not shown on the card (Murci 2026-10-28); the sources stay in `COURSES` and below.
 - **"After school" is gone.** Finance's Finance-only box (RE5 / RE1) is now part of the Financial adviser and Insurance broker
   courses.
 - **When a course names no subject with papers here,** the industry's subjects show, and the hint says so.
